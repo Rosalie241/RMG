@@ -1,14 +1,15 @@
 #ifndef MUPEN_HPP
 #define MUPEN_HPP
 
-#include <QString>
+#include <Mupen/api/m64p_frontend.h>
+#include <Mupen/api/m64p_common.h>
+#include <Mupen/api/m64p_custom.h>
+#include <Mupen/api/version.h>
+#include <Mupen/VidExt.hpp>
 
-#include "api/m64p_frontend.h"
-#include "api/m64p_common.h"
-#include "api/m64p_custom.h"
-#include "api/version.h"
-#include "../Config.hpp"
-#include "VidExt.hpp"
+#include <Config.hpp>
+
+#include <QString>
 
 enum PluginType
 {
@@ -53,9 +54,9 @@ private:
     ptr_CoreErrorMessage m64p_CoreErrorMessage;
 
     bool core_Hooked;
-    bool core_Hook();
-    bool core_Init();
-    bool core_Setup();
+    bool core_Hook(void);
+    bool core_Init(void);
+    bool core_Setup(void);
 
     m64p_dynlib_handle plugin_Rsp;
     m64p_dynlib_handle plugin_Gfx;
@@ -71,12 +72,18 @@ private:
     ptr_PluginStartup plugin_PluginStartup;
     ptr_PluginShutdown plugin_PluginShutdown;
 
-    bool plugin_Hook();
-    bool plugin_Unhook();
-    bool plugin_Attach();
-    bool plugin_Detach();
+    bool plugin_Hook(void);
+    bool plugin_Unhook(void);
+    bool plugin_Attach(void);
+    bool plugin_Detach(void);
+
+
+    bool rom_Open(QString);
+    bool rom_Close(void);
 
     VidExt m64p_VidExt;
 };
+
+extern Mupen g_MupenApi;
 
 #endif // MUPEN_HPP

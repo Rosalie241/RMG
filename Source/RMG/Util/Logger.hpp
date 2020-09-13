@@ -1,7 +1,8 @@
 #ifndef LOGGER_HPP
 #define LOGGER_HPP
 
-#include "Config.hpp"
+#include <Config.hpp>
+
 #include <QString>
 #include <QFile>
 
@@ -11,10 +12,11 @@ public:
     Logger();
     ~Logger();
 
-    bool Init();
+    bool Init(void);
 
     void AddText(QString text);
-    QString GetLastError();
+
+    QString GetLastError(void);
 
 private:
     bool init;
@@ -22,5 +24,7 @@ private:
     QString error_message;
     QFile logfile;
 };
+
+extern Logger g_Logger;
 
 #endif // LOGGER_HPP

@@ -94,7 +94,7 @@ ExternalProject_Add(mupen64plus-video-GLideN64
     INSTALL_COMMAND ""
 
     BUILD_IN_SOURCE True
-    CMAKE_ARGS -DMUPENPLUSAPI=1 -DMUPENPLUSAPI_GLIDENUI=1
+    CMAKE_ARGS -DMUPENPLUSAPI=1 -DMUPENPLUSAPI_GLIDENUI=1 -Wno-dev
     SOURCE_SUBDIR ./src
 
     BUILD_BYPRODUCTS ${CMAKE_BINARY_DIR}/External/mupen64plus-video-GLideN64/src/plugin/Release/mupen64plus-video-GLideN64.${SO_EXT}

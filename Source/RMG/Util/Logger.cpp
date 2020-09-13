@@ -1,5 +1,8 @@
-#include "Logger.hpp"
+#include <Util/Logger.hpp>
+
 #include <QDir>
+
+Logger g_Logger;
 
 Logger::Logger()
 {
@@ -7,8 +10,11 @@ Logger::Logger()
 
 Logger::~Logger()
 {
-    this->logfile.flush();
-    this->logfile.close();
+    if (this->init)
+    {
+        this->logfile.flush();
+        this->logfile.close();
+    }
 }
 
 bool Logger::Init()
@@ -36,12 +42,17 @@ bool Logger::Init()
     return true;
 }
 
+#include <iostream>
 void Logger::AddText(QString text)
 {
     if (!this->init)
         return;
 
+    if (text[text.size() - 1] != "\n")
+        text += "\n";
+
     this->logfile.write(text.toUtf8());
+    this->logfile.flush();
 }
 
 QString Logger::GetLastError()

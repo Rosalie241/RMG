@@ -1,7 +1,9 @@
+#include <UserInterface/MainWindow.hpp>
+#include <Util/Logger.hpp>
+
 #include <QApplication>
 #include <QDir>
 
-#include "UserInterface/MainWindow.hpp"
 int main(int argc, char** argv)
 {
     QApplication app(argc, argv);

@@ -2,8 +2,8 @@
 #define CONFIG_HPP
 
 #define WINDOW_TITLE "Rosalie's Mupen GUI"
-#define WINDOW_SIZE_W 640
-#define WINDOW_SIZE_H 480
+#define WINDOW_WIDGET_SIZE_W 640
+#define WINDOW_WIDGET_SIZE_H 480
 
 #define APP_URL_SUPPORT "https://discord.gg/PdFNesY"
 #define APP_URL_HOMEPAGE "https://github.com/Rosalie241/RMG"
@@ -14,6 +14,8 @@
 #define APP_SETTINGS_ORG "rosalie"
 #define APP_SETTINGS_NAME WINDOW_TITLE
 #define APP_SETTINGS_GEOMETRY "geometry"
+
+#define APP_ROMSEARCHER_MAX 50
 
 #ifdef _WIN32
 #define MUPEN_CORE_FILE "Core\\mupen64plus.dll"

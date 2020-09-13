@@ -1,14 +1,16 @@
 #ifndef MAINWINDOW_HPP
 #define MAINWINDOW_HPP
 
-#include <QMainWindow>   // QMainWindow
-#include <QOpenGLWidget> // QOpenGlWidget
-#include <QAction>       // QAction
-#include <QCloseEvent>   // QCloseEvent
-#include <QSettings>     // QSettings
-#include "RomBrowser.hpp"
-#include "../Logger.hpp" // Logger
-#include "../Mupen/Mupen.hpp" // Mupen
+#include <UserInterface/RomBrowserWidget.hpp>
+#include <Util/Logger.hpp>
+#include <Mupen/Mupen.hpp>
+
+#include <QMainWindow>
+#include <QOpenGLWidget>
+#include <QAction>
+#include <QCloseEvent>
+#include <QSettings>
+#include <QStackedWidget>
 
 class MainWindow : public QMainWindow
 {
@@ -20,8 +22,9 @@ public:
     bool Init();
 
 private:
-    QOpenGLWidget* ui_Widget_OpenGL;
-    RomBrowser*    ui_Widget_RomBrowser;
+    QOpenGLWidget*    ui_Widget_OpenGL;
+    RomBrowserWidget* ui_Widget_RomBrowser;
+    QStackedWidget*   ui_Widgets;
 
     QMenuBar* menuBar;
     QMenu*    menuBar_Menu;
@@ -43,8 +46,6 @@ private:
     QAction*  action_Help_HomePage;
     QAction*  action_Help_About;
 
-    Logger logger;
-    Mupen m64p;
     QSettings* ui_Settings;
 
     void closeEvent(QCloseEvent*);

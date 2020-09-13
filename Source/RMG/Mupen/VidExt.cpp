@@ -1,4 +1,5 @@
-#include "VidExt.hpp"
+#include <Mupen/VidExt.hpp>
+
 #include <iostream>
 #include <SDL.h>
 

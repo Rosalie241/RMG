@@ -1,6 +1,9 @@
-#include "Mupen.hpp"
-#include "MupenMacros.hpp"
+#include <Mupen/Mupen.hpp>
+#include <Mupen/MupenMacros.hpp>
+
 #include <QFile>
+
+Mupen g_MupenApi;
 
 Mupen::Mupen()
 {
@@ -16,7 +19,7 @@ Mupen::~Mupen()
     }
 }
 
-bool Mupen::Init()
+bool Mupen::Init(void)
 {
     if (!this->core_Hook())
         return false;
@@ -27,7 +30,7 @@ bool Mupen::Init()
     return true;
 }
 
-bool Mupen::Setup()
+bool Mupen::Setup(void)
 {
     return this->plugin_Hook();
 }
@@ -52,29 +55,24 @@ bool Mupen::SetupVidExt(VidExtFuncs funcs)
 bool Mupen::OpenRom(QString file)
 {
     m64p_error ret;
-    QFile qFile(file);
-    qFile.open(QIODevice::ReadOnly);
 
-    ret = m64p_CoreDoCommand(M64CMD_ROM_OPEN, qFile.size(), (void *)(const void *)qFile.readAll());
-    if (ret != M64ERR_SUCCESS)
-    {
-        this->error_message = "Mupen::OpenRom Failed: ";
-        this->error_message += m64p_CoreErrorMessage(ret);
+    if (!this->rom_Open(file))
         return false;
-    }
 
     if (!this->plugin_Attach())
         return false;
 
     ret = m64p_CoreDoCommand(M64CMD_EXECUTE, 0, NULL);
+
+    this->rom_Close();
+
     if (ret != M64ERR_SUCCESS)
     {
         this->error_message = "Mupen::OpenRom Failed: ";
         this->error_message += m64p_CoreErrorMessage(ret);
-        return false;
     }
 
-    return true;
+    return ret == M64ERR_SUCCESS;
 }
 
 bool Mupen::HasPluginConfig(PluginType type)
@@ -94,57 +92,43 @@ bool Mupen::OpenPluginConfig(PluginType type)
     return pluginConfig() == M64ERR_SUCCESS;
 }
 
-#include <iostream>
-#include <QDataStream>
-
 bool Mupen::GetRomInfo(QString file, m64p_rom_header* header, m64p_rom_settings* settings)
 {
     m64p_error ret;
 
-    QFile qFile(file);
-    
-    if (!qFile.open(QIODevice::ReadOnly))
+    if (!this->rom_Open(file))
         return false;
-
-    ret = m64p_CoreDoCommand(M64CMD_ROM_OPEN, qFile.size(), (void *)(const void *)qFile.readAll());
-    if (ret != M64ERR_SUCCESS)
-    {
-        std::cout << "m64p_CoreDoCommand M64CMD_ROM_OPEN Failed: " << m64p_CoreErrorMessage(ret) << std::endl;
-        return false;
-    }
 
     ret = m64p_CoreDoCommand(M64CMD_ROM_GET_HEADER, sizeof(m64p_rom_header), header);
     if (ret != M64ERR_SUCCESS)
     {
-        std::cout << "m64p_CoreDoCommand M64CMD_ROM_GET_HEADER Failed: " << m64p_CoreErrorMessage(ret) << std::endl;
+        this->rom_Close();
+        this->error_message = "Mupen::GetRomInfo: m64p_CoreDoCommand(M64CMD_ROM_GET_HEADER) Failed: ";
+        this->error_message += m64p_CoreErrorMessage(ret);
         return false;
     }
 
     ret = m64p_CoreDoCommand(M64CMD_ROM_GET_SETTINGS, sizeof(m64p_rom_settings), settings);
     if (ret != M64ERR_SUCCESS)
     {
-        std::cout << "m64p_CoreDoCommand M64CMD_ROM_GET_SETTINGS Failed: " << m64p_CoreErrorMessage(ret) << std::endl;
+        this->rom_Close();
+        this->error_message = "Mupen::GetRomInfo: m64p_CoreDoCommand(M64CMD_ROM_GET_SETTINGS) Failed: ";
+        this->error_message += m64p_CoreErrorMessage(ret);
         return false;
     }
 
-    ret = m64p_CoreDoCommand(M64CMD_ROM_CLOSE, 0, NULL);
-    if (ret != M64ERR_SUCCESS)
-    {
-        std::cout << "m64p_CoreDoCommand M64CMD_ROM_CLOSE Failed: " << m64p_CoreErrorMessage(ret) << std::endl;
+    if (!this->rom_Close())
         return false;
-    }
-    
-    qFile.close();
 
     return true;
 }
 
-QString Mupen::GetLastError()
+QString Mupen::GetLastError(void)
 {
     return this->error_message;
 }
 
-bool Mupen::core_Hook()
+bool Mupen::core_Hook(void)
 {
     this->m64p_handle = DLOPEN(MUPEN_CORE_FILE);
 
@@ -173,7 +157,7 @@ bool Mupen::core_Hook()
     return true;
 }
 
-bool Mupen::core_Init()
+bool Mupen::core_Init(void)
 {
     m64p_error ret;
 
@@ -188,7 +172,7 @@ bool Mupen::core_Init()
     return true;
 }
 
-bool Mupen::core_Setup()
+bool Mupen::core_Setup(void)
 {
     return true;
 }
@@ -219,7 +203,7 @@ ptr_PluginConfig Mupen::plugin_Config_Get(PluginType type)
     return pluginConfig;
 }
 
-bool Mupen::plugin_Hook()
+bool Mupen::plugin_Hook(void)
 {
     m64p_error ret;
 
@@ -238,7 +222,7 @@ bool Mupen::plugin_Hook()
     return true;
 }
 
-bool Mupen::plugin_Unhook()
+bool Mupen::plugin_Unhook(void)
 {
     m64p_error ret;
     this->error_message = "Mupen::plugin_Unhook Failed: ";
@@ -251,7 +235,7 @@ bool Mupen::plugin_Unhook()
     return true;
 }
 
-bool Mupen::plugin_Attach()
+bool Mupen::plugin_Attach(void)
 {
     m64p_error ret;
 
@@ -263,4 +247,50 @@ bool Mupen::plugin_Attach()
     MUPEN_PLUGIN_ATTACH(M64PLUGIN_RSP, Rsp);
 
     return true;
+}
+
+bool Mupen::plugin_Detach(void)
+{
+
+}
+
+bool Mupen::rom_Open(QString file)
+{
+    m64p_error ret;
+    QByteArray buffer;
+    QFile qFile(file);
+    
+    if (!qFile.open(QIODevice::ReadOnly))
+    {
+        this->error_message = "Mupen::rom_Open: QFile::open Failed";
+        return false;
+    }
+
+    buffer = qFile.readAll();
+
+    ret = m64p_CoreDoCommand(M64CMD_ROM_OPEN, buffer.size(), buffer.data());
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_message = "Mupen::rom_Open: m64p_CoreDoCommand(M64CMD_ROM_OPEN) Failed: ";
+        this->error_message += this->m64p_CoreErrorMessage(ret);
+    }
+
+    buffer.clear();
+    qFile.close();
+
+    return ret == M64ERR_SUCCESS;
+}
+
+bool Mupen::rom_Close(void)
+{
+    m64p_error ret;
+
+    ret = m64p_CoreDoCommand(M64CMD_ROM_CLOSE, 0, NULL);
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_message = "Mupen::rom_Close: m64p_CoreDoCommand(M64CMD_ROM_CLOSE) Failed: ";
+        this->error_message += this->m64p_CoreErrorMessage(ret);
+    }
+
+    return ret == M64ERR_SUCCESS;
 }
