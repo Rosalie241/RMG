@@ -19,6 +19,9 @@ install(FILES ${MUPEN64PLUSCORE_LIB}
 install(FILES ${MUPEN64PLUSCORE_INI} ${MUPEN64PLUSCORE_CHT}
     DESTINATION rmg/Data
 )
+install(FILES Config/stylesheet.qss
+    DESTINATION rmg/Config
+)
 install(FILES ${MUPEN64PLUS_PLUGIN_AUDIO}
     DESTINATION rmg/Plugin/Audio
 )

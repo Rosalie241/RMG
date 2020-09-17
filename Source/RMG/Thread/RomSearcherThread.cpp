@@ -1,12 +1,17 @@
-#include <Thread/RomSearcherThread.hpp>
-#include <Mupen/Mupen.hpp>
-#include <Util/Logger.hpp>
+#include "RomSearcherThread.hpp"
+#include "../Globals.hpp"
 
 #include <QDir>
 
+using namespace Thread;
+
 RomSearcherThread::RomSearcherThread(void)
 {
-    qRegisterMetaType<m64p_rom_info>("m64p_rom_info");
+    qRegisterMetaType<M64P::Wrapper::RomInfo_t>("M64P::Wrapper::RomInfo_t");
+}
+
+RomSearcherThread::~RomSearcherThread(void)
+{
 }
 
 void RomSearcherThread::SetDirectory(QString directory)
@@ -24,7 +29,7 @@ void RomSearcherThread::SetMaximumFiles(int value)
     this->rom_Search_MaxItems = value;
 }
 
-void RomSearcherThread::run()
+void RomSearcherThread::run(void)
 {
     this->rom_Search_Count = 0;
     this->rom_Search(this->rom_Directory);
@@ -42,7 +47,7 @@ void RomSearcherThread::rom_Search(QString directory)
 
     QFileInfoList fileList = dir.entryInfoList(filter, QDir::Files);
     QFileInfo fileInfo;
-    m64p_rom_info romInfo;
+    M64P::Wrapper::RomInfo_t romInfo;
     bool ret;
 
     for (int i = 0; i < fileList.size(); i++)
@@ -72,20 +77,7 @@ void RomSearcherThread::rom_Search(QString directory)
     }
 }
 
-bool RomSearcherThread::rom_Get_Info(QString file, m64p_rom_info *info)
+bool RomSearcherThread::rom_Get_Info(QString file, M64P::Wrapper::RomInfo_t* info)
 {
-    m64p_rom_header header;
-    m64p_rom_settings settings;
-
-    if (!g_MupenApi.GetRomInfo(file, &header, &settings))
-    {
-        g_Logger.AddText("RomSearcherThread::rom_Get_Info: " + g_MupenApi.GetLastError());
-        return false;
-    }
-
-    info->file = file;
-    info->m64p_header = header;
-    info->m64p_settings = settings;
-
-    return true;
+    return g_MupenApi.Core.GetRomInfo(file, info);
 }

@@ -1,6 +1,6 @@
-#include <UserInterface/MainWindow.hpp>
-#include <Util/Logger.hpp>
-#include <Config.hpp>
+#include "MainWindow.hpp"
+#include "../Util/Logger.hpp"
+#include "../Config.hpp"
 
 #include <QMenuBar>
 #include <QStatusBar>
@@ -11,6 +11,8 @@
 #include <QString>
 #include <QSettings>
 
+using namespace UserInterface;
+
 MainWindow::MainWindow() : QMainWindow(nullptr)
 {
 }
@@ -18,13 +20,17 @@ MainWindow::MainWindow() : QMainWindow(nullptr)
 MainWindow::~MainWindow()
 {
     // Delete all UI elements
-    delete this->menuBar;
-    delete this->ui_Widget_OpenGL;
-    delete this->ui_Widget_RomBrowser;
-    delete this->ui_Settings;
+    /*if (this->menuBar)
+        delete this->menuBar;
+
+    if (this->ui_Widgets)
+        delete this->ui_Widgets;
+
+    if (this->ui_Settings)
+        delete this->ui_Settings; */
 }
 
-bool MainWindow::Init()
+bool MainWindow::Init(void)
 {
     if (!g_Logger.Init())
     {
@@ -32,17 +38,16 @@ bool MainWindow::Init()
         return false;
     }
 
-    if (!g_MupenApi.Init())
+    if (!g_MupenApi.Init(MUPEN_CORE_FILE))
     {
-        this->ui_MessageBox("Error", "Mupen::Init Failed", g_MupenApi.GetLastError());
+        this->ui_MessageBox("Error", "M64P::Wrapper::Api::Init Failed", g_MupenApi.GetLastError());
         return false;
     }
 
-    if (!g_MupenApi.Setup())
-    {
-        this->ui_MessageBox("Error", "Mupen::Setup Failed", g_MupenApi.GetLastError());
-        return false;
-    }
+    g_MupenApi.Core.GetPlugins(M64P::Wrapper::PluginType::Gfx);
+    g_MupenApi.Core.GetPlugins(M64P::Wrapper::PluginType::Rsp);
+    g_MupenApi.Core.GetPlugins(M64P::Wrapper::PluginType::Audio);
+    g_MupenApi.Core.GetPlugins(M64P::Wrapper::PluginType::Input);
 
     this->ui_Init();
     this->ui_Setup();
@@ -50,6 +55,9 @@ bool MainWindow::Init()
     this->menuBar_Init();
     this->menuBar_Setup(false);
 
+    this->emulationThread_Init();
+    this->emulationThread_Connect();
+    
     return true;
 }
 
@@ -70,6 +78,8 @@ void MainWindow::ui_Init(void)
 
 void MainWindow::ui_Setup(void)
 {
+    this->ui_Stylesheet_Setup();
+
     this->setWindowTitle(WINDOW_TITLE);
     this->setCentralWidget(this->ui_Widgets);
     this->restoreGeometry(this->ui_Settings->value(APP_SETTINGS_GEOMETRY).toByteArray());
@@ -82,28 +92,56 @@ void MainWindow::ui_Setup(void)
     this->ui_Widgets->setCurrentIndex(1);
 }
 
+void MainWindow::ui_Stylesheet_Setup(void)
+{
+    QFile stylesheet(APP_STYLESHEET_FILE);
+
+    if (!stylesheet.open(QIODevice::ReadOnly))
+        return;
+
+    this->setStyleSheet(stylesheet.readAll());
+}
+
 void MainWindow::ui_MessageBox(QString title, QString text, QString details = "")
 {
-    g_Logger.AddText("MainWindow::ui_MessageBox: " + title + ", " + text + ", " + details + "\n");
+    g_Logger.AddText("MainWindow::ui_MessageBox: " + title + ", " + text + ", " + details);
+
     QMessageBox msgBox;
+    msgBox.setIcon(QMessageBox::Icon::Critical);
     msgBox.setWindowTitle(title);
-    msgBox.setText("<p align='center'>" + text + "</p>");
+    msgBox.setText(text);
     msgBox.setDetailedText(details);
     msgBox.addButton(QMessageBox::Ok);
     msgBox.show();
     msgBox.exec();
 }
 
+void MainWindow::ui_InEmulation(bool inEmulation)
+{
+    int index;
+
+    if (inEmulation)
+        index = 0;
+    else
+        index = 1;
+
+    this->ui_Widgets->setCurrentIndex(index);
+
+    this->menuBar_Setup(inEmulation);
+}
+
 void MainWindow::menuBar_Init(void)
 {
     this->menuBar = new QMenuBar();
     this->menuBar_Actions_Init();
+    this->menuBar_Actions_Connect();
 }
 
 void MainWindow::menuBar_Setup(bool inEmulation)
 {
     this->menuBar_Actions_Setup(inEmulation);
-    this->menuBar_Actions_Connect();
+
+    this->menuBar->clear();
 
     this->menuBar_Menu = this->menuBar->addMenu("File");
     this->menuBar_Menu->addAction(this->action_File_OpenRom);
@@ -115,10 +153,13 @@ void MainWindow::menuBar_Setup(bool inEmulation)
     this->menuBar_Menu->addSeparator();
     this->menuBar_Menu->addAction(this->action_File_Exit);
 
-    this->menuBar_Menu = this->menuBar->addMenu("System");
-    this->menuBar_Menu->setEnabled(inEmulation);
-    this->menuBar_Menu->addAction(action_System_Reset);
-    this->menuBar_Menu->addAction(action_System_Pause);
+    if (inEmulation)
+    {
+        this->menuBar_Menu = this->menuBar->addMenu("System");
+        this->menuBar_Menu->setEnabled(inEmulation);
+        this->menuBar_Menu->addAction(action_System_Reset);
+        this->menuBar_Menu->addAction(action_System_Pause);
+    }
 
     this->menuBar_Menu = this->menuBar->addMenu("Options");
     this->menuBar_Menu->addAction(this->action_Options_FullScreen);
@@ -137,6 +178,17 @@ void MainWindow::menuBar_Setup(bool inEmulation)
     this->menuBar_Menu->addAction(this->action_Help_About);
 
     this->setMenuBar(menuBar);
+}
+
+void MainWindow::emulationThread_Init(void)
+{
+    this->emulationThread = new Thread::EmulationThread();
+}
+
+void MainWindow::emulationThread_Connect(void)
+{
+    connect(this->emulationThread, &Thread::EmulationThread::on_Emulation_Finished, this, &MainWindow::on_Emulation_Finished);
+    connect(this->emulationThread, &Thread::EmulationThread::on_Emulation_Started, this, &MainWindow::on_Emulation_Started);
 }
 
 void MainWindow::menuBar_Actions_Init(void)
@@ -186,13 +238,13 @@ void MainWindow::menuBar_Actions_Setup(bool inEmulation)
     this->action_Options_FullScreen->setEnabled(inEmulation);
     this->action_Options_FullScreen->setShortcut(QKeySequence("Alt+Return"));
     this->action_Options_ConfigGfx->setText("Configure Graphics Plugin...");
-    this->action_Options_ConfigGfx->setEnabled(g_MupenApi.HasPluginConfig(PluginType::Gfx));
+    this->action_Options_ConfigGfx->setEnabled(g_MupenApi.Core.HasPluginConfig(M64P::Wrapper::PluginType::Gfx));
     this->action_Options_ConfigAudio->setText("Configure Audio Plugin...");
-    this->action_Options_ConfigAudio->setEnabled(g_MupenApi.HasPluginConfig(PluginType::Audio));
+    this->action_Options_ConfigAudio->setEnabled(g_MupenApi.Core.HasPluginConfig(M64P::Wrapper::PluginType::Audio));
     this->action_Options_ConfigRsp->setText("Configure RSP...");
-    this->action_Options_ConfigRsp->setEnabled(g_MupenApi.HasPluginConfig(PluginType::Rsp));
+    this->action_Options_ConfigRsp->setEnabled(g_MupenApi.Core.HasPluginConfig(M64P::Wrapper::PluginType::Rsp));
     this->action_Options_ConfigControl->setText("Configure Controller Plugin...");
-    this->action_Options_ConfigControl->setEnabled(g_MupenApi.HasPluginConfig(PluginType::Input));
+    this->action_Options_ConfigControl->setEnabled(g_MupenApi.Core.HasPluginConfig(M64P::Wrapper::PluginType::Input));
     this->action_Options_Settings->setText("Settings...");
     this->action_Options_Settings->setShortcut(QKeySequence("Ctrl+T"));
 
@@ -224,34 +276,26 @@ void MainWindow::menuBar_Actions_Connect(void)
     connect(this->action_Help_About, &QAction::triggered, this, &MainWindow::on_Action_Help_About);
 }
 
-bool aa = false;
+#include <iostream>
 void MainWindow::on_Action_File_OpenRom(void)
 {
-    if (aa)
-       this->ui_Widgets->setCurrentIndex(0);
-    else
-       this->ui_Widgets->setCurrentIndex(1);
-
-    aa = !aa;
-    /*if (!m64p.OpenRom("/home/rosalie/Downloads/Resident Evil 2 (USA) (Rev A).n64"))
-    {
-        this->ui_MessageBox("Error", "Mupen::OpenRom Failed", m64p.GetLastError());
-    }*/
+    if (this->emulationThread->isRunning())
+        return;
+        
+    this->emulationThread->SetRomFile("/home/rosalie/Downloads/n64_roms/Super Mario 64 (U) [!].z64");
+    this->emulationThread->start();
 }
 
 void MainWindow::on_Action_File_OpenCombo(void)
 {
-
 }
 
 void MainWindow::on_Action_File_EndEmulation(void)
 {
-
 }
 
 void MainWindow::on_Action_File_ChooseDirectory(void)
 {
-
 }
 
 void MainWindow::on_Action_File_RefreshRomList(void)
@@ -278,22 +322,22 @@ void MainWindow::on_Action_Options_FullScreen(void)
 
 void MainWindow::on_Action_Options_ConfigGfx(void)
 {
-    g_MupenApi.OpenPluginConfig(PluginType::Gfx);
+    g_MupenApi.Core.OpenPluginConfig(M64P::Wrapper::PluginType::Gfx);
 }
 
 void MainWindow::on_Action_Options_ConfigAudio(void)
 {
-    g_MupenApi.OpenPluginConfig(PluginType::Audio);
+    g_MupenApi.Core.OpenPluginConfig(M64P::Wrapper::PluginType::Audio);
 }
 
 void MainWindow::on_Action_Options_ConfigRsp(void)
 {
-    g_MupenApi.OpenPluginConfig(PluginType::Rsp);
+    g_MupenApi.Core.OpenPluginConfig(M64P::Wrapper::PluginType::Rsp);
 }
 
 void MainWindow::on_Action_Options_ConfigControl(void)
 {
-    g_MupenApi.OpenPluginConfig(PluginType::Input);
+    g_MupenApi.Core.OpenPluginConfig(M64P::Wrapper::PluginType::Input);
 }
 
 void MainWindow::on_Action_Options_Settings(void)
@@ -312,4 +356,17 @@ void MainWindow::on_Action_Help_HomePage(void)
 
 void MainWindow::on_Action_Help_About(void)
 {
+}
+
+void MainWindow::on_Emulation_Started(void)
+{
+    this->ui_InEmulation(true);
+}
+
+void MainWindow::on_Emulation_Finished(bool ret)
+{
+    if (!ret)
+        this->ui_MessageBox("Error", "EmulationThread::run Failed", this->emulationThread->GetLastError());
+
+    this->ui_InEmulation(false);
 }

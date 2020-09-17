@@ -8,7 +8,7 @@ int main(int argc, char** argv)
 {
     QApplication app(argc, argv);
 
-    MainWindow window;
+    UserInterface::MainWindow window;
 
     QDir::setCurrent(app.applicationDirPath());
 

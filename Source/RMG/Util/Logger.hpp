@@ -6,25 +6,29 @@
 #include <QString>
 #include <QFile>
 
-class Logger
+namespace Util
 {
-public:
-    Logger();
-    ~Logger();
+    class Logger
+    {
+    public:
+        Logger(void);
+        ~Logger(void);
 
-    bool Init(void);
+        bool Init(void);
 
-    void AddText(QString text);
+        void AddText(QString);
 
-    QString GetLastError(void);
+        QString GetLastError(void);
 
-private:
-    bool init;
+    private:
+        bool init_Failed = true;
 
-    QString error_message;
-    QFile logfile;
-};
+        QString error_message;
+        QFile logfile;
+    };
 
-extern Logger g_Logger;
+} // namespace Util
+
+extern Util::Logger g_Logger;
 
 #endif // LOGGER_HPP

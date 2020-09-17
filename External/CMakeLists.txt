@@ -88,8 +88,8 @@ ExternalProject_Add(mupen64plus-input-raphnetraw
 ExternalProject_Add(mupen64plus-video-GLideN64
     SOURCE_DIR mupen64plus-video-GLideN64
 
-    GIT_REPOSITORY https://github.com/Rosalie241/GLideN64
-    GIT_TAG 2021a8e674dbcd744fd7fddeb1eff9e3beb9deb8
+    GIT_REPOSITORY https://github.com/gonetz/GLideN64
+    GIT_TAG 229a6bc788fe4601fbe00288fcccdedb9396340f
 
     INSTALL_COMMAND ""
 

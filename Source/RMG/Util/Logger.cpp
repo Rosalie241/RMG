@@ -2,28 +2,27 @@
 
 #include <QDir>
 
-Logger g_Logger;
+using namespace Util;
 
-Logger::Logger()
+Logger::Logger(void)
 {
 }
 
-Logger::~Logger()
+Logger::~Logger(void)
 {
-    if (this->init)
+    if (!this->init_Failed)
     {
         this->logfile.flush();
         this->logfile.close();
     }
 }
 
-bool Logger::Init()
+bool Logger::Init(void)
 {
     if (!QDir().exists(APP_LOG_DIR))
     {
         if (!QDir().mkdir(APP_LOG_DIR))
         {
-            this->init = false;
             this->error_message = "QDir::mkdir Failed";
             return false;
         }
@@ -33,19 +32,17 @@ bool Logger::Init()
 
     if (!this->logfile.open(QIODevice::WriteOnly | QIODevice::Append))
     {
-        this->init = false;
         this->error_message = "QFile::Open Failed";
         return false;
     }
 
-    this->init = true;
+    this->init_Failed = false;
     return true;
 }
 
-#include <iostream>
 void Logger::AddText(QString text)
 {
-    if (!this->init)
+    if (this->init_Failed)
         return;
 
     if (text[text.size() - 1] != "\n")

@@ -16,6 +16,7 @@
 #define APP_SETTINGS_GEOMETRY "geometry"
 
 #define APP_ROMSEARCHER_MAX 50
+#define APP_STYLESHEET_FILE "Config/stylesheet.qss"
 
 #ifdef _WIN32
 #define MUPEN_CORE_FILE "Core\\mupen64plus.dll"

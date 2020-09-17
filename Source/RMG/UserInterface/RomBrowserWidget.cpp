@@ -1,15 +1,16 @@
-#include <UserInterface/RomBrowserWidget.hpp>
-#include <Util/Logger.hpp>
-#include <Config.hpp>
+#include "RomBrowserWidget.hpp"
+#include "../Globals.hpp"
+#include "../Config.hpp"
 
 #include <QDir>
+
+using namespace UserInterface;
 
 RomBrowserWidget::RomBrowserWidget(void) : QTableView(nullptr)
 {
     this->model_Init();
     this->model_Setup();
     this->widget_Init();
-
 }
 
 RomBrowserWidget::~RomBrowserWidget()
@@ -37,20 +38,22 @@ void RomBrowserWidget::model_Setup(void)
 
     this->rom_List_Fill("/home/rosalie/Downloads/n64_roms/");
 
-    QStringList list;
-    list.append("Name");
-    list.append("Internal Name");
-    list.append("MD5");
+    this->model_LabelList_Setup();
 
-  //  this->model_Model->setRowCount(this->rom_List_Index);
-    this->model_Model->setColumnCount(list.size());
-    this->model_Model->setHorizontalHeaderLabels(list);
+    this->model_Model->setColumnCount(this->model_LabelList.size());
+    this->model_Model->setHorizontalHeaderLabels(this->model_LabelList);
 }
 
-#include <iostream>
+void RomBrowserWidget::model_LabelList_Setup(void)
+{
+    this->model_LabelList.clear();
+    this->model_LabelList.append("Name");
+    this->model_LabelList.append("Internal Name");
+    this->model_LabelList.append("MD5");
+}
+
 void RomBrowserWidget::widget_Init(void)
 {
-
     this->setModel(this->model_Model);
     this->setShowGrid(false);
     this->setSelectionBehavior(QTableView::SelectRows);
@@ -58,34 +61,42 @@ void RomBrowserWidget::widget_Init(void)
 
     this->verticalHeader()->hide();
 
-    this->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    this->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
     this->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
     this->horizontalHeader()->setSortIndicatorShown(false);
     this->horizontalHeader()->setHighlightSections(false);
-    this->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+
+    this->verticalHeader()->setSectionResizeMode(QHeaderView::Interactive);
     this->verticalHeader()->setMaximumSectionSize(20);
+    
+    this->column_SetSize();
 
     QFont f = this->font();
     f.setPixelSize(11);
     this->setFont(f);
 }
 
-void RomBrowserWidget::rom_List_Init()
+void RomBrowserWidget::rom_Searcher_Init(void)
 {
-    this->rom_Searcher_Thread = new RomSearcherThread();
+    this->rom_Searcher_Thread = new Thread::RomSearcherThread();
     this->rom_Searcher_Thread->SetMaximumFiles(APP_ROMSEARCHER_MAX);
 
     // TODO
     this->rom_Searcher_Thread->SetRecursive(true);
 
-    connect(rom_Searcher_Thread, &RomSearcherThread::on_Rom_Found, this, &RomBrowserWidget::on_RomBrowserThread_Received);
-    connect(rom_Searcher_Thread, &RomSearcherThread::finished, this, &RomBrowserWidget::on_RomBrowserThread_Finished);
+    connect(rom_Searcher_Thread, &Thread::RomSearcherThread::on_Rom_Found, this, &RomBrowserWidget::on_RomBrowserThread_Received);
+    connect(rom_Searcher_Thread, &Thread::RomSearcherThread::finished, this, &RomBrowserWidget::on_RomBrowserThread_Finished);
 }
+
+bool init = false;
 
 void RomBrowserWidget::rom_List_Fill(QString directory)
 {
-    if (!this->rom_List_Fill_Thread_Init)
-        this->rom_List_Init();
+    if (!init)
+    {
+        this->rom_Searcher_Init();
+        init = true;
+    }
 
     if (this->rom_List_Fill_Thread_Running)
         return;
@@ -95,18 +106,49 @@ void RomBrowserWidget::rom_List_Fill(QString directory)
     this->rom_Searcher_Thread->start();
 }
 
-void RomBrowserWidget::on_RomBrowserThread_Received(m64p_rom_info romInfo)
+void RomBrowserWidget::column_SetSize(void)
+{
+    for (int i = 0; i < this->model_LabelList.size(); i++)
+    {
+        QString label = this->model_LabelList.at(i);
+
+        int oldSize = this->columnWidth(i);
+        int newSize = 0;
+        if (label == "Name")
+        {
+            newSize = 150;
+        } else if (label == "Internal Name")
+        {
+            newSize = 100;
+        } else if (label == "MD5")
+        {
+            newSize = 100;
+        }
+
+        if (oldSize != newSize)
+        {
+            this->setColumnWidth(i, oldSize);
+        }
+        else
+        {
+            this->setColumnWidth(i, newSize);
+        }
+    }
+}
+
+void RomBrowserWidget::on_RomBrowserThread_Received(M64P::Wrapper::RomInfo_t romInfo)
 {
     QList<QStandardItem*> list;
 
-    list.append(new QStandardItem(romInfo.m64p_settings.goodname));
-    list.append(new QStandardItem(QString((char*)romInfo.m64p_header.Name)));
-    list.append(new QStandardItem(romInfo.m64p_settings.MD5));
+    list.append(new QStandardItem(romInfo.Settings.goodname));
+    list.append(new QStandardItem(QString((char*)romInfo.Header.Name)));
+    list.append(new QStandardItem(romInfo.Settings.MD5));
 
     this->model_Model->appendRow(list);
 
-    this->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    this->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    this->column_SetSize();
+
+    this->horizontalHeader()->setStretchLastSection(true);
 }
 
 void RomBrowserWidget::on_RomBrowserThread_Finished(void)
