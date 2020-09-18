@@ -10,12 +10,12 @@
 #ifndef LOGGER_HPP
 #define LOGGER_HPP
 
-#include <Config.hpp>
+#include "../Config.hpp"
 
 #include <QString>
 #include <QFile>
 
-namespace Util
+namespace Utilities
 {
     class Logger
     {
@@ -38,7 +38,5 @@ namespace Util
     };
 
 } // namespace Util
-
-extern Util::Logger g_Logger;
 
 #endif // LOGGER_HPP

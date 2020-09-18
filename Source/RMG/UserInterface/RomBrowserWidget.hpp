@@ -34,7 +34,10 @@ namespace UserInterface
 
         void RefreshRomList(void);
 
+        void SetDirectory(QString);
     private:
+        QString directory;
+
         QStandardItemModel *model_Model;
         QStringList model_LabelList;
         void model_Init(void);

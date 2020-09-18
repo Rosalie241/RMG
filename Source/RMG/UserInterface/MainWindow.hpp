@@ -36,6 +36,7 @@ namespace UserInterface
     private:
         Thread::EmulationThread* emulationThread;
         
+        QIcon ui_Icon;
         QOpenGLWidget *ui_Widget_OpenGL;
         RomBrowserWidget *ui_Widget_RomBrowser;
         QStackedWidget *ui_Widgets;

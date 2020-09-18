@@ -30,11 +30,24 @@ namespace M64P
             bool SetOption(QString section, QString key, float value);
             bool SetOption(QString section, QString key, bool value);
             bool SetOption(QString section, QString key, QString value);
+            bool SetOption(QString section, QString key, char* value);
+
+            bool GetOption(QString section, QString key, int* value);
+            bool GetOption(QString section, QString key, float* value);
+            bool GetOption(QString section, QString key, bool* value);
+            bool GetOption(QString section, QString key, QString* value);
 
             QString GetLastError(void);
 
         private:
             QString error_Message;
+
+            m64p_handle handle;
+            m64p_handle section_Handle;
+
+            bool section_Open(QString);
+            bool value_Set(QString, m64p_type, void*);
+            bool value_Get(QString, m64p_type, void*, int);
         };
     } // namespace Wrapper
 } // namespace M64P

@@ -31,6 +31,11 @@ void RomBrowserWidget::RefreshRomList(void)
     this->model_Setup();
 }
 
+void RomBrowserWidget::SetDirectory(QString directory)
+{
+    this->directory = directory;
+}
+
 void RomBrowserWidget::model_Init(void)
 {
     this->model_Model = new QStandardItemModel(this);
@@ -45,7 +50,8 @@ void RomBrowserWidget::model_Setup(void)
     this->rom_List_Recursive = false;
     this->model_Model->clear();
 
-    this->rom_List_Fill("/home/rosalie/Downloads/n64_roms/");
+    if (!this->directory.isEmpty())
+        this->rom_List_Fill(this->directory);
 
     this->model_LabelList_Setup();
 

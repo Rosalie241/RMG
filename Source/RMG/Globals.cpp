@@ -1,4 +1,5 @@
 #include <Globals.hpp>
 
-Util::Logger g_Logger;
+Utilities::Logger g_Logger;
+Utilities::Settings g_Settings;
 M64P::Wrapper::Api g_MupenApi;

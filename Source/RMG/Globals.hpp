@@ -1,10 +1,12 @@
 #ifndef GLOBALS_HPP
 #define GLOBALS_HPP
 
-#include "Util/Logger.hpp"
+#include "Utilities/Logger.hpp"
+#include "Utilities/Settings.hpp"
 #include "M64P/Wrapper/Api.hpp"
 
-extern Util::Logger g_Logger;
+extern Utilities::Logger g_Logger;
+extern Utilities::Settings g_Settings;
 extern M64P::Wrapper::Api g_MupenApi;
 
 #endif // GLOBALS_HPP

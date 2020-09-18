@@ -8,7 +8,6 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 #include "MainWindow.hpp"
-#include "../Util/Logger.hpp"
 #include "../Config.hpp"
 
 #include <QMenuBar>
@@ -19,6 +18,7 @@
 #include <QMessageBox>
 #include <QString>
 #include <QSettings>
+#include <QFileDialog>
 
 using namespace UserInterface;
 
@@ -38,12 +38,18 @@ MainWindow::~MainWindow()
     if (this->ui_Settings)
         delete this->ui_Settings; */
 }
-
+#include <iostream>
 bool MainWindow::Init(void)
 {
     if (!g_Logger.Init())
     {
         this->ui_MessageBox("Error", "Logger::Init Failed", g_Logger.GetLastError());
+        return false;
+    }
+
+    if (!g_Settings.Init())
+    {
+        this->ui_MessageBox("Error", "Settings::Init Failed", g_Settings.GetLastError());
         return false;
     }
 
@@ -79,17 +85,21 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::ui_Init(void)
 {
+    this->ui_Icon = QIcon(":Icons/RMG.png");
     this->ui_Widget_OpenGL = new QOpenGLWidget();
     this->ui_Widget_RomBrowser = new RomBrowserWidget();
     this->ui_Widgets = new QStackedWidget();
     this->ui_Settings = new QSettings(APP_SETTINGS_ORG, APP_SETTINGS_NAME);
+
+    this->ui_Widget_RomBrowser->SetDirectory(g_Settings.GetValue("tmp", "directory").toString());
+    this->ui_Widget_RomBrowser->RefreshRomList();
 }
 
 void MainWindow::ui_Setup(void)
 {
     this->ui_Stylesheet_Setup();
 
-    this->setWindowIcon(QIcon(":Icons/RMG.png"));
+    this->setWindowIcon(this->ui_Icon);
     this->setWindowTitle(WINDOW_TITLE);
     this->setCentralWidget(this->ui_Widgets);
     this->restoreGeometry(this->ui_Settings->value(APP_SETTINGS_GEOMETRY).toByteArray());
@@ -118,6 +128,7 @@ void MainWindow::ui_MessageBox(QString title, QString text, QString details = ""
     g_Logger.AddText("MainWindow::ui_MessageBox: " + title + ", " + text + ", " + details);
 
     QMessageBox msgBox;
+    msgBox.setWindowIcon(this->ui_Icon);
     msgBox.setIcon(QMessageBox::Icon::Critical);
     msgBox.setWindowTitle(title);
     msgBox.setText(text);
@@ -307,6 +318,24 @@ void MainWindow::on_Action_File_EndEmulation(void)
 
 void MainWindow::on_Action_File_ChooseDirectory(void)
 {
+    QFileDialog dialog;
+    int ret;
+    QString dir;
+    dialog.setParent(this);
+    dialog.setFileMode(QFileDialog::Directory);
+    dialog.setOption(QFileDialog::ShowDirsOnly, true);
+    dialog.setWindowIcon(this->ui_Icon);
+    dialog.show();
+    ret = dialog.exec();
+
+    if (ret)
+    {
+        dir = dialog.selectedFiles().first();
+        g_Settings.SetValue("tmp", "directory", dir);
+        this->ui_Widget_RomBrowser->SetDirectory(dir);
+        this->ui_Widget_RomBrowser->RefreshRomList();
+    }
+
 }
 
 void MainWindow::on_Action_File_RefreshRomList(void)

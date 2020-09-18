@@ -3,7 +3,10 @@
 #
 include(ExternalProject)
 
-set(M64P_CORE_DIR ${CMAKE_BINARY_DIR}/Source/3rdParty/mupen64plus-core)
+set(THIRDPARTY_DIR ${CMAKE_BINARY_DIR}/Source/3rdParty)
+
+
+set(M64P_CORE_DIR ${THIRDPARTY_DIR}/mupen64plus-core)
 if(WIN32)
     set(SO_EXT "dll")
     set(CORE_FILE "mupen64plus.dll")
@@ -43,9 +46,9 @@ ExternalProject_Add(mupen64plus-audio-sdl
     BUILD_COMMAND make all APIDIR=${APIDIR}
     BUILD_IN_SOURCE False
 
-    BINARY_DIR ${CMAKE_BINARY_DIR}/Source/3rdParty/mupen64plus-audio-sdl/projects/unix
+    BINARY_DIR ${THIRDPARTY_DIR}/mupen64plus-audio-sdl/projects/unix
     
-    BUILD_BYPRODUCTS ${CMAKE_BINARY_DIR}/Source/3rdParty/mupen64plus-audio-sdl/projects/unix/mupen64plus-audio-sdl.${SO_EXT}
+    BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-audio-sdl/projects/unix/mupen64plus-audio-sdl.${SO_EXT}
     DEPENDS mupen64plus-core
 )
 
@@ -61,9 +64,9 @@ ExternalProject_Add(mupen64plus-rsp-hle
     BUILD_COMMAND make all APIDIR=${APIDIR}
     BUILD_IN_SOURCE False
 
-    BINARY_DIR ${CMAKE_BINARY_DIR}/Source/3rdParty/mupen64plus-rsp-hle/projects/unix
+    BINARY_DIR ${THIRDPARTY_DIR}/mupen64plus-rsp-hle/projects/unix
     
-    BUILD_BYPRODUCTS ${CMAKE_BINARY_DIR}/Source/3rdParty/mupen64plus-rsp-hle/projects/unix/mupen64plus-rsp-hle.${SO_EXT}
+    BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-rsp-hle/projects/unix/mupen64plus-rsp-hle.${SO_EXT}
     DEPENDS mupen64plus-core
 )
 
@@ -79,9 +82,9 @@ ExternalProject_Add(mupen64plus-input-raphnetraw
     BUILD_COMMAND make all APIDIR=${APIDIR}
     BUILD_IN_SOURCE False
 
-    BINARY_DIR ${CMAKE_BINARY_DIR}/Source/3rdParty/mupen64plus-input-raphnetraw/projects/unix
+    BINARY_DIR ${THIRDPARTY_DIR}/mupen64plus-input-raphnetraw/projects/unix
     
-    BUILD_BYPRODUCTS ${CMAKE_BINARY_DIR}/Source/3rdParty/mupen64plus-input-raphnetraw/projects/unix/mupen64plus-input-raphnetraw.${SO_EXT}
+    BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-input-raphnetraw/projects/unix/mupen64plus-input-raphnetraw.${SO_EXT}
     DEPENDS mupen64plus-core
 )
 
@@ -97,14 +100,14 @@ ExternalProject_Add(mupen64plus-video-GLideN64
     CMAKE_ARGS -DMUPENPLUSAPI=1 -DMUPENPLUSAPI_GLIDENUI=1 -Wno-dev
     SOURCE_SUBDIR ./src
 
-    BUILD_BYPRODUCTS ${CMAKE_BINARY_DIR}/Source/3rdParty/mupen64plus-video-GLideN64/src/plugin/Release/mupen64plus-video-GLideN64.${SO_EXT}
+    BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-video-GLideN64/src/plugin/Release/mupen64plus-video-GLideN64.${SO_EXT}
+    BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-video-GLideN64/ini/GLideN64.custom.ini
 )
 
 ExternalProject_Get_property(mupen64plus-core BUILD_BYPRODUCTS)
 set(MUPEN64PLUSCORE_LIB ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 set(MUPEN64PLUSCORE_INI ${M64P_CORE_DIR}/data/mupen64plus.ini PARENT_SCOPE)
 set(MUPEN64PLUSCORE_CHT ${M64P_CORE_DIR}/data/mupencheat.txt PARENT_SCOPE)
-
 
 ExternalProject_Get_property(mupen64plus-audio-sdl BUILD_BYPRODUCTS)
 set(MUPEN64PLUS_PLUGIN_AUDIO ${BUILD_BYPRODUCTS} PARENT_SCOPE)

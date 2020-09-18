@@ -24,7 +24,8 @@ add_executable(RMG
     M64P/Wrapper/Core.cpp
     M64P/Wrapper/Plugin.cpp
     M64P/Wrapper/Api.cpp
-    Util/Logger.cpp
+    Utilities/Logger.cpp
+    Utilities/Settings.cpp
     Globals.cpp
     main.cpp
 )

@@ -1,5 +1,4 @@
 #include <UserInterface/MainWindow.hpp>
-#include <Util/Logger.hpp>
 
 #include <QApplication>
 #include <QDir>
