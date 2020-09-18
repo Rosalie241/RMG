@@ -10,6 +10,7 @@
 #ifndef ROMBROWSERWIDGET_HPP
 #define ROMBROWSERWIDGET_HPP
 
+#include "NoFocusDelegate.hpp"
 #include "../Thread/RomSearcherThread.hpp"
 #include "../Globals.hpp"
 
@@ -40,6 +41,7 @@ namespace UserInterface
         void model_Setup(void);
         void model_LabelList_Setup(void);
 
+        NoFocusDelegate* widget_Delegate;
         void widget_Init(void);
 
         Thread::RomSearcherThread *rom_Searcher_Thread;

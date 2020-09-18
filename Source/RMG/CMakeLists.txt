@@ -11,6 +11,7 @@ pkg_check_modules(SDL2 REQUIRED sdl2)
 add_executable(RMG
     UserInterface/MainWindow.cpp
     UserInterface/RomBrowserWidget.cpp
+    UserInterface/NoFocusDelegate.cpp
     Thread/RomSearcherThread.cpp
     Thread/EmulationThread.cpp
     M64P/CoreApi.cpp

@@ -63,10 +63,15 @@ void RomBrowserWidget::model_LabelList_Setup(void)
 
 void RomBrowserWidget::widget_Init(void)
 {
+    this->widget_Delegate = new NoFocusDelegate();
+
     this->setModel(this->model_Model);
+    this->setItemDelegate(this->widget_Delegate);
+    this->setWordWrap(false);
     this->setShowGrid(false);
-    this->setSelectionBehavior(QTableView::SelectRows);
     this->setSortingEnabled(true);
+    this->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    this->setSelectionBehavior(QTableView::SelectRows);
 
     this->verticalHeader()->hide();
 
@@ -75,14 +80,9 @@ void RomBrowserWidget::widget_Init(void)
     this->horizontalHeader()->setSortIndicatorShown(false);
     this->horizontalHeader()->setHighlightSections(false);
 
-    this->verticalHeader()->setSectionResizeMode(QHeaderView::Interactive);
-    this->verticalHeader()->setMaximumSectionSize(20);
+    this->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     
     this->column_SetSize();
-
-    QFont f = this->font();
-    f.setPixelSize(11);
-    this->setFont(f);
 }
 
 void RomBrowserWidget::rom_Searcher_Init(void)

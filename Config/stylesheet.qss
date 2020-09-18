@@ -3,7 +3,7 @@
 QTableView
 {
     border: none;
-    color: #006600;
+    color: #0096d3;
     selection-color: #FFFFFF;
-    selection-background-color: #006600;
+    selection-background-color: #0096d3;
 }
