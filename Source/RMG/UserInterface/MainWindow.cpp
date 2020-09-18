@@ -89,7 +89,7 @@ void MainWindow::ui_Setup(void)
 {
     this->ui_Stylesheet_Setup();
 
-    this->setWindowIcon(QIcon(":Res/Icon256.png"));
+    this->setWindowIcon(QIcon(":Icons/RMG.png"));
     this->setWindowTitle(WINDOW_TITLE);
     this->setCentralWidget(this->ui_Widgets);
     this->restoreGeometry(this->ui_Settings->value(APP_SETTINGS_GEOMETRY).toByteArray());

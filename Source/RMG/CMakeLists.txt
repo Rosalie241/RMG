@@ -12,6 +12,8 @@ add_executable(RMG
     UserInterface/MainWindow.cpp
     UserInterface/RomBrowserWidget.cpp
     UserInterface/NoFocusDelegate.cpp
+    UserInterface/UIResources.rc
+    UserInterface/UIResources.qrc
     Thread/RomSearcherThread.cpp
     Thread/EmulationThread.cpp
     M64P/CoreApi.cpp
@@ -25,7 +27,6 @@ add_executable(RMG
     Util/Logger.cpp
     Globals.cpp
     main.cpp
-    RMG.qrc
 )
 
 if(UNIX)

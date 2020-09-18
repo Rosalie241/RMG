@@ -125,7 +125,7 @@ void RomBrowserWidget::column_SetSize(void)
         int newSize = 0;
         if (label == "Name")
         {
-            newSize = 150;
+            newSize = 250;
         } else if (label == "Internal Name")
         {
             newSize = 100;
@@ -134,6 +134,8 @@ void RomBrowserWidget::column_SetSize(void)
             newSize = 100;
         }
 
+        this->setColumnWidth(i, newSize);
+    continue;
         if (oldSize != newSize)
         {
             this->setColumnWidth(i, oldSize);
