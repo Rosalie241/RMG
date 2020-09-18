@@ -1,3 +1,12 @@
+/*
+ * Rosalie's Mupen GUI - https://github.com/Rosalie241/RMG
+ *  Copyright (C) 2020 Rosalie Wanders <rosalie@mailbox.org>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 3.
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
 #include "MainWindow.hpp"
 #include "../Util/Logger.hpp"
 #include "../Config.hpp"
@@ -80,6 +89,7 @@ void MainWindow::ui_Setup(void)
 {
     this->ui_Stylesheet_Setup();
 
+    this->setWindowIcon(QIcon(":Res/Icon256.png"));
     this->setWindowTitle(WINDOW_TITLE);
     this->setCentralWidget(this->ui_Widgets);
     this->restoreGeometry(this->ui_Settings->value(APP_SETTINGS_GEOMETRY).toByteArray());
@@ -90,6 +100,7 @@ void MainWindow::ui_Setup(void)
     this->ui_Widgets->addWidget(this->ui_Widget_OpenGL);
     this->ui_Widgets->addWidget(this->ui_Widget_RomBrowser);
     this->ui_Widgets->setCurrentIndex(1);
+
 }
 
 void MainWindow::ui_Stylesheet_Setup(void)

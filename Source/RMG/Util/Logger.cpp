@@ -1,3 +1,12 @@
+/*
+ * Rosalie's Mupen GUI - https://github.com/Rosalie241/RMG
+ *  Copyright (C) 2020 Rosalie Wanders <rosalie@mailbox.org>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 3.
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
 #include <Util/Logger.hpp>
 
 #include <QDir>
@@ -23,7 +32,7 @@ bool Logger::Init(void)
     {
         if (!QDir().mkdir(APP_LOG_DIR))
         {
-            this->error_message = "QDir::mkdir Failed";
+            this->error_Message = "QDir::mkdir Failed";
             return false;
         }
     }
@@ -32,7 +41,7 @@ bool Logger::Init(void)
 
     if (!this->logfile.open(QIODevice::WriteOnly | QIODevice::Append))
     {
-        this->error_message = "QFile::Open Failed";
+        this->error_Message = "QFile::Open Failed";
         return false;
     }
 
@@ -54,5 +63,5 @@ void Logger::AddText(QString text)
 
 QString Logger::GetLastError()
 {
-    return this->error_message;
+    return this->error_Message;
 }

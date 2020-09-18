@@ -2,6 +2,7 @@
 # Rosalie's Mupen GUI CMakeLists.txt
 #
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 
 find_package(Qt5 COMPONENTS Widgets Core REQUIRED)
 find_package(PkgConfig REQUIRED)
@@ -23,6 +24,7 @@ add_executable(RMG
     Util/Logger.cpp
     Globals.cpp
     main.cpp
+    RMG.qrc
 )
 
 if(UNIX)
@@ -30,6 +32,7 @@ if(UNIX)
 endif(UNIX)
 
 target_link_libraries(RMG ${SDL2_LIBRARIES})
+
 target_include_directories(RMG PRIVATE ${SDL2_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(RMG Qt5::Widgets)

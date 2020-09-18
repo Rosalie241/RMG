@@ -12,7 +12,7 @@ install(TARGETS RMG
     DESTINATION rmg
 )
 
-add_subdirectory(External)
+add_subdirectory(Source/3rdParty)
 install(FILES ${MUPEN64PLUSCORE_LIB}
     DESTINATION rmg/Core/
 )
