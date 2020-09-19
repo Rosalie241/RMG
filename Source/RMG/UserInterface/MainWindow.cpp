@@ -78,7 +78,7 @@ bool MainWindow::Init(void)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    this->ui_Settings->setValue(APP_SETTINGS_GEOMETRY, this->saveGeometry());
+    g_Settings.SetValue("Window", "geometry", this->saveGeometry());
 
     QMainWindow::closeEvent(event);
 }
@@ -91,8 +91,10 @@ void MainWindow::ui_Init(void)
     this->ui_Widgets = new QStackedWidget();
     this->ui_Settings = new QSettings(APP_SETTINGS_ORG, APP_SETTINGS_NAME);
 
-    this->ui_Widget_RomBrowser->SetDirectory(g_Settings.GetValue("tmp", "directory").toString());
+    this->ui_Widget_RomBrowser->SetDirectory(g_Settings.GetValue("Game Directory", "Directory").toString());
     this->ui_Widget_RomBrowser->RefreshRomList();
+
+    connect(this->ui_Widget_RomBrowser, &RomBrowserWidget::on_RomBrowser_Select, this, &MainWindow::on_RomBrowser_Selected);
 }
 
 void MainWindow::ui_Setup(void)
@@ -102,7 +104,7 @@ void MainWindow::ui_Setup(void)
     this->setWindowIcon(this->ui_Icon);
     this->setWindowTitle(WINDOW_TITLE);
     this->setCentralWidget(this->ui_Widgets);
-    this->restoreGeometry(this->ui_Settings->value(APP_SETTINGS_GEOMETRY).toByteArray());
+    this->restoreGeometry(g_Settings.GetValue("Window", "geometry").toByteArray());
     this->statusBar()->showMessage("Core Library Hooked");
 
     this->ui_Widgets->setMinimumSize(WINDOW_WIDGET_SIZE_W, WINDOW_WIDGET_SIZE_H);
@@ -213,6 +215,12 @@ void MainWindow::emulationThread_Connect(void)
     connect(this->emulationThread, &Thread::EmulationThread::on_Emulation_Started, this, &MainWindow::on_Emulation_Started);
 }
 
+void MainWindow::emulationThread_Launch(QString file)
+{
+    this->emulationThread->SetRomFile(file);
+    this->emulationThread->start();
+}
+
 void MainWindow::menuBar_Actions_Init(void)
 {
     this->action_File_OpenRom = new QAction();
@@ -303,9 +311,21 @@ void MainWindow::on_Action_File_OpenRom(void)
 {
     if (this->emulationThread->isRunning())
         return;
-        
-    this->emulationThread->SetRomFile("/home/rosalie/Downloads/n64_roms/Super Mario 64 (U) [!].z64");
-    this->emulationThread->start();
+    
+    QFileDialog dialog;
+    int ret;
+    QString dir;
+
+    dialog.setFileMode(QFileDialog::FileMode::ExistingFile);
+    dialog.setNameFilter("N64 Roms (*.n64 *.z64 *.z64)");
+    dialog.setWindowIcon(this->ui_Icon);
+    dialog.show();
+
+    ret = dialog.exec();
+    if (!ret)
+        return;
+
+    this->emulationThread_Launch(dialog.selectedFiles().first());
 }
 
 void MainWindow::on_Action_File_OpenCombo(void)
@@ -331,7 +351,7 @@ void MainWindow::on_Action_File_ChooseDirectory(void)
     if (ret)
     {
         dir = dialog.selectedFiles().first();
-        g_Settings.SetValue("tmp", "directory", dir);
+        g_Settings.SetValue("Game Directory", "Directory", dir);
         this->ui_Widget_RomBrowser->SetDirectory(dir);
         this->ui_Widget_RomBrowser->RefreshRomList();
     }
@@ -409,4 +429,9 @@ void MainWindow::on_Emulation_Finished(bool ret)
         this->ui_MessageBox("Error", "EmulationThread::run Failed", this->emulationThread->GetLastError());
 
     this->ui_InEmulation(false);
+}
+
+void MainWindow::on_RomBrowser_Selected(QString file)
+{
+    this->emulationThread_Launch(file);
 }

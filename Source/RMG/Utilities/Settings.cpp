@@ -14,7 +14,7 @@ Settings::~Settings(void)
 
 bool Settings::Init(void)
 {
-    this->settings = new QSettings("Config/RMG.ini",  QSettings::IniFormat);
+    this->settings = new QSettings("Config/RMG.cfg",  QSettings::IniFormat);
 
     if (!this->settings->isWritable())
     {
@@ -33,11 +33,24 @@ void Settings::SetValue(QString section, QString key, QVariant value)
     this->settings->endGroup();
 }
 
+#include <iostream>
 QVariant Settings::GetValue(QString section, QString key)
 {
     QVariant ret;
 
     this->settings->beginGroup(section);
+
+    if (!this->settings->value(key).isValid())
+    {
+
+        std::cout << "not validdd" << std::endl;
+    }
+
+    if (this->settings->value(key).isNull())
+    {
+        std::cout << "is NULL" << std::endl;
+    }
+
     ret = this->settings->value(key);
     this->settings->endGroup();
 

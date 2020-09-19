@@ -76,6 +76,7 @@ namespace UserInterface
 
         void emulationThread_Init(void);
         void emulationThread_Connect(void);
+        void emulationThread_Launch(QString);
 
         void menuBar_Actions_Init(void);
         void menuBar_Actions_Setup(bool);
@@ -104,6 +105,8 @@ namespace UserInterface
 
         void on_Emulation_Started(void);
         void on_Emulation_Finished(bool);
+
+        void on_RomBrowser_Selected(QString);
     };
 } // namespace UserInterface
 

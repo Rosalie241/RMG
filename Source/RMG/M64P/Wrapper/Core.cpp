@@ -109,7 +109,12 @@ QList<Plugin_t> Core::GetPlugins(PluginType type)
     std::cout << dir.toStdString() << std::endl;
 
     QDir qDir(dir);
-    QFileInfoList fileList = qDir.entryInfoList(QStringList() << "*.so");
+    QStringList filter;
+
+    filter << "*.so";
+    filter << "*.dll";
+
+    QFileInfoList fileList = qDir.entryInfoList(filter);
     Plugin p;
     Plugin_t pInfo;
 
@@ -222,6 +227,8 @@ bool Core::GetRomInfo(QString file, RomInfo_t* info)
         this->error_Message += M64P::Core.ErrorMessage(ret);
         return false;
     }
+
+    info->FileName = file;
 
     if (!this->rom_Close())
         return false;

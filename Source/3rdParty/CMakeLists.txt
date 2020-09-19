@@ -5,7 +5,6 @@ include(ExternalProject)
 
 set(THIRDPARTY_DIR ${CMAKE_BINARY_DIR}/Source/3rdParty)
 
-
 set(M64P_CORE_DIR ${THIRDPARTY_DIR}/mupen64plus-core)
 if(WIN32)
     set(SO_EXT "dll")

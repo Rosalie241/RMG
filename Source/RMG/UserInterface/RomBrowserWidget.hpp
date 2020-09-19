@@ -54,19 +54,24 @@ namespace UserInterface
 
         void rom_Searcher_Init(void);
 
-        M64P::Wrapper::RomInfo_t rom_List[MAX_ROM_INFO];
-        int rom_List_Index = 0;
+        QList<M64P::Wrapper::RomInfo_t> rom_List;
+        int rom_List_Index;
+
 
         bool rom_List_Recursive;
-        bool rom_List_Fill_Thread_Running;
+        bool rom_List_Fill_Thread_Running = false;
         void rom_List_Init();
         void rom_List_Fill(QString);
 
         void column_SetSize();
 
     public slots:
+        void on_Row_DoubleClicked(const QModelIndex&);
         void on_RomBrowserThread_Received(M64P::Wrapper::RomInfo_t info);
         void on_RomBrowserThread_Finished(void);
+
+    signals:
+        void on_RomBrowser_Select(QString);
     };
 } // namespace UserInterface
 

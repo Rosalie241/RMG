@@ -39,6 +39,8 @@ void RomBrowserWidget::SetDirectory(QString directory)
 void RomBrowserWidget::model_Init(void)
 {
     this->model_Model = new QStandardItemModel(this);
+
+    connect(this, &QTableView::doubleClicked, this, &RomBrowserWidget::on_Row_DoubleClicked);
 }
 
 void RomBrowserWidget::model_Setup(void)
@@ -153,9 +155,20 @@ void RomBrowserWidget::column_SetSize(void)
     }
 }
 
+#include <iostream>
+void RomBrowserWidget::on_Row_DoubleClicked(const QModelIndex& index)
+{
+    const M64P::Wrapper::RomInfo_t* info = &this->rom_List.at(index.row());
+    std::cout << "aaa " << index.row() << std::endl;
+    std::cout << info->FileName.toStdString() << std::endl;
+    emit this->on_RomBrowser_Select(info->FileName);
+}
+
 void RomBrowserWidget::on_RomBrowserThread_Received(M64P::Wrapper::RomInfo_t romInfo)
 {
     QList<QStandardItem*> list;
+
+    this->rom_List.append(romInfo);
 
     list.append(new QStandardItem(romInfo.Settings.goodname));
     list.append(new QStandardItem(QString((char*)romInfo.Header.Name)));
