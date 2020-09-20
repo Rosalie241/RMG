@@ -1,0 +1,16 @@
+image: Visual Studio 2019
+
+environment:
+  matrix:
+    - MSYSTEM: MINGW64
+
+build_script:
+    - cmd: @echo on
+    - cmd: cd %APPVEYOR_BUILD_FOLDER%
+    - cmd: set PATH=C:\msys64\%MSYSTEM%\bin;C:\%MSYS2_DIR%\usr\bin;C:\Program Files (x86)\Inno Setup 6;%PATH%
+    - cmd: bash -c "pacman -S --noconfirm --needed mingw-w64-x86_64-qt5 mingw-w64-x86_64-SDL2"
+    - cmd: bash -c "./Source/Script/Build.sh Release"
+    - cmd: .\Build\Source\Installer\create_installer.bat
+    
+artifacts:
+   - path: RMG\Bin\*.exe
