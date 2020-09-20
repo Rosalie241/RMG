@@ -47,46 +47,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "{#MyAppDir}\RMG.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\Config\stylesheet.qss"; DestDir: "{app}\Config"; Flags: ignoreversion
-Source: "{#MyAppDir}\Core\*"; DestDir: "{app}\Core"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#MyAppDir}\Data\*"; DestDir: "{app}\Data"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#MyAppDir}\iconengines\*"; DestDir: "{app}\iconengines"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#MyAppDir}\imageformats\*"; DestDir: "{app}\imageformats"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#MyAppDir}\platforms\*"; DestDir: "{app}\platforms"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#MyAppDir}\Plugin\*"; DestDir: "{app}\Plugin"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#MyAppDir}\styles\*"; DestDir: "{app}\styles"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#MyAppDir}\translations\*"; DestDir: "{app}\translations"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#MyAppDir}\libbrotlicommon.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\libbrotlidec.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\libbz2-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\libdouble-conversion.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\libfreetype-6.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\libgcc_s_seh-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\libglib-2.0-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\libgraphite2.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\libharfbuzz-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\libhidapi-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\libiconv-2.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\libicudt67.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\libicuin67.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\libicuuc67.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\libintl-8.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\libminizip-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\libpcre-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\libpcre2-16-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\libpng16-16.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\libsamplerate-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\libspeexdsp-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\libstdc++-6.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\libwinpthread-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\libzstd.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\Qt5Core.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\Qt5Gui.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\Qt5Svg.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\Qt5Widgets.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\SDL2.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#MyAppDir}\zlib1.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#MyAppDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

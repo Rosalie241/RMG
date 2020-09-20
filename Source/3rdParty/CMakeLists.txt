@@ -88,11 +88,17 @@ ExternalProject_Add(mupen64plus-input-raphnetraw
 )
 
 set(GLIDEN64_BUILD_DIR "${THIRDPARTY_DIR}/mupen64plus-video-GLideN64/projects/cmake")
+if (MSYS)
+	set(GLIDEN64_LIB "${GLIDEN64_BUILD_DIR}/mupen64plus-video-GLideN64.${SO_EXT}")
+else()
+	set(GLIDEN64_LIB "${GLIDEN64_BUILD_DIR}/plugin/${CMAKE_BUILD_TYPE}/mupen64plus-video-GLideN64.${SO_EXT}")
+endif()
+
 ExternalProject_Add(mupen64plus-video-GLideN64
     SOURCE_DIR mupen64plus-video-GLideN64
 
     GIT_REPOSITORY https://github.com/gonetz/GLideN64
-    GIT_TAG 229a6bc788fe4601fbe00288fcccdedb9396340f
+    GIT_TAG 1f5f9874d947bf5d10b9ef0e4f80cc6b4fa10d0d
 
     INSTALL_COMMAND ""
 
@@ -102,7 +108,7 @@ ExternalProject_Add(mupen64plus-video-GLideN64
     SOURCE_SUBDIR ./src/
     BINARY_DIR ${GLIDEN64_BUILD_DIR}
 
-    BUILD_BYPRODUCTS ${GLIDEN64_BUILD_DIR}/plugin/${CMAKE_BUILD_TYPE}/mupen64plus-video-GLideN64.${SO_EXT}
+    BUILD_BYPRODUCTS ${GLIDEN64_LIB}
     BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-video-GLideN64/ini/GLideN64.custom.ini
 )
 
