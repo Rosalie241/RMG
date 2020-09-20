@@ -12,4 +12,4 @@ build_script:
     - cmd: .\Build\Source\Installer\create_installer.bat
     
 artifacts:
-  - path: RMG\Bin\*.exe
+  - path: Bin\*.exe
