@@ -8,7 +8,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 #include "MainWindow.hpp"
-#include "../Config.hpp"
+#include "Config.hpp"
 
 #include <QMenuBar>
 #include <QStatusBar>
@@ -317,7 +317,7 @@ void MainWindow::on_Action_File_OpenRom(void)
     QString dir;
 
     dialog.setFileMode(QFileDialog::FileMode::ExistingFile);
-    dialog.setNameFilter("N64 Roms (*.n64 *.z64 *.z64)");
+    dialog.setNameFilter("N64 Roms (*.n64 *.z64 *.v64)");
     dialog.setWindowIcon(this->ui_Icon);
     dialog.show();
 
@@ -341,13 +341,13 @@ void MainWindow::on_Action_File_ChooseDirectory(void)
     QFileDialog dialog;
     int ret;
     QString dir;
-    dialog.setParent(this);
+
     dialog.setFileMode(QFileDialog::Directory);
     dialog.setOption(QFileDialog::ShowDirsOnly, true);
     dialog.setWindowIcon(this->ui_Icon);
     dialog.show();
-    ret = dialog.exec();
 
+    ret = dialog.exec();
     if (ret)
     {
         dir = dialog.selectedFiles().first();

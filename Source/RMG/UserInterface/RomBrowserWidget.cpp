@@ -9,7 +9,7 @@
 */
 #include "RomBrowserWidget.hpp"
 #include "../Globals.hpp"
-#include "../Config.hpp"
+#include "Config.hpp"
 
 #include <QDir>
 
