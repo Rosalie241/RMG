@@ -1,3 +1,5 @@
 # CMake build directory
 Build/
 Bin/
+# VSCode Configuration
+.vscode/
