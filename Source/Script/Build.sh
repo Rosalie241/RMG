@@ -18,7 +18,7 @@ then
 fi
 
 cmake -S "$toplvl_dir" -B "$build_dir" -DCMAKE_BUILD_TYPE="$build_config" -G "$generator"
-make -j6
+make -j$(nproc)
 
 make install DESTDIR="$install_dir"
 
