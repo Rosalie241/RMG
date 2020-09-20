@@ -75,8 +75,8 @@ ExternalProject_Add(mupen64plus-input-raphnetraw
     CONFIGURE_COMMAND ""
     INSTALL_COMMAND ""
 
-    GIT_REPOSITORY https://github.com/raphnet/mupen64plus-input-raphnetraw
-    GIT_TAG 741f37cd9dae981235e57ebdc3083be5f5755439
+    GIT_REPOSITORY https://github.com/Rosalie241/mupen64plus-input-raphnetraw
+    GIT_TAG 4bcbae84c3f3c7e2cd01817cb504d6602721c952
 
     BUILD_COMMAND make all APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug>
     BUILD_IN_SOURCE False
