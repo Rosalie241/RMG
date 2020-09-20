@@ -23,7 +23,7 @@ ExternalProject_Add(mupen64plus-core
     GIT_REPOSITORY https://github.com/mupen64plus/mupen64plus-core
     GIT_TAG 59a501ec8915f3c6f20528b076c8dcbe95bb3830
 
-    BUILD_COMMAND make all OSD=0 NO_ASM=1
+    BUILD_COMMAND make all OSD=0 NO_ASM=1 DEBUG=$<CONFIG:Debug>
     BUILD_IN_SOURCE False
 
     BINARY_DIR ${M64P_CORE_DIR}/projects/unix
@@ -42,7 +42,7 @@ ExternalProject_Add(mupen64plus-audio-sdl
     GIT_REPOSITORY https://github.com/mupen64plus/mupen64plus-audio-sdl
     GIT_TAG 39b8cb778c4690de98c8b9497578662cece356cc
 
-    BUILD_COMMAND make all APIDIR=${APIDIR}
+    BUILD_COMMAND make all APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug>
     BUILD_IN_SOURCE False
 
     BINARY_DIR ${THIRDPARTY_DIR}/mupen64plus-audio-sdl/projects/unix
@@ -60,7 +60,7 @@ ExternalProject_Add(mupen64plus-rsp-hle
     GIT_REPOSITORY https://github.com/mupen64plus/mupen64plus-rsp-hle
     GIT_TAG 72a1deca7d57f688cf20569790077bf7ab2cbe7c
 
-    BUILD_COMMAND make all APIDIR=${APIDIR}
+    BUILD_COMMAND make all APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug>
     BUILD_IN_SOURCE False
 
     BINARY_DIR ${THIRDPARTY_DIR}/mupen64plus-rsp-hle/projects/unix
@@ -78,7 +78,7 @@ ExternalProject_Add(mupen64plus-input-raphnetraw
     GIT_REPOSITORY https://github.com/raphnet/mupen64plus-input-raphnetraw
     GIT_TAG 741f37cd9dae981235e57ebdc3083be5f5755439
 
-    BUILD_COMMAND make all APIDIR=${APIDIR}
+    BUILD_COMMAND make all APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug>
     BUILD_IN_SOURCE False
 
     BINARY_DIR ${THIRDPARTY_DIR}/mupen64plus-input-raphnetraw/projects/unix
@@ -87,6 +87,7 @@ ExternalProject_Add(mupen64plus-input-raphnetraw
     DEPENDS mupen64plus-core
 )
 
+set(GLIDEN64_BUILD_DIR "${THIRDPARTY_DIR}/mupen64plus-video-GLideN64/projects/cmake")
 ExternalProject_Add(mupen64plus-video-GLideN64
     SOURCE_DIR mupen64plus-video-GLideN64
 
@@ -95,11 +96,13 @@ ExternalProject_Add(mupen64plus-video-GLideN64
 
     INSTALL_COMMAND ""
 
-    BUILD_IN_SOURCE True
-    CMAKE_ARGS -DMUPENPLUSAPI=1 -DMUPENPLUSAPI_GLIDENUI=1 -Wno-dev
-    SOURCE_SUBDIR ./src
+    BUILD_IN_SOURCE False
+    CMAKE_ARGS -DMUPENPLUSAPI=1 -DMUPENPLUSAPI_GLIDENUI=1 -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -Wno-dev
 
-    BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-video-GLideN64/src/plugin/Release/mupen64plus-video-GLideN64.${SO_EXT}
+    SOURCE_SUBDIR ./src/
+    BINARY_DIR ${GLIDEN64_BUILD_DIR}
+
+    BUILD_BYPRODUCTS ${GLIDEN64_BUILD_DIR}/plugin/${CMAKE_BUILD_TYPE}/mupen64plus-video-GLideN64.${SO_EXT}
     BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-video-GLideN64/ini/GLideN64.custom.ini
 )
 

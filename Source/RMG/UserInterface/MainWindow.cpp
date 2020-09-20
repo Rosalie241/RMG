@@ -28,17 +28,8 @@ MainWindow::MainWindow() : QMainWindow(nullptr)
 
 MainWindow::~MainWindow()
 {
-    // Delete all UI elements
-    /*if (this->menuBar)
-        delete this->menuBar;
-
-    if (this->ui_Widgets)
-        delete this->ui_Widgets;
-
-    if (this->ui_Settings)
-        delete this->ui_Settings; */
 }
-#include <iostream>
+
 bool MainWindow::Init(void)
 {
     if (!g_Logger.Init())

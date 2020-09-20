@@ -7,14 +7,27 @@ project(RMG)
 
 set(CMAKE_INSTALL_PREFIX "")
 
+find_package(Git REQUIRED)
+execute_process(
+    COMMAND ${GIT_EXECUTABLE} describe --tags --always --dirty
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    OUTPUT_VARIABLE GIT_VERSION
+    ERROR_QUIET
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
 add_subdirectory(Source/RMG)
 install(TARGETS RMG
     DESTINATION rmg
 )
 
+if (WIN32)
+    add_subdirectory(Source/Installer)
+endif()
+
 add_subdirectory(Source/3rdParty)
 install(FILES ${MUPEN64PLUSCORE_LIB}
-    DESTINATION rmg/Core/
+    DESTINATION rmg/Core
 )
 install(FILES ${MUPEN64PLUSCORE_INI} ${MUPEN64PLUSCORE_CHT}
     DESTINATION rmg/Data

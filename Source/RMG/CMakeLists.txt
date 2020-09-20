@@ -9,19 +9,9 @@ find_package(Qt5 COMPONENTS Widgets Core REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2)
 
-find_package(Git REQUIRED)
-
-execute_process(
-    COMMAND ${GIT_EXECUTABLE} describe --tags --always --dirty
-    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-    OUTPUT_VARIABLE GIT_VERSION
-    ERROR_QUIET
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-)
-
 configure_file(Config.hpp.in Config.hpp)
 
-add_executable(RMG
+set(RMG_SOURCES
     UserInterface/MainWindow.cpp
     UserInterface/RomBrowserWidget.cpp
     UserInterface/NoFocusDelegate.cpp
@@ -42,6 +32,12 @@ add_executable(RMG
     Globals.cpp
     main.cpp
 )
+
+if (CMAKE_BUILD_TYPE MATCHES Release)
+    add_executable(RMG WIN32 ${RMG_SOURCES})
+else()
+    add_executable(RMG ${RMG_SOURCES})
+endif()
 
 target_link_libraries(RMG ${SDL2_LIBRARIES})
 
