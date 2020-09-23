@@ -37,6 +37,8 @@ namespace M64P
             bool GetRomInfo(QString, RomInfo_t*);
 
             bool LaunchEmulation(QString);
+            bool PauseEmulation(void);
+            bool StopEmulation(void);
 
             QString GetLastError(void);
 

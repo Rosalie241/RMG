@@ -8,10 +8,11 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 #include "EmulationThread.hpp"
+#include "../Globals.hpp"
 
 using namespace Thread;
 
-EmulationThread::EmulationThread(void)
+EmulationThread::EmulationThread(void) : QThread(nullptr)
 {
 }
 
@@ -21,7 +22,7 @@ EmulationThread::~EmulationThread(void)
 
 void EmulationThread::SetRomFile(QString file)
 {
-    this->rom_File = file;   
+    this->rom_File = file;
 }
 
 void EmulationThread::run(void)
@@ -29,7 +30,7 @@ void EmulationThread::run(void)
     emit this->on_Emulation_Started();
 
     bool ret;
-    
+
     ret = g_MupenApi.Core.LaunchEmulation(this->rom_File);
 
     if (!ret)

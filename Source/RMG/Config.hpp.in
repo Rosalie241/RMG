@@ -1,7 +1,7 @@
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
-#define WINDOW_TITLE "Rosalie's Mupen GUI ${GIT_VERSION}"
+#define WINDOW_TITLE "Rosalie's Mupen GUI (${GIT_VERSION})"
 #define WINDOW_WIDGET_SIZE_W 640
 #define WINDOW_WIDGET_SIZE_H 480
 

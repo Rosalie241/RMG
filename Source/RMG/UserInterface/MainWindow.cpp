@@ -44,7 +44,9 @@ bool MainWindow::Init(void)
         return false;
     }
 
-    if (!g_MupenApi.Init(MUPEN_CORE_FILE))
+    this->ui_Init();
+
+    if (!g_MupenApi.Init(MUPEN_CORE_FILE, nullptr))
     {
         this->ui_MessageBox("Error", "M64P::Wrapper::Api::Init Failed", g_MupenApi.GetLastError());
         return false;
@@ -55,7 +57,6 @@ bool MainWindow::Init(void)
     g_MupenApi.Core.GetPlugins(M64P::Wrapper::PluginType::Audio);
     g_MupenApi.Core.GetPlugins(M64P::Wrapper::PluginType::Input);
 
-    this->ui_Init();
     this->ui_Setup();
 
     this->menuBar_Init();
@@ -63,7 +64,9 @@ bool MainWindow::Init(void)
 
     this->emulationThread_Init();
     this->emulationThread_Connect();
-    
+
+    g_EmuThread = this->emulationThread;
+
     return true;
 }
 
@@ -77,15 +80,17 @@ void MainWindow::closeEvent(QCloseEvent *event)
 void MainWindow::ui_Init(void)
 {
     this->ui_Icon = QIcon(":Icons/RMG.png");
-    this->ui_Widget_OpenGL = new QOpenGLWidget();
-    this->ui_Widget_RomBrowser = new RomBrowserWidget();
+
     this->ui_Widgets = new QStackedWidget();
+    this->ui_Widget_RomBrowser = new Widget::RomBrowserWidget();
+    this->ui_Widget_OpenGL = new Widget::OGLWidget();
+
     this->ui_Settings = new QSettings(APP_SETTINGS_ORG, APP_SETTINGS_NAME);
 
     this->ui_Widget_RomBrowser->SetDirectory(g_Settings.GetValue("Game Directory", "Directory").toString());
     this->ui_Widget_RomBrowser->RefreshRomList();
 
-    connect(this->ui_Widget_RomBrowser, &RomBrowserWidget::on_RomBrowser_Select, this, &MainWindow::on_RomBrowser_Selected);
+    connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::on_RomBrowser_Select, this, &MainWindow::on_RomBrowser_Selected);
 }
 
 void MainWindow::ui_Setup(void)
@@ -100,10 +105,10 @@ void MainWindow::ui_Setup(void)
 
     this->ui_Widgets->setMinimumSize(WINDOW_WIDGET_SIZE_W, WINDOW_WIDGET_SIZE_H);
 
-    this->ui_Widgets->addWidget(this->ui_Widget_OpenGL);
     this->ui_Widgets->addWidget(this->ui_Widget_RomBrowser);
-    this->ui_Widgets->setCurrentIndex(1);
+    this->ui_Widgets->addWidget(this->ui_Widget_OpenGL->GetWidget());
 
+    this->ui_Widgets->setCurrentIndex(0);
 }
 
 void MainWindow::ui_Stylesheet_Setup(void)
@@ -133,16 +138,12 @@ void MainWindow::ui_MessageBox(QString title, QString text, QString details = ""
 
 void MainWindow::ui_InEmulation(bool inEmulation)
 {
-    int index;
+    this->menuBar_Setup(inEmulation);
 
     if (inEmulation)
-        index = 0;
+        this->ui_Widgets->setCurrentIndex(1);
     else
-        index = 1;
-
-    this->ui_Widgets->setCurrentIndex(index);
-
-    this->menuBar_Setup(inEmulation);
+        this->ui_Widgets->setCurrentIndex(0);
 }
 
 void MainWindow::menuBar_Init(void)
@@ -204,10 +205,15 @@ void MainWindow::emulationThread_Connect(void)
 {
     connect(this->emulationThread, &Thread::EmulationThread::on_Emulation_Finished, this, &MainWindow::on_Emulation_Finished);
     connect(this->emulationThread, &Thread::EmulationThread::on_Emulation_Started, this, &MainWindow::on_Emulation_Started);
+
+    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_Init, this, &MainWindow::on_VidExt_Init, Qt::BlockingQueuedConnection);
+    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_SetupOGL, this, &MainWindow::on_VidExt_SetupOGL, Qt::BlockingQueuedConnection);
+    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_ResizeWindow, this, &MainWindow::on_VidExt_ResizeWindow, Qt::BlockingQueuedConnection);
+    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_Quit, this, &MainWindow::on_VidExt_Quit, Qt::BlockingQueuedConnection);
 }
 
 void MainWindow::emulationThread_Launch(QString file)
-{
+{  
     this->emulationThread->SetRomFile(file);
     this->emulationThread->start();
 }
@@ -302,7 +308,7 @@ void MainWindow::on_Action_File_OpenRom(void)
 {
     if (this->emulationThread->isRunning())
         return;
-    
+
     QFileDialog dialog;
     int ret;
     QString dir;
@@ -325,6 +331,10 @@ void MainWindow::on_Action_File_OpenCombo(void)
 
 void MainWindow::on_Action_File_EndEmulation(void)
 {
+    if (!g_MupenApi.Core.StopEmulation())
+    {
+        this->ui_MessageBox("Error", "StopEmulation Failed!", g_MupenApi.Core.GetLastError());
+    }
 }
 
 void MainWindow::on_Action_File_ChooseDirectory(void)
@@ -346,7 +356,6 @@ void MainWindow::on_Action_File_ChooseDirectory(void)
         this->ui_Widget_RomBrowser->SetDirectory(dir);
         this->ui_Widget_RomBrowser->RefreshRomList();
     }
-
 }
 
 void MainWindow::on_Action_File_RefreshRomList(void)
@@ -425,4 +434,29 @@ void MainWindow::on_Emulation_Finished(bool ret)
 void MainWindow::on_RomBrowser_Selected(QString file)
 {
     this->emulationThread_Launch(file);
+}
+
+void MainWindow::on_VidExt_Init(void)
+{
+    this->ui_InEmulation(true);
+}
+
+void MainWindow::on_VidExt_SetupOGL(QSurfaceFormat format, QThread* thread)
+{
+    this->ui_Widget_OpenGL->SetThread(thread);
+
+    g_OGLWidget = this->ui_Widget_OpenGL;
+
+    this->ui_Widget_OpenGL->setCursor(Qt::BlankCursor);
+    this->ui_Widget_OpenGL->setFormat(format);
+}
+
+void MainWindow::on_VidExt_ResizeWindow(int Width, int Height)
+{
+    this->resize(Width, Height);
+}
+
+void MainWindow::on_VidExt_Quit(void)
+{
+    this->ui_InEmulation(false);
 }

@@ -16,13 +16,17 @@
 #include "Types.hpp"
 
 #include <QString>
+#include <QObject>
+#include <QOpenGLWidget>
 
 namespace M64P
 {
     namespace Wrapper
     {
-        class Api
+        class Api : public QObject
         {
+            Q_OBJECT
+
         public:
             Api(void);
             ~Api(void);
@@ -30,7 +34,7 @@ namespace M64P
             M64P::Wrapper::Core Core;
             M64P::Wrapper::Config Config;
 
-            bool Init(QString);
+            bool Init(QString, QOpenGLWidget*);
 
             QString GetLastError(void);
 
@@ -41,6 +45,7 @@ namespace M64P
             bool core_Handle_Opened;
             bool core_Handle_Open(QString);
             void core_Handle_Close(void);
+            bool core_VidExt_Override(QOpenGLWidget*);
         };
     } // namespace Wrapper
 } // namespace M64P

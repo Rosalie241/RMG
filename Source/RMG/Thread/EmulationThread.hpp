@@ -10,10 +10,11 @@
 #ifndef EMULATIONTHREAD_HPP
 #define EMULATIONTHREAD_HPP
 
-#include "../Globals.hpp"
+//#include "../Globals.hpp"
 
 #include <QThread>
 #include <QString>
+#include <QSurfaceFormat>
 
 namespace Thread
 {
@@ -38,6 +39,17 @@ namespace Thread
     signals:
         void on_Emulation_Started(void);
         void on_Emulation_Finished(bool);
+
+        void on_VidExt_SetupOGL(QSurfaceFormat, QThread*);
+        void on_VidExt_ResizeWindow(int, int);
+
+        void on_VidExt_Init(void);
+        void on_VidExt_SetMode(int, int, int, int, int);
+        void on_VidExt_SetModeWithRate(int, int, int, int, int, int, QSurfaceFormat*,QThread*);
+        void on_VidExt_Quit(void);
+
+        void createOGLWindow(QSurfaceFormat* format, QThread* thread);
+        void resizeMainWindow(int Width, int Height);
     };
 } // namespace Thread
 

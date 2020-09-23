@@ -11,7 +11,8 @@
 #define MAINWINDOW_HPP
 
 #include "../Thread/EmulationThread.hpp"
-#include "RomBrowserWidget.hpp"
+#include "Widget/RomBrowserWidget.hpp"
+#include "Widget/OGLWidget.hpp"
 #include "../Globals.hpp"
 
 #include <QMainWindow>
@@ -34,12 +35,13 @@ namespace UserInterface
         bool Init(void);
 
     private:
-        Thread::EmulationThread* emulationThread;
-        
         QIcon ui_Icon;
-        QOpenGLWidget *ui_Widget_OpenGL;
-        RomBrowserWidget *ui_Widget_RomBrowser;
+
+        Thread::EmulationThread *emulationThread;
+
         QStackedWidget *ui_Widgets;
+        Widget::OGLWidget *ui_Widget_OpenGL;
+        Widget::RomBrowserWidget *ui_Widget_RomBrowser;
 
         QMenuBar *menuBar;
         QMenu *menuBar_Menu;
@@ -82,8 +84,6 @@ namespace UserInterface
         void menuBar_Actions_Setup(bool);
         void menuBar_Actions_Connect(void);
 
-        void on_VidExt_Quit(void);
-
     public slots:
         void on_Action_File_OpenRom(void);
         void on_Action_File_OpenCombo(void);
@@ -107,6 +107,11 @@ namespace UserInterface
         void on_Emulation_Finished(bool);
 
         void on_RomBrowser_Selected(QString);
+
+        void on_VidExt_Init(void);
+        void on_VidExt_SetupOGL(QSurfaceFormat, QThread*);
+        void on_VidExt_ResizeWindow(int, int);
+        void on_VidExt_Quit(void);
     };
 } // namespace UserInterface
 

@@ -8,12 +8,12 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 #include "RomBrowserWidget.hpp"
-#include "../Globals.hpp"
+#include "../../Globals.hpp"
 #include "Config.hpp"
 
 #include <QDir>
 
-using namespace UserInterface;
+using namespace UserInterface::Widget;
 
 RomBrowserWidget::RomBrowserWidget(void) : QTableView(nullptr)
 {
@@ -80,6 +80,7 @@ void RomBrowserWidget::widget_Init(void)
     this->setSortingEnabled(true);
     this->setEditTriggers(QAbstractItemView::NoEditTriggers);
     this->setSelectionBehavior(QTableView::SelectRows);
+    this->setSelectionMode(QAbstractItemView::SingleSelection);
 
     this->verticalHeader()->hide();
 

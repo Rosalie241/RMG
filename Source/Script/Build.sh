@@ -7,6 +7,9 @@ build_dir="$toplvl_dir/Build"
 build_config="${1:-Debug}"
 install_dir="$toplvl_dir/Bin/$build_config"
 generator="${2:-Unix Makefiles}"
+threads="${3:-$(nproc)}"
+
+msys2="0"
 
 mkdir -p "$build_dir"
 
@@ -14,17 +17,17 @@ pushd "$build_dir"
 
 if [[ $(uname -s) = *MINGW64* ]]
 then
-	generator="MSYS Makefiles"
+    msys2="1"
+    generator="MSYS Makefiles"
 fi
 
 cmake -S "$toplvl_dir" -B "$build_dir" -DCMAKE_BUILD_TYPE="$build_config" -G "$generator"
-make -j$(nproc)
 
-make install DESTDIR="$install_dir"
+make install DESTDIR="$install_dir" -j$threads
 
-if [[ $(uname -s) = *MINGW64* ]]
+if [[ "$msys2" = "1" ]]
 then
-	make bundle_dependencies
+    make bundle_dependencies
 fi
 
 popd

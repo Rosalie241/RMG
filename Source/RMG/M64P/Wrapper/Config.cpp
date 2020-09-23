@@ -30,14 +30,6 @@ bool Config::Init()
         return false;
     }
 
-    /*ret = M64P::Config.ExternalOpen("Config/RMG.ini", &this->handle);
-    if (ret != M64ERR_SUCCESS)
-    {
-        this->error_Message = "Config::Init M64P::Config.ExternalOpen Failed: ";
-        this->error_Message += M64P::Core.ErrorMessage(ret);
-        return false;
-    }*/
-
     return true;
 }
 

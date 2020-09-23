@@ -13,7 +13,8 @@ configure_file(Config.hpp.in Config.hpp)
 
 set(RMG_SOURCES
     UserInterface/MainWindow.cpp
-    UserInterface/RomBrowserWidget.cpp
+    UserInterface/Widget/RomBrowserWidget.cpp
+    UserInterface/Widget/OGLWidget.cpp
     UserInterface/NoFocusDelegate.cpp
     UserInterface/UIResources.rc
     UserInterface/UIResources.qrc
@@ -27,6 +28,7 @@ set(RMG_SOURCES
     M64P/Wrapper/Core.cpp
     M64P/Wrapper/Plugin.cpp
     M64P/Wrapper/Api.cpp
+    M64P/Wrapper/VidExt.cpp
     Utilities/Logger.cpp
     Utilities/Settings.cpp
     Globals.cpp
