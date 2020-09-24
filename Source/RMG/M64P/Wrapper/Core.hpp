@@ -40,7 +40,7 @@ namespace M64P
             bool StopEmulation(void);
             bool PauseEmulation(void);
             bool ResumeEmulation(void);
-            bool ResetEmulation(void);
+            bool ResetEmulation(bool);
 
             QString GetLastError(void);
 

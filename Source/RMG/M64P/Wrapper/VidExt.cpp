@@ -7,6 +7,7 @@
 #include <QApplication>
 
 static QSurfaceFormat format;
+static QThread* renderThread;
 
 static bool ogl_setup = false;
 static void VidExt_OglSetup(void)
@@ -24,6 +25,8 @@ static void VidExt_OglSetup(void)
 m64p_error VidExt_Init(void)
 {
     std::cout << __FUNCTION__ << std::endl;
+
+    renderThread = QThread::currentThread();
 
     format = QSurfaceFormat::defaultFormat();
     format.setOption(QSurfaceFormat::DeprecatedFunctions, 1);
@@ -222,9 +225,12 @@ m64p_error VidExt_GLGetAttr(m64p_GLattr Attr, int *pValue)
 
 m64p_error VidExt_GLSwapBuf(void)
 {
-    // std::cout << __FUNCTION__ << std::endl;
+    if (renderThread != QThread::currentThread())
+        return M64ERR_UNSUPPORTED;
 
     g_OGLWidget->context()->swapBuffers(g_OGLWidget->context()->surface());
+
+    // TODO, figure out why this is needed?
     //g_OGLWidget->context()->makeCurrent(g_OGLWidget->context()->surface());
 
     return M64ERR_SUCCESS;

@@ -175,10 +175,28 @@ void MainWindow::menuBar_Setup(bool inEmulation)
 
     if (inEmulation)
     {
+        QMenu *tmp = new QMenu("Reset");
+        tmp->addAction(action_System_SoftReset);
+        tmp->addAction(action_System_HardReset);
+
         this->menuBar_Menu = this->menuBar->addMenu("System");
-        this->menuBar_Menu->setEnabled(inEmulation);
-        this->menuBar_Menu->addAction(action_System_Reset);
+        this->menuBar_Menu->addMenu(tmp);
         this->menuBar_Menu->addAction(action_System_Pause);
+        this->menuBar_Menu->addAction(this->action_System_GenerateBitmap);
+        this->menuBar_Menu->addSeparator();
+        this->menuBar_Menu->addAction(this->action_System_LimitFPS);
+        this->menuBar_Menu->addSeparator();
+        this->menuBar_Menu->addAction(this->action_System_SwapDisk);
+        this->menuBar_Menu->addSeparator();
+        this->menuBar_Menu->addAction(this->action_System_SaveState);
+        this->menuBar_Menu->addAction(this->action_System_SaveAs);
+        this->menuBar_Menu->addAction(this->action_System_LoadState);
+        this->menuBar_Menu->addAction(this->action_System_Load);
+        this->menuBar_Menu->addSeparator();
+        this->menuBar_Menu->addAction(this->action_System_CurrentSaveState);
+        this->menuBar_Menu->addSeparator();
+        this->menuBar_Menu->addAction(this->action_System_Cheats);
+        this->menuBar_Menu->addAction(this->action_System_GSButton);
     }
 
     this->menuBar_Menu = this->menuBar->addMenu("Options");
@@ -235,8 +253,19 @@ void MainWindow::menuBar_Actions_Init(void)
     this->action_File_RefreshRomList = new QAction();
     this->action_File_Exit = new QAction();
 
-    this->action_System_Reset = new QAction();
+    this->action_System_SoftReset = new QAction();
+    this->action_System_HardReset = new QAction();
     this->action_System_Pause = new QAction();
+    this->action_System_GenerateBitmap = new QAction();
+    this->action_System_LimitFPS = new QAction();
+    this->action_System_SwapDisk = new QAction();
+    this->action_System_SaveState = new QAction();
+    this->action_System_SaveAs = new QAction();
+    this->action_System_LoadState = new QAction();
+    this->action_System_Load = new QAction();
+    this->action_System_CurrentSaveState = new QAction();
+    this->action_System_Cheats = new QAction();
+    this->action_System_GSButton = new QAction();
 
     this->action_Options_FullScreen = new QAction();
     this->action_Options_ConfigGfx = new QAction();
@@ -264,10 +293,34 @@ void MainWindow::menuBar_Actions_Setup(bool inEmulation)
     this->action_File_Exit->setText("Exit");
     this->action_File_Exit->setShortcut(QKeySequence("Alt+F4"));
 
-    this->action_System_Reset->setText("Reset");
-    this->action_System_Reset->setShortcut(QKeySequence("F1"));
+    this->action_System_SoftReset->setText("Soft Reset");
+    this->action_System_SoftReset->setShortcut(QKeySequence("F1"));
+    this->action_System_HardReset->setText("Hard Reset");
+    this->action_System_HardReset->setShortcut(QKeySequence("Shift+F1"));
     this->action_System_Pause->setText("Pause");
     this->action_System_Pause->setShortcut(QKeySequence("F2"));
+    this->action_System_GenerateBitmap->setText("Generate Bitmap");
+    this->action_System_GenerateBitmap->setShortcut(QKeySequence("F3"));
+    this->action_System_LimitFPS->setText("Limit FPS");
+    this->action_System_LimitFPS->setShortcut(QKeySequence("F4"));
+    this->action_System_LimitFPS->setCheckable(true);
+    this->action_System_LimitFPS->setChecked(true);
+    this->action_System_SwapDisk->setText("Swap Disk");
+    this->action_System_SwapDisk->setShortcut(QKeySequence("Ctrl+D"));
+    this->action_System_SwapDisk->setEnabled(false);
+    this->action_System_SaveState->setText("Save State");
+    this->action_System_SaveState->setShortcut(QKeySequence("F5"));
+    this->action_System_SaveAs->setText("Save As...");
+    this->action_System_SaveAs->setShortcut(QKeySequence("Ctrl+S"));
+    this->action_System_LoadState->setText("Load State");
+    this->action_System_LoadState->setShortcut(QKeySequence("F7"));
+    this->action_System_Load->setText("Load...");
+    this->action_System_Load->setShortcut(QKeySequence("Ctrl+L"));
+    this->action_System_CurrentSaveState->setText("Current Save State");
+    this->action_System_Cheats->setText("Cheats...");
+    this->action_System_Cheats->setShortcut(QKeySequence("Ctrl+C"));
+    this->action_System_GSButton->setText("GS Button");
+    this->action_System_GSButton->setShortcut(QKeySequence("F9"));
 
     this->action_Options_FullScreen->setText("Full Screen");
     this->action_Options_FullScreen->setEnabled(inEmulation);
@@ -297,8 +350,16 @@ void MainWindow::menuBar_Actions_Connect(void)
     connect(this->action_File_RefreshRomList, &QAction::triggered, this, &MainWindow::on_Action_File_RefreshRomList);
     connect(this->action_File_Exit, &QAction::triggered, this, &MainWindow::on_Action_File_Exit);
 
-    connect(this->action_System_Reset, &QAction::triggered, this, &MainWindow::on_Action_System_Reset);
+    connect(this->action_System_SoftReset, &QAction::triggered, this, &MainWindow::on_Action_System_SoftReset);
+    connect(this->action_System_HardReset, &QAction::triggered, this, &MainWindow::on_Action_System_HardReset);
     connect(this->action_System_Pause, &QAction::triggered, this, &MainWindow::on_Action_System_Pause);
+    connect(this->action_System_LimitFPS, &QAction::triggered, this, &MainWindow::on_Action_System_LimitFPS);
+    connect(this->action_System_SwapDisk, &QAction::triggered, this, &MainWindow::on_Action_System_SwapDisk);
+    connect(this->action_System_SaveState, &QAction::triggered, this, &MainWindow::on_Action_System_SaveState);
+    connect(this->action_System_SaveAs, &QAction::triggered, this, &MainWindow::on_Action_System_SaveAs);
+    connect(this->action_System_LoadState, &QAction::triggered, this, &MainWindow::on_Action_System_LoadState);
+    connect(this->action_System_Cheats, &QAction::triggered, this, &MainWindow::on_Action_System_Cheats);
+    connect(this->action_System_GSButton, &QAction::triggered, this, &MainWindow::on_Action_System_GSButton);
 
     connect(this->action_Options_ConfigGfx, &QAction::triggered, this, &MainWindow::on_Action_Options_ConfigGfx);
     connect(this->action_Options_ConfigAudio, &QAction::triggered, this, &MainWindow::on_Action_Options_ConfigAudio);
@@ -376,18 +437,87 @@ void MainWindow::on_Action_File_Exit(void)
     this->close();
 }
 
-void MainWindow::on_Action_System_Reset(void)
+void MainWindow::on_Action_System_SoftReset(void)
 {
-    g_MupenApi.Core.ResetEmulation();
+    g_MupenApi.Core.ResetEmulation(false);
 }
 
+void MainWindow::on_Action_System_HardReset(void)
+{
+    g_MupenApi.Core.ResetEmulation(true);
+}
+
+static bool paused = false;
 void MainWindow::on_Action_System_Pause(void)
 {
-    g_MupenApi.Core.PauseEmulation();
+
+    if (!paused)
+    {
+        this->action_System_Pause->setText("Resume");
+        g_MupenApi.Core.PauseEmulation();
+    }
+    else
+    {
+        this->action_System_Pause->setText("Pause");
+        g_MupenApi.Core.ResumeEmulation();
+    }
+
+    paused = !paused;
+}
+
+void MainWindow::on_Action_System_GenerateBitmap(void)
+{
+
+}
+
+void MainWindow::on_Action_System_LimitFPS(void)
+{
+
+}
+
+void MainWindow::on_Action_System_SwapDisk(void)
+{
+
+}
+
+void MainWindow::on_Action_System_SaveState(void)
+{
+
+}
+
+void MainWindow::on_Action_System_SaveAs(void)
+{
+
+}
+
+void MainWindow::on_Action_System_LoadState(void)
+{
+
+}
+
+void MainWindow::on_Action_System_Load(void)
+{
+
+}
+
+void MainWindow::on_Action_System_CurrentSaveState(void)
+{
+
+}
+
+void MainWindow::on_Action_System_Cheats(void)
+{
+
+}
+
+void MainWindow::on_Action_System_GSButton(void)
+{
+
 }
 
 void MainWindow::on_Action_Options_FullScreen(void)
 {
+
 }
 
 void MainWindow::on_Action_Options_ConfigGfx(void)
@@ -457,7 +587,7 @@ void MainWindow::on_VidExt_SetupOGL(QSurfaceFormat format, QThread *thread)
 
     g_OGLWidget = this->ui_Widget_OpenGL;
 
-   // this->ui_Widget_OpenGL->setCursor(Qt::BlankCursor);
+    // this->ui_Widget_OpenGL->setCursor(Qt::BlankCursor);
     this->ui_Widget_OpenGL->setFormat(format);
 }
 

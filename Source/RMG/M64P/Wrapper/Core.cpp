@@ -313,14 +313,14 @@ bool Core::ResumeEmulation(void)
     return ret == M64ERR_SUCCESS;
 }
 
-bool Core::ResetEmulation(void)
+bool Core::ResetEmulation(bool hard)
 {
     m64p_error ret;
 
     if (!this->emulation_IsPaused() && !this->emulation_IsRunning())
         return false;
 
-    ret = M64P::Core.DoCommand(M64CMD_RESET, 0, NULL);
+    ret = M64P::Core.DoCommand(M64CMD_RESET, hard ? 1 : 0, NULL);
     if (ret != M64ERR_SUCCESS)
     {
         this->error_Message = "Core::ResetEmulation M64P::Core.DoCommand(M64CMD_RESET) Failed: ";
