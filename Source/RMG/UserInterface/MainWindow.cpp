@@ -44,8 +44,6 @@ bool MainWindow::Init(void)
         return false;
     }
 
-    this->ui_Init();
-
     if (!g_MupenApi.Init(MUPEN_CORE_FILE))
     {
         this->ui_MessageBox("Error", "M64P::Wrapper::Api::Init Failed", g_MupenApi.GetLastError());
@@ -57,6 +55,7 @@ bool MainWindow::Init(void)
     g_MupenApi.Core.GetPlugins(M64P::Wrapper::PluginType::Audio);
     g_MupenApi.Core.GetPlugins(M64P::Wrapper::PluginType::Input);
 
+    this->ui_Init();
     this->ui_Setup();
 
     this->menuBar_Init();
