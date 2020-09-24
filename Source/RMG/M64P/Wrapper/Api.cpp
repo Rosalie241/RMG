@@ -24,7 +24,7 @@ Api::~Api(void)
     this->core_Handle_Close();
 }
 
-bool Api::Init(QString file, QOpenGLWidget* widget)
+bool Api::Init(QString file)
 {
     this->error_Message = "Api::Init Failed: ";
 
@@ -55,7 +55,7 @@ bool Api::Init(QString file, QOpenGLWidget* widget)
         return false;
     }
 
-    if (!this->core_VidExt_Override(widget))
+    if (!this->core_VidExt_Override())
         return false;
 
     return true;
@@ -91,36 +91,34 @@ void Api::core_Handle_Close(void)
     this->core_Handle_Opened = false;
 }
 
-bool Api::core_VidExt_Override(QOpenGLWidget* widget)
+bool Api::core_VidExt_Override(void)
 {
     m64p_error ret;
-    m64p_video_extension_functions Vidext_Funcs;
+    m64p_video_extension_functions vidext_funcs;
 
-    Vidext_Funcs.Functions = 14;
-    Vidext_Funcs.VidExtFuncInit = &VidExt_Init;
-    Vidext_Funcs.VidExtFuncQuit = &VidExt_Quit;
-    Vidext_Funcs.VidExtFuncListModes = &VidExt_ListModes;
-    Vidext_Funcs.VidExtFuncListRates = &VidExt_ListRates;
-    Vidext_Funcs.VidExtFuncSetMode = &VidExt_SetMode;
-    Vidext_Funcs.VidExtFuncSetModeWithRate = &VidExt_SetModeWithRate;
-    Vidext_Funcs.VidExtFuncGLGetProc = &VidExt_GLGetProc;
-    Vidext_Funcs.VidExtFuncGLSetAttr = &VidExt_GLSetAttr;
-    Vidext_Funcs.VidExtFuncGLGetAttr = &VidExt_GLGetAttr;
-    Vidext_Funcs.VidExtFuncGLSwapBuf = &VidExt_GLSwapBuf;
-    Vidext_Funcs.VidExtFuncSetCaption = &VidExt_SetCaption;
-    Vidext_Funcs.VidExtFuncToggleFS = &VidExt_ToggleFS;
-    Vidext_Funcs.VidExtFuncResizeWindow = &VidExt_ResizeWindow;
-    Vidext_Funcs.VidExtFuncGLGetDefaultFramebuffer = &VidExt_GLGetDefaultFramebuffer;
+    vidext_funcs.Functions = 14;
+    vidext_funcs.VidExtFuncInit = &VidExt_Init;
+    vidext_funcs.VidExtFuncQuit = &VidExt_Quit;
+    vidext_funcs.VidExtFuncListModes = &VidExt_ListModes;
+    vidext_funcs.VidExtFuncListRates = &VidExt_ListRates;
+    vidext_funcs.VidExtFuncSetMode = &VidExt_SetMode;
+    vidext_funcs.VidExtFuncSetModeWithRate = &VidExt_SetModeWithRate;
+    vidext_funcs.VidExtFuncGLGetProc = &VidExt_GLGetProc;
+    vidext_funcs.VidExtFuncGLSetAttr = &VidExt_GLSetAttr;
+    vidext_funcs.VidExtFuncGLGetAttr = &VidExt_GLGetAttr;
+    vidext_funcs.VidExtFuncGLSwapBuf = &VidExt_GLSwapBuf;
+    vidext_funcs.VidExtFuncSetCaption = &VidExt_SetCaption;
+    vidext_funcs.VidExtFuncToggleFS = &VidExt_ToggleFS;
+    vidext_funcs.VidExtFuncResizeWindow = &VidExt_ResizeWindow;
+    vidext_funcs.VidExtFuncGLGetDefaultFramebuffer = &VidExt_GLGetDefaultFramebuffer;
 
-    ret = M64P::Core.OverrideVidExt(&Vidext_Funcs);
+    ret = M64P::Core.OverrideVidExt(&vidext_funcs);
     if (ret != M64ERR_SUCCESS)
     {
         this->error_Message = "Api::core_VidExt_Override M64P::Core.OverrideVidExt Failed: ";
         this->error_Message += M64P::Core.ErrorMessage(ret);
         return false;
     }
-
-    VidExt_Setup(widget);
 
     return true;
 }

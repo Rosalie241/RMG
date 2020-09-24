@@ -110,7 +110,11 @@ namespace UserInterface
 
         void on_VidExt_Init(void);
         void on_VidExt_SetupOGL(QSurfaceFormat, QThread*);
+        void on_VidExt_SetMode(int, int, int, int, int);
+        void on_VidExt_SetModeWithRate(int, int, int, int, int, int);
         void on_VidExt_ResizeWindow(int, int);
+        void on_VidExt_SetCaption(QString);
+        void on_VidExt_ToggleFS(void);
         void on_VidExt_Quit(void);
     };
 } // namespace UserInterface

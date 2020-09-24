@@ -34,7 +34,7 @@ namespace M64P
             M64P::Wrapper::Core Core;
             M64P::Wrapper::Config Config;
 
-            bool Init(QString, QOpenGLWidget*);
+            bool Init(QString);
 
             QString GetLastError(void);
 
@@ -45,7 +45,7 @@ namespace M64P
             bool core_Handle_Opened;
             bool core_Handle_Open(QString);
             void core_Handle_Close(void);
-            bool core_VidExt_Override(QOpenGLWidget*);
+            bool core_VidExt_Override(void);
         };
     } // namespace Wrapper
 } // namespace M64P

@@ -3,18 +3,27 @@
 
 #include <QThread>
 #include <QOpenGLContext>
-
-
-QThread* g_RenderThread;
+#include <iostream>
+#include <QApplication>
 
 static QSurfaceFormat format;
-static QOpenGLWidget *openGlWidget;
-static QThread *renderThread;
-static Thread::EmulationThread* emuThread;
 
-void VidExt_Setup(QOpenGLWidget *widget)
+static bool ogl_setup = false;
+static void VidExt_OglSetup(void)
 {
-    openGlWidget = widget;
+    g_EmuThread->on_VidExt_SetupOGL(format, QThread::currentThread());
+
+    while (!g_OGLWidget->isValid())
+        continue;
+
+    g_OGLWidget->makeCurrent();
+
+    ogl_setup = true;
+}
+
+m64p_error VidExt_Init(void)
+{
+    std::cout << __FUNCTION__ << std::endl;
 
     format = QSurfaceFormat::defaultFormat();
     format.setOption(QSurfaceFormat::DeprecatedFunctions, 1);
@@ -23,33 +32,19 @@ void VidExt_Setup(QOpenGLWidget *widget)
     format.setMajorVersion(2);
     format.setMinorVersion(1);
 
-   // openGlWidget->setFormat(format);
-}
-
-#include <iostream>
-m64p_error VidExt_Init(void)
-{
-    std::cout << __FUNCTION__ << std::endl;
-
-    g_RenderThread = QThread::currentThread();
-    renderThread = QThread::currentThread();
-
-   // g_EmuThread->on_VidExt_Init();
-//    
+    g_EmuThread->on_VidExt_Init();
 
     return M64ERR_SUCCESS;
 }
 
-#include <QApplication>
 m64p_error VidExt_Quit(void)
 {
-    g_EmuThread->on_VidExt_Quit();
-    
-    g_OGLWidget->doneCurrent();
-    
-    g_OGLWidget->context()->moveToThread(QApplication::instance()->thread());
-
     std::cout << __FUNCTION__ << std::endl;
+
+    g_OGLWidget->SetThread(QApplication::instance()->thread());
+    g_EmuThread->on_VidExt_Quit();
+    ogl_setup = false;
+
     return M64ERR_SUCCESS;
 }
 
@@ -60,6 +55,7 @@ m64p_error VidExt_ListModes(m64p_2d_size *SizeArray, int *NumSizes)
     SizeArray[0].uiHeight = 1080;
     SizeArray[0].uiWidth = 1920;
     *NumSizes = 1;
+
     return M64ERR_SUCCESS;
 }
 
@@ -69,41 +65,34 @@ m64p_error VidExt_ListRates(m64p_2d_size Size, int *NumRates, int *Rates)
 
     Rates[0] = 60;
     *NumRates = 1;
+
     return M64ERR_SUCCESS;
 }
 
 m64p_error VidExt_SetMode(int Width, int Height, int BitsPerPixel, int ScreenMode, int Flags)
 {
+    if (!ogl_setup)
+        VidExt_OglSetup();
+
     std::cout << __FUNCTION__ << std::endl;
-    return M64ERR_UNSUPPORTED;
+    g_EmuThread->on_VidExt_SetMode(Width, Height, BitsPerPixel, ScreenMode, Flags);
+    return M64ERR_SUCCESS;
 }
 
 m64p_error VidExt_SetModeWithRate(int Width, int Height, int RefreshRate, int BitsPerPixel, int ScreenMode, int Flags)
 {
-/*    w->getWorkerThread()->createOGLWindow(&format);
-        while (!w->getOGLWindow()->isValid()) {}
-        w->getWorkerThread()->resizeMainWindow(Width, Height);
-        w->getOGLWindow()->makeCurrent();*/
-
-    g_RenderThread = QThread::currentThread();
-
-    g_EmuThread->on_VidExt_SetupOGL(format, QThread::currentThread());
-    
-    while(!g_OGLWidget->isValid())
-        continue;
-
-    g_EmuThread->on_VidExt_ResizeWindow(Width, Height);
-
-    g_OGLWidget->makeCurrent();
+    if (!ogl_setup)
+        VidExt_OglSetup();
 
     std::cout << __FUNCTION__ << std::endl;
+    g_EmuThread->on_VidExt_SetModeWithRate(Width, Height, RefreshRate, BitsPerPixel, ScreenMode, Flags);
     return M64ERR_SUCCESS;
 }
 
 m64p_function VidExt_GLGetProc(const char *Proc)
 {
     std::cout << __FUNCTION__ << std::endl;
-    return openGlWidget->context()->getProcAddress(Proc);
+    return g_OGLWidget->context()->getProcAddress(Proc);
 }
 
 m64p_error VidExt_GLSetAttr(m64p_GLattr Attr, int Value)
@@ -165,8 +154,6 @@ m64p_error VidExt_GLSetAttr(m64p_GLattr Attr, int Value)
 
         break;
     }
-
-    //openGlWidget->setFormat(format);
 
     return M64ERR_SUCCESS;
 }
@@ -235,10 +222,10 @@ m64p_error VidExt_GLGetAttr(m64p_GLattr Attr, int *pValue)
 
 m64p_error VidExt_GLSwapBuf(void)
 {
-    std::cout << __FUNCTION__ << std::endl;
+    // std::cout << __FUNCTION__ << std::endl;
 
     g_OGLWidget->context()->swapBuffers(g_OGLWidget->context()->surface());
-    g_OGLWidget->context()->makeCurrent(g_OGLWidget->context()->surface());
+    //g_OGLWidget->context()->makeCurrent(g_OGLWidget->context()->surface());
 
     return M64ERR_SUCCESS;
 }
@@ -246,18 +233,20 @@ m64p_error VidExt_GLSwapBuf(void)
 m64p_error VidExt_SetCaption(const char *Title)
 {
     std::cout << __FUNCTION__ << std::endl;
-    std::cout << Title << std::endl;
+    g_EmuThread->on_VidExt_SetCaption(QString(Title));
     return M64ERR_SUCCESS;
 }
 
 m64p_error VidExt_ToggleFS(void)
 {
     std::cout << __FUNCTION__ << std::endl;
+    g_EmuThread->on_VidExt_ToggleFS();
     return M64ERR_SUCCESS;
 }
 
 m64p_error VidExt_ResizeWindow(int Width, int Height)
 {
+    std::cout << "VidExt_ResizeWindow" << std::endl;
     g_EmuThread->on_VidExt_ResizeWindow(Width, Height);
     return M64ERR_SUCCESS;
 }

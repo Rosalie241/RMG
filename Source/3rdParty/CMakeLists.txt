@@ -97,8 +97,8 @@ endif()
 ExternalProject_Add(mupen64plus-video-GLideN64
     SOURCE_DIR mupen64plus-video-GLideN64
 
-    GIT_REPOSITORY https://github.com/gonetz/GLideN64
-    GIT_TAG ed0099364209bd1f3ebe13f3d6b1051f7536397b
+    GIT_REPOSITORY https://github.com/Rosalie241/GLideN64
+    GIT_TAG 814a1da05b1646f7fda22f71b94af46bff1a5388
 
     INSTALL_COMMAND ""
 

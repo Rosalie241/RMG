@@ -5,8 +5,6 @@
 #include "../../Thread/EmulationThread.hpp"
 #include <QOpenGLWidget>
 
-void VidExt_Setup(QOpenGLWidget *);
-
 m64p_error VidExt_Init(void);
 m64p_error VidExt_Quit(void);
 m64p_error VidExt_ListModes(m64p_2d_size *, int *);

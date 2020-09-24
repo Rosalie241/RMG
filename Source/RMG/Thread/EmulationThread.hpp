@@ -45,7 +45,9 @@ namespace Thread
 
         void on_VidExt_Init(void);
         void on_VidExt_SetMode(int, int, int, int, int);
-        void on_VidExt_SetModeWithRate(int, int, int, int, int, int, QSurfaceFormat*,QThread*);
+        void on_VidExt_SetModeWithRate(int, int, int, int, int, int);
+        void on_VidExt_SetCaption(QString);
+        void on_VidExt_ToggleFS(void);
         void on_VidExt_Quit(void);
 
         void createOGLWindow(QSurfaceFormat* format, QThread* thread);

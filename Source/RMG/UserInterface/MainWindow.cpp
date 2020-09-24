@@ -46,7 +46,7 @@ bool MainWindow::Init(void)
 
     this->ui_Init();
 
-    if (!g_MupenApi.Init(MUPEN_CORE_FILE, nullptr))
+    if (!g_MupenApi.Init(MUPEN_CORE_FILE))
     {
         this->ui_MessageBox("Error", "M64P::Wrapper::Api::Init Failed", g_MupenApi.GetLastError());
         return false;
@@ -73,6 +73,10 @@ bool MainWindow::Init(void)
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     g_Settings.SetValue("Window", "geometry", this->saveGeometry());
+    g_MupenApi.Core.StopEmulation();
+
+    while (g_EmuThread->isRunning())
+        QCoreApplication::processEvents();
 
     QMainWindow::closeEvent(event);
 }
@@ -103,7 +107,7 @@ void MainWindow::ui_Setup(void)
     this->restoreGeometry(g_Settings.GetValue("Window", "geometry").toByteArray());
     this->statusBar()->showMessage("Core Library Hooked");
 
-    this->ui_Widgets->setMinimumSize(WINDOW_WIDGET_SIZE_W, WINDOW_WIDGET_SIZE_H);
+    //this->ui_Widgets->setMinimumSize(WINDOW_WIDGET_SIZE_W, WINDOW_WIDGET_SIZE_H);
 
     this->ui_Widgets->addWidget(this->ui_Widget_RomBrowser);
     this->ui_Widgets->addWidget(this->ui_Widget_OpenGL->GetWidget());
@@ -208,12 +212,16 @@ void MainWindow::emulationThread_Connect(void)
 
     connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_Init, this, &MainWindow::on_VidExt_Init, Qt::BlockingQueuedConnection);
     connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_SetupOGL, this, &MainWindow::on_VidExt_SetupOGL, Qt::BlockingQueuedConnection);
+    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_SetMode, this, &MainWindow::on_VidExt_SetMode, Qt::BlockingQueuedConnection);
+    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_SetModeWithRate, this, &MainWindow::on_VidExt_SetModeWithRate, Qt::BlockingQueuedConnection);
     connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_ResizeWindow, this, &MainWindow::on_VidExt_ResizeWindow, Qt::BlockingQueuedConnection);
+    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_SetCaption, this, &MainWindow::on_VidExt_SetCaption, Qt::BlockingQueuedConnection);
+    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_ToggleFS, this, &MainWindow::on_VidExt_ToggleFS, Qt::BlockingQueuedConnection);
     connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_Quit, this, &MainWindow::on_VidExt_Quit, Qt::BlockingQueuedConnection);
 }
 
 void MainWindow::emulationThread_Launch(QString file)
-{  
+{
     this->emulationThread->SetRomFile(file);
     this->emulationThread->start();
 }
@@ -340,8 +348,8 @@ void MainWindow::on_Action_File_EndEmulation(void)
 void MainWindow::on_Action_File_ChooseDirectory(void)
 {
     QFileDialog dialog;
-    int ret;
     QString dir;
+    int ret;
 
     dialog.setFileMode(QFileDialog::Directory);
     dialog.setOption(QFileDialog::ShowDirsOnly, true);
@@ -370,10 +378,12 @@ void MainWindow::on_Action_File_Exit(void)
 
 void MainWindow::on_Action_System_Reset(void)
 {
+    g_MupenApi.Core.ResetEmulation();
 }
 
 void MainWindow::on_Action_System_Pause(void)
 {
+    g_MupenApi.Core.PauseEmulation();
 }
 
 void MainWindow::on_Action_Options_FullScreen(void)
@@ -441,22 +451,55 @@ void MainWindow::on_VidExt_Init(void)
     this->ui_InEmulation(true);
 }
 
-void MainWindow::on_VidExt_SetupOGL(QSurfaceFormat format, QThread* thread)
+void MainWindow::on_VidExt_SetupOGL(QSurfaceFormat format, QThread *thread)
 {
     this->ui_Widget_OpenGL->SetThread(thread);
 
     g_OGLWidget = this->ui_Widget_OpenGL;
 
-    this->ui_Widget_OpenGL->setCursor(Qt::BlankCursor);
+   // this->ui_Widget_OpenGL->setCursor(Qt::BlankCursor);
     this->ui_Widget_OpenGL->setFormat(format);
 }
 
-void MainWindow::on_VidExt_ResizeWindow(int Width, int Height)
+void MainWindow::on_VidExt_SetMode(int width, int height, int bps, int mode, int flags)
 {
-    this->resize(Width, Height);
+    std::cout << "on_VidExt_SetMode" << std::endl;
+    this->on_VidExt_ResizeWindow(width, height);
+}
+
+void MainWindow::on_VidExt_SetModeWithRate(int width, int height, int refresh, int bps, int mode, int flags)
+{
+    std::cout << "on_VidExt_SetModeWithRate" << std::endl;
+    this->on_VidExt_ResizeWindow(width, height);
+}
+
+void MainWindow::on_VidExt_ResizeWindow(int width, int height)
+{
+    std::cout << "on_VidExt_ResizeWindow(" << width << "," << height << ");" << std::endl;
+
+    if (!this->menuBar->isHidden())
+        height += this->menuBar->height();
+
+    if (!this->statusBar()->isHidden())
+        height += this->statusBar()->height();
+
+    this->setMinimumSize(QSize(width, height));
+    this->setMaximumSize(QSize(width, height));
+}
+
+void MainWindow::on_VidExt_SetCaption(QString title)
+{
+    std::cout << "on_VidExt_SetCaption" << std::endl;
+    this->setWindowTitle(QString(WINDOW_TITLE) + " - " + title);
+}
+
+void MainWindow::on_VidExt_ToggleFS(void)
+{
+    std::cout << "on_VidExt_ToggleFS" << std::endl;
 }
 
 void MainWindow::on_VidExt_Quit(void)
 {
+    std::cout << "on_VidExt_Quit" << std::endl;
     this->ui_InEmulation(false);
 }

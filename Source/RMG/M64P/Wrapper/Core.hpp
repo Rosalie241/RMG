@@ -37,8 +37,10 @@ namespace M64P
             bool GetRomInfo(QString, RomInfo_t*);
 
             bool LaunchEmulation(QString);
-            bool PauseEmulation(void);
             bool StopEmulation(void);
+            bool PauseEmulation(void);
+            bool ResumeEmulation(void);
+            bool ResetEmulation(void);
 
             QString GetLastError(void);
 
@@ -59,6 +61,10 @@ namespace M64P
 
             bool rom_Open(QString);
             bool rom_Close(void);
+
+            bool emulation_QueryState(m64p_emu_state*);
+            bool emulation_IsRunning(void);
+            bool emulation_IsPaused(void);
         };
     } // namespace Wrapper
 } // namespace M64P

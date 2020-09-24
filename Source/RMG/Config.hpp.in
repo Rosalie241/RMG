@@ -5,7 +5,7 @@
 #define WINDOW_WIDGET_SIZE_W 640
 #define WINDOW_WIDGET_SIZE_H 480
 
-#define APP_URL_SUPPORT "https://discord.gg/PdFNesY"
+#define APP_URL_SUPPORT "https://discord.gg/G7JTSvm"
 #define APP_URL_HOMEPAGE "https://github.com/Rosalie241/RMG"
 
 #define APP_LOG_DIR "Log"
