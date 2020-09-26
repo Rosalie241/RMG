@@ -88,8 +88,6 @@ void MainWindow::ui_Init(void)
     this->ui_Widget_RomBrowser = new Widget::RomBrowserWidget();
     this->ui_Widget_OpenGL = new Widget::OGLWidget();
 
-    this->ui_Settings = new QSettings(APP_SETTINGS_ORG, APP_SETTINGS_NAME);
-
     this->ui_Widget_RomBrowser->SetDirectory(g_Settings.GetValue("Game Directory", "Directory").toString());
     this->ui_Widget_RomBrowser->RefreshRomList();
 
@@ -105,8 +103,6 @@ void MainWindow::ui_Setup(void)
     this->setCentralWidget(this->ui_Widgets);
     this->restoreGeometry(g_Settings.GetValue("Window", "geometry").toByteArray());
     this->statusBar()->showMessage("Core Library Hooked");
-
-    //this->ui_Widgets->setMinimumSize(WINDOW_WIDGET_SIZE_W, WINDOW_WIDGET_SIZE_H);
 
     this->ui_Widgets->addWidget(this->ui_Widget_RomBrowser);
     this->ui_Widgets->addWidget(this->ui_Widget_OpenGL->GetWidget());
@@ -147,6 +143,28 @@ void MainWindow::ui_InEmulation(bool inEmulation)
         this->ui_Widgets->setCurrentIndex(1);
     else
         this->ui_Widgets->setCurrentIndex(0);
+}
+
+void MainWindow::ui_SaveGeometry(void)
+{
+    if (this->ui_Geometry_Saved)
+        return;
+
+    this->ui_MinSize = this->minimumSize();
+    this->ui_MaxSize = this->maximumSize();
+    this->ui_Geometry = this->saveGeometry();
+    this->ui_Geometry_Saved = true;
+}
+
+void MainWindow::ui_LoadGeometry(void)
+{
+    if (!this->ui_Geometry_Saved)
+        return;
+    
+    this->setMinimumSize(this->ui_MinSize);
+    this->setMaximumSize(this->ui_MaxSize);
+    this->restoreGeometry(this->ui_Geometry);
+    this->ui_Geometry_Saved = false;
 }
 
 void MainWindow::menuBar_Init(void)
@@ -612,6 +630,8 @@ void MainWindow::on_VidExt_ResizeWindow(int width, int height)
     if (!this->statusBar()->isHidden())
         height += this->statusBar()->height();
 
+    this->ui_SaveGeometry();
+
     this->setMinimumSize(QSize(width, height));
     this->setMaximumSize(QSize(width, height));
 }
@@ -631,4 +651,5 @@ void MainWindow::on_VidExt_Quit(void)
 {
     std::cout << "on_VidExt_Quit" << std::endl;
     this->ui_InEmulation(false);
+    this->ui_LoadGeometry();    
 }

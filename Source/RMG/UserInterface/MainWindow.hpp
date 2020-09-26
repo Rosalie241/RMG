@@ -74,7 +74,10 @@ namespace UserInterface
         QAction *action_Help_HomePage;
         QAction *action_Help_About;
 
-        QSettings *ui_Settings;
+        QSize ui_MinSize;
+        QSize ui_MaxSize;
+        QByteArray ui_Geometry;
+        bool ui_Geometry_Saved;
 
         void closeEvent(QCloseEvent *);
 
@@ -83,6 +86,8 @@ namespace UserInterface
         void ui_Stylesheet_Setup();
         void ui_MessageBox(QString, QString, QString);
         void ui_InEmulation(bool);
+        void ui_SaveGeometry(void);
+        void ui_LoadGeometry(void);
 
         void menuBar_Init(void);
         void menuBar_Setup(bool);
