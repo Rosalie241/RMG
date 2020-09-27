@@ -21,7 +21,7 @@ It offers a simple-to-use user interface.
 
 ## Support
 
-[**Join the official Rosalie's Mupen GUI Discord Server**](https://discord.gg/PdFNesY) to report bugs/issues and seek additional help from the developers.
+[**Join the Discord64 Server for support!**](https://discord.gg/G7JTSvm)
 
 ## License
 

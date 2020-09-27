@@ -47,9 +47,14 @@ namespace UserInterface
         QMenu *menuBar_Menu;
         QAction *action_File_OpenRom;
         QAction *action_File_OpenCombo;
+        QAction *action_File_RomInfo;
+        QAction *action_File_StartEmulation;
         QAction *action_File_EndEmulation;
+        QAction *action_File_Language;
         QAction *action_File_ChooseDirectory;
         QAction *action_File_RefreshRomList;
+        QAction *action_File_RecentRom;
+        QAction *action_File_RecentRomDirectories;
         QAction *action_File_Exit;
         QAction *action_System_SoftReset;
         QAction *action_System_HardReset;
@@ -85,19 +90,19 @@ namespace UserInterface
         void ui_Setup();
         void ui_Stylesheet_Setup();
         void ui_MessageBox(QString, QString, QString);
-        void ui_InEmulation(bool);
+        void ui_InEmulation(bool, bool);
         void ui_SaveGeometry(void);
         void ui_LoadGeometry(void);
 
         void menuBar_Init(void);
-        void menuBar_Setup(bool);
+        void menuBar_Setup(bool, bool);
 
         void emulationThread_Init(void);
         void emulationThread_Connect(void);
         void emulationThread_Launch(QString);
 
         void menuBar_Actions_Init(void);
-        void menuBar_Actions_Setup(bool);
+        void menuBar_Actions_Setup(bool, bool);
         void menuBar_Actions_Connect(void);
 
     public slots:

@@ -46,7 +46,7 @@ bool MainWindow::Init(void)
 
     if (!g_MupenApi.Init(MUPEN_CORE_FILE))
     {
-        this->ui_MessageBox("Error", "M64P::Wrapper::Api::Init Failed", g_MupenApi.GetLastError());
+        this->ui_MessageBox("Error", "Api::Init Failed", g_MupenApi.GetLastError());
         return false;
     }
 
@@ -59,7 +59,7 @@ bool MainWindow::Init(void)
     this->ui_Setup();
 
     this->menuBar_Init();
-    this->menuBar_Setup(false);
+    this->menuBar_Setup(false, false);
 
     this->emulationThread_Init();
     this->emulationThread_Connect();
@@ -135,9 +135,9 @@ void MainWindow::ui_MessageBox(QString title, QString text, QString details = ""
     msgBox.exec();
 }
 
-void MainWindow::ui_InEmulation(bool inEmulation)
+void MainWindow::ui_InEmulation(bool inEmulation, bool isPaused)
 {
-    this->menuBar_Setup(inEmulation);
+    this->menuBar_Setup(inEmulation, isPaused);
 
     if (inEmulation)
         this->ui_Widgets->setCurrentIndex(1);
@@ -161,8 +161,10 @@ void MainWindow::ui_LoadGeometry(void)
     if (!this->ui_Geometry_Saved)
         return;
     
-    this->setMinimumSize(this->ui_MinSize);
-    this->setMaximumSize(this->ui_MaxSize);
+    this->setMinimumSize(0, 0);
+    this->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+   // this->setMinimumSize(this->ui_MinSize);
+   // this->setMaximumSize(this->ui_MaxSize);
     this->restoreGeometry(this->ui_Geometry);
     this->ui_Geometry_Saved = false;
 }
@@ -174,19 +176,27 @@ void MainWindow::menuBar_Init(void)
     this->menuBar_Actions_Connect();
 }
 
-void MainWindow::menuBar_Setup(bool inEmulation)
+void MainWindow::menuBar_Setup(bool inEmulation, bool isPaused)
 {
-    this->menuBar_Actions_Setup(inEmulation);
+    this->menuBar_Actions_Setup(inEmulation, isPaused);
 
     this->menuBar->clear();
 
     this->menuBar_Menu = this->menuBar->addMenu("File");
     this->menuBar_Menu->addAction(this->action_File_OpenRom);
     this->menuBar_Menu->addAction(this->action_File_OpenCombo);
+    this->menuBar_Menu->addAction(this->action_File_RomInfo);
+    this->menuBar_Menu->addSeparator();
+    this->menuBar_Menu->addAction(this->action_File_StartEmulation);
     this->menuBar_Menu->addAction(this->action_File_EndEmulation);
+    this->menuBar_Menu->addSeparator();
+    this->menuBar_Menu->addAction(this->action_File_Language);
     this->menuBar_Menu->addSeparator();
     this->menuBar_Menu->addAction(this->action_File_ChooseDirectory);
     this->menuBar_Menu->addAction(this->action_File_RefreshRomList);
+    this->menuBar_Menu->addSeparator();
+    this->menuBar_Menu->addAction(this->action_File_RecentRom);
+    this->menuBar_Menu->addAction(this->action_File_RecentRomDirectories);
     this->menuBar_Menu->addSeparator();
     this->menuBar_Menu->addAction(this->action_File_Exit);
 
@@ -263,50 +273,63 @@ void MainWindow::emulationThread_Launch(QString file)
 
 void MainWindow::menuBar_Actions_Init(void)
 {
-    this->action_File_OpenRom = new QAction();
-    this->action_File_OpenCombo = new QAction();
-    this->action_File_EndEmulation = new QAction();
-    this->action_File_ChooseDirectory = new QAction();
-    this->action_File_RefreshRomList = new QAction();
-    this->action_File_Exit = new QAction();
+    this->action_File_OpenRom = new QAction(this);
+    this->action_File_OpenCombo = new QAction(this);
+    this->action_File_RomInfo = new QAction(this);
+    this->action_File_StartEmulation = new QAction(this);
+    this->action_File_EndEmulation = new QAction(this);
+    this->action_File_Language = new QAction(this);
+    this->action_File_ChooseDirectory = new QAction(this);
+    this->action_File_RefreshRomList = new QAction(this);
+    this->action_File_RecentRom = new QAction(this);
+    this->action_File_RecentRomDirectories = new QAction(this);
+    this->action_File_Exit = new QAction(this);
 
-    this->action_System_SoftReset = new QAction();
-    this->action_System_HardReset = new QAction();
-    this->action_System_Pause = new QAction();
-    this->action_System_GenerateBitmap = new QAction();
-    this->action_System_LimitFPS = new QAction();
-    this->action_System_SwapDisk = new QAction();
-    this->action_System_SaveState = new QAction();
-    this->action_System_SaveAs = new QAction();
-    this->action_System_LoadState = new QAction();
-    this->action_System_Load = new QAction();
-    this->action_System_CurrentSaveState = new QAction();
-    this->action_System_Cheats = new QAction();
-    this->action_System_GSButton = new QAction();
+    this->action_System_SoftReset = new QAction(this);
+    this->action_System_HardReset = new QAction(this);
+    this->action_System_Pause = new QAction(this);
+    this->action_System_GenerateBitmap = new QAction(this);
+    this->action_System_LimitFPS = new QAction(this);
+    this->action_System_SwapDisk = new QAction(this);
+    this->action_System_SaveState = new QAction(this);
+    this->action_System_SaveAs = new QAction(this);
+    this->action_System_LoadState = new QAction(this);
+    this->action_System_Load = new QAction(this);
+    this->action_System_CurrentSaveState = new QAction(this);
+    this->action_System_Cheats = new QAction(this);
+    this->action_System_GSButton = new QAction(this);
 
-    this->action_Options_FullScreen = new QAction();
-    this->action_Options_ConfigGfx = new QAction();
-    this->action_Options_ConfigAudio = new QAction();
-    this->action_Options_ConfigRsp = new QAction();
-    this->action_Options_ConfigControl = new QAction();
-    this->action_Options_Settings = new QAction();
+    this->action_Options_FullScreen = new QAction(this);
+    this->action_Options_ConfigGfx = new QAction(this);
+    this->action_Options_ConfigAudio = new QAction(this);
+    this->action_Options_ConfigRsp = new QAction(this);
+    this->action_Options_ConfigControl = new QAction(this);
+    this->action_Options_Settings = new QAction(this);
 
-    this->action_Help_Support = new QAction();
-    this->action_Help_HomePage = new QAction();
-    this->action_Help_About = new QAction();
+    this->action_Help_Support = new QAction(this);
+    this->action_Help_HomePage = new QAction(this);
+    this->action_Help_About = new QAction(this);
 }
 
-void MainWindow::menuBar_Actions_Setup(bool inEmulation)
+void MainWindow::menuBar_Actions_Setup(bool inEmulation, bool isPaused)
 {
     this->action_File_OpenRom->setText("Open ROM");
     this->action_File_OpenRom->setShortcut(QKeySequence("Ctrl+O"));
     this->action_File_OpenCombo->setText("Open Combo");
     this->action_File_OpenCombo->setShortcut(QKeySequence("Ctrl+Shift+O"));
+    this->action_File_RomInfo->setText("Rom Info...");
+    this->action_File_StartEmulation->setText("Start Emulation");
+    this->action_File_StartEmulation->setShortcut(QKeySequence("F11"));
+    this->action_File_StartEmulation->setEnabled(!inEmulation);
     this->action_File_EndEmulation->setText("End Emulation");
+    this->action_File_EndEmulation->setShortcut(QKeySequence("F12"));
     this->action_File_EndEmulation->setEnabled(inEmulation);
+    this->action_File_Language->setText("Language");
     this->action_File_ChooseDirectory->setText("Choose ROM Directory...");
     this->action_File_RefreshRomList->setText("Refresh ROM List");
     this->action_File_RefreshRomList->setShortcut(QKeySequence("F5"));
+    this->action_File_RecentRom->setText("Recent ROM");
+    this->action_File_RecentRomDirectories->setText("Recent ROM Directories");
     this->action_File_Exit->setText("Exit");
     this->action_File_Exit->setShortcut(QKeySequence("Alt+F4"));
 
@@ -314,7 +337,7 @@ void MainWindow::menuBar_Actions_Setup(bool inEmulation)
     this->action_System_SoftReset->setShortcut(QKeySequence("F1"));
     this->action_System_HardReset->setText("Hard Reset");
     this->action_System_HardReset->setShortcut(QKeySequence("Shift+F1"));
-    this->action_System_Pause->setText("Pause");
+    this->action_System_Pause->setText(isPaused ? "Resume" : "Pause");
     this->action_System_Pause->setShortcut(QKeySequence("F2"));
     this->action_System_GenerateBitmap->setText("Generate Bitmap");
     this->action_System_GenerateBitmap->setShortcut(QKeySequence("F3"));
@@ -419,7 +442,7 @@ void MainWindow::on_Action_File_EndEmulation(void)
 {
     if (!g_MupenApi.Core.StopEmulation())
     {
-        this->ui_MessageBox("Error", "StopEmulation Failed!", g_MupenApi.Core.GetLastError());
+        this->ui_MessageBox("Error", "Api::Core::StopEmulation Failed!", g_MupenApi.Core.GetLastError());
     }
 }
 
@@ -464,22 +487,35 @@ void MainWindow::on_Action_System_HardReset(void)
     g_MupenApi.Core.ResetEmulation(true);
 }
 
-static bool paused = false;
 void MainWindow::on_Action_System_Pause(void)
 {
+    static bool paused = false;
+    
+    bool ret;
+    QString error = "Api::Core::";
 
     if (!paused)
     {
-        this->action_System_Pause->setText("Resume");
-        g_MupenApi.Core.PauseEmulation();
+        ret = g_MupenApi.Core.PauseEmulation();
+        error += "PauseEmulation";
     }
     else
     {
-        this->action_System_Pause->setText("Pause");
-        g_MupenApi.Core.ResumeEmulation();
+        ret = g_MupenApi.Core.ResumeEmulation();
+        error += "ResumeEmulation";
     }
 
+    error += " Failed!";
+
     paused = !paused;
+
+    if (!ret)
+    {
+        this->ui_MessageBox("Error", error, g_MupenApi.Core.GetLastError());
+        return;
+    }
+
+    this->menuBar_Setup(true, paused);
 }
 
 void MainWindow::on_Action_System_GenerateBitmap(void)
@@ -577,7 +613,7 @@ void MainWindow::on_Action_Help_About(void)
 
 void MainWindow::on_Emulation_Started(void)
 {
-    this->ui_InEmulation(true);
+    this->ui_InEmulation(true, false);
 }
 
 void MainWindow::on_Emulation_Finished(bool ret)
@@ -585,7 +621,7 @@ void MainWindow::on_Emulation_Finished(bool ret)
     if (!ret)
         this->ui_MessageBox("Error", "EmulationThread::run Failed", this->emulationThread->GetLastError());
 
-    this->ui_InEmulation(false);
+    this->ui_InEmulation(false, false);
 }
 
 void MainWindow::on_RomBrowser_Selected(QString file)
@@ -595,7 +631,7 @@ void MainWindow::on_RomBrowser_Selected(QString file)
 
 void MainWindow::on_VidExt_Init(void)
 {
-    this->ui_InEmulation(true);
+    this->ui_InEmulation(true, false);
 }
 
 void MainWindow::on_VidExt_SetupOGL(QSurfaceFormat format, QThread *thread)
@@ -650,6 +686,6 @@ void MainWindow::on_VidExt_ToggleFS(void)
 void MainWindow::on_VidExt_Quit(void)
 {
     std::cout << "on_VidExt_Quit" << std::endl;
-    this->ui_InEmulation(false);
+    this->ui_InEmulation(false, false);
     this->ui_LoadGeometry();    
 }
