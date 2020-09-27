@@ -162,11 +162,11 @@ void MainWindow::ui_LoadGeometry(void)
 {
     if (!this->ui_Geometry_Saved)
         return;
-    
+
     this->setMinimumSize(0, 0);
     this->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
-   // this->setMinimumSize(this->ui_MinSize);
-   // this->setMaximumSize(this->ui_MaxSize);
+    // this->setMinimumSize(this->ui_MinSize);
+    // this->setMaximumSize(this->ui_MaxSize);
     this->restoreGeometry(this->ui_Geometry);
     this->ui_Geometry_Saved = false;
 }
@@ -193,12 +193,15 @@ void MainWindow::menuBar_Setup(bool inEmulation, bool isPaused)
     this->menuBar_Menu->addAction(this->action_File_EndEmulation);
     this->menuBar_Menu->addSeparator();
     this->menuBar_Menu->addAction(this->action_File_Language);
-    this->menuBar_Menu->addSeparator();
-    this->menuBar_Menu->addAction(this->action_File_ChooseDirectory);
-    this->menuBar_Menu->addAction(this->action_File_RefreshRomList);
-    this->menuBar_Menu->addSeparator();
-    this->menuBar_Menu->addAction(this->action_File_RecentRom);
-    this->menuBar_Menu->addAction(this->action_File_RecentRomDirectories);
+    if (!inEmulation)
+    {
+        this->menuBar_Menu->addSeparator();
+        this->menuBar_Menu->addAction(this->action_File_ChooseDirectory);
+        this->menuBar_Menu->addAction(this->action_File_RefreshRomList);
+        this->menuBar_Menu->addSeparator();
+        this->menuBar_Menu->addAction(this->action_File_RecentRom);
+        this->menuBar_Menu->addAction(this->action_File_RecentRomDirectories);
+    }
     this->menuBar_Menu->addSeparator();
     this->menuBar_Menu->addAction(this->action_File_Exit);
 
@@ -493,7 +496,7 @@ void MainWindow::on_Action_System_HardReset(void)
 void MainWindow::on_Action_System_Pause(void)
 {
     static bool paused = false;
-    
+
     bool ret;
     QString error = "Api::Core::";
 
@@ -550,47 +553,38 @@ void MainWindow::on_Action_System_LimitFPS(void)
 
 void MainWindow::on_Action_System_SwapDisk(void)
 {
-
 }
 
 void MainWindow::on_Action_System_SaveState(void)
 {
-
 }
 
 void MainWindow::on_Action_System_SaveAs(void)
 {
-
 }
 
 void MainWindow::on_Action_System_LoadState(void)
 {
-
 }
 
 void MainWindow::on_Action_System_Load(void)
 {
-
 }
 
 void MainWindow::on_Action_System_CurrentSaveState(void)
 {
-
 }
 
 void MainWindow::on_Action_System_Cheats(void)
 {
-
 }
 
 void MainWindow::on_Action_System_GSButton(void)
 {
-
 }
 
 void MainWindow::on_Action_Options_FullScreen(void)
 {
-
 }
 
 void MainWindow::on_Action_Options_ConfigGfx(void)
@@ -707,5 +701,5 @@ void MainWindow::on_VidExt_Quit(void)
 {
     std::cout << "on_VidExt_Quit" << std::endl;
     this->ui_InEmulation(false, false);
-    this->ui_LoadGeometry();    
+    this->ui_LoadGeometry();
 }
