@@ -42,6 +42,14 @@ namespace M64P
             bool ResumeEmulation(void);
             bool ResetEmulation(bool);
 
+            bool IsEmulationRunning(void);
+            bool isEmulationPaused(void);
+
+            bool TakeScreenshot(void);
+            
+            bool EnableSpeedLimiter(void);
+            bool DisableSpeedLimiter(void);
+
             QString GetLastError(void);
 
         private:
@@ -65,6 +73,8 @@ namespace M64P
             bool emulation_QueryState(m64p_emu_state*);
             bool emulation_IsRunning(void);
             bool emulation_IsPaused(void);
+            bool emulation_SpeedLimited(bool);
+
         };
     } // namespace Wrapper
 } // namespace M64P

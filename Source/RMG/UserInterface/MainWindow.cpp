@@ -55,6 +55,8 @@ bool MainWindow::Init(void)
     g_MupenApi.Core.GetPlugins(M64P::Wrapper::PluginType::Audio);
     g_MupenApi.Core.GetPlugins(M64P::Wrapper::PluginType::Input);
 
+    g_MupenApi.Config.SetOption("Core", "ScreenshotPath", "Screenshots");
+
     this->ui_Init();
     this->ui_Setup();
 
@@ -393,6 +395,7 @@ void MainWindow::menuBar_Actions_Connect(void)
     connect(this->action_System_SoftReset, &QAction::triggered, this, &MainWindow::on_Action_System_SoftReset);
     connect(this->action_System_HardReset, &QAction::triggered, this, &MainWindow::on_Action_System_HardReset);
     connect(this->action_System_Pause, &QAction::triggered, this, &MainWindow::on_Action_System_Pause);
+    connect(this->action_System_GenerateBitmap, &QAction::triggered, this, &MainWindow::on_Action_System_GenerateBitmap);
     connect(this->action_System_LimitFPS, &QAction::triggered, this, &MainWindow::on_Action_System_LimitFPS);
     connect(this->action_System_SwapDisk, &QAction::triggered, this, &MainWindow::on_Action_System_SwapDisk);
     connect(this->action_System_SaveState, &QAction::triggered, this, &MainWindow::on_Action_System_SaveState);
@@ -520,12 +523,29 @@ void MainWindow::on_Action_System_Pause(void)
 
 void MainWindow::on_Action_System_GenerateBitmap(void)
 {
-
+    if (!g_MupenApi.Core.TakeScreenshot())
+    {
+        this->ui_MessageBox("Error", "Api::Core::TakeScreenshot Failed!", g_MupenApi.Core.GetLastError());
+    }
 }
 
 void MainWindow::on_Action_System_LimitFPS(void)
 {
+    bool enabled, ret;
 
+    enabled = this->action_System_LimitFPS->isChecked();
+
+    std::cout << "enabled: " << enabled << std::endl;
+
+    if (enabled)
+        ret = g_MupenApi.Core.EnableSpeedLimiter();
+    else
+        ret = g_MupenApi.Core.DisableSpeedLimiter();
+
+    if (!ret)
+    {
+        this->ui_MessageBox("Error", "aaaa Failed:", g_MupenApi.Core.GetLastError());
+    }
 }
 
 void MainWindow::on_Action_System_SwapDisk(void)

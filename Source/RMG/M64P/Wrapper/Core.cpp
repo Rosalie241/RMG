@@ -22,6 +22,7 @@ Core::Core(void)
 Core::~Core(void)
 {
 }
+
 #include <iostream>
 void DebugCallback(void *Context, int level, const char *message)
 {
@@ -36,6 +37,7 @@ void StateCallback(void *Context2, m64p_core_param ParamChanged, int NewValue)
 bool Core::Init(m64p_dynlib_handle handle)
 {
     m64p_error ret;
+
     if (!M64P::Core.IsHooked())
     {
         this->error_Message = "M64P::Core is not hooked!";
@@ -55,8 +57,6 @@ bool Core::Init(m64p_dynlib_handle handle)
     return true;
 }
 
-#include <iostream>
-
 bool Core::HasPluginConfig(PluginType type)
 {
     return this->plugin_Get(type)->HasConfig();
@@ -64,7 +64,44 @@ bool Core::HasPluginConfig(PluginType type)
 
 bool Core::OpenPluginConfig(PluginType type)
 {
-    return this->plugin_Get(type)->OpenConfig();
+    bool ret, paused;
+    
+    paused = this->emulation_IsPaused();
+
+    if (!paused)
+        this->PauseEmulation();
+
+    ret = this->plugin_Get(type)->OpenConfig();
+
+    if (!paused)
+        this->ResumeEmulation();
+    
+    return ret;
+}
+
+bool Core::TakeScreenshot(void)
+{
+    m64p_error ret;
+
+    ret = M64P::Core.DoCommand(M64CMD_TAKE_NEXT_SCREENSHOT, 0, NULL);
+
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_Message = "Core::TakeScreenshot M64P::Core.DoCommand(M64CMD_TAKE_NEXT_SCREENSHOT) Failed: ";
+        this->error_Message += M64P::Core.ErrorMessage(ret);
+    }
+
+    return ret == M64ERR_SUCCESS;
+}
+
+bool Core::EnableSpeedLimiter(void)
+{
+    return this->emulation_SpeedLimited(true);
+}
+
+bool Core::DisableSpeedLimiter(void)
+{
+    return this->emulation_SpeedLimited(false);
 }
 
 M64P::Wrapper::Plugin *Core::plugin_Get(PluginType type)
@@ -313,6 +350,16 @@ bool Core::ResumeEmulation(void)
     return ret == M64ERR_SUCCESS;
 }
 
+bool Core::IsEmulationRunning(void)
+{
+    return emulation_IsRunning();
+}
+
+bool Core::isEmulationPaused(void)
+{
+    return emulation_IsPaused();
+}
+
 bool Core::ResetEmulation(bool hard)
 {
     m64p_error ret;
@@ -411,4 +458,20 @@ bool Core::emulation_IsPaused(void)
         return false;
 
     return state == M64EMU_PAUSED;
+}
+
+bool Core::emulation_SpeedLimited(bool enabled)
+{
+    m64p_error ret;
+
+    int value = enabled ? 1 : 0;
+
+    ret = M64P::Core.DoCommand(M64CMD_CORE_STATE_SET, M64CORE_SPEED_LIMITER, &enabled);
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_Message = "Core::emulation_SpeedLimited: M64P::Core.DoCommand(M64CMD_CORE_STATE_SET) Failed: ";
+        this->error_Message += M64P::Core.ErrorMessage(ret);
+    }
+
+    return ret == M64ERR_SUCCESS;
 }
