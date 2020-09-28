@@ -74,7 +74,8 @@ bool MainWindow::Init(void)
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     g_Settings.SetValue("Window", "geometry", this->saveGeometry());
-    g_MupenApi.Core.StopEmulation();
+
+    this->on_Action_File_EndEmulation();
 
     while (g_EmuThread->isRunning())
         QCoreApplication::processEvents();
@@ -446,6 +447,9 @@ void MainWindow::on_Action_File_OpenCombo(void)
 
 void MainWindow::on_Action_File_EndEmulation(void)
 {
+    if (g_MupenApi.Core.isEmulationPaused())
+        this->on_Action_System_Pause();
+
     if (!g_MupenApi.Core.StopEmulation())
     {
         this->ui_MessageBox("Error", "Api::Core::StopEmulation Failed!", g_MupenApi.Core.GetLastError());
