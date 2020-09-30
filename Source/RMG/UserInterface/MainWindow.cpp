@@ -55,7 +55,7 @@ bool MainWindow::Init(void)
     g_MupenApi.Core.GetPlugins(M64P::Wrapper::PluginType::Audio);
     g_MupenApi.Core.GetPlugins(M64P::Wrapper::PluginType::Input);
 
-    g_MupenApi.Config.SetOption("Core", "ScreenshotPath", "Screenshots");
+   // g_MupenApi.Config.SetOption("Core", "ScreenshotPath", "Screenshots");
 
     this->ui_Init();
     this->ui_Setup();
@@ -273,6 +273,8 @@ void MainWindow::emulationThread_Connect(void)
 
 void MainWindow::emulationThread_Launch(QString file)
 {
+    g_MupenApi.Config.Save();
+
     this->emulationThread->SetRomFile(file);
     this->emulationThread->start();
 }
@@ -375,7 +377,7 @@ void MainWindow::menuBar_Actions_Setup(bool inEmulation, bool isPaused)
     this->action_Options_ConfigGfx->setEnabled(g_MupenApi.Core.HasPluginConfig(M64P::Wrapper::PluginType::Gfx));
     this->action_Options_ConfigAudio->setText("Configure Audio Plugin...");
     this->action_Options_ConfigAudio->setEnabled(g_MupenApi.Core.HasPluginConfig(M64P::Wrapper::PluginType::Audio));
-    this->action_Options_ConfigRsp->setText("Configure RSP...");
+    this->action_Options_ConfigRsp->setText("Configure RSP Plugin...");
     this->action_Options_ConfigRsp->setEnabled(g_MupenApi.Core.HasPluginConfig(M64P::Wrapper::PluginType::Rsp));
     this->action_Options_ConfigControl->setText("Configure Controller Plugin...");
     this->action_Options_ConfigControl->setEnabled(g_MupenApi.Core.HasPluginConfig(M64P::Wrapper::PluginType::Input));

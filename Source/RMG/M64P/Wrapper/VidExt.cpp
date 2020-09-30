@@ -21,6 +21,8 @@ static QThread* renderThread;
 static bool ogl_setup = false;
 static void VidExt_OglSetup(void)
 {
+    std::cout << __FUNCTION__ << std::endl;
+
     g_EmuThread->on_VidExt_SetupOGL(format, QThread::currentThread());
 
     while (!g_OGLWidget->isValid())
@@ -83,20 +85,22 @@ m64p_error VidExt_ListRates(m64p_2d_size Size, int *NumRates, int *Rates)
 
 m64p_error VidExt_SetMode(int Width, int Height, int BitsPerPixel, int ScreenMode, int Flags)
 {
+    std::cout << __FUNCTION__ << std::endl;
+
     if (!ogl_setup)
         VidExt_OglSetup();
 
-    std::cout << __FUNCTION__ << std::endl;
     g_EmuThread->on_VidExt_SetMode(Width, Height, BitsPerPixel, ScreenMode, Flags);
     return M64ERR_SUCCESS;
 }
 
 m64p_error VidExt_SetModeWithRate(int Width, int Height, int RefreshRate, int BitsPerPixel, int ScreenMode, int Flags)
 {
+    std::cout << __FUNCTION__ << std::endl;
+    
     if (!ogl_setup)
         VidExt_OglSetup();
 
-    std::cout << __FUNCTION__ << std::endl;
     g_EmuThread->on_VidExt_SetModeWithRate(Width, Height, RefreshRate, BitsPerPixel, ScreenMode, Flags);
     return M64ERR_SUCCESS;
 }
@@ -261,7 +265,7 @@ m64p_error VidExt_ToggleFS(void)
 
 m64p_error VidExt_ResizeWindow(int Width, int Height)
 {
-    std::cout << "VidExt_ResizeWindow" << std::endl;
+    std::cout << __FUNCTION__ << std::endl;
     g_EmuThread->on_VidExt_ResizeWindow(Width, Height);
     return M64ERR_SUCCESS;
 }

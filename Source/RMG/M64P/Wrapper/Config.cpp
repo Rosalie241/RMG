@@ -101,6 +101,20 @@ bool Config::GetOption(QString section, QString key, QString *value)
     return true;
 }
 
+bool Config::Save(void)
+{
+    m64p_error ret;
+
+    ret = M64P::Config.SaveFile();
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_Message = "Config::Save: M64P::Config.SaveFile Failed: ";
+        this->error_Message += M64P::Core.ErrorMessage(ret);
+    }
+
+    return ret == M64ERR_SUCCESS;
+}
+
 bool Config::section_Open(QString section)
 {
     m64p_error ret;

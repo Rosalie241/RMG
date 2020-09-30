@@ -466,7 +466,7 @@ bool Core::emulation_SpeedLimited(bool enabled)
 
     int value = enabled ? 1 : 0;
 
-    ret = M64P::Core.DoCommand(M64CMD_CORE_STATE_SET, M64CORE_SPEED_LIMITER, &enabled);
+    ret = M64P::Core.DoCommand(M64CMD_CORE_STATE_SET, M64CORE_SPEED_LIMITER, &value);
     if (ret != M64ERR_SUCCESS)
     {
         this->error_Message = "Core::emulation_SpeedLimited: M64P::Core.DoCommand(M64CMD_CORE_STATE_SET) Failed: ";
