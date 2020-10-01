@@ -7,7 +7,7 @@ environment:
 build_script:
     - cmd: cd %APPVEYOR_BUILD_FOLDER%
     - cmd: set PATH=C:\msys64\%MSYSTEM%\bin;C:\msys64\usr\bin;C:\Program Files (x86)\Inno Setup 6;%PATH%
-    - cmd: bash -c "pacman -S --noconfirm --needed mingw-w64-x86_64-qt5 mingw-w64-x86_64-SDL2 mingw-w64-x86_64-hidapi mingw-w64-x86_64-nasm"
+    - cmd: bash -c "pacman -S --noconfirm --needed mingw-w64-x86_64-qt5 mingw-w64-x86_64-SDL2 mingw-w64-x86_64-hidapi mingw-w64-x86_64-nasm mingw-w64-x86_64-libsamplerate"
     - cmd: bash -c "./Source/Script/Build.sh Release"
     - cmd: .\Build\Release\Source\Installer\CreateInstaller.bat
     
