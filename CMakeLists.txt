@@ -33,7 +33,7 @@ add_subdirectory(Source/3rdParty)
 install(FILES ${MUPEN64PLUSCORE_LIB}
     DESTINATION rmg/Core
 )
-install(FILES ${MUPEN64PLUSCORE_INI} ${MUPEN64PLUSCORE_CHT}
+install(FILES ${MUPEN64PLUSCORE_INI} ${MUPEN64PLUSCORE_CHT} Data/font.ttf
     DESTINATION rmg/Data
 )
 install(FILES Config/stylesheet.qss
