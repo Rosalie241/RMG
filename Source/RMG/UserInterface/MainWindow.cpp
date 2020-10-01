@@ -55,7 +55,10 @@ bool MainWindow::Init(void)
     g_MupenApi.Core.GetPlugins(M64P::Wrapper::PluginType::Audio);
     g_MupenApi.Core.GetPlugins(M64P::Wrapper::PluginType::Input);
 
-   // g_MupenApi.Config.SetOption("Core", "ScreenshotPath", "Screenshots");
+    g_MupenApi.Config.SetOption("Core", "ScreenshotPath", "Screenshots");
+    g_MupenApi.Config.SetOption("Core", "SaveStatePath", "Save/State");
+    g_MupenApi.Config.SetOption("Core", "SaveSRAMPath", "Save/Game");
+    g_MupenApi.Config.SetOption("Core", "SharedDataPath", "Data");
 
     this->ui_Init();
     this->ui_Setup();
@@ -407,6 +410,7 @@ void MainWindow::menuBar_Actions_Connect(void)
     connect(this->action_System_SaveState, &QAction::triggered, this, &MainWindow::on_Action_System_SaveState);
     connect(this->action_System_SaveAs, &QAction::triggered, this, &MainWindow::on_Action_System_SaveAs);
     connect(this->action_System_LoadState, &QAction::triggered, this, &MainWindow::on_Action_System_LoadState);
+    connect(this->action_System_Load, &QAction::triggered, this, &MainWindow::on_Action_System_Load);
     connect(this->action_System_Cheats, &QAction::triggered, this, &MainWindow::on_Action_System_Cheats);
     connect(this->action_System_GSButton, &QAction::triggered, this, &MainWindow::on_Action_System_GSButton);
 
@@ -553,7 +557,7 @@ void MainWindow::on_Action_System_LimitFPS(void)
 
     if (!ret)
     {
-        this->ui_MessageBox("Error", "aaaa Failed:", g_MupenApi.Core.GetLastError());
+        this->ui_MessageBox("Error", "aaaa Failed", g_MupenApi.Core.GetLastError());
     }
 }
 
@@ -563,18 +567,58 @@ void MainWindow::on_Action_System_SwapDisk(void)
 
 void MainWindow::on_Action_System_SaveState(void)
 {
+    if (!g_MupenApi.Core.SaveState())
+    {
+        this->ui_MessageBox("Error", "Api::Core::SaveState Failed", g_MupenApi.Core.GetLastError());
+    }
 }
 
 void MainWindow::on_Action_System_SaveAs(void)
 {
+    bool isPaused = g_MupenApi.Core.isEmulationPaused();
+
+    if (!isPaused)
+        this->on_Action_System_Pause();
+
+    QString fileName = QFileDialog::getSaveFileName(this,
+                                                    tr("Save State"), "",
+                                                    tr("SaveState (*.dat);;All Files (*)"));
+
+    if (!g_MupenApi.Core.SaveStateAsFile(fileName))
+    {
+        this->ui_MessageBox("Error", "Api::Core::SaveStateAsFile Failed", g_MupenApi.Core.GetLastError());
+    }
+
+    if (!isPaused)
+        this->on_Action_System_Pause();
 }
 
 void MainWindow::on_Action_System_LoadState(void)
 {
+    if (!g_MupenApi.Core.LoadState())
+    {
+        this->ui_MessageBox("Error", "Api::Core::LoadState Failed", g_MupenApi.Core.GetLastError());
+    }
 }
 
 void MainWindow::on_Action_System_Load(void)
 {
+    bool isPaused = g_MupenApi.Core.isEmulationPaused();
+
+    if (!isPaused)
+        this->on_Action_System_Pause();
+
+    QString fileName = QFileDialog::getOpenFileName(this,
+                                                    tr("Open Save State"), "",
+                                                    tr("SaveState (*.dat);;All Files (*)"));
+
+    if (!g_MupenApi.Core.LoadStateFromFile(fileName))
+    {
+        this->ui_MessageBox("Error", "Api::Core::LoadStateFromFile Failed", g_MupenApi.Core.GetLastError());
+    }
+
+    if (!isPaused)
+        this->on_Action_System_Pause();
 }
 
 void MainWindow::on_Action_System_CurrentSaveState(void)
@@ -587,6 +631,10 @@ void MainWindow::on_Action_System_Cheats(void)
 
 void MainWindow::on_Action_System_GSButton(void)
 {
+    if (!g_MupenApi.Core.PressGameSharkButton())
+    {
+        this->ui_MessageBox("Error", "Api::Core::PressGameSharkButton Failed", g_MupenApi.Core.GetLastError());
+    }
 }
 
 void MainWindow::on_Action_Options_FullScreen(void)

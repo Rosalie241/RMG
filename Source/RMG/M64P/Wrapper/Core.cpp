@@ -65,7 +65,7 @@ bool Core::HasPluginConfig(PluginType type)
 bool Core::OpenPluginConfig(PluginType type)
 {
     bool ret, paused;
-    
+
     paused = this->emulation_IsPaused();
 
     if (!paused)
@@ -75,7 +75,7 @@ bool Core::OpenPluginConfig(PluginType type)
 
     if (!paused)
         this->ResumeEmulation();
-    
+
     return ret;
 }
 
@@ -358,6 +358,101 @@ bool Core::IsEmulationRunning(void)
 bool Core::isEmulationPaused(void)
 {
     return emulation_IsPaused();
+}
+
+bool Core::PressGameSharkButton(void)
+{
+    m64p_error ret;
+    int value = 1;
+
+    ret = M64P::Core.DoCommand(M64CMD_CORE_STATE_SET, M64CORE_INPUT_GAMESHARK, &value);
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_Message = "Core::PressGameSharkButton Failed: ";
+        this->error_Message += M64P::Core.ErrorMessage(ret);
+        return false;
+    }
+
+    value = 0;
+    ret = M64P::Core.DoCommand(M64CMD_CORE_STATE_SET, M64CORE_INPUT_GAMESHARK, &value);
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_Message = "Core::PressGameSharkButton Failed: ";
+        this->error_Message += M64P::Core.ErrorMessage(ret);
+        return false;
+    }
+
+    return true;
+}
+
+bool Core::SetSaveSlot(int slot)
+{
+    m64p_error ret;
+
+    ret = M64P::Core.DoCommand(M64CMD_STATE_SET_SLOT, slot, NULL);
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_Message = "Core::SetSaveSlot M64P::Core.DoCommand(M64CMD_STATE_SET_SLOT) Failed: ";
+        this->error_Message += M64P::Core.ErrorMessage(ret);
+    }
+
+    return ret == M64ERR_SUCCESS;
+}
+
+bool Core::SaveStateAsFile(QString file)
+{
+    m64p_error ret;
+
+    ret = M64P::Core.DoCommand(M64CMD_STATE_SAVE, 1, (void*)file.toStdString().c_str());
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_Message = "Core::SaveStateAsFile: M64P::Core.DoCommand(M64CMD_STATE_SAVE) Failed: ";
+        this->error_Message += M64P::Core.ErrorMessage(ret);
+    }
+
+    return ret == M64ERR_SUCCESS;
+}
+
+bool Core::LoadStateFromFile(QString file)
+{
+    m64p_error ret;
+
+    ret = M64P::Core.DoCommand(M64CMD_STATE_LOAD, 0, (void*)file.toStdString().c_str());
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_Message = "Core::SaveStateAsFile: M64P::Core.DoCommand(M64CMD_STATE_LOAD) Failed: ";
+        this->error_Message += M64P::Core.ErrorMessage(ret);
+    }
+
+    return ret == M64ERR_SUCCESS;
+}
+
+bool Core::SaveState(void)
+{
+    m64p_error ret;
+
+    ret = M64P::Core.DoCommand(M64CMD_STATE_SAVE, 0, NULL);
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_Message = "Core::SaveState: M64P::Core.DoCommand(M64CMD_STATE_SAVE) Failed: ";
+        this->error_Message += M64P::Core.ErrorMessage(ret);
+    }
+
+    return ret == M64ERR_SUCCESS;
+}
+
+bool Core::LoadState(void)
+{
+    m64p_error ret;
+
+    ret = M64P::Core.DoCommand(M64CMD_STATE_LOAD, 0, NULL);
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_Message = "Core::LoadState: M64P::Core.DoCommand(M64CMD_STATE_LOAD) Failed: ";
+        this->error_Message += M64P::Core.ErrorMessage(ret);
+    }
+
+    return ret == M64ERR_SUCCESS;
 }
 
 bool Core::ResetEmulation(bool hard)

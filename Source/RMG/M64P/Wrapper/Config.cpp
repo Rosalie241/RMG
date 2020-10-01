@@ -65,6 +65,11 @@ bool Config::SetOption(QString section, QString key, char *value)
            this->value_Set(key, M64TYPE_STRING, (void *)value);
 }
 
+bool Config::SetOption(QString section, QString key, const char* value)
+{
+    return this->SetOption(section, key, (char*)value);
+}
+
 bool Config::GetOption(QString section, QString key, int *value)
 {
     return this->section_Open(section) &&

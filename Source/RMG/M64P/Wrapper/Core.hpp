@@ -50,6 +50,16 @@ namespace M64P
             bool EnableSpeedLimiter(void);
             bool DisableSpeedLimiter(void);
 
+            bool PressGameSharkButton(void);
+
+            bool SetSaveSlot(int);
+
+            bool SaveStateAsFile(QString);
+            bool LoadStateFromFile(QString);
+
+            bool SaveState(void);
+            bool LoadState(void);
+
             QString GetLastError(void);
 
         private:

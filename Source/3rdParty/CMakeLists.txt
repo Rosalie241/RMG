@@ -34,20 +34,20 @@ ExternalProject_Add(mupen64plus-core
 set(APIDIR "${CMAKE_BINARY_DIR}/Source/3rdParty/mupen64plus-core/src/api")
 
 ExternalProject_Add(mupen64plus-audio-sdl
-    SOURCE_DIR mupen64plus-audio-sdl/
+    SOURCE_DIR mupen64plus-audio-sdl2/
 
     CONFIGURE_COMMAND ""
     INSTALL_COMMAND ""
 
-    GIT_REPOSITORY https://github.com/mupen64plus/mupen64plus-audio-sdl
-    GIT_TAG 39b8cb778c4690de98c8b9497578662cece356cc
+    GIT_REPOSITORY https://github.com/Rosalie241/mupen64plus-audio-sdl2
+    GIT_TAG cc6aca5a13b0b8ca7a2f9f5fa472ed3bb7f817db
 
     BUILD_COMMAND make all APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug>
     BUILD_IN_SOURCE False
 
-    BINARY_DIR ${THIRDPARTY_DIR}/mupen64plus-audio-sdl/projects/unix
+    BINARY_DIR ${THIRDPARTY_DIR}/mupen64plus-audio-sdl2/projects/unix
     
-    BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-audio-sdl/projects/unix/mupen64plus-audio-sdl.${SO_EXT}
+    BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-audio-sdl2/projects/unix/mupen64plus-audio-sdl2.${SO_EXT}
     DEPENDS mupen64plus-core
 )
 
