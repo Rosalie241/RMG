@@ -87,18 +87,20 @@ ExternalProject_Add(mupen64plus-input-raphnetraw
     DEPENDS mupen64plus-core
 )
 
-set(GLIDEN64_BUILD_DIR "${THIRDPARTY_DIR}/mupen64plus-video-GLideN64/projects/cmake")
+set(GLIDEN64_DIR "${THIRDPARTY_DIR}/mupen64plus-video-GLideN64")
+set(GLIDEN64_BUILD_DIR "${GLIDEN64_DIR}/projects/cmake")
 if (MSYS)
 	set(GLIDEN64_LIB "${GLIDEN64_BUILD_DIR}/mupen64plus-video-GLideN64.${SO_EXT}")
 else()
 	set(GLIDEN64_LIB "${GLIDEN64_BUILD_DIR}/plugin/${CMAKE_BUILD_TYPE}/mupen64plus-video-GLideN64.${SO_EXT}")
 endif()
+file(GLOB GLIDENUI_TRANSLATIONS "${GLIDEN64_DIR}/translations/release/*.qm")
 
 ExternalProject_Add(mupen64plus-video-GLideN64
     SOURCE_DIR mupen64plus-video-GLideN64
 
     GIT_REPOSITORY https://github.com/gonetz/GLideN64
-    GIT_TAG 4f5a76366663fb4cab5ad1878af29dc1009b7793
+    GIT_TAG 00dac336f897828b542e66aca74f6755d689e195
 
     INSTALL_COMMAND ""
 
@@ -109,7 +111,8 @@ ExternalProject_Add(mupen64plus-video-GLideN64
     BINARY_DIR ${GLIDEN64_BUILD_DIR}
 
     BUILD_BYPRODUCTS ${GLIDEN64_LIB}
-    BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-video-GLideN64/ini/GLideN64.custom.ini
+    BUILD_BYPRODUCTS ${GLIDEN64_DIR}/ini/GLideN64.custom.ini
+    BUILD_BYPRODUCTS ${GLIDENUI_TRANSLATIONS}
 )
 
 ExternalProject_Get_property(mupen64plus-core BUILD_BYPRODUCTS)

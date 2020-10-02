@@ -130,16 +130,16 @@ QList<Plugin_t> Core::GetPlugins(PluginType type)
     switch (type)
     {
     case PluginType::Gfx:
-        dir = "Plugin/GFX";
+        dir = MUPEN_DIR_GFX;
         break;
     case PluginType::Rsp:
-        dir = "Plugin/RSP";
+        dir = MUPEN_DIR_RSP;
         break;
     case PluginType::Audio:
-        dir = "Plugin/Audio";
+        dir = MUPEN_DIR_AUDIO;
         break;
     case PluginType::Input:
-        dir = "Plugin/Input";
+        dir = MUPEN_DIR_INPUT;
         break;
     }
 
@@ -148,8 +148,7 @@ QList<Plugin_t> Core::GetPlugins(PluginType type)
     QDir qDir(dir);
     QStringList filter;
 
-    filter << "*.so";
-    filter << "*.dll";
+    filter << "*." SO_EXT;
 
     QFileInfoList fileList = qDir.entryInfoList(filter);
     Plugin p;

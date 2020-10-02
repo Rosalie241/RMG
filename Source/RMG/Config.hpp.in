@@ -27,9 +27,10 @@
 #endif
 #define MUPEN_CONFIG_DIR "Config"
 #define MUPEN_DATA_DIR "Data"
-#define MUPEN_PLUGIN_RSP "Plugin/RSP/mupen64plus-rsp-hle.""" SO_EXT
-#define MUPEN_PLUGIN_GFX "Plugin/GFX/mupen64plus-video-GLideN64.""" SO_EXT
-#define MUPEN_PLUGIN_AUDIO "Plugin/Audio/mupen64plus-audio-sdl.""" SO_EXT
-#define MUPEN_PLUGIN_INPUT "Plugin/Input/mupen64plus-input-raphnetraw.""" SO_EXT
+
+#define MUPEN_DIR_RSP "Plugin/RSP"
+#define MUPEN_DIR_GFX "Plugin/GFX"
+#define MUPEN_DIR_AUDIO "Plugin/Audio"
+#define MUPEN_DIR_INPUT "Plugin/Input"
 
 #endif // CONFIG_HPP
