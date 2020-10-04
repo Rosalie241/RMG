@@ -40,8 +40,6 @@ namespace UserInterface
 
         Thread::EmulationThread *emulationThread;
 
-        Dialog::SettingsDialog *ui_SettingsDialog;
-
         QStackedWidget *ui_Widgets;
         Widget::OGLWidget *ui_Widget_OpenGL;
         Widget::RomBrowserWidget *ui_Widget_RomBrowser;
