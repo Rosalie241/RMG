@@ -94,7 +94,11 @@ if (MSYS)
 else()
 	set(GLIDEN64_LIB "${GLIDEN64_BUILD_DIR}/plugin/${CMAKE_BUILD_TYPE}/mupen64plus-video-GLideN64.${SO_EXT}")
 endif()
-file(GLOB GLIDENUI_TRANSLATIONS "${GLIDEN64_DIR}/translations/release/*.qm")
+
+set(GLIDENUI_TRANSLATIONS_LANGS "de;es;fr;it;ja;pl;pt_BR")
+foreach(LANG ${GLIDENUI_TRANSLATIONS_LANGS})
+    list(APPEND GLIDENUI_TRANSLATIONS "${GLIDEN64_DIR}/translations/release/gliden64_${LANG}.qm")
+endforeach()
 
 ExternalProject_Add(mupen64plus-video-GLideN64
     SOURCE_DIR mupen64plus-video-GLideN64

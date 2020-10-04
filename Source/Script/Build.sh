@@ -6,9 +6,9 @@ toplvl_dir="$(realpath "$script_dir/../../")"
 build_config="${1:-Debug}"
 build_dir="$toplvl_dir/Build/$build_config"
 install_dir="$toplvl_dir/Bin/$build_config"
-generator="${2:-Unix Makefiles}"
-threads="${3:-$(nproc)}"
+threads="${2:-$(nproc)}"
 
+generator="Unix Makefiles"
 msys2="0"
 
 mkdir -p "$build_dir"

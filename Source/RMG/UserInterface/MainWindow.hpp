@@ -10,9 +10,10 @@
 #ifndef MAINWINDOW_HPP
 #define MAINWINDOW_HPP
 
-#include "../Thread/EmulationThread.hpp"
+#include "Dialog/SettingsDialog.hpp"
 #include "Widget/RomBrowserWidget.hpp"
 #include "Widget/OGLWidget.hpp"
+#include "../Thread/EmulationThread.hpp"
 #include "../Globals.hpp"
 
 #include <QMainWindow>
@@ -38,6 +39,8 @@ namespace UserInterface
         QIcon ui_Icon;
 
         Thread::EmulationThread *emulationThread;
+
+        Dialog::SettingsDialog *ui_SettingsDialog;
 
         QStackedWidget *ui_Widgets;
         Widget::OGLWidget *ui_Widget_OpenGL;
@@ -141,7 +144,7 @@ namespace UserInterface
         void on_RomBrowser_Selected(QString);
 
         void on_VidExt_Init(void);
-        void on_VidExt_SetupOGL(QSurfaceFormat, QThread*);
+        void on_VidExt_SetupOGL(QSurfaceFormat, QThread *);
         void on_VidExt_SetMode(int, int, int, int, int);
         void on_VidExt_SetModeWithRate(int, int, int, int, int, int);
         void on_VidExt_ResizeWindow(int, int);

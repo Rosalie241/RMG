@@ -90,6 +90,8 @@ void MainWindow::ui_Init(void)
 {
     this->ui_Icon = QIcon(":Icons/RMG.png");
 
+    this->ui_SettingsDialog = new Dialog::SettingsDialog(this);
+
     this->ui_Widgets = new QStackedWidget();
     this->ui_Widget_RomBrowser = new Widget::RomBrowserWidget();
     this->ui_Widget_OpenGL = new Widget::OGLWidget();
@@ -663,6 +665,8 @@ void MainWindow::on_Action_Options_ConfigControl(void)
 
 void MainWindow::on_Action_Options_Settings(void)
 {
+    this->ui_SettingsDialog->show();
+    this->ui_SettingsDialog->exec();
 }
 
 void MainWindow::on_Action_Help_Support(void)

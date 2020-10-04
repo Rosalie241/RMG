@@ -15,6 +15,7 @@ set(RMG_SOURCES
     UserInterface/MainWindow.cpp
     UserInterface/Widget/RomBrowserWidget.cpp
     UserInterface/Widget/OGLWidget.cpp
+    UserInterface/Dialog/SettingsDialog.cpp
     UserInterface/NoFocusDelegate.cpp
     UserInterface/UIResources.rc
     UserInterface/UIResources.qrc
