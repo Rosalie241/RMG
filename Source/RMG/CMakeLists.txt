@@ -36,6 +36,16 @@ set(RMG_SOURCES
     main.cpp
 )
 
+if (WIN32 OR MSYS)
+    list(APPEND RMG_SOURCES 
+        M64P/dynlib_win32.cpp
+    )
+else()
+    list(APPEND RMG_SOURCES 
+        M64P/dynlib_unix.cpp
+    )
+endif()
+
 if (CMAKE_BUILD_TYPE MATCHES Release)
     add_executable(RMG WIN32 ${RMG_SOURCES})
 else()

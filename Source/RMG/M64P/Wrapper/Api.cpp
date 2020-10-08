@@ -70,10 +70,10 @@ bool Api::core_Handle_Open(QString file)
 {
     this->core_Handle_Close();
 
-    this->core_Handle = DLOPEN(file.toStdString().c_str());
+    this->core_Handle = dynlib_open((char*)file.toStdString().c_str());
     if (this->core_Handle == NULL)
     {
-        this->error_Message += DLGETERRSTR();
+        this->error_Message += dynlib_strerror();
         return false;
     }
 
@@ -87,7 +87,7 @@ void Api::core_Handle_Close(void)
     if (!this->core_Handle_Opened)
         return;
 
-    DLCLOSE(this->core_Handle);
+    dynlib_close(this->core_Handle);
     this->core_Handle_Opened = false;
 }
 

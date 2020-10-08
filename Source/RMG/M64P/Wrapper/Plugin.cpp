@@ -27,13 +27,13 @@ bool Plugin::Init(QString file, m64p_dynlib_handle coreHandle)
     m64p_error ret;
 
     this->fileName = file;
-    this->handle = DLOPEN(file.toStdString().c_str());
+    this->handle = dynlib_open((char*)file.toStdString().c_str());
     
     this->error_Message = "Plugin::Init Failed: ";
 
     if (this->handle == NULL)
     {
-        this->error_Message += DLGETERRSTR();
+        this->error_Message += dynlib_strerror();
         return false;
     }
 
