@@ -11,7 +11,7 @@ void dynlib_close(HMODULE dynlib)
     FreeLibrary(dynlib);
 }
 
-void *dynlib_sym(HMODULE dynlib, char *sym)
+FARPROC dynlib_sym(HMODULE dynlib, char *sym)
 {
     return GetProcAddress(dynlib, sym);
 }
