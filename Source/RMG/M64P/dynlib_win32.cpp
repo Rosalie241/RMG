@@ -3,7 +3,7 @@
 
 HMODULE dynlib_open(char *file)
 {
-    return LoadLibrary(file)
+    return LoadLibrary(file);
 }
 
 void dynlib_close(HMODULE dynlib)
