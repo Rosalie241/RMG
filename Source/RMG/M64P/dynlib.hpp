@@ -1,6 +1,8 @@
 #ifndef DYNLIB_HPP
 #define DYNLIB_HPP
 
+#include <QString>
+
 #ifdef _WIN32
 #include <windows.h>
 HMODULE dynlib_open(char *);
