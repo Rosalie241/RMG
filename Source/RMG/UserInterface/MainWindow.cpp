@@ -438,7 +438,6 @@ void MainWindow::on_Action_File_OpenRom(void)
     dialog.setFileMode(QFileDialog::FileMode::ExistingFile);
     dialog.setNameFilter("N64 Roms (*.n64 *.z64 *.v64)");
     dialog.setWindowIcon(this->ui_Icon);
-    dialog.show();
 
     ret = dialog.exec();
     if (!ret)
@@ -471,7 +470,6 @@ void MainWindow::on_Action_File_ChooseDirectory(void)
     dialog.setFileMode(QFileDialog::Directory);
     dialog.setOption(QFileDialog::ShowDirsOnly, true);
     dialog.setWindowIcon(this->ui_Icon);
-    dialog.show();
 
     ret = dialog.exec();
     if (ret)
