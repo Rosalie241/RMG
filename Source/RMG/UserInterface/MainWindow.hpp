@@ -67,7 +67,7 @@ namespace UserInterface
         QAction *action_System_SaveAs;
         QAction *action_System_LoadState;
         QAction *action_System_Load;
-        QAction *action_System_CurrentSaveState;
+        QMenu   *menu_System_CurrentSaveState;
         QAction *action_System_Cheats;
         QAction *action_System_GSButton;
         QAction *action_Options_FullScreen;
@@ -123,7 +123,7 @@ namespace UserInterface
         void on_Action_System_SaveAs(void);
         void on_Action_System_LoadState(void);
         void on_Action_System_Load(void);
-        void on_Action_System_CurrentSaveState(void);
+        void on_Action_System_CurrentSaveState(int);
         void on_Action_System_Cheats(void);
         void on_Action_System_GSButton(void);
         void on_Action_Options_FullScreen(void);

@@ -229,7 +229,34 @@ void MainWindow::menuBar_Setup(bool inEmulation, bool isPaused)
         this->menuBar_Menu->addAction(this->action_System_LoadState);
         this->menuBar_Menu->addAction(this->action_System_Load);
         this->menuBar_Menu->addSeparator();
-        this->menuBar_Menu->addAction(this->action_System_CurrentSaveState);
+        this->menuBar_Menu->addMenu(this->menu_System_CurrentSaveState);
+
+        this->menu_System_CurrentSaveState->clear();
+
+        QActionGroup *slotActionGroup = new QActionGroup(this);
+        QList<QAction *> slotActions;
+        QAction *slotAction;
+        for (int i = 0; i < 10; i++)
+        {
+            slotActions.append(new QAction(this));
+            slotAction = slotActions.at(i);
+
+            slotAction->setText("Slot " + QString::number(i + 1));
+            slotAction->setCheckable(true);
+            slotAction->setChecked(i == 0);
+            slotAction->setActionGroup(slotActionGroup);
+
+            connect(slotAction, &QAction::triggered, [=](bool checked) {
+                if (checked)
+                {
+                    int slot = slotAction->text().split(" ").last().toInt() - 1;
+                    this->on_Action_System_CurrentSaveState(slot);
+                }
+            });
+
+            this->menu_System_CurrentSaveState->addAction(slotAction);
+        }
+
         this->menuBar_Menu->addSeparator();
         this->menuBar_Menu->addAction(this->action_System_Cheats);
         this->menuBar_Menu->addAction(this->action_System_GSButton);
@@ -278,6 +305,14 @@ void MainWindow::emulationThread_Launch(QString file)
 {
     g_MupenApi.Config.Save();
 
+    if (this->emulationThread->isRunning())
+    {
+        this->on_Action_File_EndEmulation();
+
+        while (this->emulationThread->isRunning())
+            QCoreApplication::processEvents();
+    }
+
     this->emulationThread->SetRomFile(file);
     this->emulationThread->start();
 }
@@ -306,7 +341,7 @@ void MainWindow::menuBar_Actions_Init(void)
     this->action_System_SaveAs = new QAction(this);
     this->action_System_LoadState = new QAction(this);
     this->action_System_Load = new QAction(this);
-    this->action_System_CurrentSaveState = new QAction(this);
+    this->menu_System_CurrentSaveState = new QMenu(this);
     this->action_System_Cheats = new QAction(this);
     this->action_System_GSButton = new QAction(this);
 
@@ -367,7 +402,7 @@ void MainWindow::menuBar_Actions_Setup(bool inEmulation, bool isPaused)
     this->action_System_LoadState->setShortcut(QKeySequence("F7"));
     this->action_System_Load->setText("Load...");
     this->action_System_Load->setShortcut(QKeySequence("Ctrl+L"));
-    this->action_System_CurrentSaveState->setText("Current Save State");
+    this->menu_System_CurrentSaveState->setTitle("Current Save State");
     this->action_System_Cheats->setText("Cheats...");
     this->action_System_Cheats->setShortcut(QKeySequence("Ctrl+C"));
     this->action_System_GSButton->setText("GS Button");
@@ -425,11 +460,12 @@ void MainWindow::menuBar_Actions_Connect(void)
     connect(this->action_Help_About, &QAction::triggered, this, &MainWindow::on_Action_Help_About);
 }
 
-#include <iostream>
 void MainWindow::on_Action_File_OpenRom(void)
 {
-    if (this->emulationThread->isRunning())
-        return;
+    bool isPaused = g_MupenApi.Core.isEmulationPaused();
+
+    if (!isPaused)
+        this->on_Action_System_Pause();
 
     QFileDialog dialog;
     int ret;
@@ -441,7 +477,11 @@ void MainWindow::on_Action_File_OpenRom(void)
 
     ret = dialog.exec();
     if (!ret)
+    {
+        if (!isPaused)
+            this->on_Action_System_Pause();
         return;
+    }
 
     this->emulationThread_Launch(dialog.selectedFiles().first());
 }
@@ -453,7 +493,9 @@ void MainWindow::on_Action_File_OpenCombo(void)
 void MainWindow::on_Action_File_EndEmulation(void)
 {
     if (g_MupenApi.Core.isEmulationPaused())
+    {
         this->on_Action_System_Pause();
+    }
 
     if (!g_MupenApi.Core.StopEmulation())
     {
@@ -493,12 +535,18 @@ void MainWindow::on_Action_File_Exit(void)
 
 void MainWindow::on_Action_System_SoftReset(void)
 {
-    g_MupenApi.Core.ResetEmulation(false);
+    if (!g_MupenApi.Core.ResetEmulation(false))
+    {
+        this->ui_MessageBox("Error", "Api::Core::ResetEmulation Failed!", g_MupenApi.Core.GetLastError());
+    }
 }
 
 void MainWindow::on_Action_System_HardReset(void)
 {
-    g_MupenApi.Core.ResetEmulation(true);
+    if (!g_MupenApi.Core.ResetEmulation(true))
+    {
+        this->ui_MessageBox("Error", "Api::Core::ResetEmulation Failed!", g_MupenApi.Core.GetLastError());
+    }
 }
 
 void MainWindow::on_Action_System_Pause(void)
@@ -540,6 +588,7 @@ void MainWindow::on_Action_System_GenerateBitmap(void)
     }
 }
 
+#include <iostream>
 void MainWindow::on_Action_System_LimitFPS(void)
 {
     bool enabled, ret;
@@ -619,8 +668,12 @@ void MainWindow::on_Action_System_Load(void)
         this->on_Action_System_Pause();
 }
 
-void MainWindow::on_Action_System_CurrentSaveState(void)
+void MainWindow::on_Action_System_CurrentSaveState(int slot)
 {
+    if (!g_MupenApi.Core.SetSaveSlot(slot))
+    {
+        this->ui_MessageBox("Error", "Api::Core::SetSaveSlot Failed", g_MupenApi.Core.GetLastError());
+    }
 }
 
 void MainWindow::on_Action_System_Cheats(void)
