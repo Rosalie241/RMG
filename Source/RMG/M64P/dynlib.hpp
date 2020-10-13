@@ -7,7 +7,7 @@
 #include <windows.h>
 HMODULE dynlib_open(char *);
 void dynlib_close(HMODULE);
-FARPROC dynlib_sym(HMODULE, char *);
+FARPROC dynlib_sym(HMODULE, const char *);
 #else
 void *dynlib_open(const char *);
 void dynlib_close(void *);
