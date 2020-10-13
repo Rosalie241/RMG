@@ -87,6 +87,9 @@ namespace UserInterface
 
         void closeEvent(QCloseEvent *);
 
+        void keyPressEvent(QKeyEvent *);
+        void keyReleaseEvent(QKeyEvent *);
+
         void ui_Init();
         void ui_Setup();
         void ui_Stylesheet_Setup();

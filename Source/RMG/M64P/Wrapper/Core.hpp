@@ -60,6 +60,9 @@ namespace M64P
             bool SaveState(void);
             bool LoadState(void);
 
+            bool SetKeyDown(int, int);
+            bool SetKeyUp(int, int);
+
             QString GetLastError(void);
 
         private:

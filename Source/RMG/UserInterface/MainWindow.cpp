@@ -9,6 +9,7 @@
 */
 #include "MainWindow.hpp"
 #include "Config.hpp"
+#include "../Utilities/QtKeyToSdl2Key.hpp"
 
 #include <QMenuBar>
 #include <QStatusBar>
@@ -84,6 +85,34 @@ void MainWindow::closeEvent(QCloseEvent *event)
         QCoreApplication::processEvents();
 
     QMainWindow::closeEvent(event);
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    if (!g_MupenApi.Core.IsEmulationRunning())
+    {
+        QMainWindow::keyPressEvent(event);
+        return;
+    }
+
+    int key = Utilities::QtKeyToSdl2Key(event->key());
+    int mod = Utilities::QtModKeyToSdl2ModKey(event->modifiers());
+
+    g_MupenApi.Core.SetKeyDown(key, mod);
+}
+
+void MainWindow::keyReleaseEvent(QKeyEvent *event)
+{
+    if (!g_MupenApi.Core.IsEmulationRunning())
+    {
+        QMainWindow::keyReleaseEvent(event);
+        return;
+    }
+
+    int key = Utilities::QtKeyToSdl2Key(event->key());
+    int mod = Utilities::QtModKeyToSdl2ModKey(event->modifiers());
+
+    g_MupenApi.Core.SetKeyUp(key, mod);
 }
 
 void MainWindow::ui_Init(void)
@@ -462,9 +491,10 @@ void MainWindow::menuBar_Actions_Connect(void)
 
 void MainWindow::on_Action_File_OpenRom(void)
 {
+    bool isRunning = this->emulationThread->isRunning();
     bool isPaused = g_MupenApi.Core.isEmulationPaused();
 
-    if (!isPaused)
+    if (isRunning && !isPaused)
         this->on_Action_System_Pause();
 
     QFileDialog dialog;
@@ -478,7 +508,7 @@ void MainWindow::on_Action_File_OpenRom(void)
     ret = dialog.exec();
     if (!ret)
     {
-        if (!isPaused)
+        if (isRunning && !isPaused)
             this->on_Action_System_Pause();
         return;
     }
