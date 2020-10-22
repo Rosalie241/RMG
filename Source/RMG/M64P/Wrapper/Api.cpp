@@ -21,6 +21,7 @@ Api::Api(void)
 
 Api::~Api(void)
 {
+    M64P::Core.Shutdown();
     this->core_Handle_Close();
 }
 
