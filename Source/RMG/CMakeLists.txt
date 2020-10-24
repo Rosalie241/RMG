@@ -3,6 +3,7 @@
 #
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
 
 find_package(Qt5 COMPONENTS Widgets Core REQUIRED)
 
@@ -16,6 +17,7 @@ set(RMG_SOURCES
     UserInterface/Widget/RomBrowserWidget.cpp
     UserInterface/Widget/OGLWidget.cpp
     UserInterface/Dialog/SettingsDialog.cpp
+    UserInterface/Dialog/SettingsDialog.ui
     UserInterface/NoFocusDelegate.cpp
     UserInterface/UIResources.rc
     UserInterface/UIResources.qrc

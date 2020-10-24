@@ -7,24 +7,19 @@
 #include <QHBoxLayout>
 #include <QStandardItemModel>
 
+#include "ui_SettingsDialog.h"
+
 namespace UserInterface
 {
     namespace Dialog
     {
-        class SettingsDialog : public QDialog
+        class SettingsDialog : public QDialog, private Ui::SettingsDialog
         {
+            Q_OBJECT
+
         public:
             SettingsDialog(QWidget *parent);
-
-        private:
-            QHBoxLayout* ui_Layout;
-            QTreeWidget* ui_TreeWidget;
-
-            void ui_Init(void);
-            void ui_Setup(void);
-
-            void model_Init(void);
-            void model_Setup(void);
+            ~SettingsDialog(void);
         };
     } // namespace Dialog
 } // namespace UserInterface

@@ -225,27 +225,36 @@ void MainWindow::menuBar_Setup(bool inEmulation, bool isPaused)
     this->menuBar_Menu->addAction(this->action_File_StartEmulation);
     this->menuBar_Menu->addAction(this->action_File_EndEmulation);
     this->menuBar_Menu->addSeparator();
-    this->menuBar_Menu->addAction(this->action_File_Language);
+
+    // TODO: Add language support
+    QMenu* langMenu = new QMenu("Language", this);
+    langMenu->addAction("English");
+    this->menuBar_Menu->addMenu(langMenu);
+
     if (!inEmulation)
     {
         this->menuBar_Menu->addSeparator();
         this->menuBar_Menu->addAction(this->action_File_ChooseDirectory);
         this->menuBar_Menu->addAction(this->action_File_RefreshRomList);
         this->menuBar_Menu->addSeparator();
+
+        // TODO: Actually implement this
+        /*
         this->menuBar_Menu->addAction(this->action_File_RecentRom);
         this->menuBar_Menu->addAction(this->action_File_RecentRomDirectories);
+        */
     }
     this->menuBar_Menu->addSeparator();
     this->menuBar_Menu->addAction(this->action_File_Exit);
 
     if (inEmulation)
     {
-        QMenu *tmp = new QMenu("Reset");
-        tmp->addAction(action_System_SoftReset);
-        tmp->addAction(action_System_HardReset);
+        QMenu *resetMenu = new QMenu("Reset", this);
+        resetMenu->addAction(action_System_SoftReset);
+        resetMenu->addAction(action_System_HardReset);
 
         this->menuBar_Menu = this->menuBar->addMenu("System");
-        this->menuBar_Menu->addMenu(tmp);
+        this->menuBar_Menu->addMenu(resetMenu);
         this->menuBar_Menu->addAction(action_System_Pause);
         this->menuBar_Menu->addAction(this->action_System_GenerateBitmap);
         this->menuBar_Menu->addSeparator();
