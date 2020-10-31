@@ -61,6 +61,8 @@ bool MainWindow::Init(void)
     g_MupenApi.Config.SetOption("Core", "SaveSRAMPath", "Save/Game");
     g_MupenApi.Config.SetOption("Core", "SharedDataPath", "Data");
 
+    g_MupenApi.Config.OverrideUserPaths("Data", "Cache");
+
     this->ui_Init();
     this->ui_Setup();
 

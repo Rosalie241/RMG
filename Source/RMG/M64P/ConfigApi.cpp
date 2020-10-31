@@ -54,7 +54,8 @@ bool ConfigApi::Hook(m64p_dynlib_handle handle)
     HOOK_FUNC(handle, Config, ExternalGetParameter);
     HOOK_FUNC(handle, Config, SendNetplayConfig);
     HOOK_FUNC(handle, Config, ReceiveNetplayConfig);
-
+    HOOK_FUNC(handle, Config, OverrideUserPaths);
+    
     this->hooked = true;
     return true;
 }

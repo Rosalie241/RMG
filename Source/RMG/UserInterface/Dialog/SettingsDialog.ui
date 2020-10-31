@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>589</width>
-    <height>374</height>
+    <width>593</width>
+    <height>371</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -54,6 +54,16 @@
            <string>Core</string>
           </property>
          </item>
+         <item>
+          <property name="text">
+           <string>Game</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Plugins</string>
+          </property>
+         </item>
         </widget>
        </item>
        <item>
@@ -62,8 +72,63 @@
           <number>1</number>
          </property>
          <widget class="QWidget" name="coreSettingsPage"/>
-         <widget class="QWidget" name="widget"/>
-         <widget class="QWidget" name="page_2"/>
+         <widget class="QWidget" name="gameSettingsPage">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Ignored">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <widget class="QWidget" name="verticalLayoutWidget">
+           <property name="geometry">
+            <rect>
+             <x>-10</x>
+             <y>0</y>
+             <width>324</width>
+             <height>321</height>
+            </rect>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <property name="sizeConstraint">
+             <enum>QLayout::SetDefaultConstraint</enum>
+            </property>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <item>
+               <widget class="QLabel" name="label">
+                <property name="text">
+                 <string>TextLabel</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QTextEdit" name="textEdit"/>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <spacer name="verticalSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Expanding</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+         <widget class="QWidget" name="pluginSettingsPage"/>
         </widget>
        </item>
       </layout>

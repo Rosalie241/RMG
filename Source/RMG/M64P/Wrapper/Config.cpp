@@ -33,6 +33,21 @@ bool Config::Init()
     return true;
 }
 
+bool Config::OverrideUserPaths(QString data, QString cache)
+{
+    m64p_error ret;
+
+    ret = M64P::Config.OverrideUserPaths(data.toStdString().c_str(), cache.toStdString().c_str());
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_Message = "Config::OverrideUserPaths M64P::Config.OverrideUserPaths() Failed: ";
+        this->error_Message += M64P::Core.ErrorMessage(ret);
+    }
+
+    return ret == M64ERR_SUCCESS;
+}
+
+
 bool Config::SetOption(QString section, QString key, int value)
 {
     return this->section_Open(section) &&

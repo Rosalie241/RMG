@@ -26,6 +26,8 @@ namespace M64P
 
             bool Init();
 
+            bool OverrideUserPaths(QString data, QString cache);
+
             bool SetOption(QString section, QString key, int value);
             bool SetOption(QString section, QString key, float value);
             bool SetOption(QString section, QString key, bool value);

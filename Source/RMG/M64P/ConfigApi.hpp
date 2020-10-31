@@ -57,6 +57,7 @@ namespace M64P
         ptr_ConfigExternalGetParameter ExternalGetParameter;
         ptr_ConfigSendNetplayConfig SendNetplayConfig;
         ptr_ConfigReceiveNetplayConfig ReceiveNetplayConfig;
+        ptr_ConfigOverrideUserPaths OverrideUserPaths;
 
     private:
         bool hooked = false;
