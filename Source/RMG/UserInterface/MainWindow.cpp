@@ -755,15 +755,16 @@ void MainWindow::on_Action_Options_ConfigControl(void)
 
 void MainWindow::on_Action_Options_Settings(void)
 {
+    bool isRunning = this->emulationThread->isRunning();
     bool isPaused = g_MupenApi.Core.isEmulationPaused();
 
-    if (!isPaused)
+    if (isRunning && !isPaused)
         this->on_Action_System_Pause();
 
     Dialog::SettingsDialog dialog(this);
     dialog.exec();
 
-    if (!isPaused)
+    if (isRunning && !isPaused)
         this->on_Action_System_Pause();
 }
 
