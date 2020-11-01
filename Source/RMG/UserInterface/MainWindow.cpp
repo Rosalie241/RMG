@@ -229,7 +229,7 @@ void MainWindow::menuBar_Setup(bool inEmulation, bool isPaused)
     this->menuBar_Menu->addSeparator();
 
     // TODO: Add language support
-    QMenu* langMenu = new QMenu("Language", this);
+    QMenu *langMenu = new QMenu("Language", this);
     langMenu->addAction("English");
     this->menuBar_Menu->addMenu(langMenu);
 
@@ -755,8 +755,16 @@ void MainWindow::on_Action_Options_ConfigControl(void)
 
 void MainWindow::on_Action_Options_Settings(void)
 {
+    bool isPaused = g_MupenApi.Core.isEmulationPaused();
+
+    if (!isPaused)
+        this->on_Action_System_Pause();
+
     Dialog::SettingsDialog dialog(this);
     dialog.exec();
+
+    if (!isPaused)
+        this->on_Action_System_Pause();
 }
 
 void MainWindow::on_Action_Help_Support(void)

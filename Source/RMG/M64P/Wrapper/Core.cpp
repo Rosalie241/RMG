@@ -239,10 +239,11 @@ bool Core::SetPlugin(Plugin_t plugin)
 bool Core::GetRomInfo(QString file, RomInfo_t *info)
 {
     m64p_error ret;
+    bool inEmulation = this->emulation_IsRunning() || this->emulation_IsPaused();
 
-    if (!this->rom_Open(file))
+    if (!inEmulation && !this->rom_Open(file))
         return false;
-
+    
     ret = M64P::Core.DoCommand(M64CMD_ROM_GET_HEADER, sizeof(m64p_rom_header), &info->Header);
     if (ret != M64ERR_SUCCESS)
     {
@@ -263,7 +264,7 @@ bool Core::GetRomInfo(QString file, RomInfo_t *info)
 
     info->FileName = file;
 
-    if (!this->rom_Close())
+    if (!inEmulation && !this->rom_Close())
         return false;
 
     return true;

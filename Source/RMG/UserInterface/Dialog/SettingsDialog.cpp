@@ -8,6 +8,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 #include "SettingsDialog.hpp"
+#include "../../Globals.hpp"
 
 using namespace UserInterface::Dialog;
 
@@ -16,7 +17,22 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
     this->setupUi(this);
 
     // TODO
-    this->treeWidget->topLevelItem(0)->setSelected(true);
+    this->treeWidget->topLevelItem(1)->setSelected(true);
+
+    if (!g_EmuThread->isRunning())
+    {
+        this->treeWidget->topLevelItem(1)->setDisabled(true);
+    }
+    else
+    {
+        M64P::Wrapper::RomInfo_t info;
+        g_MupenApi.Core.GetRomInfo("", &info);
+
+        this->lineEdit->setText(info.Settings.goodname);
+        this->comboBox->setCurrentIndex(info.Settings.disableextramem == 1 ? 0 : 1);
+        this->comboBox_2->setCurrentIndex(info.Settings.savetype);
+        this->comboBox_3->setCurrentIndex(info.Settings.countperop);
+    }   
 }
 
 SettingsDialog::~SettingsDialog(void)
