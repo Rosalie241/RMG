@@ -17,22 +17,26 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
     this->setupUi(this);
 
     // TODO
-    this->treeWidget->topLevelItem(1)->setSelected(true);
-
     if (!g_EmuThread->isRunning())
     {
+        this->treeWidget->topLevelItem(0)->setSelected(true);
         this->treeWidget->topLevelItem(1)->setDisabled(true);
     }
     else
     {
+        this->treeWidget->topLevelItem(1)->setSelected(true);
         M64P::Wrapper::RomInfo_t info;
-        g_MupenApi.Core.GetRomInfo("", &info);
+
+        g_MupenApi.Core.GetRomInfo(&info);
 
         this->lineEdit->setText(info.Settings.goodname);
         this->comboBox->setCurrentIndex(info.Settings.disableextramem == 1 ? 0 : 1);
         this->comboBox_2->setCurrentIndex(info.Settings.savetype);
         this->comboBox_3->setCurrentIndex(info.Settings.countperop);
     }   
+
+
+    this->setFixedSize(this->size());
 }
 
 SettingsDialog::~SettingsDialog(void)

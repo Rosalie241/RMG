@@ -502,7 +502,7 @@ void MainWindow::menuBar_Actions_Connect(void)
 
 void MainWindow::on_Action_File_OpenRom(void)
 {
-    bool isRunning = this->emulationThread->isRunning();
+    bool isRunning = g_MupenApi.Core.IsEmulationRunning();
     bool isPaused = g_MupenApi.Core.isEmulationPaused();
 
     if (isRunning && !isPaused)
@@ -755,7 +755,7 @@ void MainWindow::on_Action_Options_ConfigControl(void)
 
 void MainWindow::on_Action_Options_Settings(void)
 {
-    bool isRunning = this->emulationThread->isRunning();
+    bool isRunning = g_MupenApi.Core.IsEmulationRunning();
     bool isPaused = g_MupenApi.Core.isEmulationPaused();
 
     if (isRunning && !isPaused)
