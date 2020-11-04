@@ -33,6 +33,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
         this->comboBox->setCurrentIndex(info.Settings.disableextramem == 1 ? 0 : 1);
         this->comboBox_9->setCurrentIndex(info.Settings.savetype);
         this->comboBox_2->setCurrentIndex(info.Settings.countperop);
+        this->spinBox_2->setValue(info.Settings.sidmaduration);
     }   
 
     //this->setFixedSize(this->size());
