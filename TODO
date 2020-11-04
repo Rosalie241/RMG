@@ -3,6 +3,7 @@ SettingsDialog
 - implement page switching using treeview
 - implement applying per game settings
 - implement getting/setting core settings
+- implement plugin selection
 
 CheatsDialog
 - begin with implementation
