@@ -1,4 +1,6 @@
-# Rosalie's Mupen GUI
+<h1>
+    <img src="https://github.com/Rosalie241/RMG/blob/master/Source/RMG/UserInterface/Icons/RMG.png" width="64" height="64"> Rosalie's Mupen GUI
+</h1>
 
 Rosalie's Mupen GUI is a free and open-source mupen64plus GUI written in C++.
 
@@ -15,13 +17,25 @@ It offers a simple-to-use user interface.
 * Graphics card
   * OpenGL 3.3 capable
 
+## Latest build
+
+<a href="https://ci.appveyor.com/project/rosalie241/rmg/build/artifacts" target="_blank">
+        <img src="https://ci.appveyor.com/api/projects/status/ssg4jwu6ve3k594s/branch/master?svg=true">
+</a>
+
+These builds are compiled automatically for each commit on the master branch. The strive is to ensure optimal stability and performance prior to pushing an update, the automated builds **may be unstable or completely broken.**
+
 ## How to use
 
 <sub>(Games not included - do **NOT** ask for ROMs.)</sub>
 
 ## Support
 
-[**Join the Discord64 Server for support!**](https://discord.gg/G7JTSvm)
+**Join the Discord64 Server for support!**
+
+<a href="https://discord.gg/G7JTSvm">
+        <img src="https://img.shields.io/discord/410208534861447168.svg">
+</a>
 
 ## License
 
