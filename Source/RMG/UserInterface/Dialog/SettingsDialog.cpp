@@ -31,12 +31,11 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
 
         this->lineEdit->setText(info.Settings.goodname);
         this->comboBox->setCurrentIndex(info.Settings.disableextramem == 1 ? 0 : 1);
-        this->comboBox_2->setCurrentIndex(info.Settings.savetype);
-        this->comboBox_3->setCurrentIndex(info.Settings.countperop);
+        this->comboBox_9->setCurrentIndex(info.Settings.savetype);
+        this->comboBox_2->setCurrentIndex(info.Settings.countperop);
     }   
 
-
-    this->setFixedSize(this->size());
+    //this->setFixedSize(this->size());
 }
 
 SettingsDialog::~SettingsDialog(void)
