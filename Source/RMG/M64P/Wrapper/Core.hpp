@@ -35,6 +35,7 @@ namespace M64P
             bool SetPlugin(Plugin_t);
 
             bool GetRomInfo(QString, RomInfo_t*);
+            bool GetRomInfo(RomInfo_t*);
 
             bool LaunchEmulation(QString);
             bool StopEmulation(void);
