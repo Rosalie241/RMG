@@ -45,10 +45,17 @@ bool MainWindow::Init(void)
         return false;
     }
 
-    g_MupenApi.Core.GetPlugins(M64P::Wrapper::PluginType::Gfx);
-    g_MupenApi.Core.GetPlugins(M64P::Wrapper::PluginType::Rsp);
-    g_MupenApi.Core.GetPlugins(M64P::Wrapper::PluginType::Audio);
-    g_MupenApi.Core.GetPlugins(M64P::Wrapper::PluginType::Input);
+    QList<M64P::Wrapper::Plugin_t> pList;
+
+    pList.append(g_MupenApi.Core.GetPlugins(M64P::Wrapper::PluginType::Gfx));
+    pList.append(g_MupenApi.Core.GetPlugins(M64P::Wrapper::PluginType::Rsp));
+    pList.append(g_MupenApi.Core.GetPlugins(M64P::Wrapper::PluginType::Audio));
+    pList.append(g_MupenApi.Core.GetPlugins(M64P::Wrapper::PluginType::Input));
+
+    for (M64P::Wrapper::Plugin_t& p : pList)
+    {
+        g_MupenApi.Core.SetPlugin(p);
+    }
 
     g_MupenApi.Config.SetOption("Core", "ScreenshotPath", "Screenshots");
     g_MupenApi.Config.SetOption("Core", "SaveStatePath", "Save/State");

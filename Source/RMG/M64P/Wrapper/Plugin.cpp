@@ -43,22 +43,46 @@ bool Plugin::Init(QString file, m64p_dynlib_handle coreHandle)
         return false;
     }
 
-    ret = this->plugin.Startup(coreHandle, NULL, NULL);
-    if (ret != M64ERR_SUCCESS)
-    {
-        this->error_Message += M64P::Core.ErrorMessage(ret);
-        return false;
-    }
+    this->coreHandle = coreHandle;
 
     if (!this->plugin_t_Get())
         return false;
 
+    this->has_Init = true;
     return true;
+}
+
+bool Plugin::HasInit(void)
+{
+    return this->has_Init;
+}
+
+bool Plugin::Startup(void)
+{
+    m64p_error ret;
+
+    ret = this->plugin.Startup(this->coreHandle, NULL, NULL);
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_Message = "Plugin::Startup Failed: ";
+        this->error_Message += M64P::Core.ErrorMessage(ret);
+    }
+
+    return ret == M64ERR_SUCCESS;
 }
 
 bool Plugin::Shutdown(void)
 {
-    return this->plugin.Shutdown() == M64ERR_SUCCESS;
+    m64p_error ret;
+
+    ret = this->plugin.Shutdown();
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_Message = "Plugin::Shutdown Failed: ";
+        this->error_Message += M64P::Core.ErrorMessage(ret);
+    }
+
+    return ret == M64ERR_SUCCESS;
 }
 
 bool Plugin::HasConfig(void)
@@ -68,7 +92,16 @@ bool Plugin::HasConfig(void)
 
 bool Plugin::OpenConfig(void)
 {
-    return this->plugin.Config() == M64ERR_SUCCESS;
+    m64p_error ret;
+
+    ret = this->plugin.Config();
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_Message = "Plugin::OpenConfig Failed: ";
+        this->error_Message += M64P::Core.ErrorMessage(ret);
+    }
+
+    return ret == M64ERR_SUCCESS;
 }
 
 m64p_dynlib_handle Plugin::GetHandle(void)
@@ -101,7 +134,6 @@ bool Plugin::plugin_t_Get(void)
     this->plugin_t.FileName = this->fileName;
     this->plugin_t.Name = QString::fromStdString(name);
     
-    // TODO
     switch (this->type)
     {
         case M64PLUGIN_GFX:

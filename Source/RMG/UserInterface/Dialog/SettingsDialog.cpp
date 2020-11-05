@@ -11,12 +11,15 @@
 #include "../../Globals.hpp"
 
 using namespace UserInterface::Dialog;
+using namespace M64P::Wrapper;
 
 SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint)
 {
     this->setupUi(this);
 
     this->treeWidget->topLevelItem(0)->setSelected(true);
+    this->treeWidget->expandAll();
+
     this->loadCoreSettings();
     this->loadGameSettings();
     this->loadPluginSettings();
@@ -38,6 +41,12 @@ void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
         loadGameSettings();
         break;
     case 2:
+        loadGameCoreSettings();
+        break;
+    case 3:
+        loadGamePluginSettings();
+        break;
+    case 4:
         loadPluginSettings();
         break;
     }
@@ -86,8 +95,49 @@ void SettingsDialog::loadGameSettings(void)
     this->gameSiDmaDuration->setValue(gameInfo.Settings.sidmaduration);
 }
 
+void SettingsDialog::loadGameCoreSettings(void)
+{
+}
+
+void SettingsDialog::loadGamePluginSettings(void)
+{
+}
+
 void SettingsDialog::loadPluginSettings(void)
 {
+    QList<Plugin_t> pluginList;
+    QComboBox *comboBoxArray[4] = {this->videoPlugins, this->audioPlugins, this->inputPlugins, this->rspPlugins};
+    PluginType type;
+    QComboBox *comboBox;
+    Plugin_t plugin_t;
+
+    for (int i = 0; i < 4; i++)
+    {
+        type = (PluginType)i;
+        comboBox = comboBoxArray[i];
+
+        pluginList.clear();
+        pluginList = g_MupenApi.Core.GetPlugins((PluginType)i);
+
+        int pluginIndex = -1, stopCounting = 0;
+        for (Plugin_t &p : pluginList)
+        {
+            comboBox->addItem(p.Name);
+
+            if (stopCounting == 1)
+                continue;
+
+            pluginIndex++;
+
+            if (g_MupenApi.Core.GetCurrentPlugin(type, &plugin_t) &&
+                plugin_t.FileName == p.FileName)
+            {
+                stopCounting = 1;
+            }
+        }
+
+        comboBox->setCurrentIndex(pluginIndex);
+    }
 }
 
 void SettingsDialog::saveCoreSettings(void)
@@ -96,9 +146,8 @@ void SettingsDialog::saveCoreSettings(void)
     int counterFactor = this->coreCounterFactor->currentIndex();
     int cpuEmulator = this->coreCpuEmulator->currentIndex();
     int siDmaDuration = this->coreSiDmaDuration->value();
-    bool randomizeInterrupt = this->coreRandomizeTiming->isChecked();;
+    bool randomizeInterrupt = this->coreRandomizeTiming->isChecked();
     bool debugger = this->coreDebugger->isChecked();
-
 
     g_MupenApi.Config.SetOption(QString("Core"), QString("DisableExtraMem"), disableExtraMem);
     g_MupenApi.Config.SetOption(QString("Core"), QString("CountPerOp"), counterFactor);
@@ -110,17 +159,31 @@ void SettingsDialog::saveCoreSettings(void)
 
 void SettingsDialog::saveGameSettings(void)
 {
-
 }
 
 void SettingsDialog::savePluginSettings(void)
 {
-
 }
 
 void SettingsDialog::on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
+    int topLevelCount = this->treeWidget->topLevelItemCount();
     int index = this->treeWidget->indexOfTopLevelItem(current);
+
+    // count all children up until our item
+    for (int i = 0; i < topLevelCount && i < index; i++)
+    {
+        index += this->treeWidget->topLevelItem(i)->childCount();
+    }
+
+    // if we're a child ourselves,
+    // get index of parent and add that onto our own index
+    if (index == -1)
+    {
+        index = this->treeWidget->indexOfTopLevelItem(current->parent());
+        index += current->parent()->indexOfChild(current) + 1;
+    }
+
     this->stackedWidget->setCurrentIndex(index);
 }
 

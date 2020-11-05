@@ -13,6 +13,8 @@
 #include "../api/version.h"
 #include "../../Config.hpp"
 
+#include <QDir>
+
 using namespace M64P::Wrapper;
 
 Core::Core(void)
@@ -23,7 +25,6 @@ Core::~Core(void)
 {
 }
 
-#include <iostream>
 void DebugCallback(void *Context, int level, const char *message)
 {
     //std::cout << level << ": " << message << std::endl;
@@ -104,24 +105,6 @@ bool Core::DisableSpeedLimiter(void)
     return this->emulation_SpeedLimited(false);
 }
 
-M64P::Wrapper::Plugin *Core::plugin_Get(PluginType type)
-{
-    switch (type)
-    {
-    case PluginType::Gfx:
-        return &this->plugin_Gfx;
-    case PluginType::Rsp:
-        return &this->plugin_Rsp;
-    case PluginType::Audio:
-        return &this->plugin_Audio;
-    case PluginType::Input:
-        return &this->plugin_Input;
-    default:
-        return nullptr;
-    }
-}
-
-#include <QDir>
 QList<Plugin_t> Core::GetPlugins(PluginType type)
 {
     QList<Plugin_t> plugins;
@@ -143,47 +126,45 @@ QList<Plugin_t> Core::GetPlugins(PluginType type)
         break;
     }
 
-    std::cout << dir.toStdString() << std::endl;
-
     QDir qDir(dir);
     QStringList filter;
 
     filter << "*." SO_EXT;
 
     QFileInfoList fileList = qDir.entryInfoList(filter);
+
     Plugin p;
     Plugin_t pInfo;
 
     for (const QFileInfo &info : fileList)
     {
-        std::cout << info.absoluteFilePath().toStdString() << std::endl;
         if (p.Init(info.absoluteFilePath(), this->handle))
         {
             pInfo = p.GetPlugin_t();
 
-            if (pInfo.Type != type)
-                continue;
-
-            plugins.append(pInfo);
+            if (pInfo.Type == type)
+                plugins.append(pInfo);
         }
-        else
-        {
-            std::cout << "Init failed??" << std::endl;
-            std::cout << p.GetLastError().toStdString() << std::endl;
-        }
-
-        p.Shutdown();
-    }
-
-    for (const Plugin_t &plugin : plugins)
-    {
-        std::cout << "Name: " << plugin.Name.toStdString() << std::endl;
-        std::cout << "FileName: " << plugin.FileName.toStdString() << std::endl;
-        std::cout << "Version: " << plugin.Version << std::endl;
-        this->SetPlugin(plugin);
     }
 
     return plugins;
+}
+
+M64P::Wrapper::Plugin *Core::plugin_Get(PluginType type)
+{
+    switch (type)
+    {
+    case PluginType::Gfx:
+        return &this->plugin_Gfx;
+    case PluginType::Rsp:
+        return &this->plugin_Rsp;
+    case PluginType::Audio:
+        return &this->plugin_Audio;
+    case PluginType::Input:
+        return &this->plugin_Input;
+    default:
+        return nullptr;
+    }
 }
 
 bool Core::plugin_Attach(Plugin *p)
@@ -224,14 +205,44 @@ bool Core::SetPlugin(Plugin_t plugin)
 
     Plugin *p = this->plugin_Get(plugin.Type);
 
-    ret = p->Init(plugin.FileName, this->handle);
+    if (p->HasInit())
+    {
+        ret = p->Shutdown();
+        if (!ret)
+        {
+            this->error_Message = "Core::SetPlugin p->Shutdown() Failed: ";
+            this->error_Message += p->GetLastError();
+            return false;
+        }
+    }
 
+    ret = p->Init(plugin.FileName, this->handle);
     if (!ret)
     {
-        std::cout << "Init failed?????" << std::endl;
-        std::cout << p->GetLastError().toStdString() << std::endl;
+        this->error_Message = "Core::SetPlugin p->Init() Failed: ";
+        this->error_Message += p->GetLastError();
         return false;
     }
+
+    ret = p->Startup();
+    if (!ret)
+    {
+        this->error_Message = "Core::SetPlugin p->Startup() Failed: ";
+        this->error_Message += p->GetLastError();
+        return false;
+    }
+
+    return true;
+}
+
+bool Core::GetCurrentPlugin(PluginType type, Plugin_t* plugin_t)
+{
+    Plugin* p = this->plugin_Get(type);
+
+    if (!p->HasInit())
+        return false;
+
+    *plugin_t = p->GetPlugin_t();
 
     return true;
 }
@@ -542,9 +553,6 @@ bool Core::rom_Open(QString file)
     }
 
     buffer = qFile.readAll();
-
-    if (buffer.data() == NULL)
-        std::cout << "WARNING" << std::endl;
 
     ret = M64P::Core.DoCommand(M64CMD_ROM_OPEN, buffer.size(), buffer.data());
     if (ret != M64ERR_SUCCESS)

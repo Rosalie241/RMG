@@ -27,8 +27,10 @@ namespace M64P
             ~Plugin(void);
 
             bool Init(QString, m64p_dynlib_handle);
-            bool Shutdown(void);
+            bool HasInit(void);
 
+            bool Startup(void);
+            bool Shutdown(void);
 
             bool HasConfig(void);
             bool OpenConfig(void);
@@ -43,10 +45,14 @@ namespace M64P
         private:
             QString error_Message;
 
+            bool has_Init = false;
+
             QString fileName;
 
             m64p_dynlib_handle handle;
             m64p_plugin_type type;
+
+            m64p_dynlib_handle coreHandle;
 
             M64P::PluginApi plugin;
 

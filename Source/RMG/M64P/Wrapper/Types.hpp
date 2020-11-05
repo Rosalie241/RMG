@@ -20,10 +20,10 @@ namespace M64P
     {
         enum PluginType
         {
-            Rsp,
-            Gfx,
+            Gfx = 0,
             Audio,
             Input,
+            Rsp,
             Invalid
         };
 

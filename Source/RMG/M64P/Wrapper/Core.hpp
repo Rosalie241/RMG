@@ -33,6 +33,7 @@ namespace M64P
 
             QList<Plugin_t> GetPlugins(PluginType);
             bool SetPlugin(Plugin_t);
+            bool GetCurrentPlugin(PluginType, Plugin_t*);
 
             bool GetRomInfo(QString, RomInfo_t*);
             bool GetRomInfo(RomInfo_t*);

@@ -31,6 +31,8 @@ namespace UserInterface
 
             void loadCoreSettings(void);
             void loadGameSettings(void);
+            void loadGameCoreSettings(void);
+            void loadGamePluginSettings(void);
             void loadPluginSettings(void);
 
             void saveCoreSettings(void);
