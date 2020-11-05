@@ -39,12 +39,6 @@ bool MainWindow::Init(void)
         return false;
     }
 
-    if (!g_Settings.Init())
-    {
-        this->ui_MessageBox("Error", "Settings::Init Failed", g_Settings.GetLastError());
-        return false;
-    }
-
     if (!g_MupenApi.Init(MUPEN_CORE_FILE))
     {
         this->ui_MessageBox("Error", "Api::Init Failed", g_MupenApi.GetLastError());
@@ -79,7 +73,7 @@ bool MainWindow::Init(void)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    g_Settings.SetValue("Window", "geometry", this->saveGeometry());
+    g_MupenApi.Config.SetOption(APP_SETTINGS_SECTION, APP_SETTINGS_GEOMETRY, QString(this->saveGeometry().toBase64().toStdString().c_str()));
 
     this->on_Action_File_EndEmulation();
 
@@ -125,7 +119,10 @@ void MainWindow::ui_Init(void)
     this->ui_Widget_RomBrowser = new Widget::RomBrowserWidget();
     this->ui_Widget_OpenGL = new Widget::OGLWidget();
 
-    this->ui_Widget_RomBrowser->SetDirectory(g_Settings.GetValue("Game Directory", "Directory").toString());
+    QString dir;
+    g_MupenApi.Config.GetOption(APP_SETTINGS_SECTION, APP_SETTINGS_DIRECTORY, &dir);
+    
+    this->ui_Widget_RomBrowser->SetDirectory(dir);
     this->ui_Widget_RomBrowser->RefreshRomList();
 
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::on_RomBrowser_Select, this, &MainWindow::on_RomBrowser_Selected);
@@ -138,7 +135,11 @@ void MainWindow::ui_Setup(void)
     this->setWindowIcon(this->ui_Icon);
     this->setWindowTitle(WINDOW_TITLE);
     this->setCentralWidget(this->ui_Widgets);
-    this->restoreGeometry(g_Settings.GetValue("Window", "geometry").toByteArray());
+
+    QString geometry;
+    g_MupenApi.Config.GetOption(APP_SETTINGS_SECTION, APP_SETTINGS_GEOMETRY, &geometry);
+    this->restoreGeometry(QByteArray::fromBase64(geometry.toLocal8Bit()));
+
     this->statusBar()->showMessage("Core Library Hooked");
 
     this->ui_Widgets->addWidget(this->ui_Widget_RomBrowser);
@@ -558,7 +559,7 @@ void MainWindow::on_Action_File_ChooseDirectory(void)
     if (ret)
     {
         dir = dialog.selectedFiles().first();
-        g_Settings.SetValue("Game Directory", "Directory", dir);
+        g_MupenApi.Config.SetOption(APP_SETTINGS_SECTION, APP_SETTINGS_DIRECTORY, dir);
         this->ui_Widget_RomBrowser->SetDirectory(dir);
         this->ui_Widget_RomBrowser->RefreshRomList();
     }

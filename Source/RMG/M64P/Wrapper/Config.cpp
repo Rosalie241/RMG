@@ -62,16 +62,18 @@ bool Config::SetOption(QString section, QString key, float value)
 
 bool Config::SetOption(QString section, QString key, bool value)
 {
+    int boolValue = value ? 1 : 0;
+
     return this->section_Open(section) &&
-           this->value_Set(key, M64TYPE_BOOL, (void *)&value);
+           this->value_Set(key, M64TYPE_BOOL, (void *)&boolValue);
 }
 
 bool Config::SetOption(QString section, QString key, QString value)
 {
-    const char *a = value.toStdString().c_str();
+    std::string tmpStr = value.toStdString();
 
     return this->section_Open(section) &&
-           this->value_Set(key, M64TYPE_STRING, (void *)a);
+           this->value_Set(key, M64TYPE_STRING, (void *)tmpStr.c_str());
 }
 
 bool Config::SetOption(QString section, QString key, char *value)
@@ -88,19 +90,25 @@ bool Config::SetOption(QString section, QString key, const char* value)
 bool Config::GetOption(QString section, QString key, int *value)
 {
     return this->section_Open(section) &&
-           this->value_Get(key, M64TYPE_INT, value, sizeof(*value));
+           this->value_Get(key, M64TYPE_INT, value, sizeof(value));
 }
 
 bool Config::GetOption(QString section, QString key, float *value)
 {
     return this->section_Open(section) &&
-           this->value_Get(key, M64TYPE_INT, value, sizeof(*value));
+           this->value_Get(key, M64TYPE_FLOAT, value, sizeof(value));
 }
 
 bool Config::GetOption(QString section, QString key, bool *value)
 {
     return this->section_Open(section) &&
-           this->value_Get(key, M64TYPE_BOOL, value, sizeof(*value));
+            this->value_Get(key, M64TYPE_BOOL, value, sizeof(value));
+}
+
+bool Config::GetOption(QString section, QString key, char *value)
+{
+    return this->section_Open(section) &&
+            this->value_Get(key, M64TYPE_STRING, value, sizeof(value));
 }
 
 bool Config::GetOption(QString section, QString key, QString *value)
@@ -162,15 +170,7 @@ bool Config::value_Set(QString key, m64p_type type, void *value)
         return false;
     }
 
-    ret = M64P::Config.SaveFile();
-    if (ret != M64ERR_SUCCESS)
-    {
-        this->error_Message = "Config::value_Set M64P::Config.SaveFile Failed: ";
-        this->error_Message += M64P::Core.ErrorMessage(ret);
-        return false;
-    }
-
-    return true;
+    return this->Save();
 }
 
 bool Config::value_Get(QString key, m64p_type type, void *data, int maxSize)

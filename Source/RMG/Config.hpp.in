@@ -11,9 +11,9 @@
 #define APP_LOG_DIR "Log"
 #define APP_LOG_FILE APP_LOG_DIR"""/RMG.txt"
 
-#define APP_SETTINGS_ORG "rosalie"
-#define APP_SETTINGS_NAME WINDOW_TITLE
-#define APP_SETTINGS_GEOMETRY "geometry"
+#define APP_SETTINGS_SECTION "Rosalie's Mupen GUI"
+#define APP_SETTINGS_GEOMETRY "Window Geometry"
+#define APP_SETTINGS_DIRECTORY "ROM Directory"
 
 #define APP_ROMSEARCHER_MAX 50
 #define APP_STYLESHEET_FILE "Config/stylesheet.qss"

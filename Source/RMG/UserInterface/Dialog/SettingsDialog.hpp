@@ -26,6 +26,21 @@ namespace UserInterface
         {
             Q_OBJECT
 
+        private:
+            void restoreDefaults(int);
+
+            void loadCoreSettings(void);
+            void loadGameSettings(void);
+            void loadPluginSettings(void);
+
+            void saveCoreSettings(void);
+            void saveGameSettings(void);
+            void savePluginSettings(void);
+
+        private slots:
+            void on_treeWidget_currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*);
+            void on_buttonBox_clicked(QAbstractButton*);
+
         public:
             SettingsDialog(QWidget *parent);
             ~SettingsDialog(void);

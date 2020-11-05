@@ -33,7 +33,6 @@ set(RMG_SOURCES
     M64P/Wrapper/Api.cpp
     M64P/Wrapper/VidExt.cpp
     Utilities/Logger.cpp
-    Utilities/Settings.cpp
     Utilities/QtKeyToSdl2Key.cpp
     Globals.cpp
     main.cpp

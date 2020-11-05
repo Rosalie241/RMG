@@ -38,6 +38,7 @@ namespace M64P
             bool GetOption(QString section, QString key, int* value);
             bool GetOption(QString section, QString key, float* value);
             bool GetOption(QString section, QString key, bool* value);
+            bool GetOption(QString section, QString key, char *value);
             bool GetOption(QString section, QString key, QString* value);
 
             bool Save(void);

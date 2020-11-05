@@ -89,7 +89,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="comboBox_4">
+              <widget class="QComboBox" name="coreMemorySize">
                <item>
                 <property name="text">
                  <string>4 MB</string>
@@ -114,7 +114,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="comboBox_5">
+              <widget class="QComboBox" name="coreCounterFactor">
                <item>
                 <property name="text">
                  <string>0</string>
@@ -164,7 +164,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="comboBox_6">
+              <widget class="QComboBox" name="coreCpuEmulator">
                <item>
                 <property name="text">
                  <string>Pure Interpreter</string>
@@ -194,7 +194,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QSpinBox" name="spinBox">
+              <widget class="QSpinBox" name="coreSiDmaDuration">
                <property name="minimum">
                 <number>-1</number>
                </property>
@@ -209,14 +209,14 @@
             </layout>
            </item>
            <item>
-            <widget class="QCheckBox" name="checkBox_2">
+            <widget class="QCheckBox" name="coreRandomizeTiming">
              <property name="text">
               <string>Randomize PI/SI Interrupt Timing</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="checkBox">
+            <widget class="QCheckBox" name="coreDebugger">
              <property name="text">
               <string>Debugger</string>
              </property>
@@ -255,7 +255,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QLineEdit" name="lineEdit">
+              <widget class="QLineEdit" name="gameGoodName">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -276,7 +276,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="comboBox">
+              <widget class="QComboBox" name="gameMemorySize">
                <item>
                 <property name="text">
                  <string>4 MB</string>
@@ -301,7 +301,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="comboBox_9">
+              <widget class="QComboBox" name="gameSaveType">
                <item>
                 <property name="text">
                  <string>4 KB EEPROM</string>
@@ -346,7 +346,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="comboBox_2">
+              <widget class="QComboBox" name="gameCounterFactor">
                <item>
                 <property name="text">
                  <string>1</string>
@@ -391,7 +391,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QSpinBox" name="spinBox_2">
+              <widget class="QSpinBox" name="gameSiDmaDuration">
                <property name="maximum">
                 <number>9999999</number>
                </property>
@@ -435,22 +435,6 @@
  </widget>
  <resources/>
  <connections>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>SettingsDialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>157</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
