@@ -78,7 +78,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_RMG                 ICON                    "Icons/RMG.ico"
+IDI_RMG                 ICON                    "Resource/RMG.ico"
 
 
 #ifdef APSTUDIO_INVOKED
