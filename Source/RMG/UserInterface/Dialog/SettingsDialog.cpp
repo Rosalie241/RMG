@@ -140,6 +140,13 @@ void SettingsDialog::loadPluginSettings(void)
     }
 }
 
+void SettingsDialog::saveSettings(void)
+{
+    this->saveCoreSettings();
+    this->saveGameSettings();
+    this->savePluginSettings();
+}
+
 void SettingsDialog::saveCoreSettings(void)
 {
     bool disableExtraMem = (this->coreMemorySize->currentIndex() == 0);
@@ -163,6 +170,30 @@ void SettingsDialog::saveGameSettings(void)
 
 void SettingsDialog::savePluginSettings(void)
 {
+    QList<Plugin_t> pluginList;
+    QComboBox *comboBoxArray[4] = {this->videoPlugins, this->audioPlugins, this->inputPlugins, this->rspPlugins};
+    QString settingsArray[4] = {SETTINGS_PLUGIN_GFX, SETTINGS_PLUGIN_AUDIO, SETTINGS_PLUGIN_INPUT, SETTINGS_PLUGIN_RSP};
+    PluginType type;
+    QComboBox *comboBox;
+
+    for (int i = 0; i < 4; i++)
+    {
+        type = (PluginType)i;
+        comboBox = comboBoxArray[i];
+
+        pluginList.clear();
+        pluginList = g_MupenApi.Core.GetPlugins((PluginType)i);
+
+        for (Plugin_t &p : pluginList)
+        {
+            if (p.Name == comboBox->currentText())
+            {
+                g_MupenApi.Config.SetOption(SETTINGS_SECTION, settingsArray[i], p.FileName);
+                g_MupenApi.Core.SetPlugin(p);
+                break;
+            }
+        }
+    }
 }
 
 void SettingsDialog::on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
@@ -201,7 +232,7 @@ void SettingsDialog::on_buttonBox_clicked(QAbstractButton *button)
     }
     else if (pushButton == saveButton)
     {
-        this->saveCoreSettings();
+        this->saveSettings();
     }
     else if (pushButton == cancelButton)
     {
@@ -209,7 +240,7 @@ void SettingsDialog::on_buttonBox_clicked(QAbstractButton *button)
     }
     else if (pushButton == okButton)
     {
-        this->saveCoreSettings();
+        this->saveSettings();
         this->accept();
     }
 }

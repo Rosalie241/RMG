@@ -72,6 +72,7 @@ namespace M64P
 
             m64p_dynlib_handle handle;
 
+            QList<Plugin_t> plugin_Todo;
             M64P::Wrapper::Plugin plugin_Rsp;
             M64P::Wrapper::Plugin plugin_Gfx;
             M64P::Wrapper::Plugin plugin_Audio;

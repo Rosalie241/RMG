@@ -22,6 +22,7 @@
 #include <QFileDialog>
 
 using namespace UserInterface;
+using namespace M64P::Wrapper;
 
 MainWindow::MainWindow() : QMainWindow(nullptr)
 {
@@ -45,16 +46,39 @@ bool MainWindow::Init(void)
         return false;
     }
 
-    QList<M64P::Wrapper::Plugin_t> pList;
+    // TODO, move this crap to a plugin loader
+    QList<Plugin_t> pluginList;
+    QString settingsArray[4] = {SETTINGS_PLUGIN_GFX, SETTINGS_PLUGIN_AUDIO, SETTINGS_PLUGIN_INPUT, SETTINGS_PLUGIN_RSP};
+    QString settingsValue;
+    PluginType type;
+    QComboBox *comboBox;
+    bool found;
 
-    pList.append(g_MupenApi.Core.GetPlugins(M64P::Wrapper::PluginType::Gfx));
-    pList.append(g_MupenApi.Core.GetPlugins(M64P::Wrapper::PluginType::Rsp));
-    pList.append(g_MupenApi.Core.GetPlugins(M64P::Wrapper::PluginType::Audio));
-    pList.append(g_MupenApi.Core.GetPlugins(M64P::Wrapper::PluginType::Input));
-
-    for (M64P::Wrapper::Plugin_t& p : pList)
+    for (int i = 0; i < 4; i++)
     {
-        g_MupenApi.Core.SetPlugin(p);
+        found = false;
+        type = (PluginType)i;
+
+        pluginList.clear();
+        pluginList = g_MupenApi.Core.GetPlugins((PluginType)i);
+
+        g_MupenApi.Config.GetOption(SETTINGS_SECTION, settingsArray[i], &settingsValue);
+
+        if (!settingsValue.isEmpty())
+        {
+            for (Plugin_t &p : pluginList)
+            {
+                if (p.FileName == settingsValue)
+                {
+                    g_MupenApi.Core.SetPlugin(p);
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        if (!found)
+            g_MupenApi.Core.SetPlugin(pluginList.first());
     }
 
     g_MupenApi.Config.SetOption("Core", "ScreenshotPath", "Screenshots");
@@ -80,7 +104,7 @@ bool MainWindow::Init(void)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    g_MupenApi.Config.SetOption(APP_SETTINGS_SECTION, APP_SETTINGS_GEOMETRY, QString(this->saveGeometry().toBase64().toStdString().c_str()));
+    g_MupenApi.Config.SetOption(SETTINGS_SECTION, SETTINGS_GEOMETRY, QString(this->saveGeometry().toBase64().toStdString().c_str()));
 
     this->on_Action_File_EndEmulation();
 
@@ -127,8 +151,8 @@ void MainWindow::ui_Init(void)
     this->ui_Widget_OpenGL = new Widget::OGLWidget();
 
     QString dir;
-    g_MupenApi.Config.GetOption(APP_SETTINGS_SECTION, APP_SETTINGS_DIRECTORY, &dir);
-    
+    g_MupenApi.Config.GetOption(SETTINGS_SECTION, SETTINGS_DIRECTORY, &dir);
+
     this->ui_Widget_RomBrowser->SetDirectory(dir);
     this->ui_Widget_RomBrowser->RefreshRomList();
 
@@ -144,7 +168,7 @@ void MainWindow::ui_Setup(void)
     this->setCentralWidget(this->ui_Widgets);
 
     QString geometry;
-    g_MupenApi.Config.GetOption(APP_SETTINGS_SECTION, APP_SETTINGS_GEOMETRY, &geometry);
+    g_MupenApi.Config.GetOption(SETTINGS_SECTION, SETTINGS_GEOMETRY, &geometry);
     this->restoreGeometry(QByteArray::fromBase64(geometry.toLocal8Bit()));
 
     this->statusBar()->showMessage("Core Library Hooked");
@@ -185,9 +209,13 @@ void MainWindow::ui_InEmulation(bool inEmulation, bool isPaused)
     this->menuBar_Setup(inEmulation, isPaused);
 
     if (inEmulation)
+    {
         this->ui_Widgets->setCurrentIndex(1);
+    }
     else
+    {
         this->ui_Widgets->setCurrentIndex(0);
+    }
 }
 
 void MainWindow::ui_SaveGeometry(void)
@@ -566,7 +594,7 @@ void MainWindow::on_Action_File_ChooseDirectory(void)
     if (ret)
     {
         dir = dialog.selectedFiles().first();
-        g_MupenApi.Config.SetOption(APP_SETTINGS_SECTION, APP_SETTINGS_DIRECTORY, dir);
+        g_MupenApi.Config.SetOption(SETTINGS_SECTION, SETTINGS_DIRECTORY, dir);
         this->ui_Widget_RomBrowser->SetDirectory(dir);
         this->ui_Widget_RomBrowser->RefreshRomList();
     }
@@ -771,6 +799,11 @@ void MainWindow::on_Action_Options_Settings(void)
 
     Dialog::SettingsDialog dialog(this);
     dialog.exec();
+
+    // reload UI,
+    // because we need to keep Options -> Configure {type} Plugin...
+    // up-to-date
+    this->ui_InEmulation(emulationThread->isRunning(), isPaused);
 
     if (isRunning && !isPaused)
         this->on_Action_System_Pause();

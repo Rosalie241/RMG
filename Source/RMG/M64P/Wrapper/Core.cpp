@@ -138,7 +138,7 @@ QList<Plugin_t> Core::GetPlugins(PluginType type)
 
     for (const QFileInfo &info : fileList)
     {
-        if (p.Init(info.absoluteFilePath(), this->handle))
+        if (p.Init(info.filePath(), this->handle))
         {
             pInfo = p.GetPlugin_t();
 
@@ -203,6 +203,13 @@ bool Core::SetPlugin(Plugin_t plugin)
 {
     bool ret;
 
+    // don't apply plugins when emulation is running
+    if (this->IsEmulationRunning() || this->isEmulationPaused())
+    {
+        plugin_Todo.append(plugin);
+        return true;
+    }
+
     Plugin *p = this->plugin_Get(plugin.Type);
 
     if (p->HasInit())
@@ -235,9 +242,9 @@ bool Core::SetPlugin(Plugin_t plugin)
     return true;
 }
 
-bool Core::GetCurrentPlugin(PluginType type, Plugin_t* plugin_t)
+bool Core::GetCurrentPlugin(PluginType type, Plugin_t *plugin_t)
 {
-    Plugin* p = this->plugin_Get(type);
+    Plugin *p = this->plugin_Get(type);
 
     if (!p->HasInit())
         return false;
@@ -278,7 +285,7 @@ bool Core::GetRomInfo(QString file, RomInfo_t *info)
 
     if (!this->rom_Open(file))
         return false;
-    
+
     ret = M64P::Core.DoCommand(M64CMD_ROM_GET_HEADER, sizeof(m64p_rom_header), &info->Header);
     if (ret != M64ERR_SUCCESS)
     {
@@ -308,6 +315,17 @@ bool Core::GetRomInfo(QString file, RomInfo_t *info)
 bool Core::LaunchEmulation(QString file)
 {
     m64p_error ret;
+
+    // Apply plugins that were set during emulation
+    if (!this->plugin_Todo.isEmpty())
+    {
+        for (const Plugin_t &p : this->plugin_Todo)
+        {
+            this->SetPlugin(p);
+        }
+
+        this->plugin_Todo.clear();
+    }
 
     if (!this->rom_Open(file))
         return false;
