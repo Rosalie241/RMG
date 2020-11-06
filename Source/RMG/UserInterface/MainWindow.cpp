@@ -210,10 +210,16 @@ void MainWindow::ui_InEmulation(bool inEmulation, bool isPaused)
 
     if (inEmulation)
     {
+        RomInfo_t info = { 0 };
+        g_MupenApi.Core.GetRomInfo(&info);
+
+        this->setWindowTitle(info.Settings.goodname + QString(" - ") + QString(WINDOW_TITLE));
+
         this->ui_Widgets->setCurrentIndex(1);
     }
     else
     {
+        this->setWindowTitle(QString(WINDOW_TITLE));
         this->ui_Widgets->setCurrentIndex(0);
     }
 }
@@ -887,7 +893,7 @@ void MainWindow::on_VidExt_ResizeWindow(int width, int height)
 void MainWindow::on_VidExt_SetCaption(QString title)
 {
     std::cout << "on_VidExt_SetCaption" << std::endl;
-    this->setWindowTitle(QString(WINDOW_TITLE) + " - " + title);
+    //this->setWindowTitle(QString(WINDOW_TITLE) + " - " + title);
 }
 
 void MainWindow::on_VidExt_ToggleFS(void)
