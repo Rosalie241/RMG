@@ -321,7 +321,8 @@ bool Core::LaunchEmulation(QString file)
     {
         for (const Plugin_t &p : this->plugin_Todo)
         {
-            this->SetPlugin(p);
+            if (!this->SetPlugin(p))
+                return false;
         }
 
         this->plugin_Todo.clear();
