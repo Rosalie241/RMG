@@ -18,6 +18,7 @@ set(RMG_SOURCES
     UserInterface/Widget/OGLWidget.cpp
     UserInterface/Dialog/SettingsDialog.cpp
     UserInterface/Dialog/SettingsDialog.ui
+    UserInterface/Dialog/SettingsDialog.qrc
     UserInterface/NoFocusDelegate.cpp
     UserInterface/UIResources.rc
     UserInterface/UIResources.qrc

@@ -40,6 +40,8 @@ namespace UserInterface
             void saveGameSettings(void);
             void savePluginSettings(void);
 
+            void hideEmulationInfoText(void);
+
         private slots:
             void on_treeWidget_currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*);
             void on_buttonBox_clicked(QAbstractButton*);

@@ -80,6 +80,7 @@ void SettingsDialog::loadGameSettings(void)
 {
     if (!g_EmuThread->isRunning())
     {
+        this->hideEmulationInfoText();
         this->treeWidget->topLevelItem(1)->setDisabled(true);
         return;
     }
@@ -192,6 +193,24 @@ void SettingsDialog::savePluginSettings(void)
                 g_MupenApi.Core.SetPlugin(p);
                 break;
             }
+        }
+    }
+}
+
+void SettingsDialog::hideEmulationInfoText(void)
+{
+    QHBoxLayout *layouts[] = 
+    {
+        this->emulationInfoLayout,
+        this->emulationInfoLayout_2
+    };
+
+    for (const QHBoxLayout *layout : layouts)
+    {
+        for (int i = 0; i < layout->count(); i++)
+        {
+            QWidget *widget = layout->itemAt(i)->widget();
+            widget->hide();
         }
     }
 }

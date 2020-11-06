@@ -144,7 +144,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
 
 void MainWindow::ui_Init(void)
 {
-    this->ui_Icon = QIcon(":Icons/RMG.png");
+    this->ui_Icon = QIcon(":Resource/RMG.png");
 
     this->ui_Widgets = new QStackedWidget();
     this->ui_Widget_RomBrowser = new Widget::RomBrowserWidget();
