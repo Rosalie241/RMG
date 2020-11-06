@@ -123,7 +123,7 @@ Plugin_t Plugin::GetPlugin_t(void)
 
 bool Plugin::plugin_t_Get(void)
 {
-    const char* name = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
+    const char* name = nullptr;
     m64p_error ret;
 
     ret = this->plugin.GetVersion(&this->type, &this->plugin_t.Version, &this->plugin_t.ApiVersion, &name, &this->plugin_t.Capabilities);
@@ -134,14 +134,17 @@ bool Plugin::plugin_t_Get(void)
     }
 
     this->plugin_t.FileName = this->fileName;
-    this->plugin_t.Name = QString::fromStdString(name);
 
     // if plugin doesn't provide us with a name,
     // use basename of filepath instead
-    if (this->plugin_t.Name.isEmpty())
+    if (name == nullptr)
     {
         QFileInfo info(this->plugin_t.FileName);
         this->plugin_t.Name = info.fileName();
+    }
+    else
+    {
+        this->plugin_t.Name = QString::fromStdString(name);
     }
 
     switch (this->type)
