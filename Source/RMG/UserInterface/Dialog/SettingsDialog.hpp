@@ -28,6 +28,7 @@ namespace UserInterface
 
         private:
             void restoreDefaults(int);
+            void reloadSettings(int);
 
             void loadCoreSettings(void);
             void loadGameSettings(void);

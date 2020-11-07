@@ -118,7 +118,7 @@ m64p_plugin_type Plugin::GetType(void)
 
 Plugin_t Plugin::GetPlugin_t(void)
 {
-   return this->plugin_t;
+    return this->plugin_t;
 }
 
 bool Plugin::plugin_t_Get(void)

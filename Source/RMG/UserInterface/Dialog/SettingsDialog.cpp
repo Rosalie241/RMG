@@ -52,6 +52,29 @@ void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
     }
 }
 
+void SettingsDialog::reloadSettings(int stackedWidgetIndex)
+{
+    switch (stackedWidgetIndex)
+    {
+    default:
+    case 0:
+        loadCoreSettings();
+        break;
+    case 1:
+        loadGameSettings();
+        break;
+    case 2:
+        loadGameCoreSettings();
+        break;
+    case 3:
+        loadGamePluginSettings();
+        break;
+    case 4:
+        loadPluginSettings();
+        break;
+    }
+}
+
 void SettingsDialog::loadCoreSettings(void)
 {
     bool disableExtraMem = false;
@@ -116,6 +139,7 @@ void SettingsDialog::loadPluginSettings(void)
     {
         type = (PluginType)i;
         comboBox = comboBoxArray[i];
+        comboBox->clear();
 
         pluginList.clear();
         pluginList = g_MupenApi.Core.GetPlugins((PluginType)i);
@@ -240,12 +264,18 @@ void SettingsDialog::on_treeWidget_currentItemChanged(QTreeWidgetItem *current, 
 void SettingsDialog::on_buttonBox_clicked(QAbstractButton *button)
 {
     QPushButton *pushButton = (QPushButton *)button;
+    QPushButton *resetButton = this->buttonBox->button(QDialogButtonBox::Reset);
     QPushButton *defaultButton = this->buttonBox->button(QDialogButtonBox::RestoreDefaults);
     QPushButton *saveButton = this->buttonBox->button(QDialogButtonBox::Save);
     QPushButton *cancelButton = this->buttonBox->button(QDialogButtonBox::Cancel);
     QPushButton *okButton = this->buttonBox->button(QDialogButtonBox::Ok);
 
-    if (pushButton == defaultButton)
+
+    if (pushButton == resetButton)
+    {
+        this->reloadSettings(this->stackedWidget->currentIndex());
+    }
+    else if (pushButton == defaultButton)
     {
         this->restoreDefaults(this->stackedWidget->currentIndex());
     }
