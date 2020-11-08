@@ -25,10 +25,21 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
     this->loadGameCoreSettings();
     this->loadGamePluginSettings();
     this->loadPluginSettings();
+
+    int width = 0, height = 0;
+    g_MupenApi.Config.GetOption(SETTINGS_SECTION, "Settings Window Width", &width);
+    g_MupenApi.Config.GetOption(SETTINGS_SECTION, "Settings Window Height", &height);
+
+    if (width != 0 && height != 0)
+        this->resize(width, height);
 }
 
 SettingsDialog::~SettingsDialog(void)
 {
+    g_MupenApi.Config.SetOption(SETTINGS_SECTION, "Settings Window Width",
+                                this->size().width());
+    g_MupenApi.Config.SetOption(SETTINGS_SECTION, "Settings Window Height",
+                                this->size().height());
 }
 
 void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
