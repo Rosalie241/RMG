@@ -6,7 +6,7 @@
  *  it under the terms of the GNU General Public License version 3.
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
-*/
+ */
 #ifndef NOFOCUSDELEGATE_HPP
 #define NOFOCUSDELEGATE_HPP
 
@@ -14,11 +14,11 @@
 
 namespace UserInterface
 {
-    class NoFocusDelegate : public QStyledItemDelegate
-    {
-    protected:
-        void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-    };
+class NoFocusDelegate : public QStyledItemDelegate
+{
+  protected:
+    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+};
 } // namespace UserInterface
 
 #endif // NOFOCUSDELEGATE_HPP

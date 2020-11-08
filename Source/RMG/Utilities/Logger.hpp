@@ -6,37 +6,37 @@
  *  it under the terms of the GNU General Public License version 3.
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
-*/
+ */
 #ifndef LOGGER_HPP
 #define LOGGER_HPP
 
 #include "Config.hpp"
 
-#include <QString>
 #include <QFile>
+#include <QString>
 
 namespace Utilities
 {
-    class Logger
-    {
-    public:
-        Logger(void);
-        ~Logger(void);
+class Logger
+{
+  public:
+    Logger(void);
+    ~Logger(void);
 
-        bool Init(void);
+    bool Init(void);
 
-        void AddText(QString);
+    void AddText(QString);
 
-        QString GetLastError(void);
+    QString GetLastError(void);
 
-    private:
-        bool init_Failed = true;
+  private:
+    bool init_Failed = true;
 
-        QString error_Message;
+    QString error_Message;
 
-        QFile logfile;
-    };
+    QFile logfile;
+};
 
-} // namespace Util
+} // namespace Utilities
 
 #endif // LOGGER_HPP

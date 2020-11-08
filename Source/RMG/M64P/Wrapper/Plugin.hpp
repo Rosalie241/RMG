@@ -6,61 +6,60 @@
  *  it under the terms of the GNU General Public License version 3.
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
-*/
+ */
 #ifndef M64P_WRAPPER_PLUGIN_HPP
 #define M64P_WRAPPER_PLUGIN_HPP
 
-#include "../api/m64p_types.h"
 #include "../PluginApi.hpp"
+#include "../api/m64p_types.h"
 #include "Types.hpp"
 
 #include <QString>
 
 namespace M64P
 {
-    namespace Wrapper
-    {
-        class Plugin
-        {
-        public:
-            Plugin(void);
-            ~Plugin(void);
+namespace Wrapper
+{
+class Plugin
+{
+  public:
+    Plugin(void);
+    ~Plugin(void);
 
-            bool Init(QString, m64p_dynlib_handle);
-            bool HasInit(void);
+    bool Init(QString, m64p_dynlib_handle);
+    bool HasInit(void);
 
-            bool Startup(void);
-            bool Shutdown(void);
+    bool Startup(void);
+    bool Shutdown(void);
 
-            bool HasConfig(void);
-            bool OpenConfig(void);
+    bool HasConfig(void);
+    bool OpenConfig(void);
 
-            m64p_dynlib_handle GetHandle(void);
-            m64p_plugin_type GetType(void);
-            
-            Plugin_t GetPlugin_t(void);
+    m64p_dynlib_handle GetHandle(void);
+    m64p_plugin_type GetType(void);
 
-            QString GetLastError(void);
+    Plugin_t GetPlugin_t(void);
 
-        private:
-            QString error_Message;
+    QString GetLastError(void);
 
-            bool has_Init = false;
+  private:
+    QString error_Message;
 
-            QString fileName;
+    bool has_Init = false;
 
-            m64p_dynlib_handle handle;
-            m64p_plugin_type type;
+    QString fileName;
 
-            m64p_dynlib_handle coreHandle;
+    m64p_dynlib_handle handle;
+    m64p_plugin_type type;
 
-            M64P::PluginApi plugin;
+    m64p_dynlib_handle coreHandle;
 
+    M64P::PluginApi plugin;
 
-            Plugin_t plugin_t;
-            bool plugin_t_Get(void);
-        };
-    } // namespace Wrapper
+    Plugin_t plugin_t;
+    bool plugin_t_Get(void);
+};
+} // namespace Wrapper
 } // namespace M64P
 
 #endif // M64P_WRAPPER_PLUGIN_HPP
