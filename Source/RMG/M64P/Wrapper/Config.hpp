@@ -13,6 +13,7 @@
 #include <M64P/ConfigApi.hpp>
 
 #include <QString>
+#include <QList>
 
 namespace M64P
 {
@@ -41,6 +42,8 @@ namespace M64P
             bool GetOption(QString section, QString key, char *value);
             bool GetOption(QString section, QString key, QString* value);
 
+            bool SectionExists(QString section);
+
             bool Save(void);
 
             QString GetLastError(void);
@@ -51,6 +54,9 @@ namespace M64P
             m64p_handle handle;
             m64p_handle section_Handle;
 
+            QList<QString> section_List;
+
+            static void section_List_Handler(void *, const char *);
             bool section_Open(QString);
             bool value_Set(QString, m64p_type, void*);
             bool value_Get(QString, m64p_type, void*, int);

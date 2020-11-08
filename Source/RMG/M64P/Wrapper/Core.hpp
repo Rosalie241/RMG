@@ -35,8 +35,9 @@ namespace M64P
             bool SetPlugin(Plugin_t);
             bool GetCurrentPlugin(PluginType, Plugin_t*);
 
-            bool GetRomInfo(QString, RomInfo_t*);
+            bool GetRomInfo(QString, RomInfo_t*, bool);
             bool GetRomInfo(RomInfo_t*);
+            bool GetDefaultRomInfo(RomInfo_t*);
 
             bool LaunchEmulation(QString);
             bool StopEmulation(void);
@@ -83,7 +84,11 @@ namespace M64P
             bool plugins_Attach(void);
             bool plugins_Detach(void);
 
-            bool rom_Open(QString);
+
+            RomInfo_t rom_Info;
+
+            bool rom_Open(QString, bool);
+            bool rom_ApplyOverlay();
             bool rom_Close(void);
 
             bool emulation_QueryState(m64p_emu_state*);

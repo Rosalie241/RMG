@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>645</width>
-    <height>564</height>
+    <width>640</width>
+    <height>480</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -307,7 +307,7 @@
                 <number>1</number>
                </property>
                <property name="text">
-                <string>Changes will be applied on next emulation start</string>
+                <string>Changes will be applied on next emulation run</string>
                </property>
                <property name="textFormat">
                 <enum>Qt::PlainText</enum>
@@ -342,6 +342,9 @@
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
@@ -526,7 +529,7 @@
                 <number>1</number>
                </property>
                <property name="text">
-                <string>Changes will be applied on next emulation start</string>
+                <string>Changes will be applied on next emulation run</string>
                </property>
                <property name="textFormat">
                 <enum>Qt::PlainText</enum>
@@ -626,7 +629,7 @@
                 <number>1</number>
                </property>
                <property name="text">
-                <string>Changes will be applied on next emulation start</string>
+                <string>Changes will be applied on next emulation run</string>
                </property>
                <property name="textFormat">
                 <enum>Qt::PlainText</enum>
@@ -640,23 +643,22 @@
          <widget class="QWidget" name="gamePluginsSettingsPage">
           <layout class="QVBoxLayout" name="verticalLayout_7">
            <item>
-            <widget class="QCheckBox" name="checkBox_3">
-             <property name="text">
-              <string>Override core plugin settings</string>
-             </property>
-            </widget>
-           </item>
-           <item>
             <widget class="QGroupBox" name="groupBox_6">
              <property name="enabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <property name="title">
               <string>Video Plugin</string>
              </property>
+             <property name="checkable">
+              <bool>false</bool>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
              <layout class="QHBoxLayout" name="horizontalLayout_17">
               <item>
-               <widget class="QComboBox" name="videoPlugins_2">
+               <widget class="QComboBox" name="pluginVideoPlugins">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -678,14 +680,20 @@
            <item>
             <widget class="QGroupBox" name="groupBox_7">
              <property name="enabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <property name="title">
               <string>Audio Plugin</string>
              </property>
+             <property name="checkable">
+              <bool>false</bool>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
              <layout class="QHBoxLayout" name="horizontalLayout_18">
               <item>
-               <widget class="QComboBox" name="audioPlugins_2">
+               <widget class="QComboBox" name="pluginAudioPlugins">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -707,14 +715,20 @@
            <item>
             <widget class="QGroupBox" name="groupBox_8">
              <property name="enabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <property name="title">
               <string>Input Plugin</string>
              </property>
+             <property name="checkable">
+              <bool>false</bool>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
              <layout class="QHBoxLayout" name="horizontalLayout_19">
               <item>
-               <widget class="QComboBox" name="inputPlugins_2">
+               <widget class="QComboBox" name="pluginInputPlugins">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -736,7 +750,7 @@
            <item>
             <widget class="QGroupBox" name="groupBox_9">
              <property name="enabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <property name="title">
               <string>Reality Signal Processor Plugin</string>
@@ -750,9 +764,12 @@
              <property name="checkable">
               <bool>false</bool>
              </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
              <layout class="QHBoxLayout" name="horizontalLayout_20">
               <item>
-               <widget class="QComboBox" name="rspPlugins_2">
+               <widget class="QComboBox" name="pluginRspPlugins">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -772,7 +789,17 @@
             </widget>
            </item>
            <item>
-            <layout class="QVBoxLayout" name="verticalLayout_8"/>
+            <spacer name="verticalSpacer_5">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
            </item>
            <item>
             <layout class="QHBoxLayout" name="emulationInfoLayout_5">
@@ -807,7 +834,7 @@
                 <number>1</number>
                </property>
                <property name="text">
-                <string>Changes will be applied on next emulation start</string>
+                <string>Changes will be applied on next emulation run</string>
                </property>
                <property name="textFormat">
                 <enum>Qt::PlainText</enum>
@@ -979,7 +1006,7 @@
                 <number>1</number>
                </property>
                <property name="text">
-                <string>Changes will be applied on next emulation start</string>
+                <string>Changes will be applied on next emulation run</string>
                </property>
                <property name="textFormat">
                 <enum>Qt::PlainText</enum>
@@ -994,6 +1021,12 @@
           <layout class="QVBoxLayout" name="verticalLayout_9">
            <item>
             <widget class="QScrollArea" name="scrollArea">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="widgetResizable">
               <bool>true</bool>
              </property>
@@ -1001,10 +1034,16 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>-76</y>
-                <width>436</width>
+                <y>0</y>
+                <width>212</width>
                 <height>542</height>
                </rect>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_11">
                <item>
@@ -1165,6 +1204,9 @@
            </item>
            <item>
             <layout class="QHBoxLayout" name="emulationInfoLayout_6">
+             <property name="sizeConstraint">
+              <enum>QLayout::SetDefaultConstraint</enum>
+             </property>
              <item>
               <widget class="QLabel" name="label_21">
                <property name="sizePolicy">
@@ -1196,7 +1238,7 @@
                 <number>1</number>
                </property>
                <property name="text">
-                <string>Changes will be applied on next application start</string>
+                <string>Changes will be applied on next application run</string>
                </property>
                <property name="textFormat">
                 <enum>Qt::PlainText</enum>

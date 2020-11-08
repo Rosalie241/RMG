@@ -38,7 +38,7 @@ void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
         loadCoreSettings();
         break;
     case 1:
-        loadGameSettings();
+        loadDefaultGameSettings();
         break;
     case 2:
         loadGameCoreSettings();
@@ -115,7 +115,7 @@ void SettingsDialog::loadGameSettings(void)
     this->gameGoodName->setText(gameInfo.Settings.goodname);
     this->gameMemorySize->setCurrentIndex(!gameInfo.Settings.disableextramem);
     this->gameSaveType->setCurrentIndex(gameInfo.Settings.savetype);
-    this->gameCounterFactor->setCurrentIndex(gameInfo.Settings.countperop);
+    this->gameCounterFactor->setCurrentIndex(gameInfo.Settings.countperop - 1);
     this->gameSiDmaDuration->setValue(gameInfo.Settings.sidmaduration);
 }
 
@@ -165,6 +165,19 @@ void SettingsDialog::loadPluginSettings(void)
     }
 }
 
+void SettingsDialog::loadDefaultGameSettings(void)
+{
+    RomInfo_t gameInfo;
+
+    g_MupenApi.Core.GetDefaultRomInfo(&gameInfo);
+
+    this->gameGoodName->setText(gameInfo.Settings.goodname);
+    this->gameMemorySize->setCurrentIndex(!gameInfo.Settings.disableextramem);
+    this->gameSaveType->setCurrentIndex(gameInfo.Settings.savetype);
+    this->gameCounterFactor->setCurrentIndex(gameInfo.Settings.countperop - 1);
+    this->gameSiDmaDuration->setValue(gameInfo.Settings.sidmaduration);
+}
+
 void SettingsDialog::saveSettings(void)
 {
     this->saveCoreSettings();
@@ -191,6 +204,16 @@ void SettingsDialog::saveCoreSettings(void)
 
 void SettingsDialog::saveGameSettings(void)
 {
+    M64P::Wrapper::RomInfo_t gameInfo = {0};
+
+    g_MupenApi.Core.GetRomInfo(&gameInfo);
+
+    QString section = QString(gameInfo.Settings.MD5);
+
+    g_MupenApi.Config.SetOption(section, "DisableExtraMem", this->gameMemorySize->currentIndex() == 0);
+    g_MupenApi.Config.SetOption(section, "SaveType", this->gameSaveType->currentIndex());
+    g_MupenApi.Config.SetOption(section, "CountPerOp", this->gameCounterFactor->currentIndex() + 1);
+    g_MupenApi.Config.SetOption(section, "SiDmaDuration", this->gameSiDmaDuration->value());
 }
 
 void SettingsDialog::savePluginSettings(void)

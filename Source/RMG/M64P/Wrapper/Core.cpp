@@ -6,13 +6,14 @@
  *  it under the terms of the GNU General Public License version 3.
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
-*/
+ */
 #include "Core.hpp"
-#include "Plugin.hpp"
+#include "../../Config.hpp"
+#include "../../Globals.hpp"
 #include "../Api.hpp"
 #include "../api/version.h"
-#include "../../Config.hpp"
-
+#include "Config.hpp"
+#include "Plugin.hpp"
 #include <QDir>
 
 using namespace M64P::Wrapper;
@@ -27,12 +28,12 @@ Core::~Core(void)
 
 void DebugCallback(void *Context, int level, const char *message)
 {
-    //std::cout << level << ": " << message << std::endl;
+    // std::cout << level << ": " << message << std::endl;
 }
 
 void StateCallback(void *Context2, m64p_core_param ParamChanged, int NewValue)
 {
-    //std::cout << ParamChanged << ": " << NewValue << std::endl;
+    // std::cout << ParamChanged << ": " << NewValue << std::endl;
 }
 
 bool Core::Init(m64p_dynlib_handle handle)
@@ -45,7 +46,8 @@ bool Core::Init(m64p_dynlib_handle handle)
         return false;
     }
 
-    ret = M64P::Core.Startup(FRONTEND_API_VERSION, MUPEN_CONFIG_DIR, MUPEN_DATA_DIR, NULL, DebugCallback, NULL, StateCallback);
+    ret = M64P::Core.Startup(FRONTEND_API_VERSION, MUPEN_CONFIG_DIR, MUPEN_DATA_DIR, NULL, DebugCallback, NULL,
+                             StateCallback);
     if (ret != M64ERR_SUCCESS)
     {
         this->error_Message = "Core::Init M64P::Core.Startup() Failed: ";
@@ -184,10 +186,8 @@ bool Core::plugin_Attach(Plugin *p)
 
 bool Core::plugins_Attach(void)
 {
-    return this->plugin_Attach(&this->plugin_Gfx) &&
-           this->plugin_Attach(&this->plugin_Audio) &&
-           this->plugin_Attach(&this->plugin_Input) &&
-           this->plugin_Attach(&this->plugin_Rsp);
+    return this->plugin_Attach(&this->plugin_Gfx) && this->plugin_Attach(&this->plugin_Audio) &&
+           this->plugin_Attach(&this->plugin_Input) && this->plugin_Attach(&this->plugin_Rsp);
 }
 
 bool Core::plugins_Detach(void)
@@ -279,11 +279,11 @@ bool Core::GetRomInfo(RomInfo_t *info)
     return true;
 }
 
-bool Core::GetRomInfo(QString file, RomInfo_t *info)
+bool Core::GetRomInfo(QString file, RomInfo_t *info, bool overlay = true)
 {
     m64p_error ret;
 
-    if (!this->rom_Open(file))
+    if (!this->rom_Open(file, overlay))
         return false;
 
     ret = M64P::Core.DoCommand(M64CMD_ROM_GET_HEADER, sizeof(m64p_rom_header), &info->Header);
@@ -312,6 +312,16 @@ bool Core::GetRomInfo(QString file, RomInfo_t *info)
     return true;
 }
 
+bool Core::GetDefaultRomInfo(RomInfo_t *romInfo)
+{
+    if (!this->emulation_IsRunning() && !this->emulation_IsPaused())
+        return false;
+
+    *romInfo = this->rom_Info;
+
+    return true;
+}
+
 bool Core::LaunchEmulation(QString file)
 {
     m64p_error ret;
@@ -328,7 +338,10 @@ bool Core::LaunchEmulation(QString file)
         this->plugin_Todo.clear();
     }
 
-    if (!this->rom_Open(file))
+    if (!this->GetRomInfo(file, &this->rom_Info, false))
+        return false;
+
+    if (!this->rom_Open(file, true))
         return false;
 
     if (!this->plugins_Attach())
@@ -559,7 +572,7 @@ QString Core::GetLastError(void)
     return this->error_Message;
 }
 
-bool Core::rom_Open(QString file)
+bool Core::rom_Open(QString file, bool overlay = true)
 {
     m64p_error ret;
     QByteArray buffer;
@@ -583,7 +596,55 @@ bool Core::rom_Open(QString file)
     buffer.clear();
     qFile.close();
 
-    return ret == M64ERR_SUCCESS;
+    if (ret != M64ERR_SUCCESS)
+        return false;
+
+    if (overlay)
+        return this->rom_ApplyOverlay();
+
+    return true;
+}
+
+#include <iostream>
+bool Core::rom_ApplyOverlay()
+{
+    bool ret;
+    m64p_error ret2;
+    RomInfo_t info = {0};
+    QString section;
+
+    ret = GetRomInfo(&info);
+    if (!ret)
+        return false;
+
+    section = info.Settings.MD5;
+
+    ret = g_MupenApi.Config.SectionExists(section);
+    if (!ret)
+    {
+        std::cout << "section: " << info.Settings.MD5 << " doesn't exist!" << std::endl;
+        return true;
+    }
+
+    g_MupenApi.Config.GetOption(section, "DisableExtraMem", (bool *)&info.Settings.disableextramem);
+    g_MupenApi.Config.GetOption(section, "SaveType", (int *)&info.Settings.savetype);
+    g_MupenApi.Config.GetOption(section, "CountPerOp", (int *)&info.Settings.countperop);
+    g_MupenApi.Config.GetOption(section, "SiDmaDuration", (int *)&info.Settings.sidmaduration);
+
+    std::cout << "info.Settings.goodname: " << info.Settings.goodname << std::endl;
+    std::cout << "info.Settings.DisableExtraMem: " << info.Settings.disableextramem << std::endl;
+    std::cout << "info.Settings.savetype: " << info.Settings.savetype << std::endl;
+    std::cout << "info.Settings.CountPerOp: " << info.Settings.countperop << std::endl;
+    std::cout << "info.Settings.SiDmaDuration: " << info.Settings.sidmaduration << std::endl;
+
+    ret2 = M64P::Core.DoCommand(M64CMD_ROM_SET_SETTINGS, sizeof(info.Settings), &info.Settings);
+    if (ret2 != M64ERR_SUCCESS)
+    {
+        this->error_Message = "Core::rom_ApplyOverlay: M64P::Core.DoCommand(M64CMD_ROM_SET_SETTINGS) Failed: ";
+        this->error_Message += M64P::Core.ErrorMessage(ret2);
+    }
+
+    return ret2 == M64ERR_SUCCESS;
 }
 
 bool Core::rom_Close(void)

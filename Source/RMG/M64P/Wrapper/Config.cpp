@@ -129,6 +129,23 @@ bool Config::GetOption(QString section, QString key, QString *value)
     return true;
 }
 
+bool Config::SectionExists(QString section)
+{
+    m64p_error ret;
+
+    this->section_List.clear();
+
+    ret = M64P::Config.ListSections(this, &this->section_List_Handler);
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_Message = "Config::SectionExists M64P::Config.ListSections Failed: ";
+        this->error_Message += M64P::Core.ErrorMessage(ret);
+        return false;
+    }
+
+    return this->section_List.contains(section);
+}
+
 bool Config::Save(void)
 {
     m64p_error ret;
@@ -141,6 +158,11 @@ bool Config::Save(void)
     }
 
     return ret == M64ERR_SUCCESS;
+}
+
+void Config::section_List_Handler(void* context, const char * section)
+{
+    ((Config*)context)->section_List.append(QString(section));
 }
 
 bool Config::section_Open(QString section)

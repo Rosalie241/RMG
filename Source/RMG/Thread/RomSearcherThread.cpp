@@ -88,5 +88,5 @@ void RomSearcherThread::rom_Search(QString directory)
 
 bool RomSearcherThread::rom_Get_Info(QString file, M64P::Wrapper::RomInfo_t* info)
 {
-    return g_MupenApi.Core.GetRomInfo(file, info);
+    return g_MupenApi.Core.GetRomInfo(file, info, true);
 }
