@@ -91,12 +91,21 @@ void SettingsDialog::loadCoreSettings(void)
     g_MupenApi.Config.GetOption(QString("Core"), QString("RandomizeInterrupt"), &randomizeInterrupt);
     g_MupenApi.Config.GetOption(QString("Core"), QString("EnableDebugger"), &debugger);
 
-    this->coreMemorySize->setCurrentIndex(!disableExtraMem);
-    this->coreCounterFactor->setCurrentIndex(counterFactor);
     this->coreCpuEmulator->setCurrentIndex(cpuEmulator);
-    this->coreSiDmaDuration->setValue(siDmaDuration);
     this->coreRandomizeTiming->setChecked(randomizeInterrupt);
     this->coreDebugger->setChecked(debugger);
+
+    if (!this->coreOverrideGameSettingsGroup->isChecked())
+    {
+        disableExtraMem = false;
+        counterFactor = 2;
+        siDmaDuration = 2304;
+    }
+
+    this->coreMemorySize->setCurrentIndex(!disableExtraMem);
+    this->coreCounterFactor->setCurrentIndex(counterFactor - 1);
+    this->coreSiDmaDuration->setValue(siDmaDuration);
+
 }
 
 void SettingsDialog::loadGameSettings(void)
@@ -180,7 +189,8 @@ void SettingsDialog::loadDefaultGameSettings(void)
 void SettingsDialog::saveSettings(void)
 {
     this->saveCoreSettings();
-    this->saveGameSettings();
+    if (g_EmuThread->isRunning())
+        this->saveGameSettings();
     this->savePluginSettings();
 }
 
@@ -193,12 +203,21 @@ void SettingsDialog::saveCoreSettings(void)
     bool randomizeInterrupt = this->coreRandomizeTiming->isChecked();
     bool debugger = this->coreDebugger->isChecked();
 
-    g_MupenApi.Config.SetOption(QString("Core"), QString("DisableExtraMem"), disableExtraMem);
-    g_MupenApi.Config.SetOption(QString("Core"), QString("CountPerOp"), counterFactor);
     g_MupenApi.Config.SetOption(QString("Core"), QString("R4300Emulator"), cpuEmulator);
-    g_MupenApi.Config.SetOption(QString("Core"), QString("SiDmaDuration"), siDmaDuration);
     g_MupenApi.Config.SetOption(QString("Core"), QString("RandomizeInterrupt"), randomizeInterrupt);
     g_MupenApi.Config.SetOption(QString("Core"), QString("EnableDebugger"), debugger);
+
+    if (!this->coreOverrideGameSettingsGroup->isChecked())
+    {
+        disableExtraMem = false;
+        counterFactor = 0;
+        siDmaDuration = -1;
+    }
+
+    g_MupenApi.Config.SetOption(QString("Core"), QString("DisableExtraMem"), disableExtraMem);
+    g_MupenApi.Config.SetOption(QString("Core"), QString("CountPerOp"), counterFactor);
+    g_MupenApi.Config.SetOption(QString("Core"), QString("SiDmaDuration"), siDmaDuration);
+
 }
 
 void SettingsDialog::saveGameSettings(void)

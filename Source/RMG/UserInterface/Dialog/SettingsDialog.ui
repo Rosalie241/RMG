@@ -136,13 +136,13 @@
               <bool>true</bool>
              </property>
              <property name="title">
-              <string>Override game specific settings</string>
+              <string>Override Game Specific Settings</string>
              </property>
              <property name="checkable">
               <bool>true</bool>
              </property>
              <property name="checked">
-              <bool>true</bool>
+              <bool>false</bool>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_6">
               <item>
@@ -181,11 +181,6 @@
                 </item>
                 <item>
                  <widget class="QComboBox" name="coreCounterFactor">
-                  <item>
-                   <property name="text">
-                    <string>0</string>
-                   </property>
-                  </item>
                   <item>
                    <property name="text">
                     <string>1</string>
@@ -232,13 +227,13 @@
                 <item>
                  <widget class="QSpinBox" name="coreSiDmaDuration">
                   <property name="minimum">
-                   <number>-1</number>
+                   <number>1</number>
                   </property>
                   <property name="maximum">
                    <number>9999999</number>
                   </property>
                   <property name="value">
-                   <number>-1</number>
+                   <number>1</number>
                   </property>
                  </widget>
                 </item>
@@ -476,6 +471,9 @@
              </item>
              <item>
               <widget class="QSpinBox" name="gameSiDmaDuration">
+               <property name="minimum">
+                <number>1</number>
+               </property>
                <property name="maximum">
                 <number>9999999</number>
                </property>
@@ -543,45 +541,56 @@
          <widget class="QWidget" name="gameCoreSettingsPage">
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_11">
-             <item>
-              <widget class="QLabel" name="label_9">
-               <property name="text">
-                <string>CPU Emulator</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QComboBox" name="coreCpuEmulator_2">
-               <item>
+            <widget class="QGroupBox" name="groupBox_16">
+             <property name="title">
+              <string>Override Core Settings</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_8">
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_11">
+                <item>
+                 <widget class="QLabel" name="label_9">
+                  <property name="text">
+                   <string>CPU Emulator</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="coreCpuEmulator_2">
+                  <item>
+                   <property name="text">
+                    <string>Pure Interpreter</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Cached Interpreter</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Dynamic Recompiler</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="checkBox">
                 <property name="text">
-                 <string>Pure Interpreter</string>
+                 <string>Randomize PI/SI Interrupt Timing</string>
                 </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Cached Interpreter</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Dynamic Recompiler</string>
-                </property>
-               </item>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_12">
-             <item>
-              <widget class="QCheckBox" name="checkBox">
-               <property name="text">
-                <string>Randomize PI/SI Interrupt Timing</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
            </item>
            <item>
             <spacer name="verticalSpacer_3">
