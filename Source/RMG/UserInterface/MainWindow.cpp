@@ -6,20 +6,20 @@
  *  it under the terms of the GNU General Public License version 3.
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
-*/
+ */
 #include "MainWindow.hpp"
-#include "Config.hpp"
 #include "../Utilities/QtKeyToSdl2Key.hpp"
+#include "Config.hpp"
 
-#include <QMenuBar>
-#include <QStatusBar>
 #include <QCoreApplication>
 #include <QDesktopServices>
-#include <QUrl>
-#include <QMessageBox>
-#include <QString>
-#include <QSettings>
 #include <QFileDialog>
+#include <QMenuBar>
+#include <QMessageBox>
+#include <QSettings>
+#include <QStatusBar>
+#include <QString>
+#include <QUrl>
 
 using namespace UserInterface;
 using namespace M64P::Wrapper;
@@ -104,7 +104,8 @@ bool MainWindow::Init(void)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    g_MupenApi.Config.SetOption(SETTINGS_SECTION, SETTINGS_GEOMETRY, QString(this->saveGeometry().toBase64().toStdString().c_str()));
+    g_MupenApi.Config.SetOption(SETTINGS_SECTION, SETTINGS_GEOMETRY,
+                                QString(this->saveGeometry().toBase64().toStdString().c_str()));
 
     this->on_Action_File_EndEmulation();
 
@@ -156,7 +157,8 @@ void MainWindow::ui_Init(void)
     this->ui_Widget_RomBrowser->SetDirectory(dir);
     this->ui_Widget_RomBrowser->RefreshRomList();
 
-    connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::on_RomBrowser_Select, this, &MainWindow::on_RomBrowser_Selected);
+    connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::on_RomBrowser_Select, this,
+            &MainWindow::on_RomBrowser_Selected);
 }
 
 void MainWindow::ui_Setup(void)
@@ -169,9 +171,15 @@ void MainWindow::ui_Setup(void)
 
     QString geometry;
     g_MupenApi.Config.GetOption(SETTINGS_SECTION, SETTINGS_GEOMETRY, &geometry);
-    this->restoreGeometry(QByteArray::fromBase64(geometry.toLocal8Bit()));
 
-    this->statusBar()->showMessage("Core Library Hooked");
+    if (!geometry.isEmpty())
+        this->restoreGeometry(QByteArray::fromBase64(geometry.toLocal8Bit()));
+    else
+    {
+        this->resize(610, 540);
+    }
+
+    this->statusBar()->setHidden(false);
 
     this->ui_Widgets->addWidget(this->ui_Widget_RomBrowser);
     this->ui_Widgets->addWidget(this->ui_Widget_OpenGL->GetWidget());
@@ -210,7 +218,7 @@ void MainWindow::ui_InEmulation(bool inEmulation, bool isPaused)
 
     if (inEmulation)
     {
-        RomInfo_t info = { 0 };
+        RomInfo_t info = {0};
         g_MupenApi.Core.GetRomInfo(&info);
 
         this->setWindowTitle(info.Settings.goodname + QString(" - ") + QString(WINDOW_TITLE));
@@ -370,17 +378,27 @@ void MainWindow::emulationThread_Init(void)
 
 void MainWindow::emulationThread_Connect(void)
 {
-    connect(this->emulationThread, &Thread::EmulationThread::on_Emulation_Finished, this, &MainWindow::on_Emulation_Finished);
-    connect(this->emulationThread, &Thread::EmulationThread::on_Emulation_Started, this, &MainWindow::on_Emulation_Started);
+    connect(this->emulationThread, &Thread::EmulationThread::on_Emulation_Finished, this,
+            &MainWindow::on_Emulation_Finished);
+    connect(this->emulationThread, &Thread::EmulationThread::on_Emulation_Started, this,
+            &MainWindow::on_Emulation_Started);
 
-    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_Init, this, &MainWindow::on_VidExt_Init, Qt::BlockingQueuedConnection);
-    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_SetupOGL, this, &MainWindow::on_VidExt_SetupOGL, Qt::BlockingQueuedConnection);
-    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_SetMode, this, &MainWindow::on_VidExt_SetMode, Qt::BlockingQueuedConnection);
-    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_SetModeWithRate, this, &MainWindow::on_VidExt_SetModeWithRate, Qt::BlockingQueuedConnection);
-    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_ResizeWindow, this, &MainWindow::on_VidExt_ResizeWindow, Qt::BlockingQueuedConnection);
-    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_SetCaption, this, &MainWindow::on_VidExt_SetCaption, Qt::BlockingQueuedConnection);
-    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_ToggleFS, this, &MainWindow::on_VidExt_ToggleFS, Qt::BlockingQueuedConnection);
-    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_Quit, this, &MainWindow::on_VidExt_Quit, Qt::BlockingQueuedConnection);
+    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_Init, this, &MainWindow::on_VidExt_Init,
+            Qt::BlockingQueuedConnection);
+    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_SetupOGL, this, &MainWindow::on_VidExt_SetupOGL,
+            Qt::BlockingQueuedConnection);
+    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_SetMode, this, &MainWindow::on_VidExt_SetMode,
+            Qt::BlockingQueuedConnection);
+    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_SetModeWithRate, this,
+            &MainWindow::on_VidExt_SetModeWithRate, Qt::BlockingQueuedConnection);
+    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_ResizeWindow, this,
+            &MainWindow::on_VidExt_ResizeWindow, Qt::BlockingQueuedConnection);
+    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_SetCaption, this,
+            &MainWindow::on_VidExt_SetCaption, Qt::BlockingQueuedConnection);
+    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_ToggleFS, this, &MainWindow::on_VidExt_ToggleFS,
+            Qt::BlockingQueuedConnection);
+    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_Quit, this, &MainWindow::on_VidExt_Quit,
+            Qt::BlockingQueuedConnection);
 }
 
 void MainWindow::emulationThread_Launch(QString file)
@@ -521,7 +539,8 @@ void MainWindow::menuBar_Actions_Connect(void)
     connect(this->action_System_SoftReset, &QAction::triggered, this, &MainWindow::on_Action_System_SoftReset);
     connect(this->action_System_HardReset, &QAction::triggered, this, &MainWindow::on_Action_System_HardReset);
     connect(this->action_System_Pause, &QAction::triggered, this, &MainWindow::on_Action_System_Pause);
-    connect(this->action_System_GenerateBitmap, &QAction::triggered, this, &MainWindow::on_Action_System_GenerateBitmap);
+    connect(this->action_System_GenerateBitmap, &QAction::triggered, this,
+            &MainWindow::on_Action_System_GenerateBitmap);
     connect(this->action_System_LimitFPS, &QAction::triggered, this, &MainWindow::on_Action_System_LimitFPS);
     connect(this->action_System_SwapDisk, &QAction::triggered, this, &MainWindow::on_Action_System_SwapDisk);
     connect(this->action_System_SaveState, &QAction::triggered, this, &MainWindow::on_Action_System_SaveState);
@@ -534,7 +553,8 @@ void MainWindow::menuBar_Actions_Connect(void)
     connect(this->action_Options_ConfigGfx, &QAction::triggered, this, &MainWindow::on_Action_Options_ConfigGfx);
     connect(this->action_Options_ConfigAudio, &QAction::triggered, this, &MainWindow::on_Action_Options_ConfigAudio);
     connect(this->action_Options_ConfigRsp, &QAction::triggered, this, &MainWindow::on_Action_Options_ConfigRsp);
-    connect(this->action_Options_ConfigControl, &QAction::triggered, this, &MainWindow::on_Action_Options_ConfigControl);
+    connect(this->action_Options_ConfigControl, &QAction::triggered, this,
+            &MainWindow::on_Action_Options_ConfigControl);
     connect(this->action_Options_Settings, &QAction::triggered, this, &MainWindow::on_Action_Options_Settings);
 
     connect(this->action_Help_Support, &QAction::triggered, this, &MainWindow::on_Action_Help_Support);
@@ -710,9 +730,7 @@ void MainWindow::on_Action_System_SaveAs(void)
     if (!isPaused)
         this->on_Action_System_Pause();
 
-    QString fileName = QFileDialog::getSaveFileName(this,
-                                                    tr("Save State"), "",
-                                                    tr("SaveState (*.dat);;All Files (*)"));
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save State"), "", tr("SaveState (*.dat);;All Files (*)"));
 
     if (!g_MupenApi.Core.SaveStateAsFile(fileName))
     {
@@ -738,9 +756,8 @@ void MainWindow::on_Action_System_Load(void)
     if (!isPaused)
         this->on_Action_System_Pause();
 
-    QString fileName = QFileDialog::getOpenFileName(this,
-                                                    tr("Open Save State"), "",
-                                                    tr("SaveState (*.dat);;All Files (*)"));
+    QString fileName =
+        QFileDialog::getOpenFileName(this, tr("Open Save State"), "", tr("SaveState (*.dat);;All Files (*)"));
 
     if (!g_MupenApi.Core.LoadStateFromFile(fileName))
     {
@@ -893,7 +910,7 @@ void MainWindow::on_VidExt_ResizeWindow(int width, int height)
 void MainWindow::on_VidExt_SetCaption(QString title)
 {
     std::cout << "on_VidExt_SetCaption" << std::endl;
-    //this->setWindowTitle(QString(WINDOW_TITLE) + " - " + title);
+    // this->setWindowTitle(QString(WINDOW_TITLE) + " - " + title);
 }
 
 void MainWindow::on_VidExt_ToggleFS(void)
