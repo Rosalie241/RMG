@@ -632,8 +632,8 @@ bool Core::rom_ApplyOverlay()
     g_MupenApi.Config.GetOption(section, "SiDmaDuration", (int *)&info.Settings.sidmaduration);
 
     std::cout << "info.Settings.goodname: " << info.Settings.goodname << std::endl;
-    std::cout << "info.Settings.DisableExtraMem: " << info.Settings.disableextramem << std::endl;
-    std::cout << "info.Settings.savetype: " << info.Settings.savetype << std::endl;
+    std::cout << "info.Settings.DisableExtraMem: " << (int)info.Settings.disableextramem << std::endl;
+    std::cout << "info.Settings.savetype: " << (int)info.Settings.savetype << std::endl;
     std::cout << "info.Settings.CountPerOp: " << info.Settings.countperop << std::endl;
     std::cout << "info.Settings.SiDmaDuration: " << info.Settings.sidmaduration << std::endl;
 

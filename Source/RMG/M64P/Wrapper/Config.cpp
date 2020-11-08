@@ -146,6 +146,20 @@ bool Config::SectionExists(QString section)
     return this->section_List.contains(section);
 }
 
+bool Config::DeleteSection(QString section)
+{
+    m64p_error ret;
+
+    ret = M64P::Config.DeleteSection(section.toStdString().c_str());
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_Message = "Config::DeleteSection M64P::Config.DeleteSection Failed: ";
+        this->error_Message += M64P::Core.ErrorMessage(ret);
+    }
+
+    return ret == M64ERR_SUCCESS;
+}
+
 bool Config::Save(void)
 {
     m64p_error ret;

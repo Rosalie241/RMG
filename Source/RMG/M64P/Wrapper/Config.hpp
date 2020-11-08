@@ -43,6 +43,7 @@ namespace M64P
             bool GetOption(QString section, QString key, QString* value);
 
             bool SectionExists(QString section);
+            bool DeleteSection(QString section);
 
             bool Save(void);
 

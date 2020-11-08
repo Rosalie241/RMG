@@ -6,7 +6,7 @@
  *  it under the terms of the GNU General Public License version 3.
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
-*/
+ */
 #include "SettingsDialog.hpp"
 #include "../../Globals.hpp"
 
@@ -154,8 +154,7 @@ void SettingsDialog::loadPluginSettings(void)
 
             pluginIndex++;
 
-            if (g_MupenApi.Core.GetCurrentPlugin(type, &plugin_t) &&
-                plugin_t.FileName == p.FileName)
+            if (g_MupenApi.Core.GetCurrentPlugin(type, &plugin_t) && plugin_t.FileName == p.FileName)
             {
                 stopCounting = 1;
             }
@@ -204,16 +203,29 @@ void SettingsDialog::saveCoreSettings(void)
 
 void SettingsDialog::saveGameSettings(void)
 {
-    M64P::Wrapper::RomInfo_t gameInfo = {0};
+    M64P::Wrapper::RomInfo_t gameInfo = {0}, defaultGameInfo = {0};
 
     g_MupenApi.Core.GetRomInfo(&gameInfo);
+    g_MupenApi.Core.GetDefaultRomInfo(&defaultGameInfo);
 
     QString section = QString(gameInfo.Settings.MD5);
 
-    g_MupenApi.Config.SetOption(section, "DisableExtraMem", this->gameMemorySize->currentIndex() == 0);
-    g_MupenApi.Config.SetOption(section, "SaveType", this->gameSaveType->currentIndex());
-    g_MupenApi.Config.SetOption(section, "CountPerOp", this->gameCounterFactor->currentIndex() + 1);
-    g_MupenApi.Config.SetOption(section, "SiDmaDuration", this->gameSiDmaDuration->value());
+    if (g_MupenApi.Config.SectionExists(section))
+        g_MupenApi.Config.DeleteSection(section);
+
+    bool disableExtraMem = this->gameMemorySize->currentIndex() == 0;
+    int saveType = this->gameSaveType->currentIndex();
+    int countPerOp = this->gameCounterFactor->currentIndex() + 1;
+    int siDmaDuration = this->gameSiDmaDuration->value();
+
+    if (defaultGameInfo.Settings.disableextramem != (unsigned char)disableExtraMem)
+        g_MupenApi.Config.SetOption(section, "DisableExtraMem", disableExtraMem);
+    if (defaultGameInfo.Settings.savetype != saveType)
+        g_MupenApi.Config.SetOption(section, "SaveType", saveType);
+    if (defaultGameInfo.Settings.countperop != countPerOp)
+        g_MupenApi.Config.SetOption(section, "CountPerOp", countPerOp);
+    if (defaultGameInfo.Settings.sidmaduration != siDmaDuration)
+        g_MupenApi.Config.SetOption(section, "SiDmaDuration", siDmaDuration);
 }
 
 void SettingsDialog::savePluginSettings(void)
@@ -246,11 +258,7 @@ void SettingsDialog::savePluginSettings(void)
 
 void SettingsDialog::hideEmulationInfoText(void)
 {
-    QHBoxLayout *layouts[] = 
-    {
-        this->emulationInfoLayout,
-        this->emulationInfoLayout_2
-    };
+    QHBoxLayout *layouts[] = {this->emulationInfoLayout, this->emulationInfoLayout_2};
 
     for (const QHBoxLayout *layout : layouts)
     {
@@ -292,7 +300,6 @@ void SettingsDialog::on_buttonBox_clicked(QAbstractButton *button)
     QPushButton *saveButton = this->buttonBox->button(QDialogButtonBox::Save);
     QPushButton *cancelButton = this->buttonBox->button(QDialogButtonBox::Cancel);
     QPushButton *okButton = this->buttonBox->button(QDialogButtonBox::Ok);
-
 
     if (pushButton == resetButton)
     {
