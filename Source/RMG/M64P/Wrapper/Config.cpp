@@ -6,9 +6,9 @@
  *  it under the terms of the GNU General Public License version 3.
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
-*/
-#include <M64P/Wrapper/Config.hpp>
+ */
 #include <M64P/Api.hpp>
+#include <M64P/Wrapper/Config.hpp>
 
 using namespace M64P::Wrapper;
 
@@ -47,68 +47,58 @@ bool Config::OverrideUserPaths(QString data, QString cache)
     return ret == M64ERR_SUCCESS;
 }
 
-
 bool Config::SetOption(QString section, QString key, int value)
 {
-    return this->section_Open(section) &&
-           this->value_Set(key, M64TYPE_INT, (void *)&value);
+    return this->section_Open(section) && this->value_Set(key, M64TYPE_INT, (void *)&value);
 }
 
 bool Config::SetOption(QString section, QString key, float value)
 {
-    return this->section_Open(section) &&
-           this->value_Set(key, M64TYPE_FLOAT, (void *)&value);
+    return this->section_Open(section) && this->value_Set(key, M64TYPE_FLOAT, (void *)&value);
 }
 
 bool Config::SetOption(QString section, QString key, bool value)
 {
     int boolValue = value ? 1 : 0;
 
-    return this->section_Open(section) &&
-           this->value_Set(key, M64TYPE_BOOL, (void *)&boolValue);
+    return this->section_Open(section) && this->value_Set(key, M64TYPE_BOOL, (void *)&boolValue);
 }
 
 bool Config::SetOption(QString section, QString key, QString value)
 {
     std::string tmpStr = value.toStdString();
 
-    return this->section_Open(section) &&
-           this->value_Set(key, M64TYPE_STRING, (void *)tmpStr.c_str());
+    return this->section_Open(section) && this->value_Set(key, M64TYPE_STRING, (void *)tmpStr.c_str());
 }
 
 bool Config::SetOption(QString section, QString key, char *value)
 {
-    return this->section_Open(section) &&
-           this->value_Set(key, M64TYPE_STRING, (void *)value);
+    return this->section_Open(section) && this->value_Set(key, M64TYPE_STRING, (void *)value);
 }
 
-bool Config::SetOption(QString section, QString key, const char* value)
+bool Config::SetOption(QString section, QString key, const char *value)
 {
-    return this->SetOption(section, key, (char*)value);
+    return this->SetOption(section, key, (char *)value);
 }
 
 bool Config::GetOption(QString section, QString key, int *value)
 {
-    return this->section_Open(section) &&
-           this->value_Get(key, M64TYPE_INT, value, sizeof(value));
+    return this->section_Open(section) && this->value_Get(key, M64TYPE_INT, value, sizeof(value));
 }
 
 bool Config::GetOption(QString section, QString key, float *value)
 {
-    return this->section_Open(section) &&
-           this->value_Get(key, M64TYPE_FLOAT, value, sizeof(value));
+    return this->section_Open(section) && this->value_Get(key, M64TYPE_FLOAT, value, sizeof(value));
 }
 
 bool Config::GetOption(QString section, QString key, bool *value)
 {
-    return this->section_Open(section) &&
-            this->value_Get(key, M64TYPE_BOOL, value, sizeof(value));
+    return this->section_Open(section) && this->value_Get(key, M64TYPE_BOOL, value, sizeof(value));
 }
 
 bool Config::GetOption(QString section, QString key, char *value)
 {
-    return this->section_Open(section) &&
-            this->value_Get(key, M64TYPE_STRING, value, sizeof(value));
+    return this->section_Open(section) && this->value_Get(key, M64TYPE_STRING, value, sizeof(value));
 }
 
 bool Config::GetOption(QString section, QString key, QString *value)
@@ -174,9 +164,9 @@ bool Config::Save(void)
     return ret == M64ERR_SUCCESS;
 }
 
-void Config::section_List_Handler(void* context, const char * section)
+void Config::section_List_Handler(void *context, const char *section)
 {
-    ((Config*)context)->section_List.append(QString(section));
+    ((Config *)context)->section_List.append(QString(section));
 }
 
 bool Config::section_Open(QString section)

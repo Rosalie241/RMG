@@ -7,7 +7,8 @@ using namespace Utilities;
 int Utilities::QtKeyToSdl2Key(int key)
 {
     SDL_Scancode returnValue;
-    switch (key) {
+    switch (key)
+    {
     case Qt::Key_Escape:
         returnValue = SDL_SCANCODE_ESCAPE;
         break;

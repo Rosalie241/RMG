@@ -6,12 +6,12 @@
  *  it under the terms of the GNU General Public License version 3.
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
-*/
+ */
 #ifndef VIDEXT_HPP
 #define VIDEXT_HPP
 
-#include "../api/m64p_types.h"
 #include "../../Thread/EmulationThread.hpp"
+#include "../api/m64p_types.h"
 #include <QOpenGLWidget>
 
 m64p_error VidExt_Init(void);

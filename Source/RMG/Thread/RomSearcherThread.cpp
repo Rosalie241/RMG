@@ -6,7 +6,7 @@
  *  it under the terms of the GNU General Public License version 3.
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
-*/
+ */
 #include "RomSearcherThread.hpp"
 #include "../Globals.hpp"
 
@@ -86,7 +86,7 @@ void RomSearcherThread::rom_Search(QString directory)
     }
 }
 
-bool RomSearcherThread::rom_Get_Info(QString file, M64P::Wrapper::RomInfo_t* info)
+bool RomSearcherThread::rom_Get_Info(QString file, M64P::Wrapper::RomInfo_t *info)
 {
     return g_MupenApi.Core.GetRomInfo(file, info, true);
 }

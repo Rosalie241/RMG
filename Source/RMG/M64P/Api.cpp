@@ -6,11 +6,11 @@
  *  it under the terms of the GNU General Public License version 3.
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
-*/
+ */
 #include <M64P/Api.hpp>
 
 namespace M64P
 {
-    M64P::CoreApi Core;
-    M64P::ConfigApi Config;
-}
+M64P::CoreApi Core;
+M64P::ConfigApi Config;
+} // namespace M64P

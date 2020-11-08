@@ -6,7 +6,7 @@
  *  it under the terms of the GNU General Public License version 3.
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
-*/
+ */
 #ifndef M64P_PLUGINAPI_HPP
 #define M64P_PLUGINAPI_HPP
 
@@ -17,24 +17,24 @@
 
 namespace M64P
 {
-    class PluginApi
-    {
-    public:
-        PluginApi(void);
-        ~PluginApi(void);
+class PluginApi
+{
+  public:
+    PluginApi(void);
+    ~PluginApi(void);
 
-        bool Hook(m64p_dynlib_handle);
+    bool Hook(m64p_dynlib_handle);
 
-        QString GetLastError(void);
+    QString GetLastError(void);
 
-        ptr_PluginStartup Startup;
-        ptr_PluginShutdown Shutdown;
-        ptr_PluginConfig Config;
-        ptr_PluginGetVersion GetVersion;
+    ptr_PluginStartup Startup;
+    ptr_PluginShutdown Shutdown;
+    ptr_PluginConfig Config;
+    ptr_PluginGetVersion GetVersion;
 
-    private:
-        QString error_Message;
-    };
+  private:
+    QString error_Message;
+};
 } // namespace M64P
 
 #endif // M64P_PLUGINAPI_HPP

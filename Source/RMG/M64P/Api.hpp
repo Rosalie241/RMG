@@ -6,17 +6,17 @@
  *  it under the terms of the GNU General Public License version 3.
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
-*/
+ */
 #ifndef M64P_API_HPP
 #define M64P_API_HPP
 
-#include "CoreApi.hpp"
 #include "ConfigApi.hpp"
+#include "CoreApi.hpp"
 
 namespace M64P
 {
-    extern M64P::CoreApi Core;
-    extern M64P::ConfigApi Config;
+extern M64P::CoreApi Core;
+extern M64P::ConfigApi Config;
 } // namespace M64P
 
 #endif // M64P_API_HPP

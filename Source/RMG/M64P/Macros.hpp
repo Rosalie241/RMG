@@ -6,21 +6,20 @@
  *  it under the terms of the GNU General Public License version 3.
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
-*/
+ */
 #ifndef M64P_MACROS_HPP
 #define M64P_MACROS_HPP
 
 #include "dynlib.hpp"
 
-#define HOOK_FUNC_OPT(handle, prevar, var) \
-    this->var = (ptr_##prevar##var)dynlib_sym(handle, #prevar#var);
-    
-#define HOOK_FUNC(handle, prevar, var) \
-    this->var = (ptr_##prevar##var)dynlib_sym(handle, #prevar#var); \
-    if (this->var == nullptr) \
-    { \
-        this->error_Message += dynlib_strerror(); \
-        return false; \
+#define HOOK_FUNC_OPT(handle, prevar, var) this->var = (ptr_##prevar##var)dynlib_sym(handle, #prevar #var);
+
+#define HOOK_FUNC(handle, prevar, var)                                                                                 \
+    this->var = (ptr_##prevar##var)dynlib_sym(handle, #prevar #var);                                                   \
+    if (this->var == nullptr)                                                                                          \
+    {                                                                                                                  \
+        this->error_Message += dynlib_strerror();                                                                      \
+        return false;                                                                                                  \
     }
 
 #endif // M64P_MACROS_HPP

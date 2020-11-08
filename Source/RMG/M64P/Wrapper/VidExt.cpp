@@ -6,17 +6,17 @@
  *  it under the terms of the GNU General Public License version 3.
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
-*/
+ */
 #include "VidExt.hpp"
 #include "../../Globals.hpp"
 
-#include <QThread>
-#include <QOpenGLContext>
-#include <iostream>
 #include <QApplication>
+#include <QOpenGLContext>
+#include <QThread>
+#include <iostream>
 
 static QSurfaceFormat format;
-static QThread* renderThread;
+static QThread *renderThread;
 
 static bool ogl_setup = false;
 static void VidExt_OglSetup(void)
@@ -97,7 +97,7 @@ m64p_error VidExt_SetMode(int Width, int Height, int BitsPerPixel, int ScreenMod
 m64p_error VidExt_SetModeWithRate(int Width, int Height, int RefreshRate, int BitsPerPixel, int ScreenMode, int Flags)
 {
     std::cout << __FUNCTION__ << std::endl;
-    
+
     if (!ogl_setup)
         VidExt_OglSetup();
 
@@ -187,7 +187,8 @@ m64p_error VidExt_GLGetAttr(m64p_GLattr Attr, int *pValue)
             *pValue = 1;
         break;
     case M64P_GL_BUFFER_SIZE:
-        *pValue = format.alphaBufferSize() + format.redBufferSize() + format.greenBufferSize() + format.blueBufferSize();
+        *pValue =
+            format.alphaBufferSize() + format.redBufferSize() + format.greenBufferSize() + format.blueBufferSize();
         break;
     case M64P_GL_DEPTH_SIZE:
         *pValue = format.depthBufferSize();
@@ -244,7 +245,7 @@ m64p_error VidExt_GLSwapBuf(void)
     g_OGLWidget->context()->swapBuffers(g_OGLWidget->context()->surface());
 
     // TODO, figure out why this is needed?
-    //g_OGLWidget->context()->makeCurrent(g_OGLWidget->context()->surface());
+    // g_OGLWidget->context()->makeCurrent(g_OGLWidget->context()->surface());
 
     return M64ERR_SUCCESS;
 }

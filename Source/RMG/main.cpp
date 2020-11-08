@@ -3,7 +3,7 @@
 #include <QApplication>
 #include <QDir>
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
 
@@ -13,7 +13,7 @@ int main(int argc, char** argv)
 
     if (!window.Init())
         return 1;
-        
+
     window.show();
 
     return app.exec();

@@ -6,11 +6,11 @@
  *  it under the terms of the GNU General Public License version 3.
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
-*/
+ */
 #include "Api.hpp"
+#include "../../Globals.hpp"
 #include "../Api.hpp"
 #include "../Macros.hpp"
-#include "../../Globals.hpp"
 #include "VidExt.hpp"
 
 using namespace M64P::Wrapper;
@@ -71,7 +71,7 @@ bool Api::core_Handle_Open(QString file)
 {
     this->core_Handle_Close();
 
-    this->core_Handle = dynlib_open((char*)file.toStdString().c_str());
+    this->core_Handle = dynlib_open((char *)file.toStdString().c_str());
     if (this->core_Handle == NULL)
     {
         this->error_Message += dynlib_strerror();

@@ -6,11 +6,11 @@
  *  it under the terms of the GNU General Public License version 3.
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
-*/
+ */
 #include "Plugin.hpp"
-#include "Types.hpp"
-#include "../Macros.hpp"
 #include "../Api.hpp"
+#include "../Macros.hpp"
+#include "Types.hpp"
 
 #include <QFileInfo>
 
@@ -29,8 +29,8 @@ bool Plugin::Init(QString file, m64p_dynlib_handle coreHandle)
     m64p_error ret;
 
     this->fileName = file;
-    this->handle = dynlib_open((char*)file.toStdString().c_str());
-    
+    this->handle = dynlib_open((char *)file.toStdString().c_str());
+
     this->error_Message = "Plugin::Init Failed: ";
 
     if (this->handle == NULL)
@@ -123,10 +123,11 @@ Plugin_t Plugin::GetPlugin_t(void)
 
 bool Plugin::plugin_t_Get(void)
 {
-    const char* name = nullptr;
+    const char *name = nullptr;
     m64p_error ret;
 
-    ret = this->plugin.GetVersion(&this->type, &this->plugin_t.Version, &this->plugin_t.ApiVersion, &name, &this->plugin_t.Capabilities);
+    ret = this->plugin.GetVersion(&this->type, &this->plugin_t.Version, &this->plugin_t.ApiVersion, &name,
+                                  &this->plugin_t.Capabilities);
     if (ret != M64ERR_SUCCESS)
     {
         this->error_Message += this->plugin.GetLastError();
@@ -149,21 +150,21 @@ bool Plugin::plugin_t_Get(void)
 
     switch (this->type)
     {
-        case M64PLUGIN_GFX:
-            this->plugin_t.Type = PluginType::Gfx;
-            break;
-        case M64PLUGIN_AUDIO:
-            this->plugin_t.Type = PluginType::Audio;
-            break;
-        case M64PLUGIN_RSP:
-            this->plugin_t.Type = PluginType::Rsp;
-            break;
-        case M64PLUGIN_INPUT:
-            this->plugin_t.Type = PluginType::Input;
-            break;
-        default:
-            this->plugin_t.Type = PluginType::Invalid;
-            break;
+    case M64PLUGIN_GFX:
+        this->plugin_t.Type = PluginType::Gfx;
+        break;
+    case M64PLUGIN_AUDIO:
+        this->plugin_t.Type = PluginType::Audio;
+        break;
+    case M64PLUGIN_RSP:
+        this->plugin_t.Type = PluginType::Rsp;
+        break;
+    case M64PLUGIN_INPUT:
+        this->plugin_t.Type = PluginType::Input;
+        break;
+    default:
+        this->plugin_t.Type = PluginType::Invalid;
+        break;
     }
 
     return true;

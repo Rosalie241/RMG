@@ -6,7 +6,7 @@
  *  it under the terms of the GNU General Public License version 3.
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
-*/
+ */
 #include "RomBrowserWidget.hpp"
 #include "../../Globals.hpp"
 #include "Config.hpp"
@@ -90,7 +90,7 @@ void RomBrowserWidget::widget_Init(void)
     this->horizontalHeader()->setHighlightSections(false);
 
     this->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    
+
     this->column_SetSize();
 }
 
@@ -102,8 +102,10 @@ void RomBrowserWidget::rom_Searcher_Init(void)
     // TODO
     this->rom_Searcher_Thread->SetRecursive(true);
 
-    connect(rom_Searcher_Thread, &Thread::RomSearcherThread::on_Rom_Found, this, &RomBrowserWidget::on_RomBrowserThread_Received);
-    connect(rom_Searcher_Thread, &Thread::RomSearcherThread::finished, this, &RomBrowserWidget::on_RomBrowserThread_Finished);
+    connect(rom_Searcher_Thread, &Thread::RomSearcherThread::on_Rom_Found, this,
+            &RomBrowserWidget::on_RomBrowserThread_Received);
+    connect(rom_Searcher_Thread, &Thread::RomSearcherThread::finished, this,
+            &RomBrowserWidget::on_RomBrowserThread_Finished);
 }
 
 bool init = false;
@@ -135,16 +137,18 @@ void RomBrowserWidget::column_SetSize(void)
         if (label == "Name")
         {
             newSize = 250;
-        } else if (label == "Internal Name")
+        }
+        else if (label == "Internal Name")
         {
             newSize = 100;
-        } else if (label == "MD5")
+        }
+        else if (label == "MD5")
         {
             newSize = 100;
         }
 
         this->setColumnWidth(i, newSize);
-    continue;
+        continue;
         if (oldSize != newSize)
         {
             this->setColumnWidth(i, oldSize);
@@ -157,9 +161,9 @@ void RomBrowserWidget::column_SetSize(void)
 }
 
 #include <iostream>
-void RomBrowserWidget::on_Row_DoubleClicked(const QModelIndex& index)
+void RomBrowserWidget::on_Row_DoubleClicked(const QModelIndex &index)
 {
-    const M64P::Wrapper::RomInfo_t* info = &this->rom_List.at(index.row());
+    const M64P::Wrapper::RomInfo_t *info = &this->rom_List.at(index.row());
     std::cout << "aaa " << index.row() << std::endl;
     std::cout << info->FileName.toStdString() << std::endl;
     emit this->on_RomBrowser_Select(info->FileName);
@@ -167,12 +171,12 @@ void RomBrowserWidget::on_Row_DoubleClicked(const QModelIndex& index)
 
 void RomBrowserWidget::on_RomBrowserThread_Received(M64P::Wrapper::RomInfo_t romInfo)
 {
-    QList<QStandardItem*> list;
+    QList<QStandardItem *> list;
 
     this->rom_List.append(romInfo);
 
     list.append(new QStandardItem(romInfo.Settings.goodname));
-    list.append(new QStandardItem(QString((char*)romInfo.Header.Name)));
+    list.append(new QStandardItem(QString((char *)romInfo.Header.Name)));
     list.append(new QStandardItem(romInfo.Settings.MD5));
 
     this->model_Model->appendRow(list);

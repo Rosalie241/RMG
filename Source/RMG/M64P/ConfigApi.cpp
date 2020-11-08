@@ -6,7 +6,7 @@
  *  it under the terms of the GNU General Public License version 3.
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
-*/
+ */
 #include "ConfigApi.hpp"
 #include "Macros.hpp"
 
@@ -55,7 +55,7 @@ bool ConfigApi::Hook(m64p_dynlib_handle handle)
     HOOK_FUNC(handle, Config, SendNetplayConfig);
     HOOK_FUNC(handle, Config, ReceiveNetplayConfig);
     HOOK_FUNC(handle, Config, OverrideUserPaths);
-    
+
     this->hooked = true;
     return true;
 }

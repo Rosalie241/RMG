@@ -22,6 +22,8 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
 
     this->loadCoreSettings();
     this->loadGameSettings();
+    this->loadGameCoreSettings();
+    this->loadGamePluginSettings();
     this->loadPluginSettings();
 }
 
@@ -44,7 +46,7 @@ void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
         loadGameCoreSettings();
         break;
     case 3:
-        loadGamePluginSettings();
+        loadDefaultGamePluginSettings();
         break;
     case 4:
         loadPluginSettings();
@@ -105,7 +107,6 @@ void SettingsDialog::loadCoreSettings(void)
     this->coreMemorySize->setCurrentIndex(!disableExtraMem);
     this->coreCounterFactor->setCurrentIndex(counterFactor - 1);
     this->coreSiDmaDuration->setValue(siDmaDuration);
-
 }
 
 void SettingsDialog::loadGameSettings(void)
@@ -134,6 +135,14 @@ void SettingsDialog::loadGameCoreSettings(void)
 
 void SettingsDialog::loadGamePluginSettings(void)
 {
+    QComboBox *comboBoxArray[4] = {this->pluginVideoPlugins, this->pluginAudioPlugins, this->pluginInputPlugins,
+                                   this->pluginRspPlugins};
+
+    for (QComboBox *comboBox : comboBoxArray)
+    {
+        comboBox->clear();
+        comboBox->addItem("**Use Core Plugin Settings**");
+    }
 }
 
 void SettingsDialog::loadPluginSettings(void)
@@ -186,6 +195,17 @@ void SettingsDialog::loadDefaultGameSettings(void)
     this->gameSiDmaDuration->setValue(gameInfo.Settings.sidmaduration);
 }
 
+void SettingsDialog::loadDefaultGamePluginSettings(void)
+{
+    QComboBox *comboBoxArray[4] = {this->pluginVideoPlugins, this->pluginAudioPlugins, this->pluginInputPlugins,
+                                   this->pluginRspPlugins};
+
+    for (QComboBox *comboBox : comboBoxArray)
+    {
+        comboBox->setCurrentIndex(0);
+    }
+}
+
 void SettingsDialog::saveSettings(void)
 {
     this->saveCoreSettings();
@@ -217,7 +237,6 @@ void SettingsDialog::saveCoreSettings(void)
     g_MupenApi.Config.SetOption(QString("Core"), QString("DisableExtraMem"), disableExtraMem);
     g_MupenApi.Config.SetOption(QString("Core"), QString("CountPerOp"), counterFactor);
     g_MupenApi.Config.SetOption(QString("Core"), QString("SiDmaDuration"), siDmaDuration);
-
 }
 
 void SettingsDialog::saveGameSettings(void)

@@ -3,27 +3,27 @@
 
 #include <QOpenGLWidget>
 #include <QOpenGLWindow>
-#include <QWidget>
 #include <QThread>
+#include <QWidget>
 
 namespace UserInterface
 {
-    namespace Widget
-    {
-        class OGLWidget : public QOpenGLWindow
-        {
-        public:
-            OGLWidget(void);
-            ~OGLWidget(void);
+namespace Widget
+{
+class OGLWidget : public QOpenGLWindow
+{
+  public:
+    OGLWidget(void);
+    ~OGLWidget(void);
 
-            void SetThread(QThread*);
+    void SetThread(QThread *);
 
-            QWidget* GetWidget(void);
+    QWidget *GetWidget(void);
 
-        protected:
-            void exposeEvent(QExposeEvent *) Q_DECL_OVERRIDE;
-        };
-    } // namespace Widget
+  protected:
+    void exposeEvent(QExposeEvent *) Q_DECL_OVERRIDE;
+};
+} // namespace Widget
 } // namespace UserInterface
 
 #endif // OGLWIDGET_HPP
