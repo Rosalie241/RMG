@@ -103,8 +103,7 @@ bool Config::GetOption(QString section, QString key, char *value)
 
 bool Config::GetOption(QString section, QString key, QString *value)
 {
-    char data[300];
-    std::string str;
+    char data[300] = { 0 };
 
     if (!this->section_Open(section))
         return false;
@@ -112,9 +111,7 @@ bool Config::GetOption(QString section, QString key, QString *value)
     if (!this->value_Get(key, M64TYPE_STRING, data, sizeof(data)))
         return false;
 
-    str = std::string(data);
-
-    *value = QString::fromStdString(str);
+    *value = QString(data);
 
     return true;
 }

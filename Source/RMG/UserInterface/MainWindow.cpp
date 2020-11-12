@@ -10,6 +10,8 @@
 #include "MainWindow.hpp"
 #include "../Utilities/QtKeyToSdl2Key.hpp"
 #include "Config.hpp"
+#include "Globals.hpp"
+#include "Utilities/SettingsTypes.hpp"
 
 #include <QCoreApplication>
 #include <QDesktopServices>
@@ -221,7 +223,8 @@ void MainWindow::ui_InEmulation(bool inEmulation, bool isPaused)
         RomInfo_t info = {0};
         g_MupenApi.Core.GetRomInfo(&info);
 
-        this->setWindowTitle(info.Settings.goodname + QString(" - ") + QString(WINDOW_TITLE));
+        if (!QString(info.Settings.goodname).isEmpty())
+            this->setWindowTitle(info.Settings.goodname + QString(" - ") + QString(WINDOW_TITLE));
 
         this->ui_Widgets->setCurrentIndex(1);
     }
@@ -522,8 +525,8 @@ void MainWindow::menuBar_Actions_Setup(bool inEmulation, bool isPaused)
     this->action_Options_Settings->setText("Settings...");
     this->action_Options_Settings->setShortcut(QKeySequence("Ctrl+T"));
 
-    this->action_Help_Support->setText("Support Discord");
-    this->action_Help_HomePage->setText("Homepage");
+    this->action_Help_Support->setText("Discord");
+    this->action_Help_HomePage->setText("Website");
     this->action_Help_About->setText("About");
 }
 

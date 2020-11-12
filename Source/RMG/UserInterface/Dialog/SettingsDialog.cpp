@@ -20,18 +20,25 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
     this->treeWidget->topLevelItem(0)->setSelected(true);
     this->treeWidget->expandAll();
 
-    this->loadCoreSettings();
-    this->loadGameSettings();
-    this->loadGameCoreSettings();
-    this->loadGamePluginSettings();
-    this->loadPluginSettings();
+    for (int i = 0; i < this->stackedWidget->count(); i++)
+        this->reloadSettings(i);
 
     int width = 0, height = 0;
     g_MupenApi.Config.GetOption(SETTINGS_SECTION, "Settings Window Width", &width);
     g_MupenApi.Config.GetOption(SETTINGS_SECTION, "Settings Window Height", &height);
 
     if (width != 0 && height != 0)
-        this->resize(width, height);
+    {
+        // center current dialog
+        this->setGeometry(
+            QStyle::alignedRect( 
+                Qt::LeftToRight,
+                Qt::AlignCenter,
+                QSize(width, height),
+                parent->geometry()
+            )
+        );
+    }
 }
 
 SettingsDialog::~SettingsDialog(void)
@@ -62,6 +69,9 @@ void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
     case 4:
         loadPluginSettings();
         break;
+    case 5:
+        loadDefaultDirectorySettings();
+        break;
     }
 }
 
@@ -84,6 +94,9 @@ void SettingsDialog::reloadSettings(int stackedWidgetIndex)
         break;
     case 4:
         loadPluginSettings();
+        break;
+    case 5:
+        loadDirectorySettings();
         break;
     }
 }
@@ -193,6 +206,36 @@ void SettingsDialog::loadPluginSettings(void)
     }
 }
 
+
+void SettingsDialog::loadDirectorySettings(void)
+{
+    // these need to be static, otherwise Qt will segfault
+    static QString screenshotDir;
+    static QString saveStateDir;
+    static QString saveSramDir;
+    static QString sharedDataDir;
+    static bool overrideUserDirs = false;
+    static QString userDataDir;
+    static QString userCacheDir;
+
+    g_MupenApi.Config.GetOption("Core", "ScreenshotPath", &screenshotDir);
+    g_MupenApi.Config.GetOption("Core", "SaveStatePath", &saveStateDir);
+    g_MupenApi.Config.GetOption("Core", "SaveSRAMPath", &saveSramDir);
+    g_MupenApi.Config.GetOption("Core", "SharedDataPath", &sharedDataDir);
+
+    g_MupenApi.Config.GetOption(SETTINGS_SECTION, "CoreOverrideUserDirectories", &overrideUserDirs);
+    g_MupenApi.Config.GetOption(SETTINGS_SECTION, "CoreUserDataDirectory", &userDataDir);
+    g_MupenApi.Config.GetOption(SETTINGS_SECTION, "CoreUserCacheDirectory", &userCacheDir);
+
+    this->screenshotDirectory->setText(screenshotDir);
+    this->saveStateDirectory->setText(saveStateDir);
+    this->saveSramDirectory->setText(saveSramDir);
+    this->sharedDataDirectory->setText(sharedDataDir);
+    this->overrideUserDirectories->setChecked(overrideUserDirs);
+    this->userDataDirectory->setText(userDataDir);
+    this->userCacheDirectory->setText(userCacheDir);
+}
+
 void SettingsDialog::loadDefaultGameSettings(void)
 {
     RomInfo_t gameInfo;
@@ -217,12 +260,24 @@ void SettingsDialog::loadDefaultGamePluginSettings(void)
     }
 }
 
+void SettingsDialog::loadDefaultDirectorySettings(void)
+{
+    this->screenshotDirectory->setText("Screenshots");
+    this->saveStateDirectory->setText("Save/State");
+    this->saveSramDirectory->setText("Save/Game");
+    this->sharedDataDirectory->setText("Data");
+    this->overrideUserDirectories->setChecked(true);
+    this->userDataDirectory->setText("Data");
+    this->userCacheDirectory->setText("Cache");
+}
+
 void SettingsDialog::saveSettings(void)
 {
     this->saveCoreSettings();
     if (g_EmuThread->isRunning())
         this->saveGameSettings();
     this->savePluginSettings();
+    this->saveDirectorySettings();
 }
 
 void SettingsDialog::saveCoreSettings(void)
@@ -303,6 +358,18 @@ void SettingsDialog::savePluginSettings(void)
             }
         }
     }
+}
+
+void SettingsDialog::saveDirectorySettings(void)
+{
+    g_MupenApi.Config.SetOption("Core", "ScreenshotPath", this->screenshotDirectory->text());
+    g_MupenApi.Config.SetOption("Core", "SaveStatePath", this->saveStateDirectory->text());
+    g_MupenApi.Config.SetOption("Core", "SaveSRAMPath", this->saveSramDirectory->text());
+    g_MupenApi.Config.SetOption("Core", "SharedDataPath", this->sharedDataDirectory->text());
+
+    g_MupenApi.Config.SetOption(SETTINGS_SECTION, "CoreOverrideUserDirectories", this->overrideUserDirectories->isChecked());
+    g_MupenApi.Config.SetOption(SETTINGS_SECTION, "CoreUserDataDirectory", this->userDataDirectory->text());
+    g_MupenApi.Config.SetOption(SETTINGS_SECTION, "CoreUserCacheDirectory", this->userCacheDirectory->text());
 }
 
 void SettingsDialog::hideEmulationInfoText(void)

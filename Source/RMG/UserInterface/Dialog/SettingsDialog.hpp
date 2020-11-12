@@ -35,14 +35,17 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void loadGameCoreSettings(void);
     void loadGamePluginSettings(void);
     void loadPluginSettings(void);
+    void loadDirectorySettings(void);
 
     void loadDefaultGameSettings(void);
     void loadDefaultGamePluginSettings(void);
+    void loadDefaultDirectorySettings(void);
 
     void saveSettings(void);
     void saveCoreSettings(void);
     void saveGameSettings(void);
     void savePluginSettings(void);
+    void saveDirectorySettings(void);
 
     void hideEmulationInfoText(void);
 
