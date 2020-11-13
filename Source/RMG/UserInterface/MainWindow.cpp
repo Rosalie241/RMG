@@ -70,8 +70,8 @@ bool MainWindow::Init(void)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    g_MupenApi.Config.SetOption(SETTINGS_SECTION, SETTINGS_GEOMETRY,
-                                QString(this->saveGeometry().toBase64().toStdString().c_str()));
+    g_Settings.SetValue(SettingsID::GUI_RomBrowserGeometry, 
+        QString(this->saveGeometry().toBase64().toStdString().c_str()));
 
     this->on_Action_File_EndEmulation();
 
@@ -118,7 +118,7 @@ void MainWindow::ui_Init(void)
     this->ui_Widget_OpenGL = new Widget::OGLWidget();
 
     QString dir;
-    g_MupenApi.Config.GetOption(SETTINGS_SECTION, SETTINGS_DIRECTORY, &dir);
+    dir = g_Settings.GetStringValue(SettingsID::GUI_RomBrowserDirectory);
 
     this->ui_Widget_RomBrowser->SetDirectory(dir);
     this->ui_Widget_RomBrowser->RefreshRomList();
@@ -136,7 +136,7 @@ void MainWindow::ui_Setup(void)
     this->setCentralWidget(this->ui_Widgets);
 
     QString geometry;
-    g_MupenApi.Config.GetOption(SETTINGS_SECTION, SETTINGS_GEOMETRY, &geometry);
+    geometry = g_Settings.GetStringValue(SettingsID::GUI_RomBrowserGeometry);
 
     if (!geometry.isEmpty())
         this->restoreGeometry(QByteArray::fromBase64(geometry.toLocal8Bit()));
@@ -587,7 +587,7 @@ void MainWindow::on_Action_File_ChooseDirectory(void)
     if (ret)
     {
         dir = dialog.selectedFiles().first();
-        g_MupenApi.Config.SetOption(SETTINGS_SECTION, SETTINGS_DIRECTORY, dir);
+        g_Settings.SetValue(SettingsID::GUI_RomBrowserDirectory, dir);
         this->ui_Widget_RomBrowser->SetDirectory(dir);
         this->ui_Widget_RomBrowser->RefreshRomList();
     }

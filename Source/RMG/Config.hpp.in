@@ -13,14 +13,6 @@
     APP_LOG_DIR ""                                                                                                     \
                 "/RMG.txt"
 
-#define SETTINGS_SECTION "Rosalie's Mupen GUI"
-#define SETTINGS_GEOMETRY "Window Geometry"
-#define SETTINGS_DIRECTORY "ROM Directory"
-#define SETTINGS_PLUGIN_GFX "GFX Plugin"
-#define SETTINGS_PLUGIN_AUDIO "Audio Plugin"
-#define SETTINGS_PLUGIN_INPUT "Input Plugin"
-#define SETTINGS_PLUGIN_RSP "RSP Plugin"
-
 #define APP_ROMSEARCHER_MAX 50
 #define APP_STYLESHEET_FILE "Config/stylesheet.qss"
 
