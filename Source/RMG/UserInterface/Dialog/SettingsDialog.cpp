@@ -53,7 +53,7 @@ void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
     {
     default:
     case 0:
-        loadCoreSettings();
+        loadDefaultCoreSettings();
         break;
     case 1:
         loadDefaultGameSettings();
@@ -107,6 +107,7 @@ void SettingsDialog::loadCoreSettings(void)
     int siDmaDuration = -1;
     bool randomizeInterrupt = true;
     bool debugger = false;
+    bool overrideGameSettings = false;
 
     disableExtraMem = g_Settings.GetBoolValue(SettingsID::Core_DisableExtraMem);
     counterFactor = g_Settings.GetIntValue(SettingsID::Core_CountPerOp);
@@ -114,12 +115,15 @@ void SettingsDialog::loadCoreSettings(void)
     siDmaDuration = g_Settings.GetIntValue(SettingsID::Core_SiDmaDuration);
     randomizeInterrupt = g_Settings.GetBoolValue(SettingsID::Core_RandomizeInterrupt);
     debugger = g_Settings.GetBoolValue(SettingsID::Core_EnableDebugger);
+    overrideGameSettings = g_Settings.GetBoolValue(SettingsID::Core_OverrideGameSpecificSettings);
 
     this->coreCpuEmulator->setCurrentIndex(cpuEmulator);
     this->coreRandomizeTiming->setChecked(randomizeInterrupt);
     this->coreDebugger->setChecked(debugger);
 
-    if (!this->coreOverrideGameSettingsGroup->isChecked())
+    this->coreOverrideGameSettingsGroup->setChecked(overrideGameSettings);
+
+    if (!overrideGameSettings)
     {
         disableExtraMem = false;
         counterFactor = 2;
@@ -219,6 +223,42 @@ void SettingsDialog::loadDirectorySettings(void)
     this->userCacheDirectory->setText(userCacheDir);
 }
 
+void SettingsDialog::loadDefaultCoreSettings(void)
+{
+    bool disableExtraMem = false;
+    int counterFactor = 0;
+    int cpuEmulator = 0;
+    int siDmaDuration = -1;
+    bool randomizeInterrupt = true;
+    bool debugger = false;
+    bool overrideGameSettings;
+
+    disableExtraMem = g_Settings.GetDefaultBoolValue(SettingsID::Core_DisableExtraMem);
+    counterFactor = g_Settings.GetDefaultIntValue(SettingsID::Core_CountPerOp);
+    cpuEmulator = g_Settings.GetDefaultIntValue(SettingsID::Core_CPU_Emulator);
+    siDmaDuration = g_Settings.GetDefaultIntValue(SettingsID::Core_SiDmaDuration);
+    randomizeInterrupt = g_Settings.GetDefaultBoolValue(SettingsID::Core_RandomizeInterrupt);
+    debugger = g_Settings.GetDefaultBoolValue(SettingsID::Core_EnableDebugger);
+    overrideGameSettings = g_Settings.GetDefaultBoolValue(SettingsID::Core_OverrideGameSpecificSettings);
+
+    this->coreCpuEmulator->setCurrentIndex(cpuEmulator);
+    this->coreRandomizeTiming->setChecked(randomizeInterrupt);
+    this->coreDebugger->setChecked(debugger);
+
+    this->coreOverrideGameSettingsGroup->setChecked(overrideGameSettings);
+
+    if (!this->coreOverrideGameSettingsGroup->isChecked())
+    {
+        disableExtraMem = false;
+        counterFactor = 2;
+        siDmaDuration = 2304;
+    }
+
+    this->coreMemorySize->setCurrentIndex(!disableExtraMem);
+    this->coreCounterFactor->setCurrentIndex(counterFactor - 1);
+    this->coreSiDmaDuration->setValue(siDmaDuration);
+}
+
 void SettingsDialog::loadDefaultGameSettings(void)
 {
     RomInfo_t gameInfo;
@@ -271,12 +311,14 @@ void SettingsDialog::saveCoreSettings(void)
     int siDmaDuration = this->coreSiDmaDuration->value();
     bool randomizeInterrupt = this->coreRandomizeTiming->isChecked();
     bool debugger = this->coreDebugger->isChecked();
+    bool overrideGameSettings = this->coreOverrideGameSettingsGroup->isChecked();
 
     g_Settings.SetValue(SettingsID::Core_CPU_Emulator, cpuEmulator);
     g_Settings.SetValue(SettingsID::Core_RandomizeInterrupt, randomizeInterrupt);
     g_Settings.SetValue(SettingsID::Core_EnableDebugger, debugger);
+    g_Settings.SetValue(SettingsID::Core_OverrideGameSpecificSettings, overrideGameSettings);
 
-    if (!this->coreOverrideGameSettingsGroup->isChecked())
+    if (!overrideGameSettings)
     {
         disableExtraMem = false;
         counterFactor = 0;

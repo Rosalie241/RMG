@@ -44,6 +44,7 @@ enum SettingsID
     Core_UserCacheDirOverride,
     
     // (mupen64plus) Core Settings
+    Core_OverrideGameSpecificSettings,
     Core_RandomizeInterrupt,
     Core_CPU_Emulator,
     Core_DisableExtraMem,

@@ -9,6 +9,7 @@
  */
 #include "Settings.hpp"
 #include "../Globals.hpp"
+#include "Utilities/SettingsID.hpp"
 #include <qopenglext.h>
 #include <qvariant.h>
 
@@ -26,7 +27,7 @@ Settings::~Settings()
 void Settings::LoadDefaults()
 {
     Setting_t setting;
-    for (int i = 0; i < 21; i++)
+    for (int i = 0; i < 22; i++)
     {
         setting = this->getSetting((SettingsID)i);
 
@@ -187,6 +188,9 @@ Setting_t Settings::getSetting(SettingsID id)
             setting = {CORE_SECTION, "UserCacheDirectory", "Cache", "", false};
             break;
 
+        case SettingsID::Core_OverrideGameSpecificSettings:
+            setting = {CORE_SECTION, "OverrideGameSpecificSettings", false, "", false};
+            break;
         case SettingsID::Core_RandomizeInterrupt:
             setting = {M64P_SECTION, "RandomizeInterrupt", true, "", false};
             break;

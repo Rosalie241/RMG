@@ -37,6 +37,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void loadPluginSettings(void);
     void loadDirectorySettings(void);
 
+    void loadDefaultCoreSettings(void);
     void loadDefaultGameSettings(void);
     void loadDefaultGamePluginSettings(void);
     void loadDefaultDirectorySettings(void);
