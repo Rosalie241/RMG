@@ -7,6 +7,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+#include "M64P/api/m64p_types.h"
 #include <M64P/Api.hpp>
 #include <M64P/Wrapper/Config.hpp>
 
@@ -81,6 +82,79 @@ bool Config::SetOption(QString section, QString key, const char *value)
     return this->SetOption(section, key, (char *)value);
 }
 
+bool Config::SetDefaultOption(QString section, QString key, int value, QString help)
+{
+    m64p_error ret;
+
+    if (!this->section_Open(section))
+        return false;
+
+    ret = M64P::Config.SetDefaultInt(this->section_Handle, key.toStdString().c_str(), value, help.toStdString().c_str());
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_Message = "Config::SetDefaultOption M64P::Config.SetDefaultInt Failed: ";
+        this->error_Message += M64P::Core.ErrorMessage(ret);
+    }
+
+    return ret == M64ERR_SUCCESS;
+}
+
+bool Config::SetDefaultOption(QString section, QString key, float value, QString help)
+{
+    m64p_error ret;
+
+    if (!this->section_Open(section))
+        return false;
+
+    ret = M64P::Config.SetDefaultFloat(this->section_Handle, key.toStdString().c_str(), value, help.toStdString().c_str());
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_Message = "Config::SetDefaultOption M64P::Config.SetDefaultFloat Failed: ";
+        this->error_Message += M64P::Core.ErrorMessage(ret);
+    }
+
+    return ret == M64ERR_SUCCESS;
+}
+
+bool Config::SetDefaultOption(QString section, QString key, bool value, QString help)
+{
+    m64p_error ret;
+
+    if (!this->section_Open(section))
+        return false;
+
+    ret = M64P::Config.SetDefaultBool(this->section_Handle, key.toStdString().c_str(), value, help.toStdString().c_str());
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_Message = "Config::SetDefaultOption M64P::Config.SetDefaultBool Failed: ";
+        this->error_Message += M64P::Core.ErrorMessage(ret);
+    }
+
+    return ret == M64ERR_SUCCESS;
+}
+
+bool Config::SetDefaultOption(QString section, QString key, QString value, QString help)
+{
+    return this->SetDefaultOption(section, key, (char*)value.toStdString().c_str(), help);
+}
+
+bool Config::SetDefaultOption(QString section, QString key, char *value, QString help)
+{
+    m64p_error ret;
+
+    if (!this->section_Open(section))
+        return false;
+
+    ret = M64P::Config.SetDefaultString(this->section_Handle, key.toStdString().c_str(), value, help.toStdString().c_str());
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_Message = "Config::SetDefaultOption M64P::Config.SetDefaultString Failed: ";
+        this->error_Message += M64P::Core.ErrorMessage(ret);
+    }
+
+    return ret == M64ERR_SUCCESS;
+}
+
 bool Config::GetOption(QString section, QString key, int *value)
 {
     return this->section_Open(section) && this->value_Get(key, M64TYPE_INT, value, sizeof(value));
@@ -93,7 +167,18 @@ bool Config::GetOption(QString section, QString key, float *value)
 
 bool Config::GetOption(QString section, QString key, bool *value)
 {
-    return this->section_Open(section) && this->value_Get(key, M64TYPE_BOOL, value, sizeof(value));
+    int bValue = 0;
+    bool ret;
+    
+    if (!this->SectionExists(section))
+        return false;
+
+    ret = this->section_Open(section) && this->value_Get(key, M64TYPE_BOOL, &bValue, sizeof(bValue));
+
+    if (ret)
+        *value = bValue;
+
+    return ret;
 }
 
 bool Config::GetOption(QString section, QString key, char *value)

@@ -11,7 +11,6 @@
 #include "../Utilities/QtKeyToSdl2Key.hpp"
 #include "Config.hpp"
 #include "Globals.hpp"
-#include "Utilities/SettingsTypes.hpp"
 
 #include <QCoreApplication>
 #include <QDesktopServices>
@@ -48,47 +47,12 @@ bool MainWindow::Init(void)
         return false;
     }
 
-    // TODO, move this crap to a plugin loader
-    QList<Plugin_t> pluginList;
-    QString settingsArray[4] = {SETTINGS_PLUGIN_GFX, SETTINGS_PLUGIN_AUDIO, SETTINGS_PLUGIN_INPUT, SETTINGS_PLUGIN_RSP};
-    QString settingsValue;
-    PluginType type;
-    QComboBox *comboBox;
-    bool found;
+    g_Settings.LoadDefaults();
 
-    for (int i = 0; i < 4; i++)
-    {
-        found = false;
-        type = (PluginType)i;
-
-        pluginList.clear();
-        pluginList = g_MupenApi.Core.GetPlugins((PluginType)i);
-
-        g_MupenApi.Config.GetOption(SETTINGS_SECTION, settingsArray[i], &settingsValue);
-
-        if (!settingsValue.isEmpty())
-        {
-            for (Plugin_t &p : pluginList)
-            {
-                if (p.FileName == settingsValue)
-                {
-                    g_MupenApi.Core.SetPlugin(p);
-                    found = true;
-                    break;
-                }
-            }
-        }
-
-        if (!found)
-            g_MupenApi.Core.SetPlugin(pluginList.first());
-    }
-
-    g_MupenApi.Config.SetOption("Core", "ScreenshotPath", "Screenshots");
-    g_MupenApi.Config.SetOption("Core", "SaveStatePath", "Save/State");
-    g_MupenApi.Config.SetOption("Core", "SaveSRAMPath", "Save/Game");
-    g_MupenApi.Config.SetOption("Core", "SharedDataPath", "Data");
-
-    g_MupenApi.Config.OverrideUserPaths("Data", "Cache");
+    QString dataDir = g_Settings.GetStringValue(SettingsID::Core_UserDataDirOverride);
+    QString cacheDir = g_Settings.GetStringValue(SettingsID::Core_UserCacheDirOverride);
+    if (g_Settings.GetBoolValue(SettingsID::Core_OverrideUserDirs))
+        g_MupenApi.Config.OverrideUserPaths(dataDir, cacheDir);
 
     this->ui_Init();
     this->ui_Setup();

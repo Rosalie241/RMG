@@ -9,6 +9,7 @@
  */
 #include "SettingsDialog.hpp"
 #include "../../Globals.hpp"
+#include "Utilities/SettingsID.hpp"
 
 using namespace UserInterface::Dialog;
 using namespace M64P::Wrapper;
@@ -23,9 +24,8 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
     for (int i = 0; i < this->stackedWidget->count(); i++)
         this->reloadSettings(i);
 
-    int width = 0, height = 0;
-    g_MupenApi.Config.GetOption(SETTINGS_SECTION, "Settings Window Width", &width);
-    g_MupenApi.Config.GetOption(SETTINGS_SECTION, "Settings Window Height", &height);
+    int width = g_Settings.GetIntValue(SettingsID::GUI_SettingsDialogWidth);
+    int height = g_Settings.GetIntValue(SettingsID::GUI_SettingsDialogHeight);
 
     if (width != 0 && height != 0)
     {
@@ -43,10 +43,8 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
 
 SettingsDialog::~SettingsDialog(void)
 {
-    g_MupenApi.Config.SetOption(SETTINGS_SECTION, "Settings Window Width",
-                                this->size().width());
-    g_MupenApi.Config.SetOption(SETTINGS_SECTION, "Settings Window Height",
-                                this->size().height());
+    g_Settings.SetValue(SettingsID::GUI_SettingsDialogWidth, this->size().width());
+    g_Settings.SetValue(SettingsID::GUI_SettingsDialogHeight, this->size().height());
 }
 
 void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
@@ -110,12 +108,12 @@ void SettingsDialog::loadCoreSettings(void)
     bool randomizeInterrupt = true;
     bool debugger = false;
 
-    g_MupenApi.Config.GetOption(QString("Core"), QString("DisableExtraMem"), &disableExtraMem);
-    g_MupenApi.Config.GetOption(QString("Core"), QString("CountPerOp"), &counterFactor);
-    g_MupenApi.Config.GetOption(QString("Core"), QString("R4300Emulator"), &cpuEmulator);
-    g_MupenApi.Config.GetOption(QString("Core"), QString("SiDmaDuration"), &siDmaDuration);
-    g_MupenApi.Config.GetOption(QString("Core"), QString("RandomizeInterrupt"), &randomizeInterrupt);
-    g_MupenApi.Config.GetOption(QString("Core"), QString("EnableDebugger"), &debugger);
+    disableExtraMem = g_Settings.GetBoolValue(SettingsID::Core_DisableExtraMem);
+    counterFactor = g_Settings.GetIntValue(SettingsID::Core_CountPerOp);
+    cpuEmulator = g_Settings.GetIntValue(SettingsID::Core_CPU_Emulator);
+    siDmaDuration = g_Settings.GetIntValue(SettingsID::Core_SiDmaDuration);
+    randomizeInterrupt = g_Settings.GetBoolValue(SettingsID::Core_RandomizeInterrupt);
+    debugger = g_Settings.GetBoolValue(SettingsID::Core_EnableDebugger);
 
     this->coreCpuEmulator->setCurrentIndex(cpuEmulator);
     this->coreRandomizeTiming->setChecked(randomizeInterrupt);
@@ -171,38 +169,23 @@ void SettingsDialog::loadGamePluginSettings(void)
 
 void SettingsDialog::loadPluginSettings(void)
 {
-    QList<Plugin_t> pluginList;
     QComboBox *comboBoxArray[4] = {this->videoPlugins, this->audioPlugins, this->inputPlugins, this->rspPlugins};
     PluginType type;
     QComboBox *comboBox;
-    Plugin_t plugin_t;
+    Plugin_t plugin;
+    int index = 0;
 
-    for (int i = 0; i < 4; i++)
+    for (const Plugin_t& p : g_Plugins.GetAvailablePlugins())
     {
-        type = (PluginType)i;
-        comboBox = comboBoxArray[i];
-        comboBox->clear();
+        comboBox = comboBoxArray[(int)p.Type];
+        plugin = g_Plugins.GetCurrentPlugin(p.Type);
 
-        pluginList.clear();
-        pluginList = g_MupenApi.Core.GetPlugins((PluginType)i);
+        comboBox->addItem(p.Name);
 
-        int pluginIndex = -1, stopCounting = 0;
-        for (Plugin_t &p : pluginList)
+        if (plugin.FileName == p.FileName)
         {
-            comboBox->addItem(p.Name);
-
-            if (stopCounting == 1)
-                continue;
-
-            pluginIndex++;
-
-            if (g_MupenApi.Core.GetCurrentPlugin(type, &plugin_t) && plugin_t.FileName == p.FileName)
-            {
-                stopCounting = 1;
-            }
+            comboBox->setCurrentText(p.Name);
         }
-
-        comboBox->setCurrentIndex(pluginIndex);
     }
 }
 
@@ -218,14 +201,14 @@ void SettingsDialog::loadDirectorySettings(void)
     static QString userDataDir;
     static QString userCacheDir;
 
-    g_MupenApi.Config.GetOption("Core", "ScreenshotPath", &screenshotDir);
-    g_MupenApi.Config.GetOption("Core", "SaveStatePath", &saveStateDir);
-    g_MupenApi.Config.GetOption("Core", "SaveSRAMPath", &saveSramDir);
-    g_MupenApi.Config.GetOption("Core", "SharedDataPath", &sharedDataDir);
-
-    g_MupenApi.Config.GetOption(SETTINGS_SECTION, "CoreOverrideUserDirectories", &overrideUserDirs);
-    g_MupenApi.Config.GetOption(SETTINGS_SECTION, "CoreUserDataDirectory", &userDataDir);
-    g_MupenApi.Config.GetOption(SETTINGS_SECTION, "CoreUserCacheDirectory", &userCacheDir);
+    screenshotDir = g_Settings.GetStringValue(SettingsID::Core_ScreenshotPath);
+    saveStateDir = g_Settings.GetStringValue(SettingsID::Core_SaveStatePath);
+    saveSramDir = g_Settings.GetStringValue(SettingsID::Core_SaveSRAMPath);
+    sharedDataDir = g_Settings.GetStringValue(SettingsID::Core_SharedDataPath);
+    
+    overrideUserDirs = g_Settings.GetBoolValue(SettingsID::Core_OverrideUserDirs);
+    userDataDir = g_Settings.GetStringValue(SettingsID::Core_UserDataDirOverride);
+    userCacheDir = g_Settings.GetStringValue(SettingsID::Core_UserCacheDirOverride);
 
     this->screenshotDirectory->setText(screenshotDir);
     this->saveStateDirectory->setText(saveStateDir);
@@ -262,13 +245,13 @@ void SettingsDialog::loadDefaultGamePluginSettings(void)
 
 void SettingsDialog::loadDefaultDirectorySettings(void)
 {
-    this->screenshotDirectory->setText("Screenshots");
-    this->saveStateDirectory->setText("Save/State");
-    this->saveSramDirectory->setText("Save/Game");
-    this->sharedDataDirectory->setText("Data");
-    this->overrideUserDirectories->setChecked(true);
-    this->userDataDirectory->setText("Data");
-    this->userCacheDirectory->setText("Cache");
+    this->screenshotDirectory->setText(g_Settings.GetDefaultStringValue(SettingsID::Core_ScreenshotPath));
+    this->saveStateDirectory->setText(g_Settings.GetDefaultStringValue(SettingsID::Core_SaveStatePath));
+    this->saveSramDirectory->setText(g_Settings.GetDefaultStringValue(SettingsID::Core_SaveSRAMPath));
+    this->sharedDataDirectory->setText(g_Settings.GetDefaultStringValue(SettingsID::Core_SharedDataPath));
+    this->overrideUserDirectories->setChecked(g_Settings.GetDefaultBoolValue(SettingsID::Core_OverrideUserDirs));
+    this->userDataDirectory->setText(g_Settings.GetDefaultStringValue(SettingsID::Core_UserDataDirOverride));
+    this->userCacheDirectory->setText(g_Settings.GetDefaultStringValue(SettingsID::Core_UserCacheDirOverride));
 }
 
 void SettingsDialog::saveSettings(void)
@@ -283,15 +266,15 @@ void SettingsDialog::saveSettings(void)
 void SettingsDialog::saveCoreSettings(void)
 {
     bool disableExtraMem = (this->coreMemorySize->currentIndex() == 0);
-    int counterFactor = this->coreCounterFactor->currentIndex();
+    int counterFactor = this->coreCounterFactor->currentIndex() + 1;
     int cpuEmulator = this->coreCpuEmulator->currentIndex();
     int siDmaDuration = this->coreSiDmaDuration->value();
     bool randomizeInterrupt = this->coreRandomizeTiming->isChecked();
     bool debugger = this->coreDebugger->isChecked();
 
-    g_MupenApi.Config.SetOption(QString("Core"), QString("R4300Emulator"), cpuEmulator);
-    g_MupenApi.Config.SetOption(QString("Core"), QString("RandomizeInterrupt"), randomizeInterrupt);
-    g_MupenApi.Config.SetOption(QString("Core"), QString("EnableDebugger"), debugger);
+    g_Settings.SetValue(SettingsID::Core_CPU_Emulator, cpuEmulator);
+    g_Settings.SetValue(SettingsID::Core_RandomizeInterrupt, randomizeInterrupt);
+    g_Settings.SetValue(SettingsID::Core_EnableDebugger, debugger);
 
     if (!this->coreOverrideGameSettingsGroup->isChecked())
     {
@@ -300,9 +283,9 @@ void SettingsDialog::saveCoreSettings(void)
         siDmaDuration = -1;
     }
 
-    g_MupenApi.Config.SetOption(QString("Core"), QString("DisableExtraMem"), disableExtraMem);
-    g_MupenApi.Config.SetOption(QString("Core"), QString("CountPerOp"), counterFactor);
-    g_MupenApi.Config.SetOption(QString("Core"), QString("SiDmaDuration"), siDmaDuration);
+    g_Settings.SetValue(SettingsID::Core_DisableExtraMem, disableExtraMem);
+    g_Settings.SetValue(SettingsID::Core_CountPerOp, counterFactor);
+    g_Settings.SetValue(SettingsID::Core_SiDmaDuration, siDmaDuration);
 }
 
 void SettingsDialog::saveGameSettings(void)
@@ -334,42 +317,28 @@ void SettingsDialog::saveGameSettings(void)
 
 void SettingsDialog::savePluginSettings(void)
 {
-    QList<Plugin_t> pluginList;
     QComboBox *comboBoxArray[4] = {this->videoPlugins, this->audioPlugins, this->inputPlugins, this->rspPlugins};
-    QString settingsArray[4] = {SETTINGS_PLUGIN_GFX, SETTINGS_PLUGIN_AUDIO, SETTINGS_PLUGIN_INPUT, SETTINGS_PLUGIN_RSP};
-    PluginType type;
     QComboBox *comboBox;
 
-    for (int i = 0; i < 4; i++)
+    for (const Plugin_t& p : g_Plugins.GetAvailablePlugins())
     {
-        type = (PluginType)i;
-        comboBox = comboBoxArray[i];
+        comboBox = comboBoxArray[(int)p.Type];
 
-        pluginList.clear();
-        pluginList = g_MupenApi.Core.GetPlugins((PluginType)i);
-
-        for (Plugin_t &p : pluginList)
-        {
-            if (p.Name == comboBox->currentText())
-            {
-                g_MupenApi.Config.SetOption(SETTINGS_SECTION, settingsArray[i], p.FileName);
-                g_MupenApi.Core.SetPlugin(p);
-                break;
-            }
-        }
+        if (p.Name == comboBox->currentText())
+            g_Plugins.ChangePlugin(p);
     }
 }
 
 void SettingsDialog::saveDirectorySettings(void)
 {
-    g_MupenApi.Config.SetOption("Core", "ScreenshotPath", this->screenshotDirectory->text());
-    g_MupenApi.Config.SetOption("Core", "SaveStatePath", this->saveStateDirectory->text());
-    g_MupenApi.Config.SetOption("Core", "SaveSRAMPath", this->saveSramDirectory->text());
-    g_MupenApi.Config.SetOption("Core", "SharedDataPath", this->sharedDataDirectory->text());
+    g_Settings.SetValue(SettingsID::Core_ScreenshotPath, this->screenshotDirectory->text());
+    g_Settings.SetValue(SettingsID::Core_SaveStatePath, this->saveStateDirectory->text());
+    g_Settings.SetValue(SettingsID::Core_SaveSRAMPath, this->saveSramDirectory->text());
+    g_Settings.SetValue(SettingsID::Core_SharedDataPath, this->sharedDataDirectory->text());
 
-    g_MupenApi.Config.SetOption(SETTINGS_SECTION, "CoreOverrideUserDirectories", this->overrideUserDirectories->isChecked());
-    g_MupenApi.Config.SetOption(SETTINGS_SECTION, "CoreUserDataDirectory", this->userDataDirectory->text());
-    g_MupenApi.Config.SetOption(SETTINGS_SECTION, "CoreUserCacheDirectory", this->userCacheDirectory->text());
+    g_Settings.SetValue(SettingsID::Core_OverrideUserDirs, this->overrideUserDirectories->isChecked());
+    g_Settings.SetValue(SettingsID::Core_UserDataDirOverride, this->userDataDirectory->text());
+    g_Settings.SetValue(SettingsID::Core_UserCacheDirOverride, this->userCacheDirectory->text());
 }
 
 void SettingsDialog::hideEmulationInfoText(void)

@@ -5,8 +5,12 @@
 #include "Thread/EmulationThread.hpp"
 #include "UserInterface/Widget/OGLWidget.hpp"
 #include "Utilities/Logger.hpp"
+#include "Utilities//Settings.hpp"
+#include "Utilities/Plugins.hpp"
 
 extern Utilities::Logger g_Logger;
+extern Utilities::Settings g_Settings;
+extern Utilities::Plugins g_Plugins;
 extern M64P::Wrapper::Api g_MupenApi;
 extern UserInterface::Widget::OGLWidget *g_OGLWidget;
 extern Thread::EmulationThread *g_EmuThread;

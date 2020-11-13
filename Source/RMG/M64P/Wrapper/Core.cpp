@@ -114,6 +114,7 @@ QList<Plugin_t> Core::GetPlugins(PluginType type)
 
     switch (type)
     {
+    default:
     case PluginType::Gfx:
         dir = MUPEN_DIR_GFX;
         break;
