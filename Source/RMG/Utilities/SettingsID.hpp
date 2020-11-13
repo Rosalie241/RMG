@@ -21,6 +21,7 @@ typedef struct
     QString Key;
     QVariant Default;
     QString Help;
+    bool ForceUseSet;
 } Setting_t;
 
 enum SettingsID

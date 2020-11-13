@@ -101,7 +101,7 @@
        <item>
         <widget class="QStackedWidget" name="stackedWidget">
          <property name="currentIndex">
-          <number>6</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="coreSettingsPage">
           <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -1067,7 +1067,11 @@
                  </property>
                  <layout class="QHBoxLayout" name="horizontalLayout_21">
                   <item>
-                   <widget class="QLineEdit" name="screenshotDirectory"/>
+                   <widget class="QLineEdit" name="screenshotDirectory">
+                    <property name="readOnly">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
                   </item>
                   <item>
                    <widget class="QPushButton" name="pushButton_9">
@@ -1274,9 +1278,9 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>-446</y>
+                <y>0</y>
                 <width>431</width>
-                <height>828</height>
+                <height>930</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -1609,6 +1613,44 @@
                  <property name="title">
                   <string>Options menu</string>
                  </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_16">
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_47">
+                    <item>
+                     <widget class="QCheckBox" name="checkBox_23">
+                      <property name="text">
+                       <string>Full Screen</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButton_36">
+                      <property name="text">
+                       <string>Change</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_46">
+                    <item>
+                     <widget class="QCheckBox" name="checkBox_22">
+                      <property name="text">
+                       <string>Settings</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="pushButton_35">
+                      <property name="text">
+                       <string>Change</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
                 </widget>
                </item>
               </layout>
