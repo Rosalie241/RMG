@@ -31,13 +31,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
     {
         // center current dialog
         this->setGeometry(
-            QStyle::alignedRect( 
-                Qt::LeftToRight,
-                Qt::AlignCenter,
-                QSize(width, height),
-                parent->geometry()
-            )
-        );
+            QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, QSize(width, height), parent->geometry()));
     }
 }
 
@@ -70,6 +64,9 @@ void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
     case 5:
         loadDefaultDirectorySettings();
         break;
+    case 6:
+        loadDefaultBehaviorSettings();
+        break;
     }
 }
 
@@ -95,6 +92,9 @@ void SettingsDialog::reloadSettings(int stackedWidgetIndex)
         break;
     case 5:
         loadDirectorySettings();
+        break;
+    case 6:
+        loadBehaviorSettings();
         break;
     }
 }
@@ -179,7 +179,7 @@ void SettingsDialog::loadPluginSettings(void)
     Plugin_t plugin;
     int index = 0;
 
-    for (const Plugin_t& p : g_Plugins.GetAvailablePlugins())
+    for (const Plugin_t &p : g_Plugins.GetAvailablePlugins())
     {
         comboBox = comboBoxArray[(int)p.Type];
         plugin = g_Plugins.GetCurrentPlugin(p.Type);
@@ -192,7 +192,6 @@ void SettingsDialog::loadPluginSettings(void)
         }
     }
 }
-
 
 void SettingsDialog::loadDirectorySettings(void)
 {
@@ -209,7 +208,7 @@ void SettingsDialog::loadDirectorySettings(void)
     saveStateDir = g_Settings.GetStringValue(SettingsID::Core_SaveStatePath);
     saveSramDir = g_Settings.GetStringValue(SettingsID::Core_SaveSRAMPath);
     sharedDataDir = g_Settings.GetStringValue(SettingsID::Core_SharedDataPath);
-    
+
     overrideUserDirs = g_Settings.GetBoolValue(SettingsID::Core_OverrideUserDirs);
     userDataDir = g_Settings.GetStringValue(SettingsID::Core_UserDataDirOverride);
     userCacheDir = g_Settings.GetStringValue(SettingsID::Core_UserCacheDirOverride);
@@ -221,6 +220,19 @@ void SettingsDialog::loadDirectorySettings(void)
     this->overrideUserDirectories->setChecked(overrideUserDirs);
     this->userDataDirectory->setText(userDataDir);
     this->userCacheDirectory->setText(userCacheDir);
+}
+
+void SettingsDialog::loadBehaviorSettings(void)
+{
+    bool pause = false, resume = false;
+
+    /*
+        pause = g_Settings.GetBoolValue(SettingsID::GUI_PauseEmulationOnFocusLoss);
+        resume = g_Settings.GetBoolValue(SettingsID::GUI_ResumeEmulationOnFocus);
+    */
+
+    this->pauseEmulationOnFocusLoss->setChecked(pause);
+    this->resumeEmulationOnFocus->setChecked(resume);
 }
 
 void SettingsDialog::loadDefaultCoreSettings(void)
@@ -294,6 +306,19 @@ void SettingsDialog::loadDefaultDirectorySettings(void)
     this->userCacheDirectory->setText(g_Settings.GetDefaultStringValue(SettingsID::Core_UserCacheDirOverride));
 }
 
+void SettingsDialog::loadDefaultBehaviorSettings(void)
+{
+    bool pause = false, resume = false;
+
+    /*
+        pause = g_Settings.GetBoolValue(SettingsID::GUI_PauseEmulationOnFocusLoss);
+        resume = g_Settings.GetBoolValue(SettingsID::GUI_ResumeEmulationOnFocus);
+    */
+
+    this->pauseEmulationOnFocusLoss->setChecked(pause);
+    this->resumeEmulationOnFocus->setChecked(resume);
+}
+
 void SettingsDialog::saveSettings(void)
 {
     this->saveCoreSettings();
@@ -301,6 +326,7 @@ void SettingsDialog::saveSettings(void)
         this->saveGameSettings();
     this->savePluginSettings();
     this->saveDirectorySettings();
+    this->saveBehaviorSettings();
 }
 
 void SettingsDialog::saveCoreSettings(void)
@@ -362,7 +388,7 @@ void SettingsDialog::savePluginSettings(void)
     QComboBox *comboBoxArray[4] = {this->videoPlugins, this->audioPlugins, this->inputPlugins, this->rspPlugins};
     QComboBox *comboBox;
 
-    for (const Plugin_t& p : g_Plugins.GetAvailablePlugins())
+    for (const Plugin_t &p : g_Plugins.GetAvailablePlugins())
     {
         comboBox = comboBoxArray[(int)p.Type];
 
@@ -381,6 +407,18 @@ void SettingsDialog::saveDirectorySettings(void)
     g_Settings.SetValue(SettingsID::Core_OverrideUserDirs, this->overrideUserDirectories->isChecked());
     g_Settings.SetValue(SettingsID::Core_UserDataDirOverride, this->userDataDirectory->text());
     g_Settings.SetValue(SettingsID::Core_UserCacheDirOverride, this->userCacheDirectory->text());
+}
+
+void SettingsDialog::saveBehaviorSettings(void)
+{
+    bool pause = false, resume = false;
+
+    pause = this->pauseEmulationOnFocusLoss->isChecked();
+    resume = this->resumeEmulationOnFocus->isChecked();
+    /* TODO for someday
+        g_Settings.SetValue(SettingsID::GUI_PauseEmulationOnFocusLoss, pause);
+        g_Settings.SetValue(SettingsID::GUI_ResumeEmulationOnFocus, resume);
+    */
 }
 
 void SettingsDialog::hideEmulationInfoText(void)

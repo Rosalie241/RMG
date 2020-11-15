@@ -20,6 +20,7 @@ set(RMG_SOURCES
     UserInterface/Dialog/SettingsDialog.ui
     UserInterface/Dialog/SettingsDialog.qrc
     UserInterface/NoFocusDelegate.cpp
+    UserInterface/EventFilter.cpp
     UserInterface/UIResources.rc
     UserInterface/UIResources.qrc
     Thread/RomSearcherThread.cpp

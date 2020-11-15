@@ -15,7 +15,7 @@
 
 using namespace UserInterface::Widget;
 
-RomBrowserWidget::RomBrowserWidget(void) : QTableView(nullptr)
+RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QTableView(parent)
 {
     this->model_Init();
     this->model_Setup();

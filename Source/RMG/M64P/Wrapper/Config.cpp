@@ -89,7 +89,8 @@ bool Config::SetDefaultOption(QString section, QString key, int value, QString h
     if (!this->section_Open(section))
         return false;
 
-    ret = M64P::Config.SetDefaultInt(this->section_Handle, key.toStdString().c_str(), value, help.toStdString().c_str());
+    ret =
+        M64P::Config.SetDefaultInt(this->section_Handle, key.toStdString().c_str(), value, help.toStdString().c_str());
     if (ret != M64ERR_SUCCESS)
     {
         this->error_Message = "Config::SetDefaultOption M64P::Config.SetDefaultInt Failed: ";
@@ -106,7 +107,8 @@ bool Config::SetDefaultOption(QString section, QString key, float value, QString
     if (!this->section_Open(section))
         return false;
 
-    ret = M64P::Config.SetDefaultFloat(this->section_Handle, key.toStdString().c_str(), value, help.toStdString().c_str());
+    ret = M64P::Config.SetDefaultFloat(this->section_Handle, key.toStdString().c_str(), value,
+                                       help.toStdString().c_str());
     if (ret != M64ERR_SUCCESS)
     {
         this->error_Message = "Config::SetDefaultOption M64P::Config.SetDefaultFloat Failed: ";
@@ -123,7 +125,8 @@ bool Config::SetDefaultOption(QString section, QString key, bool value, QString 
     if (!this->section_Open(section))
         return false;
 
-    ret = M64P::Config.SetDefaultBool(this->section_Handle, key.toStdString().c_str(), value, help.toStdString().c_str());
+    ret =
+        M64P::Config.SetDefaultBool(this->section_Handle, key.toStdString().c_str(), value, help.toStdString().c_str());
     if (ret != M64ERR_SUCCESS)
     {
         this->error_Message = "Config::SetDefaultOption M64P::Config.SetDefaultBool Failed: ";
@@ -135,7 +138,7 @@ bool Config::SetDefaultOption(QString section, QString key, bool value, QString 
 
 bool Config::SetDefaultOption(QString section, QString key, QString value, QString help)
 {
-    return this->SetDefaultOption(section, key, (char*)value.toStdString().c_str(), help);
+    return this->SetDefaultOption(section, key, (char *)value.toStdString().c_str(), help);
 }
 
 bool Config::SetDefaultOption(QString section, QString key, char *value, QString help)
@@ -145,7 +148,8 @@ bool Config::SetDefaultOption(QString section, QString key, char *value, QString
     if (!this->section_Open(section))
         return false;
 
-    ret = M64P::Config.SetDefaultString(this->section_Handle, key.toStdString().c_str(), value, help.toStdString().c_str());
+    ret = M64P::Config.SetDefaultString(this->section_Handle, key.toStdString().c_str(), value,
+                                        help.toStdString().c_str());
     if (ret != M64ERR_SUCCESS)
     {
         this->error_Message = "Config::SetDefaultOption M64P::Config.SetDefaultString Failed: ";
@@ -169,7 +173,7 @@ bool Config::GetOption(QString section, QString key, bool *value)
 {
     int bValue = 0;
     bool ret;
-    
+
     if (!this->SectionExists(section))
         return false;
 
@@ -188,7 +192,7 @@ bool Config::GetOption(QString section, QString key, char *value)
 
 bool Config::GetOption(QString section, QString key, QString *value)
 {
-    char data[300] = { 0 };
+    char data[300] = {0};
 
     if (!this->section_Open(section))
         return false;

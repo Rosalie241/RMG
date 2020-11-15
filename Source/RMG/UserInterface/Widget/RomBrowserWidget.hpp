@@ -31,7 +31,7 @@ class RomBrowserWidget : public QTableView
     Q_OBJECT
 
   public:
-    RomBrowserWidget(void);
+    RomBrowserWidget(QWidget *);
     ~RomBrowserWidget(void);
 
     void RefreshRomList(void);

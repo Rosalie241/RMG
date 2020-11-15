@@ -1049,7 +1049,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>431</width>
+                <width>212</width>
                 <height>542</height>
                </rect>
               </property>
@@ -1279,7 +1279,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>431</width>
+                <width>253</width>
                 <height>930</height>
                </rect>
               </property>
@@ -1701,6 +1701,37 @@
               </widget>
              </item>
             </layout>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="behaviorPage">
+          <layout class="QVBoxLayout" name="verticalLayout_17">
+           <item>
+            <widget class="QCheckBox" name="pauseEmulationOnFocusLoss">
+             <property name="text">
+              <string>Pause Emulation When Window Loses Focus</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="resumeEmulationOnFocus">
+             <property name="text">
+              <string>Resume Emulation When Window Re-gains Focus</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_6">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>353</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </widget>

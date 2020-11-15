@@ -13,7 +13,7 @@ namespace Widget
 class OGLWidget : public QOpenGLWindow
 {
   public:
-    OGLWidget(void);
+    OGLWidget(QWidget *);
     ~OGLWidget(void);
 
     void SetThread(QThread *);
@@ -22,6 +22,9 @@ class OGLWidget : public QOpenGLWindow
 
   protected:
     void exposeEvent(QExposeEvent *) Q_DECL_OVERRIDE;
+
+  private:
+    QWidget *parent;
 };
 } // namespace Widget
 } // namespace UserInterface

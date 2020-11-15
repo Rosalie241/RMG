@@ -31,6 +31,10 @@ enum SettingsID
     GUI_RomBrowserGeometry,
     GUI_SettingsDialogWidth,
     GUI_SettingsDialogHeight,
+    /*
+    GUI_PauseEmulationOnFocusLoss,
+    GUI_ResumeEmulationOnFocus,
+    */
 
     // Core Plugin Settings
     Core_GFX_Plugin,
@@ -42,7 +46,7 @@ enum SettingsID
     Core_OverrideUserDirs,
     Core_UserDataDirOverride,
     Core_UserCacheDirOverride,
-    
+
     // (mupen64plus) Core Settings
     Core_OverrideGameSpecificSettings,
     Core_RandomizeInterrupt,
@@ -56,7 +60,9 @@ enum SettingsID
     Core_ScreenshotPath,
     Core_SaveStatePath,
     Core_SaveSRAMPath,
-    Core_SharedDataPath
+    Core_SharedDataPath,
+
+    Invalid
 };
 
 #endif // SETTINGSTYPES_HPP

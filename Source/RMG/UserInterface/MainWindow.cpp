@@ -11,6 +11,7 @@
 #include "../Utilities/QtKeyToSdl2Key.hpp"
 #include "Config.hpp"
 #include "Globals.hpp"
+#include "UserInterface/EventFilter.hpp"
 
 #include <QCoreApplication>
 #include <QDesktopServices>
@@ -70,8 +71,8 @@ bool MainWindow::Init(void)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    g_Settings.SetValue(SettingsID::GUI_RomBrowserGeometry, 
-        QString(this->saveGeometry().toBase64().toStdString().c_str()));
+    g_Settings.SetValue(SettingsID::GUI_RomBrowserGeometry,
+                        QString(this->saveGeometry().toBase64().toStdString().c_str()));
 
     this->on_Action_File_EndEmulation();
 
@@ -81,41 +82,16 @@ void MainWindow::closeEvent(QCloseEvent *event)
     QMainWindow::closeEvent(event);
 }
 
-void MainWindow::keyPressEvent(QKeyEvent *event)
-{
-    if (!g_MupenApi.Core.IsEmulationRunning())
-    {
-        QMainWindow::keyPressEvent(event);
-        return;
-    }
-
-    int key = Utilities::QtKeyToSdl2Key(event->key());
-    int mod = Utilities::QtModKeyToSdl2ModKey(event->modifiers());
-
-    g_MupenApi.Core.SetKeyDown(key, mod);
-}
-
-void MainWindow::keyReleaseEvent(QKeyEvent *event)
-{
-    if (!g_MupenApi.Core.IsEmulationRunning())
-    {
-        QMainWindow::keyReleaseEvent(event);
-        return;
-    }
-
-    int key = Utilities::QtKeyToSdl2Key(event->key());
-    int mod = Utilities::QtModKeyToSdl2ModKey(event->modifiers());
-
-    g_MupenApi.Core.SetKeyUp(key, mod);
-}
+#include <iostream>
 
 void MainWindow::ui_Init(void)
 {
     this->ui_Icon = QIcon(":Resource/RMG.png");
 
-    this->ui_Widgets = new QStackedWidget();
-    this->ui_Widget_RomBrowser = new Widget::RomBrowserWidget();
-    this->ui_Widget_OpenGL = new Widget::OGLWidget();
+    this->ui_Widgets = new QStackedWidget(this);
+    this->ui_Widget_RomBrowser = new Widget::RomBrowserWidget(this);
+    this->ui_Widget_OpenGL = new Widget::OGLWidget(this);
+    this->ui_EventFilter = new EventFilter(this);
 
     QString dir;
     dir = g_Settings.GetStringValue(SettingsID::GUI_RomBrowserDirectory);
@@ -125,6 +101,15 @@ void MainWindow::ui_Init(void)
 
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::on_RomBrowser_Select, this,
             &MainWindow::on_RomBrowser_Selected);
+
+    connect(this->ui_EventFilter, &EventFilter::on_EventFilter_KeyPressed, this,
+            &MainWindow::on_EventFilter_KeyPressed);
+    connect(this->ui_EventFilter, &EventFilter::on_EventFilter_KeyReleased, this,
+            &MainWindow::on_EventFilter_KeyReleased);
+    /*
+    connect(this->ui_EventFilter, &EventFilter::on_EventFilter_FocusIn, this, &MainWindow::on_EventFilter_FocusIn);
+    connect(this->ui_EventFilter, &EventFilter::on_EventFilter_FocusOut, this, &MainWindow::on_EventFilter_FocusOut);
+    */
 }
 
 void MainWindow::ui_Setup(void)
@@ -151,6 +136,10 @@ void MainWindow::ui_Setup(void)
     this->ui_Widgets->addWidget(this->ui_Widget_OpenGL->GetWidget());
 
     this->ui_Widgets->setCurrentIndex(0);
+
+    this->setFocusPolicy(Qt::FocusPolicy::StrongFocus);
+    this->installEventFilter(this->ui_EventFilter);
+    this->ui_Widget_OpenGL->installEventFilter(this->ui_EventFilter);
 }
 
 void MainWindow::ui_Stylesheet_Setup(void)
@@ -225,7 +214,7 @@ void MainWindow::ui_LoadGeometry(void)
 
 void MainWindow::menuBar_Init(void)
 {
-    this->menuBar = new QMenuBar();
+    this->menuBar = new QMenuBar(this);
     this->menuBar_Actions_Init();
     this->menuBar_Actions_Connect();
 }
@@ -528,6 +517,60 @@ void MainWindow::menuBar_Actions_Connect(void)
     connect(this->action_Help_HomePage, &QAction::triggered, this, &MainWindow::on_Action_Help_HomePage);
     connect(this->action_Help_About, &QAction::triggered, this, &MainWindow::on_Action_Help_About);
 }
+
+void MainWindow::on_EventFilter_KeyPressed(QKeyEvent *event)
+{
+    if (!g_MupenApi.Core.IsEmulationRunning())
+    {
+        QMainWindow::keyPressEvent(event);
+        return;
+    }
+
+    int key = Utilities::QtKeyToSdl2Key(event->key());
+    int mod = Utilities::QtModKeyToSdl2ModKey(event->modifiers());
+
+    g_MupenApi.Core.SetKeyDown(key, mod);
+}
+
+void MainWindow::on_EventFilter_KeyReleased(QKeyEvent *event)
+{
+    if (!g_MupenApi.Core.IsEmulationRunning())
+    {
+        QMainWindow::keyReleaseEvent(event);
+        return;
+    }
+
+    int key = Utilities::QtKeyToSdl2Key(event->key());
+    int mod = Utilities::QtModKeyToSdl2ModKey(event->modifiers());
+
+    g_MupenApi.Core.SetKeyUp(key, mod);
+}
+
+/* TODO for some day
+void MainWindow::on_EventFilter_FocusIn(QFocusEvent *event)
+{
+    std::cout << "MainWindow::on_EventFilter_FocusIn" << std::endl;
+    if (g_Settings.GetBoolValue(SettingsID::GUI_ResumeEmulationOnFocus))
+    {
+        if (g_MupenApi.Core.isEmulationPaused())
+            this->on_Action_System_Pause();
+    }
+
+    QMainWindow::focusInEvent(event);
+}
+
+void MainWindow::on_EventFilter_FocusOut(QFocusEvent *event)
+{
+    std::cout << "MainWindow::on_EventFilter_FocusOut" << std::endl;
+    if (g_Settings.GetBoolValue(SettingsID::GUI_PauseEmulationOnFocusLoss))
+    {
+        if (g_MupenApi.Core.IsEmulationRunning())
+            this->on_Action_System_Pause();
+    }
+
+    QMainWindow::focusOutEvent(event);
+}
+*/
 
 void MainWindow::on_Action_File_OpenRom(void)
 {

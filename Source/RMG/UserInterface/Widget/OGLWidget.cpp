@@ -5,8 +5,9 @@ using namespace UserInterface::Widget;
 
 #include <iostream>
 
-OGLWidget::OGLWidget(void)
+OGLWidget::OGLWidget(QWidget *parent)
 {
+    this->parent = parent;
 }
 
 OGLWidget::~OGLWidget(void)
@@ -27,7 +28,9 @@ void OGLWidget::SetThread(QThread *thread)
 
 QWidget *OGLWidget::GetWidget(void)
 {
-    return QWidget::createWindowContainer(this);
+    QWidget *widget = QWidget::createWindowContainer(this);
+    widget->setParent(this->parent);
+    return widget;
 }
 
 void OGLWidget::exposeEvent(QExposeEvent *)

@@ -21,32 +21,32 @@ Settings::Settings()
 
 Settings::~Settings()
 {
-
 }
 
 void Settings::LoadDefaults()
 {
     Setting_t setting;
-    for (int i = 0; i < 22; i++)
+    for (int i = 0; i < SettingsID::Invalid; i++)
     {
         setting = this->getSetting((SettingsID)i);
 
         switch (setting.Default.type())
         {
-            case QVariant::Type::String:
-                if (setting.ForceUseSet && this->GetStringValue((SettingsID)i).isEmpty())
-                    this->SetValue((SettingsID)i, setting.Default.toString());
-                else 
-                    g_MupenApi.Config.SetDefaultOption(setting.Section, setting.Key, setting.Default.toString(), setting.Help);
-                break;
-            case QVariant::Type::Int:
-                g_MupenApi.Config.SetDefaultOption(setting.Section, setting.Key, setting.Default.toInt(), setting.Help);
-                break;
-            default:
-            case QVariant::Type::Bool:
-                g_MupenApi.Config.SetDefaultOption(setting.Section, setting.Key, setting.Default.toBool(), setting.Help);
-                break;
-        }   
+        case QVariant::Type::String:
+            if (setting.ForceUseSet && this->GetStringValue((SettingsID)i).isEmpty())
+                this->SetValue((SettingsID)i, setting.Default.toString());
+            else
+                g_MupenApi.Config.SetDefaultOption(setting.Section, setting.Key, setting.Default.toString(),
+                                                   setting.Help);
+            break;
+        case QVariant::Type::Int:
+            g_MupenApi.Config.SetDefaultOption(setting.Section, setting.Key, setting.Default.toInt(), setting.Help);
+            break;
+        default:
+        case QVariant::Type::Bool:
+            g_MupenApi.Config.SetDefaultOption(setting.Section, setting.Key, setting.Default.toBool(), setting.Help);
+            break;
+        }
     }
 
     g_Plugins.LoadSettings();
@@ -152,76 +152,84 @@ Setting_t Settings::getSetting(SettingsID id)
 
     switch (id)
     {
-        case SettingsID::GUI_RomBrowserDirectory:
-            setting = {GUI_SECTION, "ROM Browser Directory", "", "", false};
+    case SettingsID::GUI_RomBrowserDirectory:
+        setting = {GUI_SECTION, "ROM Browser Directory", "", "", false};
+        break;
+    case SettingsID::GUI_RomBrowserGeometry:
+        setting = {GUI_SECTION, "ROM Browser Geometry", "", "", false};
+        break;
+    case SettingsID::GUI_SettingsDialogWidth:
+        setting = {GUI_SECTION, "Settings Dialog Width", 0, "", false};
+        break;
+    case SettingsID::GUI_SettingsDialogHeight:
+        setting = {GUI_SECTION, "Settings Dialog Height", 0, "", false};
+        break;
+        /*
+        case SettingsID::GUI_PauseEmulationOnFocusLoss:
+            setting = {GUI_SECTION, "PauseEmulationOnFocusLoss", true, "", false};
             break;
-        case SettingsID::GUI_RomBrowserGeometry:
-            setting = {GUI_SECTION, "ROM Browser Geometry", "", "", false};
+        case SettingsID::GUI_ResumeEmulationOnFocus:
+            setting = {GUI_SECTION, "ResumeEmulationOnFocus", true, "", false};
             break;
-        case SettingsID::GUI_SettingsDialogWidth:
-            setting = {GUI_SECTION, "Settings Dialog Width", 0, "", false};
-            break;
-        case SettingsID::GUI_SettingsDialogHeight:
-            setting = {GUI_SECTION, "Settings Dialog Height", 0, "", false};
-            break;
+        */
 
-        case SettingsID::Core_GFX_Plugin:
-            setting = {CORE_SECTION, "GFX Plugin", "", "", false};
-            break;
-        case SettingsID::Core_AUDIO_Plugin:
-            setting = {CORE_SECTION, "Audio Plugin", "", "", false};
-            break;
-        case SettingsID::Core_INPUT_Plugin:
-            setting = {CORE_SECTION, "Input Plugin", "", "", false};
-            break;
-        case SettingsID::Core_RSP_Plugin:
-            setting = {CORE_SECTION, "RSP Plugin", "", "", false};
-            break;
+    case SettingsID::Core_GFX_Plugin:
+        setting = {CORE_SECTION, "GFX Plugin", "", "", false};
+        break;
+    case SettingsID::Core_AUDIO_Plugin:
+        setting = {CORE_SECTION, "Audio Plugin", "", "", false};
+        break;
+    case SettingsID::Core_INPUT_Plugin:
+        setting = {CORE_SECTION, "Input Plugin", "", "", false};
+        break;
+    case SettingsID::Core_RSP_Plugin:
+        setting = {CORE_SECTION, "RSP Plugin", "", "", false};
+        break;
 
-        case SettingsID::Core_OverrideUserDirs:
-            setting = {CORE_SECTION, "OverrideUserDirectories", true, "", false};
-            break;
-        case SettingsID::Core_UserDataDirOverride:
-            setting = {CORE_SECTION, "UserDataDirectory", "Data", "", false};
-            break;
-        case SettingsID::Core_UserCacheDirOverride:
-            setting = {CORE_SECTION, "UserCacheDirectory", "Cache", "", false};
-            break;
+    case SettingsID::Core_OverrideUserDirs:
+        setting = {CORE_SECTION, "OverrideUserDirectories", true, "", false};
+        break;
+    case SettingsID::Core_UserDataDirOverride:
+        setting = {CORE_SECTION, "UserDataDirectory", "Data", "", false};
+        break;
+    case SettingsID::Core_UserCacheDirOverride:
+        setting = {CORE_SECTION, "UserCacheDirectory", "Cache", "", false};
+        break;
 
-        case SettingsID::Core_OverrideGameSpecificSettings:
-            setting = {CORE_SECTION, "OverrideGameSpecificSettings", false, "", false};
-            break;
-        case SettingsID::Core_RandomizeInterrupt:
-            setting = {M64P_SECTION, "RandomizeInterrupt", true, "", false};
-            break;
-        case SettingsID::Core_CPU_Emulator:
-            setting = {M64P_SECTION, "R4300Emulator", 2, "", false};
-            break;
-        case SettingsID::Core_DisableExtraMem:
-            setting = {M64P_SECTION, "DisableExtraMem", false, "", false};
-            break;
-        case SettingsID::Core_EnableDebugger:
-            setting = {M64P_SECTION, "EnableDebugger", false, "", false};
-            break;
-        case SettingsID::Core_CountPerOp:
-            setting = {M64P_SECTION, "CountPerOp", 0, "", false};
-            break;
-        case SettingsID::Core_SiDmaDuration:
-            setting = {M64P_SECTION, "SiDmaDuration", -1, "", false};
-            break;
+    case SettingsID::Core_OverrideGameSpecificSettings:
+        setting = {CORE_SECTION, "OverrideGameSpecificSettings", false, "", false};
+        break;
+    case SettingsID::Core_RandomizeInterrupt:
+        setting = {M64P_SECTION, "RandomizeInterrupt", true, "", false};
+        break;
+    case SettingsID::Core_CPU_Emulator:
+        setting = {M64P_SECTION, "R4300Emulator", 2, "", false};
+        break;
+    case SettingsID::Core_DisableExtraMem:
+        setting = {M64P_SECTION, "DisableExtraMem", false, "", false};
+        break;
+    case SettingsID::Core_EnableDebugger:
+        setting = {M64P_SECTION, "EnableDebugger", false, "", false};
+        break;
+    case SettingsID::Core_CountPerOp:
+        setting = {M64P_SECTION, "CountPerOp", 0, "", false};
+        break;
+    case SettingsID::Core_SiDmaDuration:
+        setting = {M64P_SECTION, "SiDmaDuration", -1, "", false};
+        break;
 
-        case SettingsID::Core_ScreenshotPath:
-            setting = {M64P_SECTION, "ScreenshotPath", "Screenshots", "", true};
-            break;
-        case SettingsID::Core_SaveStatePath:
-            setting = {M64P_SECTION, "SaveStatePath", "Save/State", "", true};
-            break;
-        case SettingsID::Core_SaveSRAMPath:
-            setting = {M64P_SECTION, "SaveSRAMPath", "Save/Game", "", true};
-            break;
-        case SettingsID::Core_SharedDataPath:
-            setting = {M64P_SECTION, "SharedDataPath", "Data", "", true};
-            break;
+    case SettingsID::Core_ScreenshotPath:
+        setting = {M64P_SECTION, "ScreenshotPath", "Screenshots", "", true};
+        break;
+    case SettingsID::Core_SaveStatePath:
+        setting = {M64P_SECTION, "SaveStatePath", "Save/State", "", true};
+        break;
+    case SettingsID::Core_SaveSRAMPath:
+        setting = {M64P_SECTION, "SaveSRAMPath", "Save/Game", "", true};
+        break;
+    case SettingsID::Core_SharedDataPath:
+        setting = {M64P_SECTION, "SharedDataPath", "Data", "", true};
+        break;
     }
 
     return setting;

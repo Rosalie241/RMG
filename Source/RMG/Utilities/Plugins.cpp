@@ -27,23 +27,23 @@ void Plugins::LoadSettings()
 {
     SettingsID id;
     QString settingValue;
-    for (const Plugin_t& p : this->GetAvailablePlugins())
+    for (const Plugin_t &p : this->GetAvailablePlugins())
     {
         switch (p.Type)
         {
-            default:
-            case PluginType::Gfx:
-                id = SettingsID::Core_GFX_Plugin;
-                break;
-            case PluginType::Rsp:
-                id = SettingsID::Core_RSP_Plugin;
-                break;
-            case PluginType::Audio:
-                id = SettingsID::Core_AUDIO_Plugin;
-                break;
-            case PluginType::Input:
-                id = SettingsID::Core_INPUT_Plugin;
-                break;
+        default:
+        case PluginType::Gfx:
+            id = SettingsID::Core_GFX_Plugin;
+            break;
+        case PluginType::Rsp:
+            id = SettingsID::Core_RSP_Plugin;
+            break;
+        case PluginType::Audio:
+            id = SettingsID::Core_AUDIO_Plugin;
+            break;
+        case PluginType::Input:
+            id = SettingsID::Core_INPUT_Plugin;
+            break;
         }
 
         settingValue = g_Settings.GetStringValue(id);
@@ -74,19 +74,19 @@ bool Plugins::ChangePlugin(Plugin_t plugin)
         SettingsID id;
         switch (plugin.Type)
         {
-            default:
-            case PluginType::Gfx:
-                id = SettingsID::Core_GFX_Plugin;
-                break;
-            case PluginType::Rsp:
-                id = SettingsID::Core_RSP_Plugin;
-                break;
-            case PluginType::Audio:
-                id = SettingsID::Core_AUDIO_Plugin;
-                break;
-            case PluginType::Input:
-                id = SettingsID::Core_INPUT_Plugin;
-                break;
+        default:
+        case PluginType::Gfx:
+            id = SettingsID::Core_GFX_Plugin;
+            break;
+        case PluginType::Rsp:
+            id = SettingsID::Core_RSP_Plugin;
+            break;
+        case PluginType::Audio:
+            id = SettingsID::Core_AUDIO_Plugin;
+            break;
+        case PluginType::Input:
+            id = SettingsID::Core_INPUT_Plugin;
+            break;
         }
 
         g_Settings.SetValue(id, plugin.FileName);

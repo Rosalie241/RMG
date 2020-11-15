@@ -13,6 +13,7 @@
 #include "../Globals.hpp"
 #include "../Thread/EmulationThread.hpp"
 #include "Dialog/SettingsDialog.hpp"
+#include "EventFilter.hpp"
 #include "Widget/OGLWidget.hpp"
 #include "Widget/RomBrowserWidget.hpp"
 
@@ -43,6 +44,7 @@ class MainWindow : public QMainWindow
     QStackedWidget *ui_Widgets;
     Widget::OGLWidget *ui_Widget_OpenGL;
     Widget::RomBrowserWidget *ui_Widget_RomBrowser;
+    EventFilter *ui_EventFilter;
 
     QMenuBar *menuBar;
     QMenu *menuBar_Menu;
@@ -87,9 +89,6 @@ class MainWindow : public QMainWindow
 
     void closeEvent(QCloseEvent *);
 
-    void keyPressEvent(QKeyEvent *);
-    void keyReleaseEvent(QKeyEvent *);
-
     void ui_Init();
     void ui_Setup();
     void ui_Stylesheet_Setup();
@@ -110,6 +109,9 @@ class MainWindow : public QMainWindow
     void menuBar_Actions_Connect(void);
 
   public slots:
+    void on_EventFilter_KeyPressed(QKeyEvent *);
+    void on_EventFilter_KeyReleased(QKeyEvent *);
+
     void on_Action_File_OpenRom(void);
     void on_Action_File_OpenCombo(void);
     void on_Action_File_EndEmulation(void);

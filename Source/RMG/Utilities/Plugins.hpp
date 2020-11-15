@@ -23,7 +23,7 @@ class Plugins
   public:
     Plugins();
     ~Plugins();
-    
+
     void LoadSettings();
 
     QList<Plugin_t> GetAvailablePlugins();
