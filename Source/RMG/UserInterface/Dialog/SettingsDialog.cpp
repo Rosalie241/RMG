@@ -11,6 +11,8 @@
 #include "../../Globals.hpp"
 #include "Utilities/SettingsID.hpp"
 
+#include <QFileDialog>
+
 using namespace UserInterface::Dialog;
 using namespace M64P::Wrapper;
 
@@ -213,13 +215,13 @@ void SettingsDialog::loadDirectorySettings(void)
     userDataDir = g_Settings.GetStringValue(SettingsID::Core_UserDataDirOverride);
     userCacheDir = g_Settings.GetStringValue(SettingsID::Core_UserCacheDirOverride);
 
-    this->screenshotDirectory->setText(screenshotDir);
-    this->saveStateDirectory->setText(saveStateDir);
-    this->saveSramDirectory->setText(saveSramDir);
-    this->sharedDataDirectory->setText(sharedDataDir);
-    this->overrideUserDirectories->setChecked(overrideUserDirs);
-    this->userDataDirectory->setText(userDataDir);
-    this->userCacheDirectory->setText(userCacheDir);
+    this->screenshotDirLineEdit->setText(screenshotDir);
+    this->saveStateDirLineEdit->setText(saveStateDir);
+    this->saveSramDirLineEdit->setText(saveSramDir);
+    this->sharedDataDirLineEdit->setText(sharedDataDir);
+    this->overrideUserDirsGroupBox->setChecked(overrideUserDirs);
+    this->userDataDirLineEdit->setText(userDataDir);
+    this->userCacheDirLineEdit->setText(userCacheDir);
 }
 
 void SettingsDialog::loadBehaviorSettings(void)
@@ -297,13 +299,13 @@ void SettingsDialog::loadDefaultGamePluginSettings(void)
 
 void SettingsDialog::loadDefaultDirectorySettings(void)
 {
-    this->screenshotDirectory->setText(g_Settings.GetDefaultStringValue(SettingsID::Core_ScreenshotPath));
-    this->saveStateDirectory->setText(g_Settings.GetDefaultStringValue(SettingsID::Core_SaveStatePath));
-    this->saveSramDirectory->setText(g_Settings.GetDefaultStringValue(SettingsID::Core_SaveSRAMPath));
-    this->sharedDataDirectory->setText(g_Settings.GetDefaultStringValue(SettingsID::Core_SharedDataPath));
-    this->overrideUserDirectories->setChecked(g_Settings.GetDefaultBoolValue(SettingsID::Core_OverrideUserDirs));
-    this->userDataDirectory->setText(g_Settings.GetDefaultStringValue(SettingsID::Core_UserDataDirOverride));
-    this->userCacheDirectory->setText(g_Settings.GetDefaultStringValue(SettingsID::Core_UserCacheDirOverride));
+    this->screenshotDirLineEdit->setText(g_Settings.GetDefaultStringValue(SettingsID::Core_ScreenshotPath));
+    this->saveStateDirLineEdit->setText(g_Settings.GetDefaultStringValue(SettingsID::Core_SaveStatePath));
+    this->saveSramDirLineEdit->setText(g_Settings.GetDefaultStringValue(SettingsID::Core_SaveSRAMPath));
+    this->sharedDataDirLineEdit->setText(g_Settings.GetDefaultStringValue(SettingsID::Core_SharedDataPath));
+    this->overrideUserDirsGroupBox->setChecked(g_Settings.GetDefaultBoolValue(SettingsID::Core_OverrideUserDirs));
+    this->userDataDirLineEdit->setText(g_Settings.GetDefaultStringValue(SettingsID::Core_UserDataDirOverride));
+    this->userCacheDirLineEdit->setText(g_Settings.GetDefaultStringValue(SettingsID::Core_UserCacheDirOverride));
 }
 
 void SettingsDialog::loadDefaultBehaviorSettings(void)
@@ -399,14 +401,14 @@ void SettingsDialog::savePluginSettings(void)
 
 void SettingsDialog::saveDirectorySettings(void)
 {
-    g_Settings.SetValue(SettingsID::Core_ScreenshotPath, this->screenshotDirectory->text());
-    g_Settings.SetValue(SettingsID::Core_SaveStatePath, this->saveStateDirectory->text());
-    g_Settings.SetValue(SettingsID::Core_SaveSRAMPath, this->saveSramDirectory->text());
-    g_Settings.SetValue(SettingsID::Core_SharedDataPath, this->sharedDataDirectory->text());
+    g_Settings.SetValue(SettingsID::Core_ScreenshotPath, this->screenshotDirLineEdit->text());
+    g_Settings.SetValue(SettingsID::Core_SaveStatePath, this->saveStateDirLineEdit->text());
+    g_Settings.SetValue(SettingsID::Core_SaveSRAMPath, this->saveSramDirLineEdit->text());
+    g_Settings.SetValue(SettingsID::Core_SharedDataPath, this->sharedDataDirLineEdit->text());
 
-    g_Settings.SetValue(SettingsID::Core_OverrideUserDirs, this->overrideUserDirectories->isChecked());
-    g_Settings.SetValue(SettingsID::Core_UserDataDirOverride, this->userDataDirectory->text());
-    g_Settings.SetValue(SettingsID::Core_UserCacheDirOverride, this->userCacheDirectory->text());
+    g_Settings.SetValue(SettingsID::Core_OverrideUserDirs, this->overrideUserDirsGroupBox->isChecked());
+    g_Settings.SetValue(SettingsID::Core_UserDataDirOverride, this->userDataDirLineEdit->text());
+    g_Settings.SetValue(SettingsID::Core_UserCacheDirOverride, this->userCacheDirLineEdit->text());
 }
 
 void SettingsDialog::saveBehaviorSettings(void)
@@ -433,6 +435,21 @@ void SettingsDialog::hideEmulationInfoText(void)
             widget->hide();
         }
     }
+}
+
+void SettingsDialog::chooseDirectory(QLineEdit* lineEdit)
+{
+    QFileDialog dialog;
+    int ret;
+
+    dialog.setFileMode(QFileDialog::Directory);
+    dialog.setOption(QFileDialog::ShowDirsOnly, true);
+
+    ret = dialog.exec();
+    if (!ret)
+        return;
+
+    lineEdit->setText(dialog.directory().path());
 }
 
 void SettingsDialog::on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
@@ -488,3 +505,35 @@ void SettingsDialog::on_buttonBox_clicked(QAbstractButton *button)
         this->accept();
     }
 }
+
+
+void SettingsDialog::on_changeScreenShotDirButton_clicked(void)
+{
+    this->chooseDirectory(this->screenshotDirLineEdit);
+}
+
+void SettingsDialog::on_changeSaveStateDirButton_clicked(void)
+{
+    this->chooseDirectory(this->saveStateDirLineEdit);
+}
+
+void SettingsDialog::on_changeSaveSramDirButton_clicked(void)
+{
+    this->chooseDirectory(this->saveSramDirLineEdit);
+}
+
+void SettingsDialog::on_changeSharedDataDirButton_clicked(void)
+{
+    this->chooseDirectory(this->sharedDataDirLineEdit);
+}
+
+void SettingsDialog::on_changeUserDataDirButton_clicked(void)
+{
+    this->chooseDirectory(this->userDataDirLineEdit);
+}
+
+void SettingsDialog::on_changeUserCacheDirButton_clicked(void)
+{
+    this->chooseDirectory(this->userCacheDirLineEdit);
+}
+

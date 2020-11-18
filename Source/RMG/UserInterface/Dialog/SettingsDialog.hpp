@@ -53,9 +53,19 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
 
     void hideEmulationInfoText(void);
 
+    void chooseDirectory(QLineEdit*);
+
   private slots:
     void on_treeWidget_currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *);
     void on_buttonBox_clicked(QAbstractButton *);
+
+    void on_changeScreenShotDirButton_clicked(void);
+    void on_changeSaveStateDirButton_clicked(void);
+    void on_changeSaveSramDirButton_clicked(void);
+    void on_changeSharedDataDirButton_clicked(void);
+    void on_changeUserDataDirButton_clicked(void);
+    void on_changeUserCacheDirButton_clicked(void);
+
 
   public:
     SettingsDialog(QWidget *parent);

@@ -1049,7 +1049,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>212</width>
+                <width>431</width>
                 <height>542</height>
                </rect>
               </property>
@@ -1067,14 +1067,14 @@
                  </property>
                  <layout class="QHBoxLayout" name="horizontalLayout_21">
                   <item>
-                   <widget class="QLineEdit" name="screenshotDirectory">
+                   <widget class="QLineEdit" name="screenshotDirLineEdit">
                     <property name="readOnly">
                      <bool>true</bool>
                     </property>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QPushButton" name="pushButton_9">
+                   <widget class="QPushButton" name="changeScreenShotDirButton">
                     <property name="text">
                      <string>Change</string>
                     </property>
@@ -1090,14 +1090,14 @@
                  </property>
                  <layout class="QHBoxLayout" name="horizontalLayout_22">
                   <item>
-                   <widget class="QLineEdit" name="saveStateDirectory">
+                   <widget class="QLineEdit" name="saveStateDirLineEdit">
                     <property name="readOnly">
                      <bool>true</bool>
                     </property>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QPushButton" name="pushButton_10">
+                   <widget class="QPushButton" name="changeSaveStateDirButton">
                     <property name="text">
                      <string>Change</string>
                     </property>
@@ -1113,14 +1113,14 @@
                  </property>
                  <layout class="QHBoxLayout" name="horizontalLayout_23">
                   <item>
-                   <widget class="QLineEdit" name="saveSramDirectory">
+                   <widget class="QLineEdit" name="saveSramDirLineEdit">
                     <property name="readOnly">
                      <bool>true</bool>
                     </property>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QPushButton" name="pushButton_11">
+                   <widget class="QPushButton" name="changeSaveSramDirButton">
                     <property name="text">
                      <string>Change</string>
                     </property>
@@ -1136,14 +1136,14 @@
                  </property>
                  <layout class="QHBoxLayout" name="horizontalLayout_24">
                   <item>
-                   <widget class="QLineEdit" name="sharedDataDirectory">
+                   <widget class="QLineEdit" name="sharedDataDirLineEdit">
                     <property name="readOnly">
                      <bool>true</bool>
                     </property>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QPushButton" name="pushButton_12">
+                   <widget class="QPushButton" name="changeSharedDataDirButton">
                     <property name="text">
                      <string>Change</string>
                     </property>
@@ -1153,7 +1153,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QGroupBox" name="overrideUserDirectories">
+                <widget class="QGroupBox" name="overrideUserDirsGroupBox">
                  <property name="enabled">
                   <bool>true</bool>
                  </property>
@@ -1174,14 +1174,14 @@
                     </property>
                     <layout class="QHBoxLayout" name="horizontalLayout_25">
                      <item>
-                      <widget class="QLineEdit" name="userDataDirectory">
+                      <widget class="QLineEdit" name="userDataDirLineEdit">
                        <property name="readOnly">
                         <bool>true</bool>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QPushButton" name="pushButton_13">
+                      <widget class="QPushButton" name="changeUserDataDirButton">
                        <property name="text">
                         <string>Change</string>
                        </property>
@@ -1197,14 +1197,14 @@
                     </property>
                     <layout class="QHBoxLayout" name="horizontalLayout_26">
                      <item>
-                      <widget class="QLineEdit" name="userCacheDirectory">
+                      <widget class="QLineEdit" name="userCacheDirLineEdit">
                        <property name="readOnly">
                         <bool>true</bool>
                        </property>
                       </widget>
                      </item>
                      <item>
-                      <widget class="QPushButton" name="pushButton_14">
+                      <widget class="QPushButton" name="changeUserCacheDirButton">
                        <property name="text">
                         <string>Change</string>
                        </property>
@@ -1279,7 +1279,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>253</width>
+                <width>431</width>
                 <height>930</height>
                </rect>
               </property>
