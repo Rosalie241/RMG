@@ -31,6 +31,7 @@ enum SettingsID
     GUI_RomBrowserGeometry,
     GUI_SettingsDialogWidth,
     GUI_SettingsDialogHeight,
+    GUI_AllowManualResizing,
     /*
     GUI_PauseEmulationOnFocusLoss,
     GUI_ResumeEmulationOnFocus,

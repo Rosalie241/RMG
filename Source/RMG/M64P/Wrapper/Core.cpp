@@ -551,6 +551,34 @@ bool Core::SetKeyUp(int key, int mod)
     return ret == M64ERR_SUCCESS;
 }
 
+bool Core::SetVideoSize(int width, int height)
+{
+    int size = (width << 16) + height;
+    int currSize = 0;
+    m64p_error ret;
+
+    ret = M64P::Core.DoCommand(M64CMD_CORE_STATE_QUERY, M64CORE_VIDEO_SIZE, &currSize);
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_Message = "Core::SetVideoSize M64P::Core.DoCommand(M64CMD_CORE_STATE_QUERY) Failed: ";
+        this->error_Message += M64P::Core.ErrorMessage(ret);
+        return false;
+    }
+
+    if (currSize == size)
+        return true;
+
+    ret = M64P::Core.DoCommand(M64CMD_CORE_STATE_SET, M64CORE_VIDEO_SIZE, &size);
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_Message = "Core::SetVideoSize M64P::Core.DoCommand(M64CMD_CORE_STATE_SET) Failed: ";
+        this->error_Message += M64P::Core.ErrorMessage(ret);
+        return false;
+    }
+
+    return true;
+}
+
 bool Core::ResetEmulation(bool hard)
 {
     m64p_error ret;

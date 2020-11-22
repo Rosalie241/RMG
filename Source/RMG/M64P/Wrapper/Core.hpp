@@ -66,6 +66,8 @@ class Core
     bool SetKeyDown(int, int);
     bool SetKeyUp(int, int);
 
+    bool SetVideoSize(int, int);
+
     QString GetLastError(void);
 
   private:

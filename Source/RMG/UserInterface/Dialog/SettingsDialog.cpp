@@ -12,6 +12,7 @@
 #include "Utilities/SettingsID.hpp"
 
 #include <QFileDialog>
+#include <qcombobox.h>
 
 using namespace UserInterface::Dialog;
 using namespace M64P::Wrapper;
@@ -66,7 +67,7 @@ void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
     case 5:
         loadDefaultDirectorySettings();
         break;
-    case 6:
+    case 7:
         loadDefaultBehaviorSettings();
         break;
     }
@@ -95,7 +96,7 @@ void SettingsDialog::reloadSettings(int stackedWidgetIndex)
     case 5:
         loadDirectorySettings();
         break;
-    case 6:
+    case 7:
         loadBehaviorSettings();
         break;
     }
@@ -233,8 +234,7 @@ void SettingsDialog::loadBehaviorSettings(void)
         resume = g_Settings.GetBoolValue(SettingsID::GUI_ResumeEmulationOnFocus);
     */
 
-    this->pauseEmulationOnFocusLoss->setChecked(pause);
-    this->resumeEmulationOnFocus->setChecked(resume);
+    this->manualResizingCheckBox->setChecked(g_Settings.GetBoolValue(SettingsID::GUI_AllowManualResizing));
 }
 
 void SettingsDialog::loadDefaultCoreSettings(void)
@@ -275,7 +275,7 @@ void SettingsDialog::loadDefaultCoreSettings(void)
 
 void SettingsDialog::loadDefaultGameSettings(void)
 {
-    RomInfo_t gameInfo;
+    RomInfo_t gameInfo = {0};
 
     g_MupenApi.Core.GetDefaultRomInfo(&gameInfo);
 
@@ -317,8 +317,7 @@ void SettingsDialog::loadDefaultBehaviorSettings(void)
         resume = g_Settings.GetBoolValue(SettingsID::GUI_ResumeEmulationOnFocus);
     */
 
-    this->pauseEmulationOnFocusLoss->setChecked(pause);
-    this->resumeEmulationOnFocus->setChecked(resume);
+    this->manualResizingCheckBox->setChecked(g_Settings.GetDefaultBoolValue(SettingsID::GUI_AllowManualResizing));
 }
 
 void SettingsDialog::saveSettings(void)
@@ -415,8 +414,8 @@ void SettingsDialog::saveBehaviorSettings(void)
 {
     bool pause = false, resume = false;
 
-    pause = this->pauseEmulationOnFocusLoss->isChecked();
-    resume = this->resumeEmulationOnFocus->isChecked();
+    g_Settings.SetValue(SettingsID::GUI_AllowManualResizing, this->manualResizingCheckBox->isChecked());
+    // this->manualResizingCheckBox->setChecked(g_Settings.GetBoolValue(SettingsID::GUI_AllowManualResizing));
     /* TODO for someday
         g_Settings.SetValue(SettingsID::GUI_PauseEmulationOnFocusLoss, pause);
         g_Settings.SetValue(SettingsID::GUI_ResumeEmulationOnFocus, resume);
@@ -437,7 +436,7 @@ void SettingsDialog::hideEmulationInfoText(void)
     }
 }
 
-void SettingsDialog::chooseDirectory(QLineEdit* lineEdit)
+void SettingsDialog::chooseDirectory(QLineEdit *lineEdit)
 {
     QFileDialog dialog;
     int ret;
@@ -506,7 +505,6 @@ void SettingsDialog::on_buttonBox_clicked(QAbstractButton *button)
     }
 }
 
-
 void SettingsDialog::on_changeScreenShotDirButton_clicked(void)
 {
     this->chooseDirectory(this->screenshotDirLineEdit);
@@ -536,4 +534,3 @@ void SettingsDialog::on_changeUserCacheDirButton_clicked(void)
 {
     this->chooseDirectory(this->userCacheDirLineEdit);
 }
-

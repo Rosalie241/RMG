@@ -369,6 +369,9 @@ void MainWindow::emulationThread_Launch(QString file)
             QCoreApplication::processEvents();
     }
 
+    this->ui_AllowManualResizing = g_Settings.GetBoolValue(SettingsID::GUI_AllowManualResizing);
+    this->ui_Widget_OpenGL->SetAllowResizing(this->ui_AllowManualResizing);
+
     this->emulationThread->SetRomFile(file);
     this->emulationThread->start();
 }
@@ -911,10 +914,15 @@ void MainWindow::on_VidExt_ResizeWindow(int width, int height)
     if (!this->statusBar()->isHidden())
         height += this->statusBar()->height();
 
+    height *= this->devicePixelRatio();
+    width *= this->devicePixelRatio();
+
     this->ui_SaveGeometry();
 
-    this->setMinimumSize(QSize(width, height));
-    this->setMaximumSize(QSize(width, height));
+    if (this->ui_AllowManualResizing)
+        this->resize(width, height);
+    else
+        this->setFixedSize(width, height);
 }
 
 void MainWindow::on_VidExt_SetCaption(QString title)

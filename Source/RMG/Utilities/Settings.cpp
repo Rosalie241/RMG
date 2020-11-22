@@ -152,6 +152,8 @@ Setting_t Settings::getSetting(SettingsID id)
 
     switch (id)
     {
+    default:
+        break;
     case SettingsID::GUI_RomBrowserDirectory:
         setting = {GUI_SECTION, "ROM Browser Directory", "", "", false};
         break;
@@ -163,6 +165,9 @@ Setting_t Settings::getSetting(SettingsID id)
         break;
     case SettingsID::GUI_SettingsDialogHeight:
         setting = {GUI_SECTION, "Settings Dialog Height", 0, "", false};
+        break;
+    case SettingsID::GUI_AllowManualResizing:
+        setting = {GUI_SECTION, "Allow Manual Resizing", false, "", false};
         break;
         /*
         case SettingsID::GUI_PauseEmulationOnFocusLoss:

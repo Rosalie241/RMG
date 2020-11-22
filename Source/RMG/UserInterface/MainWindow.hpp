@@ -87,6 +87,8 @@ class MainWindow : public QMainWindow
     QByteArray ui_Geometry;
     bool ui_Geometry_Saved;
 
+    bool ui_AllowManualResizing;
+
     void closeEvent(QCloseEvent *);
 
     void ui_Init();

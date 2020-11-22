@@ -26,6 +26,11 @@ void OGLWidget::SetThread(QThread *thread)
     this->context()->moveToThread(thread);
 }
 
+void OGLWidget::SetAllowResizing(bool allow)
+{
+    this->allowResizing = allow;
+}
+
 QWidget *OGLWidget::GetWidget(void)
 {
     QWidget *widget = QWidget::createWindowContainer(this);
@@ -35,4 +40,32 @@ QWidget *OGLWidget::GetWidget(void)
 
 void OGLWidget::exposeEvent(QExposeEvent *)
 {
+}
+
+void OGLWidget::resizeEvent(QResizeEvent *event)
+{
+    QOpenGLWindow::resizeEvent(event);
+
+    if (!this->allowResizing)
+        return;
+
+    if (this->timerId != 0)
+    {
+        this->killTimer(this->timerId);
+        this->timerId = 0;
+    }
+
+    this->timerId = this->startTimer(100);
+    this->width = event->size().width() * this->devicePixelRatio();
+    this->height = event->size().height() * this->devicePixelRatio();
+}
+
+void OGLWidget::timerEvent(QTimerEvent *event)
+{
+    g_MupenApi.Core.SetVideoSize(this->width, this->height);
+
+    // remove current timer
+    this->killTimer(this->timerId);
+    this->timerId = 0;
+    this->requestActivate();
 }
