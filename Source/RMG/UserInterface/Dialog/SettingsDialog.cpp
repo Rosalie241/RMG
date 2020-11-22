@@ -166,11 +166,18 @@ void SettingsDialog::loadGamePluginSettings(void)
 {
     QComboBox *comboBoxArray[4] = {this->pluginVideoPlugins, this->pluginAudioPlugins, this->pluginInputPlugins,
                                    this->pluginRspPlugins};
+    QComboBox *comboBox;
 
     for (QComboBox *comboBox : comboBoxArray)
     {
         comboBox->clear();
         comboBox->addItem("**Use Core Plugin Settings**");
+    }
+
+    for (const Plugin_t &p : g_Plugins.GetAvailablePlugins())
+    {
+        comboBox = comboBoxArray[(int)p.Type];
+        comboBox->addItem(p.Name);
     }
 }
 
@@ -375,13 +382,13 @@ void SettingsDialog::saveGameSettings(void)
     int siDmaDuration = this->gameSiDmaDuration->value();
 
     if (defaultGameInfo.Settings.disableextramem != (unsigned char)disableExtraMem)
-        g_MupenApi.Config.SetOption(section, "DisableExtraMem", disableExtraMem);
+        g_Settings.SetValue(SettingsID::Game_DisableExtraMem, section, disableExtraMem);
     if (defaultGameInfo.Settings.savetype != saveType)
-        g_MupenApi.Config.SetOption(section, "SaveType", saveType);
+        g_Settings.SetValue(SettingsID::Game_SaveType, section, saveType);
     if (defaultGameInfo.Settings.countperop != countPerOp)
-        g_MupenApi.Config.SetOption(section, "CountPerOp", countPerOp);
+        g_Settings.SetValue(SettingsID::Game_CountPerOp, section, countPerOp);
     if (defaultGameInfo.Settings.sidmaduration != siDmaDuration)
-        g_MupenApi.Config.SetOption(section, "SiDmaDuration", siDmaDuration);
+        g_Settings.SetValue(SettingsID::Game_SiDmaDuration, section, siDmaDuration);
 }
 
 void SettingsDialog::savePluginSettings(void)

@@ -30,6 +30,9 @@ void Settings::LoadDefaults()
     {
         setting = this->getSetting((SettingsID)i);
 
+        if (setting.Section.isEmpty())
+            continue;
+
         switch (setting.Default.type())
         {
         case QVariant::Type::String:
@@ -56,90 +59,146 @@ void Settings::LoadDefaults()
 
 int Settings::GetDefaultIntValue(SettingsID id)
 {
-    Setting_t s = this->getSetting(id);
-    return s.Default.toInt();
+    return this->getDefaultIntValue(this->getSetting(id));
 }
 
 bool Settings::GetDefaultBoolValue(SettingsID id)
 {
-    Setting_t s = this->getSetting(id);
-    return s.Default.toBool();
+    return this->getDefaultBoolValue(this->getSetting(id));
 }
 
 float Settings::GetDefaultFloatValue(SettingsID id)
 {
-    Setting_t s = this->getSetting(id);
-    return s.Default.toFloat();
+    return this->getDefaultFloatValue(this->getSetting(id));
 }
 
 QString Settings::GetDefaultStringValue(SettingsID id)
 {
+    return this->getDefaultStringValue(this->getSetting(id));
+}
+
+int Settings::GetDefaultIntValue(SettingsID id, QString section)
+{
     Setting_t s = this->getSetting(id);
-    return s.Default.toString();
+    s.Section = section;
+    return this->getDefaultIntValue(s);
+}
+
+bool Settings::GetDefaultBoolValue(SettingsID id, QString section)
+{
+    Setting_t s = this->getSetting(id);
+    s.Section = section;
+    return this->getDefaultBoolValue(s);
+}
+
+float Settings::GetDefaultFloatValue(SettingsID id, QString section)
+{
+    Setting_t s = this->getSetting(id);
+    s.Section = section;
+    return this->getDefaultFloatValue(s);
+}
+
+QString Settings::GetDefaultStringValue(SettingsID id, QString section)
+{
+    Setting_t s = this->getSetting(id);
+    s.Section = section;
+    return this->getDefaultStringValue(s);
 }
 
 int Settings::GetIntValue(SettingsID id)
 {
-    Setting_t s = this->getSetting(id);
-    int value = s.Default.toInt();
-    g_MupenApi.Config.GetOption(s.Section, s.Key, &value);
-    return value;
+    return this->getIntValue(this->getSetting(id));
 }
 
 bool Settings::GetBoolValue(SettingsID id)
 {
-    Setting_t s = this->getSetting(id);
-    bool value = s.Default.toBool();
-    g_MupenApi.Config.GetOption(s.Section, s.Key, &value);
-    return value;
+    return this->getBoolValue(this->getSetting(id));
 }
 
 float Settings::GetFloatValue(SettingsID id)
 {
-    Setting_t s = this->getSetting(id);
-    float value = s.Default.toFloat();
-    g_MupenApi.Config.GetOption(s.Section, s.Key, &value);
-    return value;
+    return this->getFloatValue(this->getSetting(id));
 }
 
 QString Settings::GetStringValue(SettingsID id)
 {
+    return this->getStringValue(this->getSetting(id));
+}
+
+int Settings::GetIntValue(SettingsID id, QString section)
+{
     Setting_t s = this->getSetting(id);
-    QString value = s.Default.toString();
-    g_MupenApi.Config.GetOption(s.Section, s.Key, &value);
-    return value;
+    s.Section = section;
+    return this->getIntValue(s);
+}
+
+bool Settings::GetBoolValue(SettingsID id, QString section)
+{
+    Setting_t s = this->getSetting(id);
+    s.Section = section;
+    return this->getBoolValue(s);
+}
+
+float Settings::GetFloatValue(SettingsID id, QString section)
+{
+    Setting_t s = this->getSetting(id);
+    s.Section = section;
+    return this->getFloatValue(s);
+}
+
+QString Settings::GetStringValue(SettingsID id, QString section)
+{
+    Setting_t s = this->getSetting(id);
+    s.Section = section;
+    return this->getStringValue(s);
 }
 
 bool Settings::SetValue(SettingsID id, int value)
 {
-    Setting_t s = this->getSetting(id);
-    bool ret = false;
-    ret = g_MupenApi.Config.SetOption(s.Section, s.Key, value);
-    return ret;
+    return this->setValue(this->getSetting(id), value);
 }
 
 bool Settings::SetValue(SettingsID id, bool value)
 {
-    Setting_t s = this->getSetting(id);
-    bool ret = false;
-    ret = g_MupenApi.Config.SetOption(s.Section, s.Key, value);
-    return ret;
+    return this->setValue(this->getSetting(id), value);
 }
 
 bool Settings::SetValue(SettingsID id, float value)
 {
-    Setting_t s = this->getSetting(id);
-    bool ret = false;
-    ret = g_MupenApi.Config.SetOption(s.Section, s.Key, value);
-    return ret;
+    return this->setValue(this->getSetting(id), value);
 }
 
 bool Settings::SetValue(SettingsID id, QString value)
 {
+    return this->setValue(this->getSetting(id), value);
+}
+
+bool Settings::SetValue(SettingsID id, QString section, int value)
+{
     Setting_t s = this->getSetting(id);
-    bool ret = false;
-    ret = g_MupenApi.Config.SetOption(s.Section, s.Key, value);
-    return ret;
+    s.Section = section;
+    return this->setValue(s, value);
+}
+
+bool Settings::SetValue(SettingsID id, QString section, bool value)
+{
+    Setting_t s = this->getSetting(id);
+    s.Section = section;
+    return this->setValue(s, value);
+}
+
+bool Settings::SetValue(SettingsID id, QString section, float value)
+{
+    Setting_t s = this->getSetting(id);
+    s.Section = section;
+    return this->setValue(s, value);
+}
+
+bool Settings::SetValue(SettingsID id, QString section, QString value)
+{
+    Setting_t s = this->getSetting(id);
+    s.Section = section;
+    return this->setValue(s, value);
 }
 
 #define GUI_SECTION "Rosalie's Mupen GUI"
@@ -235,7 +294,111 @@ Setting_t Settings::getSetting(SettingsID id)
     case SettingsID::Core_SharedDataPath:
         setting = {M64P_SECTION, "SharedDataPath", "Data", "", true};
         break;
+
+    case SettingsID::Game_DisableExtraMem:
+        setting = {"", "DisableExtraMem", false, "", false};
+        break;
+    case SettingsID::Game_SaveType:
+        setting = {"", "SaveType", 0, "", false};
+        break;
+    case SettingsID::Game_CountPerOp:
+        setting = {"", "CountPerOp", 2, "", false};
+        break;
+    case SettingsID::Game_SiDmaDuration:
+        setting = {"", "SiDmaDuration", 2304, "", false};
+        break;
+
+    case SettingsID::Game_GFX_Plugin:
+        setting = {"", "GFX Plugin", "", "", false};
+        break;
+    case SettingsID::Game_AUDIO_Plugin:
+        setting = {"", "Audio Plugin", "", "", false};
+        break;
+    case SettingsID::Game_INPUT_Plugin:
+        setting = {"", "Input Plugin", "", "", false};
+        break;
+    case SettingsID::Game_RSP_Plugin:
+        setting = {"", "RSP Plugin", "", "", false};
+        break;
     }
 
     return setting;
 }
+
+int Settings::getDefaultIntValue(Setting_t s)
+{
+    return s.Default.toInt();
+}
+
+bool Settings::getDefaultBoolValue(Setting_t s)
+{
+    return s.Default.toBool();
+}
+
+float Settings::getDefaultFloatValue(Setting_t s)
+{
+    return s.Default.toFloat();
+}
+
+QString Settings::getDefaultStringValue(Setting_t s)
+{
+    return s.Default.toString();
+}
+
+
+int Settings::getIntValue(Setting_t s)
+{
+    int value = s.Default.toInt();
+    g_MupenApi.Config.GetOption(s.Section, s.Key, &value);
+    return value;
+}
+
+bool Settings::getBoolValue(Setting_t s)
+{
+    bool value = s.Default.toBool();
+    g_MupenApi.Config.GetOption(s.Section, s.Key, &value);
+    return value;
+}
+
+float Settings::getFloatValue(Setting_t s)
+{
+    float value = s.Default.toFloat();
+    g_MupenApi.Config.GetOption(s.Section, s.Key, &value);
+    return value;
+}
+
+QString Settings::getStringValue(Setting_t s)
+{
+    QString value = s.Default.toString();
+    g_MupenApi.Config.GetOption(s.Section, s.Key, &value);
+    return value;
+}
+
+bool Settings::setValue(Setting_t s, int value)
+{
+    bool ret = false;
+    ret = g_MupenApi.Config.SetOption(s.Section, s.Key, value);
+    return ret;
+}
+
+bool Settings::setValue(Setting_t s, bool value)
+{
+    bool ret = false;
+    ret = g_MupenApi.Config.SetOption(s.Section, s.Key, value);
+    return ret;
+}
+
+bool Settings::setValue(Setting_t s, float value)
+{
+    bool ret = false;
+    ret = g_MupenApi.Config.SetOption(s.Section, s.Key, value);
+    return ret;
+}
+
+bool Settings::setValue(Setting_t s, QString value)
+{
+    bool ret = false;
+    ret = g_MupenApi.Config.SetOption(s.Section, s.Key, value);
+    return ret;
+}
+

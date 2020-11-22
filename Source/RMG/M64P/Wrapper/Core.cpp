@@ -655,10 +655,10 @@ bool Core::rom_ApplyOverlay()
         return true;
     }
 
-    g_MupenApi.Config.GetOption(section, "DisableExtraMem", (bool *)&info.Settings.disableextramem);
-    g_MupenApi.Config.GetOption(section, "SaveType", (int *)&info.Settings.savetype);
-    g_MupenApi.Config.GetOption(section, "CountPerOp", (int *)&info.Settings.countperop);
-    g_MupenApi.Config.GetOption(section, "SiDmaDuration", (int *)&info.Settings.sidmaduration);
+    info.Settings.disableextramem = g_Settings.GetBoolValue(SettingsID::Game_DisableExtraMem, section);
+    info.Settings.savetype = g_Settings.GetIntValue(SettingsID::Game_SaveType, section);
+    info.Settings.countperop = g_Settings.GetIntValue(SettingsID::Game_CountPerOp, section);
+    info.Settings.sidmaduration = g_Settings.GetIntValue(SettingsID::Game_SiDmaDuration, section);
 
     std::cout << "info.Settings.goodname: " << info.Settings.goodname << std::endl;
     std::cout << "info.Settings.DisableExtraMem: " << (int)info.Settings.disableextramem << std::endl;

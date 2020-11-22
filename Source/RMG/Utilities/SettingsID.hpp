@@ -63,6 +63,18 @@ enum SettingsID
     Core_SaveSRAMPath,
     Core_SharedDataPath,
 
+    // Game Specific Settings
+    Game_DisableExtraMem,
+    Game_SaveType,
+    Game_CountPerOp,
+    Game_SiDmaDuration,
+
+    // Game Plugin Settings
+    Game_GFX_Plugin,
+    Game_AUDIO_Plugin,
+    Game_INPUT_Plugin,
+    Game_RSP_Plugin,
+
     Invalid
 };
 
