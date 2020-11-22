@@ -424,7 +424,7 @@ void SettingsDialog::saveBehaviorSettings(void)
 
 void SettingsDialog::hideEmulationInfoText(void)
 {
-    QHBoxLayout *layouts[] = {this->emulationInfoLayout, this->emulationInfoLayout_2};
+    QHBoxLayout *layouts[] = {this->emulationInfoLayout, this->emulationInfoLayout_2, this->emulationInfoLayout_8};
 
     for (const QHBoxLayout *layout : layouts)
     {
