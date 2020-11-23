@@ -12,7 +12,6 @@
 #include "Utilities/SettingsID.hpp"
 
 #include <QFileDialog>
-#include <qcombobox.h>
 
 using namespace UserInterface::Dialog;
 using namespace M64P::Wrapper;
@@ -67,6 +66,9 @@ void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
     case 5:
         loadDefaultDirectorySettings();
         break;
+    case 6:
+        loadDefaultKeybindSettings();
+        break;
     case 7:
         loadDefaultBehaviorSettings();
         break;
@@ -95,6 +97,9 @@ void SettingsDialog::reloadSettings(int stackedWidgetIndex)
         break;
     case 5:
         loadDirectorySettings();
+        break;
+    case 6:
+        loadKeybindSettings();
         break;
     case 7:
         loadBehaviorSettings();
@@ -232,6 +237,27 @@ void SettingsDialog::loadDirectorySettings(void)
     this->userCacheDirLineEdit->setText(userCacheDir);
 }
 
+void SettingsDialog::loadKeybindSettings(void)
+{
+    KeyBindButton *buttons[] = {this->openRomKeyButton,   this->openComboKeyButton,      this->startEmuKeyButton,
+                                this->endEmuKeyButton,    this->refreshRomListKeyButton, this->exitKeyButton,
+
+                                this->softResetKeyButton, this->hardResetKeyButton,      this->generateBitmapKeyButton,
+                                this->limitFPSKeyButton,  this->swapDiskKeyButton,       this->saveStateKeyButton,
+                                this->saveAsKeyButton,    this->loadStateKeyButton,      this->loadKeyButton,
+                                this->cheatsKeyButton,    this->gsButtonKeyButton,       this->fullscreenKeyButton,
+                                this->settingsKeyButton};
+
+    SettingsID id;
+    QString text;
+    for (int i = 0; i < (sizeof(buttons) / sizeof(buttons[0])); i++)
+    {
+        id = (SettingsID)(SettingsID::KeyBinding_OpenROM + i);
+        text = g_Settings.GetStringValue(id);
+        buttons[i]->setText(g_Settings.GetStringValue(id));
+    }
+}
+
 void SettingsDialog::loadBehaviorSettings(void)
 {
     bool pause = false, resume = false;
@@ -315,6 +341,27 @@ void SettingsDialog::loadDefaultDirectorySettings(void)
     this->userCacheDirLineEdit->setText(g_Settings.GetDefaultStringValue(SettingsID::Core_UserCacheDirOverride));
 }
 
+void SettingsDialog::loadDefaultKeybindSettings(void)
+{
+    KeyBindButton *buttons[] = {this->openRomKeyButton,   this->openComboKeyButton,      this->startEmuKeyButton,
+                                this->endEmuKeyButton,    this->refreshRomListKeyButton, this->exitKeyButton,
+
+                                this->softResetKeyButton, this->hardResetKeyButton,      this->generateBitmapKeyButton,
+                                this->limitFPSKeyButton,  this->swapDiskKeyButton,       this->saveStateKeyButton,
+                                this->saveAsKeyButton,    this->loadStateKeyButton,      this->loadKeyButton,
+                                this->cheatsKeyButton,    this->gsButtonKeyButton,       this->fullscreenKeyButton,
+                                this->settingsKeyButton};
+
+    SettingsID id;
+    QString text;
+    for (int i = 0; i < (sizeof(buttons) / sizeof(buttons[0])); i++)
+    {
+        id = (SettingsID)(SettingsID::KeyBinding_OpenROM + i);
+        text = g_Settings.GetDefaultStringValue(id);
+        buttons[i]->setText(text);
+    }
+}
+
 void SettingsDialog::loadDefaultBehaviorSettings(void)
 {
     bool pause = false, resume = false;
@@ -334,6 +381,7 @@ void SettingsDialog::saveSettings(void)
         this->saveGameSettings();
     this->savePluginSettings();
     this->saveDirectorySettings();
+    this->saveKeybindSettings();
     this->saveBehaviorSettings();
 }
 
@@ -415,6 +463,25 @@ void SettingsDialog::saveDirectorySettings(void)
     g_Settings.SetValue(SettingsID::Core_OverrideUserDirs, this->overrideUserDirsGroupBox->isChecked());
     g_Settings.SetValue(SettingsID::Core_UserDataDirOverride, this->userDataDirLineEdit->text());
     g_Settings.SetValue(SettingsID::Core_UserCacheDirOverride, this->userCacheDirLineEdit->text());
+}
+
+void SettingsDialog::saveKeybindSettings(void)
+{
+    KeyBindButton *buttons[] = {this->openRomKeyButton,   this->openComboKeyButton,      this->startEmuKeyButton,
+                                this->endEmuKeyButton,    this->refreshRomListKeyButton, this->exitKeyButton,
+
+                                this->softResetKeyButton, this->hardResetKeyButton,      this->generateBitmapKeyButton,
+                                this->limitFPSKeyButton,  this->swapDiskKeyButton,       this->saveStateKeyButton,
+                                this->saveAsKeyButton,    this->loadStateKeyButton,      this->loadKeyButton,
+                                this->cheatsKeyButton,    this->gsButtonKeyButton,       this->fullscreenKeyButton,
+                                this->settingsKeyButton};
+
+    SettingsID id;
+    for (int i = 0; i < (sizeof(buttons) / sizeof(buttons[0])); i++)
+    {
+        id = (SettingsID)(SettingsID::KeyBinding_OpenROM + i);
+        g_Settings.SetValue(id, buttons[i]->text());
+    }
 }
 
 void SettingsDialog::saveBehaviorSettings(void)

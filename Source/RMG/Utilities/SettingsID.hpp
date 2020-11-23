@@ -75,6 +75,28 @@ enum SettingsID
     Game_INPUT_Plugin,
     Game_RSP_Plugin,
 
+    // GUI KeyBindings
+    KeyBinding_OpenROM,
+    KeyBinding_OpenCombo,
+    KeyBinding_StartEmulation,
+    KeyBinding_EndEmulation,
+    KeyBinding_RefreshROMList,
+    KeyBinding_Exit,
+    KeyBinding_SoftReset,
+    KeyBinding_HardReset,
+    KeyBinding_Resume,
+    KeyBinding_GenerateBitmap,
+    KeyBinding_LimitFPS,
+    KeyBinding_SwapDisk,
+    KeyBinding_SaveState,
+    KeyBinding_SaveAs,
+    KeyBinding_LoadState,
+    KeyBinding_Load,
+    KeyBinding_Cheats,
+    KeyBinding_GSButton,
+    KeyBinding_Fullscreen,
+    KeyBinding_Settings,
+
     Invalid
 };
 

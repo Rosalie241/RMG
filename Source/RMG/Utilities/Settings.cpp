@@ -203,6 +203,7 @@ bool Settings::SetValue(SettingsID id, QString section, QString value)
 
 #define GUI_SECTION "Rosalie's Mupen GUI"
 #define CORE_SECTION GUI_SECTION " Core"
+#define KEYBIND_SECTION GUI_SECTION " KeyBindings"
 #define M64P_SECTION "Core"
 
 Setting_t Settings::getSetting(SettingsID id)
@@ -320,6 +321,67 @@ Setting_t Settings::getSetting(SettingsID id)
     case SettingsID::Game_RSP_Plugin:
         setting = {"", "RSP Plugin", "", "", false};
         break;
+
+    case SettingsID::KeyBinding_OpenROM:
+        setting = {KEYBIND_SECTION, "OpenROM", "Ctrl+O", "", false};
+        break;
+    case SettingsID::KeyBinding_OpenCombo:
+        setting = {KEYBIND_SECTION, "OpenCombo", "Ctrl+Shift+O", "", false};
+        break;
+    case SettingsID::KeyBinding_StartEmulation:
+        setting = {KEYBIND_SECTION, "StartEmulation", "F11", "", false};
+        break;
+    case SettingsID::KeyBinding_EndEmulation:
+        setting = {KEYBIND_SECTION, "EndEmulation", "F12", "", false};
+        break;
+    case SettingsID::KeyBinding_RefreshROMList:
+        setting = {KEYBIND_SECTION, "RefreshROMList", "F5", "", false};
+        break;
+    case SettingsID::KeyBinding_Exit:
+        setting = {KEYBIND_SECTION, "Exit", "Alt+F4", "", false};
+        break;
+    case SettingsID::KeyBinding_SoftReset:
+        setting = {KEYBIND_SECTION, "SoftReset", "F1", "", false};
+        break;
+    case SettingsID::KeyBinding_HardReset:
+        setting = {KEYBIND_SECTION, "HardReset", "Shift+F1", "", false};
+        break;
+    case SettingsID::KeyBinding_Resume:
+        setting = {KEYBIND_SECTION, "Resume", "F2", "", false};
+        break;
+    case SettingsID::KeyBinding_GenerateBitmap:
+        setting = {KEYBIND_SECTION, "GenerateBitmap", "F3", "", false};
+        break;
+    case SettingsID::KeyBinding_LimitFPS:
+        setting = {KEYBIND_SECTION, "LimitFPS", "F4", "", false};
+        break;
+    case SettingsID::KeyBinding_SwapDisk:
+        setting = {KEYBIND_SECTION, "SwapDisk", "Ctrl+D", "", false};
+        break;
+    case SettingsID::KeyBinding_SaveState:
+        setting = {KEYBIND_SECTION, "SaveState", "F5", "", false};
+        break;
+    case SettingsID::KeyBinding_SaveAs:
+        setting = {KEYBIND_SECTION, "SaveAs", "Ctrl+S", "", false};
+        break;
+    case SettingsID::KeyBinding_LoadState:
+        setting = {KEYBIND_SECTION, "LoadState", "F7", "", false};
+        break;
+    case SettingsID::KeyBinding_Load:
+        setting = {KEYBIND_SECTION, "Load", "Ctrl+L", "", false};
+        break;
+    case SettingsID::KeyBinding_Cheats:
+        setting = {KEYBIND_SECTION, "Cheats", "Ctrl+C", "", false};
+        break;
+    case SettingsID::KeyBinding_GSButton:
+        setting = {KEYBIND_SECTION, "GSButton", "F7", "", false};
+        break;
+    case SettingsID::KeyBinding_Fullscreen:
+        setting = {KEYBIND_SECTION, "Fullscreen", "Alt+Return", "", false};
+        break;
+    case SettingsID::KeyBinding_Settings:
+        setting = {KEYBIND_SECTION, "Settings", "Ctrl+T", "", false};
+        break;
     }
 
     return setting;
@@ -344,7 +406,6 @@ QString Settings::getDefaultStringValue(Setting_t s)
 {
     return s.Default.toString();
 }
-
 
 int Settings::getIntValue(Setting_t s)
 {
@@ -401,4 +462,3 @@ bool Settings::setValue(Setting_t s, QString value)
     ret = g_MupenApi.Config.SetOption(s.Section, s.Key, value);
     return ret;
 }
-

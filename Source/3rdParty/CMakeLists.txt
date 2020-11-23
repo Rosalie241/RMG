@@ -9,9 +9,12 @@ set(M64P_CORE_DIR ${THIRDPARTY_DIR}/mupen64plus-core)
 if(WIN32)
     set(SO_EXT "dll")
     set(CORE_FILE "mupen64plus.dll")
+    set(USE_NEW_DYNAREC "1")
 else(WIN32)
     set(SO_EXT "so")
     set(CORE_FILE "libmupen64plus.so.2.0.0")
+    # see https://github.com/mupen64plus/mupen64plus-core/issues/640
+    set(USE_NEW_DYNAREC "0")
 endif(WIN32)
 
 ExternalProject_Add(mupen64plus-core
@@ -23,7 +26,7 @@ ExternalProject_Add(mupen64plus-core
     GIT_REPOSITORY https://github.com/Rosalie241/mupen64plus-core
     GIT_TAG 3602d187593a55b85c3cdde5706b2dcdacf27fa2
 
-    BUILD_COMMAND make all OSD=0 NEW_DYNAREC=1 DEBUG=$<CONFIG:Debug>
+    BUILD_COMMAND make all OSD=0 NEW_DYNAREC=${USE_NEW_DYNAREC} DEBUG=$<CONFIG:Debug>
     BUILD_IN_SOURCE False
 
     BINARY_DIR ${M64P_CORE_DIR}/projects/unix
@@ -102,7 +105,7 @@ ExternalProject_Add(mupen64plus-video-GLideN64
     SOURCE_DIR mupen64plus-video-GLideN64
 
     GIT_REPOSITORY https://github.com/gonetz/GLideN64
-    GIT_TAG 78c89fbbfd228d7e98e26b2fd21c6bd5e7101913
+    GIT_TAG 3df9b2c3126d580b01b3d0412b5fecb9bf224678
 
     INSTALL_COMMAND ""
 
