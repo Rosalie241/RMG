@@ -551,7 +551,7 @@
          <widget class="QWidget" name="gameCoreSettingsPage">
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>
-            <widget class="QGroupBox" name="groupBox_16">
+            <widget class="QGroupBox" name="gameOverrideCoreSettingsGroupBox">
              <property name="title">
               <string>Override Core Settings</string>
              </property>
@@ -572,7 +572,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QComboBox" name="coreCpuEmulator_2">
+                 <widget class="QComboBox" name="gameCoreCpuEmulatorComboBox">
                   <item>
                    <property name="text">
                     <string>Pure Interpreter</string>
@@ -593,7 +593,7 @@
                </layout>
               </item>
               <item>
-               <widget class="QCheckBox" name="checkBox">
+               <widget class="QCheckBox" name="gameRandomizeTimingCheckBox">
                 <property name="text">
                  <string>Randomize PI/SI Interrupt Timing</string>
                 </property>
@@ -1054,7 +1054,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>431</width>
+                <width>212</width>
                 <height>542</height>
                </rect>
               </property>
@@ -1284,7 +1284,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>431</width>
+                <width>188</width>
                 <height>930</height>
                </rect>
               </property>

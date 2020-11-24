@@ -200,6 +200,22 @@ bool Core::plugins_Detach(void)
     return true;
 }
 
+bool Core::plugin_LoadTodo(void)
+{
+    if (!this->plugin_Todo.isEmpty())
+    {
+        for (const Plugin_t &p : this->plugin_Todo)
+        {
+            if (!this->SetPlugin(p))
+                return false;
+        }
+
+        this->plugin_Todo.clear();
+    }
+
+    return true;
+}
+
 bool Core::SetPlugin(Plugin_t plugin)
 {
     bool ret;
@@ -327,22 +343,19 @@ bool Core::LaunchEmulation(QString file)
 {
     m64p_error ret;
 
-    // Apply plugins that were set during emulation
-    if (!this->plugin_Todo.isEmpty())
-    {
-        for (const Plugin_t &p : this->plugin_Todo)
-        {
-            if (!this->SetPlugin(p))
-                return false;
-        }
-
-        this->plugin_Todo.clear();
-    }
+    if (!this->plugin_LoadTodo())
+        return false;
 
     if (!this->GetRomInfo(file, &this->rom_Info, false))
         return false;
 
     if (!this->rom_Open(file, true))
+        return false;
+
+    if (!this->rom_ApplyPluginOverlay())
+        return false;
+
+    if (!this->core_ApplyOverlay())
         return false;
 
     if (!this->plugins_Attach())
@@ -361,6 +374,9 @@ bool Core::LaunchEmulation(QString file)
     }
 
     if (!this->rom_Close())
+        return false;
+
+    if (!this->plugin_LoadTodo())
         return false;
 
     return true;
@@ -634,15 +650,85 @@ bool Core::rom_Open(QString file, bool overlay = true)
     return true;
 }
 
+bool Core::rom_ApplyPluginOverlay(void)
+{
+    bool ret;
+    m64p_error ret2;
+    RomInfo_t info = {0};
+    QString section, value;
+
+    ret = this->GetRomInfo(&info);
+    if (!ret)
+        return false;
+
+    section = info.Settings.MD5;
+
+    ret = g_MupenApi.Config.SectionExists(section);
+    if (!ret)
+        return true;
+
+    SettingsID settingIdArray[] = {SettingsID::Game_GFX_Plugin, SettingsID::Game_AUDIO_Plugin,
+                                   SettingsID::Game_INPUT_Plugin, SettingsID::Game_RSP_Plugin};
+
+    for (int i = 0; i < 4; i++)
+        this->plugin_Todo.append(g_Plugins.GetCurrentPlugin((PluginType)i));
+
+    for (int i = 0; i < 4; i++)
+    {
+        value = g_Settings.GetStringValue(settingIdArray[i], section);
+        if (!value.isEmpty())
+        {
+            Plugin_t plugin = { .FileName = value };
+            if (!this->SetPlugin(plugin))
+                return false;
+        }
+    }
+
+    return true;
+}
+
+bool Core::rom_HasPluginOverlay(QString file)
+{
+    bool ret;
+    RomInfo_t info = {0};
+    QString section;
+
+    if (!this->rom_Open(file))
+        return false;
+
+    ret = this->GetRomInfo(&info);
+    if (!ret)
+        return false;
+
+    this->rom_Close();
+
+    section = info.Settings.MD5;
+
+    ret = g_MupenApi.Config.SectionExists(section);
+    if (!ret)
+        return false;
+
+    SettingsID settingIdArray[] = {SettingsID::Game_GFX_Plugin, SettingsID::Game_AUDIO_Plugin,
+                                   SettingsID::Game_INPUT_Plugin, SettingsID::Game_RSP_Plugin};
+
+    for (int i = 0; i < 4; i++)
+    {
+        if (!g_Settings.GetStringValue(settingIdArray[i], section).isEmpty())
+            return true;
+    }
+
+    return false;
+}
+
 #include <iostream>
-bool Core::rom_ApplyOverlay()
+bool Core::rom_ApplyOverlay(void)
 {
     bool ret;
     m64p_error ret2;
     RomInfo_t info = {0};
     QString section;
 
-    ret = GetRomInfo(&info);
+    ret = this->GetRomInfo(&info);
     if (!ret)
         return false;
 
@@ -674,6 +760,43 @@ bool Core::rom_ApplyOverlay()
     }
 
     return ret2 == M64ERR_SUCCESS;
+}
+
+bool Core::core_ApplyOverlay(void)
+{
+    bool ret;
+    m64p_error ret2;
+    RomInfo_t info = {0};
+    QString section;
+
+    // copy settings from g_Settings to Core section
+    g_MupenApi.Config.SetOption("Core", "RandomizeInterrupt",
+                                g_Settings.GetBoolValue(SettingsID::Core_RandomizeInterrupt));
+    g_MupenApi.Config.SetOption("Core", "R4300Emulator", g_Settings.GetIntValue(SettingsID::Core_CPU_Emulator));
+    g_MupenApi.Config.SetOption("Core", "DisableExtraMem", g_Settings.GetBoolValue(SettingsID::Core_DisableExtraMem));
+    g_MupenApi.Config.SetOption("Core", "EnableDebugger", g_Settings.GetBoolValue(SettingsID::Core_EnableDebugger));
+    g_MupenApi.Config.SetOption("Core", "CountPerOp", g_Settings.GetIntValue(SettingsID::Core_CountPerOp));
+    g_MupenApi.Config.SetOption("Core", "SiDmaDuration", g_Settings.GetIntValue(SettingsID::Core_SiDmaDuration));
+
+    ret = this->GetRomInfo(&info);
+    if (!ret)
+        return false;
+
+    section = info.Settings.MD5;
+
+    ret = g_MupenApi.Config.SectionExists(section);
+    if (!ret)
+        return true;
+
+    ret = g_Settings.GetBoolValue(SettingsID::Game_OverrideCoreSettings, section);
+    if (!ret)
+        return true;
+
+    g_MupenApi.Config.SetOption("Core", "RandomizeInterrupt",
+                                g_Settings.GetBoolValue(SettingsID::Game_RandomizeInterrupt, section));
+    g_MupenApi.Config.SetOption("Core", "R4300Emulator",
+                                g_Settings.GetIntValue(SettingsID::Game_CPU_Emulator, section));
+    return true;
 }
 
 bool Core::rom_Close(void)

@@ -264,23 +264,24 @@ Setting_t Settings::getSetting(SettingsID id)
     case SettingsID::Core_OverrideGameSpecificSettings:
         setting = {CORE_SECTION, "OverrideGameSpecificSettings", false, "", false};
         break;
+    // OVERLAY THESE
     case SettingsID::Core_RandomizeInterrupt:
-        setting = {M64P_SECTION, "RandomizeInterrupt", true, "", false};
+        setting = {CORE_SECTION, "RandomizeInterrupt", true, "", false};
         break;
     case SettingsID::Core_CPU_Emulator:
-        setting = {M64P_SECTION, "R4300Emulator", 2, "", false};
+        setting = {CORE_SECTION, "R4300Emulator", 2, "", false};
         break;
     case SettingsID::Core_DisableExtraMem:
-        setting = {M64P_SECTION, "DisableExtraMem", false, "", false};
+        setting = {CORE_SECTION, "DisableExtraMem", false, "", false};
         break;
     case SettingsID::Core_EnableDebugger:
-        setting = {M64P_SECTION, "EnableDebugger", false, "", false};
+        setting = {CORE_SECTION, "EnableDebugger", false, "", false};
         break;
     case SettingsID::Core_CountPerOp:
-        setting = {M64P_SECTION, "CountPerOp", 0, "", false};
+        setting = {CORE_SECTION, "CountPerOp", 0, "", false};
         break;
     case SettingsID::Core_SiDmaDuration:
-        setting = {M64P_SECTION, "SiDmaDuration", -1, "", false};
+        setting = {CORE_SECTION, "SiDmaDuration", -1, "", false};
         break;
 
     case SettingsID::Core_ScreenshotPath:
@@ -307,6 +308,16 @@ Setting_t Settings::getSetting(SettingsID id)
         break;
     case SettingsID::Game_SiDmaDuration:
         setting = {"", "SiDmaDuration", 2304, "", false};
+        break;
+
+    case SettingsID::Game_OverrideCoreSettings:
+        setting = {"", "Core_OverrideCoreSettings", false, "", false};
+        break;
+    case SettingsID::Game_CPU_Emulator:
+        setting = {"", "Core_CPU_Emulator", 2, "", false};
+        break;
+    case SettingsID::Game_RandomizeInterrupt:
+        setting = {"", "Core_RandomizeInterrupt", true, "", false};
         break;
 
     case SettingsID::Game_GFX_Plugin:
@@ -410,28 +421,32 @@ QString Settings::getDefaultStringValue(Setting_t s)
 int Settings::getIntValue(Setting_t s)
 {
     int value = s.Default.toInt();
-    g_MupenApi.Config.GetOption(s.Section, s.Key, &value);
+    if (!s.Section.isEmpty() && g_MupenApi.Config.SectionExists(s.Section))
+        g_MupenApi.Config.GetOption(s.Section, s.Key, &value);
     return value;
 }
 
 bool Settings::getBoolValue(Setting_t s)
 {
     bool value = s.Default.toBool();
-    g_MupenApi.Config.GetOption(s.Section, s.Key, &value);
+    if (!s.Section.isEmpty() && g_MupenApi.Config.SectionExists(s.Section))
+        g_MupenApi.Config.GetOption(s.Section, s.Key, &value);
     return value;
 }
 
 float Settings::getFloatValue(Setting_t s)
 {
     float value = s.Default.toFloat();
-    g_MupenApi.Config.GetOption(s.Section, s.Key, &value);
+    if (!s.Section.isEmpty() && g_MupenApi.Config.SectionExists(s.Section))
+        g_MupenApi.Config.GetOption(s.Section, s.Key, &value);
     return value;
 }
 
 QString Settings::getStringValue(Setting_t s)
 {
     QString value = s.Default.toString();
-    g_MupenApi.Config.GetOption(s.Section, s.Key, &value);
+    if (!s.Section.isEmpty() && g_MupenApi.Config.SectionExists(s.Section))
+        g_MupenApi.Config.GetOption(s.Section, s.Key, &value);
     return value;
 }
 

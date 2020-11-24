@@ -8,6 +8,7 @@ using namespace UserInterface::Widget;
 OGLWidget::OGLWidget(QWidget *parent)
 {
     this->parent = parent;
+    this->timerId = 0;
 }
 
 OGLWidget::~OGLWidget(void)

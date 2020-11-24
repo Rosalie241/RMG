@@ -85,12 +85,18 @@ class Core
     bool plugin_Attach(Plugin *);
     bool plugins_Attach(void);
     bool plugins_Detach(void);
+    bool plugin_LoadTodo(void);
+
 
     RomInfo_t rom_Info;
 
     bool rom_Open(QString, bool);
-    bool rom_ApplyOverlay();
+    bool rom_ApplyPluginOverlay(void);
+    bool rom_HasPluginOverlay(QString);
+    bool rom_ApplyOverlay(void);
     bool rom_Close(void);
+
+    bool core_ApplyOverlay(void);
 
     bool emulation_QueryState(m64p_emu_state *);
     bool emulation_IsRunning(void);

@@ -69,6 +69,11 @@ enum SettingsID
     Game_CountPerOp,
     Game_SiDmaDuration,
 
+    // Game Core Override Settings
+    Game_OverrideCoreSettings,
+    Game_CPU_Emulator,
+    Game_RandomizeInterrupt,
+
     // Game Plugin Settings
     Game_GFX_Plugin,
     Game_AUDIO_Plugin,
