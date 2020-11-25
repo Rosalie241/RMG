@@ -929,14 +929,16 @@ void MainWindow::on_VidExt_ResizeWindow(int width, int height)
 {
     std::cout << "on_VidExt_ResizeWindow(" << width << "," << height << ");" << std::endl;
 
+    // account for HiDPI scaling
+    // see https://github.com/Rosalie241/RMG/issues/2
+    height /= this->devicePixelRatioF();
+    width /= this->devicePixelRatioF();
+
     if (!this->menuBar->isHidden())
         height += this->menuBar->height();
 
     if (!this->statusBar()->isHidden())
         height += this->statusBar()->height();
-
-    height *= this->devicePixelRatio();
-    width *= this->devicePixelRatio();
 
     this->ui_SaveGeometry();
 

@@ -57,8 +57,11 @@ void OGLWidget::resizeEvent(QResizeEvent *event)
     }
 
     this->timerId = this->startTimer(100);
-    this->width = event->size().width() * this->devicePixelRatio();
-    this->height = event->size().height() * this->devicePixelRatio();
+
+    // account for HiDPI scaling
+    // see https://github.com/Rosalie241/RMG/issues/2
+    this->width = event->size().width() * this->devicePixelRatioF();
+    this->height = event->size().height() * this->devicePixelRatioF();
 }
 
 void OGLWidget::timerEvent(QTimerEvent *event)
