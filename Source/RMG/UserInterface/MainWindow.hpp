@@ -88,6 +88,9 @@ class MainWindow : public QMainWindow
     bool ui_Geometry_Saved;
 
     bool ui_AllowManualResizing;
+    bool ui_HideCursorInEmulation;
+
+    bool ui_VidExtForce;
 
     void closeEvent(QCloseEvent *);
 
@@ -110,7 +113,7 @@ class MainWindow : public QMainWindow
     void menuBar_Actions_Setup(bool, bool);
     void menuBar_Actions_Connect(void);
 
-  public slots:
+  private slots:
     void on_EventFilter_KeyPressed(QKeyEvent *);
     void on_EventFilter_KeyReleased(QKeyEvent *);
 

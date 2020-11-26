@@ -370,7 +370,10 @@ void MainWindow::emulationThread_Launch(QString file)
     }
 
     this->ui_AllowManualResizing = g_Settings.GetBoolValue(SettingsID::GUI_AllowManualResizing);
+    this->ui_HideCursorInEmulation = g_Settings.GetBoolValue(SettingsID::GUI_HideCursorInEmulation);
+
     this->ui_Widget_OpenGL->SetAllowResizing(this->ui_AllowManualResizing);
+    this->ui_Widget_OpenGL->SetHideCursor(this->ui_HideCursorInEmulation);
 
     this->emulationThread->SetRomFile(file);
     this->emulationThread->start();
@@ -900,6 +903,7 @@ void MainWindow::on_RomBrowser_Selected(QString file)
 
 void MainWindow::on_VidExt_Init(void)
 {
+    this->ui_VidExtForce = true;
     this->ui_InEmulation(true, false);
 }
 
@@ -940,12 +944,25 @@ void MainWindow::on_VidExt_ResizeWindow(int width, int height)
     if (!this->statusBar()->isHidden())
         height += this->statusBar()->height();
 
+    if (!this->ui_VidExtForce)
+    {
+        if (this->size() == QSize(width, height))
+            return;
+    }
+
     this->ui_SaveGeometry();
+
+    if (this->isMaximized() || this->isMinimized())
+        this->showNormal();
 
     if (this->ui_AllowManualResizing)
         this->resize(width, height);
     else
         this->setFixedSize(width, height);
+
+    // we've force set the size once,
+    // we can safely disable it now
+    this->ui_VidExtForce = false;
 }
 
 void MainWindow::on_VidExt_SetCaption(QString title)
