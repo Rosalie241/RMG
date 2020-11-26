@@ -90,7 +90,9 @@ class MainWindow : public QMainWindow
     bool ui_AllowManualResizing;
     bool ui_HideCursorInEmulation;
 
-    bool ui_VidExtForce;
+    bool ui_NoSwitchToRomBrowser;
+
+    bool ui_VidExtForceSetMode;
 
     void closeEvent(QCloseEvent *);
 
@@ -116,6 +118,7 @@ class MainWindow : public QMainWindow
   private slots:
     void on_EventFilter_KeyPressed(QKeyEvent *);
     void on_EventFilter_KeyReleased(QKeyEvent *);
+    void on_EventFilter_FileDropped(QDropEvent *);
 
     void on_Action_File_OpenRom(void);
     void on_Action_File_OpenCombo(void);

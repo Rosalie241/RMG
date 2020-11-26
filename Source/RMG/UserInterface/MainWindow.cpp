@@ -18,6 +18,7 @@
 #include <QFileDialog>
 #include <QMenuBar>
 #include <QMessageBox>
+#include <QMimeData>
 #include <QSettings>
 #include <QStatusBar>
 #include <QString>
@@ -71,13 +72,13 @@ bool MainWindow::Init(void)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    g_Settings.SetValue(SettingsID::GUI_RomBrowserGeometry,
-                        QString(this->saveGeometry().toBase64().toStdString().c_str()));
-
     this->on_Action_File_EndEmulation();
 
     while (g_EmuThread->isRunning())
         QCoreApplication::processEvents();
+
+    g_Settings.SetValue(SettingsID::GUI_RomBrowserGeometry,
+                        QString(this->saveGeometry().toBase64().toStdString().c_str()));
 
     QMainWindow::closeEvent(event);
 }
@@ -106,6 +107,8 @@ void MainWindow::ui_Init(void)
             &MainWindow::on_EventFilter_KeyPressed);
     connect(this->ui_EventFilter, &EventFilter::on_EventFilter_KeyReleased, this,
             &MainWindow::on_EventFilter_KeyReleased);
+    connect(this->ui_EventFilter, &EventFilter::on_EventFilter_FileDropped, this,
+            &MainWindow::on_EventFilter_FileDropped);
     /*
     connect(this->ui_EventFilter, &EventFilter::on_EventFilter_FocusIn, this, &MainWindow::on_EventFilter_FocusIn);
     connect(this->ui_EventFilter, &EventFilter::on_EventFilter_FocusOut, this, &MainWindow::on_EventFilter_FocusOut);
@@ -169,7 +172,10 @@ void MainWindow::ui_MessageBox(QString title, QString text, QString details = ""
 
 void MainWindow::ui_InEmulation(bool inEmulation, bool isPaused)
 {
-    this->menuBar_Setup(inEmulation, isPaused);
+    if (!this->ui_NoSwitchToRomBrowser)
+    {
+        this->menuBar_Setup(inEmulation, isPaused);
+    }
 
     if (inEmulation)
     {
@@ -181,10 +187,15 @@ void MainWindow::ui_InEmulation(bool inEmulation, bool isPaused)
 
         this->ui_Widgets->setCurrentIndex(1);
     }
-    else
+    else if (!this->ui_NoSwitchToRomBrowser)
     {
         this->setWindowTitle(QString(WINDOW_TITLE));
         this->ui_Widgets->setCurrentIndex(0);
+        this->ui_LoadGeometry();
+    }
+    else
+    {
+        this->ui_NoSwitchToRomBrowser = false;
     }
 }
 
@@ -573,6 +584,21 @@ void MainWindow::on_EventFilter_KeyReleased(QKeyEvent *event)
     g_MupenApi.Core.SetKeyUp(key, mod);
 }
 
+void MainWindow::on_EventFilter_FileDropped(QDropEvent *event)
+{
+    QString file;
+    const QMimeData *mimeData = event->mimeData();
+
+    if (!mimeData->hasUrls())
+        return;
+
+    file = mimeData->urls().first().toLocalFile();
+
+    this->ui_NoSwitchToRomBrowser = true;
+
+    this->emulationThread_Launch(file);
+}
+
 /* TODO for some day
 void MainWindow::on_EventFilter_FocusIn(QFocusEvent *event)
 {
@@ -885,15 +911,18 @@ void MainWindow::on_Action_Help_About(void)
 
 void MainWindow::on_Emulation_Started(void)
 {
-    this->ui_InEmulation(true, false);
 }
 
 void MainWindow::on_Emulation_Finished(bool ret)
 {
     if (!ret)
+    {
         this->ui_MessageBox("Error", "EmulationThread::run Failed", this->emulationThread->GetLastError());
-
-    this->ui_InEmulation(false, false);
+        // whatever we do on failure, 
+        // always return to the rombrowser
+        this->ui_NoSwitchToRomBrowser = false;
+        this->ui_InEmulation(false, false);
+    }
 }
 
 void MainWindow::on_RomBrowser_Selected(QString file)
@@ -903,7 +932,8 @@ void MainWindow::on_RomBrowser_Selected(QString file)
 
 void MainWindow::on_VidExt_Init(void)
 {
-    this->ui_VidExtForce = true;
+    this->ui_SaveGeometry();
+    this->ui_VidExtForceSetMode = true;
     this->ui_InEmulation(true, false);
 }
 
@@ -944,13 +974,11 @@ void MainWindow::on_VidExt_ResizeWindow(int width, int height)
     if (!this->statusBar()->isHidden())
         height += this->statusBar()->height();
 
-    if (!this->ui_VidExtForce)
+    if (!this->ui_VidExtForceSetMode)
     {
         if (this->size() == QSize(width, height))
             return;
     }
-
-    this->ui_SaveGeometry();
 
     if (this->isMaximized() || this->isMinimized())
         this->showNormal();
@@ -962,7 +990,7 @@ void MainWindow::on_VidExt_ResizeWindow(int width, int height)
 
     // we've force set the size once,
     // we can safely disable it now
-    this->ui_VidExtForce = false;
+    this->ui_VidExtForceSetMode = false;
 }
 
 void MainWindow::on_VidExt_SetCaption(QString title)
@@ -980,5 +1008,4 @@ void MainWindow::on_VidExt_Quit(void)
 {
     std::cout << "on_VidExt_Quit" << std::endl;
     this->ui_InEmulation(false, false);
-    this->ui_LoadGeometry();
 }
