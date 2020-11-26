@@ -28,12 +28,15 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
     {
         g_MupenApi.Core.GetRomInfo(&this->gameInfo);
         g_MupenApi.Core.GetDefaultRomInfo(&this->defaultGameInfo);
+        this->gameSection = this->gameInfo.Settings.MD5;
     }
     else
     {
         this->hideEmulationInfoText();
         this->treeWidget->topLevelItem(1)->setDisabled(true);
     }
+
+    pluginList = g_Plugins.GetAvailablePlugins();
 
     for (int i = 0; i < this->stackedWidget->count(); i++)
         this->reloadSettings(i);
@@ -137,9 +140,9 @@ void SettingsDialog::loadCoreSettings(void)
     debugger = g_Settings.GetBoolValue(SettingsID::Core_EnableDebugger);
     overrideGameSettings = g_Settings.GetBoolValue(SettingsID::Core_OverrideGameSpecificSettings);
 
-    this->coreCpuEmulator->setCurrentIndex(cpuEmulator);
-    this->coreRandomizeTiming->setChecked(randomizeInterrupt);
-    this->coreDebugger->setChecked(debugger);
+    this->coreCpuEmulatorComboBox->setCurrentIndex(cpuEmulator);
+    this->coreRandomizeTimingCheckBox->setChecked(randomizeInterrupt);
+    this->coreDebuggerCheckBox->setChecked(debugger);
 
     this->coreOverrideGameSettingsGroup->setChecked(overrideGameSettings);
 
@@ -150,18 +153,18 @@ void SettingsDialog::loadCoreSettings(void)
         siDmaDuration = 2304;
     }
 
-    this->coreMemorySize->setCurrentIndex(!disableExtraMem);
-    this->coreCounterFactor->setCurrentIndex(counterFactor - 1);
-    this->coreSiDmaDuration->setValue(siDmaDuration);
+    this->coreMemorySizeComboBox->setCurrentIndex(!disableExtraMem);
+    this->coreCounterFactorComboBox->setCurrentIndex(counterFactor - 1);
+    this->coreSiDmaDurationSpinBox->setValue(siDmaDuration);
 }
 
 void SettingsDialog::loadGameSettings(void)
 {
-    this->gameGoodName->setText(this->gameInfo.Settings.goodname);
-    this->gameMemorySize->setCurrentIndex(!this->gameInfo.Settings.disableextramem);
-    this->gameSaveType->setCurrentIndex(this->gameInfo.Settings.savetype);
-    this->gameCounterFactor->setCurrentIndex(this->gameInfo.Settings.countperop - 1);
-    this->gameSiDmaDuration->setValue(this->gameInfo.Settings.sidmaduration);
+    this->gameGoodNameLineEdit->setText(this->gameInfo.Settings.goodname);
+    this->gameMemorySizeComboBox->setCurrentIndex(!this->gameInfo.Settings.disableextramem);
+    this->gameSaveTypeComboBox->setCurrentIndex(this->gameInfo.Settings.savetype);
+    this->gameCounterFactorComboBox->setCurrentIndex(this->gameInfo.Settings.countperop - 1);
+    this->gameSiDmaDurationSpinBox->setValue(this->gameInfo.Settings.sidmaduration);
 }
 
 void SettingsDialog::loadGameCoreSettings(void)
@@ -169,11 +172,9 @@ void SettingsDialog::loadGameCoreSettings(void)
     bool overrideEnabled, randomizeInterrupt;
     int cpuEmulator = 0;
 
-    QString section = QString(this->gameInfo.Settings.MD5);
-
-    overrideEnabled = g_Settings.GetBoolValue(SettingsID::Game_OverrideCoreSettings, section);
-    cpuEmulator = g_Settings.GetIntValue(SettingsID::Game_CPU_Emulator, section);
-    randomizeInterrupt = g_Settings.GetBoolValue(SettingsID::Game_RandomizeInterrupt, section);
+    overrideEnabled = g_Settings.GetBoolValue(SettingsID::Game_OverrideCoreSettings, this->gameSection);
+    cpuEmulator = g_Settings.GetIntValue(SettingsID::Game_CPU_Emulator, this->gameSection);
+    randomizeInterrupt = g_Settings.GetBoolValue(SettingsID::Game_RandomizeInterrupt, this->gameSection);
 
     gameOverrideCoreSettingsGroupBox->setChecked(overrideEnabled);
     gameCoreCpuEmulatorComboBox->setCurrentIndex(cpuEmulator);
@@ -182,10 +183,10 @@ void SettingsDialog::loadGameCoreSettings(void)
 
 void SettingsDialog::loadGamePluginSettings(void)
 {
-    QComboBox *comboBoxArray[4] = {this->pluginVideoPlugins, this->pluginAudioPlugins, this->pluginInputPlugins,
-                                   this->pluginRspPlugins};
-    SettingsID settingsId[4] = {SettingsID::Game_GFX_Plugin, SettingsID::Game_AUDIO_Plugin, SettingsID::Game_INPUT_Plugin,
-                        SettingsID::Game_RSP_Plugin};
+    QComboBox *comboBoxArray[4] = {this->gameVideoPluginsComboBox, this->gameAudioPluginsComboBox,
+                                   this->gameInputPluginsComboBox, this->gameRspPluginsComboBox};
+    SettingsID settingsId[4] = {SettingsID::Game_GFX_Plugin, SettingsID::Game_AUDIO_Plugin,
+                                SettingsID::Game_INPUT_Plugin, SettingsID::Game_RSP_Plugin};
     QComboBox *comboBox;
 
     for (QComboBox *comboBox : comboBoxArray)
@@ -194,13 +195,11 @@ void SettingsDialog::loadGamePluginSettings(void)
         comboBox->addItem("**Use Core Plugin Settings**");
     }
 
-    QString section = this->gameInfo.Settings.MD5;
-
-    for (const Plugin_t &p : g_Plugins.GetAvailablePlugins())
+    for (const auto &p : this->pluginList)
     {
         comboBox = comboBoxArray[(int)p.Type];
         comboBox->addItem(p.Name, p.FileName);
-        if (g_Settings.GetStringValue(settingsId[(int)p.Type], section) == p.FileName)
+        if (g_Settings.GetStringValue(settingsId[(int)p.Type], this->gameSection) == p.FileName)
         {
             comboBox->setCurrentText(p.Name);
         }
@@ -209,14 +208,17 @@ void SettingsDialog::loadGamePluginSettings(void)
 
 void SettingsDialog::loadPluginSettings(void)
 {
-    QComboBox *comboBoxArray[] = {this->videoPlugins, this->audioPlugins, this->inputPlugins, this->rspPlugins};
-    SettingsID settingsIdArray[] = {SettingsID::Core_GFX_Plugin, SettingsID::Core_AUDIO_Plugin, SettingsID::Core_INPUT_Plugin, SettingsID::Core_RSP_Plugin};
+    QComboBox *comboBoxArray[] = {this->videoPluginsComboBox, this->audioPluginsComboBox, this->inputPluginsComboBox,
+                                  this->rspPluginsComboBox};
+    SettingsID settingsIdArray[] = {SettingsID::Core_GFX_Plugin, SettingsID::Core_AUDIO_Plugin,
+                                    SettingsID::Core_INPUT_Plugin, SettingsID::Core_RSP_Plugin};
+
     PluginType type;
     QComboBox *comboBox;
     QString pluginFileName;
     int index = 0;
 
-    for (const Plugin_t &p : g_Plugins.GetAvailablePlugins())
+    for (const auto &p : this->pluginList)
     {
         comboBox = comboBoxArray[(int)p.Type];
         pluginFileName = g_Settings.GetStringValue(settingsIdArray[(int)p.Type]);
@@ -280,14 +282,8 @@ void SettingsDialog::loadKeybindSettings(void)
 
 void SettingsDialog::loadBehaviorSettings(void)
 {
-    bool pause = false, resume = false;
-
-    /*
-        pause = g_Settings.GetBoolValue(SettingsID::GUI_PauseEmulationOnFocusLoss);
-        resume = g_Settings.GetBoolValue(SettingsID::GUI_ResumeEmulationOnFocus);
-    */
-
     this->manualResizingCheckBox->setChecked(g_Settings.GetBoolValue(SettingsID::GUI_AllowManualResizing));
+    this->hideCursorCheckBox->setChecked(g_Settings.GetBoolValue(SettingsID::GUI_HideCursorInEmulation));
 }
 
 void SettingsDialog::loadDefaultCoreSettings(void)
@@ -308,9 +304,9 @@ void SettingsDialog::loadDefaultCoreSettings(void)
     debugger = g_Settings.GetDefaultBoolValue(SettingsID::Core_EnableDebugger);
     overrideGameSettings = g_Settings.GetDefaultBoolValue(SettingsID::Core_OverrideGameSpecificSettings);
 
-    this->coreCpuEmulator->setCurrentIndex(cpuEmulator);
-    this->coreRandomizeTiming->setChecked(randomizeInterrupt);
-    this->coreDebugger->setChecked(debugger);
+    this->coreCpuEmulatorComboBox->setCurrentIndex(cpuEmulator);
+    this->coreRandomizeTimingCheckBox->setChecked(randomizeInterrupt);
+    this->coreDebuggerCheckBox->setChecked(debugger);
 
     this->coreOverrideGameSettingsGroup->setChecked(overrideGameSettings);
 
@@ -321,18 +317,18 @@ void SettingsDialog::loadDefaultCoreSettings(void)
         siDmaDuration = 2304;
     }
 
-    this->coreMemorySize->setCurrentIndex(!disableExtraMem);
-    this->coreCounterFactor->setCurrentIndex(counterFactor - 1);
-    this->coreSiDmaDuration->setValue(siDmaDuration);
+    this->coreMemorySizeComboBox->setCurrentIndex(!disableExtraMem);
+    this->coreCounterFactorComboBox->setCurrentIndex(counterFactor - 1);
+    this->coreSiDmaDurationSpinBox->setValue(siDmaDuration);
 }
 
 void SettingsDialog::loadDefaultGameSettings(void)
 {
-    this->gameGoodName->setText(this->gameInfo.Settings.goodname);
-    this->gameMemorySize->setCurrentIndex(!this->gameInfo.Settings.disableextramem);
-    this->gameSaveType->setCurrentIndex(this->gameInfo.Settings.savetype);
-    this->gameCounterFactor->setCurrentIndex(this->gameInfo.Settings.countperop - 1);
-    this->gameSiDmaDuration->setValue(this->gameInfo.Settings.sidmaduration);
+    this->gameGoodNameLineEdit->setText(this->gameInfo.Settings.goodname);
+    this->gameMemorySizeComboBox->setCurrentIndex(!this->gameInfo.Settings.disableextramem);
+    this->gameSaveTypeComboBox->setCurrentIndex(this->gameInfo.Settings.savetype);
+    this->gameCounterFactorComboBox->setCurrentIndex(this->gameInfo.Settings.countperop - 1);
+    this->gameSiDmaDurationSpinBox->setValue(this->gameInfo.Settings.sidmaduration);
 }
 
 void SettingsDialog::loadDefaultGameCoreSettings(void)
@@ -351,8 +347,8 @@ void SettingsDialog::loadDefaultGameCoreSettings(void)
 
 void SettingsDialog::loadDefaultGamePluginSettings(void)
 {
-    QComboBox *comboBoxArray[4] = {this->pluginVideoPlugins, this->pluginAudioPlugins, this->pluginInputPlugins,
-                                   this->pluginRspPlugins};
+    QComboBox *comboBoxArray[4] = {this->gameVideoPluginsComboBox, this->gameAudioPluginsComboBox,
+                                   this->gameInputPluginsComboBox, this->gameRspPluginsComboBox};
 
     for (QComboBox *comboBox : comboBoxArray)
     {
@@ -392,14 +388,8 @@ void SettingsDialog::loadDefaultKeybindSettings(void)
 
 void SettingsDialog::loadDefaultBehaviorSettings(void)
 {
-    bool pause = false, resume = false;
-
-    /*
-        pause = g_Settings.GetBoolValue(SettingsID::GUI_PauseEmulationOnFocusLoss);
-        resume = g_Settings.GetBoolValue(SettingsID::GUI_ResumeEmulationOnFocus);
-    */
-
     this->manualResizingCheckBox->setChecked(g_Settings.GetDefaultBoolValue(SettingsID::GUI_AllowManualResizing));
+    this->hideCursorCheckBox->setChecked(g_Settings.GetDefaultBoolValue(SettingsID::GUI_HideCursorInEmulation));
 }
 
 void SettingsDialog::saveSettings(void)
@@ -408,8 +398,7 @@ void SettingsDialog::saveSettings(void)
     if (inGame)
     {
         // clean 'game settings'
-        QString section = this->gameInfo.Settings.MD5;
-        g_MupenApi.Config.DeleteSection(section);
+        g_MupenApi.Config.DeleteSection(this->gameSection);
         this->saveGameSettings();
         this->saveGameCoreSettings();
         this->saveGamePluginSettings();
@@ -422,12 +411,12 @@ void SettingsDialog::saveSettings(void)
 
 void SettingsDialog::saveCoreSettings(void)
 {
-    bool disableExtraMem = (this->coreMemorySize->currentIndex() == 0);
-    int counterFactor = this->coreCounterFactor->currentIndex() + 1;
-    int cpuEmulator = this->coreCpuEmulator->currentIndex();
-    int siDmaDuration = this->coreSiDmaDuration->value();
-    bool randomizeInterrupt = this->coreRandomizeTiming->isChecked();
-    bool debugger = this->coreDebugger->isChecked();
+    bool disableExtraMem = (this->coreMemorySizeComboBox->currentIndex() == 0);
+    int counterFactor = this->coreCounterFactorComboBox->currentIndex() + 1;
+    int cpuEmulator = this->coreCpuEmulatorComboBox->currentIndex();
+    int siDmaDuration = this->coreSiDmaDurationSpinBox->value();
+    bool randomizeInterrupt = this->coreRandomizeTimingCheckBox->isChecked();
+    bool debugger = this->coreDebuggerCheckBox->isChecked();
     bool overrideGameSettings = this->coreOverrideGameSettingsGroup->isChecked();
 
     g_Settings.SetValue(SettingsID::Core_CPU_Emulator, cpuEmulator);
@@ -449,21 +438,19 @@ void SettingsDialog::saveCoreSettings(void)
 
 void SettingsDialog::saveGameSettings(void)
 {
-    QString section = QString(this->gameInfo.Settings.MD5);
-
-    bool disableExtraMem = this->gameMemorySize->currentIndex() == 0;
-    int saveType = this->gameSaveType->currentIndex();
-    int countPerOp = this->gameCounterFactor->currentIndex() + 1;
-    int siDmaDuration = this->gameSiDmaDuration->value();
+    bool disableExtraMem = this->gameMemorySizeComboBox->currentIndex() == 0;
+    int saveType = this->gameSaveTypeComboBox->currentIndex();
+    int countPerOp = this->gameCounterFactorComboBox->currentIndex() + 1;
+    int siDmaDuration = this->gameSiDmaDurationSpinBox->value();
 
     if (this->defaultGameInfo.Settings.disableextramem != (unsigned char)disableExtraMem)
-        g_Settings.SetValue(SettingsID::Game_DisableExtraMem, section, disableExtraMem);
+        g_Settings.SetValue(SettingsID::Game_DisableExtraMem, this->gameSection, disableExtraMem);
     if (this->defaultGameInfo.Settings.savetype != saveType)
-        g_Settings.SetValue(SettingsID::Game_SaveType, section, saveType);
+        g_Settings.SetValue(SettingsID::Game_SaveType, this->gameSection, saveType);
     if (this->defaultGameInfo.Settings.countperop != countPerOp)
-        g_Settings.SetValue(SettingsID::Game_CountPerOp, section, countPerOp);
+        g_Settings.SetValue(SettingsID::Game_CountPerOp, this->gameSection, countPerOp);
     if (this->defaultGameInfo.Settings.sidmaduration != siDmaDuration)
-        g_Settings.SetValue(SettingsID::Game_SiDmaDuration, section, siDmaDuration);
+        g_Settings.SetValue(SettingsID::Game_SiDmaDuration, this->gameSection, siDmaDuration);
 }
 
 void SettingsDialog::saveGameCoreSettings(void)
@@ -471,8 +458,6 @@ void SettingsDialog::saveGameCoreSettings(void)
     bool overrideEnabled, randomizeInterrupt;
     bool defaultOverrideEnabled, defaultRandomizeInterrupt;
     int cpuEmulator = 0, defaultCpuEmulator;
-
-    QString section = QString(this->gameInfo.Settings.MD5);
 
     overrideEnabled = gameOverrideCoreSettingsGroupBox->isChecked();
     cpuEmulator = gameCoreCpuEmulatorComboBox->currentIndex();
@@ -483,22 +468,21 @@ void SettingsDialog::saveGameCoreSettings(void)
     defaultCpuEmulator = g_Settings.GetDefaultIntValue(SettingsID::Game_CPU_Emulator);
 
     if (defaultOverrideEnabled != overrideEnabled)
-        g_Settings.SetValue(SettingsID::Game_OverrideCoreSettings, section, overrideEnabled);
+        g_Settings.SetValue(SettingsID::Game_OverrideCoreSettings, this->gameSection, overrideEnabled);
     if (defaultCpuEmulator != cpuEmulator)
-        g_Settings.SetValue(SettingsID::Game_CPU_Emulator, section, cpuEmulator);
+        g_Settings.SetValue(SettingsID::Game_CPU_Emulator, this->gameSection, cpuEmulator);
     if (defaultRandomizeInterrupt != randomizeInterrupt)
-        g_Settings.SetValue(SettingsID::Game_RandomizeInterrupt, section, randomizeInterrupt);
+        g_Settings.SetValue(SettingsID::Game_RandomizeInterrupt, this->gameSection, randomizeInterrupt);
 }
 
 void SettingsDialog::saveGamePluginSettings(void)
 {
-    QComboBox *comboBoxArray[4] = {this->pluginVideoPlugins, this->pluginAudioPlugins, this->pluginInputPlugins,
-                                   this->pluginRspPlugins};
-    SettingsID settingsIdArray[4] = {SettingsID::Game_GFX_Plugin, SettingsID::Game_AUDIO_Plugin, SettingsID::Game_INPUT_Plugin,
-                        SettingsID::Game_RSP_Plugin};
+    QComboBox *comboBoxArray[4] = {this->gameVideoPluginsComboBox, this->gameAudioPluginsComboBox,
+                                   this->gameInputPluginsComboBox, this->gameRspPluginsComboBox};
+    SettingsID settingsIdArray[4] = {SettingsID::Game_GFX_Plugin, SettingsID::Game_AUDIO_Plugin,
+                                     SettingsID::Game_INPUT_Plugin, SettingsID::Game_RSP_Plugin};
     QComboBox *comboBox;
     SettingsID id;
-    QString section = this->gameInfo.Settings.MD5;
 
     for (int i = 0; i < 4; i++)
     {
@@ -506,21 +490,26 @@ void SettingsDialog::saveGamePluginSettings(void)
         id = settingsIdArray[i];
 
         if (comboBox->currentIndex() != 0)
-            g_Settings.SetValue(id, section, comboBox->currentData().toString());
+        {
+            g_Settings.SetValue(id, this->gameSection, comboBox->currentData().toString());
+        }
     }
 }
 
 void SettingsDialog::savePluginSettings(void)
 {
-    QComboBox *comboBoxArray[4] = {this->videoPlugins, this->audioPlugins, this->inputPlugins, this->rspPlugins};
+    QComboBox *comboBoxArray[4] = {this->videoPluginsComboBox, this->audioPluginsComboBox, this->inputPluginsComboBox,
+                                   this->rspPluginsComboBox};
     QComboBox *comboBox;
 
-    for (const Plugin_t &p : g_Plugins.GetAvailablePlugins())
+    for (const auto &p : this->pluginList)
     {
         comboBox = comboBoxArray[(int)p.Type];
 
         if (p.FileName == comboBox->currentData().toString())
+        {
             g_Plugins.ChangePlugin(p);
+        }
     }
 }
 
@@ -538,14 +527,12 @@ void SettingsDialog::saveDirectorySettings(void)
 
 void SettingsDialog::saveKeybindSettings(void)
 {
-    KeyBindButton *buttons[] = {this->openRomKeyButton,   this->openComboKeyButton,      this->startEmuKeyButton,
-                                this->endEmuKeyButton,    this->refreshRomListKeyButton, this->exitKeyButton,
-
-                                this->softResetKeyButton, this->hardResetKeyButton,      this->generateBitmapKeyButton,
-                                this->limitFPSKeyButton,  this->swapDiskKeyButton,       this->saveStateKeyButton,
-                                this->saveAsKeyButton,    this->loadStateKeyButton,      this->loadKeyButton,
-                                this->cheatsKeyButton,    this->gsButtonKeyButton,       this->fullscreenKeyButton,
-                                this->settingsKeyButton};
+    KeyBindButton *buttons[] = {
+        this->openRomKeyButton,        this->openComboKeyButton,  this->startEmuKeyButton,  this->endEmuKeyButton,
+        this->refreshRomListKeyButton, this->exitKeyButton,       this->softResetKeyButton, this->hardResetKeyButton,
+        this->generateBitmapKeyButton, this->limitFPSKeyButton,   this->swapDiskKeyButton,  this->saveStateKeyButton,
+        this->saveAsKeyButton,         this->loadStateKeyButton,  this->loadKeyButton,      this->cheatsKeyButton,
+        this->gsButtonKeyButton,       this->fullscreenKeyButton, this->settingsKeyButton};
 
     SettingsID id;
     for (int i = 0; i < (sizeof(buttons) / sizeof(buttons[0])); i++)
@@ -557,21 +544,15 @@ void SettingsDialog::saveKeybindSettings(void)
 
 void SettingsDialog::saveBehaviorSettings(void)
 {
-    bool pause = false, resume = false;
-
     g_Settings.SetValue(SettingsID::GUI_AllowManualResizing, this->manualResizingCheckBox->isChecked());
-    // this->manualResizingCheckBox->setChecked(g_Settings.GetBoolValue(SettingsID::GUI_AllowManualResizing));
-    /* TODO for someday
-        g_Settings.SetValue(SettingsID::GUI_PauseEmulationOnFocusLoss, pause);
-        g_Settings.SetValue(SettingsID::GUI_ResumeEmulationOnFocus, resume);
-    */
+    g_Settings.SetValue(SettingsID::GUI_HideCursorInEmulation, this->hideCursorCheckBox->isChecked());
 }
 
 void SettingsDialog::hideEmulationInfoText(void)
 {
     QHBoxLayout *layouts[] = {this->emulationInfoLayout, this->emulationInfoLayout_2, this->emulationInfoLayout_8};
 
-    for (const QHBoxLayout *layout : layouts)
+    for (const auto &layout : layouts)
     {
         for (int i = 0; i < layout->count(); i++)
         {

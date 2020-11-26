@@ -32,12 +32,19 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     Q_OBJECT
 
   private:
+
+
     bool inGame;
     M64P::Wrapper::RomInfo_t gameInfo = {0};
     M64P::Wrapper::RomInfo_t defaultGameInfo = {0};
+    QString gameSection;
+
+
+    QList<M64P::Wrapper::Plugin_t> pluginList;
 
     void restoreDefaults(int);
     void reloadSettings(int);
+    void saveSettings(int);
 
     void loadCoreSettings(void);
     void loadGameSettings(void);

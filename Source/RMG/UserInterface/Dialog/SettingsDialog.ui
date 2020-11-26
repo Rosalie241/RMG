@@ -120,7 +120,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="coreCpuEmulator">
+              <widget class="QComboBox" name="coreCpuEmulatorComboBox">
                <item>
                 <property name="text">
                  <string>Pure Interpreter</string>
@@ -165,7 +165,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QComboBox" name="coreMemorySize">
+                 <widget class="QComboBox" name="coreMemorySizeComboBox">
                   <item>
                    <property name="text">
                     <string>4 MB</string>
@@ -190,7 +190,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QComboBox" name="coreCounterFactor">
+                 <widget class="QComboBox" name="coreCounterFactorComboBox">
                   <item>
                    <property name="text">
                     <string>1</string>
@@ -235,7 +235,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QSpinBox" name="coreSiDmaDuration">
+                 <widget class="QSpinBox" name="coreSiDmaDurationSpinBox">
                   <property name="minimum">
                    <number>1</number>
                   </property>
@@ -253,14 +253,14 @@
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="coreRandomizeTiming">
+            <widget class="QCheckBox" name="coreRandomizeTimingCheckBox">
              <property name="text">
               <string>Randomize PI/SI Interrupt Timing</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="coreDebugger">
+            <widget class="QCheckBox" name="coreDebuggerCheckBox">
              <property name="text">
               <string>Debugger</string>
              </property>
@@ -341,7 +341,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QLineEdit" name="gameGoodName">
+              <widget class="QLineEdit" name="gameGoodNameLineEdit">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -365,7 +365,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="gameMemorySize">
+              <widget class="QComboBox" name="gameMemorySizeComboBox">
                <item>
                 <property name="text">
                  <string>4 MB</string>
@@ -390,7 +390,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="gameSaveType">
+              <widget class="QComboBox" name="gameSaveTypeComboBox">
                <item>
                 <property name="text">
                  <string>4 KB EEPROM</string>
@@ -435,7 +435,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="gameCounterFactor">
+              <widget class="QComboBox" name="gameCounterFactorComboBox">
                <item>
                 <property name="text">
                  <string>1</string>
@@ -480,7 +480,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QSpinBox" name="gameSiDmaDuration">
+              <widget class="QSpinBox" name="gameSiDmaDurationSpinBox">
                <property name="minimum">
                 <number>1</number>
                </property>
@@ -677,7 +677,7 @@
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_17">
               <item>
-               <widget class="QComboBox" name="pluginVideoPlugins">
+               <widget class="QComboBox" name="gameVideoPluginsComboBox">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -712,7 +712,7 @@
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_18">
               <item>
-               <widget class="QComboBox" name="pluginAudioPlugins">
+               <widget class="QComboBox" name="gameAudioPluginsComboBox">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -747,7 +747,7 @@
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_19">
               <item>
-               <widget class="QComboBox" name="pluginInputPlugins">
+               <widget class="QComboBox" name="gameInputPluginsComboBox">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -788,7 +788,7 @@
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_20">
               <item>
-               <widget class="QComboBox" name="pluginRspPlugins">
+               <widget class="QComboBox" name="gameRspPluginsComboBox">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -873,7 +873,7 @@
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_13">
               <item>
-               <widget class="QComboBox" name="videoPlugins">
+               <widget class="QComboBox" name="videoPluginsComboBox">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -899,7 +899,7 @@
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_14">
               <item>
-               <widget class="QComboBox" name="audioPlugins">
+               <widget class="QComboBox" name="audioPluginsComboBox">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -925,7 +925,7 @@
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_15">
               <item>
-               <widget class="QComboBox" name="inputPlugins">
+               <widget class="QComboBox" name="inputPluginsComboBox">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -960,7 +960,7 @@
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_16">
               <item>
-               <widget class="QComboBox" name="rspPlugins">
+               <widget class="QComboBox" name="rspPluginsComboBox">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -1284,7 +1284,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>188</width>
+                <width>431</width>
                 <height>930</height>
                </rect>
               </property>
@@ -1670,6 +1670,13 @@
             <widget class="QCheckBox" name="manualResizingCheckBox">
              <property name="text">
               <string>Allow Manual Window Resizing</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="hideCursorCheckBox">
+             <property name="text">
+              <string>Hide Cursor In Emulation</string>
              </property>
             </widget>
            </item>
