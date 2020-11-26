@@ -1,5 +1,6 @@
 #include "OGLWidget.hpp"
 #include "../../Globals.hpp"
+#include <qnamespace.h>
 
 using namespace UserInterface::Widget;
 
@@ -27,9 +28,14 @@ void OGLWidget::SetThread(QThread *thread)
     this->context()->moveToThread(thread);
 }
 
-void OGLWidget::SetAllowResizing(bool allow)
+void OGLWidget::SetAllowResizing(bool value)
 {
-    this->allowResizing = allow;
+    this->allowResizing = value;
+}
+
+void OGLWidget::SetHideCursor(bool value)
+{
+    this->setCursor(value ? Qt::BlankCursor : Qt::ArrowCursor);
 }
 
 QWidget *OGLWidget::GetWidget(void)
