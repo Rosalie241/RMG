@@ -23,6 +23,8 @@ class EventFilter : public QObject
     void on_EventFilter_KeyPressed(QKeyEvent *);
     void on_EventFilter_KeyReleased(QKeyEvent *);
 
+    void on_EventFilter_FileDropped(QDropEvent *);
+
     void on_EventFilter_FocusIn(QFocusEvent *);
     void on_EventFilter_FocusOut(QFocusEvent *);
 };

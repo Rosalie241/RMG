@@ -21,6 +21,9 @@ bool EventFilter::eventFilter(QObject *object, QEvent *event)
     case QEvent::Type::KeyPress:
         emit this->on_EventFilter_KeyPressed((QKeyEvent *)event);
         return true;
+    case QEvent::Type::Drop:
+        emit this->on_EventFilter_FileDropped((QDropEvent *)event);
+        return true;
     case QEvent::Type::KeyRelease:
         emit this->on_EventFilter_KeyReleased((QKeyEvent *)event);
         return true;
