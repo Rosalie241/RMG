@@ -32,6 +32,7 @@ enum SettingsID
     GUI_SettingsDialogWidth,
     GUI_SettingsDialogHeight,
     GUI_AllowManualResizing,
+    GUI_HideCursorInEmulation,
     /*
     GUI_PauseEmulationOnFocusLoss,
     GUI_ResumeEmulationOnFocus,

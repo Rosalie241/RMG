@@ -215,19 +215,22 @@ Setting_t Settings::getSetting(SettingsID id)
     default:
         break;
     case SettingsID::GUI_RomBrowserDirectory:
-        setting = {GUI_SECTION, "ROM Browser Directory", "", "", false};
+        setting = {GUI_SECTION, "RomBrowserDirectory", "", "", false};
         break;
     case SettingsID::GUI_RomBrowserGeometry:
-        setting = {GUI_SECTION, "ROM Browser Geometry", "", "", false};
+        setting = {GUI_SECTION, "RomBrowserGeometry", "", "", false};
         break;
     case SettingsID::GUI_SettingsDialogWidth:
-        setting = {GUI_SECTION, "Settings Dialog Width", 0, "", false};
+        setting = {GUI_SECTION, "SettingsDialogWidth", 0, "", false};
         break;
     case SettingsID::GUI_SettingsDialogHeight:
-        setting = {GUI_SECTION, "Settings Dialog Height", 0, "", false};
+        setting = {GUI_SECTION, "SettingsDialogHeight", 0, "", false};
         break;
     case SettingsID::GUI_AllowManualResizing:
-        setting = {GUI_SECTION, "Allow Manual Resizing", false, "", false};
+        setting = {GUI_SECTION, "AllowManualResizing", false, "", false};
+        break;
+    case SettingsID::GUI_HideCursorInEmulation:
+        setting = {GUI_SECTION, "HideCursorInEmulation", false, "", false};
         break;
         /*
         case SettingsID::GUI_PauseEmulationOnFocusLoss:
