@@ -25,30 +25,17 @@ Plugins::~Plugins()
 
 void Plugins::LoadSettings()
 {
-    SettingsID id;
+    SettingsID settingIds[]{SettingsID::Core_GFX_Plugin, SettingsID::Core_RSP_Plugin, SettingsID::Core_AUDIO_Plugin,
+                            SettingsID::Core_INPUT_Plugin};
+
     QString settingValue;
     for (const Plugin_t &p : this->GetAvailablePlugins())
     {
-        switch (p.Type)
-        {
-        default:
-        case PluginType::Gfx:
-            id = SettingsID::Core_GFX_Plugin;
-            break;
-        case PluginType::Rsp:
-            id = SettingsID::Core_RSP_Plugin;
-            break;
-        case PluginType::Audio:
-            id = SettingsID::Core_AUDIO_Plugin;
-            break;
-        case PluginType::Input:
-            id = SettingsID::Core_INPUT_Plugin;
-            break;
-        }
-
-        settingValue = g_Settings.GetStringValue(id);
+        settingValue = g_Settings.GetStringValue(settingIds[(int)p.Type]);
         if (settingValue == p.FileName || settingValue.isEmpty())
+        {
             this->ChangePlugin(p);
+        }
     }
 }
 
@@ -66,30 +53,14 @@ QList<Plugin_t> Plugins::GetAvailablePlugins()
 
 bool Plugins::ChangePlugin(Plugin_t plugin)
 {
-    bool ret = false;
-    ret = g_MupenApi.Core.SetPlugin(plugin);
+    SettingsID settingIds[]{SettingsID::Core_GFX_Plugin, SettingsID::Core_RSP_Plugin, SettingsID::Core_AUDIO_Plugin,
+                            SettingsID::Core_INPUT_Plugin};
+    bool ret;
 
+    ret = g_MupenApi.Core.SetPlugin(plugin);
     if (ret)
     {
-        SettingsID id;
-        switch (plugin.Type)
-        {
-        default:
-        case PluginType::Gfx:
-            id = SettingsID::Core_GFX_Plugin;
-            break;
-        case PluginType::Rsp:
-            id = SettingsID::Core_RSP_Plugin;
-            break;
-        case PluginType::Audio:
-            id = SettingsID::Core_AUDIO_Plugin;
-            break;
-        case PluginType::Input:
-            id = SettingsID::Core_INPUT_Plugin;
-            break;
-        }
-
-        g_Settings.SetValue(id, plugin.FileName);
+        g_Settings.SetValue(settingIds[(int)plugin.Type], plugin.FileName);
     }
 
     return ret;
