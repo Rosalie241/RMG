@@ -67,6 +67,11 @@ class RomBrowserWidget : public QTableView
 
     void column_SetSize();
 
+  protected:
+    void dragMoveEvent(QDragMoveEvent *);
+    void dragEnterEvent(QDragEnterEvent *);
+    void dropEvent(QDropEvent *);
+
   public slots:
     void on_Row_DoubleClicked(const QModelIndex &);
     void on_RomBrowserThread_Received(M64P::Wrapper::RomInfo_t info);
@@ -74,6 +79,7 @@ class RomBrowserWidget : public QTableView
 
   signals:
     void on_RomBrowser_Select(QString);
+    void on_RomBrowser_FileDropped(QDropEvent *);
 };
 } // namespace Widget
 } // namespace UserInterface

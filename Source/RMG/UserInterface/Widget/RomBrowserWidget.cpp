@@ -17,6 +17,11 @@ using namespace UserInterface::Widget;
 
 RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QTableView(parent)
 {
+    // needed for drag & drop
+    this->setDragDropMode(QAbstractItemView::DragDropMode::DropOnly);
+    this->setAcceptDrops(true);
+    this->setDropIndicatorShown(true);
+    
     this->model_Init();
     this->model_Setup();
     this->widget_Init();
@@ -39,6 +44,7 @@ void RomBrowserWidget::SetDirectory(QString directory)
 void RomBrowserWidget::model_Init(void)
 {
     this->model_Model = new QStandardItemModel(this);
+    this->model_Model->installEventFilter(this);
 
     connect(this, &QTableView::doubleClicked, this, &RomBrowserWidget::on_Row_DoubleClicked);
 }
@@ -71,7 +77,7 @@ void RomBrowserWidget::model_LabelList_Setup(void)
 
 void RomBrowserWidget::widget_Init(void)
 {
-    this->widget_Delegate = new NoFocusDelegate();
+    this->widget_Delegate = new NoFocusDelegate(this);
 
     this->setModel(this->model_Model);
     this->setItemDelegate(this->widget_Delegate);
@@ -158,6 +164,26 @@ void RomBrowserWidget::column_SetSize(void)
             this->setColumnWidth(i, newSize);
         }
     }
+}
+
+void RomBrowserWidget::dragMoveEvent(QDragMoveEvent *event)
+{
+    event->accept();
+}
+
+void RomBrowserWidget::dragEnterEvent(QDragEnterEvent *event)
+{
+    event->accept();
+}
+
+
+void RomBrowserWidget::dropEvent(QDropEvent *event)
+{
+    // sadly installing an EventFilter doesn't work
+    // on a QTableView, so just override the event,
+    // emit the signal and pass it through to QTableView
+    emit this->on_RomBrowser_FileDropped(event);
+    QTableView::dropEvent(event);
 }
 
 #include <iostream>
