@@ -16,6 +16,10 @@ namespace UserInterface
 {
 class NoFocusDelegate : public QStyledItemDelegate
 {
+  public:
+    NoFocusDelegate(QWidget *);
+    ~NoFocusDelegate(void);
+
   protected:
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 };

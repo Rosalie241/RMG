@@ -11,6 +11,16 @@
 
 using namespace UserInterface;
 
+NoFocusDelegate::NoFocusDelegate(QWidget* parent) : QStyledItemDelegate(parent)
+{
+
+}
+
+NoFocusDelegate::~NoFocusDelegate(void)
+{
+
+}
+
 void NoFocusDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     QStyleOptionViewItem itemOption(option);
