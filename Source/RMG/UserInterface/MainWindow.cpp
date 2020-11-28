@@ -102,6 +102,8 @@ void MainWindow::ui_Init(void)
 
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::on_RomBrowser_Select, this,
             &MainWindow::on_RomBrowser_Selected);
+    connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::on_RomBrowser_FileDropped, this,
+            &MainWindow::on_EventFilter_FileDropped);
 
     connect(this->ui_EventFilter, &EventFilter::on_EventFilter_KeyPressed, this,
             &MainWindow::on_EventFilter_KeyPressed);
@@ -159,8 +161,7 @@ void MainWindow::ui_MessageBox(QString title, QString text, QString details = ""
 {
     g_Logger.AddText("MainWindow::ui_MessageBox: " + title + ", " + text + ", " + details);
 
-    QMessageBox msgBox;
-    msgBox.setWindowIcon(this->ui_Icon);
+    QMessageBox msgBox(this);
     msgBox.setIcon(QMessageBox::Icon::Critical);
     msgBox.setWindowTitle(title);
     msgBox.setText(text);
@@ -183,7 +184,9 @@ void MainWindow::ui_InEmulation(bool inEmulation, bool isPaused)
         g_MupenApi.Core.GetRomInfo(&info);
 
         if (!QString(info.Settings.goodname).isEmpty())
+        {
             this->setWindowTitle(info.Settings.goodname + QString(" - ") + QString(WINDOW_TITLE));
+        }
 
         this->ui_Widgets->setCurrentIndex(1);
     }
@@ -202,7 +205,9 @@ void MainWindow::ui_InEmulation(bool inEmulation, bool isPaused)
 void MainWindow::ui_SaveGeometry(void)
 {
     if (this->ui_Geometry_Saved)
+    {
         return;
+    }
 
     this->ui_MinSize = this->minimumSize();
     this->ui_MaxSize = this->maximumSize();
@@ -213,7 +218,9 @@ void MainWindow::ui_SaveGeometry(void)
 void MainWindow::ui_LoadGeometry(void)
 {
     if (!this->ui_Geometry_Saved)
+    {
         return;
+    }
 
     this->setMinimumSize(0, 0);
     this->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
@@ -377,7 +384,9 @@ void MainWindow::emulationThread_Launch(QString file)
         this->on_Action_File_EndEmulation();
 
         while (this->emulationThread->isRunning())
+        {
             QCoreApplication::processEvents();
+        }
     }
 
     this->ui_AllowManualResizing = g_Settings.GetBoolValue(SettingsID::GUI_AllowManualResizing);
@@ -590,11 +599,16 @@ void MainWindow::on_EventFilter_FileDropped(QDropEvent *event)
     const QMimeData *mimeData = event->mimeData();
 
     if (!mimeData->hasUrls())
+    {
         return;
+    }
 
     file = mimeData->urls().first().toLocalFile();
 
-    this->ui_NoSwitchToRomBrowser = true;
+    if (this->ui_Widgets->currentIndex() != 0)
+    {
+        this->ui_NoSwitchToRomBrowser = true;
+    }
 
     this->emulationThread_Launch(file);
 }
@@ -631,7 +645,9 @@ void MainWindow::on_Action_File_OpenRom(void)
     bool isPaused = g_MupenApi.Core.isEmulationPaused();
 
     if (isRunning && !isPaused)
+    {
         this->on_Action_System_Pause();
+    }
 
     QFileDialog dialog;
     int ret;
@@ -645,8 +661,15 @@ void MainWindow::on_Action_File_OpenRom(void)
     if (!ret)
     {
         if (isRunning && !isPaused)
+        {
             this->on_Action_System_Pause();
+        }
         return;
+    }
+
+    if (this->ui_Widgets->currentIndex() != 0)
+    {
+        this->ui_NoSwitchToRomBrowser = true;
     }
 
     this->emulationThread_Launch(dialog.selectedFiles().first());
@@ -791,7 +814,9 @@ void MainWindow::on_Action_System_SaveAs(void)
     bool isPaused = g_MupenApi.Core.isEmulationPaused();
 
     if (!isPaused)
+    {
         this->on_Action_System_Pause();
+    }
 
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save State"), "", tr("SaveState (*.dat);;All Files (*)"));
 
@@ -801,7 +826,9 @@ void MainWindow::on_Action_System_SaveAs(void)
     }
 
     if (!isPaused)
+    {
         this->on_Action_System_Pause();
+    }
 }
 
 void MainWindow::on_Action_System_LoadState(void)
@@ -817,7 +844,9 @@ void MainWindow::on_Action_System_Load(void)
     bool isPaused = g_MupenApi.Core.isEmulationPaused();
 
     if (!isPaused)
+    {
         this->on_Action_System_Pause();
+    }
 
     QString fileName =
         QFileDialog::getOpenFileName(this, tr("Open Save State"), "", tr("SaveState (*.dat);;All Files (*)"));
@@ -828,7 +857,9 @@ void MainWindow::on_Action_System_Load(void)
     }
 
     if (!isPaused)
+    {
         this->on_Action_System_Pause();
+    }
 }
 
 void MainWindow::on_Action_System_CurrentSaveState(int slot)
@@ -881,7 +912,9 @@ void MainWindow::on_Action_Options_Settings(void)
     bool isPaused = g_MupenApi.Core.isEmulationPaused();
 
     if (isRunning && !isPaused)
+    {
         this->on_Action_System_Pause();
+    }
 
     Dialog::SettingsDialog dialog(this);
     dialog.exec();
@@ -892,7 +925,9 @@ void MainWindow::on_Action_Options_Settings(void)
     this->ui_InEmulation(emulationThread->isRunning(), isPaused);
 
     if (isRunning && !isPaused)
+    {
         this->on_Action_System_Pause();
+    }
 }
 
 void MainWindow::on_Action_Help_Support(void)
@@ -918,7 +953,7 @@ void MainWindow::on_Emulation_Finished(bool ret)
     if (!ret)
     {
         this->ui_MessageBox("Error", "EmulationThread::run Failed", this->emulationThread->GetLastError());
-        // whatever we do on failure, 
+        // whatever we do on failure,
         // always return to the rombrowser
         this->ui_NoSwitchToRomBrowser = false;
         this->ui_InEmulation(false, false);
@@ -969,10 +1004,14 @@ void MainWindow::on_VidExt_ResizeWindow(int width, int height)
     width /= this->devicePixelRatioF();
 
     if (!this->menuBar->isHidden())
+    {
         height += this->menuBar->height();
+    }
 
     if (!this->statusBar()->isHidden())
+    {
         height += this->statusBar()->height();
+    }
 
     if (!this->ui_VidExtForceSetMode)
     {
@@ -981,12 +1020,18 @@ void MainWindow::on_VidExt_ResizeWindow(int width, int height)
     }
 
     if (this->isMaximized() || this->isMinimized())
+    {
         this->showNormal();
+    }
 
     if (this->ui_AllowManualResizing)
+    {
         this->resize(width, height);
+    }
     else
+    {
         this->setFixedSize(width, height);
+    }
 
     // we've force set the size once,
     // we can safely disable it now
