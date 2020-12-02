@@ -224,7 +224,7 @@ bool Core::plugin_Attach(Plugin *p)
 
     if (ret != M64ERR_SUCCESS)
     {
-        this->error_Message = "Core::plugin_Attach Failed: ";
+        this->error_Message = "Core::plugin_Attach ( " + p->GetPlugin_t().Name + " ) Failed: ";
         this->error_Message += M64P::Core.ErrorMessage(ret);
     }
 
