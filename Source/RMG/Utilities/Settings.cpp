@@ -267,7 +267,7 @@ Setting_t Settings::getSetting(SettingsID id)
     case SettingsID::Core_OverrideGameSpecificSettings:
         setting = {CORE_SECTION, "OverrideGameSpecificSettings", false, "", false};
         break;
-    // OVERLAY THESE
+
     case SettingsID::Core_RandomizeInterrupt:
         setting = {CORE_SECTION, "RandomizeInterrupt", true, "", false};
         break;
