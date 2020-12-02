@@ -203,6 +203,7 @@ bool Settings::SetValue(SettingsID id, QString section, QString value)
 
 #define GUI_SECTION "Rosalie's Mupen GUI"
 #define CORE_SECTION GUI_SECTION " Core"
+#define OVERLAY_SECTION CORE_SECTION " Overlay"
 #define KEYBIND_SECTION GUI_SECTION " KeyBindings"
 #define M64P_SECTION "Core"
 
@@ -242,16 +243,16 @@ Setting_t Settings::getSetting(SettingsID id)
         */
 
     case SettingsID::Core_GFX_Plugin:
-        setting = {CORE_SECTION, "GFX Plugin", "", "", false};
+        setting = {CORE_SECTION, "GFX_Plugin", "", "", false};
         break;
     case SettingsID::Core_AUDIO_Plugin:
-        setting = {CORE_SECTION, "Audio Plugin", "", "", false};
+        setting = {CORE_SECTION, "AUDIO_Plugin", "", "", false};
         break;
     case SettingsID::Core_INPUT_Plugin:
-        setting = {CORE_SECTION, "Input Plugin", "", "", false};
+        setting = {CORE_SECTION, "INPUT_Plugin", "", "", false};
         break;
     case SettingsID::Core_RSP_Plugin:
-        setting = {CORE_SECTION, "RSP Plugin", "", "", false};
+        setting = {CORE_SECTION, "RSP_Plugin", "", "", false};
         break;
 
     case SettingsID::Core_OverrideUserDirs:
@@ -269,22 +270,22 @@ Setting_t Settings::getSetting(SettingsID id)
         break;
 
     case SettingsID::Core_RandomizeInterrupt:
-        setting = {CORE_SECTION, "RandomizeInterrupt", true, "", false};
+        setting = {OVERLAY_SECTION, "RandomizeInterrupt", true, "", false};
         break;
     case SettingsID::Core_CPU_Emulator:
-        setting = {CORE_SECTION, "R4300Emulator", 2, "", false};
+        setting = {OVERLAY_SECTION, "CPU_Emulator", 2, "", false};
         break;
     case SettingsID::Core_DisableExtraMem:
-        setting = {CORE_SECTION, "DisableExtraMem", false, "", false};
+        setting = {OVERLAY_SECTION, "DisableExtraMem", false, "", false};
         break;
     case SettingsID::Core_EnableDebugger:
-        setting = {CORE_SECTION, "EnableDebugger", false, "", false};
+        setting = {OVERLAY_SECTION, "EnableDebugger", false, "", false};
         break;
     case SettingsID::Core_CountPerOp:
-        setting = {CORE_SECTION, "CountPerOp", 0, "", false};
+        setting = {OVERLAY_SECTION, "CountPerOp", 0, "", false};
         break;
     case SettingsID::Core_SiDmaDuration:
-        setting = {CORE_SECTION, "SiDmaDuration", -1, "", false};
+        setting = {OVERLAY_SECTION, "SiDmaDuration", -1, "", false};
         break;
 
     case SettingsID::Core_ScreenshotPath:
@@ -301,7 +302,7 @@ Setting_t Settings::getSetting(SettingsID id)
         break;
 
     case SettingsID::Core_64DD_RomFile:
-        setting = {CORE_SECTION, "64DD ROM File", "", "", false};
+        setting = {CORE_SECTION, "64DD_RomFile", "", "", false};
         break;
 
     case SettingsID::Game_DisableExtraMem:
@@ -318,26 +319,26 @@ Setting_t Settings::getSetting(SettingsID id)
         break;
 
     case SettingsID::Game_OverrideCoreSettings:
-        setting = {"", "Core_OverrideCoreSettings", false, "", false};
+        setting = {"", "OverrideCoreSettings", false, "", false};
         break;
     case SettingsID::Game_CPU_Emulator:
-        setting = {"", "Core_CPU_Emulator", 2, "", false};
+        setting = {"", "CPU_Emulator", 2, "", false};
         break;
     case SettingsID::Game_RandomizeInterrupt:
-        setting = {"", "Core_RandomizeInterrupt", true, "", false};
+        setting = {"", "RandomizeInterrupt", true, "", false};
         break;
 
     case SettingsID::Game_GFX_Plugin:
-        setting = {"", "GFX Plugin", "", "", false};
+        setting = {"", "GFX_Plugin", "", "", false};
         break;
     case SettingsID::Game_AUDIO_Plugin:
-        setting = {"", "Audio Plugin", "", "", false};
+        setting = {"", "AUDIO_Plugin", "", "", false};
         break;
     case SettingsID::Game_INPUT_Plugin:
-        setting = {"", "Input Plugin", "", "", false};
+        setting = {"", "INPUT_Plugin", "", "", false};
         break;
     case SettingsID::Game_RSP_Plugin:
-        setting = {"", "RSP Plugin", "", "", false};
+        setting = {"", "RSP_Plugin", "", "", false};
         break;
 
     case SettingsID::KeyBinding_OpenROM:
