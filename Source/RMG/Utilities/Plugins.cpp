@@ -25,13 +25,13 @@ Plugins::~Plugins()
 
 void Plugins::LoadSettings()
 {
-    SettingsID settingIds[]{SettingsID::Core_GFX_Plugin, SettingsID::Core_RSP_Plugin, SettingsID::Core_AUDIO_Plugin,
-                            SettingsID::Core_INPUT_Plugin};
-
     QString settingValue;
+    SettingsID settingsID;
+
     for (const Plugin_t &p : this->GetAvailablePlugins())
     {
-        settingValue = g_Settings.GetStringValue(settingIds[(int)p.Type]);
+        settingsID = this->pluginTypeToSettingsId(p.Type);
+        settingValue = g_Settings.GetStringValue(settingsID);
         if (settingValue == p.FileName || settingValue.isEmpty())
         {
             this->ChangePlugin(p);
@@ -44,23 +44,23 @@ QList<Plugin_t> Plugins::GetAvailablePlugins()
     QList<Plugin_t> plugins;
 
     plugins.append(g_MupenApi.Core.GetPlugins(PluginType::Gfx));
-    plugins.append(g_MupenApi.Core.GetPlugins(PluginType::Rsp));
     plugins.append(g_MupenApi.Core.GetPlugins(PluginType::Audio));
     plugins.append(g_MupenApi.Core.GetPlugins(PluginType::Input));
+    plugins.append(g_MupenApi.Core.GetPlugins(PluginType::Rsp));
 
     return plugins;
 }
 
 bool Plugins::ChangePlugin(Plugin_t plugin)
 {
-    SettingsID settingIds[]{SettingsID::Core_GFX_Plugin, SettingsID::Core_RSP_Plugin, SettingsID::Core_AUDIO_Plugin,
-                            SettingsID::Core_INPUT_Plugin};
     bool ret;
+    SettingsID settingsID;
 
     ret = g_MupenApi.Core.SetPlugin(plugin);
     if (ret)
     {
-        g_Settings.SetValue(settingIds[(int)plugin.Type], plugin.FileName);
+        settingsID = this->pluginTypeToSettingsId(plugin.Type);
+        g_Settings.SetValue(settingsID, plugin.FileName);
     }
 
     return ret;
@@ -71,4 +71,28 @@ Plugin_t Plugins::GetCurrentPlugin(PluginType type)
     Plugin_t plugin = {0};
     g_MupenApi.Core.GetCurrentPlugin(type, &plugin);
     return plugin;
+}
+
+SettingsID Plugins::pluginTypeToSettingsId(PluginType type)
+{
+    SettingsID id;
+
+    switch (type)
+    {
+    default:
+    case M64P::Wrapper::PluginType::Gfx:
+        id = SettingsID::Core_GFX_Plugin;
+        break;
+    case M64P::Wrapper::PluginType::Audio:
+        id = SettingsID::Core_AUDIO_Plugin;
+        break;
+    case M64P::Wrapper::PluginType::Input:
+        id = SettingsID::Core_INPUT_Plugin;
+        break;
+    case M64P::Wrapper::PluginType::Rsp:
+        id = SettingsID::Core_RSP_Plugin;
+        break;
+    }
+
+    return id;
 }

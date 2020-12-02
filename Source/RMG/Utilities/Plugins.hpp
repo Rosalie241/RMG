@@ -11,6 +11,7 @@
 #define PLUGINS_HPP
 
 #include "M64P/Wrapper/Types.hpp"
+#include "SettingsID.hpp"
 
 #include <QList>
 
@@ -31,6 +32,8 @@ class Plugins
 
     bool ChangePlugin(Plugin_t);
     Plugin_t GetCurrentPlugin(PluginType);
+  private:
+    SettingsID pluginTypeToSettingsId(PluginType);
 };
 }; // namespace Utilities
 
