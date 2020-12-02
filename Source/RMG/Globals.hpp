@@ -4,7 +4,7 @@
 #include "M64P/Wrapper/Api.hpp"
 #include "Thread/EmulationThread.hpp"
 #include "UserInterface/Widget/OGLWidget.hpp"
-#include "Utilities//Settings.hpp"
+#include "Utilities/Settings.hpp"
 #include "Utilities/Logger.hpp"
 #include "Utilities/Plugins.hpp"
 
