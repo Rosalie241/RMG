@@ -301,7 +301,7 @@ Setting_t Settings::getSetting(SettingsID id)
         break;
 
     case SettingsID::Core_64DD_RomFile:
-        setting = {M64P_SECTION, "64DD ROM File", "", "", false};
+        setting = {CORE_SECTION, "64DD ROM File", "", "", false};
         break;
 
     case SettingsID::Game_DisableExtraMem:
