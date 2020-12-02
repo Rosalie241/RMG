@@ -14,3 +14,6 @@ build_script:
     
 artifacts:
   - path: Bin\*.exe
+
+cache:
+  - Build
