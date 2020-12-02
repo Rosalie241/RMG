@@ -264,21 +264,7 @@ void SettingsDialog::loadDirectorySettings(void)
 
 void SettingsDialog::loadKeybindSettings(void)
 {
-    KeyBindButton *buttons[] = {this->openRomKeyButton,   this->openComboKeyButton,      this->startEmuKeyButton,
-                                this->endEmuKeyButton,    this->refreshRomListKeyButton, this->exitKeyButton,
-
-                                this->softResetKeyButton, this->hardResetKeyButton,      this->generateBitmapKeyButton,
-                                this->limitFPSKeyButton,  this->swapDiskKeyButton,       this->saveStateKeyButton,
-                                this->saveAsKeyButton,    this->loadStateKeyButton,      this->loadKeyButton,
-                                this->cheatsKeyButton,    this->gsButtonKeyButton,       this->fullscreenKeyButton,
-                                this->settingsKeyButton};
-
-    SettingsID id;
-    for (int i = 0; i < (sizeof(buttons) / sizeof(buttons[0])); i++)
-    {
-        id = (SettingsID)(SettingsID::KeyBinding_OpenROM + i);
-        buttons[i]->setText(g_Settings.GetStringValue(id));
-    }
+    commonKeyBindSettings(0);
 }
 
 void SettingsDialog::loadBehaviorSettings(void)
@@ -370,21 +356,7 @@ void SettingsDialog::loadDefaultDirectorySettings(void)
 
 void SettingsDialog::loadDefaultKeybindSettings(void)
 {
-    KeyBindButton *buttons[] = {this->openRomKeyButton,   this->openComboKeyButton,      this->startEmuKeyButton,
-                                this->endEmuKeyButton,    this->refreshRomListKeyButton, this->exitKeyButton,
-
-                                this->softResetKeyButton, this->hardResetKeyButton,      this->generateBitmapKeyButton,
-                                this->limitFPSKeyButton,  this->swapDiskKeyButton,       this->saveStateKeyButton,
-                                this->saveAsKeyButton,    this->loadStateKeyButton,      this->loadKeyButton,
-                                this->cheatsKeyButton,    this->gsButtonKeyButton,       this->fullscreenKeyButton,
-                                this->settingsKeyButton};
-
-    SettingsID id;
-    for (int i = 0; i < (sizeof(buttons) / sizeof(buttons[0])); i++)
-    {
-        id = (SettingsID)(SettingsID::KeyBinding_OpenROM + i);
-        buttons[i]->setText(g_Settings.GetDefaultStringValue(id));
-    }
+    commonKeyBindSettings(1);
 }
 
 void SettingsDialog::loadDefaultBehaviorSettings(void)
@@ -528,25 +500,53 @@ void SettingsDialog::saveDirectorySettings(void)
 
 void SettingsDialog::saveKeybindSettings(void)
 {
-    KeyBindButton *buttons[] = {
-        this->openRomKeyButton,        this->openComboKeyButton,  this->startEmuKeyButton,  this->endEmuKeyButton,
-        this->refreshRomListKeyButton, this->exitKeyButton,       this->softResetKeyButton, this->hardResetKeyButton,
-        this->generateBitmapKeyButton, this->limitFPSKeyButton,   this->swapDiskKeyButton,  this->saveStateKeyButton,
-        this->saveAsKeyButton,         this->loadStateKeyButton,  this->loadKeyButton,      this->cheatsKeyButton,
-        this->gsButtonKeyButton,       this->fullscreenKeyButton, this->settingsKeyButton};
-
-    SettingsID id;
-    for (int i = 0; i < (sizeof(buttons) / sizeof(buttons[0])); i++)
-    {
-        id = (SettingsID)(SettingsID::KeyBinding_OpenROM + i);
-        g_Settings.SetValue(id, buttons[i]->text());
-    }
+    commonKeyBindSettings(2);
 }
 
 void SettingsDialog::saveBehaviorSettings(void)
 {
     g_Settings.SetValue(SettingsID::GUI_AllowManualResizing, this->manualResizingCheckBox->isChecked());
     g_Settings.SetValue(SettingsID::GUI_HideCursorInEmulation, this->hideCursorCheckBox->isChecked());
+}
+
+void SettingsDialog::commonKeyBindSettings(int action)
+{
+    KeyBindButton *buttons[] = {this->openRomKeyButton,   this->openComboKeyButton,      this->startEmuKeyButton,
+                                this->endEmuKeyButton,    this->refreshRomListKeyButton, this->exitKeyButton,
+
+                                this->softResetKeyButton, this->hardResetKeyButton,      this->generateBitmapKeyButton,
+                                this->limitFPSKeyButton,  this->swapDiskKeyButton,       this->saveStateKeyButton,
+                                this->saveAsKeyButton,    this->loadStateKeyButton,      this->loadKeyButton,
+                                this->cheatsKeyButton,    this->gsButtonKeyButton,       this->fullscreenKeyButton,
+                                this->settingsKeyButton};
+
+    SettingsID settings[] = {SettingsID::KeyBinding_OpenROM,        SettingsID::KeyBinding_OpenCombo,
+                             SettingsID::KeyBinding_StartEmulation, SettingsID::KeyBinding_EndEmulation,
+                             SettingsID::KeyBinding_RefreshROMList, SettingsID::KeyBinding_Exit,
+                             SettingsID::KeyBinding_SoftReset,      SettingsID::KeyBinding_HardReset,
+                             SettingsID::KeyBinding_GenerateBitmap, SettingsID::KeyBinding_LimitFPS,
+                             SettingsID::KeyBinding_SwapDisk,       SettingsID::KeyBinding_SaveState,
+                             SettingsID::KeyBinding_SaveAs,         SettingsID::KeyBinding_LoadState,
+                             SettingsID::KeyBinding_Load,           SettingsID::KeyBinding_Cheats,
+                             SettingsID::KeyBinding_GSButton,       SettingsID::KeyBinding_Fullscreen,
+                             SettingsID::KeyBinding_Settings};
+
+    for (int i = 0; i < (sizeof(buttons) / sizeof(buttons[0])); i++)
+    {
+        switch (action)
+        {
+        default:
+        case 0:
+            buttons[i]->setText(g_Settings.GetStringValue(settings[i]));
+            break;
+        case 1:
+            buttons[i]->setText(g_Settings.GetDefaultStringValue(settings[i]));
+            break;
+        case 2:
+            g_Settings.SetValue(settings[i], buttons[i]->text());
+            break;
+        }
+    }
 }
 
 void SettingsDialog::hideEmulationInfoText(void)

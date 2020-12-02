@@ -73,6 +73,8 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void saveKeybindSettings(void);
     void saveBehaviorSettings(void);
 
+    void commonKeyBindSettings(int);
+
     void hideEmulationInfoText(void);
 
     void chooseDirectory(QLineEdit *);
