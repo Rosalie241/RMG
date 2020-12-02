@@ -227,7 +227,7 @@ Setting_t Settings::getSetting(SettingsID id)
         setting = {GUI_SECTION, "SettingsDialogHeight", 0, "", false};
         break;
     case SettingsID::GUI_AllowManualResizing:
-        setting = {GUI_SECTION, "AllowManualResizing", false, "", false};
+        setting = {GUI_SECTION, "AllowManualResizing", true, "", false};
         break;
     case SettingsID::GUI_HideCursorInEmulation:
         setting = {GUI_SECTION, "HideCursorInEmulation", false, "", false};
