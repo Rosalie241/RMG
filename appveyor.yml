@@ -16,4 +16,4 @@ artifacts:
   - path: Bin\*.exe
 
 cache:
-  - Build
+  - Build\Release\Source\3rdParty\mupen64plus-video-GLideN64\projects\cmake
