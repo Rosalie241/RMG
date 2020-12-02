@@ -655,13 +655,12 @@ void MainWindow::on_Action_File_OpenRom(void)
         this->on_Action_System_Pause();
     }
 
-    QFileDialog dialog;
+    QFileDialog dialog(this);
     int ret;
     QString dir;
 
     dialog.setFileMode(QFileDialog::FileMode::ExistingFile);
-    dialog.setNameFilter("N64 Roms (*.n64 *.z64 *.v64 *.ndd *.d64)");
-    dialog.setWindowIcon(this->ui_Icon);
+    dialog.setNameFilter("N64/64DD ROM (*.n64 *.z64 *.v64 *.ndd *.d64)");
 
     ret = dialog.exec();
     if (!ret)
