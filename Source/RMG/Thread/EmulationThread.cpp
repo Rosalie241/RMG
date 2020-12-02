@@ -25,13 +25,18 @@ void EmulationThread::SetRomFile(QString file)
     this->rom_File = file;
 }
 
+void EmulationThread::SetDiskFile(QString file)
+{
+    this->disk_File = file;
+}
+
 void EmulationThread::run(void)
 {
     emit this->on_Emulation_Started();
 
     bool ret;
 
-    ret = g_MupenApi.Core.LaunchEmulation(this->rom_File);
+    ret = g_MupenApi.Core.LaunchEmulation(this->rom_File, this->disk_File);
 
     if (!ret)
         this->error_Message = g_MupenApi.Core.GetLastError();

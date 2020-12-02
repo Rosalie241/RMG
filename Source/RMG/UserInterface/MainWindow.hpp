@@ -109,6 +109,7 @@ class MainWindow : public QMainWindow
 
     void emulationThread_Init(void);
     void emulationThread_Connect(void);
+    void emulationThread_Launch(QString, QString);
     void emulationThread_Launch(QString);
 
     void menuBar_Actions_Init(void);

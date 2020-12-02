@@ -300,6 +300,10 @@ Setting_t Settings::getSetting(SettingsID id)
         setting = {M64P_SECTION, "SharedDataPath", "Data", "", true};
         break;
 
+    case SettingsID::Core_64DD_RomFile:
+        setting = {M64P_SECTION, "64DD ROM File", "", "", false};
+        break;
+
     case SettingsID::Game_DisableExtraMem:
         setting = {"", "DisableExtraMem", false, "", false};
         break;

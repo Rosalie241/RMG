@@ -49,6 +49,9 @@ enum SettingsID
     Core_UserDataDirOverride,
     Core_UserCacheDirOverride,
 
+    // Core 64DD ROM Settings
+    Core_64DD_RomFile,
+
     // (mupen64plus) Core Settings
     Core_OverrideGameSpecificSettings,
     Core_RandomizeInterrupt,

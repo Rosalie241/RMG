@@ -55,6 +55,22 @@ bool Core::Init(m64p_dynlib_handle handle)
         return false;
     }
 
+    media_loader = {
+        (void *)this,
+        media_loader_get_gb_cart_rom,
+        media_loader_get_gb_cart_ram,
+        media_loader_get_dd_rom,
+        media_loader_get_dd_disk
+    };
+
+    ret = M64P::Core.DoCommand(M64CMD_SET_MEDIA_LOADER, sizeof(media_loader), &media_loader);
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_Message = "Core::Init M64P::Core.DoCommand(M64CMD_SET_MEDIA_LOADER) Failed: ";
+        this->error_Message += M64P::Core.ErrorMessage(ret);
+        return false;
+    }
+
     this->handle = handle;
 
     return true;
@@ -168,6 +184,36 @@ M64P::Wrapper::Plugin *Core::plugin_Get(PluginType type)
     default:
         return nullptr;
     }
+}
+
+char *Core::media_loader_get_gb_cart_rom(void *_this, int)
+{
+    return NULL;
+}
+
+char *Core::media_loader_get_gb_cart_ram(void *_this, int)
+{
+    return NULL;
+}
+
+char *Core::media_loader_get_dd_rom(void *_this)
+{
+    QString file = g_Settings.GetStringValue(SettingsID::Core_64DD_RomFile);
+
+    if (file.isEmpty())
+        return NULL;
+
+    return strdup(file.toStdString().c_str());;
+}
+
+char *Core::media_loader_get_dd_disk(void *_this)
+{
+    QString file = ((Core*)_this)->rom_Combo_Disk;
+
+    if (file.isEmpty())
+        return NULL;
+
+    return strdup(file.toStdString().c_str());
 }
 
 bool Core::plugin_Attach(Plugin *p)
@@ -380,6 +426,13 @@ bool Core::LaunchEmulation(QString file)
         return false;
 
     return true;
+}
+
+bool Core::LaunchEmulation(QString cartRom, QString diskRom)
+{
+    this->rom_Combo_Disk = diskRom;
+
+    return this->LaunchEmulation(cartRom);
 }
 
 bool Core::StopEmulation(void)
@@ -678,7 +731,7 @@ bool Core::rom_ApplyPluginOverlay(void)
         value = g_Settings.GetStringValue(settingIdArray[i], section);
         if (!value.isEmpty())
         {
-            Plugin_t plugin = { .FileName = value };
+            Plugin_t plugin = {.FileName = value};
             if (!this->SetPlugin(plugin))
                 return false;
         }

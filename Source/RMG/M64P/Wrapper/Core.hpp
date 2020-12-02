@@ -40,6 +40,7 @@ class Core
     bool GetDefaultRomInfo(RomInfo_t *);
 
     bool LaunchEmulation(QString);
+    bool LaunchEmulation(QString, QString);
     bool StopEmulation(void);
     bool PauseEmulation(void);
     bool ResumeEmulation(void);
@@ -72,6 +73,15 @@ class Core
 
   private:
     QString error_Message;
+
+    m64p_media_loader media_loader;
+
+    QString rom_Combo_Disk;
+
+    static char* media_loader_get_gb_cart_rom(void*, int);
+    static char* media_loader_get_gb_cart_ram(void*, int);
+    static char* media_loader_get_dd_rom(void*);
+    static char* media_loader_get_dd_disk(void*);
 
     m64p_dynlib_handle handle;
 

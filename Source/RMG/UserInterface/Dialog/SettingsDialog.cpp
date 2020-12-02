@@ -22,6 +22,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
 
     this->treeWidget->topLevelItem(0)->setSelected(true);
     this->treeWidget->expandAll();
+    this->treeWidget->setItemsExpandable(false);
 
     this->inGame = g_EmuThread->isRunning();
     if (inGame)

@@ -27,6 +27,7 @@ class EmulationThread : public QThread
     ~EmulationThread(void);
 
     void SetRomFile(QString);
+    void SetDiskFile(QString);
 
     void run(void) override;
 
@@ -34,6 +35,7 @@ class EmulationThread : public QThread
 
   private:
     QString rom_File;
+    QString disk_File;
     QString error_Message;
 
   signals:

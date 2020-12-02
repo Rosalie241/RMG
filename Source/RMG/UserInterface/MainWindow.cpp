@@ -375,7 +375,7 @@ void MainWindow::emulationThread_Connect(void)
             Qt::BlockingQueuedConnection);
 }
 
-void MainWindow::emulationThread_Launch(QString file)
+void MainWindow::emulationThread_Launch(QString cartRom, QString diskRom)
 {
     g_MupenApi.Config.Save();
 
@@ -395,8 +395,14 @@ void MainWindow::emulationThread_Launch(QString file)
     this->ui_Widget_OpenGL->SetAllowResizing(this->ui_AllowManualResizing);
     this->ui_Widget_OpenGL->SetHideCursor(this->ui_HideCursorInEmulation);
 
-    this->emulationThread->SetRomFile(file);
+    this->emulationThread->SetRomFile(cartRom);
+    this->emulationThread->SetDiskFile(diskRom);
     this->emulationThread->start();
+}
+
+void MainWindow::emulationThread_Launch(QString file)
+{
+    this->emulationThread_Launch(file, "");
 }
 
 void MainWindow::menuBar_Actions_Init(void)
@@ -654,7 +660,7 @@ void MainWindow::on_Action_File_OpenRom(void)
     QString dir;
 
     dialog.setFileMode(QFileDialog::FileMode::ExistingFile);
-    dialog.setNameFilter("N64 Roms (*.n64 *.z64 *.v64)");
+    dialog.setNameFilter("N64 Roms (*.n64 *.z64 *.v64 *.ndd *.d64)");
     dialog.setWindowIcon(this->ui_Icon);
 
     ret = dialog.exec();
@@ -677,6 +683,52 @@ void MainWindow::on_Action_File_OpenRom(void)
 
 void MainWindow::on_Action_File_OpenCombo(void)
 {
+    bool isRunning = g_MupenApi.Core.IsEmulationRunning();
+    bool isPaused = g_MupenApi.Core.isEmulationPaused();
+
+    if (isRunning && !isPaused)
+    {
+        this->on_Action_System_Pause();
+    }
+
+    QFileDialog dialog(this);
+    int ret;
+    QString dir, cartRom, diskRom;
+
+    dialog.setFileMode(QFileDialog::FileMode::ExistingFile);
+    dialog.setNameFilter("N64 ROM (*.n64 *.z64 *.v64)");
+
+    ret = dialog.exec();
+    if (!ret)
+    {
+        if (isRunning && !isPaused)
+        {
+            this->on_Action_System_Pause();
+        }
+        return;
+    }
+
+    cartRom = dialog.selectedFiles().first();
+
+    dialog.setNameFilter("64DD ROM (*.ndd *.d64)");
+    ret = dialog.exec();
+    if (!ret)
+    {
+        if (isRunning && !isPaused)
+        {
+            this->on_Action_System_Pause();
+        }
+        return;
+    }
+
+    diskRom = dialog.selectedFiles().first();
+
+    if (this->ui_Widgets->currentIndex() != 0)
+    {
+        this->ui_NoSwitchToRomBrowser = true;
+    }
+
+    this->emulationThread_Launch(cartRom, diskRom);
 }
 
 void MainWindow::on_Action_File_EndEmulation(void)
