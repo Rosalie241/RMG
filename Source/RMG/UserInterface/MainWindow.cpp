@@ -454,7 +454,7 @@ void MainWindow::menuBar_Actions_Setup(bool inEmulation, bool isPaused)
     keyBinding = g_Settings.GetStringValue(SettingsID::KeyBinding_OpenCombo);
     this->action_File_OpenCombo->setText("Open Combo");
     this->action_File_OpenCombo->setShortcut(QKeySequence(keyBinding));
-    this->action_File_RomInfo->setText("Rom Info...");
+    this->action_File_RomInfo->setText("ROM Info....");
     keyBinding = g_Settings.GetStringValue(SettingsID::KeyBinding_StartEmulation);
     this->action_File_StartEmulation->setText("Start Emulation");
     this->action_File_StartEmulation->setShortcut(QKeySequence(keyBinding));
@@ -660,7 +660,7 @@ void MainWindow::on_Action_File_OpenRom(void)
     QString dir;
 
     dialog.setFileMode(QFileDialog::FileMode::ExistingFile);
-    dialog.setNameFilter("N64/64DD ROM (*.n64 *.z64 *.v64 *.ndd *.d64)");
+    dialog.setNameFilter("N64 ROMs & Disks (*.n64 *.z64 *.v64 *.ndd *.d64)");
 
     ret = dialog.exec();
     if (!ret)
@@ -695,7 +695,7 @@ void MainWindow::on_Action_File_OpenCombo(void)
     QString dir, cartRom, diskRom;
 
     dialog.setFileMode(QFileDialog::FileMode::ExistingFile);
-    dialog.setNameFilter("N64 ROM (*.n64 *.z64 *.v64)");
+    dialog.setNameFilter("N64 ROMs (*.n64 *.z64 *.v64)");
 
     ret = dialog.exec();
     if (!ret)
@@ -709,7 +709,7 @@ void MainWindow::on_Action_File_OpenCombo(void)
 
     cartRom = dialog.selectedFiles().first();
 
-    dialog.setNameFilter("64DD ROM (*.ndd *.d64)");
+    dialog.setNameFilter("N64DD Disk Image (*.ndd *.d64)");
     ret = dialog.exec();
     if (!ret)
     {
