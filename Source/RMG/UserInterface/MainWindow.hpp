@@ -87,6 +87,9 @@ class MainWindow : public QMainWindow
     QByteArray ui_Geometry;
     bool ui_Geometry_Saved;
 
+    QByteArray vidExt_Geometry;
+    bool vidExt_Geometry_Saved;
+
     bool ui_AllowManualResizing;
     bool ui_HideCursorInEmulation;
 
@@ -158,7 +161,8 @@ class MainWindow : public QMainWindow
     void on_VidExt_Init(void);
     void on_VidExt_SetupOGL(QSurfaceFormat, QThread *);
     void on_VidExt_SetMode(int, int, int, int, int);
-    void on_VidExt_SetModeWithRate(int, int, int, int, int, int);
+    void on_VidExt_SetWindowedModeWithRate(int, int, int, int, int);
+    void on_VidExt_SetFullscreenModeWithRate(int, int, int, int, int);
     void on_VidExt_ResizeWindow(int, int);
     void on_VidExt_SetCaption(QString);
     void on_VidExt_ToggleFS(void);

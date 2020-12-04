@@ -72,7 +72,7 @@ void OGLWidget::resizeEvent(QResizeEvent *event)
 
 void OGLWidget::timerEvent(QTimerEvent *event)
 {
-    g_MupenApi.Core.SetVideoSize(this->width, this->height);
+    g_MupenApi.Core.SetVideoSize(this->width, this->height, false);
 
     // remove current timer
     this->killTimer(this->timerId);

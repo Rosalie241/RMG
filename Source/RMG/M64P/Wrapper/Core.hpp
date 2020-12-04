@@ -67,7 +67,9 @@ class Core
     bool SetKeyDown(int, int);
     bool SetKeyUp(int, int);
 
-    bool SetVideoSize(int, int);
+    bool SetVideoSize(int, int, bool);
+
+    bool ToggleFullscreen(void);
 
     QString GetLastError(void);
 

@@ -14,6 +14,7 @@
 #include <QOpenGLContext>
 #include <QThread>
 #include <iostream>
+#include <QScreen>
 
 static QSurfaceFormat format;
 static QThread *renderThread;
@@ -66,8 +67,9 @@ m64p_error VidExt_ListModes(m64p_2d_size *SizeArray, int *NumSizes)
 {
     std::cout << __FUNCTION__ << std::endl;
 
-    SizeArray[0].uiHeight = 1080;
-    SizeArray[0].uiWidth = 1920;
+    QSize size = QApplication::primaryScreen()->size();
+    SizeArray[0].uiHeight = size.height();
+    SizeArray[0].uiWidth = size.width();
     *NumSizes = 1;
 
     return M64ERR_SUCCESS;
@@ -77,7 +79,7 @@ m64p_error VidExt_ListRates(m64p_2d_size Size, int *NumRates, int *Rates)
 {
     std::cout << __FUNCTION__ << std::endl;
 
-    Rates[0] = 60;
+    Rates[0] = QApplication::primaryScreen()->refreshRate();
     *NumRates = 1;
 
     return M64ERR_SUCCESS;
@@ -101,7 +103,18 @@ m64p_error VidExt_SetModeWithRate(int Width, int Height, int RefreshRate, int Bi
     if (!ogl_setup)
         VidExt_OglSetup();
 
-    g_EmuThread->on_VidExt_SetModeWithRate(Width, Height, RefreshRate, BitsPerPixel, ScreenMode, Flags);
+    switch (ScreenMode)
+    {
+        case M64VIDEO_NONE:
+            return M64ERR_INPUT_INVALID;
+        case M64VIDEO_WINDOWED:
+            g_EmuThread->on_VidExt_SetWindowedModeWithRate(Width, Height, RefreshRate, BitsPerPixel, Flags);
+            break;
+        case M64VIDEO_FULLSCREEN:
+            g_EmuThread->on_VidExt_SetFullscreenModeWithRate(Width, Height, RefreshRate, BitsPerPixel, Flags);
+            break;
+    }
+
     return M64ERR_SUCCESS;
 }
 

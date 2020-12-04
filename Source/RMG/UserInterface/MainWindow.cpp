@@ -363,8 +363,10 @@ void MainWindow::emulationThread_Connect(void)
             Qt::BlockingQueuedConnection);
     connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_SetMode, this, &MainWindow::on_VidExt_SetMode,
             Qt::BlockingQueuedConnection);
-    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_SetModeWithRate, this,
-            &MainWindow::on_VidExt_SetModeWithRate, Qt::BlockingQueuedConnection);
+    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_SetWindowedModeWithRate, this,
+            &MainWindow::on_VidExt_SetWindowedModeWithRate, Qt::BlockingQueuedConnection);
+    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_SetFullscreenModeWithRate, this,
+            &MainWindow::on_VidExt_SetFullscreenModeWithRate, Qt::BlockingQueuedConnection);
     connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_ResizeWindow, this,
             &MainWindow::on_VidExt_ResizeWindow, Qt::BlockingQueuedConnection);
     connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_SetCaption, this,
@@ -559,6 +561,7 @@ void MainWindow::menuBar_Actions_Connect(void)
     connect(this->action_System_Cheats, &QAction::triggered, this, &MainWindow::on_Action_System_Cheats);
     connect(this->action_System_GSButton, &QAction::triggered, this, &MainWindow::on_Action_System_GSButton);
 
+    connect(this->action_Options_FullScreen, &QAction::triggered, this, &MainWindow::on_Action_Options_FullScreen);
     connect(this->action_Options_ConfigGfx, &QAction::triggered, this, &MainWindow::on_Action_Options_ConfigGfx);
     connect(this->action_Options_ConfigAudio, &QAction::triggered, this, &MainWindow::on_Action_Options_ConfigAudio);
     connect(this->action_Options_ConfigRsp, &QAction::triggered, this, &MainWindow::on_Action_Options_ConfigRsp);
@@ -935,6 +938,10 @@ void MainWindow::on_Action_System_GSButton(void)
 
 void MainWindow::on_Action_Options_FullScreen(void)
 {
+    if (!g_MupenApi.Core.ToggleFullscreen())
+    {
+        this->ui_MessageBox("Error", "Api::Core::ToggleFullscreen Failed", g_MupenApi.Core.GetLastError());
+    }
 }
 
 void MainWindow::on_Action_Options_ConfigGfx(void)
@@ -1018,6 +1025,7 @@ void MainWindow::on_RomBrowser_Selected(QString file)
 
 void MainWindow::on_VidExt_Init(void)
 {
+    this->vidExt_Geometry_Saved = false;
     this->ui_SaveGeometry();
     this->ui_VidExtForceSetMode = true;
     this->ui_InEmulation(true, false);
@@ -1039,9 +1047,53 @@ void MainWindow::on_VidExt_SetMode(int width, int height, int bps, int mode, int
     this->on_VidExt_ResizeWindow(width, height);
 }
 
-void MainWindow::on_VidExt_SetModeWithRate(int width, int height, int refresh, int bps, int mode, int flags)
+void MainWindow::on_VidExt_SetWindowedModeWithRate(int width, int height, int refresh, int bps, int flags)
 {
-    std::cout << "on_VidExt_SetModeWithRate" << std::endl;
+    // load window geometry
+    if (this->vidExt_Geometry_Saved)
+    {
+        this->restoreGeometry(this->vidExt_Geometry);
+        this->vidExt_Geometry_Saved = false;
+
+        // force 'refresh' the video plugin
+        g_MupenApi.Core.SetVideoSize(width, height, true);
+    }
+
+    if (this->isFullScreen())
+        this->showNormal();
+
+    if (this->menuBar->isHidden())
+        this->menuBar->show();
+
+    if (this->statusBar()->isHidden())
+        this->statusBar()->show();
+
+    std::cout << "on_VidExt_SetWindowedModeWithRate" << std::endl;
+    this->on_VidExt_ResizeWindow(width, height);
+}
+
+void MainWindow::on_VidExt_SetFullscreenModeWithRate(int width, int height, int refresh, int bps, int flags)
+{
+    // save window geometry
+    if (!this->vidExt_Geometry_Saved)
+    {
+        this->vidExt_Geometry = this->saveGeometry();
+        this->vidExt_Geometry_Saved = true;
+
+        // force 'refresh' the video plugin
+        g_MupenApi.Core.SetVideoSize(width, height, true);
+    }
+
+    if (!this->isFullScreen())
+        this->showFullScreen();
+
+    if (!this->menuBar->isHidden())
+        this->menuBar->hide();
+
+    if (!this->statusBar()->isHidden())
+        this->statusBar()->hide();
+
+    std::cout << "on_VidExt_SetFullscreenModeWithRate" << std::endl;
     this->on_VidExt_ResizeWindow(width, height);
 }
 
