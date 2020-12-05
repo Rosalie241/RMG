@@ -115,9 +115,10 @@ class MainWindow : public QMainWindow
     void emulationThread_Launch(QString, QString);
     void emulationThread_Launch(QString);
 
-    void menuBar_Actions_Init(void);
-    void menuBar_Actions_Setup(bool, bool);
-    void menuBar_Actions_Connect(void);
+    void ui_Actions_Init(void);
+    void ui_Actions_Setup(bool, bool);
+    void ui_Actions_Add(void);
+    void ui_Actions_Connect(void);
 
   private slots:
     void on_EventFilter_KeyPressed(QKeyEvent *);

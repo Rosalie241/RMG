@@ -59,6 +59,10 @@ bool MainWindow::Init(void)
     this->ui_Init();
     this->ui_Setup();
 
+    this->ui_Actions_Init();
+    this->ui_Actions_Connect();
+    this->ui_Actions_Add();
+
     this->menuBar_Init();
     this->menuBar_Setup(false, false);
 
@@ -233,13 +237,11 @@ void MainWindow::ui_LoadGeometry(void)
 void MainWindow::menuBar_Init(void)
 {
     this->menuBar = new QMenuBar(this);
-    this->menuBar_Actions_Init();
-    this->menuBar_Actions_Connect();
 }
 
 void MainWindow::menuBar_Setup(bool inEmulation, bool isPaused)
 {
-    this->menuBar_Actions_Setup(inEmulation, isPaused);
+    this->ui_Actions_Setup(inEmulation, isPaused);
 
     this->menuBar->clear();
 
@@ -407,7 +409,7 @@ void MainWindow::emulationThread_Launch(QString file)
     this->emulationThread_Launch(file, "");
 }
 
-void MainWindow::menuBar_Actions_Init(void)
+void MainWindow::ui_Actions_Init(void)
 {
     this->action_File_OpenRom = new QAction(this);
     this->action_File_OpenCombo = new QAction(this);
@@ -447,7 +449,7 @@ void MainWindow::menuBar_Actions_Init(void)
     this->action_Help_About = new QAction(this);
 }
 
-void MainWindow::menuBar_Actions_Setup(bool inEmulation, bool isPaused)
+void MainWindow::ui_Actions_Setup(bool inEmulation, bool isPaused)
 {
     QString keyBinding;
     keyBinding = g_Settings.GetStringValue(SettingsID::KeyBinding_OpenROM);
@@ -538,7 +540,38 @@ void MainWindow::menuBar_Actions_Setup(bool inEmulation, bool isPaused)
     this->action_Help_About->setText("About");
 }
 
-void MainWindow::menuBar_Actions_Connect(void)
+void MainWindow::ui_Actions_Add(void)
+{
+    this->addAction(this->action_File_OpenRom);
+    this->addAction(this->action_File_OpenCombo);
+    this->addAction(this->action_File_EndEmulation);
+    this->addAction(this->action_File_ChooseDirectory);
+    this->addAction(this->action_File_RefreshRomList);
+    this->addAction(this->action_File_Exit);
+    this->addAction(this->action_System_SoftReset);
+    this->addAction(this->action_System_HardReset);
+    this->addAction(this->action_System_Pause);
+    this->addAction(this->action_System_GenerateBitmap);
+    this->addAction(this->action_System_LimitFPS);
+    this->addAction(this->action_System_SwapDisk);
+    this->addAction(this->action_System_SaveState);
+    this->addAction(this->action_System_SaveAs);
+    this->addAction(this->action_System_LoadState);
+    this->addAction(this->action_System_Load);
+    this->addAction(this->action_System_Cheats);
+    this->addAction(this->action_System_GSButton);
+    this->addAction(this->action_Options_FullScreen);
+    this->addAction(this->action_Options_ConfigGfx);
+    this->addAction(this->action_Options_ConfigAudio);
+    this->addAction(this->action_Options_ConfigRsp);
+    this->addAction(this->action_Options_ConfigControl);
+    this->addAction(this->action_Options_Settings);
+    this->addAction(this->action_Help_Support);
+    this->addAction(this->action_Help_HomePage);
+    this->addAction(this->action_Help_About);
+}
+
+void MainWindow::ui_Actions_Connect(void)
 {
     connect(this->action_File_OpenRom, &QAction::triggered, this, &MainWindow::on_Action_File_OpenRom);
     connect(this->action_File_OpenCombo, &QAction::triggered, this, &MainWindow::on_Action_File_OpenCombo);
