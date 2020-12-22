@@ -19,6 +19,8 @@
 #include <QStandardItemModel>
 #include <QString>
 #include <QTableView>
+#include <QMenu>
+#include <QAction>
 
 #define MAX_ROM_INFO 50
 
@@ -40,6 +42,22 @@ class RomBrowserWidget : public QTableView
 
   private:
     QString directory;
+
+    QMenu* contextMenu;
+    QAction* action_PlayGame;
+    QAction* action_PlayGameWithDisk;
+    QAction* action_RefreshRomList;
+    QAction* action_ChooseRomDirectory;
+    QAction* action_RomInformation;
+    QAction* action_EditGameSettings;
+    QAction* action_EditCheats;
+
+    void contextMenu_Init(void);
+    void contextMenu_Setup(void);
+
+    void contextMenu_Actions_Init(void);
+    void contextMenu_Actions_Setup(void);
+    void contextMenu_Actions_Connect(void);
 
     QStandardItemModel *model_Model;
     QStringList model_LabelList;
@@ -71,6 +89,17 @@ class RomBrowserWidget : public QTableView
     void dragMoveEvent(QDragMoveEvent *);
     void dragEnterEvent(QDragEnterEvent *);
     void dropEvent(QDropEvent *);
+
+  private slots:
+    void customContextMenuRequested(QPoint);
+
+    void on_Action_PlayGame(void);
+    void on_Action_PlayGameWithDisk(void);
+    void on_Action_RefreshRomList(void);
+    void on_Action_ChooseRomDirectory(void);
+    void on_Action_RomInformation(void);
+    void on_Action_EditGameSettings(void);
+    void on_Action_EditCheats(void);
 
   public slots:
     void on_Row_DoubleClicked(const QModelIndex &);

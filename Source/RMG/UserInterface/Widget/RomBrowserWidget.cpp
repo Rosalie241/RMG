@@ -10,6 +10,7 @@
 #include "RomBrowserWidget.hpp"
 #include "../../Globals.hpp"
 #include "Config.hpp"
+#include "M64P/Wrapper/Types.hpp"
 
 #include <QDir>
 
@@ -21,7 +22,14 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QTableView(parent)
     this->setDragDropMode(QAbstractItemView::DragDropMode::DropOnly);
     this->setAcceptDrops(true);
     this->setDropIndicatorShown(true);
-    
+
+    this->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
+    connect(this, SIGNAL(customContextMenuRequested(QPoint)), SLOT(customContextMenuRequested(QPoint)));
+
+
+    this->contextMenu_Init();
+    this->contextMenu_Setup();
+
     this->model_Init();
     this->model_Setup();
     this->widget_Init();
@@ -39,6 +47,64 @@ void RomBrowserWidget::RefreshRomList(void)
 void RomBrowserWidget::SetDirectory(QString directory)
 {
     this->directory = directory;
+}
+
+void RomBrowserWidget::contextMenu_Init(void)
+{
+    this->contextMenu_Actions_Init();
+    this->contextMenu = new QMenu(this);
+}
+
+void RomBrowserWidget::contextMenu_Setup(void)
+{
+    this->contextMenu_Actions_Setup();
+    this->contextMenu_Actions_Connect();
+
+    this->contextMenu->clear();
+
+    this->contextMenu->addAction(this->action_PlayGame);
+    this->contextMenu->addAction(this->action_PlayGameWithDisk);
+    this->contextMenu->addSeparator();
+    this->contextMenu->addAction(this->action_RefreshRomList);
+    this->contextMenu->addAction(this->action_ChooseRomDirectory);
+    this->contextMenu->addSeparator();
+    this->contextMenu->addAction(this->action_RomInformation);
+    this->contextMenu->addSeparator();
+    this->contextMenu->addAction(this->action_EditGameSettings);
+    this->contextMenu->addAction(this->action_EditCheats);
+}
+
+void RomBrowserWidget::contextMenu_Actions_Init(void)
+{
+    this->action_PlayGame = new QAction(this);
+    this->action_PlayGameWithDisk = new QAction(this);
+    this->action_RefreshRomList = new QAction(this);
+    this->action_ChooseRomDirectory = new QAction(this);
+    this->action_RomInformation = new QAction(this);
+    this->action_EditGameSettings = new QAction(this);
+    this->action_EditCheats = new QAction(this);
+}
+
+void RomBrowserWidget::contextMenu_Actions_Setup(void)
+{
+    this->action_PlayGame->setText("Play Game");
+    this->action_PlayGameWithDisk->setText("Play Game with Disk");
+    this->action_RefreshRomList->setText("Refresh ROM List");
+    this->action_ChooseRomDirectory->setText("Choose ROM Directory...");
+    this->action_RomInformation->setText("ROM Information");
+    this->action_EditGameSettings->setText("Edit Game Settings");
+    this->action_EditCheats->setText("Edit Cheats");
+}
+
+void RomBrowserWidget::contextMenu_Actions_Connect(void)
+{
+    connect(this->action_PlayGame, &QAction::triggered, this, &RomBrowserWidget::on_Action_PlayGame);
+    connect(this->action_PlayGameWithDisk, &QAction::triggered, this, &RomBrowserWidget::on_Action_PlayGameWithDisk);
+    connect(this->action_RefreshRomList, &QAction::triggered, this, &RomBrowserWidget::on_Action_RefreshRomList);
+    connect(this->action_ChooseRomDirectory, &QAction::triggered, this, &RomBrowserWidget::on_Action_ChooseRomDirectory);
+    connect(this->action_RomInformation, &QAction::triggered, this, &RomBrowserWidget::on_Action_RomInformation);
+    connect(this->action_EditGameSettings, &QAction::triggered, this, &RomBrowserWidget::on_Action_EditGameSettings);
+    connect(this->action_EditCheats, &QAction::triggered, this, &RomBrowserWidget::on_Action_EditCheats);
 }
 
 void RomBrowserWidget::model_Init(void)
@@ -176,7 +242,6 @@ void RomBrowserWidget::dragEnterEvent(QDragEnterEvent *event)
     event->accept();
 }
 
-
 void RomBrowserWidget::dropEvent(QDropEvent *event)
 {
     // sadly installing an EventFilter doesn't work
@@ -184,6 +249,46 @@ void RomBrowserWidget::dropEvent(QDropEvent *event)
     // emit the signal and pass it through to QTableView
     emit this->on_RomBrowser_FileDropped(event);
     QTableView::dropEvent(event);
+}
+
+void RomBrowserWidget::customContextMenuRequested(QPoint position)
+{
+    this->contextMenu->popup(this->viewport()->mapToGlobal(position));
+}
+
+void RomBrowserWidget::on_Action_PlayGame(void)
+{
+
+}
+
+void RomBrowserWidget::on_Action_PlayGameWithDisk(void)
+{
+
+}
+
+void RomBrowserWidget::on_Action_RefreshRomList(void)
+{
+    this->RefreshRomList();
+}
+
+void RomBrowserWidget::on_Action_ChooseRomDirectory(void)
+{
+
+}
+
+void RomBrowserWidget::on_Action_RomInformation(void)
+{
+
+}
+
+void RomBrowserWidget::on_Action_EditGameSettings(void)
+{
+
+}
+
+void RomBrowserWidget::on_Action_EditCheats(void)
+{
+
 }
 
 #include <iostream>
