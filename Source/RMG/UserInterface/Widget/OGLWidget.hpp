@@ -18,7 +18,7 @@ class OGLWidget : public QOpenGLWindow
     OGLWidget(QWidget *);
     ~OGLWidget(void);
 
-    void SetThread(QThread *);
+    void MoveToThread(QThread *);
     void SetAllowResizing(bool);
     void SetHideCursor(bool);
 
