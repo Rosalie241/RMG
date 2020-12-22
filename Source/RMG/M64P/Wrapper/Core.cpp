@@ -26,14 +26,16 @@ Core::~Core(void)
 {
 }
 
+#include <iostream>
+
 void DebugCallback(void *Context, int level, const char *message)
 {
-    // std::cout << level << ": " << message << std::endl;
+   // std::cout << "DebugCallback: " << level << ": " << message << std::endl;
 }
 
 void StateCallback(void *Context2, m64p_core_param ParamChanged, int NewValue)
 {
-    // std::cout << ParamChanged << ": " << NewValue << std::endl;
+    //std::cout << "StateCallback: " << ParamChanged << ": " << NewValue << std::endl;
 }
 
 bool Core::Init(m64p_dynlib_handle handle)

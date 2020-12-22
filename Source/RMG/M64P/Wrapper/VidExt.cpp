@@ -46,6 +46,7 @@ m64p_error VidExt_Init(void)
     format.setProfile(QSurfaceFormat::CompatibilityProfile);
     format.setMajorVersion(2);
     format.setMinorVersion(1);
+    format.setSwapInterval(0);
 
     g_EmuThread->on_VidExt_Init();
 
@@ -56,7 +57,7 @@ m64p_error VidExt_Quit(void)
 {
     std::cout << __FUNCTION__ << std::endl;
 
-    g_OGLWidget->SetThread(QApplication::instance()->thread());
+    g_OGLWidget->MoveToThread(QApplication::instance()->thread());
     g_EmuThread->on_VidExt_Quit();
     ogl_setup = false;
 
@@ -255,10 +256,8 @@ m64p_error VidExt_GLSwapBuf(void)
     if (renderThread != QThread::currentThread())
         return M64ERR_UNSUPPORTED;
 
-    g_OGLWidget->context()->swapBuffers(g_OGLWidget->context()->surface());
-
-    // TODO, figure out why this is needed?
-    // g_OGLWidget->context()->makeCurrent(g_OGLWidget->context()->surface());
+    g_OGLWidget->context()->swapBuffers(g_OGLWidget);
+    g_OGLWidget->context()->makeCurrent(g_OGLWidget);
 
     return M64ERR_SUCCESS;
 }
@@ -287,5 +286,5 @@ m64p_error VidExt_ResizeWindow(int Width, int Height)
 uint32_t VidExt_GLGetDefaultFramebuffer(void)
 {
     std::cout << __FUNCTION__ << std::endl;
-    return 0;
+    return g_OGLWidget->context()->defaultFramebufferObject();
 }

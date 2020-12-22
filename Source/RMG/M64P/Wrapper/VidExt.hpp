@@ -12,7 +12,6 @@
 
 #include "../../Thread/EmulationThread.hpp"
 #include "../api/m64p_types.h"
-#include <QOpenGLWidget>
 
 m64p_error VidExt_Init(void);
 m64p_error VidExt_Quit(void);
