@@ -393,7 +393,7 @@ Setting_t Settings::getSetting(SettingsID id)
         setting = {KEYBIND_SECTION, "Cheats", "Ctrl+C", "", false};
         break;
     case SettingsID::KeyBinding_GSButton:
-        setting = {KEYBIND_SECTION, "GSButton", "F7", "", false};
+        setting = {KEYBIND_SECTION, "GSButton", "F9", "", false};
         break;
     case SettingsID::KeyBinding_Fullscreen:
         setting = {KEYBIND_SECTION, "Fullscreen", "Alt+Return", "", false};
