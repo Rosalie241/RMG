@@ -82,19 +82,15 @@ class MainWindow : public QMainWindow
     QAction *action_Help_HomePage;
     QAction *action_Help_About;
 
-    QSize ui_MinSize;
-    QSize ui_MaxSize;
     QByteArray ui_Geometry;
     bool ui_Geometry_Saved;
 
-    QByteArray vidExt_Geometry;
-    bool vidExt_Geometry_Saved;
+    QByteArray ui_VidExt_Geometry;
+    bool ui_VidExt_Geometry_Saved;
 
     bool ui_AllowManualResizing;
     bool ui_HideCursorInEmulation;
-
     bool ui_NoSwitchToRomBrowser;
-
     bool ui_VidExtForceSetMode;
 
     void closeEvent(QCloseEvent *);
@@ -118,6 +114,7 @@ class MainWindow : public QMainWindow
     void ui_Actions_Init(void);
     void ui_Actions_Setup(bool, bool);
     void ui_Actions_Add(void);
+    void ui_Actions_Remove(void);
     void ui_Actions_Connect(void);
 
   private slots:

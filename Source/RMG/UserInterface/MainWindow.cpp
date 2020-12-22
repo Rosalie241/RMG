@@ -61,7 +61,6 @@ bool MainWindow::Init(void)
 
     this->ui_Actions_Init();
     this->ui_Actions_Connect();
-    this->ui_Actions_Add();
 
     this->menuBar_Init();
     this->menuBar_Setup(false, false);
@@ -193,6 +192,7 @@ void MainWindow::ui_InEmulation(bool inEmulation, bool isPaused)
         }
 
         this->ui_Widgets->setCurrentIndex(1);
+        this->ui_SaveGeometry();
     }
     else if (!this->ui_NoSwitchToRomBrowser)
     {
@@ -213,8 +213,6 @@ void MainWindow::ui_SaveGeometry(void)
         return;
     }
 
-    this->ui_MinSize = this->minimumSize();
-    this->ui_MaxSize = this->maximumSize();
     this->ui_Geometry = this->saveGeometry();
     this->ui_Geometry_Saved = true;
 }
@@ -226,10 +224,18 @@ void MainWindow::ui_LoadGeometry(void)
         return;
     }
 
+    // restore from fullscreen aswell
+    if (this->isFullScreen())
+        this->showNormal();
+
+    if (this->menuBar->isHidden())
+        this->menuBar->show();
+
+    if (this->statusBar()->isHidden())
+        this->statusBar()->show();
+
     this->setMinimumSize(0, 0);
     this->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
-    // this->setMinimumSize(this->ui_MinSize);
-    // this->setMaximumSize(this->ui_MaxSize);
     this->restoreGeometry(this->ui_Geometry);
     this->ui_Geometry_Saved = false;
 }
@@ -283,7 +289,7 @@ void MainWindow::menuBar_Setup(bool inEmulation, bool isPaused)
 
         this->menuBar_Menu = this->menuBar->addMenu("System");
         this->menuBar_Menu->addMenu(resetMenu);
-        this->menuBar_Menu->addAction(action_System_Pause);
+        this->menuBar_Menu->addAction(this->action_System_Pause);
         this->menuBar_Menu->addAction(this->action_System_GenerateBitmap);
         this->menuBar_Menu->addSeparator();
         this->menuBar_Menu->addAction(this->action_System_LimitFPS);
@@ -546,7 +552,7 @@ void MainWindow::ui_Actions_Add(void)
     this->addAction(this->action_File_OpenCombo);
     this->addAction(this->action_File_EndEmulation);
     this->addAction(this->action_File_ChooseDirectory);
-    this->addAction(this->action_File_RefreshRomList);
+    //this->addAction(this->action_File_RefreshRomList);
     this->addAction(this->action_File_Exit);
     this->addAction(this->action_System_SoftReset);
     this->addAction(this->action_System_HardReset);
@@ -569,6 +575,37 @@ void MainWindow::ui_Actions_Add(void)
     this->addAction(this->action_Help_Support);
     this->addAction(this->action_Help_HomePage);
     this->addAction(this->action_Help_About);
+}
+
+void MainWindow::ui_Actions_Remove(void)
+{
+    this->removeAction(this->action_File_OpenRom);
+    this->removeAction(this->action_File_OpenCombo);
+    this->removeAction(this->action_File_EndEmulation);
+    this->removeAction(this->action_File_ChooseDirectory);
+    //this->removeAction(this->action_File_RefreshRomList);
+    this->removeAction(this->action_File_Exit);
+    this->removeAction(this->action_System_SoftReset);
+    this->removeAction(this->action_System_HardReset);
+    this->removeAction(this->action_System_Pause);
+    this->removeAction(this->action_System_GenerateBitmap);
+    this->removeAction(this->action_System_LimitFPS);
+    this->removeAction(this->action_System_SwapDisk);
+    this->removeAction(this->action_System_SaveState);
+    this->removeAction(this->action_System_SaveAs);
+    this->removeAction(this->action_System_LoadState);
+    this->removeAction(this->action_System_Load);
+    this->removeAction(this->action_System_Cheats);
+    this->removeAction(this->action_System_GSButton);
+    this->removeAction(this->action_Options_FullScreen);
+    this->removeAction(this->action_Options_ConfigGfx);
+    this->removeAction(this->action_Options_ConfigAudio);
+    this->removeAction(this->action_Options_ConfigRsp);
+    this->removeAction(this->action_Options_ConfigControl);
+    this->removeAction(this->action_Options_Settings);
+    this->removeAction(this->action_Help_Support);
+    this->removeAction(this->action_Help_HomePage);
+    this->removeAction(this->action_Help_About);
 }
 
 void MainWindow::ui_Actions_Connect(void)
@@ -1058,19 +1095,18 @@ void MainWindow::on_RomBrowser_Selected(QString file)
 
 void MainWindow::on_VidExt_Init(void)
 {
-    this->vidExt_Geometry_Saved = false;
-    this->ui_SaveGeometry();
+    this->ui_VidExt_Geometry_Saved = false;
     this->ui_VidExtForceSetMode = true;
+
     this->ui_InEmulation(true, false);
 }
 
 void MainWindow::on_VidExt_SetupOGL(QSurfaceFormat format, QThread *thread)
 {
-    this->ui_Widget_OpenGL->SetThread(thread);
+    this->ui_Widget_OpenGL->MoveToThread(thread);
 
     g_OGLWidget = this->ui_Widget_OpenGL;
 
-    // this->ui_Widget_OpenGL->setCursor(Qt::BlankCursor);
     this->ui_Widget_OpenGL->setFormat(format);
 }
 
@@ -1083,10 +1119,10 @@ void MainWindow::on_VidExt_SetMode(int width, int height, int bps, int mode, int
 void MainWindow::on_VidExt_SetWindowedModeWithRate(int width, int height, int refresh, int bps, int flags)
 {
     // load window geometry
-    if (this->vidExt_Geometry_Saved)
+    if (this->ui_VidExt_Geometry_Saved)
     {
-        this->restoreGeometry(this->vidExt_Geometry);
-        this->vidExt_Geometry_Saved = false;
+        this->restoreGeometry(this->ui_VidExt_Geometry);
+        this->ui_VidExt_Geometry_Saved = false;
 
         // force 'refresh' the video plugin
         g_MupenApi.Core.SetVideoSize(width, height, true);
@@ -1102,16 +1138,17 @@ void MainWindow::on_VidExt_SetWindowedModeWithRate(int width, int height, int re
         this->statusBar()->show();
 
     std::cout << "on_VidExt_SetWindowedModeWithRate" << std::endl;
+    this->ui_Actions_Remove();
     this->on_VidExt_ResizeWindow(width, height);
 }
 
 void MainWindow::on_VidExt_SetFullscreenModeWithRate(int width, int height, int refresh, int bps, int flags)
 {
     // save window geometry
-    if (!this->vidExt_Geometry_Saved)
+    if (!this->ui_VidExt_Geometry_Saved)
     {
-        this->vidExt_Geometry = this->saveGeometry();
-        this->vidExt_Geometry_Saved = true;
+        this->ui_VidExt_Geometry = this->saveGeometry();
+        this->ui_VidExt_Geometry_Saved = true;
 
         // force 'refresh' the video plugin
         g_MupenApi.Core.SetVideoSize(width, height, true);
@@ -1127,6 +1164,7 @@ void MainWindow::on_VidExt_SetFullscreenModeWithRate(int width, int height, int 
         this->statusBar()->hide();
 
     std::cout << "on_VidExt_SetFullscreenModeWithRate" << std::endl;
+    this->ui_Actions_Add();
     this->on_VidExt_ResizeWindow(width, height);
 }
 
