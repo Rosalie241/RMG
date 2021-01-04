@@ -180,10 +180,10 @@ void RomBrowserWidget::rom_Searcher_Init(void)
             &RomBrowserWidget::on_RomBrowserThread_Finished);
 }
 
-bool init = false;
-
 void RomBrowserWidget::rom_List_Fill(QString directory)
 {
+    static bool init = false;
+
     if (!init)
     {
         this->rom_Searcher_Init();
