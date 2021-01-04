@@ -259,7 +259,10 @@ void RomBrowserWidget::customContextMenuRequested(QPoint position)
 
 void RomBrowserWidget::on_Action_PlayGame(void)
 {
+    int index = this->selectedIndexes().first().row();
+    QString rom = this->rom_List.at(index).FileName;
 
+    emit this->on_RomBrowser_Select(rom);
 }
 
 void RomBrowserWidget::on_Action_PlayGameWithDisk(void)
@@ -292,13 +295,11 @@ void RomBrowserWidget::on_Action_EditCheats(void)
 
 }
 
-#include <iostream>
 void RomBrowserWidget::on_Row_DoubleClicked(const QModelIndex &index)
 {
-    const M64P::Wrapper::RomInfo_t *info = &this->rom_List.at(index.row());
-    std::cout << "aaa " << index.row() << std::endl;
-    std::cout << info->FileName.toStdString() << std::endl;
-    emit this->on_RomBrowser_Select(info->FileName);
+    QString rom = this->rom_List.at(index.row()).FileName;
+
+    emit this->on_RomBrowser_Select(rom);
 }
 
 void RomBrowserWidget::on_RomBrowserThread_Received(M64P::Wrapper::RomInfo_t romInfo)
