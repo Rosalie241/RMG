@@ -28,6 +28,7 @@ namespace UserInterface
 {
 namespace Widget
 {
+
 class RomBrowserWidget : public QTableView
 {
     Q_OBJECT
@@ -75,7 +76,6 @@ class RomBrowserWidget : public QTableView
 
     void rom_Searcher_Init(void);
 
-    QList<M64P::Wrapper::RomInfo_t> rom_List;
     int rom_List_Index;
 
     bool rom_List_Recursive;
@@ -84,6 +84,8 @@ class RomBrowserWidget : public QTableView
     void rom_List_Fill(QString);
 
     void column_SetSize();
+
+    void launchSelectedRom(void);
 
   protected:
     void dragMoveEvent(QDragMoveEvent *);

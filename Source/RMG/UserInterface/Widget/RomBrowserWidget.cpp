@@ -26,7 +26,6 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QTableView(parent)
     this->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
     connect(this, SIGNAL(customContextMenuRequested(QPoint)), SLOT(customContextMenuRequested(QPoint)));
 
-
     this->contextMenu_Init();
     this->contextMenu_Setup();
 
@@ -101,7 +100,8 @@ void RomBrowserWidget::contextMenu_Actions_Connect(void)
     connect(this->action_PlayGame, &QAction::triggered, this, &RomBrowserWidget::on_Action_PlayGame);
     connect(this->action_PlayGameWithDisk, &QAction::triggered, this, &RomBrowserWidget::on_Action_PlayGameWithDisk);
     connect(this->action_RefreshRomList, &QAction::triggered, this, &RomBrowserWidget::on_Action_RefreshRomList);
-    connect(this->action_ChooseRomDirectory, &QAction::triggered, this, &RomBrowserWidget::on_Action_ChooseRomDirectory);
+    connect(this->action_ChooseRomDirectory, &QAction::triggered, this,
+            &RomBrowserWidget::on_Action_ChooseRomDirectory);
     connect(this->action_RomInformation, &QAction::triggered, this, &RomBrowserWidget::on_Action_RomInformation);
     connect(this->action_EditGameSettings, &QAction::triggered, this, &RomBrowserWidget::on_Action_EditGameSettings);
     connect(this->action_EditCheats, &QAction::triggered, this, &RomBrowserWidget::on_Action_EditCheats);
@@ -122,7 +122,6 @@ void RomBrowserWidget::model_Setup(void)
 
     this->rom_List_Index = 0;
     this->rom_List_Recursive = false;
-    this->rom_List.clear();
     this->model_Model->clear();
 
     if (!this->directory.isEmpty())
@@ -233,6 +232,15 @@ void RomBrowserWidget::column_SetSize(void)
     }
 }
 
+void RomBrowserWidget::launchSelectedRom(void)
+{
+    QModelIndex index = this->selectedIndexes().first();
+    QString rom = this->model()->itemData(index).last().toString();
+    ;
+
+    emit this->on_RomBrowser_Select(rom);
+}
+
 void RomBrowserWidget::dragMoveEvent(QDragMoveEvent *event)
 {
     event->accept();
@@ -259,15 +267,11 @@ void RomBrowserWidget::customContextMenuRequested(QPoint position)
 
 void RomBrowserWidget::on_Action_PlayGame(void)
 {
-    int index = this->selectedIndexes().first().row();
-    QString rom = this->rom_List.at(index).FileName;
-
-    emit this->on_RomBrowser_Select(rom);
+    this->launchSelectedRom();
 }
 
 void RomBrowserWidget::on_Action_PlayGameWithDisk(void)
 {
-
 }
 
 void RomBrowserWidget::on_Action_RefreshRomList(void)
@@ -277,42 +281,46 @@ void RomBrowserWidget::on_Action_RefreshRomList(void)
 
 void RomBrowserWidget::on_Action_ChooseRomDirectory(void)
 {
-
 }
 
 void RomBrowserWidget::on_Action_RomInformation(void)
 {
-
 }
 
 void RomBrowserWidget::on_Action_EditGameSettings(void)
 {
-
 }
 
 void RomBrowserWidget::on_Action_EditCheats(void)
 {
-
 }
 
 void RomBrowserWidget::on_Row_DoubleClicked(const QModelIndex &index)
 {
-    QString rom = this->rom_List.at(index.row()).FileName;
-
-    emit this->on_RomBrowser_Select(rom);
+    this->launchSelectedRom();
 }
 
 void RomBrowserWidget::on_RomBrowserThread_Received(M64P::Wrapper::RomInfo_t romInfo)
 {
-    QList<QStandardItem *> list;
+    QList<QStandardItem *> rowList;
 
-    this->rom_List.append(romInfo);
+    for (int i = 0; i < 3; i++)
+    {
+        QStandardItem *item = new QStandardItem();
 
-    list.append(new QStandardItem(romInfo.Settings.goodname));
-    list.append(new QStandardItem(QString((char *)romInfo.Header.Name)));
-    list.append(new QStandardItem(romInfo.Settings.MD5));
+        // TODO, make this configurable
+        if (i == 0)
+            item->setText(romInfo.Settings.goodname);
+        else if (i == 1)
+            item->setText(QString((char *)romInfo.Header.Name));
+        else
+            item->setText(romInfo.Settings.MD5);
 
-    this->model_Model->appendRow(list);
+        item->setData(romInfo.FileName);
+        rowList.append(item);
+    }
+
+    this->model_Model->appendRow(rowList);
 
     this->column_SetSize();
 
