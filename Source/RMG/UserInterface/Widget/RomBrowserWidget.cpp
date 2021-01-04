@@ -122,6 +122,7 @@ void RomBrowserWidget::model_Setup(void)
 
     this->rom_List_Index = 0;
     this->rom_List_Recursive = false;
+    this->rom_List.clear();
     this->model_Model->clear();
 
     if (!this->directory.isEmpty())
