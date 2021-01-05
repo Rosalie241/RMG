@@ -61,27 +61,18 @@ class RomBrowserWidget : public QTableView
     void contextMenu_Actions_Connect(void);
 
     QStandardItemModel *model_Model;
-    QStringList model_LabelList;
+    QList<int> model_Rows;
+
     void model_Init(void);
     void model_Setup(void);
-    void model_LabelList_Setup(void);
+    void model_Setup_Labels(void);
 
     NoFocusDelegate *widget_Delegate;
     void widget_Init(void);
 
-    Thread::RomSearcherThread *rom_Searcher_Thread;
-    bool rom_Searcher_Recursive;
-    bool rom_Searcher_MaxItems;
-    bool rom_Searcher_Running;
-
-    void rom_Searcher_Init(void);
-
-    int rom_List_Index;
-
-    bool rom_List_Recursive;
-    bool rom_List_Fill_Thread_Running = false;
-    void rom_List_Init();
-    void rom_List_Fill(QString);
+    Thread::RomSearcherThread *romSearcher_Thread;
+    void romSearcher_Init(void);
+    void romSearcher_Launch(QString);
 
     void column_SetSize();
 
@@ -106,7 +97,6 @@ class RomBrowserWidget : public QTableView
   public slots:
     void on_Row_DoubleClicked(const QModelIndex &);
     void on_RomBrowserThread_Received(M64P::Wrapper::RomInfo_t info);
-    void on_RomBrowserThread_Finished(void);
 
   signals:
     void on_RomBrowser_Select(QString);

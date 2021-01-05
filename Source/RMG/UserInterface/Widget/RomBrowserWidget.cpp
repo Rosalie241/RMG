@@ -11,10 +11,26 @@
 #include "../../Globals.hpp"
 #include "Config.hpp"
 #include "M64P/Wrapper/Types.hpp"
+#include "RowID.hpp"
 
 #include <QDir>
 
 using namespace UserInterface::Widget;
+
+static QString rowIdToText(RomInfo_t& romInfo, RowID row)
+{
+    switch (row)
+    {
+        case RowID::GoodName:
+            return QString(romInfo.Settings.goodname);
+        case RowID::InternalName:
+            return QString((char*)romInfo.Header.Name);
+        case RowID::MD5:
+            return romInfo.Settings.MD5;
+        default:
+            return "";
+    };
+}
 
 RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QTableView(parent)
 {
@@ -29,8 +45,11 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QTableView(parent)
     this->contextMenu_Init();
     this->contextMenu_Setup();
 
+    this->romSearcher_Init();
+
     this->model_Init();
     this->model_Setup();
+
     this->widget_Init();
 }
 
@@ -117,28 +136,40 @@ void RomBrowserWidget::model_Init(void)
 
 void RomBrowserWidget::model_Setup(void)
 {
-    if (this->rom_List_Fill_Thread_Running)
+    if (this->romSearcher_Thread->isRunning())
         return;
 
-    this->rom_List_Index = 0;
-    this->rom_List_Recursive = false;
     this->model_Model->clear();
 
-    if (!this->directory.isEmpty())
-        this->rom_List_Fill(this->directory);
+    this->romSearcher_Launch(this->directory);
 
-    this->model_LabelList_Setup();
+    this->model_Rows = g_Settings.GetIntListValue(SettingsID::RomBrowser_Rows);
+    // sanitize list
+    for (int row : this->model_Rows)
+    {
+        if (row > (int)RowID::Invalid || row < 0)
+        {
+            this->model_Rows.removeOne(row);
+        }
+    }
 
-    this->model_Model->setColumnCount(this->model_LabelList.size());
-    this->model_Model->setHorizontalHeaderLabels(this->model_LabelList);
+    this->model_Setup_Labels();
+
+    // TODO, save & restore the column size
+    this->column_SetSize();
 }
 
-void RomBrowserWidget::model_LabelList_Setup(void)
+void RomBrowserWidget::model_Setup_Labels(void)
 {
-    this->model_LabelList.clear();
-    this->model_LabelList.append("Name");
-    this->model_LabelList.append("Internal Name");
-    this->model_LabelList.append("MD5");
+    QStringList labels;
+
+    for (int row : this->model_Rows)
+    {
+        labels.append(g_RowTitles[row].Text);
+    }
+
+    this->model_Model->setColumnCount(labels.size());
+    this->model_Model->setHorizontalHeaderLabels(labels);
 }
 
 void RomBrowserWidget::widget_Init(void)
@@ -163,72 +194,35 @@ void RomBrowserWidget::widget_Init(void)
 
     this->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
-    this->column_SetSize();
 }
 
-void RomBrowserWidget::rom_Searcher_Init(void)
+void RomBrowserWidget::romSearcher_Init(void)
 {
-    this->rom_Searcher_Thread = new Thread::RomSearcherThread();
-    this->rom_Searcher_Thread->SetMaximumFiles(APP_ROMSEARCHER_MAX);
+    this->romSearcher_Thread = new Thread::RomSearcherThread(this);
 
-    // TODO
-    this->rom_Searcher_Thread->SetRecursive(true);
-
-    connect(rom_Searcher_Thread, &Thread::RomSearcherThread::on_Rom_Found, this,
+    connect(romSearcher_Thread, &Thread::RomSearcherThread::on_Rom_Found, this,
             &RomBrowserWidget::on_RomBrowserThread_Received);
-    connect(rom_Searcher_Thread, &Thread::RomSearcherThread::finished, this,
-            &RomBrowserWidget::on_RomBrowserThread_Finished);
 }
 
-void RomBrowserWidget::rom_List_Fill(QString directory)
+void RomBrowserWidget::romSearcher_Launch(QString directory)
 {
-    static bool init = false;
-
-    if (!init)
+    if (directory.isEmpty())
     {
-        this->rom_Searcher_Init();
-        init = true;
+        return;
     }
 
-    if (this->rom_List_Fill_Thread_Running)
-        return;
-
-    this->rom_List_Fill_Thread_Running = true;
-    this->rom_Searcher_Thread->SetDirectory(directory);
-    this->rom_Searcher_Thread->start();
+    this->romSearcher_Thread->SetMaximumFiles(g_Settings.GetBoolValue(SettingsID::RomBrowser_MaxItems));
+    this->romSearcher_Thread->SetRecursive(g_Settings.GetBoolValue(SettingsID::RomBrowser_Recursive));
+    this->romSearcher_Thread->SetDirectory(directory);
+    this->romSearcher_Thread->start();
 }
 
 void RomBrowserWidget::column_SetSize(void)
 {
-    for (int i = 0; i < this->model_LabelList.size(); i++)
+    int index = 0;
+    for (int id : this->model_Rows)
     {
-        QString label = this->model_LabelList.at(i);
-
-        int oldSize = this->columnWidth(i);
-        int newSize = 0;
-        if (label == "Name")
-        {
-            newSize = 250;
-        }
-        else if (label == "Internal Name")
-        {
-            newSize = 100;
-        }
-        else if (label == "MD5")
-        {
-            newSize = 100;
-        }
-
-        this->setColumnWidth(i, newSize);
-        continue;
-        if (oldSize != newSize)
-        {
-            this->setColumnWidth(i, oldSize);
-        }
-        else
-        {
-            this->setColumnWidth(i, newSize);
-        }
+        this->setColumnWidth(index++, g_RowTitles[id].Size);
     }
 }
 
@@ -236,7 +230,6 @@ void RomBrowserWidget::launchSelectedRom(void)
 {
     QModelIndex index = this->selectedIndexes().first();
     QString rom = this->model()->itemData(index).last().toString();
-    ;
 
     emit this->on_RomBrowser_Select(rom);
 }
@@ -304,30 +297,16 @@ void RomBrowserWidget::on_RomBrowserThread_Received(M64P::Wrapper::RomInfo_t rom
 {
     QList<QStandardItem *> rowList;
 
-    for (int i = 0; i < 3; i++)
+    for (int row : this->model_Rows)
     {
         QStandardItem *item = new QStandardItem();
 
-        // TODO, make this configurable
-        if (i == 0)
-            item->setText(romInfo.Settings.goodname);
-        else if (i == 1)
-            item->setText(QString((char *)romInfo.Header.Name));
-        else
-            item->setText(romInfo.Settings.MD5);
-
+        item->setText(rowIdToText(romInfo, (RowID)row));
         item->setData(romInfo.FileName);
         rowList.append(item);
     }
 
     this->model_Model->appendRow(rowList);
 
-    this->column_SetSize();
-
     this->horizontalHeader()->setStretchLastSection(true);
-}
-
-void RomBrowserWidget::on_RomBrowserThread_Finished(void)
-{
-    this->rom_List_Fill_Thread_Running = false;
 }
