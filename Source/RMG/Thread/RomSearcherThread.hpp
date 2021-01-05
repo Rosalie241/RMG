@@ -22,7 +22,7 @@ class RomSearcherThread : public QThread
     Q_OBJECT
 
   public:
-    RomSearcherThread(void);
+    RomSearcherThread(QObject *);
     ~RomSearcherThread(void);
 
     void SetDirectory(QString);

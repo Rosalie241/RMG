@@ -14,7 +14,7 @@
 
 using namespace Thread;
 
-RomSearcherThread::RomSearcherThread(void)
+RomSearcherThread::RomSearcherThread(QObject *parent) : QThread(parent)
 {
     qRegisterMetaType<M64P::Wrapper::RomInfo_t>("M64P::Wrapper::RomInfo_t");
 }
@@ -69,10 +69,8 @@ void RomSearcherThread::rom_Search(QString directory)
         ret = this->rom_Get_Info(fileInfo.absoluteFilePath(), &romInfo);
         if (ret)
         {
-            if (this->rom_Search_Count >= this->rom_Search_MaxItems)
+            if (this->rom_Search_Count >= this->rom_Search_MaxItems++)
                 return;
-
-            this->rom_Search_Count++;
 
             emit this->on_Rom_Found(romInfo);
         }
