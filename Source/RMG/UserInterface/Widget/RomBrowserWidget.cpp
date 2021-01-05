@@ -211,7 +211,7 @@ void RomBrowserWidget::romSearcher_Launch(QString directory)
         return;
     }
 
-    this->romSearcher_Thread->SetMaximumFiles(g_Settings.GetBoolValue(SettingsID::RomBrowser_MaxItems));
+    this->romSearcher_Thread->SetMaximumFiles(g_Settings.GetIntValue(SettingsID::RomBrowser_MaxItems));
     this->romSearcher_Thread->SetRecursive(g_Settings.GetBoolValue(SettingsID::RomBrowser_Recursive));
     this->romSearcher_Thread->SetDirectory(directory);
     this->romSearcher_Thread->start();
