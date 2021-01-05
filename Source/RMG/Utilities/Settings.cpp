@@ -455,7 +455,7 @@ Setting_t Settings::getSetting(SettingsID id)
         setting = {ROMBROWSER_SECTION, "MaxItems", 50, "", false};
         break;
     case SettingsID::RomBrowser_Columns:
-        setting = {ROMBROWSER_SECTION, "Rows", QVariant({(int)ColumnID::GoodName, (int)ColumnID::InternalName, (int)ColumnID::MD5}), "", false};
+        setting = {ROMBROWSER_SECTION, "Columns", QVariant({(int)ColumnID::GoodName, (int)ColumnID::InternalName, (int)ColumnID::MD5}), "", false};
         break;
     }
 
