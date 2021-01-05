@@ -13,12 +13,14 @@
 #include "../api/m64p_types.h"
 
 #include <QString>
+#include <QMetaType> 
 
 namespace M64P
 {
 namespace Wrapper
 {
-enum PluginType
+
+enum class PluginType
 {
     Gfx = 0,
     Audio,
@@ -27,14 +29,14 @@ enum PluginType
     Invalid
 };
 
-struct RomInfo_t
+typedef struct
 {
     QString FileName;
     m64p_rom_settings Settings;
     m64p_rom_header Header;
-};
+} RomInfo_t;
 
-struct Plugin_t
+typedef struct
 {
     QString Name;
     QString FileName;
@@ -42,8 +44,12 @@ struct Plugin_t
     int Version;
     int ApiVersion;
     int Capabilities;
-};
+} Plugin_t;
+
 } // namespace Wrapper
 } // namespace M64P
+
+Q_DECLARE_METATYPE(M64P::Wrapper::RomInfo_t);
+Q_DECLARE_METATYPE(M64P::Wrapper::Plugin_t);
 
 #endif // M64P_WRAPPER_TYPES_HPP
