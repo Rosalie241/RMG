@@ -69,7 +69,7 @@ void RomSearcherThread::rom_Search(QString directory)
         ret = this->rom_Get_Info(fileInfo.absoluteFilePath(), &romInfo);
         if (ret)
         {
-            if (this->rom_Search_Count >= this->rom_Search_MaxItems++)
+            if (this->rom_Search_Count++ >= this->rom_Search_MaxItems)
                 return;
 
             emit this->on_Rom_Found(romInfo);
