@@ -23,7 +23,7 @@ fi
 
 cmake -S "$toplvl_dir" -B "$build_dir" -DCMAKE_BUILD_TYPE="$build_config" -G "$generator"
 
-make install DESTDIR="$install_dir" -j$threads
+make install DESTDIR="$toplvl_dir" -j$threads
 
 if [[ "$msys2" = "1" ]]
 then

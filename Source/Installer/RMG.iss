@@ -13,7 +13,7 @@
 ; Specify MyAppVer, which should contain the version
 ;
 ; EXAMPLE USAGE:
-; "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" ".\Source\Installer\RMG.iss" /DMyAppDir=.\Bin\rmg /DMyAppVer="1.0" /DMyOutDir=.\Bin\ /DMySrcDir=.\
+; "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" ".\Source\Installer\RMG.iss" /DMyAppDir=.\Bin\ /DMyAppVer="1.0" /DMyOutDir=.\Bin\ /DMySrcDir=.\
 
 
 [Setup]

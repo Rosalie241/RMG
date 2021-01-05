@@ -1,6 +1,6 @@
 ISCC.exe ^
 	".\Source\Installer\RMG.iss" ^
-	"/DMyAppDir=..\..\Bin\${CMAKE_BUILD_TYPE}\rmg" ^
+	"/DMyAppDir=..\..\Bin\${CMAKE_BUILD_TYPE}" ^
 	"/DMyAppVer=${GIT_VERSION}" ^
 	"/DMyOutDir=..\..\Bin" ^
 	"/DMySrcDir=..\..\"
