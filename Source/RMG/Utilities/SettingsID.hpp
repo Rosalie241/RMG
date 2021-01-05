@@ -24,7 +24,7 @@ typedef struct
     bool ForceUseSet;
 } Setting_t;
 
-enum SettingsID
+enum class SettingsID
 {
     // GUI Settings
     GUI_RomBrowserDirectory = 0,
@@ -105,6 +105,11 @@ enum SettingsID
     KeyBinding_GSButton,
     KeyBinding_Fullscreen,
     KeyBinding_Settings,
+
+    // RomBrowser Settings
+    RomBrowser_Recursive,
+    RomBrowser_MaxItems,
+    RomBrowser_Rows,
 
     Invalid
 };

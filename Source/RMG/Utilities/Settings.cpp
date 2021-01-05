@@ -9,9 +9,9 @@
  */
 #include "Settings.hpp"
 #include "../Globals.hpp"
+#include "UserInterface/Widget/RowID.hpp"
 #include "Utilities/SettingsID.hpp"
-#include <qopenglext.h>
-#include <qvariant.h>
+#include <QVariant>
 
 using namespace Utilities;
 
@@ -26,13 +26,12 @@ Settings::~Settings()
 void Settings::LoadDefaults()
 {
     Setting_t setting;
-    for (int i = 0; i < SettingsID::Invalid; i++)
+    for (int i = 0; i < (int)SettingsID::Invalid; i++)
     {
         setting = this->getSetting((SettingsID)i);
 
         if (setting.Section.isEmpty())
             continue;
-
         switch (setting.Default.type())
         {
         case QVariant::Type::String:
@@ -45,6 +44,16 @@ void Settings::LoadDefaults()
         case QVariant::Type::Int:
             g_MupenApi.Config.SetDefaultOption(setting.Section, setting.Key, setting.Default.toInt(), setting.Help);
             break;
+        case QVariant::Type::List: {
+            QString str = "";
+            for (QVariant &v : setting.Default.toList())
+            {
+                // TODO, support other QList<T>s aswell
+                str += QString::number(v.toInt()) + ";";
+            }
+            g_MupenApi.Config.SetDefaultOption(setting.Section, setting.Key, str, setting.Help);
+            break;
+        }
         default:
         case QVariant::Type::Bool:
             g_MupenApi.Config.SetDefaultOption(setting.Section, setting.Key, setting.Default.toBool(), setting.Help);
@@ -77,6 +86,11 @@ QString Settings::GetDefaultStringValue(SettingsID id)
     return this->getDefaultStringValue(this->getSetting(id));
 }
 
+QList<int> Settings::GetDefaultIntListValue(SettingsID id)
+{
+    return this->getDefaultIntListValue(this->getSetting(id));
+}
+
 int Settings::GetDefaultIntValue(SettingsID id, QString section)
 {
     Setting_t s = this->getSetting(id);
@@ -105,6 +119,13 @@ QString Settings::GetDefaultStringValue(SettingsID id, QString section)
     return this->getDefaultStringValue(s);
 }
 
+QList<int> Settings::GetDefaultIntListValue(SettingsID id, QString section)
+{
+    Setting_t s = this->getSetting(id);
+    s.Section = section;
+    return this->getDefaultIntListValue(s);
+}
+
 int Settings::GetIntValue(SettingsID id)
 {
     return this->getIntValue(this->getSetting(id));
@@ -123,6 +144,11 @@ float Settings::GetFloatValue(SettingsID id)
 QString Settings::GetStringValue(SettingsID id)
 {
     return this->getStringValue(this->getSetting(id));
+}
+
+QList<int> Settings::GetIntListValue(SettingsID id)
+{
+    return this->getIntListValue(this->getSetting(id));
 }
 
 int Settings::GetIntValue(SettingsID id, QString section)
@@ -153,6 +179,13 @@ QString Settings::GetStringValue(SettingsID id, QString section)
     return this->getStringValue(s);
 }
 
+QList<int> Settings::GetIntListValue(SettingsID id, QString section)
+{
+    Setting_t s = this->getSetting(id);
+    s.Section = section;
+    return this->getIntListValue(s);
+}
+
 bool Settings::SetValue(SettingsID id, int value)
 {
     return this->setValue(this->getSetting(id), value);
@@ -169,6 +202,11 @@ bool Settings::SetValue(SettingsID id, float value)
 }
 
 bool Settings::SetValue(SettingsID id, QString value)
+{
+    return this->setValue(this->getSetting(id), value);
+}
+
+bool Settings::SetValue(SettingsID id, QList<int> value)
 {
     return this->setValue(this->getSetting(id), value);
 }
@@ -201,10 +239,18 @@ bool Settings::SetValue(SettingsID id, QString section, QString value)
     return this->setValue(s, value);
 }
 
+bool Settings::SetValue(SettingsID id, QString section, QList<int> value)
+{
+    Setting_t s = this->getSetting(id);
+    s.Section = section;
+    return this->setValue(s, value);
+}
+
 #define GUI_SECTION "Rosalie's Mupen GUI"
 #define CORE_SECTION GUI_SECTION " Core"
 #define OVERLAY_SECTION CORE_SECTION " Overlay"
 #define KEYBIND_SECTION GUI_SECTION " KeyBindings"
+#define ROMBROWSER_SECTION GUI_SECTION " RomBrowser"
 #define M64P_SECTION "Core"
 
 Setting_t Settings::getSetting(SettingsID id)
@@ -401,6 +447,16 @@ Setting_t Settings::getSetting(SettingsID id)
     case SettingsID::KeyBinding_Settings:
         setting = {KEYBIND_SECTION, "Settings", "Ctrl+T", "", false};
         break;
+
+    case SettingsID::RomBrowser_Recursive:
+        setting = {ROMBROWSER_SECTION, "Recursive", true, "", false};
+        break;
+    case SettingsID::RomBrowser_MaxItems:
+        setting = {ROMBROWSER_SECTION, "MaxItems", 50, "", false};
+        break;
+    case SettingsID::RomBrowser_Rows:
+        setting = {ROMBROWSER_SECTION, "Rows", QVariant({(int)RowID::GoodName, (int)RowID::InternalName, (int)RowID::MD5}), "", false};
+        break;
     }
 
     return setting;
@@ -424,6 +480,18 @@ float Settings::getDefaultFloatValue(Setting_t s)
 QString Settings::getDefaultStringValue(Setting_t s)
 {
     return s.Default.toString();
+}
+
+QList<int> Settings::getDefaultIntListValue(Setting_t s)
+{
+    QList<int> value;
+
+    for (const QVariant& var : s.Default.toList())
+    {
+        value.append(var.toInt());
+    }
+
+    return value;
 }
 
 int Settings::getIntValue(Setting_t s)
@@ -458,6 +526,28 @@ QString Settings::getStringValue(Setting_t s)
     return value;
 }
 
+QList<int> Settings::getIntListValue(Setting_t s)
+{
+    QList<int> value;
+    if (!s.Section.isEmpty() && g_MupenApi.Config.SectionExists(s.Section))
+    {
+        QString strValue = this->getStringValue(s);
+        for (const QString& str : strValue.split(";"))
+        {
+            if (str.isEmpty())
+            {
+                continue;
+            }
+            value.append(str.toInt());
+        }
+    }
+    if (value.isEmpty())
+    {
+        value = this->getDefaultIntListValue(s);
+    }
+    return value;
+}
+
 bool Settings::setValue(Setting_t s, int value)
 {
     bool ret = false;
@@ -484,4 +574,15 @@ bool Settings::setValue(Setting_t s, QString value)
     bool ret = false;
     ret = g_MupenApi.Config.SetOption(s.Section, s.Key, value);
     return ret;
+}
+
+bool Settings::setValue(Setting_t s, QList<int> value)
+{
+    QString str;
+    for (const int& val : value)
+    {
+        str += QString::number(val) + ";";
+    }
+
+    return this->setValue(s, str);
 }
