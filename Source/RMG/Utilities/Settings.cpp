@@ -9,7 +9,7 @@
  */
 #include "Settings.hpp"
 #include "../Globals.hpp"
-#include "UserInterface/Widget/RowID.hpp"
+#include "UserInterface/Widget/ColumnID.hpp"
 #include "Utilities/SettingsID.hpp"
 #include <QVariant>
 
@@ -454,8 +454,8 @@ Setting_t Settings::getSetting(SettingsID id)
     case SettingsID::RomBrowser_MaxItems:
         setting = {ROMBROWSER_SECTION, "MaxItems", 50, "", false};
         break;
-    case SettingsID::RomBrowser_Rows:
-        setting = {ROMBROWSER_SECTION, "Rows", QVariant({(int)RowID::GoodName, (int)RowID::InternalName, (int)RowID::MD5}), "", false};
+    case SettingsID::RomBrowser_Columns:
+        setting = {ROMBROWSER_SECTION, "Rows", QVariant({(int)ColumnID::GoodName, (int)ColumnID::InternalName, (int)ColumnID::MD5}), "", false};
         break;
     }
 

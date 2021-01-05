@@ -7,12 +7,12 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef ROWID_HPP
-#define ROWID_HPP
+#ifndef COLUMNID_HPP
+#define COLUMNID_HPP
 
 #include <QString>
 
-enum class RowID
+enum class ColumnID
 {
     GoodName = 0,
     InternalName,
@@ -22,16 +22,16 @@ enum class RowID
 
 typedef struct
 {
-    RowID Id;
+    ColumnID Id;
     QString Text;
     int Size;
-} RowTitle_t;
+} ColumnTitle_t;
 
-static const RowTitle_t g_RowTitles[] = 
+static const ColumnTitle_t g_ColumnTitles[] = 
 {
-    { RowID::GoodName, "Name", 250 },
-    { RowID::InternalName, "Internal Name", 100 },
-    { RowID::MD5, "MD5", 100 }
+    { ColumnID::GoodName, "Name", 250 },
+    { ColumnID::InternalName, "Internal Name", 100 },
+    { ColumnID::MD5, "MD5", 100 }
 };
 
-#endif // ROWID_HPP
+#endif // COLUMNID_HPP

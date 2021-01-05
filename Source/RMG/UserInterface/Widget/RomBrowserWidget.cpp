@@ -11,21 +11,21 @@
 #include "../../Globals.hpp"
 #include "Config.hpp"
 #include "M64P/Wrapper/Types.hpp"
-#include "RowID.hpp"
+#include "ColumnID.hpp"
 
 #include <QDir>
 
 using namespace UserInterface::Widget;
 
-static QString rowIdToText(RomInfo_t& romInfo, RowID row)
+static QString columnIdToText(RomInfo_t& romInfo, ColumnID id)
 {
-    switch (row)
+    switch (id)
     {
-        case RowID::GoodName:
+        case ColumnID::GoodName:
             return QString(romInfo.Settings.goodname);
-        case RowID::InternalName:
+        case ColumnID::InternalName:
             return QString((char*)romInfo.Header.Name);
-        case RowID::MD5:
+        case ColumnID::MD5:
             return romInfo.Settings.MD5;
         default:
             return "";
@@ -143,13 +143,13 @@ void RomBrowserWidget::model_Setup(void)
 
     this->romSearcher_Launch(this->directory);
 
-    this->model_Rows = g_Settings.GetIntListValue(SettingsID::RomBrowser_Rows);
+    this->model_Columns = g_Settings.GetIntListValue(SettingsID::RomBrowser_Columns);
     // sanitize list
-    for (int row : this->model_Rows)
+    for (int column : this->model_Columns)
     {
-        if (row > (int)RowID::Invalid || row < 0)
+        if (column > (int)ColumnID::Invalid || column < 0)
         {
-            this->model_Rows.removeOne(row);
+            this->model_Columns.removeOne(column);
         }
     }
 
@@ -163,9 +163,9 @@ void RomBrowserWidget::model_Setup_Labels(void)
 {
     QStringList labels;
 
-    for (int row : this->model_Rows)
+    for (int id : this->model_Columns)
     {
-        labels.append(g_RowTitles[row].Text);
+        labels.append(g_ColumnTitles[id].Text);
     }
 
     this->model_Model->setColumnCount(labels.size());
@@ -220,9 +220,9 @@ void RomBrowserWidget::romSearcher_Launch(QString directory)
 void RomBrowserWidget::column_SetSize(void)
 {
     int index = 0;
-    for (int id : this->model_Rows)
+    for (int id : this->model_Columns)
     {
-        this->setColumnWidth(index++, g_RowTitles[id].Size);
+        this->setColumnWidth(index++, g_ColumnTitles[id].Size);
     }
 }
 
@@ -297,11 +297,11 @@ void RomBrowserWidget::on_RomBrowserThread_Received(M64P::Wrapper::RomInfo_t rom
 {
     QList<QStandardItem *> rowList;
 
-    for (int row : this->model_Rows)
+    for (int id : this->model_Columns)
     {
         QStandardItem *item = new QStandardItem();
 
-        item->setText(rowIdToText(romInfo, (RowID)row));
+        item->setText(columnIdToText(romInfo, (ColumnID)id));
         item->setData(romInfo.FileName);
         rowList.append(item);
     }

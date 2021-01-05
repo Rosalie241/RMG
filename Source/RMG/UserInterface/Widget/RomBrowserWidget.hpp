@@ -61,7 +61,7 @@ class RomBrowserWidget : public QTableView
     void contextMenu_Actions_Connect(void);
 
     QStandardItemModel *model_Model;
-    QList<int> model_Rows;
+    QList<int> model_Columns;
 
     void model_Init(void);
     void model_Setup(void);
