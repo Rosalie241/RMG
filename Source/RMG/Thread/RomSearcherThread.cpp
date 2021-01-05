@@ -21,6 +21,12 @@ RomSearcherThread::RomSearcherThread(QObject *parent) : QThread(parent)
 
 RomSearcherThread::~RomSearcherThread(void)
 {
+    // kill the thread when we're running
+    if (this->isRunning())
+    {
+        this->terminate();
+        this->wait();
+    }
 }
 
 void RomSearcherThread::SetDirectory(QString directory)
