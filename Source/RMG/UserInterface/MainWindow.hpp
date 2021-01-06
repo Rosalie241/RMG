@@ -83,7 +83,7 @@ class MainWindow : public QMainWindow
     QAction *action_Help_About;
 
     QByteArray ui_Geometry;
-    bool ui_Geometry_Saved;
+    bool ui_Geometry_Saved = false;
 
     QByteArray ui_VidExt_Geometry;
     bool ui_VidExt_Geometry_Saved;
