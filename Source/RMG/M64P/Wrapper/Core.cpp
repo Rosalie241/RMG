@@ -20,22 +20,11 @@ using namespace M64P::Wrapper;
 
 Core::Core(void)
 {
+    qRegisterMetaType<MessageType>("MessageType");
 }
 
 Core::~Core(void)
 {
-}
-
-#include <iostream>
-
-void DebugCallback(void *Context, int level, const char *message)
-{
-   // std::cout << "DebugCallback: " << level << ": " << message << std::endl;
-}
-
-void StateCallback(void *Context2, m64p_core_param ParamChanged, int NewValue)
-{
-    //std::cout << "StateCallback: " << ParamChanged << ": " << NewValue << std::endl;
 }
 
 bool Core::Init(m64p_dynlib_handle handle)
@@ -48,8 +37,8 @@ bool Core::Init(m64p_dynlib_handle handle)
         return false;
     }
 
-    ret = M64P::Core.Startup(FRONTEND_API_VERSION, MUPEN_CONFIG_DIR, MUPEN_DATA_DIR, NULL, DebugCallback, NULL,
-                             StateCallback);
+    ret = M64P::Core.Startup(FRONTEND_API_VERSION, MUPEN_CONFIG_DIR, MUPEN_DATA_DIR, this, this->core_DebugCallback, this,
+                             this->core_StateCallback);
     if (ret != M64ERR_SUCCESS)
     {
         this->error_Message = "Core::Init M64P::Core.Startup() Failed: ";
@@ -57,13 +46,8 @@ bool Core::Init(m64p_dynlib_handle handle)
         return false;
     }
 
-    media_loader = {
-        (void *)this,
-        media_loader_get_gb_cart_rom,
-        media_loader_get_gb_cart_ram,
-        media_loader_get_dd_rom,
-        media_loader_get_dd_disk
-    };
+    media_loader = {(void *)this, media_loader_get_gb_cart_rom, media_loader_get_gb_cart_ram, media_loader_get_dd_rom,
+                    media_loader_get_dd_disk};
 
     ret = M64P::Core.DoCommand(M64CMD_SET_MEDIA_LOADER, sizeof(media_loader), &media_loader);
     if (ret != M64ERR_SUCCESS)
@@ -205,12 +189,12 @@ char *Core::media_loader_get_dd_rom(void *_this)
     if (file.isEmpty())
         return NULL;
 
-    return strdup(file.toStdString().c_str());;
+    return strdup(file.toStdString().c_str());
 }
 
 char *Core::media_loader_get_dd_disk(void *_this)
 {
-    QString file = ((Core*)_this)->rom_Combo_Disk;
+    QString file = ((Core *)_this)->rom_Combo_Disk;
 
     if (file.isEmpty())
         return NULL;
@@ -814,14 +798,15 @@ bool Core::rom_ApplyOverlay(void)
 
     ret = this->GetRomInfo(&info);
     if (!ret)
+    {
         return false;
+    }
 
     section = info.Settings.MD5;
 
     ret = g_MupenApi.Config.SectionExists(section);
     if (!ret)
     {
-        std::cout << "section: " << info.Settings.MD5 << " doesn't exist!" << std::endl;
         return true;
     }
 
@@ -829,12 +814,6 @@ bool Core::rom_ApplyOverlay(void)
     info.Settings.savetype = g_Settings.GetIntValue(SettingsID::Game_SaveType, section);
     info.Settings.countperop = g_Settings.GetIntValue(SettingsID::Game_CountPerOp, section);
     info.Settings.sidmaduration = g_Settings.GetIntValue(SettingsID::Game_SiDmaDuration, section);
-
-    std::cout << "info.Settings.goodname: " << info.Settings.goodname << std::endl;
-    std::cout << "info.Settings.DisableExtraMem: " << (int)info.Settings.disableextramem << std::endl;
-    std::cout << "info.Settings.savetype: " << (int)info.Settings.savetype << std::endl;
-    std::cout << "info.Settings.CountPerOp: " << info.Settings.countperop << std::endl;
-    std::cout << "info.Settings.SiDmaDuration: " << info.Settings.sidmaduration << std::endl;
 
     ret2 = M64P::Core.DoCommand(M64CMD_ROM_SET_SETTINGS, sizeof(info.Settings), &info.Settings);
     if (ret2 != M64ERR_SUCCESS)
@@ -881,6 +860,18 @@ bool Core::core_ApplyOverlay(void)
     g_MupenApi.Config.SetOption("Core", "R4300Emulator",
                                 g_Settings.GetIntValue(SettingsID::Game_CPU_Emulator, section));
     return true;
+}
+
+void Core::core_DebugCallback(void *Context, int level, const char *message)
+{
+    Core* _this = (Core*)Context;
+
+    emit _this->on_Core_DebugCallback((MessageType)level, QString(message));
+}
+
+void Core::core_StateCallback(void *Context, m64p_core_param ParamChanged, int NewValue)
+{
+    std::cout << "StateCallback: " << ParamChanged << ": " << NewValue << std::endl;
 }
 
 bool Core::rom_Close(void)

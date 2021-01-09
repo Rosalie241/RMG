@@ -23,7 +23,7 @@ class EmulationThread : public QThread
     Q_OBJECT
 
   public:
-    EmulationThread(void);
+    EmulationThread(QObject *);
     ~EmulationThread(void);
 
     void SetRomFile(QString);

@@ -70,6 +70,8 @@ bool MainWindow::Init(void)
 
     g_EmuThread = this->emulationThread;
 
+    connect(&g_MupenApi.Core, &Core::on_Core_DebugCallback, this, &MainWindow::on_Core_DebugCallback);
+
     return true;
 }
 
@@ -96,6 +98,7 @@ void MainWindow::ui_Init(void)
     this->ui_Widget_RomBrowser = new Widget::RomBrowserWidget(this);
     this->ui_Widget_OpenGL = new Widget::OGLWidget(this);
     this->ui_EventFilter = new EventFilter(this);
+    this->ui_StatusBar_Label = new QLabel(this);
 
     QString dir;
     dir = g_Settings.GetStringValue(SettingsID::GUI_RomBrowserDirectory);
@@ -132,13 +135,17 @@ void MainWindow::ui_Setup(void)
     geometry = g_Settings.GetStringValue(SettingsID::GUI_RomBrowserGeometry);
 
     if (!geometry.isEmpty())
+    {
         this->restoreGeometry(QByteArray::fromBase64(geometry.toLocal8Bit()));
+    }
     else
     {
         this->resize(610, 540);
     }
 
     this->statusBar()->setHidden(false);
+    this->statusBar()->addPermanentWidget(this->ui_StatusBar_Label, 1);
+    this->ui_TimerTimeout = g_Settings.GetIntValue(SettingsID::GUI_LabelDeletionTimeout);
 
     this->ui_Widgets->addWidget(this->ui_Widget_RomBrowser);
     this->ui_Widgets->addWidget(this->ui_Widget_OpenGL->GetWidget());
@@ -170,7 +177,6 @@ void MainWindow::ui_MessageBox(QString title, QString text, QString details = ""
     msgBox.setText(text);
     msgBox.setDetailedText(details);
     msgBox.addButton(QMessageBox::Ok);
-    msgBox.show();
     msgBox.exec();
 }
 
@@ -355,7 +361,7 @@ void MainWindow::menuBar_Setup(bool inEmulation, bool isPaused)
 
 void MainWindow::emulationThread_Init(void)
 {
-    this->emulationThread = new Thread::EmulationThread();
+    this->emulationThread = new Thread::EmulationThread(this);
 }
 
 void MainWindow::emulationThread_Connect(void)
@@ -552,7 +558,7 @@ void MainWindow::ui_Actions_Add(void)
     this->addAction(this->action_File_OpenCombo);
     this->addAction(this->action_File_EndEmulation);
     this->addAction(this->action_File_ChooseDirectory);
-    //this->addAction(this->action_File_RefreshRomList);
+    // this->addAction(this->action_File_RefreshRomList);
     this->addAction(this->action_File_Exit);
     this->addAction(this->action_System_SoftReset);
     this->addAction(this->action_System_HardReset);
@@ -583,7 +589,7 @@ void MainWindow::ui_Actions_Remove(void)
     this->removeAction(this->action_File_OpenCombo);
     this->removeAction(this->action_File_EndEmulation);
     this->removeAction(this->action_File_ChooseDirectory);
-    //this->removeAction(this->action_File_RefreshRomList);
+    // this->removeAction(this->action_File_RefreshRomList);
     this->removeAction(this->action_File_Exit);
     this->removeAction(this->action_System_SoftReset);
     this->removeAction(this->action_System_HardReset);
@@ -642,6 +648,11 @@ void MainWindow::ui_Actions_Connect(void)
     connect(this->action_Help_Support, &QAction::triggered, this, &MainWindow::on_Action_Help_Support);
     connect(this->action_Help_HomePage, &QAction::triggered, this, &MainWindow::on_Action_Help_HomePage);
     connect(this->action_Help_About, &QAction::triggered, this, &MainWindow::on_Action_Help_About);
+}
+
+void MainWindow::timerEvent(QTimerEvent *event)
+{
+    this->ui_StatusBar_Label->clear();
 }
 
 void MainWindow::on_EventFilter_KeyPressed(QKeyEvent *event)
@@ -1227,4 +1238,30 @@ void MainWindow::on_VidExt_Quit(void)
 {
     std::cout << "on_VidExt_Quit" << std::endl;
     this->ui_InEmulation(false, false);
+}
+
+void MainWindow::on_Core_DebugCallback(MessageType type, QString message)
+{
+    // only display in statusbar when emulation is running
+    if (!this->emulationThread->isRunning())
+        return;
+
+    // drop verbose messages
+    if (type == MessageType::Verbose)
+        return;
+
+    if (type == MessageType::Error)
+    {
+        this->ui_MessageBox("Error", "Core Error", message);
+        return;
+    }
+
+    this->ui_StatusBar_Label->setText(message);
+
+    // reset label deletion timer
+    if (this->ui_TimerId != 0)
+    {
+        this->killTimer(this->ui_TimerId);
+    }
+    this->ui_TimerId = this->startTimer(this->ui_TimerTimeout);
 }

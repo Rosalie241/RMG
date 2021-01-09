@@ -29,6 +29,15 @@ enum class PluginType
     Invalid
 };
 
+enum class MessageType
+{
+    Error = 1,
+    Warning,
+    Info,
+    Status,
+    Verbose
+};
+
 typedef struct
 {
     QString FileName;
@@ -44,7 +53,7 @@ typedef struct
     int Version;
     int ApiVersion;
     int Capabilities;
-} Plugin_t;
+} Plugin_t; 
 
 } // namespace Wrapper
 } // namespace M64P

@@ -15,13 +15,15 @@
 
 #include <QList>
 #include <QString>
+#include <QObject>
 
 namespace M64P
 {
 namespace Wrapper
 {
-class Core
+class Core : public QObject
 {
+  Q_OBJECT
   public:
     Core(void);
     ~Core(void);
@@ -108,12 +110,18 @@ class Core
     bool rom_ApplyOverlay(void);
     bool rom_Close(void);
 
+
+    static void core_DebugCallback(void *, int, const char *);
+    static void core_StateCallback(void *, m64p_core_param, int);
+
     bool core_ApplyOverlay(void);
 
     bool emulation_QueryState(m64p_emu_state *);
     bool emulation_IsRunning(void);
     bool emulation_IsPaused(void);
     bool emulation_SpeedLimited(bool);
+  signals:
+    void on_Core_DebugCallback(MessageType, QString);
 };
 } // namespace Wrapper
 } // namespace M64P

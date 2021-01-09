@@ -12,7 +12,7 @@
 
 using namespace Thread;
 
-EmulationThread::EmulationThread(void) : QThread(nullptr)
+EmulationThread::EmulationThread(QObject *parent) : QThread(parent)
 {
 }
 

@@ -45,6 +45,7 @@ class MainWindow : public QMainWindow
     Widget::OGLWidget *ui_Widget_OpenGL;
     Widget::RomBrowserWidget *ui_Widget_RomBrowser;
     EventFilter *ui_EventFilter;
+    QLabel *ui_StatusBar_Label;
 
     QMenuBar *menuBar;
     QMenu *menuBar_Menu;
@@ -90,8 +91,11 @@ class MainWindow : public QMainWindow
 
     bool ui_AllowManualResizing;
     bool ui_HideCursorInEmulation;
-    bool ui_NoSwitchToRomBrowser;
+    bool ui_NoSwitchToRomBrowser = false;
     bool ui_VidExtForceSetMode;
+
+    int ui_TimerId = 0;
+    int ui_TimerTimeout = 0;
 
     void closeEvent(QCloseEvent *);
 
@@ -116,6 +120,9 @@ class MainWindow : public QMainWindow
     void ui_Actions_Add(void);
     void ui_Actions_Remove(void);
     void ui_Actions_Connect(void);
+
+  protected:
+    void timerEvent(QTimerEvent *) Q_DECL_OVERRIDE;
 
   private slots:
     void on_EventFilter_KeyPressed(QKeyEvent *);
@@ -165,6 +172,8 @@ class MainWindow : public QMainWindow
     void on_VidExt_SetCaption(QString);
     void on_VidExt_ToggleFS(void);
     void on_VidExt_Quit(void);
+
+    void on_Core_DebugCallback(MessageType, QString);
 };
 } // namespace UserInterface
 

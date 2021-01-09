@@ -33,6 +33,7 @@ enum class SettingsID
     GUI_SettingsDialogHeight,
     GUI_AllowManualResizing,
     GUI_HideCursorInEmulation,
+    GUI_LabelDeletionTimeout,
     /*
     GUI_PauseEmulationOnFocusLoss,
     GUI_ResumeEmulationOnFocus,
