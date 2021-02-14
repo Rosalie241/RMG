@@ -24,9 +24,11 @@ Plugin::~Plugin(void)
 {
 }
 
+#include <iostream>
 bool Plugin::Init(QString file, m64p_dynlib_handle coreHandle)
 {
     m64p_error ret;
+    const char *name = nullptr;
 
     this->fileName = file;
     this->handle = dynlib_open((char *)file.toStdString().c_str());
@@ -47,16 +49,29 @@ bool Plugin::Init(QString file, m64p_dynlib_handle coreHandle)
 
     this->coreHandle = coreHandle;
 
-    if (!this->plugin_t_Get())
+    ret = this->plugin.GetVersion(&this->type, &this->version, &this->apiVersion, &name,
+                                  &this->capabilities);
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_Message += this->plugin.GetLastError();
         return false;
+    }
 
-    this->has_Init = true;
+    // if plugin doesn't provide us with a name,
+    // use basename of filepath instead
+    if (name == nullptr)
+    {
+        QFileInfo info(this->fileName);
+        this->name = info.fileName();
+    }
+    else
+    {
+        this->name = QString(name);
+    }
+
+    std::cout << "Plugin::Init name = " << this->name.toStdString() << std::endl;
+
     return true;
-}
-
-bool Plugin::HasInit(void)
-{
-    return this->has_Init;
 }
 
 bool Plugin::Startup(void)
@@ -70,7 +85,7 @@ bool Plugin::Startup(void)
         this->error_Message += M64P::Core.ErrorMessage(ret);
     }
 
-    return ret == M64ERR_SUCCESS;
+    return (ret == M64ERR_SUCCESS || ret == M64ERR_ALREADY_INIT);
 }
 
 bool Plugin::Shutdown(void)
@@ -106,68 +121,41 @@ bool Plugin::OpenConfig(void)
     return ret == M64ERR_SUCCESS;
 }
 
+QString Plugin::GetName(void)
+{
+    return this->name;
+}
+
+QString Plugin::GetFileName(void)
+{
+    return this->fileName;
+}
+
+int Plugin::GetVersion(void)
+{
+    return this->version;
+}
+
+int Plugin::GetApiVersion(void)
+{
+    return this->apiVersion;
+}
+
+int Plugin::GetCapabilities(void)
+{
+    return this->capabilities;
+}
+
 m64p_dynlib_handle Plugin::GetHandle(void)
 {
+    std::cout << "Plugin::GetHandle " << this << ": " << this->handle << std::endl;
+
     return this->handle;
 }
 
 m64p_plugin_type Plugin::GetType(void)
 {
     return this->type;
-}
-
-Plugin_t Plugin::GetPlugin_t(void)
-{
-    return this->plugin_t;
-}
-
-bool Plugin::plugin_t_Get(void)
-{
-    const char *name = nullptr;
-    m64p_error ret;
-
-    ret = this->plugin.GetVersion(&this->type, &this->plugin_t.Version, &this->plugin_t.ApiVersion, &name,
-                                  &this->plugin_t.Capabilities);
-    if (ret != M64ERR_SUCCESS)
-    {
-        this->error_Message += this->plugin.GetLastError();
-        return false;
-    }
-
-    this->plugin_t.FileName = this->fileName;
-
-    // if plugin doesn't provide us with a name,
-    // use basename of filepath instead
-    if (name == nullptr)
-    {
-        QFileInfo info(this->plugin_t.FileName);
-        this->plugin_t.Name = info.fileName();
-    }
-    else
-    {
-        this->plugin_t.Name = QString::fromStdString(name);
-    }
-
-    switch (this->type)
-    {
-    case M64PLUGIN_GFX:
-        this->plugin_t.Type = PluginType::Gfx;
-        break;
-    case M64PLUGIN_AUDIO:
-        this->plugin_t.Type = PluginType::Audio;
-        break;
-    case M64PLUGIN_RSP:
-        this->plugin_t.Type = PluginType::Rsp;
-        break;
-    case M64PLUGIN_INPUT:
-        this->plugin_t.Type = PluginType::Input;
-        break;
-    default:
-        this->plugin_t.Type = PluginType::Invalid;
-        break;
-    }
-
-    return true;
 }
 
 QString Plugin::GetLastError(void)

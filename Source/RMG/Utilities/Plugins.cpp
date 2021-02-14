@@ -12,6 +12,7 @@
 #include "Utilities/SettingsID.hpp"
 
 #include <QDir>
+#include <QDirIterator>
 
 using namespace Utilities;
 
@@ -28,68 +29,161 @@ void Plugins::LoadSettings()
     QString settingValue;
     SettingsID settingsID;
 
-    for (const Plugin_t &p : this->GetAvailablePlugins())
+    this->FindAvailablePlugins();
+
+    for (Plugin *p : this->GetAvailablePlugins())
     {
-        settingsID = this->pluginTypeToSettingsId(p.Type);
+        settingsID = this->pluginTypeToSettingsId(p->GetType());
         settingValue = g_Settings.GetStringValue(settingsID);
-        if (settingValue == p.FileName || settingValue.isEmpty())
+        if (settingValue == p->GetFileName() || settingValue.isEmpty())
         {
             this->ChangePlugin(p);
         }
     }
 }
 
-QList<Plugin_t> Plugins::GetAvailablePlugins()
+#include <iostream>
+void Plugins::FindAvailablePlugins(void)
 {
-    QList<Plugin_t> plugins;
+    QDirIterator pluginIt("Plugin", QStringList() << "*." SO_EXT, QDir::Files, QDirIterator::Subdirectories);
 
-    plugins.append(g_MupenApi.Core.GetPlugins(PluginType::Gfx));
-    plugins.append(g_MupenApi.Core.GetPlugins(PluginType::Audio));
-    plugins.append(g_MupenApi.Core.GetPlugins(PluginType::Input));
-    plugins.append(g_MupenApi.Core.GetPlugins(PluginType::Rsp));
-
-    return plugins;
-}
-
-bool Plugins::ChangePlugin(Plugin_t plugin)
-{
-    bool ret;
-    SettingsID settingsID;
-
-    ret = g_MupenApi.Core.SetPlugin(plugin);
-    if (ret)
+    for (Plugin *p : this->plugins)
     {
-        settingsID = this->pluginTypeToSettingsId(plugin.Type);
-        g_Settings.SetValue(settingsID, plugin.FileName);
+        if (p != nullptr)
+        {
+            p->Shutdown();
+            delete p;
+        }
     }
 
-    return ret;
+    this->plugins.clear();
+
+    std::cout << "aaaa: " << std::endl;
+
+    while (pluginIt.hasNext())
+    {
+        QString pluginFileName = pluginIt.next();
+
+        std::cout << "FindAvailablePlugins: " << pluginFileName.toStdString() << std::endl;
+        Plugin *plugin = new Plugin();
+
+        if (!plugin->Init(pluginFileName, g_MupenApi.Core.GetHandle()))
+        {
+            plugin->Shutdown();
+            std::cout << "Plugin INIT FAILED!!" << std::endl;
+            continue;
+        }
+
+        this->plugins.append(plugin);
+    }
 }
 
-Plugin_t Plugins::GetCurrentPlugin(PluginType type)
+QList<Plugin *> Plugins::GetAvailablePlugins(void)
 {
-    Plugin_t plugin = {0};
-    g_MupenApi.Core.GetCurrentPlugin(type, &plugin);
+    return this->plugins;
+}
+
+#include <iostream>
+bool Plugins::ChangePlugin(Plugin *plugin)
+{
+    Plugin *oldPlugin;
+
+    std::cout << "ChangePlugin" << std::endl;
+
+    if (plugin == nullptr)
+    {
+        std::cout << "ChangePlugin: plugin == nullptr!" << std::endl;
+        return false;
+    }
+
+    if (!plugin->Startup())
+    {
+        std::cout << "ChangePlugin: !plugin->Startup()!" << std::endl;
+        std::cout << plugin->GetLastError().toStdString() << std::endl;
+        return false;
+    }
+
+    // pointersssssss
+    // aaaaaaaaaaaaaaaaaaaaa
+
+    switch (plugin->GetType())
+    {
+    default:
+    case m64p_plugin_type::M64PLUGIN_GFX:
+        this->plugin_Gfx = plugin;
+        break;
+    case m64p_plugin_type::M64PLUGIN_AUDIO:
+        this->plugin_Audio = plugin;
+        oldPlugin = this->plugin_Audio;
+        break;
+    case m64p_plugin_type::M64PLUGIN_INPUT:
+        this->plugin_Input = plugin;
+        oldPlugin = this->plugin_Input;
+        break;
+    case m64p_plugin_type::M64PLUGIN_RSP:
+        this->plugin_Rsp = plugin;
+        oldPlugin = this->plugin_Rsp;
+        break;
+    }
+
+  /*  if (oldPlugin != nullptr)
+    {
+        oldPlugin->Shutdown();
+    } 
+
+    oldPlugin = plugin; */
+
+    if (plugin == nullptr)
+    {
+        std::cout << "Plugins::ChangePlugin plugin is NULLPTRA ASDASDASD" << std::endl;
+    }
+
+    g_MupenApi.Core.AttachPlugin(plugin);
+
+    return true;
+}
+
+Plugin *Plugins::GetCurrentPlugin(PluginType type)
+{
+    Plugin *plugin;
+
+    switch (type)
+    {
+    default:
+    case PluginType::Gfx:
+        plugin = this->plugin_Gfx;
+        break;
+    case PluginType::Audio:
+        plugin = this->plugin_Audio;
+        break;
+    case PluginType::Input:
+        plugin = this->plugin_Input;
+        break;
+    case PluginType::Rsp:
+        plugin = this->plugin_Rsp;
+        break;
+    }
+
     return plugin;
 }
 
-SettingsID Plugins::pluginTypeToSettingsId(PluginType type)
+SettingsID Plugins::pluginTypeToSettingsId(m64p_plugin_type type)
 {
     SettingsID id;
 
     switch (type)
     {
     default:
-    case M64P::Wrapper::PluginType::Gfx:
+    case m64p_plugin_type::M64PLUGIN_GFX:
         id = SettingsID::Core_GFX_Plugin;
         break;
-    case M64P::Wrapper::PluginType::Audio:
+    case m64p_plugin_type::M64PLUGIN_AUDIO:
         id = SettingsID::Core_AUDIO_Plugin;
         break;
-    case M64P::Wrapper::PluginType::Input:
+    case m64p_plugin_type::M64PLUGIN_INPUT:
         id = SettingsID::Core_INPUT_Plugin;
         break;
-    case M64P::Wrapper::PluginType::Rsp:
+    case m64p_plugin_type::M64PLUGIN_RSP:
         id = SettingsID::Core_RSP_Plugin;
         break;
     }

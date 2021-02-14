@@ -37,8 +37,6 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
         this->treeWidget->topLevelItem(1)->setDisabled(true);
     }
 
-    pluginList = g_Plugins.GetAvailablePlugins();
-
     for (int i = 0; i < this->stackedWidget->count(); i++)
         this->reloadSettings(i);
 
@@ -86,6 +84,9 @@ void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
         loadDefaultKeybindSettings();
         break;
     case 7:
+        loadDefaultRombrowserSettings();
+        break;
+    case 8:
         loadDefaultBehaviorSettings();
         break;
     }
@@ -118,6 +119,9 @@ void SettingsDialog::reloadSettings(int stackedWidgetIndex)
         loadKeybindSettings();
         break;
     case 7:
+        loadRombrowserSettings();
+        break;
+    case 8:
         loadBehaviorSettings();
         break;
     }
@@ -182,11 +186,24 @@ void SettingsDialog::loadGameCoreSettings(void)
     gameRandomizeTimingCheckBox->setChecked(randomizeInterrupt);
 }
 
+#include <iostream>
 void SettingsDialog::loadGamePluginSettings(void)
 {
-    QComboBox *comboBoxArray[4] = {this->gameVideoPluginsComboBox, this->gameAudioPluginsComboBox,
-                                   this->gameInputPluginsComboBox, this->gameRspPluginsComboBox};
-    SettingsID settingsId[4] = {SettingsID::Game_GFX_Plugin, SettingsID::Game_AUDIO_Plugin,
+    struct {
+        m64p_plugin_type pluginType;
+        QComboBox* comboBox;
+        SettingsID settingsID;
+    } list[] =  {
+        { M64PLUGIN_NULL, nullptr, SettingsID::Invalid },
+        { M64PLUGIN_RSP, this->gameRspPluginsComboBox, SettingsID::Game_RSP_Plugin },
+        { M64PLUGIN_GFX, this->gameVideoPluginsComboBox, SettingsID::Game_GFX_Plugin },
+        { M64PLUGIN_AUDIO, this->gameAudioPluginsComboBox, SettingsID::Game_AUDIO_Plugin },
+        { M64PLUGIN_INPUT, this->gameInputPluginsComboBox, SettingsID::Game_INPUT_Plugin }
+    };
+
+    QComboBox *comboBoxArray[] = { this->gameVideoPluginsComboBox, this->gameAudioPluginsComboBox,
+                                   this->gameInputPluginsComboBox, this->gameRspPluginsComboBox };
+    SettingsID settingsId[] = {SettingsID::Game_GFX_Plugin, SettingsID::Game_AUDIO_Plugin,
                                 SettingsID::Game_INPUT_Plugin, SettingsID::Game_RSP_Plugin};
     QComboBox *comboBox;
 
@@ -196,19 +213,34 @@ void SettingsDialog::loadGamePluginSettings(void)
         comboBox->addItem("**Use Core Plugin Settings**");
     }
 
-    for (const auto &p : this->pluginList)
+    for (auto &p : g_Plugins.GetAvailablePlugins())
     {
-        comboBox = comboBoxArray[(int)p.Type];
-        comboBox->addItem(p.Name, p.FileName);
-        if (g_Settings.GetStringValue(settingsId[(int)p.Type], this->gameSection) == p.FileName)
+        comboBox = list[p->GetType()].comboBox;
+        std::cout << "g_Plugins.GetAvailablePlugins() p =" << p->GetName().toStdString() << std::endl;
+        static QString name = p->GetName();
+        static QString fileName = p->GetFileName();
+        comboBox->addItem(name, fileName);
+        if (g_Settings.GetStringValue(list[p->GetType()].settingsID, this->gameSection) == p->GetFileName())
         {
-            comboBox->setCurrentText(p.Name);
+            comboBox->setCurrentText(p->GetName());
         }
     }
 }
 
 void SettingsDialog::loadPluginSettings(void)
 {
+    struct {
+        m64p_plugin_type pluginType;
+        QComboBox* comboBox;
+        SettingsID settingsID;
+    } list[] =  {
+        { M64PLUGIN_NULL, nullptr, SettingsID::Invalid },
+        { M64PLUGIN_RSP, this->rspPluginsComboBox, SettingsID::Core_RSP_Plugin },
+        { M64PLUGIN_GFX, this->videoPluginsComboBox, SettingsID::Core_GFX_Plugin },
+        { M64PLUGIN_AUDIO, this->audioPluginsComboBox, SettingsID::Core_AUDIO_Plugin },
+        { M64PLUGIN_INPUT, this->inputPluginsComboBox, SettingsID::Core_INPUT_Plugin }
+    };
+
     QComboBox *comboBoxArray[] = {this->videoPluginsComboBox, this->audioPluginsComboBox, this->inputPluginsComboBox,
                                   this->rspPluginsComboBox};
     SettingsID settingsIdArray[] = {SettingsID::Core_GFX_Plugin, SettingsID::Core_AUDIO_Plugin,
@@ -219,16 +251,20 @@ void SettingsDialog::loadPluginSettings(void)
     QString pluginFileName;
     int index = 0;
 
-    for (const auto &p : this->pluginList)
+    for (auto &p : g_Plugins.GetAvailablePlugins())
     {
-        comboBox = comboBoxArray[(int)p.Type];
-        pluginFileName = g_Settings.GetStringValue(settingsIdArray[(int)p.Type]);
+        comboBox = list[p->GetType()].comboBox;
+        pluginFileName = g_Settings.GetStringValue(list[p->GetType()].settingsID);
+        std::cout << "comboBox = " <<  comboBox->objectName().toStdString() << std::endl; 
+        std::cout << "loadPluginSettings: settingsID = " << (int)list[p->GetType()].settingsID << std::endl;
+        std::cout << "loadPluginSettings: p = " << p->GetName().toStdString() << std::endl;
+        std::cout << "loadPluginSettings: p = " << p->GetFileName().toStdString() << std::endl;
+        std::cout << "loadPluginSettings: pluginFileName = " << pluginFileName.toStdString() << std::endl;
+        comboBox->addItem(p->GetName(), p->GetFileName());
 
-        comboBox->addItem(p.Name, p.FileName);
-
-        if (pluginFileName == p.FileName)
+        if (pluginFileName == p->GetFileName())
         {
-            comboBox->setCurrentText(p.Name);
+            comboBox->setCurrentText(p->GetName());
         }
     }
 }
@@ -265,6 +301,12 @@ void SettingsDialog::loadDirectorySettings(void)
 void SettingsDialog::loadKeybindSettings(void)
 {
     commonKeyBindSettings(0);
+}
+
+void SettingsDialog::loadRombrowserSettings(void)
+{
+    this->rombrowserRecursiveSearchCheckBox->setChecked(g_Settings.GetBoolValue(SettingsID::RomBrowser_Recursive));
+    this->rombrowserMaxItemsSpinBox->setValue(g_Settings.GetIntValue(SettingsID::RomBrowser_MaxItems));
 }
 
 void SettingsDialog::loadBehaviorSettings(void)
@@ -357,6 +399,12 @@ void SettingsDialog::loadDefaultDirectorySettings(void)
 void SettingsDialog::loadDefaultKeybindSettings(void)
 {
     commonKeyBindSettings(1);
+}
+
+void SettingsDialog::loadDefaultRombrowserSettings(void)
+{
+    this->rombrowserRecursiveSearchCheckBox->setChecked(g_Settings.GetDefaultBoolValue(SettingsID::RomBrowser_Recursive));
+    this->rombrowserMaxItemsSpinBox->setValue(g_Settings.GetDefaultIntValue(SettingsID::RomBrowser_MaxItems));
 }
 
 void SettingsDialog::loadDefaultBehaviorSettings(void)
@@ -471,17 +519,20 @@ void SettingsDialog::saveGamePluginSettings(void)
 
 void SettingsDialog::savePluginSettings(void)
 {
-    QComboBox *comboBoxArray[4] = {this->videoPluginsComboBox, this->audioPluginsComboBox, this->inputPluginsComboBox,
-                                   this->rspPluginsComboBox};
+    QComboBox *comboBoxArray[] = { nullptr, this->rspPluginsComboBox, this->videoPluginsComboBox, this->audioPluginsComboBox, this->inputPluginsComboBox,
+                                  };
     QComboBox *comboBox;
 
-    for (const auto &p : this->pluginList)
+    for (auto &p : g_Plugins.GetAvailablePlugins())
     {
-        comboBox = comboBoxArray[(int)p.Type];
+        comboBox = comboBoxArray[(int)p->GetType()];
 
-        if (p.FileName == comboBox->currentData().toString())
+        if (p->GetFileName() == comboBox->currentData().toString())
         {
-            g_Plugins.ChangePlugin(p);
+            if (!g_Plugins.ChangePlugin(p))
+            {
+                std::cout << "g_Plugins.ChangePlugin(p) FAILED" << std::endl;
+            }
         }
     }
 }
@@ -581,19 +632,27 @@ void SettingsDialog::chooseDirectory(QLineEdit *lineEdit)
 void SettingsDialog::on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
     int topLevelCount = this->treeWidget->topLevelItemCount();
-    int index = this->treeWidget->indexOfTopLevelItem(current);
+    int topLevelIndex = this->treeWidget->indexOfTopLevelItem(current);
+    int index = topLevelIndex;
 
     // count all children up until our item
-    for (int i = 0; i < topLevelCount && i < index; i++)
+    for (int i = 0; i < topLevelCount && i < topLevelIndex; i++)
     {
         index += this->treeWidget->topLevelItem(i)->childCount();
     }
 
     // if we're a child ourselves,
     // get index of parent and add that onto our own index
-    if (index == -1)
+    if (topLevelIndex == -1)
     {
-        index = this->treeWidget->indexOfTopLevelItem(current->parent());
+        // sadly we need to repeat some code,
+        // TODO, maybe simplify this?
+        topLevelIndex = this->treeWidget->indexOfTopLevelItem(current->parent());
+        index = topLevelIndex;
+        for (int i = 0; i < topLevelCount && i < topLevelIndex; i++)
+        {
+            index += this->treeWidget->topLevelItem(i)->childCount();
+        }
         index += current->parent()->indexOfChild(current) + 1;
     }
 

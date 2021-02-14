@@ -98,6 +98,16 @@
          </item>
          <item>
           <property name="text">
+           <string>ROM Browser</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>Columns</string>
+           </property>
+          </item>
+         </item>
+         <item>
+          <property name="text">
            <string>Behavior</string>
           </property>
          </item>
@@ -1284,7 +1294,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>431</width>
+                <width>188</width>
                 <height>930</height>
                </rect>
               </property>
@@ -1661,6 +1671,133 @@
               </layout>
              </widget>
             </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="rombrowserPage">
+          <layout class="QVBoxLayout" name="verticalLayout_21">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_44">
+             <item>
+              <widget class="QLabel" name="label_46">
+               <property name="text">
+                <string>Maximum Items</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="rombrowserMaxItemsSpinBox"/>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="rombrowserRecursiveSearchCheckBox">
+             <property name="text">
+              <string>Recursive Search</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_10">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>341</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="rombrowserColumnsPage">
+          <layout class="QHBoxLayout" name="horizontalLayout_43">
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_18">
+             <item>
+              <widget class="QLabel" name="label_23">
+               <property name="text">
+                <string>Shown columns</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QListView" name="rombrowserShownColumnListView"/>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_20">
+             <item>
+              <spacer name="verticalSpacer_9">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QPushButton" name="rombrowserShowColumnButton">
+               <property name="text">
+                <string>&lt;&lt;</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_7">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QPushButton" name="rombrowserHideColumnButton">
+               <property name="text">
+                <string>&gt;&gt;</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_8">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_19">
+             <item>
+              <widget class="QLabel" name="label_24">
+               <property name="text">
+                <string>Hidden columns</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QListView" name="rombrowserHiddenColumnListView"/>
+             </item>
+            </layout>
            </item>
           </layout>
          </widget>

@@ -33,6 +33,10 @@ class Core : public QObject
     bool HasPluginConfig(PluginType);
     bool OpenPluginConfig(PluginType);
 
+    m64p_dynlib_handle GetHandle(void);
+
+    bool AttachPlugin(Plugin *);
+
     QList<Plugin_t> GetPlugins(PluginType);
     bool SetPlugin(Plugin_t);
     bool GetCurrentPlugin(PluginType, Plugin_t *);
@@ -49,7 +53,7 @@ class Core : public QObject
     bool ResetEmulation(bool);
 
     bool IsEmulationRunning(void);
-    bool isEmulationPaused(void);
+    bool IsEmulationPaused(void);
 
     bool TakeScreenshot(void);
 
@@ -96,11 +100,9 @@ class Core : public QObject
     M64P::Wrapper::Plugin plugin_Input;
 
     M64P::Wrapper::Plugin *plugin_Get(PluginType);
-    bool plugin_Attach(Plugin *);
     bool plugins_Attach(void);
     bool plugins_Detach(void);
     bool plugin_LoadTodo(void);
-
 
     RomInfo_t rom_Info;
 

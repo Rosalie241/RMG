@@ -27,7 +27,6 @@ class Plugin
     ~Plugin(void);
 
     bool Init(QString, m64p_dynlib_handle);
-    bool HasInit(void);
 
     bool Startup(void);
     bool Shutdown(void);
@@ -35,19 +34,25 @@ class Plugin
     bool HasConfig(void);
     bool OpenConfig(void);
 
+    QString GetName(void);
+    QString GetFileName(void);
+    int GetVersion(void);
+    int GetApiVersion(void);
+    int GetCapabilities(void);
+
     m64p_dynlib_handle GetHandle(void);
     m64p_plugin_type GetType(void);
-
-    Plugin_t GetPlugin_t(void);
 
     QString GetLastError(void);
 
   private:
     QString error_Message;
 
-    bool has_Init = false;
-
+    QString name;
     QString fileName;
+    int version;
+    int apiVersion;
+    int capabilities;
 
     m64p_dynlib_handle handle;
     m64p_plugin_type type;
@@ -55,9 +60,6 @@ class Plugin
     m64p_dynlib_handle coreHandle;
 
     M64P::PluginApi plugin;
-
-    Plugin_t plugin_t;
-    bool plugin_t_Get(void);
 };
 } // namespace Wrapper
 } // namespace M64P

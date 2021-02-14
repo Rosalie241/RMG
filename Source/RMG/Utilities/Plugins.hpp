@@ -11,6 +11,7 @@
 #define PLUGINS_HPP
 
 #include "M64P/Wrapper/Types.hpp"
+#include "M64P/Wrapper/Plugin.hpp"
 #include "SettingsID.hpp"
 
 #include <QList>
@@ -27,13 +28,23 @@ class Plugins
 
     void LoadSettings();
 
-    QList<Plugin_t> GetAvailablePlugins();
-    QList<Plugin_t> GetAvailablePlugins(PluginType);
+    void FindAvailablePlugins(void);
 
-    bool ChangePlugin(Plugin_t);
-    Plugin_t GetCurrentPlugin(PluginType);
+    QList<Plugin *> GetAvailablePlugins(void);
+    QList<Plugin *> GetAvailablePlugins(PluginType);
+
+    bool ChangePlugin(Plugin *);
+    Plugin *GetCurrentPlugin(PluginType);
+
   private:
-    SettingsID pluginTypeToSettingsId(PluginType);
+    Plugin *plugin_Rsp = nullptr;
+    Plugin *plugin_Gfx = nullptr;
+    Plugin *plugin_Audio = nullptr;
+    Plugin *plugin_Input = nullptr;
+
+    QList<Plugin *> plugins;
+
+    SettingsID pluginTypeToSettingsId(m64p_plugin_type);
 };
 }; // namespace Utilities
 

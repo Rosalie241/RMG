@@ -59,6 +59,5 @@ typedef struct
 } // namespace M64P
 
 Q_DECLARE_METATYPE(M64P::Wrapper::RomInfo_t);
-Q_DECLARE_METATYPE(M64P::Wrapper::Plugin_t);
 
 #endif // M64P_WRAPPER_TYPES_HPP

@@ -1,19 +1,12 @@
-SettingsDialog
-- implement setting/getting game specific core setting overlays
-- implement setting/getting game specific plugin setting overlays
-
 CheatsDialog
 - begin with implementation
 
 MainWindow
-- implement opening combo
 - implement 'File->Rom Info...'
 - implement 'File->Start emulation'
 - implement 'File->Recent ROM'
 - implement 'File->Recent ROM Directories'
 - implement 'Help->About'
-- implement fullscreen functionality
-- implement customizable keybindings
 - implement language support
 
 RomBrowserWidget

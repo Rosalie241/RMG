@@ -26,7 +26,7 @@ ExternalProject_Add(mupen64plus-core
     GIT_REPOSITORY https://github.com/Rosalie241/mupen64plus-core
     GIT_TAG 13729a892ee253e19627fe29887787817813dd9f
 
-    BUILD_COMMAND make all OSD=0 NEW_DYNAREC=${USE_NEW_DYNAREC} DEBUG=$<CONFIG:Debug>
+    BUILD_COMMAND make all OSD=0 NEW_DYNAREC=${USE_NEW_DYNAREC} DEBUG=$<CONFIG:Debug> CC=${CMAKE_C_COMPILER}
     BUILD_IN_SOURCE False
 
     BINARY_DIR ${M64P_CORE_DIR}/projects/unix
@@ -45,7 +45,7 @@ ExternalProject_Add(mupen64plus-audio-sdl
     GIT_REPOSITORY https://github.com/Rosalie241/mupen64plus-audio-sdl2
     GIT_TAG cc6aca5a13b0b8ca7a2f9f5fa472ed3bb7f817db
 
-    BUILD_COMMAND make all APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug>
+    BUILD_COMMAND make all APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug> CC=${CMAKE_C_COMPILER}
     BUILD_IN_SOURCE False
 
     BINARY_DIR ${THIRDPARTY_DIR}/mupen64plus-audio-sdl2/projects/unix
@@ -63,7 +63,7 @@ ExternalProject_Add(mupen64plus-rsp-cxd4
     GIT_REPOSITORY https://github.com/mupen64plus/mupen64plus-rsp-cxd4
     GIT_TAG 094c6642d0571b683571a27f3118749d03f37b13
 
-    BUILD_COMMAND make all APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug> SSE=SSE2
+    BUILD_COMMAND make all APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug> SSE=SSE2 CC=${CMAKE_C_COMPILER}
     BUILD_IN_SOURCE False
 
     BINARY_DIR ${THIRDPARTY_DIR}/mupen64plus-rsp-cxd4/projects/unix
@@ -81,7 +81,7 @@ ExternalProject_Add(mupen64plus-input-qt
     GIT_REPOSITORY https://github.com/Rosalie241/mupen64plus-input-qt
     GIT_TAG e6cacb7fe6513cac4b30f7171d8ca7d1cd5fdb81
 
-    BUILD_COMMAND make all APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug>
+    BUILD_COMMAND make all APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug> CC=${CMAKE_C_COMPILER}
     BUILD_IN_SOURCE True
     
     BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-input-qt/libmupen64plus-input-qt.${SO_EXT}

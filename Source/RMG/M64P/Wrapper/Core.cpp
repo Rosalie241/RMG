@@ -84,6 +84,25 @@ bool Core::OpenPluginConfig(PluginType type)
     return ret;
 }
 
+m64p_dynlib_handle Core::GetHandle(void)
+{
+    return this->handle;
+}
+
+bool Core::AttachPlugin(Plugin *p)
+{
+    m64p_error ret;
+
+    ret = M64P::Core.AttachPlugin(p->GetType(), p->GetHandle());
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_Message = "Core::plugin_Attach ( " + p->GetName() + " ) Failed: ";
+        this->error_Message += M64P::Core.ErrorMessage(ret);
+    }
+
+    return ret == M64ERR_SUCCESS;
+}
+
 bool Core::TakeScreenshot(void)
 {
     m64p_error ret;
@@ -142,13 +161,13 @@ QList<Plugin_t> Core::GetPlugins(PluginType type)
     Plugin_t pInfo;
 
     for (const QFileInfo &info : fileList)
-    {
+    {   
         if (p.Init(info.filePath(), this->handle))
         {
-            pInfo = p.GetPlugin_t();
+           // pInfo = p.GetPlugin_t();
 
-            if (pInfo.Type == type)
-                plugins.append(pInfo);
+           // if (pInfo.Type == type)
+            //    plugins.append(pInfo);
         }
     }
 
@@ -202,25 +221,18 @@ char *Core::media_loader_get_dd_disk(void *_this)
     return strdup(file.toStdString().c_str());
 }
 
-bool Core::plugin_Attach(Plugin *p)
-{
-    m64p_error ret;
 
-    ret = M64P::Core.AttachPlugin(p->GetType(), p->GetHandle());
-
-    if (ret != M64ERR_SUCCESS)
-    {
-        this->error_Message = "Core::plugin_Attach ( " + p->GetPlugin_t().Name + " ) Failed: ";
-        this->error_Message += M64P::Core.ErrorMessage(ret);
-    }
-
-    return ret == M64ERR_SUCCESS;
-}
 
 bool Core::plugins_Attach(void)
 {
-    return this->plugin_Attach(&this->plugin_Gfx) && this->plugin_Attach(&this->plugin_Audio) &&
-           this->plugin_Attach(&this->plugin_Input) && this->plugin_Attach(&this->plugin_Rsp);
+    return this->AttachPlugin(g_Plugins.GetCurrentPlugin(PluginType::Gfx)) &&
+         this->AttachPlugin(g_Plugins.GetCurrentPlugin(PluginType::Audio)) &&
+          this->AttachPlugin(g_Plugins.GetCurrentPlugin(PluginType::Input)) &&
+           this->AttachPlugin(g_Plugins.GetCurrentPlugin(PluginType::Rsp));
+  
+    //return this->plugin_Attach(&this->plugin_Gfx) && this->plugin_Attach(&this->plugin_Audio) &&
+      //     this->plugin_Attach(&this->plugin_Input) && this->plugin_Attach(&this->plugin_Rsp);
+    return true;
 }
 
 bool Core::plugins_Detach(void)
@@ -251,7 +263,7 @@ bool Core::plugin_LoadTodo(void)
 bool Core::SetPlugin(Plugin_t plugin)
 {
     bool ret;
-
+/*
     // don't apply plugins when emulation is running
     if (this->IsEmulationRunning() || this->isEmulationPaused())
     {
@@ -260,17 +272,6 @@ bool Core::SetPlugin(Plugin_t plugin)
     }
 
     Plugin *p = this->plugin_Get(plugin.Type);
-
-    if (p->HasInit())
-    {
-        ret = p->Shutdown();
-        if (!ret)
-        {
-            this->error_Message = "Core::SetPlugin p->Shutdown() Failed: ";
-            this->error_Message += p->GetLastError();
-            return false;
-        }
-    }
 
     ret = p->Init(plugin.FileName, this->handle);
     if (!ret)
@@ -287,18 +288,18 @@ bool Core::SetPlugin(Plugin_t plugin)
         this->error_Message += p->GetLastError();
         return false;
     }
-
+*/
     return true;
 }
 
 bool Core::GetCurrentPlugin(PluginType type, Plugin_t *plugin_t)
 {
-    Plugin *p = this->plugin_Get(type);
+   /* Plugin *p = this->plugin_Get(type);
 
     if (!p->HasInit())
         return false;
 
-    *plugin_t = p->GetPlugin_t();
+    *plugin_t = p->GetPlugin_t();*/
 
     return true;
 }
@@ -478,7 +479,7 @@ bool Core::IsEmulationRunning(void)
     return emulation_IsRunning();
 }
 
-bool Core::isEmulationPaused(void)
+bool Core::IsEmulationPaused(void)
 {
     return emulation_IsPaused();
 }
@@ -738,17 +739,17 @@ bool Core::rom_ApplyPluginOverlay(void)
     SettingsID settingIdArray[] = {SettingsID::Game_GFX_Plugin, SettingsID::Game_AUDIO_Plugin,
                                    SettingsID::Game_INPUT_Plugin, SettingsID::Game_RSP_Plugin};
 
-    for (int i = 0; i < 4; i++)
-        this->plugin_Todo.append(g_Plugins.GetCurrentPlugin((PluginType)i));
+    /*for (int i = 0; i < 4; i++)
+        this->plugin_Todo.append(g_Plugins.GetCurrentPlugin((PluginType)i)); */
 
     for (int i = 0; i < 4; i++)
     {
         value = g_Settings.GetStringValue(settingIdArray[i], section);
         if (!value.isEmpty())
         {
-            Plugin_t plugin = {.FileName = value};
+          /*  Plugin_t plugin = {.FileName = value};
             if (!this->SetPlugin(plugin))
-                return false;
+                return false;*/
         }
     }
 

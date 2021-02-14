@@ -18,6 +18,7 @@
 
 // needed for KeyBindButton in ui_SettingsDialog
 #include "../Widget/KeyBindButton.hpp"
+#include "M64P/Wrapper/Plugin.hpp"
 #include "M64P/Wrapper/Types.hpp"
 using namespace UserInterface::Widget;
 
@@ -40,7 +41,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     QString gameSection;
 
 
-    QList<M64P::Wrapper::Plugin_t> pluginList;
+    QList<M64P::Wrapper::Plugin> pluginList;
 
     void restoreDefaults(int);
     void reloadSettings(int);
@@ -53,6 +54,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void loadPluginSettings(void);
     void loadDirectorySettings(void);
     void loadKeybindSettings(void);
+    void loadRombrowserSettings(void);
     void loadBehaviorSettings(void);
 
     void loadDefaultCoreSettings(void);
@@ -61,6 +63,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void loadDefaultGamePluginSettings(void);
     void loadDefaultDirectorySettings(void);
     void loadDefaultKeybindSettings(void);
+    void loadDefaultRombrowserSettings(void);
     void loadDefaultBehaviorSettings(void);
 
     void saveSettings(void);
@@ -71,6 +74,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void savePluginSettings(void);
     void saveDirectorySettings(void);
     void saveKeybindSettings(void);
+    void saveRombrowserSettings(void);
     void saveBehaviorSettings(void);
 
     void commonKeyBindSettings(int);

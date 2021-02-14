@@ -709,7 +709,7 @@ void MainWindow::on_EventFilter_FocusIn(QFocusEvent *event)
     std::cout << "MainWindow::on_EventFilter_FocusIn" << std::endl;
     if (g_Settings.GetBoolValue(SettingsID::GUI_ResumeEmulationOnFocus))
     {
-        if (g_MupenApi.Core.isEmulationPaused())
+        if (g_MupenApi.Core.IsEmulationPaused())
             this->on_Action_System_Pause();
     }
 
@@ -732,7 +732,7 @@ void MainWindow::on_EventFilter_FocusOut(QFocusEvent *event)
 void MainWindow::on_Action_File_OpenRom(void)
 {
     bool isRunning = g_MupenApi.Core.IsEmulationRunning();
-    bool isPaused = g_MupenApi.Core.isEmulationPaused();
+    bool isPaused = g_MupenApi.Core.IsEmulationPaused();
 
     if (isRunning && !isPaused)
     {
@@ -767,7 +767,7 @@ void MainWindow::on_Action_File_OpenRom(void)
 void MainWindow::on_Action_File_OpenCombo(void)
 {
     bool isRunning = g_MupenApi.Core.IsEmulationRunning();
-    bool isPaused = g_MupenApi.Core.isEmulationPaused();
+    bool isPaused = g_MupenApi.Core.IsEmulationPaused();
 
     if (isRunning && !isPaused)
     {
@@ -816,7 +816,7 @@ void MainWindow::on_Action_File_OpenCombo(void)
 
 void MainWindow::on_Action_File_EndEmulation(void)
 {
-    if (g_MupenApi.Core.isEmulationPaused())
+    if (g_MupenApi.Core.IsEmulationPaused())
     {
         this->on_Action_System_Pause();
     }
@@ -946,7 +946,7 @@ void MainWindow::on_Action_System_SaveState(void)
 
 void MainWindow::on_Action_System_SaveAs(void)
 {
-    bool isPaused = g_MupenApi.Core.isEmulationPaused();
+    bool isPaused = g_MupenApi.Core.IsEmulationPaused();
 
     if (!isPaused)
     {
@@ -976,7 +976,7 @@ void MainWindow::on_Action_System_LoadState(void)
 
 void MainWindow::on_Action_System_Load(void)
 {
-    bool isPaused = g_MupenApi.Core.isEmulationPaused();
+    bool isPaused = g_MupenApi.Core.IsEmulationPaused();
 
     if (!isPaused)
     {
@@ -1048,7 +1048,7 @@ void MainWindow::on_Action_Options_ConfigControl(void)
 void MainWindow::on_Action_Options_Settings(void)
 {
     bool isRunning = g_MupenApi.Core.IsEmulationRunning();
-    bool isPaused = g_MupenApi.Core.isEmulationPaused();
+    bool isPaused = g_MupenApi.Core.IsEmulationPaused();
 
     if (isRunning && !isPaused)
     {
