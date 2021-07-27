@@ -2,7 +2,6 @@
 set -ex
 script_dir="$(dirname "$0")"
 toplvl_dir="$(realpath "$script_dir/../../")"
-
 build_config="${1:-Debug}"
 build_dir="$toplvl_dir/Build/$build_config"
 install_dir="$toplvl_dir/Bin/$build_config"
@@ -10,6 +9,13 @@ threads="${2:-$(nproc)}"
 
 generator="Unix Makefiles"
 msys2="0"
+
+if [ "$1" = "--help" ] ||
+    [ "$1" = "-h" ]
+then
+    echo "$0 [Build Config] [Thread Count]"
+    exit
+fi
 
 mkdir -p "$build_dir"
 
