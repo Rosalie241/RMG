@@ -536,21 +536,21 @@ void MainWindow::ui_Actions_Setup(bool inEmulation, bool isPaused)
     this->action_Options_FullScreen->setText("Full Screen");
     this->action_Options_FullScreen->setEnabled(inEmulation);
     this->action_Options_FullScreen->setShortcut(QKeySequence(keyBinding));
-    this->action_Options_ConfigGfx->setText("Configure Graphics Plugin...");
+    this->action_Options_ConfigGfx->setText("Graphics Settings");
     this->action_Options_ConfigGfx->setEnabled(g_MupenApi.Core.HasPluginConfig(M64P::Wrapper::PluginType::Gfx));
-    this->action_Options_ConfigAudio->setText("Configure Audio Plugin...");
+    this->action_Options_ConfigAudio->setText("Audio Settings");
     this->action_Options_ConfigAudio->setEnabled(g_MupenApi.Core.HasPluginConfig(M64P::Wrapper::PluginType::Audio));
-    this->action_Options_ConfigRsp->setText("Configure RSP Plugin...");
+    this->action_Options_ConfigRsp->setText("RSP Settings");
     this->action_Options_ConfigRsp->setEnabled(g_MupenApi.Core.HasPluginConfig(M64P::Wrapper::PluginType::Rsp));
-    this->action_Options_ConfigControl->setText("Configure Controller Plugin...");
+    this->action_Options_ConfigControl->setText("Input Settings");
     this->action_Options_ConfigControl->setEnabled(g_MupenApi.Core.HasPluginConfig(M64P::Wrapper::PluginType::Input));
     keyBinding = g_Settings.GetStringValue(SettingsID::KeyBinding_Settings);
-    this->action_Options_Settings->setText("Settings...");
+    this->action_Options_Settings->setText("Settings");
     this->action_Options_Settings->setShortcut(QKeySequence(keyBinding));
 
     this->action_Help_Support->setText("Discord");
     this->action_Help_HomePage->setText("Website");
-    this->action_Help_About->setText("About");
+    this->action_Help_About->setText("About RMG");
 }
 
 void MainWindow::ui_Actions_Add(void)
