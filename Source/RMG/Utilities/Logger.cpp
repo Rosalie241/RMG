@@ -54,7 +54,7 @@ void Logger::AddText(QString text)
     if (this->init_Failed)
         return;
 
-    if (text[text.size() - 1] != "\n")
+    if (text[text.size() - 1] != '\n')
         text += "\n";
 
     this->logfile.write(text.toUtf8());

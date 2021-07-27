@@ -5,7 +5,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt5 COMPONENTS Widgets Core REQUIRED)
+find_package(Qt5 COMPONENTS Gui Widgets Core REQUIRED)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2)
@@ -67,4 +67,4 @@ if(UNIX)
     target_link_libraries(RMG dl)
 endif(UNIX)
 
-target_link_libraries(RMG Qt5::Widgets)
+target_link_libraries(RMG Qt5::Gui Qt5::Widgets)

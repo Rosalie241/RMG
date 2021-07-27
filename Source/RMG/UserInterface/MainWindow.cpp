@@ -23,6 +23,7 @@
 #include <QStatusBar>
 #include <QString>
 #include <QUrl>
+#include <QActionGroup> 
 
 using namespace UserInterface;
 using namespace M64P::Wrapper;
