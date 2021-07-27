@@ -23,8 +23,8 @@ ExternalProject_Add(mupen64plus-core
     CONFIGURE_COMMAND ""
     INSTALL_COMMAND ""
 
-    GIT_REPOSITORY https://github.com/Rosalie241/mupen64plus-core
-    GIT_TAG 13729a892ee253e19627fe29887787817813dd9f
+    GIT_REPOSITORY https://github.com/mupen64plus/mupen64plus-core
+    GIT_TAG c44352d72dc05005bd23e826e0acb4267aa00719
 
     BUILD_COMMAND make all OSD=0 NEW_DYNAREC=${USE_NEW_DYNAREC} DEBUG=$<CONFIG:Debug>
     BUILD_IN_SOURCE False
@@ -105,7 +105,7 @@ ExternalProject_Add(mupen64plus-video-GLideN64
     SOURCE_DIR mupen64plus-video-GLideN64
 
     GIT_REPOSITORY https://github.com/gonetz/GLideN64
-    GIT_TAG ad272060f741d9b97e3a5585bd342f21b8184aee
+    GIT_TAG 73b2d0060bd2bbbe43d2a90dffff1909d3d1a932
 
     INSTALL_COMMAND ""
 
