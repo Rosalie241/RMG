@@ -3,3 +3,5 @@ Build/
 Bin/
 # VSCode Configuration
 .vscode/
+# Clangd cache
+.cache/
