@@ -1,26 +1,15 @@
-SettingsDialog
-- implement setting/getting game specific core setting overlays
-- implement setting/getting game specific plugin setting overlays
-
 CheatsDialog
 - begin with implementation
 
 MainWindow
-- implement opening combo
 - implement 'File->Rom Info...'
 - implement 'File->Start emulation'
 - implement 'File->Recent ROM'
 - implement 'File->Recent ROM Directories'
 - implement 'Help->About'
-- implement fullscreen functionality
-- implement customizable keybindings
 - implement language support
 
 RomBrowserWidget
 - implement settings to specify what columns are shown
 - implement keeping width size of columns (on refresh)
 - implement right click menu
-
-
-Angrylion-rdp-plus
-- implement configuration GUI
