@@ -533,7 +533,7 @@ void MainWindow::ui_Actions_Setup(bool inEmulation, bool isPaused)
     this->action_System_GSButton->setShortcut(QKeySequence(keyBinding));
 
     keyBinding = g_Settings.GetStringValue(SettingsID::KeyBinding_Fullscreen);
-    this->action_Options_FullScreen->setText("Full Screen");
+    this->action_Options_FullScreen->setText("Fullscreen");
     this->action_Options_FullScreen->setEnabled(inEmulation);
     this->action_Options_FullScreen->setShortcut(QKeySequence(keyBinding));
     this->action_Options_ConfigGfx->setText("Graphics Settings");
