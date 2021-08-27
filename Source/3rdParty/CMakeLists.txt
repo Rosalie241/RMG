@@ -105,7 +105,7 @@ ExternalProject_Add(mupen64plus-video-GLideN64
     SOURCE_DIR mupen64plus-video-GLideN64
 
     GIT_REPOSITORY https://github.com/gonetz/GLideN64
-    GIT_TAG 73b2d0060bd2bbbe43d2a90dffff1909d3d1a932
+    GIT_TAG ee9f47d077bfc607f92799cb3cb7103354e52e17
 
     INSTALL_COMMAND ""
 
