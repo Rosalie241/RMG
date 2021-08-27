@@ -23,10 +23,10 @@ ExternalProject_Add(mupen64plus-core
     CONFIGURE_COMMAND ""
     INSTALL_COMMAND ""
 
-    GIT_REPOSITORY https://github.com/mupen64plus/mupen64plus-core
-    GIT_TAG c44352d72dc05005bd23e826e0acb4267aa00719
+    GIT_REPOSITORY https://github.com/Rosalie241/mupen64plus-core
+    GIT_TAG 011f9cf3c4c88a8789b3831aa46a0d8fefd37c3b
 
-    BUILD_COMMAND make all OSD=0 NEW_DYNAREC=${USE_NEW_DYNAREC} DEBUG=$<CONFIG:Debug>
+    BUILD_COMMAND make all OSD=0 NEW_DYNAREC=${USE_NEW_DYNAREC} DEBUG=$<CONFIG:Debug> KEYBINDINGS=0
     BUILD_IN_SOURCE False
 
     BINARY_DIR ${M64P_CORE_DIR}/projects/unix
