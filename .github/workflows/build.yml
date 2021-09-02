@@ -1,4 +1,4 @@
-name: Build project
+name: RMG
 
 on: [push, pull_request]
 
@@ -12,15 +12,16 @@ jobs:
           sudo apt-get -qq update
           sudo apt-get upgrade
           sudo apt-get -y install cmake libhidapi-dev libsamplerate0-dev libminizip-dev libsdl2-dev libfreetype6-dev libgl1-mesa-dev libglu1-mesa-dev pkg-config zlib1g-dev binutils-dev libspeexdsp-dev qt5-default build-essential nasm git zip
+      - name: Prepare Environment
+        run: |
+          echo "GIT_REVISION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
       - name: Build RMG
         run: bash ./Source/Script/Build.sh Release
-      - name: Package RMG
-        run: bash ./Source/Script/Package.sh Release
-      - name: Upload Package
+      - name: Upload RMG
         uses: actions/upload-artifact@v2
         with:
-          name: Linux Build
-          path: Bin/*.zip
+          name: RMG-Linux-x64-${{ env.GIT_REVISION }}
+          path: Bin/Release/*
 
   Windows:
     runs-on: windows-latest
@@ -46,12 +47,16 @@ jobs:
             mingw-w64-x86_64-python3-pyopenssl
             mingw-w64-x86_64-nasm
             git
+      - name: Prepare Environment
+        run: |
+          $env:revision = git rev-parse --short HEAD
+          echo "GIT_REVISION=$env:revision" >> $env:GITHUB_ENV
+        shell: pwsh
       - name: Build RMG
-        run: msys2 -c './Source/Script/Build.sh Release'
-      - name: Create Setup
-        run: .\Build\Release\Source\Installer\CreateInstaller.bat
-      - name: Upload Setup
+        run: ./Source/Script/Build.sh Release
+        shell: msys2 {0}
+      - name: Upload RMG
         uses: actions/upload-artifact@v2
         with:
-          name: Windows Build
-          path: Bin/*.exe
+          name: RMG-Windows-x64-${{ env.GIT_REVISION }}
+          path: Bin/Release/*
