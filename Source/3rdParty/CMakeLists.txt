@@ -1,5 +1,5 @@
 #
-# Mupen64plus CMakeLists.txt
+# 3rdParty CMakeLists.txt
 #
 include(ExternalProject)
 
@@ -9,12 +9,9 @@ set(M64P_CORE_DIR ${THIRDPARTY_DIR}/mupen64plus-core)
 if(WIN32)
     set(SO_EXT "dll")
     set(CORE_FILE "mupen64plus.dll")
-    set(USE_NEW_DYNAREC "1")
 else(WIN32)
     set(SO_EXT "so")
     set(CORE_FILE "libmupen64plus.so.2.0.0")
-    # see https://github.com/mupen64plus/mupen64plus-core/issues/640
-    set(USE_NEW_DYNAREC "0")
 endif(WIN32)
 
 ExternalProject_Add(mupen64plus-core
@@ -23,10 +20,10 @@ ExternalProject_Add(mupen64plus-core
     CONFIGURE_COMMAND ""
     INSTALL_COMMAND ""
 
-    GIT_REPOSITORY https://github.com/Rosalie241/mupen64plus-core
-    GIT_TAG 011f9cf3c4c88a8789b3831aa46a0d8fefd37c3b
+    GIT_REPOSITORY https://github.com/mupen64plus/mupen64plus-core
+    GIT_TAG 251f2e1a6f82149029dae378a16aad804c806864
 
-    BUILD_COMMAND make all OSD=0 NEW_DYNAREC=${USE_NEW_DYNAREC} DEBUG=$<CONFIG:Debug> KEYBINDINGS=0
+    BUILD_COMMAND make all OSD=0 NEW_DYNAREC=1 DEBUG=$<CONFIG:Debug> KEYBINDINGS=0
     BUILD_IN_SOURCE False
 
     BINARY_DIR ${M64P_CORE_DIR}/projects/unix
