@@ -352,7 +352,6 @@ void MainWindow::menuBar_Setup(bool inEmulation, bool isPaused)
     this->menuBar_Menu->addAction(this->action_Options_Settings);
 
     this->menuBar_Menu = this->menuBar->addMenu("Help");
-    this->menuBar_Menu->addAction(this->action_Help_Support);
     this->menuBar_Menu->addAction(this->action_Help_HomePage);
     this->menuBar_Menu->addSeparator();
     this->menuBar_Menu->addAction(this->action_Help_About);
@@ -457,7 +456,6 @@ void MainWindow::ui_Actions_Init(void)
     this->action_Options_ConfigControl = new QAction(this);
     this->action_Options_Settings = new QAction(this);
 
-    this->action_Help_Support = new QAction(this);
     this->action_Help_HomePage = new QAction(this);
     this->action_Help_About = new QAction(this);
 }
@@ -548,7 +546,6 @@ void MainWindow::ui_Actions_Setup(bool inEmulation, bool isPaused)
     this->action_Options_Settings->setText("Settings");
     this->action_Options_Settings->setShortcut(QKeySequence(keyBinding));
 
-    this->action_Help_Support->setText("Discord");
     this->action_Help_HomePage->setText("Website");
     this->action_Help_About->setText("About RMG");
 }
@@ -579,7 +576,6 @@ void MainWindow::ui_Actions_Add(void)
     this->addAction(this->action_Options_ConfigRsp);
     this->addAction(this->action_Options_ConfigControl);
     this->addAction(this->action_Options_Settings);
-    this->addAction(this->action_Help_Support);
     this->addAction(this->action_Help_HomePage);
     this->addAction(this->action_Help_About);
 }
@@ -610,7 +606,6 @@ void MainWindow::ui_Actions_Remove(void)
     this->removeAction(this->action_Options_ConfigRsp);
     this->removeAction(this->action_Options_ConfigControl);
     this->removeAction(this->action_Options_Settings);
-    this->removeAction(this->action_Help_Support);
     this->removeAction(this->action_Help_HomePage);
     this->removeAction(this->action_Help_About);
 }
@@ -646,7 +641,6 @@ void MainWindow::ui_Actions_Connect(void)
             &MainWindow::on_Action_Options_ConfigControl);
     connect(this->action_Options_Settings, &QAction::triggered, this, &MainWindow::on_Action_Options_Settings);
 
-    connect(this->action_Help_Support, &QAction::triggered, this, &MainWindow::on_Action_Help_Support);
     connect(this->action_Help_HomePage, &QAction::triggered, this, &MainWindow::on_Action_Help_HomePage);
     connect(this->action_Help_About, &QAction::triggered, this, &MainWindow::on_Action_Help_About);
 }
@@ -1068,11 +1062,6 @@ void MainWindow::on_Action_Options_Settings(void)
     {
         this->on_Action_System_Pause();
     }
-}
-
-void MainWindow::on_Action_Help_Support(void)
-{
-    QDesktopServices::openUrl(QUrl(APP_URL_SUPPORT));
 }
 
 void MainWindow::on_Action_Help_HomePage(void)

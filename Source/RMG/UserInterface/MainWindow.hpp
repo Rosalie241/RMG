@@ -79,7 +79,6 @@ class MainWindow : public QMainWindow
     QAction *action_Options_ConfigRsp;
     QAction *action_Options_ConfigControl;
     QAction *action_Options_Settings;
-    QAction *action_Help_Support;
     QAction *action_Help_HomePage;
     QAction *action_Help_About;
 
@@ -154,7 +153,6 @@ class MainWindow : public QMainWindow
     void on_Action_Options_ConfigRsp(void);
     void on_Action_Options_ConfigControl(void);
     void on_Action_Options_Settings(void);
-    void on_Action_Help_Support(void);
     void on_Action_Help_HomePage(void);
     void on_Action_Help_About(void);
 
