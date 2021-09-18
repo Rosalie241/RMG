@@ -55,8 +55,15 @@ jobs:
       - name: Build RMG
         run: ./Source/Script/Build.sh Release
         shell: msys2 {0}
+      - name: Create Installer
+        run: .\Build\Release\Source\Installer\CreateInstaller.bat
       - name: Upload RMG
         uses: actions/upload-artifact@v2
         with:
           name: RMG-Windows-x64-${{ env.GIT_REVISION }}
           path: Bin/Release/*
+      - name: Upload Installer
+        uses: actions/upload-artifact@v2
+        with:
+          name: RMG-Setup-Windows-x64-${{ env.GIT_REVISION }}
+          path: Bin/*.exe
