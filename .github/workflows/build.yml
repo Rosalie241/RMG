@@ -20,7 +20,7 @@ jobs:
       - name: Upload RMG
         uses: actions/upload-artifact@v2
         with:
-          name: RMG-Linux-x64-${{ env.GIT_REVISION }}
+          name: RMG-Portable-Linux64-${{ env.GIT_REVISION }}
           path: Bin/Release/*
 
   Windows:
@@ -60,10 +60,10 @@ jobs:
       - name: Upload RMG
         uses: actions/upload-artifact@v2
         with:
-          name: RMG-Windows-x64-${{ env.GIT_REVISION }}
+          name: RMG-Portable-Windows64-${{ env.GIT_REVISION }}
           path: Bin/Release/*
       - name: Upload Installer
         uses: actions/upload-artifact@v2
         with:
-          name: RMG-Setup-Windows-x64-${{ env.GIT_REVISION }}
+          name: RMG-Setup-Windows64-${{ env.GIT_REVISION }}
           path: Bin/*.exe
