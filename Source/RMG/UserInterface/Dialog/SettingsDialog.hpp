@@ -80,7 +80,6 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void chooseDirectory(QLineEdit *);
 
   private slots:
-    void on_treeWidget_currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *);
     void on_buttonBox_clicked(QAbstractButton *);
 
     void on_changeScreenShotDirButton_clicked(void);
