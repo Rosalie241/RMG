@@ -269,7 +269,7 @@
              <property name="currentIndex">
               <number>0</number>
              </property>
-             <widget class="QWidget" name="tab">
+             <widget class="QWidget" name="innerGameTab">
               <attribute name="title">
                <string>Game</string>
               </attribute>
@@ -449,7 +449,7 @@
                </item>
               </layout>
              </widget>
-             <widget class="QWidget" name="tab_3">
+             <widget class="QWidget" name="innerGameCoreTab">
               <attribute name="title">
                <string>Core</string>
               </attribute>
@@ -521,7 +521,7 @@
                </item>
               </layout>
              </widget>
-             <widget class="QWidget" name="tab">
+             <widget class="QWidget" name="innerGamePluginsTab">
               <attribute name="title">
                <string>Plugins</string>
               </attribute>
@@ -1153,7 +1153,7 @@
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_33">
            <item>
-            <widget class="QTabWidget" name="tabWidget">
+            <widget class="QTabWidget" name="keybindingsMenuTabWidget">
              <property name="currentIndex">
               <number>0</number>
              </property>
