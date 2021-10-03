@@ -20,9 +20,9 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
 {
     this->setupUi(this);
 
-    this->treeWidget->topLevelItem(0)->setSelected(true);
-    this->treeWidget->expandAll();
-    this->treeWidget->setItemsExpandable(false);
+    //this->treeWidget->topLevelItem(0)->setSelected(true);
+    //this->treeWidget->expandAll();
+    //this->treeWidget->setItemsExpandable(false);
 
     this->inGame = g_EmuThread->isRunning();
     if (inGame)
@@ -34,12 +34,14 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
     else
     {
         this->hideEmulationInfoText();
-        this->treeWidget->topLevelItem(1)->setDisabled(true);
+        this->tabWidget->setTabEnabled(1, false);
+        //this->gameTab->setDisabled(true);
+        //this->treeWidget->topLevelItem(1)->setDisabled(true);
     }
 
     pluginList = g_Plugins.GetAvailablePlugins();
 
-    for (int i = 0; i < this->stackedWidget->count(); i++)
+    for (int i = 0; i < 8; i++)
         this->reloadSettings(i);
 
     int width = g_Settings.GetIntValue(SettingsID::GUI_SettingsDialogWidth);
@@ -551,7 +553,7 @@ void SettingsDialog::commonKeyBindSettings(int action)
 
 void SettingsDialog::hideEmulationInfoText(void)
 {
-    QHBoxLayout *layouts[] = {this->emulationInfoLayout, this->emulationInfoLayout_2, this->emulationInfoLayout_8};
+    QHBoxLayout *layouts[] = {this->emulationInfoLayout_0, this->emulationInfoLayout_1, this->emulationInfoLayout_2};
 
     for (const auto &layout : layouts)
     {
@@ -578,28 +580,6 @@ void SettingsDialog::chooseDirectory(QLineEdit *lineEdit)
     lineEdit->setText(dialog.directory().path());
 }
 
-void SettingsDialog::on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
-{
-    int topLevelCount = this->treeWidget->topLevelItemCount();
-    int index = this->treeWidget->indexOfTopLevelItem(current);
-
-    // count all children up until our item
-    for (int i = 0; i < topLevelCount && i < index; i++)
-    {
-        index += this->treeWidget->topLevelItem(i)->childCount();
-    }
-
-    // if we're a child ourselves,
-    // get index of parent and add that onto our own index
-    if (index == -1)
-    {
-        index = this->treeWidget->indexOfTopLevelItem(current->parent());
-        index += current->parent()->indexOfChild(current) + 1;
-    }
-
-    this->stackedWidget->setCurrentIndex(index);
-}
-
 void SettingsDialog::on_buttonBox_clicked(QAbstractButton *button)
 {
     QPushButton *pushButton = (QPushButton *)button;
@@ -611,11 +591,11 @@ void SettingsDialog::on_buttonBox_clicked(QAbstractButton *button)
 
     if (pushButton == resetButton)
     {
-        this->reloadSettings(this->stackedWidget->currentIndex());
+     //   this->reloadSettings(this->stackedWidget->currentIndex());
     }
     else if (pushButton == defaultButton)
     {
-        this->restoreDefaults(this->stackedWidget->currentIndex());
+      //  this->restoreDefaults(this->stackedWidget->currentIndex());
     }
     else if (pushButton == saveButton)
     {
