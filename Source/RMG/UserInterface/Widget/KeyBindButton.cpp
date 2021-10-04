@@ -1,7 +1,4 @@
 #include "KeyBindButton.hpp"
-#include <qkeysequence.h>
-#include <qnamespace.h>
-#include <qpushbutton.h>
 
 using namespace UserInterface::Widget;
 
@@ -17,8 +14,6 @@ KeyBindButton::~KeyBindButton(void)
 
 void KeyBindButton::keyPressEvent(QKeyEvent * event)
 {   
-    QKeySequence sequence;
-
     // filter keys
     switch (event->key())
     {
@@ -29,7 +24,7 @@ void KeyBindButton::keyPressEvent(QKeyEvent * event)
         case Qt::Key_AltGr:
         case Qt::Key_Super_L:
         case Qt::Key_Super_R:
-            sequence = QKeySequence(event->modifiers());
+            this->keySequence = QKeySequence(event->modifiers());
             break;
         // if a key requires a modifier(i.e shift), only use key
         case Qt::Key_AsciiTilde:
@@ -53,17 +48,17 @@ void KeyBindButton::keyPressEvent(QKeyEvent * event)
         case Qt::Key_Question:
         case Qt::Key_Greater:
         case Qt::Key_Less:
-            sequence = QKeySequence(event->key());
+            this->keySequence = QKeySequence(event->key());
             break;
         default:
-            sequence = QKeySequence(event->key() | event->modifiers());
+            this->keySequence = QKeySequence(event->key() | event->modifiers());
             break;
     }
+}
 
-    if (sequence.isEmpty())
-        return;
-
-    this->setText(sequence.toString());
+void KeyBindButton::keyReleaseEvent(QKeyEvent *event)
+{
+    this->setText(this->keySequence.toString());
 }
 
 void KeyBindButton::mousePressEvent(QMouseEvent *event)

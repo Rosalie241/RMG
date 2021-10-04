@@ -12,12 +12,16 @@ namespace Widget
 {
 class KeyBindButton : public QPushButton
 {
+private:
+    QKeySequence keySequence;
+
   public:
     KeyBindButton(QWidget *);
     ~KeyBindButton(void);
 
   protected:
     void keyPressEvent(QKeyEvent *);
+    void keyReleaseEvent(QKeyEvent *);
     void mousePressEvent(QMouseEvent *);
 };
 } // namespace Widget
