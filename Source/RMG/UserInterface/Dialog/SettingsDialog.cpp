@@ -8,8 +8,8 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "SettingsDialog.hpp"
-#include "../../Globals.hpp"
 #include "Utilities/SettingsID.hpp"
+#include "Globals.hpp"
 
 #include <QFileDialog>
 
@@ -36,7 +36,9 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
     pluginList = g_Plugins.GetAvailablePlugins();
 
     for (int i = 0; i < 8; i++)
+    {
         this->reloadSettings(i);
+    }
 
     int width = g_Settings.GetIntValue(SettingsID::GUI_SettingsDialogWidth);
     int height = g_Settings.GetIntValue(SettingsID::GUI_SettingsDialogHeight);
@@ -532,7 +534,7 @@ void SettingsDialog::commonHotkeySettings(int action)
 {
     struct
     {
-        KeyBindButton* button;
+        KeyBindButton *button;
         SettingsID settingId;
     } keybindings[] =
     {
