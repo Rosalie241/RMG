@@ -32,15 +32,14 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     Q_OBJECT
 
   private:
-
-
-    bool inGame;
+    bool inGame = false;
     M64P::Wrapper::RomInfo_t gameInfo = {0};
     M64P::Wrapper::RomInfo_t defaultGameInfo = {0};
     QString gameSection;
 
-
     QList<M64P::Wrapper::Plugin_t> pluginList;
+
+    int currentIndex(void);
 
     void restoreDefaults(int);
     void reloadSettings(int);
@@ -52,7 +51,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void loadGamePluginSettings(void);
     void loadPluginSettings(void);
     void loadDirectorySettings(void);
-    void loadKeybindSettings(void);
+    void loadHotkeySettings(void);
     void loadBehaviorSettings(void);
 
     void loadDefaultCoreSettings(void);
@@ -60,7 +59,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void loadDefaultGameCoreSettings(void);
     void loadDefaultGamePluginSettings(void);
     void loadDefaultDirectorySettings(void);
-    void loadDefaultKeybindSettings(void);
+    void loadDefaultHotkeySettings(void);
     void loadDefaultBehaviorSettings(void);
 
     void saveSettings(void);
@@ -70,10 +69,10 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void saveGamePluginSettings(void);
     void savePluginSettings(void);
     void saveDirectorySettings(void);
-    void saveKeybindSettings(void);
+    void saveHotkeySettings(void);
     void saveBehaviorSettings(void);
 
-    void commonKeyBindSettings(int);
+    void commonHotkeySettings(int);
 
     void hideEmulationInfoText(void);
 

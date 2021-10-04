@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>540</width>
-    <height>639</height>
+    <width>503</width>
+    <height>660</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -928,9 +928,9 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>-38</y>
-                <width>479</width>
-                <height>542</height>
+                <y>0</y>
+                <width>442</width>
+                <height>548</height>
                </rect>
               </property>
               <property name="sizePolicy">
@@ -1096,6 +1096,19 @@
                  </layout>
                 </widget>
                </item>
+               <item>
+                <spacer name="verticalSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
               </layout>
              </widget>
             </widget>
@@ -1147,9 +1160,9 @@
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="keybindingsTab">
+         <widget class="QWidget" name="hotkeysTab">
           <attribute name="title">
-           <string>Keybindings</string>
+           <string>Hotkeys</string>
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_33">
            <item>
@@ -1289,7 +1302,7 @@
               <attribute name="title">
                <string>System</string>
               </attribute>
-              <layout class="QVBoxLayout" name="verticalLayout_36">
+              <layout class="QVBoxLayout" name="verticalLayout_3">
                <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_75">
                  <item>
@@ -1319,6 +1332,24 @@
                  </item>
                  <item>
                   <widget class="KeyBindButton" name="hardResetKeyButton">
+                   <property name="text">
+                    <string/>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_89">
+                 <item>
+                  <widget class="QLabel" name="label_88">
+                   <property name="text">
+                    <string>Pause</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="KeyBindButton" name="pauseKeyButton">
                    <property name="text">
                     <string/>
                    </property>
@@ -1563,23 +1594,32 @@
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="behaviorTab">
+         <widget class="QWidget" name="interfaceTab">
           <attribute name="title">
-           <string>Behavior</string>
+           <string>Interface</string>
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_34">
            <item>
-            <widget class="QCheckBox" name="manualResizingCheckBox">
-             <property name="text">
-              <string>Allow Manual Window Resizing</string>
+            <widget class="QGroupBox" name="groupBox">
+             <property name="title">
+              <string>Emulation Window</string>
              </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="hideCursorCheckBox">
-             <property name="text">
-              <string>Hide Cursor In Emulation</string>
-             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_2">
+              <item>
+               <widget class="QCheckBox" name="hideCursorCheckBox">
+                <property name="text">
+                 <string>Hide Cursor During Emulation</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="manualResizingCheckBox">
+                <property name="text">
+                 <string>Allow Manual Window Resizing</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </widget>
            </item>
            <item>
@@ -1649,7 +1689,7 @@
         <enum>Qt::Horizontal</enum>
        </property>
        <property name="standardButtons">
-        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::Reset|QDialogButtonBox::RestoreDefaults|QDialogButtonBox::Save</set>
+        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::RestoreDefaults</set>
        </property>
       </widget>
      </item>

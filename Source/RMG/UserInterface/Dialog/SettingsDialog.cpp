@@ -20,10 +20,6 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
 {
     this->setupUi(this);
 
-    //this->treeWidget->topLevelItem(0)->setSelected(true);
-    //this->treeWidget->expandAll();
-    //this->treeWidget->setItemsExpandable(false);
-
     this->inGame = g_EmuThread->isRunning();
     if (inGame)
     {
@@ -35,8 +31,6 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
     {
         this->hideEmulationInfoText();
         this->tabWidget->setTabEnabled(1, false);
-        //this->gameTab->setDisabled(true);
-        //this->treeWidget->topLevelItem(1)->setDisabled(true);
     }
 
     pluginList = g_Plugins.GetAvailablePlugins();
@@ -59,6 +53,21 @@ SettingsDialog::~SettingsDialog(void)
 {
     g_Settings.SetValue(SettingsID::GUI_SettingsDialogWidth, this->size().width());
     g_Settings.SetValue(SettingsID::GUI_SettingsDialogHeight, this->size().height());
+}
+
+int SettingsDialog::currentIndex(void)
+{
+    int currentIndex = this->tabWidget->currentIndex();
+
+    if (currentIndex == 1)
+    { // game tab
+        currentIndex += this->innerGameTabWidget->currentIndex();
+    } else if (currentIndex > 1)
+    { // above game tab
+        currentIndex += this->innerGameTabWidget->count() - 1;
+    }
+
+    return currentIndex;
 }
 
 void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
@@ -85,7 +94,7 @@ void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
         loadDefaultDirectorySettings();
         break;
     case 6:
-        loadDefaultKeybindSettings();
+        loadDefaultHotkeySettings();
         break;
     case 7:
         loadDefaultBehaviorSettings();
@@ -117,7 +126,7 @@ void SettingsDialog::reloadSettings(int stackedWidgetIndex)
         loadDirectorySettings();
         break;
     case 6:
-        loadKeybindSettings();
+        loadHotkeySettings();
         break;
     case 7:
         loadBehaviorSettings();
@@ -264,9 +273,9 @@ void SettingsDialog::loadDirectorySettings(void)
     this->userCacheDirLineEdit->setText(userCacheDir);
 }
 
-void SettingsDialog::loadKeybindSettings(void)
+void SettingsDialog::loadHotkeySettings(void)
 {
-    commonKeyBindSettings(0);
+    this->commonHotkeySettings(0);
 }
 
 void SettingsDialog::loadBehaviorSettings(void)
@@ -356,9 +365,9 @@ void SettingsDialog::loadDefaultDirectorySettings(void)
     this->userCacheDirLineEdit->setText(g_Settings.GetDefaultStringValue(SettingsID::Core_UserCacheDirOverride));
 }
 
-void SettingsDialog::loadDefaultKeybindSettings(void)
+void SettingsDialog::loadDefaultHotkeySettings(void)
 {
-    commonKeyBindSettings(1);
+    this->commonHotkeySettings(1);
 }
 
 void SettingsDialog::loadDefaultBehaviorSettings(void)
@@ -380,7 +389,7 @@ void SettingsDialog::saveSettings(void)
     }
     this->savePluginSettings();
     this->saveDirectorySettings();
-    this->saveKeybindSettings();
+    this->saveHotkeySettings();
     this->saveBehaviorSettings();
 }
 
@@ -419,13 +428,21 @@ void SettingsDialog::saveGameSettings(void)
     int siDmaDuration = this->gameSiDmaDurationSpinBox->value();
 
     if (this->defaultGameInfo.Settings.disableextramem != (unsigned char)disableExtraMem)
+    {
         g_Settings.SetValue(SettingsID::Game_DisableExtraMem, this->gameSection, disableExtraMem);
+    }
     if (this->defaultGameInfo.Settings.savetype != saveType)
+    {
         g_Settings.SetValue(SettingsID::Game_SaveType, this->gameSection, saveType);
+    }
     if (this->defaultGameInfo.Settings.countperop != countPerOp)
+    {
         g_Settings.SetValue(SettingsID::Game_CountPerOp, this->gameSection, countPerOp);
+    }
     if (this->defaultGameInfo.Settings.sidmaduration != siDmaDuration)
+    {
         g_Settings.SetValue(SettingsID::Game_SiDmaDuration, this->gameSection, siDmaDuration);
+    }
 }
 
 void SettingsDialog::saveGameCoreSettings(void)
@@ -500,9 +517,9 @@ void SettingsDialog::saveDirectorySettings(void)
     g_Settings.SetValue(SettingsID::Core_UserCacheDirOverride, this->userCacheDirLineEdit->text());
 }
 
-void SettingsDialog::saveKeybindSettings(void)
+void SettingsDialog::saveHotkeySettings(void)
 {
-    commonKeyBindSettings(2);
+    this->commonHotkeySettings(2);
 }
 
 void SettingsDialog::saveBehaviorSettings(void)
@@ -511,41 +528,49 @@ void SettingsDialog::saveBehaviorSettings(void)
     g_Settings.SetValue(SettingsID::GUI_HideCursorInEmulation, this->hideCursorCheckBox->isChecked());
 }
 
-void SettingsDialog::commonKeyBindSettings(int action)
+void SettingsDialog::commonHotkeySettings(int action)
 {
-    KeyBindButton *buttons[] = {this->openRomKeyButton,   this->openComboKeyButton,      this->startEmuKeyButton,
-                                this->endEmuKeyButton,    this->refreshRomListKeyButton, this->exitKeyButton,
+    struct
+    {
+        KeyBindButton* button;
+        SettingsID settingId;
+    } keybindings[] =
+    {
+        { this->openRomKeyButton, SettingsID::KeyBinding_OpenROM },
+        { this->openComboKeyButton, SettingsID::KeyBinding_OpenCombo },
+        { this->startEmuKeyButton, SettingsID::KeyBinding_StartEmulation },
+        { this->endEmuKeyButton, SettingsID::KeyBinding_EndEmulation },
+        { this->refreshRomListKeyButton, SettingsID::KeyBinding_RefreshROMList },
+        { this->exitKeyButton, SettingsID::KeyBinding_Exit },
+        { this->softResetKeyButton, SettingsID::KeyBinding_SoftReset },
+        { this->hardResetKeyButton, SettingsID::KeyBinding_HardReset },
+        { this->pauseKeyButton, SettingsID::KeyBinding_Resume },
+        { this->generateBitmapKeyButton, SettingsID::KeyBinding_GenerateBitmap },
+        { this->limitFPSKeyButton, SettingsID::KeyBinding_LimitFPS },
+        { this->swapDiskKeyButton, SettingsID::KeyBinding_SwapDisk },
+        { this->saveStateKeyButton, SettingsID::KeyBinding_SaveState },
+        { this->saveAsKeyButton, SettingsID::KeyBinding_SaveAs },
+        { this->loadStateKeyButton, SettingsID::KeyBinding_LoadState },
+        { this->loadKeyButton, SettingsID::KeyBinding_Load },
+        { this->cheatsKeyButton, SettingsID::KeyBinding_Cheats },
+        { this->gsButtonKeyButton, SettingsID::KeyBinding_GSButton },
+        { this->fullscreenKeyButton, SettingsID::KeyBinding_Fullscreen },
+        { this->settingsKeyButton, SettingsID::KeyBinding_Settings },
+    };
 
-                                this->softResetKeyButton, this->hardResetKeyButton,      this->generateBitmapKeyButton,
-                                this->limitFPSKeyButton,  this->swapDiskKeyButton,       this->saveStateKeyButton,
-                                this->saveAsKeyButton,    this->loadStateKeyButton,      this->loadKeyButton,
-                                this->cheatsKeyButton,    this->gsButtonKeyButton,       this->fullscreenKeyButton,
-                                this->settingsKeyButton};
-
-    SettingsID settings[] = {SettingsID::KeyBinding_OpenROM,        SettingsID::KeyBinding_OpenCombo,
-                             SettingsID::KeyBinding_StartEmulation, SettingsID::KeyBinding_EndEmulation,
-                             SettingsID::KeyBinding_RefreshROMList, SettingsID::KeyBinding_Exit,
-                             SettingsID::KeyBinding_SoftReset,      SettingsID::KeyBinding_HardReset,
-                             SettingsID::KeyBinding_GenerateBitmap, SettingsID::KeyBinding_LimitFPS,
-                             SettingsID::KeyBinding_SwapDisk,       SettingsID::KeyBinding_SaveState,
-                             SettingsID::KeyBinding_SaveAs,         SettingsID::KeyBinding_LoadState,
-                             SettingsID::KeyBinding_Load,           SettingsID::KeyBinding_Cheats,
-                             SettingsID::KeyBinding_GSButton,       SettingsID::KeyBinding_Fullscreen,
-                             SettingsID::KeyBinding_Settings};
-
-    for (int i = 0; i < (sizeof(buttons) / sizeof(buttons[0])); i++)
+    for (const auto& keybinding : keybindings)
     {
         switch (action)
         {
         default:
         case 0:
-            buttons[i]->setText(g_Settings.GetStringValue(settings[i]));
+            keybinding.button->setText(g_Settings.GetStringValue(keybinding.settingId));
             break;
         case 1:
-            buttons[i]->setText(g_Settings.GetDefaultStringValue(settings[i]));
+            keybinding.button->setText(g_Settings.GetDefaultStringValue(keybinding.settingId));
             break;
         case 2:
-            g_Settings.SetValue(settings[i], buttons[i]->text());
+            g_Settings.SetValue(keybinding.settingId, keybinding.button->text());
             break;
         }
     }
@@ -575,7 +600,9 @@ void SettingsDialog::chooseDirectory(QLineEdit *lineEdit)
 
     ret = dialog.exec();
     if (!ret)
+    {
         return;
+    }
 
     lineEdit->setText(dialog.directory().path());
 }
@@ -583,23 +610,13 @@ void SettingsDialog::chooseDirectory(QLineEdit *lineEdit)
 void SettingsDialog::on_buttonBox_clicked(QAbstractButton *button)
 {
     QPushButton *pushButton = (QPushButton *)button;
-    QPushButton *resetButton = this->buttonBox->button(QDialogButtonBox::Reset);
     QPushButton *defaultButton = this->buttonBox->button(QDialogButtonBox::RestoreDefaults);
-    QPushButton *saveButton = this->buttonBox->button(QDialogButtonBox::Save);
     QPushButton *cancelButton = this->buttonBox->button(QDialogButtonBox::Cancel);
     QPushButton *okButton = this->buttonBox->button(QDialogButtonBox::Ok);
 
-    if (pushButton == resetButton)
+    if (pushButton == defaultButton)
     {
-     //   this->reloadSettings(this->stackedWidget->currentIndex());
-    }
-    else if (pushButton == defaultButton)
-    {
-      //  this->restoreDefaults(this->stackedWidget->currentIndex());
-    }
-    else if (pushButton == saveButton)
-    {
-        this->saveSettings();
+        this->restoreDefaults(this->currentIndex());
     }
     else if (pushButton == cancelButton)
     {
