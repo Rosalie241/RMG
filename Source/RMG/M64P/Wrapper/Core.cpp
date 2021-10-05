@@ -824,7 +824,6 @@ bool Core::rom_HasPluginOverlay(QString file)
     return false;
 }
 
-#include <iostream>
 bool Core::rom_ApplyOverlay(void)
 {
     bool ret;
@@ -907,7 +906,6 @@ void Core::core_DebugCallback(void *Context, int level, const char *message)
 
 void Core::core_StateCallback(void *Context, m64p_core_param ParamChanged, int NewValue)
 {
-    std::cout << "StateCallback: " << ParamChanged << ": " << NewValue << std::endl;
 }
 
 bool Core::rom_Close(void)
