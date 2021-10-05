@@ -99,7 +99,7 @@ void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
         loadDefaultHotkeySettings();
         break;
     case 7:
-        loadDefaultBehaviorSettings();
+        loadDefaultInterfaceSettings();
         break;
     }
 }
@@ -131,7 +131,7 @@ void SettingsDialog::reloadSettings(int stackedWidgetIndex)
         loadHotkeySettings();
         break;
     case 7:
-        loadBehaviorSettings();
+        loadInterfaceSettings();
         break;
     }
 }
@@ -280,10 +280,11 @@ void SettingsDialog::loadHotkeySettings(void)
     this->commonHotkeySettings(0);
 }
 
-void SettingsDialog::loadBehaviorSettings(void)
+void SettingsDialog::loadInterfaceSettings(void)
 {
     this->manualResizingCheckBox->setChecked(g_Settings.GetBoolValue(SettingsID::GUI_AllowManualResizing));
     this->hideCursorCheckBox->setChecked(g_Settings.GetBoolValue(SettingsID::GUI_HideCursorInEmulation));
+    this->statusBarMessageDurationSpinBox->setValue(g_Settings.GetIntValue(SettingsID::GUI_StatusbarMessageDuration));
 }
 
 void SettingsDialog::loadDefaultCoreSettings(void)
@@ -372,10 +373,11 @@ void SettingsDialog::loadDefaultHotkeySettings(void)
     this->commonHotkeySettings(1);
 }
 
-void SettingsDialog::loadDefaultBehaviorSettings(void)
+void SettingsDialog::loadDefaultInterfaceSettings(void)
 {
     this->manualResizingCheckBox->setChecked(g_Settings.GetDefaultBoolValue(SettingsID::GUI_AllowManualResizing));
     this->hideCursorCheckBox->setChecked(g_Settings.GetDefaultBoolValue(SettingsID::GUI_HideCursorInEmulation));
+    this->statusBarMessageDurationSpinBox->setValue(g_Settings.GetDefaultIntValue(SettingsID::GUI_StatusbarMessageDuration));
 }
 
 void SettingsDialog::saveSettings(void)
@@ -392,7 +394,7 @@ void SettingsDialog::saveSettings(void)
     this->savePluginSettings();
     this->saveDirectorySettings();
     this->saveHotkeySettings();
-    this->saveBehaviorSettings();
+    this->saveInterfaceSettings();
 }
 
 void SettingsDialog::saveCoreSettings(void)
@@ -524,10 +526,11 @@ void SettingsDialog::saveHotkeySettings(void)
     this->commonHotkeySettings(2);
 }
 
-void SettingsDialog::saveBehaviorSettings(void)
+void SettingsDialog::saveInterfaceSettings(void)
 {
     g_Settings.SetValue(SettingsID::GUI_AllowManualResizing, this->manualResizingCheckBox->isChecked());
     g_Settings.SetValue(SettingsID::GUI_HideCursorInEmulation, this->hideCursorCheckBox->isChecked());
+    g_Settings.SetValue(SettingsID::GUI_StatusbarMessageDuration, this->statusBarMessageDurationSpinBox->value());
 }
 
 void SettingsDialog::commonHotkeySettings(int action)

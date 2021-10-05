@@ -279,8 +279,8 @@ Setting_t Settings::getSetting(SettingsID id)
     case SettingsID::GUI_HideCursorInEmulation:
         setting = {GUI_SECTION, "HideCursorInEmulation", false, "", false};
         break;
-    case SettingsID::GUI_LabelDeletionTimeout:
-        setting = {GUI_SECTION, "LabelDeletionTimeout", 3000, "", false};
+    case SettingsID::GUI_StatusbarMessageDuration:
+        setting = {GUI_SECTION, "StatusbarMessageDuration", 3, "", false};
         break;
         /*
         case SettingsID::GUI_PauseEmulationOnFocusLoss:

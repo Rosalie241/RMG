@@ -52,7 +52,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void loadPluginSettings(void);
     void loadDirectorySettings(void);
     void loadHotkeySettings(void);
-    void loadBehaviorSettings(void);
+    void loadInterfaceSettings(void);
 
     void loadDefaultCoreSettings(void);
     void loadDefaultGameSettings(void);
@@ -60,7 +60,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void loadDefaultGamePluginSettings(void);
     void loadDefaultDirectorySettings(void);
     void loadDefaultHotkeySettings(void);
-    void loadDefaultBehaviorSettings(void);
+    void loadDefaultInterfaceSettings(void);
 
     void saveSettings(void);
     void saveCoreSettings(void);
@@ -70,7 +70,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void savePluginSettings(void);
     void saveDirectorySettings(void);
     void saveHotkeySettings(void);
-    void saveBehaviorSettings(void);
+    void saveInterfaceSettings(void);
 
     void commonHotkeySettings(int);
 

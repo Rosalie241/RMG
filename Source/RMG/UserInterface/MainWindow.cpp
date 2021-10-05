@@ -146,7 +146,7 @@ void MainWindow::ui_Setup(void)
 
     this->statusBar()->setHidden(false);
     this->statusBar()->addPermanentWidget(this->ui_StatusBar_Label, 1);
-    this->ui_TimerTimeout = g_Settings.GetIntValue(SettingsID::GUI_LabelDeletionTimeout);
+    this->ui_TimerTimeout = g_Settings.GetIntValue(SettingsID::GUI_StatusbarMessageDuration);
 
     this->ui_Widgets->addWidget(this->ui_Widget_RomBrowser);
     this->ui_Widgets->addWidget(this->ui_Widget_OpenGL->GetWidget());
@@ -213,6 +213,9 @@ void MainWindow::ui_InEmulation(bool inEmulation, bool isPaused)
     {
         this->ui_NoSwitchToRomBrowser = false;
     }
+
+    // update timer timeout
+    this->ui_TimerTimeout = g_Settings.GetIntValue(SettingsID::GUI_StatusbarMessageDuration);
 }
 
 void MainWindow::ui_SaveGeometry(void)
@@ -1254,5 +1257,5 @@ void MainWindow::on_Core_DebugCallback(MessageType type, QString message)
     {
         this->killTimer(this->ui_TimerId);
     }
-    this->ui_TimerId = this->startTimer(this->ui_TimerTimeout);
+    this->ui_TimerId = this->startTimer(this->ui_TimerTimeout * 1000);
 }
