@@ -10,8 +10,8 @@
 #ifndef MAINWINDOW_HPP
 #define MAINWINDOW_HPP
 
-#include "../Globals.hpp"
-#include "../Thread/EmulationThread.hpp"
+#include "Globals.hpp"
+#include "Thread/EmulationThread.hpp"
 #include "Dialog/SettingsDialog.hpp"
 #include "EventFilter.hpp"
 #include "Widget/OGLWidget.hpp"

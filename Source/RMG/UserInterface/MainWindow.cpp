@@ -81,14 +81,15 @@ void MainWindow::closeEvent(QCloseEvent *event)
     this->on_Action_File_EndEmulation();
 
     while (g_EmuThread->isRunning())
+    {
         QCoreApplication::processEvents();
+    }
 
     g_Settings.SetValue(SettingsID::GUI_RomBrowserGeometry,
                         QString(this->saveGeometry().toBase64().toStdString().c_str()));
 
     QMainWindow::closeEvent(event);
 }
-
 
 void MainWindow::ui_Init(void)
 {
@@ -162,7 +163,9 @@ void MainWindow::ui_Stylesheet_Setup(void)
     QFile stylesheet(APP_STYLESHEET_FILE);
 
     if (!stylesheet.open(QIODevice::ReadOnly))
+    {
         return;
+    }
 
     this->setStyleSheet(stylesheet.readAll());
 }
@@ -232,13 +235,19 @@ void MainWindow::ui_LoadGeometry(void)
 
     // restore from fullscreen aswell
     if (this->isFullScreen())
+    {
         this->showNormal();
+    }
 
     if (this->menuBar->isHidden())
+    {
         this->menuBar->show();
+    }
 
     if (this->statusBar()->isHidden())
+    {
         this->statusBar()->show();
+    }
 
     this->setMinimumSize(0, 0);
     this->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
@@ -1149,13 +1158,19 @@ void MainWindow::on_VidExt_SetFullscreenModeWithRate(int width, int height, int 
     }
 
     if (!this->isFullScreen())
+    {
         this->showFullScreen();
+    }
 
     if (!this->menuBar->isHidden())
+    {
         this->menuBar->hide();
+    }
 
     if (!this->statusBar()->isHidden())
+    {
         this->statusBar()->hide();
+    }
 
     this->ui_Actions_Add();
     this->on_VidExt_ResizeWindow(width, height);
