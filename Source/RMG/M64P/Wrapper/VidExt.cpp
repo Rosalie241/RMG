@@ -8,12 +8,11 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "VidExt.hpp"
-#include "../../Globals.hpp"
+#include "Globals.hpp"
 
 #include <QApplication>
 #include <QOpenGLContext>
 #include <QThread>
-#include <iostream>
 #include <QScreen>
 
 static QSurfaceFormat format;
@@ -22,8 +21,6 @@ static QThread *renderThread;
 static bool ogl_setup = false;
 static void VidExt_OglSetup(void)
 {
-    std::cout << __FUNCTION__ << std::endl;
-
     g_EmuThread->on_VidExt_SetupOGL(format, QThread::currentThread());
 
     while (!g_OGLWidget->isValid())
@@ -36,8 +33,6 @@ static void VidExt_OglSetup(void)
 
 m64p_error VidExt_Init(void)
 {
-    std::cout << __FUNCTION__ << std::endl;
-
     renderThread = QThread::currentThread();
 
     format = QSurfaceFormat::defaultFormat();
@@ -55,8 +50,6 @@ m64p_error VidExt_Init(void)
 
 m64p_error VidExt_Quit(void)
 {
-    std::cout << __FUNCTION__ << std::endl;
-
     g_OGLWidget->MoveToThread(QApplication::instance()->thread());
     g_EmuThread->on_VidExt_Quit();
     ogl_setup = false;
@@ -66,8 +59,6 @@ m64p_error VidExt_Quit(void)
 
 m64p_error VidExt_ListModes(m64p_2d_size *SizeArray, int *NumSizes)
 {
-    std::cout << __FUNCTION__ << std::endl;
-
     QSize size = QApplication::primaryScreen()->size();
     SizeArray[0].uiHeight = size.height();
     SizeArray[0].uiWidth = size.width();
@@ -78,8 +69,6 @@ m64p_error VidExt_ListModes(m64p_2d_size *SizeArray, int *NumSizes)
 
 m64p_error VidExt_ListRates(m64p_2d_size Size, int *NumRates, int *Rates)
 {
-    std::cout << __FUNCTION__ << std::endl;
-
     Rates[0] = QApplication::primaryScreen()->refreshRate();
     *NumRates = 1;
 
@@ -88,10 +77,10 @@ m64p_error VidExt_ListRates(m64p_2d_size Size, int *NumRates, int *Rates)
 
 m64p_error VidExt_SetMode(int Width, int Height, int BitsPerPixel, int ScreenMode, int Flags)
 {
-    std::cout << __FUNCTION__ << std::endl;
-
     if (!ogl_setup)
+    {
         VidExt_OglSetup();
+    }
 
     g_EmuThread->on_VidExt_SetMode(Width, Height, BitsPerPixel, ScreenMode, Flags);
     return M64ERR_SUCCESS;
@@ -99,10 +88,10 @@ m64p_error VidExt_SetMode(int Width, int Height, int BitsPerPixel, int ScreenMod
 
 m64p_error VidExt_SetModeWithRate(int Width, int Height, int RefreshRate, int BitsPerPixel, int ScreenMode, int Flags)
 {
-    std::cout << __FUNCTION__ << std::endl;
-
     if (!ogl_setup)
+    {
         VidExt_OglSetup();
+    }
 
     switch (ScreenMode)
     {
@@ -121,13 +110,11 @@ m64p_error VidExt_SetModeWithRate(int Width, int Height, int RefreshRate, int Bi
 
 m64p_function VidExt_GLGetProc(const char *Proc)
 {
-    std::cout << __FUNCTION__ << std::endl;
     return g_OGLWidget->context()->getProcAddress(Proc);
 }
 
 m64p_error VidExt_GLSetAttr(m64p_GLattr Attr, int Value)
 {
-    std::cout << __FUNCTION__ << std::endl;
 
     switch (Attr)
     {
@@ -190,7 +177,6 @@ m64p_error VidExt_GLSetAttr(m64p_GLattr Attr, int Value)
 
 m64p_error VidExt_GLGetAttr(m64p_GLattr Attr, int *pValue)
 {
-    std::cout << __FUNCTION__ << std::endl;
     QSurfaceFormat::SwapBehavior SB = format.swapBehavior();
     switch (Attr)
     {
@@ -254,7 +240,9 @@ m64p_error VidExt_GLGetAttr(m64p_GLattr Attr, int *pValue)
 m64p_error VidExt_GLSwapBuf(void)
 {
     if (renderThread != QThread::currentThread())
+    {
         return M64ERR_UNSUPPORTED;
+    }
 
     g_OGLWidget->context()->swapBuffers(g_OGLWidget);
     g_OGLWidget->context()->makeCurrent(g_OGLWidget);
@@ -264,27 +252,23 @@ m64p_error VidExt_GLSwapBuf(void)
 
 m64p_error VidExt_SetCaption(const char *Title)
 {
-    std::cout << __FUNCTION__ << std::endl;
     g_EmuThread->on_VidExt_SetCaption(QString(Title));
     return M64ERR_SUCCESS;
 }
 
 m64p_error VidExt_ToggleFS(void)
 {
-    std::cout << __FUNCTION__ << std::endl;
     g_EmuThread->on_VidExt_ToggleFS();
     return M64ERR_SUCCESS;
 }
 
 m64p_error VidExt_ResizeWindow(int Width, int Height)
 {
-    std::cout << __FUNCTION__ << std::endl;
     g_EmuThread->on_VidExt_ResizeWindow(Width, Height);
     return M64ERR_SUCCESS;
 }
 
 uint32_t VidExt_GLGetDefaultFramebuffer(void)
 {
-    std::cout << __FUNCTION__ << std::endl;
     return g_OGLWidget->context()->defaultFramebufferObject();
 }
