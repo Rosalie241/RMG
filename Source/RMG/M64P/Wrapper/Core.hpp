@@ -53,8 +53,8 @@ class Core : public QObject
 
     bool TakeScreenshot(void);
 
-    bool EnableSpeedLimiter(void);
-    bool DisableSpeedLimiter(void);
+    bool GetSpeedLimiterState(void);
+    bool SetSpeedLimiter(bool);
 
     bool PressGameSharkButton(void);
 
@@ -120,7 +120,6 @@ class Core : public QObject
     bool emulation_QueryState(m64p_emu_state *);
     bool emulation_IsRunning(void);
     bool emulation_IsPaused(void);
-    bool emulation_SpeedLimited(bool);
   signals:
     void on_Core_DebugCallback(MessageType, QString);
 };

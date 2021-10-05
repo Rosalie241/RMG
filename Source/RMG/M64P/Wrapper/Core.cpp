@@ -99,14 +99,35 @@ bool Core::TakeScreenshot(void)
     return ret == M64ERR_SUCCESS;
 }
 
-bool Core::EnableSpeedLimiter(void)
+bool Core::GetSpeedLimiterState(void)
 {
-    return this->emulation_SpeedLimited(true);
+    m64p_error ret;
+    int value = 0;
+
+    ret = M64P::Core.DoCommand(M64CMD_CORE_STATE_QUERY, M64CORE_SPEED_LIMITER, &value);
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_Message = "Core::GetSpeedLimiterState: M64P::Core.DoCommand(M64CMD_CORE_STATE_QUERY) Failed: ";
+        this->error_Message += M64P::Core.ErrorMessage(ret);
+    }
+
+    return value;
 }
 
-bool Core::DisableSpeedLimiter(void)
+bool Core::SetSpeedLimiter(bool enabled)
 {
-    return this->emulation_SpeedLimited(false);
+    m64p_error ret;
+
+    int value = enabled ? 1 : 0;
+
+    ret = M64P::Core.DoCommand(M64CMD_CORE_STATE_SET, M64CORE_SPEED_LIMITER, &value);
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_Message = "Core::SetSpeedLimiter: M64P::Core.DoCommand(M64CMD_CORE_STATE_SET) Failed: ";
+        this->error_Message += M64P::Core.ErrorMessage(ret);
+    }
+
+    return ret == M64ERR_SUCCESS;
 }
 
 QList<Plugin_t> Core::GetPlugins(PluginType type)
@@ -935,20 +956,4 @@ bool Core::emulation_IsPaused(void)
         return false;
 
     return state == M64EMU_PAUSED;
-}
-
-bool Core::emulation_SpeedLimited(bool enabled)
-{
-    m64p_error ret;
-
-    int value = enabled ? 1 : 0;
-
-    ret = M64P::Core.DoCommand(M64CMD_CORE_STATE_SET, M64CORE_SPEED_LIMITER, &value);
-    if (ret != M64ERR_SUCCESS)
-    {
-        this->error_Message = "Core::emulation_SpeedLimited: M64P::Core.DoCommand(M64CMD_CORE_STATE_SET) Failed: ";
-        this->error_Message += M64P::Core.ErrorMessage(ret);
-    }
-
-    return ret == M64ERR_SUCCESS;
 }
