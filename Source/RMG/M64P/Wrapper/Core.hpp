@@ -58,6 +58,7 @@ class Core : public QObject
 
     bool PressGameSharkButton(void);
 
+    int GetSaveSlot(void);
     bool SetSaveSlot(int);
 
     bool SaveStateAsFile(QString);

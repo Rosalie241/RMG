@@ -508,6 +508,21 @@ bool Core::PressGameSharkButton(void)
     return true;
 }
 
+int Core::GetSaveSlot(void)
+{
+    m64p_error ret;
+    int slot = 0;
+
+    ret = M64P::Core.DoCommand(M64CMD_CORE_STATE_QUERY, M64CORE_SAVESTATE_SLOT, &slot);
+    if (ret != M64ERR_SUCCESS)
+    {
+        this->error_Message = "Core::GetSaveSlot M64P::Core.DoCommand(M64CMD_CORE_STATE_QUERY, M64CORE_SAVESTATE_SLOT) Failed: ";
+        this->error_Message += M64P::Core.ErrorMessage(ret);
+    }
+
+    return slot;
+}
+
 bool Core::SetSaveSlot(int slot)
 {
     m64p_error ret;
