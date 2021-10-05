@@ -330,7 +330,7 @@ void MainWindow::menuBar_Setup(bool inEmulation, bool isPaused)
             {
                 if (checked)
                 {
-                    int slot = slotAction->text().split(" ").last().toInt() - 1;
+                    int slot = slotAction->text().split(" ").last().toInt();
                     this->on_Action_System_CurrentSaveState(slot);
                 }
             });
