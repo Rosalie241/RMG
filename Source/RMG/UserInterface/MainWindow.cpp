@@ -315,17 +315,19 @@ void MainWindow::menuBar_Setup(bool inEmulation, bool isPaused)
         QActionGroup *slotActionGroup = new QActionGroup(this);
         QList<QAction *> slotActions;
         QAction *slotAction;
+        int currentSaveslot = g_MupenApi.Core.GetSaveSlot();
         for (int i = 0; i < 10; i++)
         {
             slotActions.append(new QAction(this));
             slotAction = slotActions.at(i);
 
-            slotAction->setText("Slot " + QString::number(i + 1));
+            slotAction->setText("Slot " + QString::number(i));
             slotAction->setCheckable(true);
-            slotAction->setChecked(i == 0);
+            slotAction->setChecked(i == currentSaveslot);
             slotAction->setActionGroup(slotActionGroup);
 
-            connect(slotAction, &QAction::triggered, [=](bool checked) {
+            connect(slotAction, &QAction::triggered, [=](bool checked)
+            {
                 if (checked)
                 {
                     int slot = slotAction->text().split(" ").last().toInt() - 1;
