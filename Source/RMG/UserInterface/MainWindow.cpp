@@ -507,7 +507,7 @@ void MainWindow::ui_Actions_Setup(bool inEmulation, bool isPaused)
     this->action_System_LimitFPS->setText("Limit FPS");
     this->action_System_LimitFPS->setShortcut(QKeySequence(keyBinding));
     this->action_System_LimitFPS->setCheckable(true);
-    this->action_System_LimitFPS->setChecked(true);
+    this->action_System_LimitFPS->setChecked(g_MupenApi.Core.GetSpeedLimiterState());
     keyBinding = g_Settings.GetStringValue(SettingsID::KeyBinding_SwapDisk);
     this->action_System_SwapDisk->setText("Swap Disk");
     this->action_System_SwapDisk->setShortcut(QKeySequence(keyBinding));
