@@ -89,7 +89,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
     QMainWindow::closeEvent(event);
 }
 
-#include <iostream>
 
 void MainWindow::ui_Init(void)
 {
@@ -1109,7 +1108,6 @@ void MainWindow::on_VidExt_SetupOGL(QSurfaceFormat format, QThread *thread)
 
 void MainWindow::on_VidExt_SetMode(int width, int height, int bps, int mode, int flags)
 {
-    std::cout << "on_VidExt_SetMode" << std::endl;
     this->on_VidExt_ResizeWindow(width, height);
 }
 
@@ -1134,7 +1132,6 @@ void MainWindow::on_VidExt_SetWindowedModeWithRate(int width, int height, int re
     if (this->statusBar()->isHidden())
         this->statusBar()->show();
 
-    std::cout << "on_VidExt_SetWindowedModeWithRate" << std::endl;
     this->ui_Actions_Remove();
     this->on_VidExt_ResizeWindow(width, height);
 }
@@ -1160,15 +1157,12 @@ void MainWindow::on_VidExt_SetFullscreenModeWithRate(int width, int height, int 
     if (!this->statusBar()->isHidden())
         this->statusBar()->hide();
 
-    std::cout << "on_VidExt_SetFullscreenModeWithRate" << std::endl;
     this->ui_Actions_Add();
     this->on_VidExt_ResizeWindow(width, height);
 }
 
 void MainWindow::on_VidExt_ResizeWindow(int width, int height)
 {
-    std::cout << "on_VidExt_ResizeWindow(" << width << "," << height << ");" << std::endl;
-
     // account for HiDPI scaling
     // see https://github.com/Rosalie241/RMG/issues/2
     height /= this->devicePixelRatioF();
@@ -1211,18 +1205,14 @@ void MainWindow::on_VidExt_ResizeWindow(int width, int height)
 
 void MainWindow::on_VidExt_SetCaption(QString title)
 {
-    std::cout << "on_VidExt_SetCaption" << std::endl;
-    // this->setWindowTitle(QString(WINDOW_TITLE) + " - " + title);
 }
 
 void MainWindow::on_VidExt_ToggleFS(void)
 {
-    std::cout << "on_VidExt_ToggleFS" << std::endl;
 }
 
 void MainWindow::on_VidExt_Quit(void)
 {
-    std::cout << "on_VidExt_Quit" << std::endl;
     this->ui_InEmulation(false, false);
 }
 
