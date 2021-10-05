@@ -909,23 +909,17 @@ void MainWindow::on_Action_System_GenerateBitmap(void)
     }
 }
 
-#include <iostream>
 void MainWindow::on_Action_System_LimitFPS(void)
 {
     bool enabled, ret;
 
     enabled = this->action_System_LimitFPS->isChecked();
 
-    std::cout << "enabled: " << enabled << std::endl;
-
-    if (enabled)
-        ret = g_MupenApi.Core.EnableSpeedLimiter();
-    else
-        ret = g_MupenApi.Core.DisableSpeedLimiter();
+    ret = g_MupenApi.Core.SetSpeedLimiter(enabled);
 
     if (!ret)
     {
-        this->ui_MessageBox("Error", "aaaa Failed", g_MupenApi.Core.GetLastError());
+        this->ui_MessageBox("Error", "Api::Core::SetSpeedLimiter Failed!", g_MupenApi.Core.GetLastError());
     }
 }
 
