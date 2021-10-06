@@ -55,7 +55,34 @@ bool MainWindow::Init(void)
     QString dataDir = g_Settings.GetStringValue(SettingsID::Core_UserDataDirOverride);
     QString cacheDir = g_Settings.GetStringValue(SettingsID::Core_UserCacheDirOverride);
     if (g_Settings.GetBoolValue(SettingsID::Core_OverrideUserDirs))
+    {
         g_MupenApi.Config.OverrideUserPaths(dataDir, cacheDir);
+    }
+
+    // create mupen64plus directories
+    // when they don't exist
+    const SettingsID directorySettings[] =
+    {
+        SettingsID::Core_ScreenshotPath,
+        SettingsID::Core_SaveSRAMPath,
+        SettingsID::Core_SaveStatePath,
+        SettingsID::Core_SharedDataPath,
+        SettingsID::Core_UserDataDirOverride,
+        SettingsID::Core_UserCacheDirOverride,
+    };
+    for (const SettingsID settingId : directorySettings)
+    {
+        QString directory = g_Settings.GetStringValue(settingId);
+        if (!QDir().exists(directory))
+        {
+            if (!QDir().mkdir(directory))
+            {
+                QString error = "Failed to create the \"" + directory + "\" directory";
+                this->ui_MessageBox("Error", "MainWindow::Init Failed", error);
+                return false;
+            }
+        }
+    }
 
     this->ui_Init();
     this->ui_Setup();
