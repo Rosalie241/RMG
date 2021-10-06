@@ -285,6 +285,8 @@ void SettingsDialog::loadInterfaceSettings(void)
     this->manualResizingCheckBox->setChecked(g_Settings.GetBoolValue(SettingsID::GUI_AllowManualResizing));
     this->hideCursorCheckBox->setChecked(g_Settings.GetBoolValue(SettingsID::GUI_HideCursorInEmulation));
     this->statusBarMessageDurationSpinBox->setValue(g_Settings.GetIntValue(SettingsID::GUI_StatusbarMessageDuration));
+    this->searchSubDirectoriesCheckbox->setChecked(g_Settings.GetBoolValue(SettingsID::RomBrowser_Recursive));
+    this->romSearchLimitSpinBox->setValue(g_Settings.GetIntValue(SettingsID::RomBrowser_MaxItems));
 }
 
 void SettingsDialog::loadDefaultCoreSettings(void)
@@ -378,6 +380,8 @@ void SettingsDialog::loadDefaultInterfaceSettings(void)
     this->manualResizingCheckBox->setChecked(g_Settings.GetDefaultBoolValue(SettingsID::GUI_AllowManualResizing));
     this->hideCursorCheckBox->setChecked(g_Settings.GetDefaultBoolValue(SettingsID::GUI_HideCursorInEmulation));
     this->statusBarMessageDurationSpinBox->setValue(g_Settings.GetDefaultIntValue(SettingsID::GUI_StatusbarMessageDuration));
+    this->searchSubDirectoriesCheckbox->setChecked(g_Settings.GetDefaultBoolValue(SettingsID::RomBrowser_Recursive));
+    this->romSearchLimitSpinBox->setValue(g_Settings.GetDefaultIntValue(SettingsID::RomBrowser_MaxItems));
 }
 
 void SettingsDialog::saveSettings(void)
@@ -531,6 +535,8 @@ void SettingsDialog::saveInterfaceSettings(void)
     g_Settings.SetValue(SettingsID::GUI_AllowManualResizing, this->manualResizingCheckBox->isChecked());
     g_Settings.SetValue(SettingsID::GUI_HideCursorInEmulation, this->hideCursorCheckBox->isChecked());
     g_Settings.SetValue(SettingsID::GUI_StatusbarMessageDuration, this->statusBarMessageDurationSpinBox->value());
+    g_Settings.SetValue(SettingsID::RomBrowser_Recursive, this->searchSubDirectoriesCheckbox->isChecked());
+    g_Settings.SetValue(SettingsID::RomBrowser_MaxItems, this->romSearchLimitSpinBox->value());
 }
 
 void SettingsDialog::commonHotkeySettings(int action)
