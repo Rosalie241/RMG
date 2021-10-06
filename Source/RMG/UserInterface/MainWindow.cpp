@@ -64,9 +64,6 @@ bool MainWindow::Init(void)
     const SettingsID directorySettings[] =
     {
         SettingsID::Core_ScreenshotPath,
-        SettingsID::Core_SaveSRAMPath,
-        SettingsID::Core_SaveStatePath,
-        SettingsID::Core_SharedDataPath,
         SettingsID::Core_UserDataDirOverride,
         SettingsID::Core_UserCacheDirOverride,
     };
