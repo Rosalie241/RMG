@@ -75,6 +75,7 @@ class RomBrowserWidget : public QTableView
     void romSearcher_Launch(QString);
 
     void column_SetSize();
+    int column_GetSizeSettingIndex(int);
 
     void launchSelectedRom(void);
 
@@ -85,6 +86,7 @@ class RomBrowserWidget : public QTableView
 
   private slots:
     void customContextMenuRequested(QPoint);
+    void on_columnResized(int, int, int);
 
     void on_Action_PlayGame(void);
     void on_Action_PlayGameWithDisk(void);

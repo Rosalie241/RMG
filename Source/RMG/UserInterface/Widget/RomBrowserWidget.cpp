@@ -51,6 +51,8 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QTableView(parent)
     this->model_Setup();
 
     this->widget_Init();
+
+    connect(this->horizontalHeader(), SIGNAL(sectionResized(int,int,int)), this, SLOT(on_columnResized(int,int,int)));
 }
 
 RomBrowserWidget::~RomBrowserWidget()
@@ -147,7 +149,7 @@ void RomBrowserWidget::model_Setup(void)
     // sanitize list
     for (int column : this->model_Columns)
     {
-        if (column > (int)ColumnID::Invalid || column < 0)
+        if (column >= (int)ColumnID::Invalid || column < 0)
         {
             this->model_Columns.removeOne(column);
         }
@@ -220,10 +222,52 @@ void RomBrowserWidget::romSearcher_Launch(QString directory)
 void RomBrowserWidget::column_SetSize(void)
 {
     int index = 0;
+    int columnCount = (this->model_Model->columnCount() - 1);
+
+    QList<int> sizes = g_Settings.GetIntListValue(SettingsID::RomBrowser_ColumnSizes);
+
     for (int id : this->model_Columns)
     {
-        this->setColumnWidth(index++, g_ColumnTitles[id].Size);
+        // don't set size for the last column
+        if (columnCount == index)
+        {
+            break;
+        }
+
+        for (int i = 0; i < sizes.size(); i += 2)
+        {
+            int columnId = sizes[i];
+            if (columnId == id)
+            {
+                this->setColumnWidth(index++, sizes[i + 1]);
+            }
+        }
     }
+}
+
+int RomBrowserWidget::column_GetSizeSettingIndex(int column)
+{
+    QList<int> sizes = g_Settings.GetIntListValue(SettingsID::RomBrowser_ColumnSizes);
+
+    for (int id : this->model_Columns)
+    {
+        // skip irrelevant columns
+        if (id != column)
+        {
+            continue;
+        }
+
+        for (int i = 0; i < sizes.size(); i += 2)
+        {
+            int columnId = sizes[i];
+            if (columnId == id)
+            {
+                return (i + 1);
+            }
+        }
+    }
+
+    return -1;
 }
 
 void RomBrowserWidget::launchSelectedRom(void)
@@ -256,6 +300,24 @@ void RomBrowserWidget::dropEvent(QDropEvent *event)
 void RomBrowserWidget::customContextMenuRequested(QPoint position)
 {
     this->contextMenu->popup(this->viewport()->mapToGlobal(position));
+}
+
+void RomBrowserWidget::on_columnResized(int column, int oldWidth, int newWidth)
+{
+    QList<int> sizes = g_Settings.GetIntListValue(SettingsID::RomBrowser_ColumnSizes);
+
+    int sizeIndex = this->column_GetSizeSettingIndex(column);
+
+    // when we've failed to find the setting index,
+    // return because that shouldn't happen
+    if (sizeIndex == -1)
+    {
+        return;
+    }
+
+    sizes[sizeIndex] = newWidth;
+
+    g_Settings.SetValue(SettingsID::RomBrowser_ColumnSizes, sizes);
 }
 
 void RomBrowserWidget::on_Action_PlayGame(void)

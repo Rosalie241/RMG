@@ -460,6 +460,9 @@ Setting_t Settings::getSetting(SettingsID id)
     case SettingsID::RomBrowser_Columns:
         setting = {ROMBROWSER_SECTION, "Columns", QVariant({(int)ColumnID::GoodName, (int)ColumnID::InternalName, (int)ColumnID::MD5}), "", false};
         break;
+    case SettingsID::RomBrowser_ColumnSizes:
+        setting = {ROMBROWSER_SECTION, "ColumnSizes", QVariant({(int)ColumnID::GoodName, 250, (int)ColumnID::InternalName, 100, (int)ColumnID::MD5, 100}), "", false};
+        break;
     }
 
     return setting;

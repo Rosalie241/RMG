@@ -111,6 +111,7 @@ enum class SettingsID
     RomBrowser_Recursive,
     RomBrowser_MaxItems,
     RomBrowser_Columns,
+    RomBrowser_ColumnSizes,
 
     Invalid
 };
