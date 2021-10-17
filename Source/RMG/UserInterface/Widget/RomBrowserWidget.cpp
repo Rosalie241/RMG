@@ -64,6 +64,19 @@ void RomBrowserWidget::RefreshRomList(void)
     this->model_Setup();
 }
 
+bool RomBrowserWidget::IsRefreshingRomList(void)
+{
+    return this->romSearcher_Thread->isRunning();
+}
+
+void RomBrowserWidget::StopRefreshRomList(void)
+{
+    if (this->romSearcher_Thread->isRunning())
+    {
+        this->romSearcher_Thread->terminate();
+    }
+}
+
 void RomBrowserWidget::SetDirectory(QString directory)
 {
     this->directory = directory;

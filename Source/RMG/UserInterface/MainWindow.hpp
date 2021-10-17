@@ -35,6 +35,7 @@ class MainWindow : public QMainWindow
     ~MainWindow(void);
 
     bool Init(void);
+    void OpenROM(QString);
 
   private:
     QIcon ui_Icon;
@@ -92,6 +93,8 @@ class MainWindow : public QMainWindow
     bool ui_HideCursorInEmulation;
     bool ui_NoSwitchToRomBrowser = false;
     bool ui_VidExtForceSetMode;
+    bool ui_RefreshRomListAfterEmulation = false;
+
 
     int ui_TimerId = 0;
     int ui_TimerTimeout = 0;

@@ -38,6 +38,8 @@ class RomBrowserWidget : public QTableView
     ~RomBrowserWidget(void);
 
     void RefreshRomList(void);
+    bool IsRefreshingRomList(void);
+    void StopRefreshRomList(void);
 
     void SetDirectory(QString);
 

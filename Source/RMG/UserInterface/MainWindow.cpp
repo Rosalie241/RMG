@@ -100,6 +100,11 @@ bool MainWindow::Init(void)
     return true;
 }
 
+void MainWindow::OpenROM(QString file)
+{
+    this->emulationThread_Launch(file);
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     this->on_Action_File_EndEmulation();
@@ -440,6 +445,12 @@ void MainWindow::emulationThread_Launch(QString cartRom, QString diskRom)
         {
             QCoreApplication::processEvents();
         }
+    }
+
+    ui_RefreshRomListAfterEmulation = this->ui_Widget_RomBrowser->IsRefreshingRomList();
+    if (ui_RefreshRomListAfterEmulation)
+    {
+        this->ui_Widget_RomBrowser->StopRefreshRomList();
     }
 
     this->ui_AllowManualResizing = g_Settings.GetBoolValue(SettingsID::GUI_AllowManualResizing);
@@ -1117,6 +1128,12 @@ void MainWindow::on_Emulation_Finished(bool ret)
         // always return to the rombrowser
         this->ui_NoSwitchToRomBrowser = false;
         this->ui_InEmulation(false, false);
+    }
+
+    if (this->ui_RefreshRomListAfterEmulation)
+    {
+        this->ui_Widget_RomBrowser->RefreshRomList();
+        this->ui_RefreshRomListAfterEmulation = false;
     }
 }
 
