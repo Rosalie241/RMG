@@ -14,7 +14,9 @@
 #include "../api/version.h"
 #include "Config.hpp"
 #include "Plugin.hpp"
+
 #include <QDir>
+#include <unzip.h>
 
 using namespace M64P::Wrapper;
 
@@ -727,32 +729,192 @@ bool Core::rom_Open(QString file, bool overlay = true)
     QByteArray buffer;
     QFile qFile(file);
 
-    if (!qFile.open(QIODevice::ReadOnly))
-    {
-        this->error_Message = "Core::rom_Open: QFile::open Failed";
-        return false;
+    void* bufferData = nullptr;
+    int bufferDataSize = 0;
+    bool clearByteArray = false;
+
+    if (file.endsWith(".zip", Qt::CaseInsensitive))
+    { // try to extract ROM from archive
+        if (!this->rom_Unzip(file, &bufferData, &bufferDataSize))
+        {
+            return false;
+        }
+    }
+    else
+    { // read file normally
+        if (!qFile.open(QIODevice::ReadOnly))
+        {
+            this->error_Message = "Core::rom_Open: QFile::open Failed";
+            return false;
+        }
+
+        buffer = qFile.readAll();
+        bufferDataSize = buffer.size();
+        bufferData = buffer.data();
+        qFile.close();
+
+        clearByteArray = true;
     }
 
-    buffer = qFile.readAll();
-
-    ret = M64P::Core.DoCommand(M64CMD_ROM_OPEN, buffer.size(), buffer.data());
+    ret = M64P::Core.DoCommand(M64CMD_ROM_OPEN, bufferDataSize, bufferData);
     if (ret != M64ERR_SUCCESS)
     {
         this->error_Message = "Core::rom_Open: M64P::Core.DoCommand(M64CMD_ROM_OPEN) Failed: ";
         this->error_Message += M64P::Core.ErrorMessage(ret);
     }
 
-    buffer.clear();
-    qFile.close();
+    if (clearByteArray)
+    {
+        buffer.clear();
+    }
+    else
+    {
+        free(bufferData);
+    }
 
     if (ret != M64ERR_SUCCESS)
+    {
         return false;
+    }
 
     if (overlay)
+    {
         return this->rom_ApplyOverlay();
+    }
 
     return true;
 }
+
+#define UNZIP_READ_SIZE 67108860 /* 64 MiB */
+
+bool Core::rom_Unzip(QString file, void** outData, int* outDataSize)
+{
+    unzFile zipFile;
+    unz_global_info zipInfo;
+
+    zipFile = unzOpen(file.toStdString().c_str());
+    if (zipFile == nullptr)
+    {
+        this->error_Message = "Core::rom_Unzip: unzOpen Failed!";
+        return false;
+    }
+
+    if (unzGetGlobalInfo(zipFile, &zipInfo) != UNZ_OK)
+    {
+        this->error_Message = "Core::rom_Unzip: unzGetGlobalInfo Failed!";
+        return false;
+    }
+
+    for (int i = 0; i < zipInfo.number_entry; i++)
+    {
+        unz_file_info fileInfo;
+        char fileName[PATH_MAX];
+
+        // if we can't retrieve file info,
+        // skip the file
+        if (unzGetCurrentFileInfo(zipFile, &fileInfo, fileName, PATH_MAX, nullptr, 0, nullptr, 0) != UNZ_OK)
+        {
+            continue;
+        }
+
+        // make sure file has supported file format,
+        // if it does, read it in memory
+        QString qFileName(fileName);
+        if (qFileName.endsWith(".z64", Qt::CaseInsensitive) ||
+            qFileName.endsWith(".v64", Qt::CaseInsensitive) ||
+            qFileName.endsWith(".n64", Qt::CaseInsensitive))
+        {
+            void* buffer;
+            int dataSize = UNZIP_READ_SIZE;
+            int total_bytes_read = 0;
+            int bytes_read = 0;
+
+            buffer = malloc(UNZIP_READ_SIZE);
+            if (buffer == nullptr)
+            {
+                this->error_Message = "Core::rom_Unzip: malloc Failed!";
+                return false;
+            }
+
+            *outData = malloc(UNZIP_READ_SIZE);
+            if (*outData == nullptr)
+            {
+                free(buffer);
+                this->error_Message = "Core::rom_Unzip: malloc Failed!";
+                return false;
+            }
+
+            if (unzOpenCurrentFile(zipFile) != UNZ_OK)
+            {
+                free(buffer);
+                free(*outData);
+                this->error_Message = "Core::rom_Unzip: unzOpenCurrentFile Failed!";
+                return false;
+            }
+
+            do
+            {
+                bytes_read = unzReadCurrentFile(zipFile, buffer, UNZIP_READ_SIZE);
+                if (bytes_read < 0)
+                {
+                    unzCloseCurrentFile(zipFile);
+                    unzClose(zipFile);
+                    free(buffer);
+                    free(*outData);
+                    this->error_Message = "Core::rom_Unzip: unzReadCurrentFile Failed: ";
+                    this->error_Message += QString::number(bytes_read);
+                    return false;
+                }
+
+                if (bytes_read > 0)
+                {
+                    if (total_bytes_read + bytes_read > dataSize)
+                    {
+                        *outData = realloc(*outData, total_bytes_read + bytes_read);
+                        dataSize += bytes_read;
+                        if (*outData == nullptr)
+                        {
+                            unzCloseCurrentFile(zipFile);
+                            unzClose(zipFile);
+                            free(buffer);
+                            free(*outData);
+                            this->error_Message = "Core::rom_Unzip: realloc Failed!";
+                            return false;
+                        }
+                    }
+
+                    memcpy((void*)((int*)*outData + total_bytes_read), buffer, bytes_read);
+                    total_bytes_read += bytes_read;
+                }
+            } while (bytes_read > 0);
+
+            *outDataSize = total_bytes_read;
+            unzCloseCurrentFile(zipFile);
+            unzClose(zipFile);
+            free(buffer);
+            return true;
+        }
+
+        // break when we've iterated over all entries
+        if ((i + 1) >= zipInfo.number_entry)
+        {
+            break;
+        }
+
+        // move to next file
+        if (unzGoToNextFile(zipFile) != UNZ_OK)
+        {
+            unzClose(zipFile);
+            this->error_Message = "Core::rom_Unzip: unzGoToNextFile Failed!";
+            return false;
+        }
+    }
+
+    this->error_Message = "Core::rom_Unzip: no valid ROMs found in ZIP!";
+    unzClose(zipFile);
+    return false;
+}
+
 
 bool Core::rom_ApplyPluginOverlay(void)
 {

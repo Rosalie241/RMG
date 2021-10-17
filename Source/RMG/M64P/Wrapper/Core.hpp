@@ -106,11 +106,11 @@ class Core : public QObject
     RomInfo_t rom_Info;
 
     bool rom_Open(QString, bool);
+    bool rom_Unzip(QString, void**, int*);
     bool rom_ApplyPluginOverlay(void);
     bool rom_HasPluginOverlay(QString);
     bool rom_ApplyOverlay(void);
     bool rom_Close(void);
-
 
     static void core_DebugCallback(void *, int, const char *);
     static void core_StateCallback(void *, m64p_core_param, int);

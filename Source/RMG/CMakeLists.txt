@@ -9,6 +9,7 @@ find_package(Qt5 COMPONENTS Gui Widgets Core REQUIRED)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2)
+pkg_check_modules(MINIZIP REQUIRED minizip)
 
 configure_file(Config.hpp.in Config.hpp)
 
@@ -59,9 +60,9 @@ else()
     add_executable(RMG ${RMG_SOURCES})
 endif()
 
-target_link_libraries(RMG ${SDL2_LIBRARIES})
+target_link_libraries(RMG ${SDL2_LIBRARIES} ${MINIZIP_LIBRARIES})
 
-target_include_directories(RMG PRIVATE ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${SDL2_INCLUDE_DIRS})
+target_include_directories(RMG PRIVATE ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR} ${SDL2_INCLUDE_DIRS} ${MINIZIP_INCLUDE_DIRS})
 
 if(UNIX)
     target_link_libraries(RMG dl)

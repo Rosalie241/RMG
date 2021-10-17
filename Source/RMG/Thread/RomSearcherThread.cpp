@@ -59,9 +59,9 @@ void RomSearcherThread::rom_Search(QString directory)
     filter << "*.N64";
     filter << "*.Z64";
     filter << "*.V64";
-    filter << "*.ndd";
+    filter << "*.NDD";
     filter << "*.D64";
-
+    filter << "*.ZIP";
 
     QFileInfoList fileList = dir.entryInfoList(filter, QDir::Files);
     QFileInfo fileInfo;

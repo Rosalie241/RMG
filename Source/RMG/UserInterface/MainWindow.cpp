@@ -787,7 +787,7 @@ void MainWindow::on_Action_File_OpenRom(void)
     QString dir;
 
     dialog.setFileMode(QFileDialog::FileMode::ExistingFile);
-    dialog.setNameFilter("N64 ROMs & Disks (*.n64 *.z64 *.v64 *.ndd *.d64)");
+    dialog.setNameFilter("N64 ROMs & Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip)");
 
     ret = dialog.exec();
     if (!ret)
@@ -822,7 +822,7 @@ void MainWindow::on_Action_File_OpenCombo(void)
     QString dir, cartRom, diskRom;
 
     dialog.setFileMode(QFileDialog::FileMode::ExistingFile);
-    dialog.setNameFilter("N64 ROMs (*.n64 *.z64 *.v64)");
+    dialog.setNameFilter("N64 ROMs (*.n64 *.z64 *.v64 *.zip)");
 
     ret = dialog.exec();
     if (!ret)
