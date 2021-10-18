@@ -825,6 +825,7 @@ bool Core::rom_Unzip(QString file, void** outData, int* outDataSize)
             qFileName.endsWith(".n64", Qt::CaseInsensitive))
         {
             void* buffer;
+            void* outBuffer;
             int dataSize = UNZIP_READ_SIZE;
             int total_bytes_read = 0;
             int bytes_read = 0;
@@ -836,8 +837,8 @@ bool Core::rom_Unzip(QString file, void** outData, int* outDataSize)
                 return false;
             }
 
-            *outData = malloc(UNZIP_READ_SIZE);
-            if (*outData == nullptr)
+            outBuffer = malloc(UNZIP_READ_SIZE);
+            if (outBuffer == nullptr)
             {
                 free(buffer);
                 this->error_Message = "Core::rom_Unzip: malloc Failed!";
@@ -847,7 +848,7 @@ bool Core::rom_Unzip(QString file, void** outData, int* outDataSize)
             if (unzOpenCurrentFile(zipFile) != UNZ_OK)
             {
                 free(buffer);
-                free(*outData);
+                free(outBuffer);
                 this->error_Message = "Core::rom_Unzip: unzOpenCurrentFile Failed!";
                 return false;
             }
@@ -860,7 +861,7 @@ bool Core::rom_Unzip(QString file, void** outData, int* outDataSize)
                     unzCloseCurrentFile(zipFile);
                     unzClose(zipFile);
                     free(buffer);
-                    free(*outData);
+                    free(outBuffer);
                     this->error_Message = "Core::rom_Unzip: unzReadCurrentFile Failed: ";
                     this->error_Message += QString::number(bytes_read);
                     return false;
@@ -870,25 +871,26 @@ bool Core::rom_Unzip(QString file, void** outData, int* outDataSize)
                 {
                     if (total_bytes_read + bytes_read > dataSize)
                     {
-                        *outData = realloc(*outData, total_bytes_read + bytes_read);
+                        outBuffer = realloc(outBuffer, total_bytes_read + bytes_read);
                         dataSize += bytes_read;
-                        if (*outData == nullptr)
+                        if (outBuffer == nullptr)
                         {
                             unzCloseCurrentFile(zipFile);
                             unzClose(zipFile);
                             free(buffer);
-                            free(*outData);
+                            free(outBuffer);
                             this->error_Message = "Core::rom_Unzip: realloc Failed!";
                             return false;
                         }
                     }
 
-                    memcpy((void*)((int*)*outData + total_bytes_read), buffer, bytes_read);
+                    memcpy((((char*)outBuffer) + total_bytes_read), buffer, bytes_read);
                     total_bytes_read += bytes_read;
                 }
             } while (bytes_read > 0);
 
             *outDataSize = total_bytes_read;
+            *outData = outBuffer;
             unzCloseCurrentFile(zipFile);
             unzClose(zipFile);
             free(buffer);
