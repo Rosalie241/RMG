@@ -261,12 +261,6 @@ Setting_t Settings::getSetting(SettingsID id)
     {
     default:
         break;
-    case SettingsID::GUI_RomBrowserDirectory:
-        setting = {GUI_SECTION, "RomBrowserDirectory", "", "", false};
-        break;
-    case SettingsID::GUI_RomBrowserGeometry:
-        setting = {GUI_SECTION, "RomBrowserGeometry", "", "", false};
-        break;
     case SettingsID::GUI_SettingsDialogWidth:
         setting = {GUI_SECTION, "SettingsDialogWidth", 0, "", false};
         break;
@@ -451,6 +445,12 @@ Setting_t Settings::getSetting(SettingsID id)
         setting = {KEYBIND_SECTION, "Settings", "Ctrl+T", "", false};
         break;
 
+    case SettingsID::RomBrowser_Directory:
+        setting = {ROMBROWSER_SECTION, "Directory", "", "", false};
+        break;
+    case SettingsID::RomBrowser_Geometry:
+        setting = {ROMBROWSER_SECTION, "Geometry", "", "", false};
+        break;
     case SettingsID::RomBrowser_Recursive:
         setting = {ROMBROWSER_SECTION, "Recursive", true, "", false};
         break;

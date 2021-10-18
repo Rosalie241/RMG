@@ -27,9 +27,7 @@ typedef struct
 enum class SettingsID
 {
     // GUI Settings
-    GUI_RomBrowserDirectory = 0,
-    GUI_RomBrowserGeometry,
-    GUI_SettingsDialogWidth,
+    GUI_SettingsDialogWidth = 0,
     GUI_SettingsDialogHeight,
     GUI_AllowManualResizing,
     GUI_HideCursorInEmulation,
@@ -108,6 +106,8 @@ enum class SettingsID
     KeyBinding_Settings,
 
     // RomBrowser Settings
+    RomBrowser_Directory,
+    RomBrowser_Geometry,
     RomBrowser_Recursive,
     RomBrowser_MaxItems,
     RomBrowser_Columns,

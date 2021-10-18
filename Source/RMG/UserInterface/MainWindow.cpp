@@ -114,7 +114,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
         QCoreApplication::processEvents();
     }
 
-    g_Settings.SetValue(SettingsID::GUI_RomBrowserGeometry,
+    g_Settings.SetValue(SettingsID::RomBrowser_Geometry,
                         QString(this->saveGeometry().toBase64().toStdString().c_str()));
 
     QMainWindow::closeEvent(event);
@@ -131,7 +131,7 @@ void MainWindow::ui_Init(void)
     this->ui_StatusBar_Label = new QLabel(this);
 
     QString dir;
-    dir = g_Settings.GetStringValue(SettingsID::GUI_RomBrowserDirectory);
+    dir = g_Settings.GetStringValue(SettingsID::RomBrowser_Directory);
 
     this->ui_Widget_RomBrowser->SetDirectory(dir);
     this->ui_Widget_RomBrowser->RefreshRomList();
@@ -162,7 +162,7 @@ void MainWindow::ui_Setup(void)
     this->setCentralWidget(this->ui_Widgets);
 
     QString geometry;
-    geometry = g_Settings.GetStringValue(SettingsID::GUI_RomBrowserGeometry);
+    geometry = g_Settings.GetStringValue(SettingsID::RomBrowser_Geometry);
 
     if (!geometry.isEmpty())
     {
@@ -884,7 +884,7 @@ void MainWindow::on_Action_File_ChooseDirectory(void)
     if (ret)
     {
         dir = dialog.selectedFiles().first();
-        g_Settings.SetValue(SettingsID::GUI_RomBrowserDirectory, dir);
+        g_Settings.SetValue(SettingsID::RomBrowser_Directory, dir);
         this->ui_Widget_RomBrowser->SetDirectory(dir);
         this->ui_Widget_RomBrowser->RefreshRomList();
     }
