@@ -27,6 +27,20 @@ Core::Core(void)
 
 Core::~Core(void)
 {
+    for (Plugin p : 
+    {
+        this->plugin_Gfx,
+        this->plugin_Rsp,
+        this->plugin_Audio,
+        this->plugin_Input 
+    })
+    {
+        if (p.HasInit())
+        {
+            p.Shutdown();
+        }
+
+    }
 }
 
 bool Core::Init(m64p_dynlib_handle handle)
