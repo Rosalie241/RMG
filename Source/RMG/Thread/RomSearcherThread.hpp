@@ -35,7 +35,6 @@ class RomSearcherThread : public QThread
     QString rom_Directory;
     bool rom_Search_Recursive;
     int rom_Search_MaxItems;
-    int rom_Search_Count;
 
     void rom_Search(QString);
     bool rom_Get_Info(QString, M64P::Wrapper::RomInfo_t *);

@@ -11,6 +11,7 @@
 #include "../Globals.hpp"
 
 #include <QDir>
+#include <QDirIterator>
 
 using namespace Thread;
 
@@ -46,7 +47,6 @@ void RomSearcherThread::SetMaximumFiles(int value)
 
 void RomSearcherThread::run(void)
 {
-    this->rom_Search_Count = 0;
     this->rom_Search(this->rom_Directory);
     return;
 }
@@ -63,32 +63,29 @@ void RomSearcherThread::rom_Search(QString directory)
     filter << "*.D64";
     filter << "*.ZIP";
 
-    QFileInfoList fileList = dir.entryInfoList(filter, QDir::Files);
-    QFileInfo fileInfo;
+
+    QDirIterator::IteratorFlag flag = this->rom_Search_Recursive ? 
+        QDirIterator::Subdirectories : 
+        QDirIterator::NoIteratorFlags;
+    QDirIterator romDirIt(directory, filter, QDir::Files, flag);
+
     M64P::Wrapper::RomInfo_t romInfo;
     bool ret;
 
-    for (int i = 0; i < fileList.size(); i++)
-    {
-        fileInfo = fileList.at(i);
+    int count = 0;
 
-        ret = this->rom_Get_Info(fileInfo.absoluteFilePath(), &romInfo);
+    while (romDirIt.hasNext())
+    {
+        QString file = romDirIt.next();
+        ret = this->rom_Get_Info(file, &romInfo);
         if (ret)
         {
-            if (this->rom_Search_Count++ >= this->rom_Search_MaxItems)
+            if (count++ >= this->rom_Search_MaxItems)
+            {
                 return;
+            }
 
             emit this->on_Rom_Found(romInfo);
-        }
-    }
-
-    if (this->rom_Search_Recursive)
-    {
-        fileList = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
-
-        for (int i = 0; i < fileList.size(); i++)
-        {
-            this->rom_Search(fileList.at(i).absoluteFilePath());
         }
     }
 }
