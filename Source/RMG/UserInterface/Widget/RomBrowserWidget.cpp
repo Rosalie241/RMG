@@ -22,7 +22,14 @@ static QString columnIdToText(RomInfo_t& romInfo, ColumnID id)
     switch (id)
     {
         case ColumnID::GoodName:
-            return QString(romInfo.Settings.goodname);
+        {
+            QString name = QString(romInfo.Settings.goodname);
+            if (name.contains("(unknown rom)"))
+            {
+                name = QFileInfo(romInfo.FileName).fileName();
+            }
+            return name;
+        }
         case ColumnID::InternalName:
             return QString((char*)romInfo.Header.Name);
         case ColumnID::MD5:
@@ -170,7 +177,6 @@ void RomBrowserWidget::model_Setup(void)
 
     this->model_Setup_Labels();
 
-    // TODO, save & restore the column size
     this->column_SetSize();
 }
 
