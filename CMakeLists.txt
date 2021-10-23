@@ -17,6 +17,7 @@ execute_process(
 set(CMAKE_INSTALL_PREFIX "")
 set(INSTALL_PATH Bin/${CMAKE_BUILD_TYPE})
 
+add_subdirectory(Source/RMG-Core)
 add_subdirectory(Source/RMG)
 install(TARGETS RMG
     DESTINATION ${INSTALL_PATH}
