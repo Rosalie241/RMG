@@ -16,14 +16,16 @@
 #include <windows.h>
 typedef HMODULE osal_dynlib_lib_handle;
 typedef FARPROC osal_dynlib_lib_sym;
+#define OSAL_DYNLIB_LIB_EXT_STR ".dll"
 #else // Unix
 typedef void*   osal_dynlib_lib_handle;
 typedef void*   osal_dynlib_lib_sym;
+#define OSAL_DYNLIB_LIB_EXT_STR ".so"
 #endif // _WIN32
 
 // returns library handle for given filename,
 // return nullptr when invalid library
-osal_dynlib_lib_handle osal_dynlib_open(char *);
+osal_dynlib_lib_handle osal_dynlib_open(const char *);
 
 // retrieves symbol handle for given library 
 // handle, returns nullptr when not found

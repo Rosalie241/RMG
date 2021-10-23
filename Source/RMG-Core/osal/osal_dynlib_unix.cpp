@@ -11,7 +11,7 @@
 
 #include <dlfcn.h>
 
-osal_dynlib_lib_handle osal_dynlib_open(char* file)
+osal_dynlib_lib_handle osal_dynlib_open(const char* file)
 {
     return dlopen(file, RTLD_LAZY);
 }
@@ -26,7 +26,7 @@ void osal_dynlib_close(osal_dynlib_lib_handle handle)
     dlclose(handle);
 }
 
-std::string dynlib_strerror(void)
+std::string osal_dynlib_strerror(void)
 {
     return std::string(dlerror());
 }

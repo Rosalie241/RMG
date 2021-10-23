@@ -9,7 +9,7 @@
  */
 #include "osal_dynlib.hpp"
 
-osal_dynlib_lib_handle osal_dynlib_open(char* file)
+osal_dynlib_lib_handle osal_dynlib_open(const char* file)
 {
     return LoadLibrary(file);
 }

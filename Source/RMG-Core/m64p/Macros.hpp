@@ -18,7 +18,7 @@
     this->var = (ptr_##prevar##var)osal_dynlib_sym(handle, #prevar #var); \
     if (this->var == nullptr)                                             \
     {                                                                     \
-        this->errorMessage += "Failed to hook \"" #prevar #var "\":";     \
+        this->errorMessage += "Failed to hook \"" #prevar #var "\": ";    \
         this->errorMessage += osal_dynlib_strerror();                     \
         return false;                                                     \
     }
