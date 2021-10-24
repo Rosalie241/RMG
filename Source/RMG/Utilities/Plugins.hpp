@@ -11,7 +11,7 @@
 #define PLUGINS_HPP
 
 #include "M64P/Wrapper/Types.hpp"
-#include "SettingsID.hpp"
+#include <RMG-Core/Core.hpp>
 
 #include <QList>
 

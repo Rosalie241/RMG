@@ -9,7 +9,7 @@
  */
 #include "Plugins.hpp"
 #include "../Globals.hpp"
-#include "Utilities/SettingsID.hpp"
+
 
 #include <QDir>
 
@@ -31,7 +31,7 @@ void Plugins::LoadSettings()
     for (const Plugin_t &p : this->GetAvailablePlugins())
     {
         settingsID = this->pluginTypeToSettingsId(p.Type);
-        settingValue = g_Settings.GetStringValue(settingsID);
+        settingValue = QString::fromStdString(CoreSettingsGetStringValue(settingsID));
         if (settingValue == p.FileName || settingValue.isEmpty())
         {
             this->ChangePlugin(p);
@@ -60,7 +60,7 @@ bool Plugins::ChangePlugin(Plugin_t plugin)
     if (ret)
     {
         settingsID = this->pluginTypeToSettingsId(plugin.Type);
-        g_Settings.SetValue(settingsID, plugin.FileName);
+        CoreSettingsSetValue(settingsID, plugin.FileName.toStdString());
     }
 
     return ret;

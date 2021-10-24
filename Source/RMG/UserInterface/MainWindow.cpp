@@ -8,10 +8,14 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "MainWindow.hpp"
-#include "../Utilities/QtKeyToSdl2Key.hpp"
-#include "Config.hpp"
-#include "Globals.hpp"
+
+#include "RMG-Core/Settings/Settings.hpp"
 #include "UserInterface/EventFilter.hpp"
+#include "Utilities/QtKeyToSdl2Key.hpp"
+#include "Globals.hpp"
+#include "Config.hpp"
+
+#include <RMG-Core/Core.hpp>
 
 #include <QCoreApplication>
 #include <QDesktopServices>
@@ -44,17 +48,29 @@ bool MainWindow::Init(void)
         return false;
     }
 
+    if (!CoreInit())
+    {
+        this->ui_MessageBox("Error", "CoreInit() Failed", QString::fromStdString(CoreGetError()));
+        return false;
+    }
+
     if (!g_MupenApi.Init(MUPEN_CORE_FILE))
     {
         this->ui_MessageBox("Error", "Api::Init Failed", g_MupenApi.GetLastError());
         return false;
     }
 
-    g_Settings.LoadDefaults();
+    if (!CoreSettingsSetupDefaults())
+    {
+        this->ui_MessageBox("Error", "CoreSettingsSetupDefaults() Failed", QString::fromStdString(CoreGetError()));
+        return false;
+    }
 
-    QString dataDir = g_Settings.GetStringValue(SettingsID::Core_UserDataDirOverride);
-    QString cacheDir = g_Settings.GetStringValue(SettingsID::Core_UserCacheDirOverride);
-    if (g_Settings.GetBoolValue(SettingsID::Core_OverrideUserDirs))
+    g_Plugins.LoadSettings();
+
+    QString dataDir = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::Core_UserDataDirOverride));
+    QString cacheDir = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::Core_UserCacheDirOverride));
+    if (CoreSettingsGetBoolValue(SettingsID::Core_OverrideUserDirs))
     {
         g_MupenApi.Config.OverrideUserPaths(dataDir, cacheDir);
     }
@@ -69,7 +85,7 @@ bool MainWindow::Init(void)
     };
     for (const SettingsID settingId : directorySettings)
     {
-        QString directory = g_Settings.GetStringValue(settingId);
+        QString directory = QString::fromStdString(CoreSettingsGetStringValue(settingId));
         if (!QDir().exists(directory))
         {
             if (!QDir().mkdir(directory))
@@ -114,8 +130,10 @@ void MainWindow::closeEvent(QCloseEvent *event)
         QCoreApplication::processEvents();
     }
 
-    g_Settings.SetValue(SettingsID::RomBrowser_Geometry,
-                        QString(this->saveGeometry().toBase64().toStdString().c_str()));
+    QString geometryStr = QString(this->saveGeometry().toBase64().toStdString().c_str());
+
+    CoreSettingsSetValue(SettingsID::RomBrowser_Geometry, geometryStr.toStdString());
+    CoreSettingsSave();
 
     QMainWindow::closeEvent(event);
 }
@@ -131,7 +149,7 @@ void MainWindow::ui_Init(void)
     this->ui_StatusBar_Label = new QLabel(this);
 
     QString dir;
-    dir = g_Settings.GetStringValue(SettingsID::RomBrowser_Directory);
+    dir = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::RomBrowser_Directory));
 
     this->ui_Widget_RomBrowser->SetDirectory(dir);
     this->ui_Widget_RomBrowser->RefreshRomList();
@@ -162,7 +180,7 @@ void MainWindow::ui_Setup(void)
     this->setCentralWidget(this->ui_Widgets);
 
     QString geometry;
-    geometry = g_Settings.GetStringValue(SettingsID::RomBrowser_Geometry);
+    geometry = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::RomBrowser_Geometry));
 
     if (!geometry.isEmpty())
     {
@@ -175,7 +193,7 @@ void MainWindow::ui_Setup(void)
 
     this->statusBar()->setHidden(false);
     this->statusBar()->addPermanentWidget(this->ui_StatusBar_Label, 1);
-    this->ui_TimerTimeout = g_Settings.GetIntValue(SettingsID::GUI_StatusbarMessageDuration);
+    this->ui_TimerTimeout = CoreSettingsGetIntValue(SettingsID::GUI_StatusbarMessageDuration);
 
     this->ui_Widgets->addWidget(this->ui_Widget_RomBrowser);
     this->ui_Widgets->addWidget(this->ui_Widget_OpenGL->GetWidget());
@@ -244,7 +262,7 @@ void MainWindow::ui_InEmulation(bool inEmulation, bool isPaused)
     }
 
     // update timer timeout
-    this->ui_TimerTimeout = g_Settings.GetIntValue(SettingsID::GUI_StatusbarMessageDuration);
+    this->ui_TimerTimeout = CoreSettingsGetIntValue(SettingsID::GUI_StatusbarMessageDuration);
 }
 
 void MainWindow::ui_SaveGeometry(void)
@@ -355,7 +373,7 @@ void MainWindow::menuBar_Setup(bool inEmulation, bool isPaused)
         QActionGroup *slotActionGroup = new QActionGroup(this);
         QList<QAction *> slotActions;
         QAction *slotAction;
-        int currentSaveslot = g_MupenApi.Core.GetSaveSlot();
+        int currentSaveslot = CoreGetSaveSlot();
         for (int i = 0; i < 10; i++)
         {
             slotActions.append(new QAction(this));
@@ -453,8 +471,8 @@ void MainWindow::emulationThread_Launch(QString cartRom, QString diskRom)
         this->ui_Widget_RomBrowser->StopRefreshRomList();
     }
 
-    this->ui_AllowManualResizing = g_Settings.GetBoolValue(SettingsID::GUI_AllowManualResizing);
-    this->ui_HideCursorInEmulation = g_Settings.GetBoolValue(SettingsID::GUI_HideCursorInEmulation);
+    this->ui_AllowManualResizing = CoreSettingsGetBoolValue(SettingsID::GUI_AllowManualResizing);
+    this->ui_HideCursorInEmulation = CoreSettingsGetBoolValue(SettingsID::GUI_HideCursorInEmulation);
 
     this->ui_Widget_OpenGL->SetAllowResizing(this->ui_AllowManualResizing);
     this->ui_Widget_OpenGL->SetHideCursor(this->ui_HideCursorInEmulation);
@@ -511,74 +529,74 @@ void MainWindow::ui_Actions_Init(void)
 void MainWindow::ui_Actions_Setup(bool inEmulation, bool isPaused)
 {
     QString keyBinding;
-    keyBinding = g_Settings.GetStringValue(SettingsID::KeyBinding_OpenROM);
+    keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_OpenROM));
     this->action_File_OpenRom->setText("Open ROM");
     this->action_File_OpenRom->setShortcut(QKeySequence(keyBinding));
-    keyBinding = g_Settings.GetStringValue(SettingsID::KeyBinding_OpenCombo);
+    keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_OpenCombo));
     this->action_File_OpenCombo->setText("Open Combo");
     this->action_File_OpenCombo->setShortcut(QKeySequence(keyBinding));
     this->action_File_RomInfo->setText("ROM Info....");
-    keyBinding = g_Settings.GetStringValue(SettingsID::KeyBinding_StartEmulation);
+    keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_StartEmulation));
     this->action_File_StartEmulation->setText("Start Emulation");
     this->action_File_StartEmulation->setShortcut(QKeySequence(keyBinding));
     this->action_File_StartEmulation->setEnabled(!inEmulation);
-    keyBinding = g_Settings.GetStringValue(SettingsID::KeyBinding_EndEmulation);
+    keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_EndEmulation));
     this->action_File_EndEmulation->setText("End Emulation");
     this->action_File_EndEmulation->setShortcut(QKeySequence(keyBinding));
     this->action_File_EndEmulation->setEnabled(inEmulation);
     this->action_File_Language->setText("Language");
     this->action_File_ChooseDirectory->setText("Choose ROM Directory...");
-    keyBinding = g_Settings.GetStringValue(SettingsID::KeyBinding_RefreshROMList);
+    keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_RefreshROMList));
     this->action_File_RefreshRomList->setText("Refresh ROM List");
     this->action_File_RefreshRomList->setShortcut(QKeySequence(keyBinding));
     this->action_File_RecentRom->setText("Recent ROM");
     this->action_File_RecentRomDirectories->setText("Recent ROM Directories");
-    keyBinding = g_Settings.GetStringValue(SettingsID::KeyBinding_Exit);
+    keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_Exit));
     this->action_File_Exit->setText("Exit");
     this->action_File_Exit->setShortcut(QKeySequence(keyBinding));
 
-    keyBinding = g_Settings.GetStringValue(SettingsID::KeyBinding_SoftReset);
+    keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_SoftReset));
     this->action_System_SoftReset->setText("Soft Reset");
     this->action_System_SoftReset->setShortcut(QKeySequence(keyBinding));
-    keyBinding = g_Settings.GetStringValue(SettingsID::KeyBinding_HardReset);
+    keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_HardReset));
     this->action_System_HardReset->setText("Hard Reset");
     this->action_System_HardReset->setShortcut(QKeySequence(keyBinding));
-    keyBinding = g_Settings.GetStringValue(SettingsID::KeyBinding_Resume);
+    keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_Resume));
     this->action_System_Pause->setText(isPaused ? "Resume" : "Pause");
     this->action_System_Pause->setShortcut(QKeySequence(keyBinding));
-    keyBinding = g_Settings.GetStringValue(SettingsID::KeyBinding_GenerateBitmap);
+    keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_GenerateBitmap));
     this->action_System_GenerateBitmap->setText("Generate Bitmap");
     this->action_System_GenerateBitmap->setShortcut(QKeySequence(keyBinding));
-    keyBinding = g_Settings.GetStringValue(SettingsID::KeyBinding_LimitFPS);
+    keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_LimitFPS));
     this->action_System_LimitFPS->setText("Limit FPS");
     this->action_System_LimitFPS->setShortcut(QKeySequence(keyBinding));
     this->action_System_LimitFPS->setCheckable(true);
     this->action_System_LimitFPS->setChecked(g_MupenApi.Core.GetSpeedLimiterState());
-    keyBinding = g_Settings.GetStringValue(SettingsID::KeyBinding_SwapDisk);
+    keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_SwapDisk));
     this->action_System_SwapDisk->setText("Swap Disk");
     this->action_System_SwapDisk->setShortcut(QKeySequence(keyBinding));
     this->action_System_SwapDisk->setEnabled(false);
-    keyBinding = g_Settings.GetStringValue(SettingsID::KeyBinding_SaveState);
+    keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_SaveState));
     this->action_System_SaveState->setText("Save State");
     this->action_System_SaveState->setShortcut(QKeySequence(keyBinding));
-    keyBinding = g_Settings.GetStringValue(SettingsID::KeyBinding_SaveAs);
+    keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_SaveAs));
     this->action_System_SaveAs->setText("Save As...");
     this->action_System_SaveAs->setShortcut(QKeySequence(keyBinding));
-    keyBinding = g_Settings.GetStringValue(SettingsID::KeyBinding_LoadState);
+    keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_LoadState));
     this->action_System_LoadState->setText("Load State");
     this->action_System_LoadState->setShortcut(QKeySequence(keyBinding));
-    keyBinding = g_Settings.GetStringValue(SettingsID::KeyBinding_Load);
+    keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_Load));
     this->action_System_Load->setText("Load...");
     this->action_System_Load->setShortcut(QKeySequence(keyBinding));
     this->menu_System_CurrentSaveState->setTitle("Current Save State");
-    keyBinding = g_Settings.GetStringValue(SettingsID::KeyBinding_Cheats);
+    keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_Cheats));
     this->action_System_Cheats->setText("Cheats...");
     this->action_System_Cheats->setShortcut(QKeySequence(keyBinding));
-    keyBinding = g_Settings.GetStringValue(SettingsID::KeyBinding_GSButton);
+    keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_GSButton));
     this->action_System_GSButton->setText("GS Button");
     this->action_System_GSButton->setShortcut(QKeySequence(keyBinding));
 
-    keyBinding = g_Settings.GetStringValue(SettingsID::KeyBinding_Fullscreen);
+    keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_Fullscreen));
     this->action_Options_FullScreen->setText("Fullscreen");
     this->action_Options_FullScreen->setEnabled(inEmulation);
     this->action_Options_FullScreen->setShortcut(QKeySequence(keyBinding));
@@ -590,7 +608,7 @@ void MainWindow::ui_Actions_Setup(bool inEmulation, bool isPaused)
     this->action_Options_ConfigRsp->setEnabled(g_MupenApi.Core.HasPluginConfig(M64P::Wrapper::PluginType::Rsp));
     this->action_Options_ConfigControl->setText("Input Settings");
     this->action_Options_ConfigControl->setEnabled(g_MupenApi.Core.HasPluginConfig(M64P::Wrapper::PluginType::Input));
-    keyBinding = g_Settings.GetStringValue(SettingsID::KeyBinding_Settings);
+    keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_Settings));
     this->action_Options_Settings->setText("Settings");
     this->action_Options_Settings->setShortcut(QKeySequence(keyBinding));
 
@@ -884,7 +902,7 @@ void MainWindow::on_Action_File_ChooseDirectory(void)
     if (ret)
     {
         dir = dialog.selectedFiles().first();
-        g_Settings.SetValue(SettingsID::RomBrowser_Directory, dir);
+        CoreSettingsSetValue(SettingsID::RomBrowser_Directory, dir.toStdString());
         this->ui_Widget_RomBrowser->SetDirectory(dir);
         this->ui_Widget_RomBrowser->RefreshRomList();
     }
@@ -1036,7 +1054,7 @@ void MainWindow::on_Action_System_Load(void)
 
 void MainWindow::on_Action_System_CurrentSaveState(int slot)
 {
-    if (!g_MupenApi.Core.SetSaveSlot(slot))
+    if (!CoreSetSaveSlot(slot))
     {
         this->ui_MessageBox("Error", "Api::Core::SetSaveSlot Failed", g_MupenApi.Core.GetLastError());
     }

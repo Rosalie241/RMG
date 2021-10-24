@@ -221,12 +221,12 @@ char *Core::media_loader_get_gb_cart_ram(void *_this, int)
 
 char *Core::media_loader_get_dd_rom(void *_this)
 {
-    QString file = g_Settings.GetStringValue(SettingsID::Core_64DD_RomFile);
+    std::string file = CoreSettingsGetStringValue(SettingsID::Core_64DD_RomFile);
 
-    if (file.isEmpty())
+    if (file.empty())
         return NULL;
 
-    return strdup(file.toStdString().c_str());
+    return strdup(file.c_str());
 }
 
 char *Core::media_loader_get_dd_disk(void *_this)
@@ -957,7 +957,7 @@ bool Core::rom_ApplyPluginOverlay(void)
 
     for (int i = 0; i < 4; i++)
     {
-        value = g_Settings.GetStringValue(settingIdArray[i], section);
+        value = QString::fromStdString(CoreSettingsGetStringValue(settingIdArray[i], section.toStdString()));
         if (!value.isEmpty())
         {
             Plugin_t plugin = {.FileName = value};
@@ -995,7 +995,7 @@ bool Core::rom_HasPluginOverlay(QString file)
 
     for (int i = 0; i < 4; i++)
     {
-        if (!g_Settings.GetStringValue(settingIdArray[i], section).isEmpty())
+        if (!CoreSettingsGetStringValue(settingIdArray[i], section.toStdString()).empty())
             return true;
     }
 
@@ -1023,10 +1023,10 @@ bool Core::rom_ApplyOverlay(void)
         return true;
     }
 
-    info.Settings.disableextramem = g_Settings.GetBoolValue(SettingsID::Game_DisableExtraMem, section);
-    info.Settings.savetype = g_Settings.GetIntValue(SettingsID::Game_SaveType, section);
-    info.Settings.countperop = g_Settings.GetIntValue(SettingsID::Game_CountPerOp, section);
-    info.Settings.sidmaduration = g_Settings.GetIntValue(SettingsID::Game_SiDmaDuration, section);
+    info.Settings.disableextramem = CoreSettingsGetBoolValue(SettingsID::Game_DisableExtraMem, section.toStdString());
+    info.Settings.savetype = CoreSettingsGetIntValue(SettingsID::Game_SaveType, section.toStdString());
+    info.Settings.countperop = CoreSettingsGetIntValue(SettingsID::Game_CountPerOp, section.toStdString());
+    info.Settings.sidmaduration = CoreSettingsGetIntValue(SettingsID::Game_SiDmaDuration, section.toStdString());
 
     ret2 = M64P::Core.DoCommand(M64CMD_ROM_SET_SETTINGS, sizeof(info.Settings), &info.Settings);
     if (ret2 != M64ERR_SUCCESS)
@@ -1047,12 +1047,12 @@ bool Core::core_ApplyOverlay(void)
 
     // copy settings from g_Settings to Core section
     g_MupenApi.Config.SetOption("Core", "RandomizeInterrupt",
-                                g_Settings.GetBoolValue(SettingsID::Core_RandomizeInterrupt));
-    g_MupenApi.Config.SetOption("Core", "R4300Emulator", g_Settings.GetIntValue(SettingsID::Core_CPU_Emulator));
-    g_MupenApi.Config.SetOption("Core", "DisableExtraMem", g_Settings.GetBoolValue(SettingsID::Core_DisableExtraMem));
-    g_MupenApi.Config.SetOption("Core", "EnableDebugger", g_Settings.GetBoolValue(SettingsID::Core_EnableDebugger));
-    g_MupenApi.Config.SetOption("Core", "CountPerOp", g_Settings.GetIntValue(SettingsID::Core_CountPerOp));
-    g_MupenApi.Config.SetOption("Core", "SiDmaDuration", g_Settings.GetIntValue(SettingsID::Core_SiDmaDuration));
+                                CoreSettingsGetBoolValue(SettingsID::Core_RandomizeInterrupt));
+    g_MupenApi.Config.SetOption("Core", "R4300Emulator", CoreSettingsGetIntValue(SettingsID::Core_CPU_Emulator));
+    g_MupenApi.Config.SetOption("Core", "DisableExtraMem", CoreSettingsGetBoolValue(SettingsID::Core_DisableExtraMem));
+    g_MupenApi.Config.SetOption("Core", "EnableDebugger", CoreSettingsGetBoolValue(SettingsID::Core_EnableDebugger));
+    g_MupenApi.Config.SetOption("Core", "CountPerOp", CoreSettingsGetIntValue(SettingsID::Core_CountPerOp));
+    g_MupenApi.Config.SetOption("Core", "SiDmaDuration", CoreSettingsGetIntValue(SettingsID::Core_SiDmaDuration));
 
     ret = this->GetRomInfo(&info);
     if (!ret)
@@ -1064,14 +1064,14 @@ bool Core::core_ApplyOverlay(void)
     if (!ret)
         return true;
 
-    ret = g_Settings.GetBoolValue(SettingsID::Game_OverrideCoreSettings, section);
+    ret = CoreSettingsGetBoolValue(SettingsID::Game_OverrideCoreSettings, section.toStdString());
     if (!ret)
         return true;
 
     g_MupenApi.Config.SetOption("Core", "RandomizeInterrupt",
-                                g_Settings.GetBoolValue(SettingsID::Game_RandomizeInterrupt, section));
+                                CoreSettingsGetBoolValue(SettingsID::Game_RandomizeInterrupt, section.toStdString()));
     g_MupenApi.Config.SetOption("Core", "R4300Emulator",
-                                g_Settings.GetIntValue(SettingsID::Game_CPU_Emulator, section));
+                                CoreSettingsGetIntValue(SettingsID::Game_CPU_Emulator, section.toStdString()));
     return true;
 }
 

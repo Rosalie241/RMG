@@ -8,7 +8,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "SettingsDialog.hpp"
-#include "Utilities/SettingsID.hpp"
+#include "RMG-Core/Settings/Settings.hpp"
 #include "Globals.hpp"
 
 #include <QFileDialog>
@@ -40,8 +40,8 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
         this->reloadSettings(i);
     }
 
-    int width = g_Settings.GetIntValue(SettingsID::GUI_SettingsDialogWidth);
-    int height = g_Settings.GetIntValue(SettingsID::GUI_SettingsDialogHeight);
+    int width = CoreSettingsGetIntValue(SettingsID::GUI_SettingsDialogWidth);
+    int height = CoreSettingsGetIntValue(SettingsID::GUI_SettingsDialogHeight);
 
     if (width != 0 && height != 0)
     {
@@ -53,8 +53,9 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
 
 SettingsDialog::~SettingsDialog(void)
 {
-    g_Settings.SetValue(SettingsID::GUI_SettingsDialogWidth, this->size().width());
-    g_Settings.SetValue(SettingsID::GUI_SettingsDialogHeight, this->size().height());
+    CoreSettingsSetValue(SettingsID::GUI_SettingsDialogWidth, this->size().width());
+    CoreSettingsSetValue(SettingsID::GUI_SettingsDialogHeight, this->size().height());
+    CoreSettingsSave();
 }
 
 int SettingsDialog::currentIndex(void)
@@ -146,13 +147,13 @@ void SettingsDialog::loadCoreSettings(void)
     bool debugger = false;
     bool overrideGameSettings = false;
 
-    disableExtraMem = g_Settings.GetBoolValue(SettingsID::Core_DisableExtraMem);
-    counterFactor = g_Settings.GetIntValue(SettingsID::Core_CountPerOp);
-    cpuEmulator = g_Settings.GetIntValue(SettingsID::Core_CPU_Emulator);
-    siDmaDuration = g_Settings.GetIntValue(SettingsID::Core_SiDmaDuration);
-    randomizeInterrupt = g_Settings.GetBoolValue(SettingsID::Core_RandomizeInterrupt);
-    debugger = g_Settings.GetBoolValue(SettingsID::Core_EnableDebugger);
-    overrideGameSettings = g_Settings.GetBoolValue(SettingsID::Core_OverrideGameSpecificSettings);
+    disableExtraMem = CoreSettingsGetBoolValue(SettingsID::Core_DisableExtraMem);
+    counterFactor = CoreSettingsGetIntValue(SettingsID::Core_CountPerOp);
+    cpuEmulator = CoreSettingsGetIntValue(SettingsID::Core_CPU_Emulator);
+    siDmaDuration = CoreSettingsGetIntValue(SettingsID::Core_SiDmaDuration);
+    randomizeInterrupt = CoreSettingsGetBoolValue(SettingsID::Core_RandomizeInterrupt);
+    debugger = CoreSettingsGetBoolValue(SettingsID::Core_EnableDebugger);
+    overrideGameSettings = CoreSettingsGetBoolValue(SettingsID::Core_OverrideGameSpecificSettings);
 
     this->coreCpuEmulatorComboBox->setCurrentIndex(cpuEmulator);
     this->coreRandomizeTimingCheckBox->setChecked(randomizeInterrupt);
@@ -186,9 +187,9 @@ void SettingsDialog::loadGameCoreSettings(void)
     bool overrideEnabled, randomizeInterrupt;
     int cpuEmulator = 0;
 
-    overrideEnabled = g_Settings.GetBoolValue(SettingsID::Game_OverrideCoreSettings, this->gameSection);
-    cpuEmulator = g_Settings.GetIntValue(SettingsID::Game_CPU_Emulator, this->gameSection);
-    randomizeInterrupt = g_Settings.GetBoolValue(SettingsID::Game_RandomizeInterrupt, this->gameSection);
+    overrideEnabled = CoreSettingsGetBoolValue(SettingsID::Game_OverrideCoreSettings, this->gameSection.toStdString());
+    cpuEmulator = CoreSettingsGetIntValue(SettingsID::Game_CPU_Emulator, this->gameSection.toStdString());
+    randomizeInterrupt = CoreSettingsGetBoolValue(SettingsID::Game_RandomizeInterrupt, this->gameSection.toStdString());
 
     gameOverrideCoreSettingsGroupBox->setChecked(overrideEnabled);
     gameCoreCpuEmulatorComboBox->setCurrentIndex(cpuEmulator);
@@ -213,7 +214,8 @@ void SettingsDialog::loadGamePluginSettings(void)
     {
         comboBox = comboBoxArray[(int)p.Type];
         comboBox->addItem(p.Name, p.FileName);
-        if (g_Settings.GetStringValue(settingsId[(int)p.Type], this->gameSection) == p.FileName)
+
+        if (CoreSettingsGetStringValue(settingsId[(int)p.Type], this->gameSection.toStdString()) == p.FileName.toStdString())
         {
             comboBox->setCurrentText(p.Name);
         }
@@ -229,17 +231,17 @@ void SettingsDialog::loadPluginSettings(void)
 
     PluginType type;
     QComboBox *comboBox;
-    QString pluginFileName;
+    std::string pluginFileName;
     int index = 0;
 
     for (const auto &p : this->pluginList)
     {
         comboBox = comboBoxArray[(int)p.Type];
-        pluginFileName = g_Settings.GetStringValue(settingsIdArray[(int)p.Type]);
+        pluginFileName = CoreSettingsGetStringValue(settingsIdArray[(int)p.Type]);
 
         comboBox->addItem(p.Name, p.FileName);
 
-        if (pluginFileName == p.FileName)
+        if (pluginFileName == p.FileName.toStdString())
         {
             comboBox->setCurrentText(p.Name);
         }
@@ -249,30 +251,30 @@ void SettingsDialog::loadPluginSettings(void)
 void SettingsDialog::loadDirectorySettings(void)
 {
     // these need to be static, otherwise Qt will segfault
-    static QString screenshotDir;
-    static QString saveStateDir;
-    static QString saveSramDir;
-    static QString sharedDataDir;
+    static std::string screenshotDir;
+    static std::string saveStateDir;
+    static std::string saveSramDir;
+    static std::string sharedDataDir;
     static bool overrideUserDirs = false;
-    static QString userDataDir;
-    static QString userCacheDir;
+    static std::string userDataDir;
+    static std::string userCacheDir;
 
-    screenshotDir = g_Settings.GetStringValue(SettingsID::Core_ScreenshotPath);
-    saveStateDir = g_Settings.GetStringValue(SettingsID::Core_SaveStatePath);
-    saveSramDir = g_Settings.GetStringValue(SettingsID::Core_SaveSRAMPath);
-    sharedDataDir = g_Settings.GetStringValue(SettingsID::Core_SharedDataPath);
+    screenshotDir = CoreSettingsGetStringValue(SettingsID::Core_ScreenshotPath);
+    saveStateDir = CoreSettingsGetStringValue(SettingsID::Core_SaveStatePath);
+    saveSramDir = CoreSettingsGetStringValue(SettingsID::Core_SaveSRAMPath);
+    sharedDataDir = CoreSettingsGetStringValue(SettingsID::Core_SharedDataPath);
 
-    overrideUserDirs = g_Settings.GetBoolValue(SettingsID::Core_OverrideUserDirs);
-    userDataDir = g_Settings.GetStringValue(SettingsID::Core_UserDataDirOverride);
-    userCacheDir = g_Settings.GetStringValue(SettingsID::Core_UserCacheDirOverride);
+    overrideUserDirs = CoreSettingsGetBoolValue(SettingsID::Core_OverrideUserDirs);
+    userDataDir = CoreSettingsGetStringValue(SettingsID::Core_UserDataDirOverride);
+    userCacheDir = CoreSettingsGetStringValue(SettingsID::Core_UserCacheDirOverride);
 
-    this->screenshotDirLineEdit->setText(screenshotDir);
-    this->saveStateDirLineEdit->setText(saveStateDir);
-    this->saveSramDirLineEdit->setText(saveSramDir);
-    this->sharedDataDirLineEdit->setText(sharedDataDir);
+    this->screenshotDirLineEdit->setText(QString::fromStdString(screenshotDir));
+    this->saveStateDirLineEdit->setText(QString::fromStdString(saveStateDir));
+    this->saveSramDirLineEdit->setText(QString::fromStdString(saveSramDir));
+    this->sharedDataDirLineEdit->setText(QString::fromStdString(sharedDataDir));
     this->overrideUserDirsGroupBox->setChecked(overrideUserDirs);
-    this->userDataDirLineEdit->setText(userDataDir);
-    this->userCacheDirLineEdit->setText(userCacheDir);
+    this->userDataDirLineEdit->setText(QString::fromStdString(userDataDir));
+    this->userCacheDirLineEdit->setText(QString::fromStdString(userCacheDir));
 }
 
 void SettingsDialog::loadHotkeySettings(void)
@@ -282,11 +284,11 @@ void SettingsDialog::loadHotkeySettings(void)
 
 void SettingsDialog::loadInterfaceSettings(void)
 {
-    this->manualResizingCheckBox->setChecked(g_Settings.GetBoolValue(SettingsID::GUI_AllowManualResizing));
-    this->hideCursorCheckBox->setChecked(g_Settings.GetBoolValue(SettingsID::GUI_HideCursorInEmulation));
-    this->statusBarMessageDurationSpinBox->setValue(g_Settings.GetIntValue(SettingsID::GUI_StatusbarMessageDuration));
-    this->searchSubDirectoriesCheckbox->setChecked(g_Settings.GetBoolValue(SettingsID::RomBrowser_Recursive));
-    this->romSearchLimitSpinBox->setValue(g_Settings.GetIntValue(SettingsID::RomBrowser_MaxItems));
+    this->manualResizingCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_AllowManualResizing));
+    this->hideCursorCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_HideCursorInEmulation));
+    this->statusBarMessageDurationSpinBox->setValue(CoreSettingsGetIntValue(SettingsID::GUI_StatusbarMessageDuration));
+    this->searchSubDirectoriesCheckbox->setChecked(CoreSettingsGetBoolValue(SettingsID::RomBrowser_Recursive));
+    this->romSearchLimitSpinBox->setValue(CoreSettingsGetIntValue(SettingsID::RomBrowser_MaxItems));
 }
 
 void SettingsDialog::loadDefaultCoreSettings(void)
@@ -299,13 +301,13 @@ void SettingsDialog::loadDefaultCoreSettings(void)
     bool debugger = false;
     bool overrideGameSettings;
 
-    disableExtraMem = g_Settings.GetDefaultBoolValue(SettingsID::Core_DisableExtraMem);
-    counterFactor = g_Settings.GetDefaultIntValue(SettingsID::Core_CountPerOp);
-    cpuEmulator = g_Settings.GetDefaultIntValue(SettingsID::Core_CPU_Emulator);
-    siDmaDuration = g_Settings.GetDefaultIntValue(SettingsID::Core_SiDmaDuration);
-    randomizeInterrupt = g_Settings.GetDefaultBoolValue(SettingsID::Core_RandomizeInterrupt);
-    debugger = g_Settings.GetDefaultBoolValue(SettingsID::Core_EnableDebugger);
-    overrideGameSettings = g_Settings.GetDefaultBoolValue(SettingsID::Core_OverrideGameSpecificSettings);
+    disableExtraMem = CoreSettingsGetDefaultBoolValue(SettingsID::Core_DisableExtraMem);
+    counterFactor = CoreSettingsGetDefaultIntValue(SettingsID::Core_CountPerOp);
+    cpuEmulator = CoreSettingsGetDefaultIntValue(SettingsID::Core_CPU_Emulator);
+    siDmaDuration = CoreSettingsGetDefaultIntValue(SettingsID::Core_SiDmaDuration);
+    randomizeInterrupt = CoreSettingsGetDefaultBoolValue(SettingsID::Core_RandomizeInterrupt);
+    debugger = CoreSettingsGetDefaultBoolValue(SettingsID::Core_EnableDebugger);
+    overrideGameSettings = CoreSettingsGetDefaultBoolValue(SettingsID::Core_OverrideGameSpecificSettings);
 
     this->coreCpuEmulatorComboBox->setCurrentIndex(cpuEmulator);
     this->coreRandomizeTimingCheckBox->setChecked(randomizeInterrupt);
@@ -339,9 +341,9 @@ void SettingsDialog::loadDefaultGameCoreSettings(void)
     bool overrideEnabled, randomizeInterrupt;
     int cpuEmulator = 0;
 
-    overrideEnabled = g_Settings.GetDefaultBoolValue(SettingsID::Game_OverrideCoreSettings);
-    cpuEmulator = g_Settings.GetDefaultIntValue(SettingsID::Game_CPU_Emulator);
-    randomizeInterrupt = g_Settings.GetDefaultBoolValue(SettingsID::Game_RandomizeInterrupt);
+    overrideEnabled = CoreSettingsGetDefaultBoolValue(SettingsID::Game_OverrideCoreSettings);
+    cpuEmulator = CoreSettingsGetDefaultIntValue(SettingsID::Game_CPU_Emulator);
+    randomizeInterrupt = CoreSettingsGetDefaultBoolValue(SettingsID::Game_RandomizeInterrupt);
 
     gameOverrideCoreSettingsGroupBox->setChecked(overrideEnabled);
     gameCoreCpuEmulatorComboBox->setCurrentIndex(cpuEmulator);
@@ -361,13 +363,13 @@ void SettingsDialog::loadDefaultGamePluginSettings(void)
 
 void SettingsDialog::loadDefaultDirectorySettings(void)
 {
-    this->screenshotDirLineEdit->setText(g_Settings.GetDefaultStringValue(SettingsID::Core_ScreenshotPath));
-    this->saveStateDirLineEdit->setText(g_Settings.GetDefaultStringValue(SettingsID::Core_SaveStatePath));
-    this->saveSramDirLineEdit->setText(g_Settings.GetDefaultStringValue(SettingsID::Core_SaveSRAMPath));
-    this->sharedDataDirLineEdit->setText(g_Settings.GetDefaultStringValue(SettingsID::Core_SharedDataPath));
-    this->overrideUserDirsGroupBox->setChecked(g_Settings.GetDefaultBoolValue(SettingsID::Core_OverrideUserDirs));
-    this->userDataDirLineEdit->setText(g_Settings.GetDefaultStringValue(SettingsID::Core_UserDataDirOverride));
-    this->userCacheDirLineEdit->setText(g_Settings.GetDefaultStringValue(SettingsID::Core_UserCacheDirOverride));
+    this->screenshotDirLineEdit->setText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::Core_ScreenshotPath)));
+    this->saveStateDirLineEdit->setText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::Core_SaveStatePath)));
+    this->saveSramDirLineEdit->setText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::Core_SaveSRAMPath)));
+    this->sharedDataDirLineEdit->setText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::Core_SharedDataPath)));
+    this->overrideUserDirsGroupBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::Core_OverrideUserDirs));
+    this->userDataDirLineEdit->setText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::Core_UserDataDirOverride)));
+    this->userCacheDirLineEdit->setText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::Core_UserCacheDirOverride)));
 }
 
 void SettingsDialog::loadDefaultHotkeySettings(void)
@@ -377,11 +379,11 @@ void SettingsDialog::loadDefaultHotkeySettings(void)
 
 void SettingsDialog::loadDefaultInterfaceSettings(void)
 {
-    this->manualResizingCheckBox->setChecked(g_Settings.GetDefaultBoolValue(SettingsID::GUI_AllowManualResizing));
-    this->hideCursorCheckBox->setChecked(g_Settings.GetDefaultBoolValue(SettingsID::GUI_HideCursorInEmulation));
-    this->statusBarMessageDurationSpinBox->setValue(g_Settings.GetDefaultIntValue(SettingsID::GUI_StatusbarMessageDuration));
-    this->searchSubDirectoriesCheckbox->setChecked(g_Settings.GetDefaultBoolValue(SettingsID::RomBrowser_Recursive));
-    this->romSearchLimitSpinBox->setValue(g_Settings.GetDefaultIntValue(SettingsID::RomBrowser_MaxItems));
+    this->manualResizingCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_AllowManualResizing));
+    this->hideCursorCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_HideCursorInEmulation));
+    this->statusBarMessageDurationSpinBox->setValue(CoreSettingsGetDefaultIntValue(SettingsID::GUI_StatusbarMessageDuration));
+    this->searchSubDirectoriesCheckbox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::RomBrowser_Recursive));
+    this->romSearchLimitSpinBox->setValue(CoreSettingsGetDefaultIntValue(SettingsID::RomBrowser_MaxItems));
 }
 
 void SettingsDialog::saveSettings(void)
@@ -411,10 +413,10 @@ void SettingsDialog::saveCoreSettings(void)
     bool debugger = this->coreDebuggerCheckBox->isChecked();
     bool overrideGameSettings = this->coreOverrideGameSettingsGroup->isChecked();
 
-    g_Settings.SetValue(SettingsID::Core_CPU_Emulator, cpuEmulator);
-    g_Settings.SetValue(SettingsID::Core_RandomizeInterrupt, randomizeInterrupt);
-    g_Settings.SetValue(SettingsID::Core_EnableDebugger, debugger);
-    g_Settings.SetValue(SettingsID::Core_OverrideGameSpecificSettings, overrideGameSettings);
+    CoreSettingsSetValue(SettingsID::Core_CPU_Emulator, cpuEmulator);
+    CoreSettingsSetValue(SettingsID::Core_RandomizeInterrupt, randomizeInterrupt);
+    CoreSettingsSetValue(SettingsID::Core_EnableDebugger, debugger);
+    CoreSettingsSetValue(SettingsID::Core_OverrideGameSpecificSettings, overrideGameSettings);
 
     if (!overrideGameSettings)
     {
@@ -423,9 +425,9 @@ void SettingsDialog::saveCoreSettings(void)
         siDmaDuration = -1;
     }
 
-    g_Settings.SetValue(SettingsID::Core_DisableExtraMem, disableExtraMem);
-    g_Settings.SetValue(SettingsID::Core_CountPerOp, counterFactor);
-    g_Settings.SetValue(SettingsID::Core_SiDmaDuration, siDmaDuration);
+    CoreSettingsSetValue(SettingsID::Core_DisableExtraMem, disableExtraMem);
+    CoreSettingsSetValue(SettingsID::Core_CountPerOp, counterFactor);
+    CoreSettingsSetValue(SettingsID::Core_SiDmaDuration, siDmaDuration);
 }
 
 void SettingsDialog::saveGameSettings(void)
@@ -437,19 +439,19 @@ void SettingsDialog::saveGameSettings(void)
 
     if (this->defaultGameInfo.Settings.disableextramem != (unsigned char)disableExtraMem)
     {
-        g_Settings.SetValue(SettingsID::Game_DisableExtraMem, this->gameSection, disableExtraMem);
+        CoreSettingsSetValue(SettingsID::Game_DisableExtraMem, this->gameSection.toStdString(), disableExtraMem);
     }
     if (this->defaultGameInfo.Settings.savetype != saveType)
     {
-        g_Settings.SetValue(SettingsID::Game_SaveType, this->gameSection, saveType);
+        CoreSettingsSetValue(SettingsID::Game_SaveType, this->gameSection.toStdString(), saveType);
     }
     if (this->defaultGameInfo.Settings.countperop != countPerOp)
     {
-        g_Settings.SetValue(SettingsID::Game_CountPerOp, this->gameSection, countPerOp);
+        CoreSettingsSetValue(SettingsID::Game_CountPerOp, this->gameSection.toStdString(), countPerOp);
     }
     if (this->defaultGameInfo.Settings.sidmaduration != siDmaDuration)
     {
-        g_Settings.SetValue(SettingsID::Game_SiDmaDuration, this->gameSection, siDmaDuration);
+        CoreSettingsSetValue(SettingsID::Game_SiDmaDuration, this->gameSection.toStdString(), siDmaDuration);
     }
 }
 
@@ -463,16 +465,16 @@ void SettingsDialog::saveGameCoreSettings(void)
     cpuEmulator = gameCoreCpuEmulatorComboBox->currentIndex();
     randomizeInterrupt = gameRandomizeTimingCheckBox->isChecked();
 
-    defaultOverrideEnabled = g_Settings.GetDefaultBoolValue(SettingsID::Game_OverrideCoreSettings);
-    defaultRandomizeInterrupt = g_Settings.GetDefaultBoolValue(SettingsID::Game_RandomizeInterrupt);
-    defaultCpuEmulator = g_Settings.GetDefaultIntValue(SettingsID::Game_CPU_Emulator);
+    defaultOverrideEnabled = CoreSettingsGetDefaultBoolValue(SettingsID::Game_OverrideCoreSettings);
+    defaultRandomizeInterrupt = CoreSettingsGetDefaultBoolValue(SettingsID::Game_RandomizeInterrupt);
+    defaultCpuEmulator = CoreSettingsGetDefaultIntValue(SettingsID::Game_CPU_Emulator);
 
     if (defaultOverrideEnabled != overrideEnabled)
-        g_Settings.SetValue(SettingsID::Game_OverrideCoreSettings, this->gameSection, overrideEnabled);
+        CoreSettingsSetValue(SettingsID::Game_OverrideCoreSettings, this->gameSection.toStdString(), overrideEnabled);
     if (defaultCpuEmulator != cpuEmulator)
-        g_Settings.SetValue(SettingsID::Game_CPU_Emulator, this->gameSection, cpuEmulator);
+        CoreSettingsSetValue(SettingsID::Game_CPU_Emulator, this->gameSection.toStdString(), cpuEmulator);
     if (defaultRandomizeInterrupt != randomizeInterrupt)
-        g_Settings.SetValue(SettingsID::Game_RandomizeInterrupt, this->gameSection, randomizeInterrupt);
+        CoreSettingsSetValue(SettingsID::Game_RandomizeInterrupt, this->gameSection.toStdString(), randomizeInterrupt);
 }
 
 void SettingsDialog::saveGamePluginSettings(void)
@@ -489,9 +491,9 @@ void SettingsDialog::saveGamePluginSettings(void)
         comboBox = comboBoxArray[i];
         id = settingsIdArray[i];
 
-        if (comboBox->currentIndex() != 0)
+        if (comboBox->currentIndex() != 0 )
         {
-            g_Settings.SetValue(id, this->gameSection, comboBox->currentData().toString());
+            CoreSettingsSetValue(id, this->gameSection.toStdString(), comboBox->currentData().toString().toStdString());
         }
     }
 }
@@ -515,14 +517,14 @@ void SettingsDialog::savePluginSettings(void)
 
 void SettingsDialog::saveDirectorySettings(void)
 {
-    g_Settings.SetValue(SettingsID::Core_ScreenshotPath, this->screenshotDirLineEdit->text());
-    g_Settings.SetValue(SettingsID::Core_SaveStatePath, this->saveStateDirLineEdit->text());
-    g_Settings.SetValue(SettingsID::Core_SaveSRAMPath, this->saveSramDirLineEdit->text());
-    g_Settings.SetValue(SettingsID::Core_SharedDataPath, this->sharedDataDirLineEdit->text());
+    CoreSettingsSetValue(SettingsID::Core_ScreenshotPath, this->screenshotDirLineEdit->text().toStdString());
+    CoreSettingsSetValue(SettingsID::Core_SaveStatePath, this->saveStateDirLineEdit->text().toStdString());
+    CoreSettingsSetValue(SettingsID::Core_SaveSRAMPath, this->saveSramDirLineEdit->text().toStdString());
+    CoreSettingsSetValue(SettingsID::Core_SharedDataPath, this->sharedDataDirLineEdit->text().toStdString());
 
-    g_Settings.SetValue(SettingsID::Core_OverrideUserDirs, this->overrideUserDirsGroupBox->isChecked());
-    g_Settings.SetValue(SettingsID::Core_UserDataDirOverride, this->userDataDirLineEdit->text());
-    g_Settings.SetValue(SettingsID::Core_UserCacheDirOverride, this->userCacheDirLineEdit->text());
+    CoreSettingsSetValue(SettingsID::Core_OverrideUserDirs, this->overrideUserDirsGroupBox->isChecked());
+    CoreSettingsSetValue(SettingsID::Core_UserDataDirOverride, this->userDataDirLineEdit->text().toStdString());
+    CoreSettingsSetValue(SettingsID::Core_UserCacheDirOverride, this->userCacheDirLineEdit->text().toStdString());
 }
 
 void SettingsDialog::saveHotkeySettings(void)
@@ -532,11 +534,11 @@ void SettingsDialog::saveHotkeySettings(void)
 
 void SettingsDialog::saveInterfaceSettings(void)
 {
-    g_Settings.SetValue(SettingsID::GUI_AllowManualResizing, this->manualResizingCheckBox->isChecked());
-    g_Settings.SetValue(SettingsID::GUI_HideCursorInEmulation, this->hideCursorCheckBox->isChecked());
-    g_Settings.SetValue(SettingsID::GUI_StatusbarMessageDuration, this->statusBarMessageDurationSpinBox->value());
-    g_Settings.SetValue(SettingsID::RomBrowser_Recursive, this->searchSubDirectoriesCheckbox->isChecked());
-    g_Settings.SetValue(SettingsID::RomBrowser_MaxItems, this->romSearchLimitSpinBox->value());
+    CoreSettingsSetValue(SettingsID::GUI_AllowManualResizing, this->manualResizingCheckBox->isChecked());
+    CoreSettingsSetValue(SettingsID::GUI_HideCursorInEmulation, this->hideCursorCheckBox->isChecked());
+    CoreSettingsSetValue(SettingsID::GUI_StatusbarMessageDuration, this->statusBarMessageDurationSpinBox->value());
+    CoreSettingsSetValue(SettingsID::RomBrowser_Recursive, this->searchSubDirectoriesCheckbox->isChecked());
+    CoreSettingsSetValue(SettingsID::RomBrowser_MaxItems, this->romSearchLimitSpinBox->value());
 }
 
 void SettingsDialog::commonHotkeySettings(int action)
@@ -575,13 +577,13 @@ void SettingsDialog::commonHotkeySettings(int action)
         {
         default:
         case 0:
-            keybinding.button->setText(g_Settings.GetStringValue(keybinding.settingId));
+            keybinding.button->setText(QString::fromStdString(CoreSettingsGetStringValue(keybinding.settingId)));
             break;
         case 1:
-            keybinding.button->setText(g_Settings.GetDefaultStringValue(keybinding.settingId));
+            keybinding.button->setText(QString::fromStdString(CoreSettingsGetDefaultStringValue(keybinding.settingId)));
             break;
         case 2:
-            g_Settings.SetValue(keybinding.settingId, keybinding.button->text());
+            CoreSettingsSetValue(keybinding.settingId, keybinding.button->text().toStdString());
             break;
         }
     }

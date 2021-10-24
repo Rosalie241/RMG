@@ -165,13 +165,13 @@ void RomBrowserWidget::model_Setup(void)
 
     this->romSearcher_Launch(this->directory);
 
-    this->model_Columns = g_Settings.GetIntListValue(SettingsID::RomBrowser_Columns);
+    this->model_Columns = CoreSettingsGetIntListValue(SettingsID::RomBrowser_Columns);
     // sanitize list
     for (int column : this->model_Columns)
     {
         if (column >= (int)ColumnID::Invalid || column < 0)
         {
-            this->model_Columns.removeOne(column);
+            this->model_Columns.erase(this->model_Columns.begin() + column);
         }
     }
 
@@ -232,8 +232,8 @@ void RomBrowserWidget::romSearcher_Launch(QString directory)
         return;
     }
 
-    this->romSearcher_Thread->SetMaximumFiles(g_Settings.GetIntValue(SettingsID::RomBrowser_MaxItems));
-    this->romSearcher_Thread->SetRecursive(g_Settings.GetBoolValue(SettingsID::RomBrowser_Recursive));
+    this->romSearcher_Thread->SetMaximumFiles(CoreSettingsGetIntValue(SettingsID::RomBrowser_MaxItems));
+    this->romSearcher_Thread->SetRecursive(CoreSettingsGetBoolValue(SettingsID::RomBrowser_Recursive));
     this->romSearcher_Thread->SetDirectory(directory);
     this->romSearcher_Thread->start();
 }
@@ -243,7 +243,7 @@ void RomBrowserWidget::column_SetSize(void)
     int index = 0;
     int columnCount = (this->model_Model->columnCount() - 1);
 
-    QList<int> sizes = g_Settings.GetIntListValue(SettingsID::RomBrowser_ColumnSizes);
+    std::vector<int> sizes = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnSizes);
 
     for (int id : this->model_Columns)
     {
@@ -266,7 +266,7 @@ void RomBrowserWidget::column_SetSize(void)
 
 int RomBrowserWidget::column_GetSizeSettingIndex(int column)
 {
-    QList<int> sizes = g_Settings.GetIntListValue(SettingsID::RomBrowser_ColumnSizes);
+    std::vector<int> sizes = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnSizes);
 
     for (int id : this->model_Columns)
     {
@@ -323,7 +323,7 @@ void RomBrowserWidget::customContextMenuRequested(QPoint position)
 
 void RomBrowserWidget::on_columnResized(int column, int oldWidth, int newWidth)
 {
-    QList<int> sizes = g_Settings.GetIntListValue(SettingsID::RomBrowser_ColumnSizes);
+    std::vector<int> sizes = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnSizes);
 
     int sizeIndex = this->column_GetSizeSettingIndex(column);
 
@@ -336,7 +336,7 @@ void RomBrowserWidget::on_columnResized(int column, int oldWidth, int newWidth)
 
     sizes[sizeIndex] = newWidth;
 
-    g_Settings.SetValue(SettingsID::RomBrowser_ColumnSizes, sizes);
+    CoreSettingsSetValue(SettingsID::RomBrowser_ColumnSizes, sizes);
 }
 
 void RomBrowserWidget::on_Action_PlayGame(void)
