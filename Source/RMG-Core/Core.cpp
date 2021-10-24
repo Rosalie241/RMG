@@ -21,7 +21,6 @@
 // Local Variables
 //
 
-static std::string            l_ErrorMessage;
 static osal_dynlib_lib_handle l_CoreLibHandle;
 
 //
@@ -30,27 +29,31 @@ static osal_dynlib_lib_handle l_CoreLibHandle;
 
 bool CoreInit(void)
 {
+    std::string error;
     bool ret = false;
 
     l_CoreLibHandle = osal_dynlib_open(CORE_LIB_FILENAME);
     if (l_CoreLibHandle == nullptr)
     {
-        l_ErrorMessage = "osal_dynlib_open Failed: ";
-        l_ErrorMessage += osal_dynlib_strerror();
+        error = "osal_dynlib_open Failed: ";
+        error += osal_dynlib_strerror();
+        CoreSetError(error);
         return false;
     }
 
     ret = m64p::Core.Hook(l_CoreLibHandle);
     if (!ret)
     {
-        l_ErrorMessage = m64p::Core.GetLastError();
+        error = m64p::Core.GetLastError();
+        CoreSetError(error);
         return false;
     }
 
     ret = m64p::Config.Hook(l_CoreLibHandle);
     if (!ret)
     {
-        l_ErrorMessage = m64p::Core.GetLastError();
+        error = m64p::Config.GetLastError();
+        CoreSetError(error);
         return false;
     }
 
@@ -60,9 +63,4 @@ bool CoreInit(void)
 void CoreShutdown(void)
 {
     osal_dynlib_close(l_CoreLibHandle);
-}
-
-std::string CoreGetError(void)
-{
-    return l_ErrorMessage;
 }

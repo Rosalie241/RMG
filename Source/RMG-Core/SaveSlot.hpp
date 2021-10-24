@@ -7,18 +7,14 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef CORE_HPP
-#define CORE_HPP
+#ifndef CORE_SAVESLOT_HPP
+#define CORE_SAVESLOT_HPP
 
-#include "Settings/Settings.hpp"
-#include "SaveSlot.hpp"
-#include "Error.hpp"
+// sets save slot
+bool CoreSetSaveSlot(int slot);
 
-// initializes the core library,
-// returns false when failed
-bool CoreInit(void);
+// retrieves current save slot,
+// returns -1 on error
+int CoreGetSaveSlot(void);
 
-// shuts down the core library
-void CoreShutdown(void);
-
-#endif // CORE_HPP
+#endif // CORE_SAVESLOT_HPP

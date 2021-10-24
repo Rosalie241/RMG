@@ -7,18 +7,15 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef CORE_HPP
-#define CORE_HPP
+#ifndef CORE_ERROR_HPP
+#define CORE_ERROR_HPP
 
-#include "Settings/Settings.hpp"
-#include "SaveSlot.hpp"
-#include "Error.hpp"
+#include <iostream>
 
-// initializes the core library,
-// returns false when failed
-bool CoreInit(void);
+// sets error message
+void CoreSetError(std::string error);
 
-// shuts down the core library
-void CoreShutdown(void);
+// retrieves error message
+std::string CoreGetError(void);
 
-#endif // CORE_HPP
+#endif // CORE_ERROR_HPP

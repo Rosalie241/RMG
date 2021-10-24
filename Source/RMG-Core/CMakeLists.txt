@@ -8,11 +8,16 @@ pkg_check_modules(SDL2 REQUIRED sdl2)
 pkg_check_modules(MINIZIP REQUIRED minizip)
 
 set(RMG_CORE_SOURCES
-	m64p/Api.cpp
-	m64p/CoreApi.cpp
-	m64p/ConfigApi.cpp
-	m64p/PluginApi.cpp
-	Core.cpp
+    m64p/Api.cpp
+    m64p/CoreApi.cpp
+    m64p/ConfigApi.cpp
+    m64p/PluginApi.cpp
+    Settings/Settings.cpp
+    Emulation.cpp
+    SaveSlot.cpp
+    VidExt.cpp
+    Error.cpp
+    Core.cpp
 )
 
 if (WIN32 OR MSYS)
@@ -21,7 +26,7 @@ if (WIN32 OR MSYS)
     )
 else()
     list(APPEND RMG_CORE_SOURCES 
-        osal/osal_dynlib_unix.cpp
+		osal/osal_dynlib_unix.cpp
     )
 endif()
 
