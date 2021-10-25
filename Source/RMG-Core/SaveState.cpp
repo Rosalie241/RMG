@@ -24,7 +24,7 @@ bool CoreSetSaveStateSlot(int slot)
     ret = m64p::Core.DoCommand(M64CMD_CORE_STATE_SET, M64CORE_SAVESTATE_SLOT, &slot);
     if (ret != M64ERR_SUCCESS)
     {
-        error = "CoreSetSaveSlot m64p::Core.DoCommand(M64CMD_CORE_STATE_SET, M64CORE_SAVESTATE_SLOT) Failed: ";
+        error = "CoreSetSaveStateSlot m64p::Core.DoCommand(M64CMD_CORE_STATE_SET, M64CORE_SAVESTATE_SLOT) Failed: ";
         error += m64p::Core.ErrorMessage(ret);
         CoreSetError(error);
     }
@@ -41,7 +41,7 @@ int CoreGetSaveStateSlot(void)
     ret = m64p::Core.DoCommand(M64CMD_CORE_STATE_QUERY, M64CORE_SAVESTATE_SLOT, &slot);
     if (ret != M64ERR_SUCCESS)
     {
-        error = "CoreGetSaveSlot m64p::Core.DoCommand(M64CMD_CORE_STATE_QUERY, M64CORE_SAVESTATE_SLOT) Failed: ";
+        error = "CoreGetSaveStateSlot m64p::Core.DoCommand(M64CMD_CORE_STATE_QUERY, M64CORE_SAVESTATE_SLOT) Failed: ";
         error += m64p::Core.ErrorMessage(ret);
         CoreSetError(error);
     }
@@ -89,7 +89,7 @@ bool CoreLoadSaveState(void)
     ret = m64p::Core.DoCommand(M64CMD_STATE_LOAD, 0, NULL);
     if (ret != M64ERR_SUCCESS)
     {
-        error = "CoreLoadState: m64p::Core.DoCommand(M64CMD_STATE_LOAD) Failed: ";
+        error = "CoreLoadSaveState: m64p::Core.DoCommand(M64CMD_STATE_LOAD) Failed: ";
         error += m64p::Core.ErrorMessage(ret);
         CoreSetError(error);
     }
@@ -105,7 +105,7 @@ bool CoreLoadSaveState(std::string file)
     ret = m64p::Core.DoCommand(M64CMD_STATE_LOAD, 0, (void*)file.c_str());
     if (ret != M64ERR_SUCCESS)
     {
-        error = "CoreLoadState: m64p::Core.DoCommand(M64CMD_STATE_LOAD) Failed: ";
+        error = "CoreLoadSaveState: m64p::Core.DoCommand(M64CMD_STATE_LOAD) Failed: ";
         error += m64p::Core.ErrorMessage(ret);
         CoreSetError(error);
     }
