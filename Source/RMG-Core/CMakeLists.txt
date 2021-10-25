@@ -14,7 +14,7 @@ set(RMG_CORE_SOURCES
     m64p/PluginApi.cpp
     Settings/Settings.cpp
     Emulation.cpp
-    SaveSlot.cpp
+    SaveState.cpp
     VidExt.cpp
     Error.cpp
     Core.cpp

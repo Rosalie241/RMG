@@ -11,7 +11,7 @@
 #define CORE_HPP
 
 #include "Settings/Settings.hpp"
-#include "SaveSlot.hpp"
+#include "SaveState.hpp"
 #include "Error.hpp"
 
 // initializes the core library,
