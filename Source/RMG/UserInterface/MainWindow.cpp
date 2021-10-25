@@ -9,6 +9,7 @@
  */
 #include "MainWindow.hpp"
 
+#include "RMG-Core/SaveState.hpp"
 #include "RMG-Core/Settings/Settings.hpp"
 #include "UserInterface/EventFilter.hpp"
 #include "Utilities/QtKeyToSdl2Key.hpp"
@@ -373,7 +374,7 @@ void MainWindow::menuBar_Setup(bool inEmulation, bool isPaused)
         QActionGroup *slotActionGroup = new QActionGroup(this);
         QList<QAction *> slotActions;
         QAction *slotAction;
-        int currentSaveslot = CoreGetSaveSlot();
+        int currentSlot = CoreGetSaveStateSlot();
         for (int i = 0; i < 10; i++)
         {
             slotActions.append(new QAction(this));
@@ -381,7 +382,7 @@ void MainWindow::menuBar_Setup(bool inEmulation, bool isPaused)
 
             slotAction->setText("Slot " + QString::number(i));
             slotAction->setCheckable(true);
-            slotAction->setChecked(i == currentSaveslot);
+            slotAction->setChecked(i == currentSlot);
             slotAction->setActionGroup(slotActionGroup);
 
             connect(slotAction, &QAction::triggered, [=](bool checked)
@@ -993,9 +994,9 @@ void MainWindow::on_Action_System_SwapDisk(void)
 
 void MainWindow::on_Action_System_SaveState(void)
 {
-    if (!g_MupenApi.Core.SaveState())
+    if (!CoreSaveState())
     {
-        this->ui_MessageBox("Error", "Api::Core::SaveState Failed", g_MupenApi.Core.GetLastError());
+        this->ui_MessageBox("Error", "CoreSaveState Failed", g_MupenApi.Core.GetLastError());
     }
 }
 
@@ -1010,9 +1011,9 @@ void MainWindow::on_Action_System_SaveAs(void)
 
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save State"), "", tr("SaveState (*.dat);;All Files (*)"));
 
-    if (!g_MupenApi.Core.SaveStateAsFile(fileName))
+    if (!CoreSaveState(fileName.toStdString()))
     {
-        this->ui_MessageBox("Error", "Api::Core::SaveStateAsFile Failed", g_MupenApi.Core.GetLastError());
+        this->ui_MessageBox("Error", "CoreSaveState Failed", g_MupenApi.Core.GetLastError());
     }
 
     if (!isPaused)
@@ -1023,9 +1024,9 @@ void MainWindow::on_Action_System_SaveAs(void)
 
 void MainWindow::on_Action_System_LoadState(void)
 {
-    if (!g_MupenApi.Core.LoadState())
+    if (!CoreLoadSaveState())
     {
-        this->ui_MessageBox("Error", "Api::Core::LoadState Failed", g_MupenApi.Core.GetLastError());
+        this->ui_MessageBox("Error", "CoreLoadSaveState Failed", g_MupenApi.Core.GetLastError());
     }
 }
 
@@ -1041,9 +1042,9 @@ void MainWindow::on_Action_System_Load(void)
     QString fileName =
         QFileDialog::getOpenFileName(this, tr("Open Save State"), "", tr("SaveState (*.dat);;All Files (*)"));
 
-    if (!g_MupenApi.Core.LoadStateFromFile(fileName))
+    if (!CoreLoadSaveState(fileName.toStdString()))
     {
-        this->ui_MessageBox("Error", "Api::Core::LoadStateFromFile Failed", g_MupenApi.Core.GetLastError());
+        this->ui_MessageBox("Error", "CoreLoadSaveState Failed", g_MupenApi.Core.GetLastError());
     }
 
     if (!isPaused)
@@ -1054,9 +1055,9 @@ void MainWindow::on_Action_System_Load(void)
 
 void MainWindow::on_Action_System_CurrentSaveState(int slot)
 {
-    if (!CoreSetSaveSlot(slot))
+    if (!CoreSetSaveStateSlot(slot))
     {
-        this->ui_MessageBox("Error", "Api::Core::SetSaveSlot Failed", g_MupenApi.Core.GetLastError());
+        this->ui_MessageBox("Error", "CoreSetSaveStateSlot Failed", g_MupenApi.Core.GetLastError());
     }
 }
 
