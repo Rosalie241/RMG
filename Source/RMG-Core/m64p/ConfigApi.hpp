@@ -12,7 +12,7 @@
 
 #include "api/m64p_config.h"
 
-#include <iostream>
+#include <string>
 
 namespace m64p
 {

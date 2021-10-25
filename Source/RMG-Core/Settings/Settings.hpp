@@ -12,7 +12,7 @@
 
 #include "SettingsID.hpp"
 
-#include <iostream>
+#include <string>
 #include <vector>
 
 // saves settings to file

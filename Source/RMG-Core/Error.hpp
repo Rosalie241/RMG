@@ -10,7 +10,7 @@
 #ifndef CORE_ERROR_HPP
 #define CORE_ERROR_HPP
 
-#include <iostream>
+#include <string>
 
 // sets error message
 void CoreSetError(std::string error);

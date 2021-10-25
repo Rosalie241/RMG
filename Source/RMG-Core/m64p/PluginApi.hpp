@@ -13,7 +13,7 @@
 #include "api/m64p_common.h"
 #include "api/m64p_custom.h"
 
-#include <iostream>
+#include <string>
 
 namespace m64p
 {

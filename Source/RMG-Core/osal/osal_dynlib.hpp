@@ -10,7 +10,7 @@
 #ifndef OSAL_DYNLIB_HPP
 #define OSAL_DYNLIB_HPP
 
-#include <iostream>
+#include <string>
 
 #ifdef _WIN32
 #include <windows.h>
