@@ -10,7 +10,6 @@
 #ifndef M64P_WRAPPER_CORE_HPP
 #define M64P_WRAPPER_CORE_HPP
 
-#include "Plugin.hpp"
 #include "Types.hpp"
 
 #include <QList>
@@ -29,13 +28,6 @@ class Core : public QObject
     ~Core(void);
 
     bool Init(m64p_dynlib_handle);
-
-    bool HasPluginConfig(PluginType);
-    bool OpenPluginConfig(PluginType);
-
-    QList<Plugin_t> GetPlugins(PluginType);
-    bool SetPlugin(Plugin_t);
-    bool GetCurrentPlugin(PluginType, Plugin_t *);
 
     bool GetRomInfo(QString, RomInfo_t *, bool);
     bool GetRomInfo(RomInfo_t *);
@@ -57,15 +49,6 @@ class Core : public QObject
     bool SetSpeedLimiter(bool);
 
     bool PressGameSharkButton(void);
-
-    int GetSaveSlot(void);
-    bool SetSaveSlot(int);
-
-    bool SaveStateAsFile(QString);
-    bool LoadStateFromFile(QString);
-
-    bool SaveState(void);
-    bool LoadState(void);
 
     bool SetKeyDown(int, int);
     bool SetKeyUp(int, int);
@@ -89,19 +72,6 @@ class Core : public QObject
     static char* media_loader_get_dd_disk(void*);
 
     m64p_dynlib_handle handle;
-
-    QList<Plugin_t> plugin_Todo;
-    M64P::Wrapper::Plugin plugin_Rsp;
-    M64P::Wrapper::Plugin plugin_Gfx;
-    M64P::Wrapper::Plugin plugin_Audio;
-    M64P::Wrapper::Plugin plugin_Input;
-
-    M64P::Wrapper::Plugin *plugin_Get(PluginType);
-    bool plugin_Attach(Plugin *);
-    bool plugins_Attach(void);
-    bool plugins_Detach(void);
-    bool plugin_LoadTodo(void);
-
 
     RomInfo_t rom_Info;
 

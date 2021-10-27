@@ -13,7 +13,8 @@
 #include "../Api.hpp"
 #include "../api/version.h"
 #include "Config.hpp"
-#include "Plugin.hpp"
+
+#include <RMG-Core/Core.hpp>
 
 #include <QDir>
 #include <unzip.h>
@@ -27,20 +28,6 @@ Core::Core(void)
 
 Core::~Core(void)
 {
-    for (Plugin p : 
-    {
-        this->plugin_Gfx,
-        this->plugin_Rsp,
-        this->plugin_Audio,
-        this->plugin_Input 
-    })
-    {
-        if (p.HasInit())
-        {
-            p.Shutdown();
-        }
-
-    }
 }
 
 bool Core::Init(m64p_dynlib_handle handle)
@@ -76,28 +63,6 @@ bool Core::Init(m64p_dynlib_handle handle)
     this->handle = handle;
 
     return true;
-}
-
-bool Core::HasPluginConfig(PluginType type)
-{
-    return this->plugin_Get(type)->HasConfig();
-}
-
-bool Core::OpenPluginConfig(PluginType type)
-{
-    bool ret, paused;
-
-    paused = this->emulation_IsPaused();
-
-    if (!paused)
-        this->PauseEmulation();
-
-    ret = this->plugin_Get(type)->OpenConfig();
-
-    if (!paused)
-        this->ResumeEmulation();
-
-    return ret;
 }
 
 bool Core::TakeScreenshot(void)
@@ -146,69 +111,6 @@ bool Core::SetSpeedLimiter(bool enabled)
     return ret == M64ERR_SUCCESS;
 }
 
-QList<Plugin_t> Core::GetPlugins(PluginType type)
-{
-    QList<Plugin_t> plugins;
-    QString dir;
-
-    switch (type)
-    {
-    default:
-    case PluginType::Gfx:
-        dir = MUPEN_DIR_GFX;
-        break;
-    case PluginType::Rsp:
-        dir = MUPEN_DIR_RSP;
-        break;
-    case PluginType::Audio:
-        dir = MUPEN_DIR_AUDIO;
-        break;
-    case PluginType::Input:
-        dir = MUPEN_DIR_INPUT;
-        break;
-    }
-
-    QDir qDir(dir);
-    QStringList filter;
-
-    filter << "*." SO_EXT;
-
-    QFileInfoList fileList = qDir.entryInfoList(filter);
-
-    Plugin p;
-    Plugin_t pInfo;
-
-    for (const QFileInfo &info : fileList)
-    {
-        if (p.Init(info.filePath(), this->handle))
-        {
-            pInfo = p.GetPlugin_t();
-
-            if (pInfo.Type == type)
-                plugins.append(pInfo);
-        }
-    }
-
-    return plugins;
-}
-
-M64P::Wrapper::Plugin *Core::plugin_Get(PluginType type)
-{
-    switch (type)
-    {
-    case PluginType::Gfx:
-        return &this->plugin_Gfx;
-    case PluginType::Rsp:
-        return &this->plugin_Rsp;
-    case PluginType::Audio:
-        return &this->plugin_Audio;
-    case PluginType::Input:
-        return &this->plugin_Input;
-    default:
-        return nullptr;
-    }
-}
-
 char *Core::media_loader_get_gb_cart_rom(void *_this, int)
 {
     return NULL;
@@ -237,107 +139,6 @@ char *Core::media_loader_get_dd_disk(void *_this)
         return NULL;
 
     return strdup(file.toStdString().c_str());
-}
-
-bool Core::plugin_Attach(Plugin *p)
-{
-    m64p_error ret;
-
-    ret = M64P::Core.AttachPlugin(p->GetType(), p->GetHandle());
-
-    if (ret != M64ERR_SUCCESS)
-    {
-        this->error_Message = "Core::plugin_Attach ( " + p->GetPlugin_t().Name + " ) Failed: ";
-        this->error_Message += M64P::Core.ErrorMessage(ret);
-    }
-
-    return ret == M64ERR_SUCCESS;
-}
-
-bool Core::plugins_Attach(void)
-{
-    return this->plugin_Attach(&this->plugin_Gfx) && this->plugin_Attach(&this->plugin_Audio) &&
-           this->plugin_Attach(&this->plugin_Input) && this->plugin_Attach(&this->plugin_Rsp);
-}
-
-bool Core::plugins_Detach(void)
-{
-    M64P::Core.DetachPlugin(M64PLUGIN_GFX);
-    M64P::Core.DetachPlugin(M64PLUGIN_AUDIO);
-    M64P::Core.DetachPlugin(M64PLUGIN_INPUT);
-    M64P::Core.DetachPlugin(M64PLUGIN_RSP);
-    return true;
-}
-
-bool Core::plugin_LoadTodo(void)
-{
-    if (!this->plugin_Todo.isEmpty())
-    {
-        for (const Plugin_t &p : this->plugin_Todo)
-        {
-            if (!this->SetPlugin(p))
-                return false;
-        }
-
-        this->plugin_Todo.clear();
-    }
-
-    return true;
-}
-
-bool Core::SetPlugin(Plugin_t plugin)
-{
-    bool ret;
-
-    // don't apply plugins when emulation is running
-    if (this->IsEmulationRunning() || this->isEmulationPaused())
-    {
-        plugin_Todo.append(plugin);
-        return true;
-    }
-
-    Plugin *p = this->plugin_Get(plugin.Type);
-
-    if (p->HasInit())
-    {
-        ret = p->Shutdown();
-        if (!ret)
-        {
-            this->error_Message = "Core::SetPlugin p->Shutdown() Failed: ";
-            this->error_Message += p->GetLastError();
-            return false;
-        }
-    }
-
-    ret = p->Init(plugin.FileName, this->handle);
-    if (!ret)
-    {
-        this->error_Message = "Core::SetPlugin p->Init() Failed: ";
-        this->error_Message += p->GetLastError();
-        return false;
-    }
-
-    ret = p->Startup();
-    if (!ret)
-    {
-        this->error_Message = "Core::SetPlugin p->Startup() Failed: ";
-        this->error_Message += p->GetLastError();
-        return false;
-    }
-
-    return true;
-}
-
-bool Core::GetCurrentPlugin(PluginType type, Plugin_t *plugin_t)
-{
-    Plugin *p = this->plugin_Get(type);
-
-    if (!p->HasInit())
-        return false;
-
-    *plugin_t = p->GetPlugin_t();
-
-    return true;
 }
 
 bool Core::GetRomInfo(RomInfo_t *info)
@@ -412,9 +213,6 @@ bool Core::LaunchEmulation(QString file)
 {
     m64p_error ret;
 
-    if (!this->plugin_LoadTodo())
-        return false;
-
     if (!this->GetRomInfo(file, &this->rom_Info, false))
         return false;
 
@@ -427,12 +225,12 @@ bool Core::LaunchEmulation(QString file)
     if (!this->core_ApplyOverlay())
         return false;
 
-    if (!this->plugins_Attach())
+    if (!CoreAttachPlugins())
         return false;
 
     ret = M64P::Core.DoCommand(M64CMD_EXECUTE, 0, NULL);
 
-    this->plugins_Detach();
+    CoreDetachPlugins();
 
     if (ret != M64ERR_SUCCESS)
     {
@@ -443,9 +241,6 @@ bool Core::LaunchEmulation(QString file)
     }
 
     if (!this->rom_Close())
-        return false;
-
-    if (!this->plugin_LoadTodo())
         return false;
 
     return true;
@@ -543,91 +338,6 @@ bool Core::PressGameSharkButton(void)
     }
 
     return true;
-}
-
-int Core::GetSaveSlot(void)
-{
-    m64p_error ret;
-    int slot = 0;
-
-    ret = M64P::Core.DoCommand(M64CMD_CORE_STATE_QUERY, M64CORE_SAVESTATE_SLOT, &slot);
-    if (ret != M64ERR_SUCCESS)
-    {
-        this->error_Message = "Core::GetSaveSlot M64P::Core.DoCommand(M64CMD_CORE_STATE_QUERY, M64CORE_SAVESTATE_SLOT) Failed: ";
-        this->error_Message += M64P::Core.ErrorMessage(ret);
-    }
-
-    return slot;
-}
-
-bool Core::SetSaveSlot(int slot)
-{
-    m64p_error ret;
-
-    ret = M64P::Core.DoCommand(M64CMD_CORE_STATE_SET, M64CORE_SAVESTATE_SLOT, &slot);
-    if (ret != M64ERR_SUCCESS)
-    {
-        this->error_Message = "Core::SetSaveSlot M64P::Core.DoCommand(M64CMD_CORE_STATE_SET, M64CORE_SAVESTATE_SLOT) Failed: ";
-        this->error_Message += M64P::Core.ErrorMessage(ret);
-    }
-
-    return ret == M64ERR_SUCCESS;
-}
-
-bool Core::SaveStateAsFile(QString file)
-{
-    m64p_error ret;
-
-    ret = M64P::Core.DoCommand(M64CMD_STATE_SAVE, 1, (void *)file.toStdString().c_str());
-    if (ret != M64ERR_SUCCESS)
-    {
-        this->error_Message = "Core::SaveStateAsFile: M64P::Core.DoCommand(M64CMD_STATE_SAVE) Failed: ";
-        this->error_Message += M64P::Core.ErrorMessage(ret);
-    }
-
-    return ret == M64ERR_SUCCESS;
-}
-
-bool Core::LoadStateFromFile(QString file)
-{
-    m64p_error ret;
-
-    ret = M64P::Core.DoCommand(M64CMD_STATE_LOAD, 0, (void *)file.toStdString().c_str());
-    if (ret != M64ERR_SUCCESS)
-    {
-        this->error_Message = "Core::SaveStateAsFile: M64P::Core.DoCommand(M64CMD_STATE_LOAD) Failed: ";
-        this->error_Message += M64P::Core.ErrorMessage(ret);
-    }
-
-    return ret == M64ERR_SUCCESS;
-}
-
-bool Core::SaveState(void)
-{
-    m64p_error ret;
-
-    ret = M64P::Core.DoCommand(M64CMD_STATE_SAVE, 0, NULL);
-    if (ret != M64ERR_SUCCESS)
-    {
-        this->error_Message = "Core::SaveState: M64P::Core.DoCommand(M64CMD_STATE_SAVE) Failed: ";
-        this->error_Message += M64P::Core.ErrorMessage(ret);
-    }
-
-    return ret == M64ERR_SUCCESS;
-}
-
-bool Core::LoadState(void)
-{
-    m64p_error ret;
-
-    ret = M64P::Core.DoCommand(M64CMD_STATE_LOAD, 0, NULL);
-    if (ret != M64ERR_SUCCESS)
-    {
-        this->error_Message = "Core::LoadState: M64P::Core.DoCommand(M64CMD_STATE_LOAD) Failed: ";
-        this->error_Message += M64P::Core.ErrorMessage(ret);
-    }
-
-    return ret == M64ERR_SUCCESS;
 }
 
 bool Core::SetKeyDown(int key, int mod)
@@ -952,18 +662,19 @@ bool Core::rom_ApplyPluginOverlay(void)
     SettingsID settingIdArray[] = {SettingsID::Game_GFX_Plugin, SettingsID::Game_AUDIO_Plugin,
                                    SettingsID::Game_INPUT_Plugin, SettingsID::Game_RSP_Plugin};
 
+/*
     for (int i = 0; i < 4; i++)
         this->plugin_Todo.append(g_Plugins.GetCurrentPlugin((PluginType)i));
-
+*/
     for (int i = 0; i < 4; i++)
     {
         value = QString::fromStdString(CoreSettingsGetStringValue(settingIdArray[i], section.toStdString()));
-        if (!value.isEmpty())
+        /*if (!value.isEmpty())
         {
             Plugin_t plugin = {.FileName = value};
             if (!this->SetPlugin(plugin))
                 return false;
-        }
+        }*/
     }
 
     return true;
