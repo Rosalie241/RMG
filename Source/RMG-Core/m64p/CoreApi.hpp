@@ -26,6 +26,7 @@ class CoreApi
     bool Hook(m64p_dynlib_handle handle);
     bool IsHooked(void);
 
+    m64p_dynlib_handle GetHandle(void);
     std::string GetLastError(void);
 
     ptr_CoreStartup Startup;
@@ -44,6 +45,7 @@ class CoreApi
     bool hooked = false;
 
     std::string errorMessage;
+    m64p_dynlib_handle handle;
 };
 } // namespace m64p
 

@@ -3,6 +3,8 @@
 #
 project(RMG-Core)
 
+set(CMAKE_CXX_STANDARD 20)
+
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2)
 pkg_check_modules(MINIZIP REQUIRED minizip)
@@ -15,6 +17,7 @@ set(RMG_CORE_SOURCES
     Settings/Settings.cpp
     Emulation.cpp
     SaveState.cpp
+    Plugins.cpp
     VidExt.cpp
     Error.cpp
     Core.cpp

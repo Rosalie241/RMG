@@ -29,10 +29,34 @@ bool PluginApi::Hook(m64p_dynlib_handle handle)
     HOOK_FUNC_OPT(handle, Plugin, Config);
     HOOK_FUNC(handle, Plugin, GetVersion);
 
+    this->handle = handle;
+    this->hooked = true;
     return true;
+}
+
+bool PluginApi::Unhook(void)
+{
+    this->Startup = nullptr;
+    this->Shutdown = nullptr;
+    this->Config = nullptr;
+    this->GetVersion = nullptr;
+    this->handle = nullptr;
+    this->hooked = false;
+    return true;
+}
+
+bool PluginApi::IsHooked(void)
+{
+    return this->hooked;
+}
+
+m64p_dynlib_handle PluginApi::GetHandle(void)
+{
+    return this->handle;
 }
 
 std::string PluginApi::GetLastError(void)
 {
     return this->errorMessage;
 }
+

@@ -24,7 +24,11 @@ class PluginApi
     ~PluginApi(void);
 
     bool Hook(m64p_dynlib_handle);
+    bool Unhook(void);
+    
+    bool IsHooked(void);
 
+    m64p_dynlib_handle GetHandle(void);
     std::string GetLastError(void);
 
     ptr_PluginStartup Startup;
@@ -34,6 +38,9 @@ class PluginApi
 
   private:
     std::string errorMessage;
+    m64p_dynlib_handle handle;
+
+    bool hooked = false;
 };
 } // namespace m64p
 

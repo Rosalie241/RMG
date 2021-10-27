@@ -8,6 +8,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "Core.hpp"
+
 #include "osal/osal_dynlib.hpp"
 #include "m64p/Api.hpp"
 
@@ -57,10 +58,24 @@ bool CoreInit(void)
         return false;
     }
 
+    ret = CoreSettingsSetupDefaults();
+    if (!ret)
+    {
+        return false;
+    }
+
+    ret = CoreApplyPluginSettings();
+    if (!ret)
+    {
+        return false;
+    }
+
     return true;
 }
 
 void CoreShutdown(void)
 {
+    CorePluginsShutdown();
+
     osal_dynlib_close(l_CoreLibHandle);
 }

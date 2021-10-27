@@ -12,6 +12,7 @@
 
 #include "Settings/Settings.hpp"
 #include "SaveState.hpp"
+#include "Plugins.hpp"
 #include "Error.hpp"
 
 // initializes the core library,

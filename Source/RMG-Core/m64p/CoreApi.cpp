@@ -36,6 +36,7 @@ bool CoreApi::Hook(m64p_dynlib_handle handle)
     HOOK_FUNC(handle, Core, GetAPIVersions);
     HOOK_FUNC(handle, Core, ErrorMessage);
 
+    this->handle = handle;
     this->hooked = true;
     return true;
 }
@@ -43,6 +44,11 @@ bool CoreApi::Hook(m64p_dynlib_handle handle)
 bool CoreApi::IsHooked(void)
 {
     return this->hooked;
+}
+
+m64p_dynlib_handle CoreApi::GetHandle(void)
+{
+    return this->handle;
 }
 
 std::string CoreApi::GetLastError(void)
