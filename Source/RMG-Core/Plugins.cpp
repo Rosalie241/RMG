@@ -85,7 +85,7 @@ std::vector<CorePlugin> CoreGetAllPlugins(void)
 
     for (const auto& entry : std::filesystem::recursive_directory_iterator("Plugin"))
     {
-        std::string path = entry.path();
+        std::string path = entry.path().string();
         if (!entry.is_directory() &&
             path.ends_with(OSAL_DYNLIB_LIB_EXT_STR))
         {
@@ -95,7 +95,7 @@ std::vector<CorePlugin> CoreGetAllPlugins(void)
                 continue;
             }
 
-            plugin_name = get_plugin_name(&plugin, entry.path().filename());
+            plugin_name = get_plugin_name(&plugin, entry.path().filename().string());
             plugin_type = get_plugin_type(&plugin);
 
             plugin.Unhook();
