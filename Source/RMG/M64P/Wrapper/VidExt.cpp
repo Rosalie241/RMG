@@ -9,6 +9,7 @@
  */
 #include "VidExt.hpp"
 #include "Globals.hpp"
+#include "M64P/Api.hpp"
 
 #include <QApplication>
 #include <QOpenGLContext>
@@ -258,7 +259,11 @@ m64p_error VidExt_SetCaption(const char *Title)
 
 m64p_error VidExt_ToggleFS(void)
 {
-    g_EmuThread->on_VidExt_ToggleFS();
+    int videoMode = M64VIDEO_WINDOWED;
+
+    M64P::Core.DoCommand(M64CMD_CORE_STATE_QUERY, M64CORE_VIDEO_MODE, &videoMode);
+
+    g_EmuThread->on_VidExt_ToggleFS((videoMode == M64VIDEO_WINDOWED));
     return M64ERR_SUCCESS;
 }
 

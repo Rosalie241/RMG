@@ -1240,7 +1240,9 @@ void MainWindow::on_VidExt_ResizeWindow(int width, int height)
     if (!this->ui_VidExtForceSetMode)
     {
         if (this->size() == QSize(width, height))
+        {
             return;
+        }
     }
 
     if (this->isMaximized() || this->isMinimized())
@@ -1266,8 +1268,47 @@ void MainWindow::on_VidExt_SetCaption(QString title)
 {
 }
 
-void MainWindow::on_VidExt_ToggleFS(void)
+void MainWindow::on_VidExt_ToggleFS(bool fullscreen)
 {
+    if (fullscreen)
+    {
+        if (!this->isFullScreen())
+        {
+            this->showFullScreen();
+        }
+
+        if (!this->menuBar->isHidden())
+        {
+            this->menuBar->hide();
+        }
+
+        if (!this->statusBar()->isHidden())
+        {
+            this->statusBar()->hide();
+        }
+
+        this->ui_Actions_Add();
+    }
+    else
+    {
+        if (this->isFullScreen())
+        {
+            this->showNormal();
+        }
+
+        if (this->menuBar->isHidden())
+        {
+            this->menuBar->show();
+        }
+
+        if (this->statusBar()->isHidden())
+        {
+            this->statusBar()->show();
+        }
+
+        this->ui_Actions_Remove();
+    }
+
 }
 
 void MainWindow::on_VidExt_Quit(void)

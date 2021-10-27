@@ -171,7 +171,7 @@ class MainWindow : public QMainWindow
     void on_VidExt_SetFullscreenModeWithRate(int, int, int, int, int);
     void on_VidExt_ResizeWindow(int, int);
     void on_VidExt_SetCaption(QString);
-    void on_VidExt_ToggleFS(void);
+    void on_VidExt_ToggleFS(bool);
     void on_VidExt_Quit(void);
 
     void on_Core_DebugCallback(MessageType, QString);
