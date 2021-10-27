@@ -16,6 +16,7 @@
 #include "EventFilter.hpp"
 #include "Widget/OGLWidget.hpp"
 #include "Widget/RomBrowserWidget.hpp"
+#include "M64P/Wrapper/Types.hpp"
 
 #include <QAction>
 #include <QCloseEvent>
@@ -174,7 +175,7 @@ class MainWindow : public QMainWindow
     void on_VidExt_ToggleFS(bool);
     void on_VidExt_Quit(void);
 
-    void on_Core_DebugCallback(MessageType, QString);
+    void on_Core_DebugCallback(M64P::Wrapper::MessageType, QString);
 };
 } // namespace UserInterface
 

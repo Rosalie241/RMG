@@ -49,25 +49,18 @@ bool MainWindow::Init(void)
         return false;
     }
 
-    if (!CoreInit())
-    {
-        this->ui_MessageBox("Error", "CoreInit() Failed", QString::fromStdString(CoreGetError()));
-        return false;
-    }
-
+    
     if (!g_MupenApi.Init(MUPEN_CORE_FILE))
     {
         this->ui_MessageBox("Error", "Api::Init Failed", g_MupenApi.GetLastError());
         return false;
     }
 
-    if (!CoreSettingsSetupDefaults())
+    if (!CoreInit())
     {
-        this->ui_MessageBox("Error", "CoreSettingsSetupDefaults() Failed", QString::fromStdString(CoreGetError()));
+        this->ui_MessageBox("Error", "CoreInit() Failed", QString::fromStdString(CoreGetError()));
         return false;
     }
-
-    g_Plugins.LoadSettings();
 
     QString dataDir = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::Core_UserDataDirOverride));
     QString cacheDir = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::Core_UserCacheDirOverride));
@@ -602,13 +595,13 @@ void MainWindow::ui_Actions_Setup(bool inEmulation, bool isPaused)
     this->action_Options_FullScreen->setEnabled(inEmulation);
     this->action_Options_FullScreen->setShortcut(QKeySequence(keyBinding));
     this->action_Options_ConfigGfx->setText("Graphics Settings");
-    this->action_Options_ConfigGfx->setEnabled(g_MupenApi.Core.HasPluginConfig(M64P::Wrapper::PluginType::Gfx));
+    this->action_Options_ConfigGfx->setEnabled(CorePluginsHasConfig(CorePluginType::Gfx));
     this->action_Options_ConfigAudio->setText("Audio Settings");
-    this->action_Options_ConfigAudio->setEnabled(g_MupenApi.Core.HasPluginConfig(M64P::Wrapper::PluginType::Audio));
+    this->action_Options_ConfigAudio->setEnabled(CorePluginsHasConfig(CorePluginType::Audio));
     this->action_Options_ConfigRsp->setText("RSP Settings");
-    this->action_Options_ConfigRsp->setEnabled(g_MupenApi.Core.HasPluginConfig(M64P::Wrapper::PluginType::Rsp));
+    this->action_Options_ConfigRsp->setEnabled(CorePluginsHasConfig(CorePluginType::Rsp));
     this->action_Options_ConfigControl->setText("Input Settings");
-    this->action_Options_ConfigControl->setEnabled(g_MupenApi.Core.HasPluginConfig(M64P::Wrapper::PluginType::Input));
+    this->action_Options_ConfigControl->setEnabled(CorePluginsHasConfig(CorePluginType::Input));
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_Settings));
     this->action_Options_Settings->setText("Settings");
     this->action_Options_Settings->setShortcut(QKeySequence(keyBinding));
@@ -1083,22 +1076,22 @@ void MainWindow::on_Action_Options_FullScreen(void)
 
 void MainWindow::on_Action_Options_ConfigGfx(void)
 {
-    g_MupenApi.Core.OpenPluginConfig(M64P::Wrapper::PluginType::Gfx);
+    CorePluginsOpenConfig(CorePluginType::Gfx);
 }
 
 void MainWindow::on_Action_Options_ConfigAudio(void)
 {
-    g_MupenApi.Core.OpenPluginConfig(M64P::Wrapper::PluginType::Audio);
+    CorePluginsOpenConfig(CorePluginType::Audio);
 }
 
 void MainWindow::on_Action_Options_ConfigRsp(void)
 {
-    g_MupenApi.Core.OpenPluginConfig(M64P::Wrapper::PluginType::Rsp);
+    CorePluginsOpenConfig(CorePluginType::Rsp);
 }
 
 void MainWindow::on_Action_Options_ConfigControl(void)
 {
-    g_MupenApi.Core.OpenPluginConfig(M64P::Wrapper::PluginType::Input);
+    CorePluginsOpenConfig(CorePluginType::Input);
 }
 
 void MainWindow::on_Action_Options_Settings(void)

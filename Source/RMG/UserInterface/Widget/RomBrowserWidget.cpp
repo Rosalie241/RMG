@@ -12,12 +12,13 @@
 #include "Config.hpp"
 #include "M64P/Wrapper/Types.hpp"
 #include "ColumnID.hpp"
+#include <RMG-Core/Core.hpp>
 
 #include <QDir>
 
 using namespace UserInterface::Widget;
 
-static QString columnIdToText(RomInfo_t& romInfo, ColumnID id)
+static QString columnIdToText(M64P::Wrapper::RomInfo_t& romInfo, ColumnID id)
 {
     switch (id)
     {

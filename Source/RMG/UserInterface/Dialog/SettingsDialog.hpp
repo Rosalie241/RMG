@@ -16,6 +16,8 @@
 #include <QTreeWidget>
 #include <QWidget>
 
+#include <RMG-Core/Core.hpp>
+
 // needed for KeyBindButton in ui_SettingsDialog
 #include "UserInterface/Widget/KeyBindButton.hpp"
 #include "M64P/Wrapper/Types.hpp"
@@ -38,7 +40,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     M64P::Wrapper::RomInfo_t defaultGameInfo = {0};
     QString gameSection;
 
-    QList<M64P::Wrapper::Plugin_t> pluginList;
+    std::vector<CorePlugin> pluginList;
 
     int currentIndex(void);
 

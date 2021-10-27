@@ -8,7 +8,6 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "SettingsDialog.hpp"
-#include "RMG-Core/Settings/Settings.hpp"
 #include "Globals.hpp"
 
 #include <QFileDialog>
@@ -33,7 +32,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
         this->tabWidget->setTabEnabled(1, false);
     }
 
-    pluginList = g_Plugins.GetAvailablePlugins();
+    pluginList = CoreGetAllPlugins();
 
     for (int i = 0; i < 8; i++)
     {
@@ -198,10 +197,10 @@ void SettingsDialog::loadGameCoreSettings(void)
 
 void SettingsDialog::loadGamePluginSettings(void)
 {
-    QComboBox *comboBoxArray[4] = {this->gameVideoPluginsComboBox, this->gameAudioPluginsComboBox,
-                                   this->gameInputPluginsComboBox, this->gameRspPluginsComboBox};
-    SettingsID settingsId[4] = {SettingsID::Game_GFX_Plugin, SettingsID::Game_AUDIO_Plugin,
-                                SettingsID::Game_INPUT_Plugin, SettingsID::Game_RSP_Plugin};
+    QComboBox *comboBoxArray[] = {this->gameRspPluginsComboBox, this->gameVideoPluginsComboBox,
+                                   this->gameAudioPluginsComboBox, this->gameInputPluginsComboBox};
+    SettingsID settingsId[] = {SettingsID::Game_RSP_Plugin, SettingsID::Game_GFX_Plugin, 
+                                    SettingsID::Game_AUDIO_Plugin, SettingsID::Game_INPUT_Plugin};
     QComboBox *comboBox;
 
     for (QComboBox *comboBox : comboBoxArray)
@@ -212,38 +211,37 @@ void SettingsDialog::loadGamePluginSettings(void)
 
     for (const auto &p : this->pluginList)
     {
-        comboBox = comboBoxArray[(int)p.Type];
-        comboBox->addItem(p.Name, p.FileName);
+        comboBox = comboBoxArray[(int)p.Type - 1];
+        comboBox->addItem(QString::fromStdString(p.Name), QString::fromStdString(p.File));
 
-        if (CoreSettingsGetStringValue(settingsId[(int)p.Type], this->gameSection.toStdString()) == p.FileName.toStdString())
+        if (CoreSettingsGetStringValue(settingsId[(int)p.Type - 1], this->gameSection.toStdString()) == p.File)
         {
-            comboBox->setCurrentText(p.Name);
+            comboBox->setCurrentText(QString::fromStdString(p.Name));
         }
     }
 }
 
 void SettingsDialog::loadPluginSettings(void)
 {
-    QComboBox *comboBoxArray[] = {this->videoPluginsComboBox, this->audioPluginsComboBox, this->inputPluginsComboBox,
-                                  this->rspPluginsComboBox};
-    SettingsID settingsIdArray[] = {SettingsID::Core_GFX_Plugin, SettingsID::Core_AUDIO_Plugin,
-                                    SettingsID::Core_INPUT_Plugin, SettingsID::Core_RSP_Plugin};
+    QComboBox *comboBoxArray[] = {this->rspPluginsComboBox, this->videoPluginsComboBox, 
+                                    this->audioPluginsComboBox, this->inputPluginsComboBox};
+    SettingsID settingsIdArray[] = {SettingsID::Core_RSP_Plugin, SettingsID::Core_GFX_Plugin, 
+                                    SettingsID::Core_AUDIO_Plugin, SettingsID::Core_INPUT_Plugin};
 
-    PluginType type;
     QComboBox *comboBox;
     std::string pluginFileName;
     int index = 0;
 
     for (const auto &p : this->pluginList)
     {
-        comboBox = comboBoxArray[(int)p.Type];
-        pluginFileName = CoreSettingsGetStringValue(settingsIdArray[(int)p.Type]);
+        comboBox = comboBoxArray[(int)p.Type - 1];
+        pluginFileName = CoreSettingsGetStringValue(settingsIdArray[(int)p.Type - 1]);
 
-        comboBox->addItem(p.Name, p.FileName);
+        comboBox->addItem(QString::fromStdString(p.Name), QString::fromStdString(p.File));
 
-        if (pluginFileName == p.FileName.toStdString())
+        if (pluginFileName == p.File)
         {
-            comboBox->setCurrentText(p.Name);
+            comboBox->setCurrentText(QString::fromStdString(p.Name));
         }
     }
 }
@@ -352,7 +350,7 @@ void SettingsDialog::loadDefaultGameCoreSettings(void)
 
 void SettingsDialog::loadDefaultGamePluginSettings(void)
 {
-    QComboBox *comboBoxArray[4] = {this->gameVideoPluginsComboBox, this->gameAudioPluginsComboBox,
+    QComboBox *comboBoxArray[] = {this->gameVideoPluginsComboBox, this->gameAudioPluginsComboBox,
                                    this->gameInputPluginsComboBox, this->gameRspPluginsComboBox};
 
     for (QComboBox *comboBox : comboBoxArray)
@@ -479,9 +477,9 @@ void SettingsDialog::saveGameCoreSettings(void)
 
 void SettingsDialog::saveGamePluginSettings(void)
 {
-    QComboBox *comboBoxArray[4] = {this->gameVideoPluginsComboBox, this->gameAudioPluginsComboBox,
+    QComboBox *comboBoxArray[] = {this->gameVideoPluginsComboBox, this->gameAudioPluginsComboBox,
                                    this->gameInputPluginsComboBox, this->gameRspPluginsComboBox};
-    SettingsID settingsIdArray[4] = {SettingsID::Game_GFX_Plugin, SettingsID::Game_AUDIO_Plugin,
+    SettingsID settingsIdArray[] = {SettingsID::Game_GFX_Plugin, SettingsID::Game_AUDIO_Plugin,
                                      SettingsID::Game_INPUT_Plugin, SettingsID::Game_RSP_Plugin};
     QComboBox *comboBox;
     SettingsID id;
@@ -500,19 +498,22 @@ void SettingsDialog::saveGamePluginSettings(void)
 
 void SettingsDialog::savePluginSettings(void)
 {
-    QComboBox *comboBoxArray[4] = {this->videoPluginsComboBox, this->audioPluginsComboBox, this->inputPluginsComboBox,
+    QComboBox *comboBoxArray[] = {this->videoPluginsComboBox, this->audioPluginsComboBox, this->inputPluginsComboBox,
                                    this->rspPluginsComboBox};
+    SettingsID settings[] = {SettingsID::Core_GFX_Plugin, SettingsID::Core_AUDIO_Plugin, 
+                                SettingsID::Core_INPUT_Plugin, SettingsID::Core_RSP_Plugin};
     QComboBox *comboBox;
+    SettingsID settingId;
 
-    for (const auto &p : this->pluginList)
+    for (int i = 0; i < 4; i++)
     {
-        comboBox = comboBoxArray[(int)p.Type];
+        comboBox = comboBoxArray[i];
+        settingId = settings[i];
 
-        if (p.FileName == comboBox->currentData().toString())
-        {
-            g_Plugins.ChangePlugin(p);
-        }
+        CoreSettingsSetValue(settingId, comboBox->currentData().toString().toStdString());
     }
+
+    CoreApplyPluginSettings();
 }
 
 void SettingsDialog::saveDirectorySettings(void)
