@@ -129,6 +129,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
     CoreSettingsSetValue(SettingsID::RomBrowser_Geometry, geometryStr.toStdString());
     CoreSettingsSave();
 
+    CoreShutdown();
+
     QMainWindow::closeEvent(event);
 }
 
