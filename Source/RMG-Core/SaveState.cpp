@@ -54,7 +54,7 @@ bool CoreSaveState(void)
     std::string error;
     m64p_error ret;
 
-    ret = m64p::Core.DoCommand(M64CMD_STATE_SAVE, 0, NULL);
+    ret = m64p::Core.DoCommand(M64CMD_STATE_SAVE, 0, nullptr);
     if (ret != M64ERR_SUCCESS)
     {
         error = "CoreSaveState: m64p::Core.DoCommand(M64CMD_STATE_SAVE) Failed: ";
@@ -86,7 +86,7 @@ bool CoreLoadSaveState(void)
     std::string error;
     m64p_error ret;
 
-    ret = m64p::Core.DoCommand(M64CMD_STATE_LOAD, 0, NULL);
+    ret = m64p::Core.DoCommand(M64CMD_STATE_LOAD, 0, nullptr);
     if (ret != M64ERR_SUCCESS)
     {
         error = "CoreLoadSaveState: m64p::Core.DoCommand(M64CMD_STATE_LOAD) Failed: ";
