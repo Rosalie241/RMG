@@ -12,11 +12,7 @@
 #include "osal/osal_dynlib.hpp"
 #include "m64p/Api.hpp"
 
-//
-// Defines
-//
-
-#define CORE_LIB_FILENAME "Core/libmupen64plus.so.2.0.0"
+#include <filesystem>
 
 //
 // Local Variables
@@ -25,15 +21,42 @@
 static osal_dynlib_lib_handle l_CoreLibHandle;
 
 //
+// Local Functions
+//
+
+std::string find_core_lib(void)
+{
+    for (const auto& entry : std::filesystem::recursive_directory_iterator("Core"))
+    {
+        std::string path = entry.path().string();
+        if (path.ends_with(OSAL_DYNLIB_LIB_EXT_STR))
+        {
+            return path;
+        }
+    }
+
+    return std::string();
+}
+
+//
 // Exported Functions
 //
 
 bool CoreInit(void)
 {
     std::string error;
+    std::string core_file;
     bool ret = false;
 
-    l_CoreLibHandle = osal_dynlib_open(CORE_LIB_FILENAME);
+    core_file = find_core_lib();
+    if (core_file.empty())
+    {
+        error = "no core lib found";
+        CoreSetError(error);
+        return false;
+    }
+
+    l_CoreLibHandle = osal_dynlib_open(core_file.c_str());
     if (l_CoreLibHandle == nullptr)
     {
         error = "osal_dynlib_open Failed: ";
