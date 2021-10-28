@@ -19,7 +19,7 @@
 #define MUPEN_CORE_FILE "Core\\mupen64plus.dll"
 #define SO_EXT "dll"
 #else // Unix
-#define MUPEN_CORE_FILE "Core/libmupen64plus.so.2.0.0"
+#define MUPEN_CORE_FILE "Core/libmupen64plus.so"
 #define SO_EXT "so"
 #endif
 #define MUPEN_CONFIG_DIR "Config"
