@@ -11,7 +11,7 @@ if(WIN32)
     set(CORE_FILE "mupen64plus.dll")
 else(WIN32)
     set(SO_EXT "so")
-    set(CORE_FILE "libmupen64plus.so.2.0.0")
+    set(CORE_FILE "libmupen64plus.so")
 endif(WIN32)
 
 ExternalProject_Add(mupen64plus-core
@@ -23,7 +23,7 @@ ExternalProject_Add(mupen64plus-core
     GIT_REPOSITORY https://github.com/Rosalie241/mupen64plus-core/
     GIT_TAG 9b0b0efae74b7a96c4d60290b2e539c33461d12e
 
-    BUILD_COMMAND make all OSD=0 NEW_DYNAREC=1 DEBUG=$<CONFIG:Debug> KEYBINDINGS=0
+    BUILD_COMMAND make all OSD=0 NEW_DYNAREC=1 TARGET=${CORE_FILE} DEBUG=$<CONFIG:Debug> KEYBINDINGS=0
     BUILD_IN_SOURCE False
 
     BINARY_DIR ${M64P_CORE_DIR}/projects/unix
