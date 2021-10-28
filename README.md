@@ -7,7 +7,7 @@ It offers a simple-to-use user interface.
 ## System Requirements
 
 * Operating System
-  * Windows 8/10 Or Linux
+  * Windows Or Linux
 * CPU
   * Intel or AMD processor with SSE2 support
 * RAM
@@ -15,9 +15,29 @@ It offers a simple-to-use user interface.
 * Graphics card
   * OpenGL 3.3 capable
 
-## How to use
+## Building
 
-<sub>(Games not included - do **NOT** ask for ROMs.)</sub>
+#### Linux
+**NOTE:** installation is **not** supported on linux at the moment, only running it portable will work
+```
+# for debian based distros
+sudo apt-get -y install cmake libhidapi-dev libsamplerate0-dev libminizip-dev libsdl2-dev libfreetype6-dev libgl1-mesa-dev libglu1-mesa-dev pkg-config zlib1g-dev binutils-dev libspeexdsp-dev qt5-default build-essential nasm git zip
+# for arch based distros
+sudo pacman -S base-devel git hidapi libsamplerate minizip sdl2 freetype2 pkg-config zlib qt5 nasm
+# building
+./Source/Script/Build.sh Release
+```
+
+When it's done building, executables can be found in `Bin/Release`
+
+#### Windows
+* Download & Install [MSYS2](https://www.msys2.org/)
+```
+sudo pacman -S make mingw-w64-x86_64-cmake mingw-w64-x86_64-gcc mingw-w64-x86_64-hidapi mingw-w64-x86_64-freetype mingw-w64-x86_64-libpng mingw-w64-x86_64-SDL2 mingw-w64-x86_64-jasper mingw-w64-x86_64-qt5 mingw-w64-x86_64-SDL2 mingw-w64-x86_64-hidapi mingw-w64-x86_64-libsamplerate mingw-w64-x86_64-python3-pip mingw-w64-x86_64-python3-pyopenssl mingw-w64-x86_64-nasm git
+./Source/Script/Build.sh Release
+```
+
+When it's done building, executables can be found in `Bin/Release`
 
 ## Support
 
