@@ -133,12 +133,10 @@ bool CoreApplyPluginSettings(void)
     for (int i = 0; i < 4; i++)
     {
         settingValue = CoreSettingsGetStringValue(settings[i]);
-        if (settingValue.empty())
-        {
-            error = "CoreApplyPluginSettings Failed:";
-            error += "empty plugin filename is not allowed!";
-            CoreSetError(error);
-            return false;
+        if (settingValue.empty() ||
+            !std::filesystem::is_regular_file(settingValue))
+        { // skip invalid setting value
+            continue;
         }
 
         if (settingValue != l_PluginFiles[i])
@@ -276,9 +274,9 @@ bool CoreDetachPlugins(void)
     std::string error;
     m64p_error ret;
 
-    for (int i = 1; i <= 4; i++)
+    for (int i = 0; i < 4; i++)
     {
-        ret = m64p::Core.DetachPlugin((m64p_plugin_type)i);
+        ret = m64p::Core.DetachPlugin((m64p_plugin_type)(i + 1));
         if (ret != M64ERR_SUCCESS)
         {
             error = "CoreDetachPlugins m64p::Core.DetachPlugin() Failed: ";
@@ -297,7 +295,7 @@ bool CorePluginsShutdown(void)
     m64p::PluginApi* plugin;
     m64p_error       ret;
 
-    for (int i = 0; i <= 4; i++)
+    for (int i = 0; i < 4; i++)
     {
         plugin = &l_Plugins[i];
 
@@ -312,9 +310,6 @@ bool CorePluginsShutdown(void)
                 CoreSetError(error);
                 break;
             }
-
-            // close lib
-            osal_dynlib_close(plugin->GetHandle());
 
             // reset plugin
             plugin->Unhook();
