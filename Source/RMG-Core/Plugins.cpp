@@ -197,6 +197,24 @@ bool CoreApplyPluginSettings(void)
     return true;
 }
 
+bool CoreArePluginsReady(void)
+{
+    std::string error;
+
+    for (int i = 0; i < 4; i++)
+    {
+        if (!l_Plugins[i].IsHooked())
+        {
+            error = "CoreArePluginsReady Failed: ";
+            error += "CoreApi::IsHooked returned false!";
+            CoreSetError(error);
+            return false;
+        }
+    }
+
+    return true;
+}
+
 bool CorePluginsHasConfig(CorePluginType type)
 {
     return get_plugin(type)->Config != nullptr;

@@ -36,6 +36,10 @@ std::vector<CorePlugin> CoreGetAllPlugins(void);
 // i.e when you've changed a plugin
 bool CoreApplyPluginSettings(void);
 
+// checks wether all plugins are
+// hooked and ready for emulation
+bool CoreArePluginsReady(void);
+
 // returns wether the currently used plugin
 // of given type has a config GUI
 bool CorePluginsHasConfig(CorePluginType type);
