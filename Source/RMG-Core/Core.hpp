@@ -11,6 +11,7 @@
 #define CORE_HPP
 
 #include "Settings/Settings.hpp"
+#include "Emulation.hpp"
 #include "SaveState.hpp"
 #include "Plugins.hpp"
 #include "Error.hpp"
