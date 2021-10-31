@@ -987,7 +987,7 @@ void MainWindow::on_Action_System_SaveState(void)
 {
     if (!CoreSaveState())
     {
-        this->ui_MessageBox("Error", "CoreSaveState Failed", g_MupenApi.Core.GetLastError());
+        this->ui_MessageBox("Error", "CoreSaveState() Failed", QString::fromStdString(CoreGetError()));
     }
 }
 
@@ -1004,7 +1004,7 @@ void MainWindow::on_Action_System_SaveAs(void)
 
     if (!CoreSaveState(fileName.toStdString()))
     {
-        this->ui_MessageBox("Error", "CoreSaveState Failed", g_MupenApi.Core.GetLastError());
+        this->ui_MessageBox("Error", "CoreSaveState() Failed", QString::fromStdString(CoreGetError()));
     }
 
     if (!isPaused)
@@ -1017,7 +1017,7 @@ void MainWindow::on_Action_System_LoadState(void)
 {
     if (!CoreLoadSaveState())
     {
-        this->ui_MessageBox("Error", "CoreLoadSaveState Failed", g_MupenApi.Core.GetLastError());
+        this->ui_MessageBox("Error", "CoreLoadSaveState() Failed", QString::fromStdString(CoreGetError()));
     }
 }
 
@@ -1035,7 +1035,7 @@ void MainWindow::on_Action_System_Load(void)
 
     if (!CoreLoadSaveState(fileName.toStdString()))
     {
-        this->ui_MessageBox("Error", "CoreLoadSaveState Failed", g_MupenApi.Core.GetLastError());
+        this->ui_MessageBox("Error", "CoreLoadSaveState() Failed", QString::fromStdString(CoreGetError()));
     }
 
     if (!isPaused)
@@ -1048,7 +1048,7 @@ void MainWindow::on_Action_System_CurrentSaveState(int slot)
 {
     if (!CoreSetSaveStateSlot(slot))
     {
-        this->ui_MessageBox("Error", "CoreSetSaveStateSlot Failed", g_MupenApi.Core.GetLastError());
+        this->ui_MessageBox("Error", "CoreSetSaveStateSlot() Failed", QString::fromStdString(CoreGetError()));
     }
 }
 
