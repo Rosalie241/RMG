@@ -1,6 +1,10 @@
 #ifndef M64P_CUSTOM_H
 #define M64P_CUSTOM_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* This file contains functions which break the mupen64plus spec */
 
 #include "m64p_types.h"
@@ -17,5 +21,8 @@ typedef m64p_error (*ptr_PluginConfig)(void);
 EXPORT m64p_error CALL PluginConfig(void);
 #endif
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif // M64P_CUSTOM_H
