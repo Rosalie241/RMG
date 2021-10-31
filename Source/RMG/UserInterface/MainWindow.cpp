@@ -714,7 +714,7 @@ void MainWindow::timerEvent(QTimerEvent *event)
 
 void MainWindow::on_EventFilter_KeyPressed(QKeyEvent *event)
 {
-    if (!g_MupenApi.Core.IsEmulationRunning())
+    if (!CoreIsEmulationRunning())
     {
         QMainWindow::keyPressEvent(event);
         return;
@@ -728,7 +728,7 @@ void MainWindow::on_EventFilter_KeyPressed(QKeyEvent *event)
 
 void MainWindow::on_EventFilter_KeyReleased(QKeyEvent *event)
 {
-    if (!g_MupenApi.Core.IsEmulationRunning())
+    if (!CoreIsEmulationRunning())
     {
         QMainWindow::keyReleaseEvent(event);
         return;
@@ -766,7 +766,7 @@ void MainWindow::on_EventFilter_FocusIn(QFocusEvent *event)
     std::cout << "MainWindow::on_EventFilter_FocusIn" << std::endl;
     if (g_Settings.GetBoolValue(SettingsID::GUI_ResumeEmulationOnFocus))
     {
-        if (g_MupenApi.Core.isEmulationPaused())
+        if (CoreIsEmulationPaused())
             this->on_Action_System_Pause();
     }
 
@@ -778,7 +778,7 @@ void MainWindow::on_EventFilter_FocusOut(QFocusEvent *event)
     std::cout << "MainWindow::on_EventFilter_FocusOut" << std::endl;
     if (g_Settings.GetBoolValue(SettingsID::GUI_PauseEmulationOnFocusLoss))
     {
-        if (g_MupenApi.Core.IsEmulationRunning())
+        if (CoreIsEmulationRunning())
             this->on_Action_System_Pause();
     }
 
@@ -788,8 +788,8 @@ void MainWindow::on_EventFilter_FocusOut(QFocusEvent *event)
 
 void MainWindow::on_Action_File_OpenRom(void)
 {
-    bool isRunning = g_MupenApi.Core.IsEmulationRunning();
-    bool isPaused = g_MupenApi.Core.isEmulationPaused();
+    bool isRunning = CoreIsEmulationRunning();
+    bool isPaused = CoreIsEmulationPaused();
 
     if (isRunning && !isPaused)
     {
@@ -823,8 +823,8 @@ void MainWindow::on_Action_File_OpenRom(void)
 
 void MainWindow::on_Action_File_OpenCombo(void)
 {
-    bool isRunning = g_MupenApi.Core.IsEmulationRunning();
-    bool isPaused = g_MupenApi.Core.isEmulationPaused();
+    bool isRunning = CoreIsEmulationRunning();
+    bool isPaused = CoreIsEmulationPaused();
 
     if (isRunning && !isPaused)
     {
@@ -873,7 +873,7 @@ void MainWindow::on_Action_File_OpenCombo(void)
 
 void MainWindow::on_Action_File_EndEmulation(void)
 {
-    if (g_MupenApi.Core.isEmulationPaused())
+    if (CoreIsEmulationPaused())
     {
         this->on_Action_System_Pause();
     }
@@ -916,49 +916,45 @@ void MainWindow::on_Action_File_Exit(void)
 
 void MainWindow::on_Action_System_SoftReset(void)
 {
-    if (!g_MupenApi.Core.ResetEmulation(false))
+    if (!CoreResetEmulation(false))
     {
-        this->ui_MessageBox("Error", "Api::Core::ResetEmulation Failed!", g_MupenApi.Core.GetLastError());
+        this->ui_MessageBox("Error", "CoreResetEmulation() Failed!", QString::fromStdString(CoreGetError()));
     }
 }
 
 void MainWindow::on_Action_System_HardReset(void)
 {
-    if (!g_MupenApi.Core.ResetEmulation(true))
+    if (!CoreResetEmulation(true))
     {
-        this->ui_MessageBox("Error", "Api::Core::ResetEmulation Failed!", g_MupenApi.Core.GetLastError());
+        this->ui_MessageBox("Error", "CoreResetEmulation() Failed!", QString::fromStdString(CoreGetError()));
     }
 }
 
 void MainWindow::on_Action_System_Pause(void)
 {
-    static bool paused = false;
+    bool isPaused = CoreIsEmulationPaused();
 
     bool ret;
-    QString error = "Api::Core::";
+    QString error;
 
-    if (!paused)
+    if (!isPaused)
     {
-        ret = g_MupenApi.Core.PauseEmulation();
-        error += "PauseEmulation";
+        ret = CorePauseEmulation();
+        error = "CorePauseEmulation() Failed!";
     }
     else
     {
-        ret = g_MupenApi.Core.ResumeEmulation();
-        error += "ResumeEmulation";
+        ret = CoreResumeEmulation();
+        error = "CoreResumeEmulation() Failed!";
     }
-
-    error += " Failed!";
-
-    paused = !paused;
 
     if (!ret)
     {
-        this->ui_MessageBox("Error", error, g_MupenApi.Core.GetLastError());
+        this->ui_MessageBox("Error", error, QString::fromStdString(CoreGetError()));
         return;
     }
 
-    this->menuBar_Setup(true, paused);
+    this->menuBar_Setup(true, !isPaused);
 }
 
 void MainWindow::on_Action_System_GenerateBitmap(void)
@@ -997,7 +993,7 @@ void MainWindow::on_Action_System_SaveState(void)
 
 void MainWindow::on_Action_System_SaveAs(void)
 {
-    bool isPaused = g_MupenApi.Core.isEmulationPaused();
+    bool isPaused = CoreIsEmulationPaused();
 
     if (!isPaused)
     {
@@ -1027,7 +1023,7 @@ void MainWindow::on_Action_System_LoadState(void)
 
 void MainWindow::on_Action_System_Load(void)
 {
-    bool isPaused = g_MupenApi.Core.isEmulationPaused();
+    bool isPaused = CoreIsEmulationPaused();
 
     if (!isPaused)
     {
@@ -1098,8 +1094,8 @@ void MainWindow::on_Action_Options_ConfigControl(void)
 
 void MainWindow::on_Action_Options_Settings(void)
 {
-    bool isRunning = g_MupenApi.Core.IsEmulationRunning();
-    bool isPaused = g_MupenApi.Core.isEmulationPaused();
+    bool isRunning = CoreIsEmulationRunning();
+    bool isPaused = CoreIsEmulationPaused();
 
     if (isRunning && !isPaused)
     {
