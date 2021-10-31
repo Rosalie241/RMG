@@ -14,7 +14,6 @@
 #include "m64p/PluginApi.hpp"
 #include "osal/osal_dynlib.hpp"
 
-#include "m64p/api/m64p_types.h"
 #include "m64p/PluginApi.cpp"
 #include "m64p/Api.hpp"
 
