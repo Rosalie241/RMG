@@ -21,6 +21,7 @@ set(RMG_CORE_SOURCES
     VidExt.cpp
     Error.cpp
     Core.cpp
+    Rom.cpp
 )
 
 if (WIN32 OR MSYS)
@@ -35,4 +36,12 @@ endif()
 
 add_library(RMG-Core STATIC ${RMG_CORE_SOURCES})
 
-target_include_directories(RMG-Core PRIVATE ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(RMG-Core
+    ${MINIZIP_LIBRARIES}
+)
+
+target_include_directories(RMG-Core PRIVATE 
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${MINIZIP_INCLUDE_DIRS}
+)
