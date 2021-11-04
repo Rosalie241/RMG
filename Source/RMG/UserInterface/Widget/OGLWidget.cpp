@@ -1,10 +1,10 @@
 #include "OGLWidget.hpp"
 #include "../../Globals.hpp"
-#include <qnamespace.h>
 
 using namespace UserInterface::Widget;
 
 #include <iostream>
+#include <RMG-Core/Core.hpp>
 
 OGLWidget::OGLWidget(QWidget *parent)
 {
@@ -69,7 +69,7 @@ void OGLWidget::resizeEvent(QResizeEvent *event)
 
 void OGLWidget::timerEvent(QTimerEvent *event)
 {
-    g_MupenApi.Core.SetVideoSize(this->width, this->height, false);
+    CoreSetVideoSize(this->width, this->height);
 
     // remove current timer
     this->killTimer(this->timerId);

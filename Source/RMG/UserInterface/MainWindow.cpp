@@ -1066,9 +1066,9 @@ void MainWindow::on_Action_System_GSButton(void)
 
 void MainWindow::on_Action_Options_FullScreen(void)
 {
-    if (!g_MupenApi.Core.ToggleFullscreen())
+    if (!CoreToggleFullscreen())
     {
-        this->ui_MessageBox("Error", "Api::Core::ToggleFullscreen Failed", g_MupenApi.Core.GetLastError());
+        this->ui_MessageBox("Error", "CoreToggleFullscreen() Failed", QString::fromStdString(CoreGetError()));
     }
 }
 
@@ -1183,7 +1183,7 @@ void MainWindow::on_VidExt_SetWindowedModeWithRate(int width, int height, int re
         this->ui_VidExt_Geometry_Saved = false;
 
         // force 'refresh' the video plugin
-        g_MupenApi.Core.SetVideoSize(width, height, true);
+        CoreSetVideoSize(width, height);
     }
 
     if (this->isFullScreen())
@@ -1208,7 +1208,7 @@ void MainWindow::on_VidExt_SetFullscreenModeWithRate(int width, int height, int 
         this->ui_VidExt_Geometry_Saved = true;
 
         // force 'refresh' the video plugin
-        g_MupenApi.Core.SetVideoSize(width, height, true);
+        CoreSetVideoSize(width, height);
     }
 
     if (!this->isFullScreen())
