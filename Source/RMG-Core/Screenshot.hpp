@@ -7,23 +7,10 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef CORE_HPP
-#define CORE_HPP
+#ifndef CORE_SCREENSHOT_HPP
+#define CORE_SCREENSHOT_HPP
 
-#include "Settings/Settings.hpp"
-#include "Screenshot.hpp"
-#include "Emulation.hpp"
-#include "SaveState.hpp"
-#include "Plugins.hpp"
-#include "Error.hpp"
-#include "Video.hpp"
-#include "Key.hpp"
+// takes a screenshot
+bool CoreTakeScreenshot(void);
 
-// initializes the core library,
-// returns false when failed
-bool CoreInit(void);
-
-// shuts down the core library
-void CoreShutdown(void);
-
-#endif // CORE_HPP
+#endif // CORE_SCREENSHOT_HPP

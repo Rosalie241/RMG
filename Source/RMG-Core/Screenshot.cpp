@@ -7,23 +7,25 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef CORE_HPP
-#define CORE_HPP
-
-#include "Settings/Settings.hpp"
 #include "Screenshot.hpp"
-#include "Emulation.hpp"
-#include "SaveState.hpp"
-#include "Plugins.hpp"
+#include "m64p/Api.hpp"
 #include "Error.hpp"
-#include "Video.hpp"
-#include "Key.hpp"
 
-// initializes the core library,
-// returns false when failed
-bool CoreInit(void);
+//
+// Exported Functions
+//
 
-// shuts down the core library
-void CoreShutdown(void);
+bool CoreTakeScreenshot(void)
+{
+    std::string error;
+    m64p_error ret;
 
-#endif // CORE_HPP
+    ret = m64p::Core.DoCommand(M64CMD_TAKE_NEXT_SCREENSHOT, 0, nullptr);
+    if (ret != M64ERR_SUCCESS)
+    {
+        error = "CoreTakeScreenshot M64P::Core.DoCommand(M64CMD_TAKE_NEXT_SCREENSHOT) Failed: ";
+        error += m64p::Core.ErrorMessage(ret);
+    }
+
+    return ret == M64ERR_SUCCESS;
+}
