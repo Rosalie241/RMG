@@ -723,7 +723,7 @@ void MainWindow::on_EventFilter_KeyPressed(QKeyEvent *event)
     int key = Utilities::QtKeyToSdl2Key(event->key());
     int mod = Utilities::QtModKeyToSdl2ModKey(event->modifiers());
 
-    g_MupenApi.Core.SetKeyDown(key, mod);
+    CoreSetKeyDown(key, mod);
 }
 
 void MainWindow::on_EventFilter_KeyReleased(QKeyEvent *event)
@@ -737,7 +737,7 @@ void MainWindow::on_EventFilter_KeyReleased(QKeyEvent *event)
     int key = Utilities::QtKeyToSdl2Key(event->key());
     int mod = Utilities::QtModKeyToSdl2ModKey(event->modifiers());
 
-    g_MupenApi.Core.SetKeyUp(key, mod);
+    CoreSetKeyUp(key, mod);
 }
 
 void MainWindow::on_EventFilter_FileDropped(QDropEvent *event)
