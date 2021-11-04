@@ -7,22 +7,13 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef CORE_HPP
-#define CORE_HPP
+#ifndef CORE_KEY_HPP
+#define CORE_KEY_HPP
 
-#include "Settings/Settings.hpp"
-#include "Emulation.hpp"
-#include "SaveState.hpp"
-#include "Plugins.hpp"
-#include "Error.hpp"
-#include "Video.hpp"
-#include "Key.hpp"
+// sets key up
+bool CoreSetKeyUp(int key, int mod);
 
-// initializes the core library,
-// returns false when failed
-bool CoreInit(void);
+// sets key down
+bool CoreSetKeyDown(int key, int mod);
 
-// shuts down the core library
-void CoreShutdown(void);
-
-#endif // CORE_HPP
+#endif // CORE_KEY_HPP

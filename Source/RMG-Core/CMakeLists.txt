@@ -22,6 +22,7 @@ set(RMG_CORE_SOURCES
     Video.cpp
     Error.cpp
     Core.cpp
+    Key.cpp
     Rom.cpp
 )
 
