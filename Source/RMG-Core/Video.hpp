@@ -7,21 +7,13 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef CORE_HPP
-#define CORE_HPP
+#ifndef CORE_VIDEO_HPP
+#define CORE_VIDEO_HPP
 
-#include "Settings/Settings.hpp"
-#include "Emulation.hpp"
-#include "SaveState.hpp"
-#include "Plugins.hpp"
-#include "Error.hpp"
-#include "Video.hpp"
+// sets video size with given width & height
+bool CoreSetVideoSize(int width, int height);
 
-// initializes the core library,
-// returns false when failed
-bool CoreInit(void);
+// toggles fullscreen
+bool CoreToggleFullscreen(void);
 
-// shuts down the core library
-void CoreShutdown(void);
-
-#endif // CORE_HPP
+#endif // CORE_VIDEO_HPP

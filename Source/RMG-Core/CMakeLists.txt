@@ -19,6 +19,7 @@ set(RMG_CORE_SOURCES
     SaveState.cpp
     Plugins.cpp
     VidExt.cpp
+    Video.cpp
     Error.cpp
     Core.cpp
     Rom.cpp
