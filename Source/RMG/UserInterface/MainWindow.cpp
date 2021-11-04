@@ -959,9 +959,9 @@ void MainWindow::on_Action_System_Pause(void)
 
 void MainWindow::on_Action_System_GenerateBitmap(void)
 {
-    if (!g_MupenApi.Core.TakeScreenshot())
+    if (!CoreTakeScreenshot())
     {
-        this->ui_MessageBox("Error", "Api::Core::TakeScreenshot Failed!", g_MupenApi.Core.GetLastError());
+        this->ui_MessageBox("Error", "CoreTakeScreenshot() Failed!", QString::fromStdString(CoreGetError()));
     }
 }
 
