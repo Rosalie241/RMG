@@ -11,9 +11,11 @@
 #define CORE_HPP
 
 #include "Settings/Settings.hpp"
+#include "RomSettings.hpp"
 #include "Screenshot.hpp"
 #include "Emulation.hpp"
 #include "SaveState.hpp"
+#include "RomHeader.hpp"
 #include "Plugins.hpp"
 #include "Error.hpp"
 #include "Video.hpp"

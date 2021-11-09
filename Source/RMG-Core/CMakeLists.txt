@@ -15,6 +15,8 @@ set(RMG_CORE_SOURCES
     m64p/ConfigApi.cpp
     m64p/PluginApi.cpp
     Settings/Settings.cpp
+    RomSettings.cpp
+    RomHeader.cpp
     Screenshot.cpp
     Emulation.cpp
     SaveState.cpp

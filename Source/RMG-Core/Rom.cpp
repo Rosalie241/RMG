@@ -10,6 +10,7 @@
 #include "Rom.hpp"
 #include "Error.hpp"
 #include "m64p/Api.hpp"
+#include "RomSettings.hpp"
 
 #include <unzip.h>
 #include <iostream>
@@ -275,6 +276,15 @@ bool CoreOpenRom(std::string file)
 
     free(buf);
     l_HasRomOpen = (ret == M64ERR_SUCCESS);
+
+    if (l_HasRomOpen)
+    {
+        // store default ROM settings
+        CoreStoreCurrentDefaultRomSettings();
+        // apply rom settings overlay
+        CoreApplyRomSettingsOverlay();
+    }
+
     return l_HasRomOpen;
 }
 
@@ -304,6 +314,9 @@ bool CoreCloseRom(void)
         CoreSetError(error);
         return false;
     }
+
+    // clear default ROM settings
+    CoreClearCurrentDefaultRomSettings();
 
     l_HasRomOpen = false;
     return true;
