@@ -14,6 +14,7 @@
 
 #include <QString>
 #include <QThread>
+#include <RMG-Core/Core.hpp>
 
 namespace Thread
 {
@@ -37,10 +38,9 @@ class RomSearcherThread : public QThread
     int rom_Search_MaxItems;
 
     void rom_Search(QString);
-    bool rom_Get_Info(QString, M64P::Wrapper::RomInfo_t *);
 
   signals:
-    void on_Rom_Found(M64P::Wrapper::RomInfo_t);
+    void on_Rom_Found(QString file, CoreRomHeader header, CoreRomSettings settings);
 };
 } // namespace Thread
 

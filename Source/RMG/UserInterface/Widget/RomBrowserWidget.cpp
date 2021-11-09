@@ -18,23 +18,23 @@
 
 using namespace UserInterface::Widget;
 
-static QString columnIdToText(M64P::Wrapper::RomInfo_t& romInfo, ColumnID id)
+static QString columnIdToText(QString file, CoreRomHeader header, CoreRomSettings settings, ColumnID id)
 {
     switch (id)
     {
         case ColumnID::GoodName:
         {
-            QString name = QString(romInfo.Settings.goodname);
+            QString name = QString::fromStdString(settings.GoodName);
             if (name.contains("(unknown rom)"))
             {
-                name = QFileInfo(romInfo.FileName).fileName();
+                name = QFileInfo(file).fileName();
             }
             return name;
         }
         case ColumnID::InternalName:
-            return QString((char*)romInfo.Header.Name);
+            return QString::fromStdString(header.Name);
         case ColumnID::MD5:
-            return romInfo.Settings.MD5;
+            return QString::fromStdString(settings.MD5);
         default:
             return "";
     };
@@ -375,7 +375,7 @@ void RomBrowserWidget::on_Row_DoubleClicked(const QModelIndex &index)
     this->launchSelectedRom();
 }
 
-void RomBrowserWidget::on_RomBrowserThread_Received(M64P::Wrapper::RomInfo_t romInfo)
+void RomBrowserWidget::on_RomBrowserThread_Received(QString file, CoreRomHeader header, CoreRomSettings settings)
 {
     QList<QStandardItem *> rowList;
 
@@ -383,8 +383,8 @@ void RomBrowserWidget::on_RomBrowserThread_Received(M64P::Wrapper::RomInfo_t rom
     {
         QStandardItem *item = new QStandardItem();
 
-        item->setText(columnIdToText(romInfo, (ColumnID)id));
-        item->setData(romInfo.FileName);
+        item->setText(columnIdToText(file, header, settings, (ColumnID)id));
+        item->setData(file);
         rowList.append(item);
     }
 

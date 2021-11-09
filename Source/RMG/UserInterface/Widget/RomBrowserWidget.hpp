@@ -100,7 +100,7 @@ class RomBrowserWidget : public QTableView
 
   public slots:
     void on_Row_DoubleClicked(const QModelIndex &);
-    void on_RomBrowserThread_Received(M64P::Wrapper::RomInfo_t info);
+    void on_RomBrowserThread_Received(QString file, CoreRomHeader header, CoreRomSettings settings);
 
   signals:
     void on_RomBrowser_Select(QString);

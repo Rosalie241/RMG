@@ -9,6 +9,7 @@
  */
 #include "RomSearcherThread.hpp"
 #include "../Globals.hpp"
+#include "RMG-Core/Rom.hpp"
 
 #include <QDir>
 #include <QDirIterator>
@@ -17,7 +18,8 @@ using namespace Thread;
 
 RomSearcherThread::RomSearcherThread(QObject *parent) : QThread(parent)
 {
-    qRegisterMetaType<M64P::Wrapper::RomInfo_t>("M64P::Wrapper::RomInfo_t");
+    qRegisterMetaType<CoreRomHeader>("CoreRomHeader");
+    qRegisterMetaType<CoreRomSettings>("CoreRomSettings");
 }
 
 RomSearcherThread::~RomSearcherThread(void)
@@ -63,21 +65,28 @@ void RomSearcherThread::rom_Search(QString directory)
     filter << "*.D64";
     filter << "*.ZIP";
 
-
     QDirIterator::IteratorFlag flag = this->rom_Search_Recursive ? 
         QDirIterator::Subdirectories : 
         QDirIterator::NoIteratorFlags;
     QDirIterator romDirIt(directory, filter, QDir::Files, flag);
 
-    M64P::Wrapper::RomInfo_t romInfo;
-    bool ret;
-
-    int count = 0;
+    CoreRomHeader   header;
+    CoreRomSettings settings;
+    bool            ret;
+    int             count = 0;
 
     while (romDirIt.hasNext())
     {
         QString file = romDirIt.next();
-        ret = this->rom_Get_Info(file, &romInfo);
+
+        // open rom, retrieve rom settings & header 
+        ret = CoreOpenRom(file.toStdString()) && 
+            CoreGetCurrentRomSettings(settings) && 
+            CoreGetCurrentRomHeader(header);
+        // always close the ROM,
+        // even when retrieving rom info failed
+        ret = CoreCloseRom() && ret;
+        
         if (ret)
         {
             if (count++ >= this->rom_Search_MaxItems)
@@ -85,12 +94,8 @@ void RomSearcherThread::rom_Search(QString directory)
                 return;
             }
 
-            emit this->on_Rom_Found(romInfo);
+            emit this->on_Rom_Found(file, header, settings);
         }
     }
 }
 
-bool RomSearcherThread::rom_Get_Info(QString file, M64P::Wrapper::RomInfo_t *info)
-{
-    return g_MupenApi.Core.GetRomInfo(file, info, true);
-}

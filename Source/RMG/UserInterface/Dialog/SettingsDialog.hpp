@@ -36,9 +36,10 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
 
   private:
     bool inGame = false;
-    M64P::Wrapper::RomInfo_t gameInfo = {0};
-    M64P::Wrapper::RomInfo_t defaultGameInfo = {0};
-    QString gameSection;
+
+    CoreRomSettings currentGameSettings;
+    CoreRomSettings defaultGameSettings;
+    std::string     gameSection;
 
     std::vector<CorePlugin> pluginList;
 

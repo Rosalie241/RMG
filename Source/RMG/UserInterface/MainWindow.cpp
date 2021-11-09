@@ -9,8 +9,6 @@
  */
 #include "MainWindow.hpp"
 
-#include "RMG-Core/SaveState.hpp"
-#include "RMG-Core/Settings/Settings.hpp"
 #include "UserInterface/EventFilter.hpp"
 #include "Utilities/QtKeyToSdl2Key.hpp"
 #include "Globals.hpp"
@@ -235,12 +233,12 @@ void MainWindow::ui_InEmulation(bool inEmulation, bool isPaused)
 
     if (inEmulation)
     {
-        RomInfo_t info = {0};
-        g_MupenApi.Core.GetRomInfo(&info);
+        CoreRomSettings settings;
+        CoreGetCurrentRomSettings(settings);
 
-        if (!QString(info.Settings.goodname).isEmpty())
+        if (!settings.GoodName.empty())
         {
-            this->setWindowTitle(info.Settings.goodname + QString(" - ") + QString(WINDOW_TITLE));
+            this->setWindowTitle(QString::fromStdString(settings.GoodName) + QString(" - ") + QString(WINDOW_TITLE));
         }
 
         this->ui_Widgets->setCurrentIndex(1);
@@ -449,7 +447,7 @@ void MainWindow::emulationThread_Connect(void)
 
 void MainWindow::emulationThread_Launch(QString cartRom, QString diskRom)
 {
-    g_MupenApi.Config.Save();
+    CoreSettingsSave();
 
     if (this->emulationThread->isRunning())
     {
@@ -465,6 +463,14 @@ void MainWindow::emulationThread_Launch(QString cartRom, QString diskRom)
     if (ui_RefreshRomListAfterEmulation)
     {
         this->ui_Widget_RomBrowser->StopRefreshRomList();
+    }
+
+    // make sure plugins are initialized,
+    // TODO, move this to RMG-Core
+    if (!CoreArePluginsReady())
+    {
+        this->ui_MessageBox("Error", "CoreArePluginsReady() Failed", QString::fromStdString(CoreGetError()));
+        return;
     }
 
     this->ui_AllowManualResizing = CoreSettingsGetBoolValue(SettingsID::GUI_AllowManualResizing);
@@ -1187,13 +1193,19 @@ void MainWindow::on_VidExt_SetWindowedModeWithRate(int width, int height, int re
     }
 
     if (this->isFullScreen())
+    {
         this->showNormal();
+    }
 
     if (this->menuBar->isHidden())
+    {
         this->menuBar->show();
+    }
 
     if (this->statusBar()->isHidden())
+    {
         this->statusBar()->show();
+    }
 
     this->ui_Actions_Remove();
     this->on_VidExt_ResizeWindow(width, height);
@@ -1334,7 +1346,9 @@ void MainWindow::on_Core_DebugCallback(MessageType type, QString message)
 
     // drop verbose messages
     if (type == MessageType::Verbose)
+    {
         return;
+    }
 
     if (type == MessageType::Error)
     {

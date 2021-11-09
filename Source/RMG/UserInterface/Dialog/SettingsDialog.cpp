@@ -22,9 +22,9 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
     this->inGame = g_EmuThread->isRunning();
     if (inGame)
     {
-        g_MupenApi.Core.GetRomInfo(&this->gameInfo);
-        g_MupenApi.Core.GetDefaultRomInfo(&this->defaultGameInfo);
-        this->gameSection = this->gameInfo.Settings.MD5;
+        CoreGetCurrentRomSettings(this->currentGameSettings);
+        CoreGetCurrentDefaultRomSettings(this->defaultGameSettings);
+        this->gameSection = this->currentGameSettings.MD5;
     }
     else
     {
@@ -174,11 +174,11 @@ void SettingsDialog::loadCoreSettings(void)
 
 void SettingsDialog::loadGameSettings(void)
 {
-    this->gameGoodNameLineEdit->setText(this->gameInfo.Settings.goodname);
-    this->gameMemorySizeComboBox->setCurrentIndex(!this->gameInfo.Settings.disableextramem);
-    this->gameSaveTypeComboBox->setCurrentIndex(this->gameInfo.Settings.savetype);
-    this->gameCounterFactorComboBox->setCurrentIndex(this->gameInfo.Settings.countperop - 1);
-    this->gameSiDmaDurationSpinBox->setValue(this->gameInfo.Settings.sidmaduration);
+    this->gameGoodNameLineEdit->setText(QString::fromStdString(this->currentGameSettings.GoodName));
+    this->gameMemorySizeComboBox->setCurrentIndex(!this->currentGameSettings.DisableExtraMem);
+    this->gameSaveTypeComboBox->setCurrentIndex(this->currentGameSettings.SaveType);
+    this->gameCounterFactorComboBox->setCurrentIndex(this->currentGameSettings.CountPerOp - 1);
+    this->gameSiDmaDurationSpinBox->setValue(this->currentGameSettings.SiDMADuration);
 }
 
 void SettingsDialog::loadGameCoreSettings(void)
@@ -186,9 +186,9 @@ void SettingsDialog::loadGameCoreSettings(void)
     bool overrideEnabled, randomizeInterrupt;
     int cpuEmulator = 0;
 
-    overrideEnabled = CoreSettingsGetBoolValue(SettingsID::Game_OverrideCoreSettings, this->gameSection.toStdString());
-    cpuEmulator = CoreSettingsGetIntValue(SettingsID::Game_CPU_Emulator, this->gameSection.toStdString());
-    randomizeInterrupt = CoreSettingsGetBoolValue(SettingsID::Game_RandomizeInterrupt, this->gameSection.toStdString());
+    overrideEnabled = CoreSettingsGetBoolValue(SettingsID::Game_OverrideCoreSettings, this->gameSection);
+    cpuEmulator = CoreSettingsGetIntValue(SettingsID::Game_CPU_Emulator, this->gameSection);
+    randomizeInterrupt = CoreSettingsGetBoolValue(SettingsID::Game_RandomizeInterrupt, this->gameSection);
 
     gameOverrideCoreSettingsGroupBox->setChecked(overrideEnabled);
     gameCoreCpuEmulatorComboBox->setCurrentIndex(cpuEmulator);
@@ -219,7 +219,7 @@ void SettingsDialog::loadGamePluginSettings(void)
         comboBox = comboBoxArray[index];
         comboBox->addItem(QString::fromStdString(p.Name), QString::fromStdString(p.File));
 
-        if (CoreSettingsGetStringValue(settingsId[index], this->gameSection.toStdString()) == p.File)
+        if (CoreSettingsGetStringValue(settingsId[index], this->gameSection) == p.File)
         {
             comboBox->setCurrentText(QString::fromStdString(p.Name));
             pluginFound[index] = true;
@@ -230,7 +230,7 @@ void SettingsDialog::loadGamePluginSettings(void)
     {
         comboBox = comboBoxArray[i];
 
-        if (CoreSettingsGetStringValue(settingsId[i], this->gameSection.toStdString()).empty())
+        if (CoreSettingsGetStringValue(settingsId[i], this->gameSection).empty())
         { // skip empty values
             continue;
         }
@@ -362,11 +362,11 @@ void SettingsDialog::loadDefaultCoreSettings(void)
 
 void SettingsDialog::loadDefaultGameSettings(void)
 {
-    this->gameGoodNameLineEdit->setText(this->gameInfo.Settings.goodname);
-    this->gameMemorySizeComboBox->setCurrentIndex(!this->gameInfo.Settings.disableextramem);
-    this->gameSaveTypeComboBox->setCurrentIndex(this->gameInfo.Settings.savetype);
-    this->gameCounterFactorComboBox->setCurrentIndex(this->gameInfo.Settings.countperop - 1);
-    this->gameSiDmaDurationSpinBox->setValue(this->gameInfo.Settings.sidmaduration);
+    this->gameGoodNameLineEdit->setText(QString::fromStdString(this->defaultGameSettings.GoodName));
+    this->gameMemorySizeComboBox->setCurrentIndex(!this->defaultGameSettings.DisableExtraMem);
+    this->gameSaveTypeComboBox->setCurrentIndex(this->defaultGameSettings.SaveType);
+    this->gameCounterFactorComboBox->setCurrentIndex(this->defaultGameSettings.CountPerOp - 1);
+    this->gameSiDmaDurationSpinBox->setValue(this->defaultGameSettings.SiDMADuration);
 }
 
 void SettingsDialog::loadDefaultGameCoreSettings(void)
@@ -425,7 +425,7 @@ void SettingsDialog::saveSettings(void)
     if (inGame)
     {
         // clean 'game settings'
-        g_MupenApi.Config.DeleteSection(this->gameSection);
+        CoreSettingsDeleteSection(this->gameSection);
         this->saveGameSettings();
         this->saveGameCoreSettings();
         this->saveGamePluginSettings();
@@ -470,21 +470,21 @@ void SettingsDialog::saveGameSettings(void)
     int countPerOp = this->gameCounterFactorComboBox->currentIndex() + 1;
     int siDmaDuration = this->gameSiDmaDurationSpinBox->value();
 
-    if (this->defaultGameInfo.Settings.disableextramem != (unsigned char)disableExtraMem)
+    if (this->defaultGameSettings.DisableExtraMem != disableExtraMem)
     {
-        CoreSettingsSetValue(SettingsID::Game_DisableExtraMem, this->gameSection.toStdString(), disableExtraMem);
+        CoreSettingsSetValue(SettingsID::Game_DisableExtraMem, this->gameSection, disableExtraMem);
     }
-    if (this->defaultGameInfo.Settings.savetype != saveType)
+    if (this->defaultGameSettings.SaveType != saveType)
     {
-        CoreSettingsSetValue(SettingsID::Game_SaveType, this->gameSection.toStdString(), saveType);
+        CoreSettingsSetValue(SettingsID::Game_SaveType, this->gameSection, saveType);
     }
-    if (this->defaultGameInfo.Settings.countperop != countPerOp)
+    if (this->defaultGameSettings.CountPerOp != countPerOp)
     {
-        CoreSettingsSetValue(SettingsID::Game_CountPerOp, this->gameSection.toStdString(), countPerOp);
+        CoreSettingsSetValue(SettingsID::Game_CountPerOp, this->gameSection, countPerOp);
     }
-    if (this->defaultGameInfo.Settings.sidmaduration != siDmaDuration)
+    if (this->defaultGameSettings.SiDMADuration != siDmaDuration)
     {
-        CoreSettingsSetValue(SettingsID::Game_SiDmaDuration, this->gameSection.toStdString(), siDmaDuration);
+        CoreSettingsSetValue(SettingsID::Game_SiDmaDuration, this->gameSection, siDmaDuration);
     }
 }
 
@@ -503,11 +503,11 @@ void SettingsDialog::saveGameCoreSettings(void)
     defaultCpuEmulator = CoreSettingsGetDefaultIntValue(SettingsID::Game_CPU_Emulator);
 
     if (defaultOverrideEnabled != overrideEnabled)
-        CoreSettingsSetValue(SettingsID::Game_OverrideCoreSettings, this->gameSection.toStdString(), overrideEnabled);
+        CoreSettingsSetValue(SettingsID::Game_OverrideCoreSettings, this->gameSection, overrideEnabled);
     if (defaultCpuEmulator != cpuEmulator)
-        CoreSettingsSetValue(SettingsID::Game_CPU_Emulator, this->gameSection.toStdString(), cpuEmulator);
+        CoreSettingsSetValue(SettingsID::Game_CPU_Emulator, this->gameSection, cpuEmulator);
     if (defaultRandomizeInterrupt != randomizeInterrupt)
-        CoreSettingsSetValue(SettingsID::Game_RandomizeInterrupt, this->gameSection.toStdString(), randomizeInterrupt);
+        CoreSettingsSetValue(SettingsID::Game_RandomizeInterrupt, this->gameSection, randomizeInterrupt);
 }
 
 void SettingsDialog::saveGamePluginSettings(void)
@@ -526,7 +526,7 @@ void SettingsDialog::saveGamePluginSettings(void)
 
         if (comboBox->currentIndex() != 0 )
         {
-            CoreSettingsSetValue(id, this->gameSection.toStdString(), comboBox->currentData().toString().toStdString());
+            CoreSettingsSetValue(id, this->gameSection, comboBox->currentData().toString().toStdString());
         }
     }
 }
