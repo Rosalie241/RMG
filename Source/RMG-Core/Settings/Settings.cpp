@@ -529,6 +529,34 @@ bool CoreSettingsSetupDefaults(void)
     return true;
 }
 
+bool CoreSettingsSectionExists(std::string section)
+{
+    return config_section_exists(section);
+}
+
+bool CoreSettingsDeleteSection(std::string section)
+{
+    std::string error;
+    m64p_error ret;
+
+    if (!config_section_exists(section))
+    {
+        error = "CoreSettingsDeleteSection Failed: cannot non-existent section!";
+        CoreSetError(error);
+        return false;
+    }
+
+    ret = m64p::Config.DeleteSection(section.c_str());
+    if (ret != M64ERR_SUCCESS)
+    {
+        error = "CoreSettingsDeleteSection m64p::Config.DeleteSection() Failed: ";
+        error = m64p::Core.ErrorMessage(ret);
+        CoreSetError(error);
+    }
+
+    return ret == M64ERR_SUCCESS;
+}
+
 bool CoreSettingsSetValue(SettingsID settingId, int value)
 {
     l_Setting setting = get_setting(settingId);

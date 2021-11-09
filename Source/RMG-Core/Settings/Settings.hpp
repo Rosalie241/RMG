@@ -21,6 +21,12 @@ bool CoreSettingsSave(void);
 // setup default settings
 bool CoreSettingsSetupDefaults(void);
 
+// returns whether a section exists
+bool CoreSettingsSectionExists(std::string section);
+
+// deletes given section
+bool CoreSettingsDeleteSection(std::string section);
+
 // sets setting as int value
 bool CoreSettingsSetValue(SettingsID settingId, int value);
 // sets setting as bool value
