@@ -203,7 +203,7 @@ bool CoreArePluginsReady(void)
         if (!l_Plugins[i].IsHooked())
         {
             error = "CoreArePluginsReady Failed: ";
-            error += "CoreApi::IsHooked returned false!";
+            error += "PluginApi::IsHooked returned false!";
             CoreSetError(error);
             return false;
         }
