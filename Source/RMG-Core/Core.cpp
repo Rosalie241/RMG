@@ -11,7 +11,7 @@
 
 #include "osal/osal_dynlib.hpp"
 #include "m64p/Api.hpp"
-
+#include "m64p/api/version.h"
 #include <filesystem>
 
 //
@@ -38,6 +38,33 @@ std::string find_core_lib(void)
     return std::string();
 }
 
+bool config_override_user_dirs(void)
+{
+    std::string error;
+    m64p_error ret;
+
+    std::string dataDir;
+    std::string cacheDir;
+    bool overrideUserDirs;
+    dataDir = CoreSettingsGetStringValue(SettingsID::Core_UserDataDirOverride);
+    cacheDir = CoreSettingsGetStringValue(SettingsID::Core_UserCacheDirOverride);
+    overrideUserDirs = CoreSettingsGetBoolValue(SettingsID::Core_OverrideUserDirs);
+
+    if (!overrideUserDirs)
+    {
+        return true;
+    }
+
+    ret = m64p::Config.OverrideUserPaths(dataDir.c_str(), cacheDir.c_str());
+    if (ret != M64ERR_SUCCESS)
+    {
+        error = "config_override_user_dirs m64p::Config.OverrideUserPaths() Failed: ";
+        error += m64p::Core.ErrorMessage(ret);
+    }
+
+    return ret == M64ERR_SUCCESS;
+}
+
 //
 // Exported Functions
 //
@@ -46,6 +73,7 @@ bool CoreInit(void)
 {
     std::string error;
     std::string core_file;
+    m64p_error  m64p_ret;
     bool ret = false;
 
     core_file = find_core_lib();
@@ -78,6 +106,20 @@ bool CoreInit(void)
     {
         error = m64p::Config.GetLastError();
         CoreSetError(error);
+        return false;
+    }
+
+    m64p_ret = m64p::Core.Startup(FRONTEND_API_VERSION, "Config", "Data", nullptr, nullptr, nullptr, nullptr);
+    if (m64p_ret != M64ERR_SUCCESS)
+    {
+        error = "CoreInit M64P::Core.Startup() Failed: ";
+        error += m64p::Core.ErrorMessage(m64p_ret);
+        CoreSetError(error);
+        return false;
+    }
+
+    if (!config_override_user_dirs())
+    {
         return false;
     }
 
