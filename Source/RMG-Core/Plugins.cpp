@@ -9,6 +9,7 @@
  */
 #include "Plugins.hpp"
 #include "Error.hpp"
+#include "RomSettings.hpp"
 #include "Settings/Settings.hpp"
 
 #include "m64p/PluginApi.hpp"
@@ -132,6 +133,93 @@ bool CoreApplyPluginSettings(void)
     for (int i = 0; i < 4; i++)
     {
         settingValue = CoreSettingsGetStringValue(settings[i]);
+        if (settingValue.empty() ||
+            !std::filesystem::is_regular_file(settingValue))
+        { // skip invalid setting value
+            continue;
+        }
+
+        if (settingValue != l_PluginFiles[i])
+        {
+            plugin = &l_Plugins[i];
+
+            // shutdown plugin when hooked
+            if (plugin->IsHooked())
+            {
+                ret = plugin->Shutdown();
+                if (ret != M64ERR_SUCCESS)
+                {
+                    error = "CoreApplyPluginSettings m64p::PluginApi.Shutdown() Failed: ";
+                    error += m64p::Core.ErrorMessage(ret);
+                    CoreSetError(error);
+                    return false;
+                }
+
+                // reset plugin
+                plugin->Unhook();
+            }
+
+            // attempt to open the library
+            handle = osal_dynlib_open(settingValue.c_str());
+            if (handle == nullptr)
+            {
+                error = "CoreApplyPluginSettings osal_dynlib_open Failed: ";
+                error += osal_dynlib_strerror();
+                CoreSetError(error);
+                return false;
+            }
+
+            // attempt to hook the library
+            if (!plugin->Hook(handle))
+            {
+                error = "CoreApplyPluginSettings m64p::PluginApi.Hook() Failed: ";
+                error += plugin->GetLastError();
+                CoreSetError(error);
+                return false;
+            }
+
+            // attempt to start plugin
+            ret = plugin->Startup(m64p::Core.GetHandle(), nullptr, nullptr);
+            if (ret != M64ERR_SUCCESS)
+            {
+                error = "CoreApplyPluginSettings m64p::PluginApi.Startup() Failed: ";
+                error += m64p::Core.ErrorMessage(ret);
+                CoreSetError(error);
+                return false;
+            }
+
+            l_PluginFiles[i] = settingValue;
+        }
+    }
+
+    return true;
+}
+
+bool CoreApplyRomPluginSettings(void)
+{
+    std::string            error;
+    std::string            settingValue;
+    m64p::PluginApi*       plugin;
+    osal_dynlib_lib_handle handle;
+    m64p_error             ret;
+    CoreRomSettings        romSettings;
+
+    SettingsID settings[] = 
+    {
+        SettingsID::Game_RSP_Plugin,
+        SettingsID::Game_GFX_Plugin,
+        SettingsID::Game_AUDIO_Plugin,
+        SettingsID::Game_INPUT_Plugin
+    };
+
+    if (!CoreGetCurrentDefaultRomSettings(romSettings))
+    {
+        return false;
+    }
+
+    for (int i = 0; i < 4; i++)
+    {
+        settingValue = CoreSettingsGetStringValue(settings[i], romSettings.MD5);
         if (settingValue.empty() ||
             !std::filesystem::is_regular_file(settingValue))
         { // skip invalid setting value

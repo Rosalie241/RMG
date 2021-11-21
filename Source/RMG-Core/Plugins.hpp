@@ -36,6 +36,10 @@ std::vector<CorePlugin> CoreGetAllPlugins(void);
 // i.e when you've changed a plugin
 bool CoreApplyPluginSettings(void);
 
+// applies ROM plugin settings,
+// i.e when you launch a ROM
+bool CoreApplyRomPluginSettings(void);
+
 // checks wether all plugins are
 // hooked and ready for emulation
 bool CoreArePluginsReady(void);
