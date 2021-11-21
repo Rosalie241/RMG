@@ -41,6 +41,10 @@ endif()
 
 add_library(RMG-Core STATIC ${RMG_CORE_SOURCES})
 
+if(UNIX)
+    target_link_libraries(RMG-Core dl)
+endif(UNIX)
+
 target_link_libraries(RMG-Core
     ${MINIZIP_LIBRARIES}
 )
