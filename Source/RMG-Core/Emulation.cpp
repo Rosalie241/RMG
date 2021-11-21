@@ -9,7 +9,9 @@
  */
 #include "Emulation.hpp"
 #include "m64p/Api.hpp"
+#include "Plugins.hpp"
 #include "Error.hpp"
+#include "Rom.hpp"
 
 //
 // Local Functions
@@ -34,6 +36,65 @@ static bool get_emulation_state(m64p_emu_state* state)
 //
 // Exported Functions
 //
+
+bool CoreStartEmulation(std::string n64rom, std::string n64ddrom)
+{
+    std::string error;
+    m64p_error ret;
+
+    if (!CoreOpenRom(n64rom))
+    {
+        return false;
+    }
+
+    if (!CoreApplyRomPluginSettings())
+    {
+        return false;
+    }
+
+    if (!CoreArePluginsReady())
+    {
+        return false;
+    }
+
+    if (!CoreAttachPlugins())
+    {
+        return false;
+    }
+
+    ret = m64p::Core.DoCommand(M64CMD_EXECUTE, 0, nullptr);
+    if (ret != M64ERR_SUCCESS)
+    {
+        error = "CoreStartEmulation m64p::Core.DoCommand(M64CMD_EXECUTE) Failed: ";
+        error += m64p::Core.ErrorMessage(ret);
+        CoreSetError(error);
+    }
+
+    CoreDetachPlugins();
+    CoreCloseRom();
+
+    // restore plugin settings
+    CoreApplyPluginSettings();
+
+    return ret == M64ERR_SUCCESS;
+}
+
+bool CoreStopEmulation(void)
+{
+    std::string error;
+    m64p_error ret;
+
+    ret = m64p::Core.DoCommand(M64CMD_STOP, 0, nullptr);
+    if (ret != M64ERR_SUCCESS)
+    {
+        error = "CoreStopEmulation m64p::Core.DoCommand(M64CMD_STOP) Failed: ";
+        error += m64p::Core.ErrorMessage(ret);
+        CoreSetError(error);
+        return false;
+    }
+
+    return ret == M64ERR_SUCCESS;
+}
 
 bool CorePauseEmulation(void)
 {

@@ -10,6 +10,14 @@
 #ifndef CORE_EMULATION_HPP
 #define CORE_EMULATION_HPP
 
+#include <string>
+
+// starts emulation with given ROM
+bool CoreStartEmulation(std::string n64rom, std::string n64ddrom);
+
+// stops emulation
+bool CoreStopEmulation(void);
+
 // pauses emulation
 bool CorePauseEmulation(void);
 
