@@ -136,7 +136,7 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::Core_GFX_Plugin:
         setting = {SETTING_SECTION_CORE, "GFX_Plugin", 
 #ifdef _WIN32
-                    "Plugin/GFX/mupen64plus-video-GLideN64.dll",
+                    "Plugin\\GFX\\mupen64plus-video-GLideN64.dll",
 #else
                     "Plugin/GFX/mupen64plus-video-GLideN64.so", 
 #endif // _WIN32
@@ -145,7 +145,7 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::Core_AUDIO_Plugin:
         setting = {SETTING_SECTION_CORE, "AUDIO_Plugin", 
 #ifdef _WIN32
-                    "Plugin/Audio/mupen64plus-audio-sdl2.dll",
+                    "Plugin\\Audio\\mupen64plus-audio-sdl2.dll",
 #else
                     "Plugin/Audio/mupen64plus-audio-sdl2.so",
 #endif // _WIN32
@@ -154,7 +154,7 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::Core_INPUT_Plugin:
         setting = {SETTING_SECTION_CORE, "INPUT_Plugin", 
 #ifdef _WIN32
-                    "Plugin/Input/libmupen64plus-input-qt.dll",
+                    "Plugin\\Input\\libmupen64plus-input-qt.dll",
 #else
                     "Plugin/Input/libmupen64plus-input-qt.so",
 #endif // _WIN32
@@ -163,7 +163,7 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::Core_RSP_Plugin:
         setting = {SETTING_SECTION_CORE, "RSP_Plugin", 
 #ifdef _WIN32
-                    "Plugin/RSP/mupen64plus-rsp-hle.dll",
+                    "Plugin\\RSP\\mupen64plus-rsp-hle.dll",
 #else
                     "Plugin/RSP/mupen64plus-rsp-hle.so",
 #endif // _WIN32
