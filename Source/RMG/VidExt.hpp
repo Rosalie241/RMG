@@ -7,16 +7,13 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef M64P_API_HPP
-#define M64P_API_HPP
+#ifndef RMG_VIDEXT_HPP
+#define RMG_VIDEXT_HPP
 
-#include "ConfigApi.hpp"
-#include "CoreApi.hpp"
+#include <UserInterface/Widget/OGLWidget.hpp>
+#include <UserInterface/MainWindow.hpp>
+#include <Thread/EmulationThread.hpp>
 
-namespace M64P
-{
-extern M64P::CoreApi Core;
-extern M64P::ConfigApi Config;
-} // namespace M64P
+bool SetupVidExt(Thread::EmulationThread* emuThread, UserInterface::MainWindow* mainWindow, UserInterface::Widget::OGLWidget* oglWidget);
 
-#endif // M64P_API_HPP
+#endif // RMG_VIDEXT_HPP

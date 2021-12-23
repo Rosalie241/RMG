@@ -20,7 +20,6 @@
 
 // needed for KeyBindButton in ui_SettingsDialog
 #include "UserInterface/Widget/KeyBindButton.hpp"
-#include "M64P/Wrapper/Types.hpp"
 
 using namespace UserInterface::Widget;
 

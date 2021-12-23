@@ -8,18 +8,16 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "SettingsDialog.hpp"
-#include "Globals.hpp"
 
 #include <QFileDialog>
 
 using namespace UserInterface::Dialog;
-using namespace M64P::Wrapper;
 
 SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint)
 {
     this->setupUi(this);
 
-    this->inGame = g_EmuThread->isRunning();
+    this->inGame = CoreIsEmulationRunning() || CoreIsEmulationPaused();
     if (inGame)
     {
         CoreGetCurrentRomSettings(this->currentGameSettings);
@@ -548,7 +546,12 @@ void SettingsDialog::savePluginSettings(void)
         CoreSettingsSetValue(settingId, comboBox->currentData().toString().toStdString());
     }
 
-    CoreApplyPluginSettings();
+    // only apply plugin settings when
+    // emulation isn't running
+    if (!CoreIsEmulationPaused() && !CoreIsEmulationRunning())
+    {
+        CoreApplyPluginSettings();
+    }
 }
 
 void SettingsDialog::saveDirectorySettings(void)

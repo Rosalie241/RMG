@@ -10,13 +10,12 @@
 #ifndef MAINWINDOW_HPP
 #define MAINWINDOW_HPP
 
-#include "Globals.hpp"
 #include "Thread/EmulationThread.hpp"
 #include "Dialog/SettingsDialog.hpp"
 #include "EventFilter.hpp"
 #include "Widget/OGLWidget.hpp"
 #include "Widget/RomBrowserWidget.hpp"
-#include "M64P/Wrapper/Types.hpp"
+#include "Callbacks.hpp"
 
 #include <QAction>
 #include <QCloseEvent>
@@ -42,6 +41,8 @@ class MainWindow : public QMainWindow
     QIcon ui_Icon;
 
     Thread::EmulationThread *emulationThread;
+
+    CoreCallbacks* coreCallBacks;
 
     QStackedWidget *ui_Widgets;
     Widget::OGLWidget *ui_Widget_OpenGL;
@@ -100,7 +101,7 @@ class MainWindow : public QMainWindow
     int ui_TimerId = 0;
     int ui_TimerTimeout = 0;
 
-    void closeEvent(QCloseEvent *);
+    void closeEvent(QCloseEvent *) Q_DECL_OVERRIDE;
 
     void ui_Init();
     void ui_Setup();
@@ -165,6 +166,8 @@ class MainWindow : public QMainWindow
 
     void on_RomBrowser_Selected(QString);
 
+  public slots:
+
     void on_VidExt_Init(void);
     void on_VidExt_SetupOGL(QSurfaceFormat, QThread *);
     void on_VidExt_SetMode(int, int, int, int, int);
@@ -175,7 +178,7 @@ class MainWindow : public QMainWindow
     void on_VidExt_ToggleFS(bool);
     void on_VidExt_Quit(void);
 
-    void on_Core_DebugCallback(M64P::Wrapper::MessageType, QString);
+    void on_Core_DebugCallback(CoreDebugMessageType, QString);
 };
 } // namespace UserInterface
 

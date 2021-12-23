@@ -8,13 +8,12 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "RomBrowserWidget.hpp"
-#include "../../Globals.hpp"
 #include "Config.hpp"
-#include "M64P/Wrapper/Types.hpp"
 #include "ColumnID.hpp"
 #include <RMG-Core/Core.hpp>
 
 #include <QDir>
+#include <QDragMoveEvent>
 
 using namespace UserInterface::Widget;
 
@@ -163,7 +162,6 @@ void RomBrowserWidget::model_Setup(void)
         return;
 
     this->model_Model->clear();
-
     this->romSearcher_Launch(this->directory);
 
     this->model_Columns = CoreSettingsGetIntListValue(SettingsID::RomBrowser_Columns);
@@ -215,7 +213,6 @@ void RomBrowserWidget::widget_Init(void)
     this->horizontalHeader()->setHighlightSections(false);
 
     this->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-
 }
 
 void RomBrowserWidget::romSearcher_Init(void)

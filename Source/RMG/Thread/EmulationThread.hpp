@@ -10,8 +10,6 @@
 #ifndef EMULATIONTHREAD_HPP
 #define EMULATIONTHREAD_HPP
 
-//#include "../Globals.hpp"
-
 #include <QString>
 #include <QSurfaceFormat>
 #include <QThread>

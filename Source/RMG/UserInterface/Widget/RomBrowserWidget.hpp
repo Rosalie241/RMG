@@ -10,9 +10,8 @@
 #ifndef ROMBROWSERWIDGET_HPP
 #define ROMBROWSERWIDGET_HPP
 
-#include "../../Globals.hpp"
-#include "../../Thread/RomSearcherThread.hpp"
-#include "../NoFocusDelegate.hpp"
+#include "Thread/RomSearcherThread.hpp"
+#include "UserInterface/NoFocusDelegate.hpp"
 
 #include <QHeaderView>
 #include <QList>

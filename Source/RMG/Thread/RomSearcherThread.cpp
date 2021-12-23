@@ -8,7 +8,6 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "RomSearcherThread.hpp"
-#include "../Globals.hpp"
 #include "RMG-Core/Rom.hpp"
 
 #include <QDir>

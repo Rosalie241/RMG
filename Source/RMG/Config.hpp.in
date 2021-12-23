@@ -6,28 +6,6 @@
 #define WINDOW_WIDGET_SIZE_H 480
 
 #define APP_URL_HOMEPAGE "https://github.com/Rosalie241/RMG"
-
-#define APP_LOG_DIR "Log"
-#define APP_LOG_FILE                                                                                                   \
-    APP_LOG_DIR ""                                                                                                     \
-                "/RMG.txt"
-
-#define APP_ROMSEARCHER_MAX 50
 #define APP_STYLESHEET_FILE "Config/stylesheet.qss"
-
-#ifdef _WIN32
-#define MUPEN_CORE_FILE "Core\\mupen64plus.dll"
-#define SO_EXT "dll"
-#else // Unix
-#define MUPEN_CORE_FILE "Core/libmupen64plus.so"
-#define SO_EXT "so"
-#endif
-#define MUPEN_CONFIG_DIR "Config"
-#define MUPEN_DATA_DIR "Data"
-
-#define MUPEN_DIR_RSP "Plugin/RSP"
-#define MUPEN_DIR_GFX "Plugin/GFX"
-#define MUPEN_DIR_AUDIO "Plugin/Audio"
-#define MUPEN_DIR_INPUT "Plugin/Input"
 
 #endif // CONFIG_HPP

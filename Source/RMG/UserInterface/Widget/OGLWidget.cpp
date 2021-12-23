@@ -1,5 +1,4 @@
 #include "OGLWidget.hpp"
-#include "../../Globals.hpp"
 
 using namespace UserInterface::Widget;
 

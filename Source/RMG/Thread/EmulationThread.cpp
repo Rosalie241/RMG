@@ -8,7 +8,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "EmulationThread.hpp"
-#include "../Globals.hpp"
+#include <RMG-Core/Core.hpp>
 
 using namespace Thread;
 
@@ -36,10 +36,12 @@ void EmulationThread::run(void)
 
     bool ret;
 
-    ret = g_MupenApi.Core.LaunchEmulation(this->rom_File, this->disk_File);
+    ret = CoreStartEmulation(this->rom_File.toStdString(), this->disk_File.toStdString());
 
     if (!ret)
-        this->error_Message = g_MupenApi.Core.GetLastError();
+    {
+        this->error_Message = QString::fromStdString(CoreGetError());
+    }
 
     emit this->on_Emulation_Finished(ret);
 }

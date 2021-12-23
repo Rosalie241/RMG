@@ -11,8 +11,9 @@
 
 #include "UserInterface/EventFilter.hpp"
 #include "Utilities/QtKeyToSdl2Key.hpp"
-#include "Globals.hpp"
+#include "Callbacks.hpp"
 #include "Config.hpp"
+#include "VidExt.hpp"
 
 #include <RMG-Core/Core.hpp>
 
@@ -29,7 +30,6 @@
 #include <QActionGroup> 
 
 using namespace UserInterface;
-using namespace M64P::Wrapper;
 
 MainWindow::MainWindow() : QMainWindow(nullptr)
 {
@@ -41,52 +41,10 @@ MainWindow::~MainWindow()
 
 bool MainWindow::Init(void)
 {
-    if (!g_Logger.Init())
-    {
-        this->ui_MessageBox("Error", "Logger::Init Failed", g_Logger.GetLastError());
-        return false;
-    }
-
-    
-    if (!g_MupenApi.Init(MUPEN_CORE_FILE))
-    {
-        this->ui_MessageBox("Error", "Api::Init Failed", g_MupenApi.GetLastError());
-        return false;
-    }
-
     if (!CoreInit())
     {
         this->ui_MessageBox("Error", "CoreInit() Failed", QString::fromStdString(CoreGetError()));
         return false;
-    }
-
-    QString dataDir = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::Core_UserDataDirOverride));
-    QString cacheDir = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::Core_UserCacheDirOverride));
-    if (CoreSettingsGetBoolValue(SettingsID::Core_OverrideUserDirs))
-    {
-        g_MupenApi.Config.OverrideUserPaths(dataDir, cacheDir);
-    }
-
-    // create mupen64plus directories
-    // when they don't exist
-    const SettingsID directorySettings[] =
-    {
-        SettingsID::Core_ScreenshotPath,
-        SettingsID::Core_UserDataDirOverride,
-        SettingsID::Core_UserCacheDirOverride,
-    };
-    for (const SettingsID settingId : directorySettings)
-    {
-        QString directory = QString::fromStdString(CoreSettingsGetStringValue(settingId));
-        if (!QDir().exists(directory))
-        {
-            if (!QDir().mkdir(directory))
-            {
-                QString error = "Failed to create the \"" + directory + "\" directory";
-                this->ui_MessageBox("Error", "MainWindow::Init Failed", error);
-                return false;
-            }
-        }
     }
 
     this->ui_Init();
@@ -101,9 +59,20 @@ bool MainWindow::Init(void)
     this->emulationThread_Init();
     this->emulationThread_Connect();
 
-    g_EmuThread = this->emulationThread;
+    if (!SetupVidExt(this->emulationThread, this, this->ui_Widget_OpenGL))
+    {
+        this->ui_MessageBox("Error", "SetupVidExt() Failed", QString::fromStdString(CoreGetError()));
+        return false;
+    }
 
-    connect(&g_MupenApi.Core, &Core::on_Core_DebugCallback, this, &MainWindow::on_Core_DebugCallback);
+    this->coreCallBacks = new CoreCallbacks(this);
+    if (!this->coreCallBacks->Init())
+    {
+        this->ui_MessageBox("Error", "CoreCallbacks::Init() Failed", QString::fromStdString(CoreGetError()));
+        return false;
+    }
+
+    connect(coreCallBacks, &CoreCallbacks::OnCoreDebugCallback, this, &MainWindow::on_Core_DebugCallback);
 
     return true;
 }
@@ -117,14 +86,16 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
     this->on_Action_File_EndEmulation();
 
-    while (g_EmuThread->isRunning())
+    this->coreCallBacks->Stop();
+
+    while (this->emulationThread->isRunning())
     {
         QCoreApplication::processEvents();
     }
 
-    QString geometryStr = QString(this->saveGeometry().toBase64().toStdString().c_str());
+    std::string geometryStr = this->saveGeometry().toBase64().toStdString();
 
-    CoreSettingsSetValue(SettingsID::RomBrowser_Geometry, geometryStr.toStdString());
+    CoreSettingsSetValue(SettingsID::RomBrowser_Geometry, geometryStr);
     CoreSettingsSave();
 
     CoreShutdown();
@@ -213,8 +184,6 @@ void MainWindow::ui_Stylesheet_Setup(void)
 
 void MainWindow::ui_MessageBox(QString title, QString text, QString details = "")
 {
-    g_Logger.AddText("MainWindow::ui_MessageBox: " + title + ", " + text + ", " + details);
-
     QMessageBox msgBox(this);
     msgBox.setIcon(QMessageBox::Icon::Critical);
     msgBox.setWindowTitle(title);
@@ -465,8 +434,6 @@ void MainWindow::emulationThread_Launch(QString cartRom, QString diskRom)
         this->ui_Widget_RomBrowser->StopRefreshRomList();
     }
 
-    // make sure plugins are initialized,
-    // TODO, move this to RMG-Core
     if (!CoreArePluginsReady())
     {
         this->ui_MessageBox("Error", "CoreArePluginsReady() Failed", QString::fromStdString(CoreGetError()));
@@ -573,7 +540,7 @@ void MainWindow::ui_Actions_Setup(bool inEmulation, bool isPaused)
     this->action_System_LimitFPS->setText("Limit FPS");
     this->action_System_LimitFPS->setShortcut(QKeySequence(keyBinding));
     this->action_System_LimitFPS->setCheckable(true);
-    this->action_System_LimitFPS->setChecked(g_MupenApi.Core.GetSpeedLimiterState());
+    this->action_System_LimitFPS->setChecked(CoreIsSpeedLimiterEnabled());
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_SwapDisk));
     this->action_System_SwapDisk->setText("Swap Disk");
     this->action_System_SwapDisk->setShortcut(QKeySequence(keyBinding));
@@ -884,9 +851,14 @@ void MainWindow::on_Action_File_EndEmulation(void)
         this->on_Action_System_Pause();
     }
 
-    if (!g_MupenApi.Core.StopEmulation())
+    if (!CoreIsEmulationRunning())
     {
-        this->ui_MessageBox("Error", "Api::Core::StopEmulation Failed!", g_MupenApi.Core.GetLastError());
+        return;
+    }
+
+    if (!CoreStopEmulation())
+    {
+        this->ui_MessageBox("Error", "CoreStopEmulation() Failed!", QString::fromStdString(CoreGetError()));
     }
 }
 
@@ -977,11 +949,11 @@ void MainWindow::on_Action_System_LimitFPS(void)
 
     enabled = this->action_System_LimitFPS->isChecked();
 
-    ret = g_MupenApi.Core.SetSpeedLimiter(enabled);
+    ret = CoreSetSpeedLimiterState(enabled);
 
     if (!ret)
     {
-        this->ui_MessageBox("Error", "Api::Core::SetSpeedLimiter Failed!", g_MupenApi.Core.GetLastError());
+        this->ui_MessageBox("Error", "CoreSetSpeedLimiterState() Failed!", QString::fromStdString(CoreGetError()));
     }
 }
 
@@ -1064,10 +1036,12 @@ void MainWindow::on_Action_System_Cheats(void)
 
 void MainWindow::on_Action_System_GSButton(void)
 {
+    /* TODO
     if (!g_MupenApi.Core.PressGameSharkButton())
     {
         this->ui_MessageBox("Error", "Api::Core::PressGameSharkButton Failed", g_MupenApi.Core.GetLastError());
     }
+    */
 }
 
 void MainWindow::on_Action_Options_FullScreen(void)
@@ -1143,7 +1117,6 @@ void MainWindow::on_Emulation_Finished(bool ret)
         // whatever we do on failure,
         // always return to the rombrowser
         this->ui_NoSwitchToRomBrowser = false;
-        this->ui_InEmulation(false, false);
     }
 
     if (this->ui_RefreshRomListAfterEmulation)
@@ -1151,6 +1124,9 @@ void MainWindow::on_Emulation_Finished(bool ret)
         this->ui_Widget_RomBrowser->RefreshRomList();
         this->ui_RefreshRomListAfterEmulation = false;
     }
+
+    // always refresh UI
+    this->ui_InEmulation(false, false);
 }
 
 void MainWindow::on_RomBrowser_Selected(QString file)
@@ -1166,12 +1142,9 @@ void MainWindow::on_VidExt_Init(void)
     this->ui_InEmulation(true, false);
 }
 
-void MainWindow::on_VidExt_SetupOGL(QSurfaceFormat format, QThread *thread)
+void MainWindow::on_VidExt_SetupOGL(QSurfaceFormat format, QThread* thread)
 {
     this->ui_Widget_OpenGL->MoveToThread(thread);
-
-    g_OGLWidget = this->ui_Widget_OpenGL;
-
     this->ui_Widget_OpenGL->setFormat(format);
 }
 
@@ -1335,22 +1308,23 @@ void MainWindow::on_VidExt_ToggleFS(bool fullscreen)
 
 void MainWindow::on_VidExt_Quit(void)
 {
-    this->ui_InEmulation(false, false);
 }
 
-void MainWindow::on_Core_DebugCallback(MessageType type, QString message)
+void MainWindow::on_Core_DebugCallback(CoreDebugMessageType type, QString message)
 {
     // only display in statusbar when emulation is running
     if (!this->emulationThread->isRunning())
-        return;
-
-    // drop verbose messages
-    if (type == MessageType::Verbose)
     {
         return;
     }
 
-    if (type == MessageType::Error)
+    // drop verbose messages
+    if (type == CoreDebugMessageType::Verbose)
+    {
+        return;
+    }
+
+    if (type == CoreDebugMessageType::Error)
     {
         this->ui_MessageBox("Error", "Core Error", message);
         return;
@@ -1365,3 +1339,4 @@ void MainWindow::on_Core_DebugCallback(MessageType type, QString message)
     }
     this->ui_TimerId = this->startTimer(this->ui_TimerTimeout * 1000);
 }
+
