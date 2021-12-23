@@ -20,6 +20,7 @@ set(RMG_CORE_SOURCES
     Screenshot.cpp
     Emulation.cpp
     SaveState.cpp
+    Callback.cpp
     Plugins.cpp
     VidExt.cpp
     Video.cpp

@@ -16,6 +16,7 @@
 #include "Emulation.hpp"
 #include "SaveState.hpp"
 #include "RomHeader.hpp"
+#include "Callback.hpp"
 #include "Plugins.hpp"
 #include "Error.hpp"
 #include "Video.hpp"

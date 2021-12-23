@@ -7,6 +7,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+#define CORE_INTERNAL
 #include "Core.hpp"
 
 #include "osal/osal_dynlib.hpp"
@@ -109,7 +110,7 @@ bool CoreInit(void)
         return false;
     }
 
-    m64p_ret = m64p::Core.Startup(FRONTEND_API_VERSION, "Config", "Data", nullptr, nullptr, nullptr, nullptr);
+    m64p_ret = m64p::Core.Startup(FRONTEND_API_VERSION, "Config", "Data", nullptr, CoreDebugCallback, nullptr, CoreStateCallback);
     if (m64p_ret != M64ERR_SUCCESS)
     {
         error = "CoreInit M64P::Core.Startup() Failed: ";
