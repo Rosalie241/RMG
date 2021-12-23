@@ -11,6 +11,7 @@
 #define CORE_HPP
 
 #include "Settings/Settings.hpp"
+#include "SpeedLimiter.hpp"
 #include "RomSettings.hpp"
 #include "Screenshot.hpp"
 #include "Emulation.hpp"
