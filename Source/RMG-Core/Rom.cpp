@@ -214,19 +214,8 @@ static bool read_raw_file(std::string file, char** buf, int* size)
     // read file
     fileStream.read(fileStreamBuf, fileStreamLen);
 
-    // make sure that we've read the entire file
-    if (fileStream.tellg() != fileStreamLen)
-    {
-        error = "read_raw_file Failed: ";
-        error += "failed to read entire file!";
-        CoreSetError(error);
-        free(fileStreamBuf);
-        fileStream.close();
-        return false;
-    }
-
     *buf  = fileStreamBuf;
-    *size = fileStreamLen;
+    *size = fileStream.gcount();
 
     fileStream.close();
     return true;
