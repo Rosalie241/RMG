@@ -69,6 +69,20 @@ ExternalProject_Add(mupen64plus-rsp-hle
     DEPENDS mupen64plus-core
 )
 
+ExternalProject_Add(mupen64plus-rsp-parallel
+    SOURCE_DIR mupen64plus-rsp-parallel
+
+    GIT_REPOSITORY https://github.com/loganmc10/parallel-rsp
+    GIT_TAG a9646b27c2ef399e5917735b4d84ebe93edcce39
+
+    INSTALL_COMMAND ""
+
+    BUILD_IN_SOURCE True
+    CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+
+    BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-rsp-parallel/mupen64plus-rsp-parallel.${SO_EXT}
+)
+
 ExternalProject_Add(mupen64plus-input-qt
     SOURCE_DIR mupen64plus-input-qt
 
@@ -144,7 +158,10 @@ ExternalProject_Get_property(mupen64plus-audio-sdl BUILD_BYPRODUCTS)
 set(MUPEN64PLUS_PLUGIN_AUDIO ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 
 ExternalProject_Get_property(mupen64plus-rsp-hle BUILD_BYPRODUCTS)
-set(MUPEN64PLUS_PLUGIN_RSP ${BUILD_BYPRODUCTS} PARENT_SCOPE)
+set(MUPEN64PLUS_PLUGIN_RSP_HLE ${BUILD_BYPRODUCTS} PARENT_SCOPE)
+
+ExternalProject_Get_property(mupen64plus-rsp-parallel BUILD_BYPRODUCTS)
+set(MUPEN64PLUS_PLUGIN_RSP_PARALLEL ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 
 ExternalProject_Get_property(mupen64plus-input-qt BUILD_BYPRODUCTS)
 set(MUPEN64PLUS_PLUGIN_INPUT_QT ${BUILD_BYPRODUCTS} PARENT_SCOPE)
