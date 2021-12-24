@@ -79,14 +79,14 @@ struct l_DynamicValue
     }
 };
 
-typedef struct
+struct l_Setting
 {
     std::string Section;
     std::string Key;
     l_DynamicValue DefaultValue;
-    std::string Description;
-    bool ForceUseSet;
-} l_Setting;
+    std::string Description = "";
+    bool ForceUseSetOnce = false;
+};
 
 //
 // Local Variables
@@ -104,6 +104,7 @@ static std::vector<std::string> l_sectionList;
 #define SETTING_SECTION_OVERLAY     SETTING_SECTION_CORE " Overlay"
 #define SETTING_SECTION_KEYBIND     SETTING_SECTION_GUI  " KeyBindings"
 #define SETTING_SECTION_ROMBROWSER  SETTING_SECTION_GUI  " RomBrowser"
+#define SETTING_SECTION_SETTINGS    SETTING_SECTION_CORE " Settings"
 #define SETTING_SECTION_M64P        "Core"
 
 // retrieves l_Setting from settingId
@@ -118,19 +119,19 @@ static l_Setting get_setting(SettingsID settingId)
         break;
 
     case SettingsID::GUI_SettingsDialogWidth:
-        setting = {SETTING_SECTION_GUI, "SettingsDialogWidth", 0, "", false};
+        setting = {SETTING_SECTION_GUI, "SettingsDialogWidth", 0};
         break;
     case SettingsID::GUI_SettingsDialogHeight:
-        setting = {SETTING_SECTION_GUI, "SettingsDialogHeight", 0, "", false};
+        setting = {SETTING_SECTION_GUI, "SettingsDialogHeight", 0};
         break;
     case SettingsID::GUI_AllowManualResizing:
-        setting = {SETTING_SECTION_GUI, "AllowManualResizing", true, "", false};
+        setting = {SETTING_SECTION_GUI, "AllowManualResizing", true};
         break;
     case SettingsID::GUI_HideCursorInEmulation:
-        setting = {SETTING_SECTION_GUI, "HideCursorInEmulation", false, "", false};
+        setting = {SETTING_SECTION_GUI, "HideCursorInEmulation", false};
         break;
     case SettingsID::GUI_StatusbarMessageDuration:
-        setting = {SETTING_SECTION_GUI, "StatusbarMessageDuration", 3, "", false};
+        setting = {SETTING_SECTION_GUI, "StatusbarMessageDuration", 3};
         break;
 
     case SettingsID::Core_GFX_Plugin:
@@ -140,7 +141,7 @@ static l_Setting get_setting(SettingsID settingId)
 #else
                     "Plugin/GFX/mupen64plus-video-GLideN64.so", 
 #endif // _WIN32
-                    "", false};
+                  };
         break;
     case SettingsID::Core_AUDIO_Plugin:
         setting = {SETTING_SECTION_CORE, "AUDIO_Plugin", 
@@ -149,7 +150,7 @@ static l_Setting get_setting(SettingsID settingId)
 #else
                     "Plugin/Audio/mupen64plus-audio-sdl2.so",
 #endif // _WIN32
-                    "", false};
+                  };
         break;
     case SettingsID::Core_INPUT_Plugin:
         setting = {SETTING_SECTION_CORE, "INPUT_Plugin", 
@@ -158,7 +159,7 @@ static l_Setting get_setting(SettingsID settingId)
 #else
                     "Plugin/Input/libmupen64plus-input-qt.so",
 #endif // _WIN32
-                    "", false};
+                  };
         break;
     case SettingsID::Core_RSP_Plugin:
         setting = {SETTING_SECTION_CORE, "RSP_Plugin", 
@@ -167,40 +168,40 @@ static l_Setting get_setting(SettingsID settingId)
 #else
                     "Plugin/RSP/mupen64plus-rsp-hle.so",
 #endif // _WIN32
-                    "", false};
+                  };
         break;
 
     case SettingsID::Core_OverrideUserDirs:
-        setting = {SETTING_SECTION_CORE, "OverrideUserDirectories", true, "", false};
+        setting = {SETTING_SECTION_CORE, "OverrideUserDirectories", true};
         break;
     case SettingsID::Core_UserDataDirOverride:
-        setting = {SETTING_SECTION_CORE, "UserDataDirectory", "Data", "", false};
+        setting = {SETTING_SECTION_CORE, "UserDataDirectory", "Data"};
         break;
     case SettingsID::Core_UserCacheDirOverride:
-        setting = {SETTING_SECTION_CORE, "UserCacheDirectory", "Cache", "", false};
+        setting = {SETTING_SECTION_CORE, "UserCacheDirectory", "Cache"};
         break;
 
     case SettingsID::Core_OverrideGameSpecificSettings:
-        setting = {SETTING_SECTION_CORE, "OverrideGameSpecificSettings", false, "", false};
+        setting = {SETTING_SECTION_CORE, "OverrideGameSpecificSettings", false};
         break;
 
     case SettingsID::Core_RandomizeInterrupt:
-        setting = {SETTING_SECTION_OVERLAY, "RandomizeInterrupt", true, "", false};
+        setting = {SETTING_SECTION_OVERLAY, "RandomizeInterrupt", true};
         break;
     case SettingsID::Core_CPU_Emulator:
-        setting = {SETTING_SECTION_OVERLAY, "CPU_Emulator", 2, "", false};
+        setting = {SETTING_SECTION_OVERLAY, "CPU_Emulator", 2};
         break;
     case SettingsID::Core_DisableExtraMem:
-        setting = {SETTING_SECTION_OVERLAY, "DisableExtraMem", false, "", false};
+        setting = {SETTING_SECTION_OVERLAY, "DisableExtraMem", false};
         break;
     case SettingsID::Core_EnableDebugger:
-        setting = {SETTING_SECTION_OVERLAY, "EnableDebugger", false, "", false};
+        setting = {SETTING_SECTION_OVERLAY, "EnableDebugger", false};
         break;
     case SettingsID::Core_CountPerOp:
-        setting = {SETTING_SECTION_OVERLAY, "CountPerOp", 0, "", false};
+        setting = {SETTING_SECTION_OVERLAY, "CountPerOp", 0};
         break;
     case SettingsID::Core_SiDmaDuration:
-        setting = {SETTING_SECTION_OVERLAY, "SiDmaDuration", -1, "", false};
+        setting = {SETTING_SECTION_OVERLAY, "SiDmaDuration", -1};
         break;
 
     case SettingsID::Core_ScreenshotPath:
@@ -217,123 +218,127 @@ static l_Setting get_setting(SettingsID settingId)
         break;
 
     case SettingsID::Core_64DD_RomFile:
-        setting = {SETTING_SECTION_CORE, "64DD_RomFile", "", "", false};
+        setting = {SETTING_SECTION_CORE, "64DD_RomFile", ""};
         break;
 
     case SettingsID::Game_DisableExtraMem:
-        setting = {"", "DisableExtraMem", false, "", false};
+        setting = {"", "DisableExtraMem", false};
         break;
     case SettingsID::Game_SaveType:
-        setting = {"", "SaveType", 0, "", false};
+        setting = {"", "SaveType", 0};
         break;
     case SettingsID::Game_CountPerOp:
-        setting = {"", "CountPerOp", 2, "", false};
+        setting = {"", "CountPerOp", 2};
         break;
     case SettingsID::Game_SiDmaDuration:
-        setting = {"", "SiDmaDuration", 2304, "", false};
+        setting = {"", "SiDmaDuration", 2304};
         break;
 
     case SettingsID::Game_OverrideCoreSettings:
-        setting = {"", "OverrideCoreSettings", false, "", false};
+        setting = {"", "OverrideCoreSettings", false};
         break;
     case SettingsID::Game_CPU_Emulator:
-        setting = {"", "CPU_Emulator", 2, "", false};
+        setting = {"", "CPU_Emulator", 2};
         break;
     case SettingsID::Game_RandomizeInterrupt:
-        setting = {"", "RandomizeInterrupt", true, "", false};
+        setting = {"", "RandomizeInterrupt", true};
         break;
 
     case SettingsID::Game_GFX_Plugin:
-        setting = {"", "GFX_Plugin", "", "", false};
+        setting = {"", "GFX_Plugin", ""};
         break;
     case SettingsID::Game_AUDIO_Plugin:
-        setting = {"", "AUDIO_Plugin", "", "", false};
+        setting = {"", "AUDIO_Plugin", ""};
         break;
     case SettingsID::Game_INPUT_Plugin:
-        setting = {"", "INPUT_Plugin", "", "", false};
+        setting = {"", "INPUT_Plugin", ""};
         break;
     case SettingsID::Game_RSP_Plugin:
-        setting = {"", "RSP_Plugin", "", "", false};
+        setting = {"", "RSP_Plugin", ""};
         break;
 
     case SettingsID::KeyBinding_OpenROM:
-        setting = {SETTING_SECTION_KEYBIND, "OpenROM", "Ctrl+O", "", false};
+        setting = {SETTING_SECTION_KEYBIND, "OpenROM", "Ctrl+O"};
         break;
     case SettingsID::KeyBinding_OpenCombo:
-        setting = {SETTING_SECTION_KEYBIND, "OpenCombo", "Ctrl+Shift+O", "", false};
+        setting = {SETTING_SECTION_KEYBIND, "OpenCombo", "Ctrl+Shift+O"};
         break;
     case SettingsID::KeyBinding_StartEmulation:
-        setting = {SETTING_SECTION_KEYBIND, "StartEmulation", "F11", "", false};
+        setting = {SETTING_SECTION_KEYBIND, "StartEmulation", "F11"};
         break;
     case SettingsID::KeyBinding_EndEmulation:
-        setting = {SETTING_SECTION_KEYBIND, "EndEmulation", "F12", "", false};
+        setting = {SETTING_SECTION_KEYBIND, "EndEmulation", "F12"};
         break;
     case SettingsID::KeyBinding_RefreshROMList:
-        setting = {SETTING_SECTION_KEYBIND, "RefreshROMList", "F5", "", false};
+        setting = {SETTING_SECTION_KEYBIND, "RefreshROMList", "F5"};
         break;
     case SettingsID::KeyBinding_Exit:
-        setting = {SETTING_SECTION_KEYBIND, "Exit", "Alt+F4", "", false};
+        setting = {SETTING_SECTION_KEYBIND, "Exit", "Alt+F4"};
         break;
     case SettingsID::KeyBinding_SoftReset:
-        setting = {SETTING_SECTION_KEYBIND, "SoftReset", "F1", "", false};
+        setting = {SETTING_SECTION_KEYBIND, "SoftReset", "F1"};
         break;
     case SettingsID::KeyBinding_HardReset:
-        setting = {SETTING_SECTION_KEYBIND, "HardReset", "Shift+F1", "", false};
+        setting = {SETTING_SECTION_KEYBIND, "HardReset", "Shift+F1"};
         break;
     case SettingsID::KeyBinding_Resume:
-        setting = {SETTING_SECTION_KEYBIND, "Resume", "F2", "", false};
+        setting = {SETTING_SECTION_KEYBIND, "Resume", "F2"};
         break;
     case SettingsID::KeyBinding_GenerateBitmap:
-        setting = {SETTING_SECTION_KEYBIND, "GenerateBitmap", "F3", "", false};
+        setting = {SETTING_SECTION_KEYBIND, "GenerateBitmap", "F3"};
         break;
     case SettingsID::KeyBinding_LimitFPS:
-        setting = {SETTING_SECTION_KEYBIND, "LimitFPS", "F4", "", false};
+        setting = {SETTING_SECTION_KEYBIND, "LimitFPS", "F4"};
         break;
     case SettingsID::KeyBinding_SwapDisk:
-        setting = {SETTING_SECTION_KEYBIND, "SwapDisk", "Ctrl+D", "", false};
+        setting = {SETTING_SECTION_KEYBIND, "SwapDisk", "Ctrl+D"};
         break;
     case SettingsID::KeyBinding_SaveState:
-        setting = {SETTING_SECTION_KEYBIND, "SaveState", "F5", "", false};
+        setting = {SETTING_SECTION_KEYBIND, "SaveState", "F5"};
         break;
     case SettingsID::KeyBinding_SaveAs:
-        setting = {SETTING_SECTION_KEYBIND, "SaveAs", "Ctrl+S", "", false};
+        setting = {SETTING_SECTION_KEYBIND, "SaveAs", "Ctrl+S"};
         break;
     case SettingsID::KeyBinding_LoadState:
-        setting = {SETTING_SECTION_KEYBIND, "LoadState", "F7", "", false};
+        setting = {SETTING_SECTION_KEYBIND, "LoadState", "F7"};
         break;
     case SettingsID::KeyBinding_Load:
-        setting = {SETTING_SECTION_KEYBIND, "Load", "Ctrl+L", "", false};
+        setting = {SETTING_SECTION_KEYBIND, "Load", "Ctrl+L"};
         break;
     case SettingsID::KeyBinding_Cheats:
-        setting = {SETTING_SECTION_KEYBIND, "Cheats", "Ctrl+C", "", false};
+        setting = {SETTING_SECTION_KEYBIND, "Cheats", "Ctrl+C"};
         break;
     case SettingsID::KeyBinding_GSButton:
-        setting = {SETTING_SECTION_KEYBIND, "GSButton", "F9", "", false};
+        setting = {SETTING_SECTION_KEYBIND, "GSButton", "F9"};
         break;
     case SettingsID::KeyBinding_Fullscreen:
-        setting = {SETTING_SECTION_KEYBIND, "Fullscreen", "Alt+Return", "", false};
+        setting = {SETTING_SECTION_KEYBIND, "Fullscreen", "Alt+Return"};
         break;
     case SettingsID::KeyBinding_Settings:
-        setting = {SETTING_SECTION_KEYBIND, "Settings", "Ctrl+T", "", false};
+        setting = {SETTING_SECTION_KEYBIND, "Settings", "Ctrl+T"};
         break;
 
     case SettingsID::RomBrowser_Directory:
-        setting = {SETTING_SECTION_ROMBROWSER, "Directory", "", "", false};
+        setting = {SETTING_SECTION_ROMBROWSER, "Directory", ""};
         break;
     case SettingsID::RomBrowser_Geometry:
-        setting = {SETTING_SECTION_ROMBROWSER, "Geometry", "", "", false};
+        setting = {SETTING_SECTION_ROMBROWSER, "Geometry", ""};
         break;
     case SettingsID::RomBrowser_Recursive:
-        setting = {SETTING_SECTION_ROMBROWSER, "Recursive", true, "", false};
+        setting = {SETTING_SECTION_ROMBROWSER, "Recursive", true};
         break;
     case SettingsID::RomBrowser_MaxItems:
-        setting = {SETTING_SECTION_ROMBROWSER, "MaxItems", 50, "", false};
+        setting = {SETTING_SECTION_ROMBROWSER, "MaxItems", 50};
         break;
     case SettingsID::RomBrowser_Columns:
-        setting = {SETTING_SECTION_ROMBROWSER, "Columns", std::vector<int>({0, 1, 2}), "", false};
+        setting = {SETTING_SECTION_ROMBROWSER, "Columns", std::vector<int>({0, 1, 2})};
         break;
     case SettingsID::RomBrowser_ColumnSizes:
-        setting = {SETTING_SECTION_ROMBROWSER, "ColumnSizes", std::vector<int>({0, 250, 1, 100, 2, 100}), "", false};
+        setting = {SETTING_SECTION_ROMBROWSER, "ColumnSizes", std::vector<int>({0, 250, 1, 100, 2, 100})};
+        break;
+
+    case SettingsID::Settings_HasForceUsedSetOnce:
+        setting = {SETTING_SECTION_SETTINGS, "HasForceUsedSetOnce", false};
         break;
     }
 
@@ -509,7 +514,9 @@ bool CoreSettingsSave(void)
 bool CoreSettingsSetupDefaults(void)
 {
     l_Setting setting;
-    bool ret;
+    bool ret, hasForceUsedSetOnce;
+
+    hasForceUsedSetOnce = CoreSettingsGetBoolValue(SettingsID::Settings_HasForceUsedSetOnce);
 
     for (int i = 0; i < (int)SettingsID::Invalid; i++)
     {
@@ -524,11 +531,11 @@ bool CoreSettingsSetupDefaults(void)
         {
         case M64TYPE_STRING:
         {
-            if (setting.ForceUseSet)
+            if (setting.ForceUseSetOnce && !hasForceUsedSetOnce)
             {
                 ret = config_option_set(setting.Section, setting.Key, M64TYPE_STRING, (void*)setting.DefaultValue.stringValue.c_str());
             }
-            else
+            else if (!setting.ForceUseSetOnce)
             {
                 ret = config_option_default_set(setting.Section, setting.Key, M64TYPE_STRING, (void*)setting.DefaultValue.stringValue.c_str(), setting.Description.c_str());
             }
@@ -548,6 +555,11 @@ bool CoreSettingsSetupDefaults(void)
         {
             return false;
         }
+    }
+
+    if (!hasForceUsedSetOnce)
+    {
+        CoreSettingsSetValue(SettingsID::Settings_HasForceUsedSetOnce, true);
     }
 
     return true;

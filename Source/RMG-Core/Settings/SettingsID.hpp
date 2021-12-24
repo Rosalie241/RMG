@@ -86,6 +86,9 @@ enum class SettingsID
     RomBrowser_Columns,
     RomBrowser_ColumnSizes,
 
+    // Settings Settings
+    Settings_HasForceUsedSetOnce,
+
     Invalid
 };
 
