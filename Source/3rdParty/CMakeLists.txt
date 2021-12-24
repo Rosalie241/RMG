@@ -85,6 +85,24 @@ ExternalProject_Add(mupen64plus-input-qt
     DEPENDS mupen64plus-core
 )
 
+ExternalProject_Add(mupen64plus-input-raphnetraw
+    SOURCE_DIR mupen64plus-input-raphnetraw/
+
+    CONFIGURE_COMMAND ""
+    INSTALL_COMMAND ""
+
+    GIT_REPOSITORY https://github.com/raphnet/mupen64plus-input-raphnetraw
+    GIT_TAG 86112413e98a8648edb11d199673cc24d5799af8
+
+    BUILD_COMMAND make all APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug>
+    BUILD_IN_SOURCE False
+
+    BINARY_DIR ${THIRDPARTY_DIR}/mupen64plus-input-raphnetraw/projects/unix
+    
+    BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-input-raphnetraw/projects/unix/mupen64plus-input-raphnetraw.${SO_EXT}
+    DEPENDS mupen64plus-core
+)
+
 set(GLIDEN64_DIR "${THIRDPARTY_DIR}/mupen64plus-video-GLideN64")
 set(GLIDEN64_BUILD_DIR "${GLIDEN64_DIR}/projects/cmake")
 if (MSYS)
@@ -129,7 +147,10 @@ ExternalProject_Get_property(mupen64plus-rsp-hle BUILD_BYPRODUCTS)
 set(MUPEN64PLUS_PLUGIN_RSP ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 
 ExternalProject_Get_property(mupen64plus-input-qt BUILD_BYPRODUCTS)
-set(MUPEN64PLUS_PLUGIN_INPUT ${BUILD_BYPRODUCTS} PARENT_SCOPE)
+set(MUPEN64PLUS_PLUGIN_INPUT_QT ${BUILD_BYPRODUCTS} PARENT_SCOPE)
+
+ExternalProject_Get_property(mupen64plus-input-raphnetraw BUILD_BYPRODUCTS)
+set(MUPEN64PLUS_PLUGIN_INPUT_RAPHNET ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 
 ExternalProject_Get_property(mupen64plus-video-GLideN64 BUILD_BYPRODUCTS)
 set(MUPEN64PLUS_PLUGIN_GFX ${BUILD_BYPRODUCTS} PARENT_SCOPE)
