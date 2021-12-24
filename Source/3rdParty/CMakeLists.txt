@@ -149,6 +149,20 @@ ExternalProject_Add(mupen64plus-video-GLideN64
     BUILD_BYPRODUCTS ${GLIDENUI_TRANSLATIONS}
 )
 
+ExternalProject_Add(mupen64plus-video-parallel
+    SOURCE_DIR mupen64plus-video-parallel
+
+    GIT_REPOSITORY https://github.com/loganmc10/parallel-rdp-standalone
+    GIT_TAG 2efeaf014bad03ec26e081c22d8ca3566003b1ea
+
+    INSTALL_COMMAND ""
+
+    BUILD_IN_SOURCE True
+    CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+
+    BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-video-parallel/mupen64plus-video-parallel.${SO_EXT}
+)
+
 ExternalProject_Get_property(mupen64plus-core BUILD_BYPRODUCTS)
 set(MUPEN64PLUSCORE_LIB ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 set(MUPEN64PLUSCORE_INI ${M64P_CORE_DIR}/data/mupen64plus.ini PARENT_SCOPE)
@@ -170,4 +184,7 @@ ExternalProject_Get_property(mupen64plus-input-raphnetraw BUILD_BYPRODUCTS)
 set(MUPEN64PLUS_PLUGIN_INPUT_RAPHNET ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 
 ExternalProject_Get_property(mupen64plus-video-GLideN64 BUILD_BYPRODUCTS)
-set(MUPEN64PLUS_PLUGIN_GFX ${BUILD_BYPRODUCTS} PARENT_SCOPE)
+set(MUPEN64PLUS_PLUGIN_GFX_GLIDEN64 ${BUILD_BYPRODUCTS} PARENT_SCOPE)
+
+ExternalProject_Get_property(mupen64plus-video-parallel BUILD_BYPRODUCTS)
+set(MUPEN64PLUS_PLUGIN_GFX_PARALLEL ${BUILD_BYPRODUCTS} PARENT_SCOPE)
