@@ -215,7 +215,7 @@ static bool read_raw_file(std::string file, char** buf, int* size)
     fileStream.read(fileStreamBuf, fileStreamLen);
 
     *buf  = fileStreamBuf;
-    *size = fileStream.gcount();
+    *size = fileStreamLen;
 
     fileStream.close();
     return true;
