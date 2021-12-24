@@ -1324,6 +1324,12 @@ void MainWindow::on_Core_DebugCallback(CoreDebugMessageType type, QString messag
         return;
     }
 
+    // drop IS64 messages
+    if (message.startsWith("IS64:"))
+    {
+        return;
+    }
+
     if (type == CoreDebugMessageType::Error)
     {
         this->ui_MessageBox("Error", "Core Error", message);
