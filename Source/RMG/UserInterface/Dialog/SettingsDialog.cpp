@@ -468,20 +468,14 @@ void SettingsDialog::saveGameSettings(void)
     int countPerOp = this->gameCounterFactorComboBox->currentIndex() + 1;
     int siDmaDuration = this->gameSiDmaDurationSpinBox->value();
 
-    if (this->defaultGameSettings.DisableExtraMem != disableExtraMem)
+    if ((this->defaultGameSettings.DisableExtraMem != disableExtraMem) ||
+        (this->defaultGameSettings.SaveType != saveType) ||
+        (this->defaultGameSettings.CountPerOp != countPerOp) ||
+        (this->defaultGameSettings.SiDMADuration != siDmaDuration))
     {
         CoreSettingsSetValue(SettingsID::Game_DisableExtraMem, this->gameSection, disableExtraMem);
-    }
-    if (this->defaultGameSettings.SaveType != saveType)
-    {
         CoreSettingsSetValue(SettingsID::Game_SaveType, this->gameSection, saveType);
-    }
-    if (this->defaultGameSettings.CountPerOp != countPerOp)
-    {
         CoreSettingsSetValue(SettingsID::Game_CountPerOp, this->gameSection, countPerOp);
-    }
-    if (this->defaultGameSettings.SiDMADuration != siDmaDuration)
-    {
         CoreSettingsSetValue(SettingsID::Game_SiDmaDuration, this->gameSection, siDmaDuration);
     }
 }
