@@ -236,7 +236,7 @@ bool CoreApplyRomPluginSettings(void)
                 ret = plugin->Shutdown();
                 if (ret != M64ERR_SUCCESS)
                 {
-                    error = "CoreApplyPluginSettings m64p::PluginApi.Shutdown() Failed: ";
+                    error = "CoreApplyRomPluginSettings m64p::PluginApi.Shutdown() Failed: ";
                     error += m64p::Core.ErrorMessage(ret);
                     CoreSetError(error);
                     return false;
@@ -250,7 +250,7 @@ bool CoreApplyRomPluginSettings(void)
             handle = osal_dynlib_open(settingValue.c_str());
             if (handle == nullptr)
             {
-                error = "CoreApplyPluginSettings osal_dynlib_open Failed: ";
+                error = "CoreApplyRomPluginSettings osal_dynlib_open Failed: ";
                 error += osal_dynlib_strerror();
                 CoreSetError(error);
                 return false;
@@ -259,7 +259,7 @@ bool CoreApplyRomPluginSettings(void)
             // attempt to hook the library
             if (!plugin->Hook(handle))
             {
-                error = "CoreApplyPluginSettings m64p::PluginApi.Hook() Failed: ";
+                error = "CoreApplyRomPluginSettings m64p::PluginApi.Hook() Failed: ";
                 error += plugin->GetLastError();
                 CoreSetError(error);
                 return false;
@@ -269,7 +269,7 @@ bool CoreApplyRomPluginSettings(void)
             ret = plugin->Startup(m64p::Core.GetHandle(), nullptr, nullptr);
             if (ret != M64ERR_SUCCESS)
             {
-                error = "CoreApplyPluginSettings m64p::PluginApi.Startup() Failed: ";
+                error = "CoreApplyRomPluginSettings m64p::PluginApi.Startup() Failed: ";
                 error += m64p::Core.ErrorMessage(ret);
                 CoreSetError(error);
                 return false;
