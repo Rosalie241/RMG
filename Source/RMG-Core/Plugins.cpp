@@ -9,6 +9,7 @@
  */
 #include "Plugins.hpp"
 #include "Error.hpp"
+#include "Emulation.hpp"
 #include "RomSettings.hpp"
 #include "Settings/Settings.hpp"
 
@@ -309,6 +310,7 @@ bool CorePluginsOpenConfig(CorePluginType type)
 {
     std::string error;
     m64p_error ret;
+    bool resumeEmulation = false;
 
     if (!CorePluginsHasConfig(type))
     {
@@ -318,12 +320,29 @@ bool CorePluginsOpenConfig(CorePluginType type)
         return false;
     }
 
+    // try to pause emulation,
+    // when emulation is running
+    // and try to resume afterwards
+    if (CoreIsEmulationRunning())
+    {
+        // only resume emulation
+        // after running the config function
+        // when pausing succeeds
+        resumeEmulation = CorePauseEmulation();
+    }
+
     ret = get_plugin(type)->Config();
     if (ret != M64ERR_SUCCESS)
     {
         error = "CorePluginsOpenConfig m64p::PluginApi.Config() Failed: ";
         error += m64p::Core.ErrorMessage(ret);
         CoreSetError(error);
+    }
+
+    // try to resume emulation when needed
+    if (resumeEmulation)
+    {
+        CoreResumeEmulation();
     }
 
     return ret == M64ERR_SUCCESS;
