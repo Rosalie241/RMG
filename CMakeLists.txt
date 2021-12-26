@@ -19,8 +19,12 @@ set(INSTALL_PATH Bin/${CMAKE_BUILD_TYPE})
 
 add_subdirectory(Source/RMG-Core)
 add_subdirectory(Source/RMG)
+add_subdirectory(Source/RMG-Audio)
 install(TARGETS RMG
     DESTINATION ${INSTALL_PATH}
+)
+install(TARGETS RMG-Audio
+    DESTINATION ${INSTALL_PATH}/Plugin/Audio
 )
 
 if (WIN32)
