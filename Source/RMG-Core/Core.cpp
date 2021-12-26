@@ -139,6 +139,30 @@ bool CoreInit(void)
     return true;
 }
 
+bool CoreInit(m64p_dynlib_handle handle)
+{
+    std::string error;
+    bool ret = false;
+
+    ret = m64p::Core.Hook(handle);
+    if (!ret)
+    {
+        error = m64p::Core.GetLastError();
+        CoreSetError(error);
+        return false;
+    }
+
+    ret = m64p::Config.Hook(handle);
+    if (!ret)
+    {
+        error = m64p::Config.GetLastError();
+        CoreSetError(error);
+        return false;
+    }
+
+    return true;
+}
+
 void CoreShutdown(void)
 {
     CorePluginsShutdown();

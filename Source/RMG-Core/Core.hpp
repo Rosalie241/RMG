@@ -22,10 +22,25 @@
 #include "Error.hpp"
 #include "Video.hpp"
 #include "Key.hpp"
+#ifdef CORE_PLUGIN
+#include "m64p/api/m64p_common.h"
+#include "m64p/api/m64p_custom.h"
+#include "m64p/api/m64p_types.h"
+#include "m64p/api/m64p_config.h"
+#include "m64p/api/m64p_plugin.h"
+#include "m64p/api/version.h"
+#endif // CORE_PLUGIN
+
 
 // initializes the core library,
 // returns false when failed
 bool CoreInit(void);
+
+#ifdef CORE_PLUGIN
+// initializes the core library for plugins,
+// returns false when failed
+bool CoreInit(m64p_dynlib_handle handle);
+#endif // CORE_PLUGIN
 
 // shuts down the core library
 void CoreShutdown(void);
