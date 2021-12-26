@@ -89,6 +89,10 @@ enum class SettingsID
     // Settings Settings
     Settings_HasForceUsedSetOnce,
 
+    // Audio Plugin Settings
+    Audio_Volume,
+    Audio_Muted,
+
     Invalid
 };
 

@@ -106,6 +106,7 @@ static std::vector<std::string> l_sectionList;
 #define SETTING_SECTION_ROMBROWSER  SETTING_SECTION_GUI  " RomBrowser"
 #define SETTING_SECTION_SETTINGS    SETTING_SECTION_CORE " Settings"
 #define SETTING_SECTION_M64P        "Core"
+#define SETTING_SECTION_AUDIO       SETTING_SECTION_GUI  " - Audio Plugin"
 
 // retrieves l_Setting from settingId
 static l_Setting get_setting(SettingsID settingId)
@@ -146,9 +147,9 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::Core_AUDIO_Plugin:
         setting = {SETTING_SECTION_CORE, "AUDIO_Plugin", 
 #ifdef _WIN32
-                    "Plugin\\Audio\\mupen64plus-audio-sdl2.dll",
+                    "Plugin\\Audio\\RMG-Audio.dll",
 #else
-                    "Plugin/Audio/mupen64plus-audio-sdl2.so",
+                    "Plugin/Audio/RMG-Audio.so",
 #endif // _WIN32
                   };
         break;
@@ -339,6 +340,13 @@ static l_Setting get_setting(SettingsID settingId)
 
     case SettingsID::Settings_HasForceUsedSetOnce:
         setting = {SETTING_SECTION_SETTINGS, "HasForceUsedSetOnce", false};
+        break;
+
+    case SettingsID::Audio_Volume:
+        setting = {SETTING_SECTION_AUDIO, "Volume", 100};
+        break;
+    case SettingsID::Audio_Muted:
+        setting = {SETTING_SECTION_AUDIO, "Muted", false};
         break;
     }
 
