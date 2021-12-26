@@ -33,24 +33,6 @@ ExternalProject_Add(mupen64plus-core
 
 set(APIDIR "${CMAKE_BINARY_DIR}/Source/3rdParty/mupen64plus-core/src/api")
 
-ExternalProject_Add(mupen64plus-audio-sdl
-    SOURCE_DIR mupen64plus-audio-sdl2/
-
-    CONFIGURE_COMMAND ""
-    INSTALL_COMMAND ""
-
-    GIT_REPOSITORY https://github.com/Rosalie241/mupen64plus-audio-sdl2
-    GIT_TAG cc6aca5a13b0b8ca7a2f9f5fa472ed3bb7f817db
-
-    BUILD_COMMAND make all APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug>
-    BUILD_IN_SOURCE False
-
-    BINARY_DIR ${THIRDPARTY_DIR}/mupen64plus-audio-sdl2/projects/unix
-    
-    BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-audio-sdl2/projects/unix/mupen64plus-audio-sdl2.${SO_EXT}
-    DEPENDS mupen64plus-core
-)
-
 ExternalProject_Add(mupen64plus-rsp-hle
     SOURCE_DIR mupen64plus-rsp-hle/
 
@@ -167,9 +149,6 @@ ExternalProject_Get_property(mupen64plus-core BUILD_BYPRODUCTS)
 set(MUPEN64PLUSCORE_LIB ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 set(MUPEN64PLUSCORE_INI ${M64P_CORE_DIR}/data/mupen64plus.ini PARENT_SCOPE)
 set(MUPEN64PLUSCORE_CHT ${M64P_CORE_DIR}/data/mupencheat.txt PARENT_SCOPE)
-
-ExternalProject_Get_property(mupen64plus-audio-sdl BUILD_BYPRODUCTS)
-set(MUPEN64PLUS_PLUGIN_AUDIO ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 
 ExternalProject_Get_property(mupen64plus-rsp-hle BUILD_BYPRODUCTS)
 set(MUPEN64PLUS_PLUGIN_RSP_HLE ${BUILD_BYPRODUCTS} PARENT_SCOPE)
