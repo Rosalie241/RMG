@@ -63,6 +63,7 @@ ExternalProject_Add(mupen64plus-rsp-parallel
     CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
 
     BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-rsp-parallel/mupen64plus-rsp-parallel.${SO_EXT}
+    DEPENDS mupen64plus-core
 )
 
 ExternalProject_Add(mupen64plus-input-qt
@@ -143,6 +144,7 @@ ExternalProject_Add(mupen64plus-video-parallel
     CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
 
     BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-video-parallel/mupen64plus-video-parallel.${SO_EXT}
+    DEPENDS mupen64plus-core
 )
 
 ExternalProject_Get_property(mupen64plus-core BUILD_BYPRODUCTS)
