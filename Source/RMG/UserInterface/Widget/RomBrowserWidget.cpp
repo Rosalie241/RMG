@@ -150,7 +150,7 @@ void RomBrowserWidget::contextMenu_Actions_Connect(void)
 
 void RomBrowserWidget::contextMenu_Actions_Update(void)
 {
-    bool enabled =  this->selectedIndexes().count() > 0;
+    bool enabled = this->selectedIndexes().count() > 0;
 
     this->action_PlayGame->setEnabled(enabled);
     this->action_PlayGameWithDisk->setEnabled(enabled);
