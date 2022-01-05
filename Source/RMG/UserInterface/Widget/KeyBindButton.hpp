@@ -14,6 +14,7 @@ class KeyBindButton : public QPushButton
 {
 private:
     QKeySequence keySequence;
+    QString currentText;
 
   public:
     KeyBindButton(QWidget *);
@@ -23,6 +24,8 @@ private:
     void keyPressEvent(QKeyEvent *);
     void keyReleaseEvent(QKeyEvent *);
     void mousePressEvent(QMouseEvent *);
+    void focusInEvent(QFocusEvent *event);
+    void focusOutEvent(QFocusEvent *event);
 };
 } // namespace Widget
 } // namespace UserInterface
