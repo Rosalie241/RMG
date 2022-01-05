@@ -23,6 +23,7 @@
 #include <QOpenGLWidget>
 #include <QSettings>
 #include <QStackedWidget>
+#include <QGuiApplication>
 
 namespace UserInterface
 {
@@ -34,7 +35,7 @@ class MainWindow : public QMainWindow
     MainWindow(void);
     ~MainWindow(void);
 
-    bool Init(void);
+    bool Init(QGuiApplication*);
     void OpenROM(QString);
 
   private:
@@ -97,6 +98,7 @@ class MainWindow : public QMainWindow
     bool ui_VidExtForceSetMode;
     bool ui_RefreshRomListAfterEmulation = false;
 
+    bool ui_ManuallyPaused = true;
 
     int ui_TimerId = 0;
     int ui_TimerTimeout = 0;
@@ -132,6 +134,8 @@ class MainWindow : public QMainWindow
     void on_EventFilter_KeyPressed(QKeyEvent *);
     void on_EventFilter_KeyReleased(QKeyEvent *);
     void on_EventFilter_FileDropped(QDropEvent *);
+
+    void on_QGuiApplication_applicationStateChanged(Qt::ApplicationState);
 
     void on_Action_File_OpenRom(void);
     void on_Action_File_OpenCombo(void);

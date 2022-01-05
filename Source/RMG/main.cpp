@@ -21,7 +21,7 @@ int main(int argc, char **argv)
 
     QDir::setCurrent(app.applicationDirPath());
 
-    if (!window.Init())
+    if (!window.Init(&app))
     {
         return 1;
     }

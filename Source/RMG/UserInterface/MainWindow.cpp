@@ -39,7 +39,7 @@ MainWindow::~MainWindow()
 {
 }
 
-bool MainWindow::Init(void)
+bool MainWindow::Init(QGuiApplication* app)
 {
     if (!CoreInit())
     {
@@ -73,6 +73,7 @@ bool MainWindow::Init(void)
     }
 
     connect(coreCallBacks, &CoreCallbacks::OnCoreDebugCallback, this, &MainWindow::on_Core_DebugCallback);
+    connect(app, &QGuiApplication::applicationStateChanged, this, &MainWindow::on_QGuiApplication_applicationStateChanged);
 
     return true;
 }
@@ -130,10 +131,6 @@ void MainWindow::ui_Init(void)
             &MainWindow::on_EventFilter_KeyReleased);
     connect(this->ui_EventFilter, &EventFilter::on_EventFilter_FileDropped, this,
             &MainWindow::on_EventFilter_FileDropped);
-    /*
-    connect(this->ui_EventFilter, &EventFilter::on_EventFilter_FocusIn, this, &MainWindow::on_EventFilter_FocusIn);
-    connect(this->ui_EventFilter, &EventFilter::on_EventFilter_FocusOut, this, &MainWindow::on_EventFilter_FocusOut);
-    */
 }
 
 void MainWindow::ui_Setup(void)
@@ -733,31 +730,37 @@ void MainWindow::on_EventFilter_FileDropped(QDropEvent *event)
     this->emulationThread_Launch(file);
 }
 
-/* TODO for some day
-void MainWindow::on_EventFilter_FocusIn(QFocusEvent *event)
+void MainWindow::on_QGuiApplication_applicationStateChanged(Qt::ApplicationState state)
 {
-    std::cout << "MainWindow::on_EventFilter_FocusIn" << std::endl;
-    if (g_Settings.GetBoolValue(SettingsID::GUI_ResumeEmulationOnFocus))
+    bool isRunning = CoreIsEmulationRunning();
+    bool isPaused = CoreIsEmulationPaused();
+
+    bool pauseOnFocusLoss = CoreSettingsGetBoolValue(SettingsID::GUI_PauseEmulationOnFocusLoss);
+    bool resumeOnFocus = CoreSettingsGetBoolValue(SettingsID::GUI_ResumeEmulationOnFocus);
+
+    switch (state)
     {
-        if (CoreIsEmulationPaused())
-            this->on_Action_System_Pause();
+        default:
+            break;
+
+        case Qt::ApplicationState::ApplicationInactive:
+        {
+            if (pauseOnFocusLoss && isRunning && !isPaused)
+            {
+                this->on_Action_System_Pause();
+                this->ui_ManuallyPaused = false;
+            }
+        } break;
+
+        case Qt::ApplicationState::ApplicationActive:
+        {
+            if (resumeOnFocus && isPaused && !this->ui_ManuallyPaused)
+            {
+                this->on_Action_System_Pause();
+            }
+        } break;
     }
-
-    QMainWindow::focusInEvent(event);
 }
-
-void MainWindow::on_EventFilter_FocusOut(QFocusEvent *event)
-{
-    std::cout << "MainWindow::on_EventFilter_FocusOut" << std::endl;
-    if (g_Settings.GetBoolValue(SettingsID::GUI_PauseEmulationOnFocusLoss))
-    {
-        if (CoreIsEmulationRunning())
-            this->on_Action_System_Pause();
-    }
-
-    QMainWindow::focusOutEvent(event);
-}
-*/
 
 void MainWindow::on_Action_File_OpenRom(void)
 {
@@ -933,6 +936,7 @@ void MainWindow::on_Action_System_Pause(void)
     }
 
     this->menuBar_Setup(true, !isPaused);
+    this->ui_ManuallyPaused = true;
 }
 
 void MainWindow::on_Action_System_GenerateBitmap(void)
