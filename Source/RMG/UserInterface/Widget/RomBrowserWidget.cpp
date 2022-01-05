@@ -148,6 +148,17 @@ void RomBrowserWidget::contextMenu_Actions_Connect(void)
     connect(this->action_EditCheats, &QAction::triggered, this, &RomBrowserWidget::on_Action_EditCheats);
 }
 
+void RomBrowserWidget::contextMenu_Actions_Update(void)
+{
+    bool enabled = this->selectedIndexes().count() > 0;
+
+    this->action_PlayGame->setEnabled(enabled);
+    this->action_PlayGameWithDisk->setEnabled(enabled);
+    this->action_RomInformation->setEnabled(enabled);
+    this->action_EditGameSettings->setEnabled(enabled);
+    this->action_EditCheats->setEnabled(enabled);
+}
+
 void RomBrowserWidget::model_Init(void)
 {
     this->model_Model = new QStandardItemModel(this);
@@ -316,6 +327,7 @@ void RomBrowserWidget::dropEvent(QDropEvent *event)
 
 void RomBrowserWidget::customContextMenuRequested(QPoint position)
 {
+    this->contextMenu_Actions_Update();
     this->contextMenu->popup(this->viewport()->mapToGlobal(position));
 }
 
