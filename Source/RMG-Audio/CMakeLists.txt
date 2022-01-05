@@ -15,6 +15,7 @@ pkg_check_modules(SDL2 REQUIRED sdl2)
 set(RMG_AUDIO_SOURCES
     UserInterface/MainDialog.cpp
     UserInterface/MainDialog.ui
+    UserInterface/UIResources.qrc
     main.cpp
 )
 
