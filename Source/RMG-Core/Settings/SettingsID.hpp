@@ -9,6 +9,8 @@ enum class SettingsID
     GUI_AllowManualResizing,
     GUI_HideCursorInEmulation,
     GUI_StatusbarMessageDuration,
+    GUI_PauseEmulationOnFocusLoss,
+    GUI_ResumeEmulationOnFocus,
 
     // Core Plugin Settings
     Core_GFX_Plugin,

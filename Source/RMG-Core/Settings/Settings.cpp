@@ -134,6 +134,12 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::GUI_StatusbarMessageDuration:
         setting = {SETTING_SECTION_GUI, "StatusbarMessageDuration", 3};
         break;
+    case SettingsID::GUI_PauseEmulationOnFocusLoss:
+        setting = {SETTING_SECTION_GUI, "PauseEmulationOnFocusLoss", true};
+        break;
+    case SettingsID::GUI_ResumeEmulationOnFocus:
+        setting = {SETTING_SECTION_GUI, "ResumeEmulationOnFocus", true};
+        break;
 
     case SettingsID::Core_GFX_Plugin:
         setting = {SETTING_SECTION_CORE, "GFX_Plugin", 
