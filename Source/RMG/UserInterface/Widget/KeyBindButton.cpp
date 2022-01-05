@@ -58,7 +58,7 @@ void KeyBindButton::keyPressEvent(QKeyEvent * event)
 
 void KeyBindButton::keyReleaseEvent(QKeyEvent *event)
 {
-    this->setText(this->keySequence.toString());
+    this->currentText = this->keySequence.toString();
     this->clearFocus();
 }
 
@@ -68,4 +68,15 @@ void KeyBindButton::mousePressEvent(QMouseEvent *event)
     {
         this->setText("");
     }
+}
+
+void KeyBindButton::focusInEvent(QFocusEvent *event)
+{
+    currentText = this->text();
+    this->setText("...");
+}
+
+void KeyBindButton::focusOutEvent(QFocusEvent *event)
+{
+    this->setText(this->currentText);
 }
