@@ -22,6 +22,7 @@
 #include "Error.hpp"
 #include "Video.hpp"
 #include "Key.hpp"
+#include "Rom.hpp"
 #ifdef CORE_PLUGIN
 #include "m64p/api/m64p_common.h"
 #include "m64p/api/m64p_custom.h"
