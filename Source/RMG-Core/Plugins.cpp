@@ -161,6 +161,7 @@ bool apply_plugin_settings(std::string pluginSettings[4])
                 error += ")->Hook() Failed: ";
                 error += plugin->GetLastError();
                 CoreSetError(error);
+                plugin->Unhook();
                 return false;
             }
 
@@ -173,7 +174,6 @@ bool apply_plugin_settings(std::string pluginSettings[4])
                 error += get_plugin_type_name(pluginType);
                 error += "!";
                 CoreSetError(error);
-                plugin->Shutdown();
                 plugin->Unhook();
                 return false;
             }
@@ -189,6 +189,11 @@ bool apply_plugin_settings(std::string pluginSettings[4])
                 CoreSetError(error);
                 plugin->Shutdown();
                 plugin->Unhook();
+                // force a re-load next time,
+                // because this plugin isn't
+                // the one we've stored in 
+                // l_PluginFiles[i]
+                l_PluginFiles[i].clear();
                 return false;
             }
 
