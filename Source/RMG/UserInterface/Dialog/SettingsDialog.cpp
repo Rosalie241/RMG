@@ -10,6 +10,7 @@
 #include "SettingsDialog.hpp"
 
 #include <QFileDialog>
+#include <QMessageBox>
 
 using namespace UserInterface::Dialog;
 
@@ -543,13 +544,6 @@ void SettingsDialog::savePluginSettings(void)
 
         CoreSettingsSetValue(settingId, comboBox->currentData().toString().toStdString());
     }
-
-    // only apply plugin settings when
-    // emulation isn't running
-    if (!CoreIsEmulationPaused() && !CoreIsEmulationRunning())
-    {
-        CoreApplyPluginSettings();
-    }
 }
 
 void SettingsDialog::saveDirectorySettings(void)
@@ -666,6 +660,33 @@ void SettingsDialog::on_buttonBox_clicked(QAbstractButton *button)
     QPushButton *cancelButton = this->buttonBox->button(QDialogButtonBox::Cancel);
     QPushButton *okButton = this->buttonBox->button(QDialogButtonBox::Ok);
 
+
+    if (pushButton == cancelButton || pushButton == okButton)
+    {
+        if (pushButton == okButton)
+        {
+            this->saveSettings();
+        }
+
+        // attempt to apply plugin settings when emulation
+        // isn't running, when it fails, show the user the error and
+        // don't allow the user to save invalid settings
+        if (!CoreIsEmulationPaused() && !CoreIsEmulationRunning())
+        {
+            if (!CoreApplyPluginSettings())
+            {
+                QMessageBox msgBox(this);
+                msgBox.setIcon(QMessageBox::Icon::Critical);
+                msgBox.setWindowTitle("Error");
+                msgBox.setText("CoreApplyPluginSettings() Failed");
+                msgBox.setDetailedText(QString::fromStdString(CoreGetError()));
+                msgBox.addButton(QMessageBox::Ok);
+                msgBox.exec();
+                return;
+            }
+        }
+    }
+
     if (pushButton == defaultButton)
     {
         this->restoreDefaults(this->currentIndex());
@@ -676,7 +697,6 @@ void SettingsDialog::on_buttonBox_clicked(QAbstractButton *button)
     }
     else if (pushButton == okButton)
     {
-        this->saveSettings();
         this->accept();
     }
 }
