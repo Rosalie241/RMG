@@ -130,12 +130,6 @@ bool CoreInit(void)
         return false;
     }
 
-    ret = CoreApplyPluginSettings();
-    if (!ret)
-    {
-        return false;
-    }
-
     return true;
 }
 
