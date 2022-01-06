@@ -254,6 +254,12 @@ void SettingsDialog::loadPluginSettings(void)
     std::string pluginFileName;
     int index = 0;
 
+    // clear combobox items
+    for (const auto& c : comboBoxArray)
+    {
+        c->clear();
+    }
+
     for (const auto &p : this->pluginList)
     {
         index = ((int)p.Type - 1);
