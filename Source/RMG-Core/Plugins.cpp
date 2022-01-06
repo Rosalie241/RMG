@@ -173,6 +173,7 @@ bool apply_plugin_settings(std::string pluginSettings[4])
                 error += get_plugin_type_name(pluginType);
                 error += "!";
                 CoreSetError(error);
+                plugin->Shutdown();
                 plugin->Unhook();
                 return false;
             }
@@ -186,6 +187,7 @@ bool apply_plugin_settings(std::string pluginSettings[4])
                 error += ")->Startup() Failed: ";
                 error += m64p::Core.ErrorMessage(ret);
                 CoreSetError(error);
+                plugin->Shutdown();
                 plugin->Unhook();
                 return false;
             }
