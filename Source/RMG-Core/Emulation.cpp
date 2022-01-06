@@ -49,18 +49,21 @@ bool CoreStartEmulation(std::string n64rom, std::string n64ddrom)
 
     if (!CoreApplyRomPluginSettings())
     {
+        CoreApplyPluginSettings();
         CoreCloseRom();
         return false;
     }
 
     if (!CoreArePluginsReady())
     {
+        CoreApplyPluginSettings();
         CoreCloseRom();
         return false;
     }
 
     if (!CoreAttachPlugins())
     {
+        CoreApplyPluginSettings();
         CoreCloseRom();
         return false;
     }
