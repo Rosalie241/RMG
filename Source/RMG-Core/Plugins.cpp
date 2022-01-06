@@ -72,6 +72,131 @@ std::string get_plugin_name(m64p::PluginApi* plugin, std::string filename)
     return std::string(name);
 }
 
+std::string get_plugin_type_name(CorePluginType type)
+{
+    std::string name;
+
+    switch (type)
+    {
+        default:
+            name = "Unknown";
+            break;
+        case CorePluginType::Rsp:
+            name = "Rsp";
+            break;
+        case CorePluginType::Gfx:
+            name = "Gfx";
+            break;
+        case CorePluginType::Audio:
+            name = "Audio";
+            break;
+        case CorePluginType::Input:
+            name = "Input";
+            break;
+        case CorePluginType::Invalid:
+            name = "Invalid";
+            break;
+    }
+
+    return name + " Plugin";
+}
+
+bool apply_plugin_settings(std::string pluginSettings[4])
+{
+    std::string            error;
+    std::string            settingValue;
+    m64p::PluginApi*       plugin;
+    CorePluginType         pluginType;
+    osal_dynlib_lib_handle handle;
+    m64p_error             ret;
+
+    for (int i = 0; i < 4; i++)
+    {
+        settingValue = pluginSettings[i];
+        if (settingValue.empty() ||
+            !std::filesystem::is_regular_file(settingValue))
+        { // skip invalid setting value
+            continue;
+        }
+
+        pluginType = (CorePluginType)(i + 1);
+
+        if (settingValue != l_PluginFiles[i])
+        {
+            plugin = &l_Plugins[i];
+
+            // shutdown plugin when hooked
+            if (plugin->IsHooked())
+            {
+                ret = plugin->Shutdown();
+                if (ret != M64ERR_SUCCESS)
+                {
+                    error = "apply_plugin_settings (";
+                    error += get_plugin_type_name(pluginType);
+                    error += ")->Shutdown() Failed: ";
+                    error += m64p::Core.ErrorMessage(ret);
+                    CoreSetError(error);
+                    return false;
+                }
+
+                // reset plugin
+                plugin->Unhook();
+            }
+
+            // attempt to open the library
+            handle = osal_dynlib_open(settingValue.c_str());
+            if (handle == nullptr)
+            {
+                error = "apply_plugin_settings osal_dynlib_open Failed: ";
+                error += osal_dynlib_strerror();
+                CoreSetError(error);
+                return false;
+            }
+
+            // attempt to hook the library
+            if (!plugin->Hook(handle))
+            {
+                error = "apply_plugin_settings (";
+                error += get_plugin_type_name(pluginType);
+                error += ")->Hook() Failed: ";
+                error += plugin->GetLastError();
+                CoreSetError(error);
+                return false;
+            }
+
+            // make sure the plugin type is the expected type
+            if (get_plugin_type(plugin) != pluginType)
+            {
+                error = "apply_plugin_settings plugin type ";
+                error += get_plugin_type_name(get_plugin_type(plugin));
+                error += " doesn't match expected type ";
+                error += get_plugin_type_name(pluginType);
+                error += "!";
+                CoreSetError(error);
+                plugin->Unhook();
+                return false;
+            }
+
+            // attempt to start plugin
+            ret = plugin->Startup(m64p::Core.GetHandle(), nullptr, nullptr);
+            if (ret != M64ERR_SUCCESS)
+            {
+                error = "apply_plugin_settings (";
+                error += get_plugin_type_name(pluginType);
+                error += ")->Startup() Failed: ";
+                error += m64p::Core.ErrorMessage(ret);
+                CoreSetError(error);
+                plugin->Unhook();
+                return false;
+            }
+
+            l_PluginFiles[i] = settingValue;
+        }
+    }
+
+    return true;
+}
+
 //
 // Exported Functions
 //
@@ -117,170 +242,35 @@ std::vector<CorePlugin> CoreGetAllPlugins(void)
 
 bool CoreApplyPluginSettings(void)
 {
-    std::string            error;
-    std::string            settingValue;
-    m64p::PluginApi*       plugin;
-    osal_dynlib_lib_handle handle;
-    m64p_error             ret;
-
-    SettingsID settings[] = 
+    std::string settings[] = 
     {
-        SettingsID::Core_RSP_Plugin,
-        SettingsID::Core_GFX_Plugin,
-        SettingsID::Core_AUDIO_Plugin,
-        SettingsID::Core_INPUT_Plugin
+        CoreSettingsGetStringValue(SettingsID::Core_RSP_Plugin),
+        CoreSettingsGetStringValue(SettingsID::Core_GFX_Plugin),
+        CoreSettingsGetStringValue(SettingsID::Core_AUDIO_Plugin),
+        CoreSettingsGetStringValue(SettingsID::Core_INPUT_Plugin)
     };
 
-    for (int i = 0; i < 4; i++)
-    {
-        settingValue = CoreSettingsGetStringValue(settings[i]);
-        if (settingValue.empty() ||
-            !std::filesystem::is_regular_file(settingValue))
-        { // skip invalid setting value
-            continue;
-        }
-
-        if (settingValue != l_PluginFiles[i])
-        {
-            plugin = &l_Plugins[i];
-
-            // shutdown plugin when hooked
-            if (plugin->IsHooked())
-            {
-                ret = plugin->Shutdown();
-                if (ret != M64ERR_SUCCESS)
-                {
-                    error = "CoreApplyPluginSettings m64p::PluginApi.Shutdown() Failed: ";
-                    error += m64p::Core.ErrorMessage(ret);
-                    CoreSetError(error);
-                    return false;
-                }
-
-                // reset plugin
-                plugin->Unhook();
-            }
-
-            // attempt to open the library
-            handle = osal_dynlib_open(settingValue.c_str());
-            if (handle == nullptr)
-            {
-                error = "CoreApplyPluginSettings osal_dynlib_open Failed: ";
-                error += osal_dynlib_strerror();
-                CoreSetError(error);
-                return false;
-            }
-
-            // attempt to hook the library
-            if (!plugin->Hook(handle))
-            {
-                error = "CoreApplyPluginSettings m64p::PluginApi.Hook() Failed: ";
-                error += plugin->GetLastError();
-                CoreSetError(error);
-                return false;
-            }
-
-            // attempt to start plugin
-            ret = plugin->Startup(m64p::Core.GetHandle(), nullptr, nullptr);
-            if (ret != M64ERR_SUCCESS)
-            {
-                error = "CoreApplyPluginSettings m64p::PluginApi.Startup() Failed: ";
-                error += m64p::Core.ErrorMessage(ret);
-                CoreSetError(error);
-                return false;
-            }
-
-            l_PluginFiles[i] = settingValue;
-        }
-    }
-
-    return true;
+    return apply_plugin_settings(settings);
 }
 
 bool CoreApplyRomPluginSettings(void)
 {
-    std::string            error;
-    std::string            settingValue;
-    m64p::PluginApi*       plugin;
-    osal_dynlib_lib_handle handle;
-    m64p_error             ret;
-    CoreRomSettings        romSettings;
-
-    SettingsID settings[] = 
-    {
-        SettingsID::Game_RSP_Plugin,
-        SettingsID::Game_GFX_Plugin,
-        SettingsID::Game_AUDIO_Plugin,
-        SettingsID::Game_INPUT_Plugin
-    };
+    CoreRomSettings          romSettings;
 
     if (!CoreGetCurrentDefaultRomSettings(romSettings))
     {
         return false;
     }
 
-    for (int i = 0; i < 4; i++)
+    std::string settings[] =
     {
-        settingValue = CoreSettingsGetStringValue(settings[i], romSettings.MD5);
-        if (settingValue.empty() ||
-            !std::filesystem::is_regular_file(settingValue))
-        { // skip invalid setting value
-            continue;
-        }
+        CoreSettingsGetStringValue(SettingsID::Game_RSP_Plugin, romSettings.MD5),
+        CoreSettingsGetStringValue(SettingsID::Game_GFX_Plugin, romSettings.MD5),
+        CoreSettingsGetStringValue(SettingsID::Game_AUDIO_Plugin, romSettings.MD5),
+        CoreSettingsGetStringValue(SettingsID::Game_INPUT_Plugin, romSettings.MD5)
+    };
 
-        if (settingValue != l_PluginFiles[i])
-        {
-            plugin = &l_Plugins[i];
-
-            // shutdown plugin when hooked
-            if (plugin->IsHooked())
-            {
-                ret = plugin->Shutdown();
-                if (ret != M64ERR_SUCCESS)
-                {
-                    error = "CoreApplyRomPluginSettings m64p::PluginApi.Shutdown() Failed: ";
-                    error += m64p::Core.ErrorMessage(ret);
-                    CoreSetError(error);
-                    return false;
-                }
-
-                // reset plugin
-                plugin->Unhook();
-            }
-
-            // attempt to open the library
-            handle = osal_dynlib_open(settingValue.c_str());
-            if (handle == nullptr)
-            {
-                error = "CoreApplyRomPluginSettings osal_dynlib_open Failed: ";
-                error += osal_dynlib_strerror();
-                CoreSetError(error);
-                return false;
-            }
-
-            // attempt to hook the library
-            if (!plugin->Hook(handle))
-            {
-                error = "CoreApplyRomPluginSettings m64p::PluginApi.Hook() Failed: ";
-                error += plugin->GetLastError();
-                CoreSetError(error);
-                return false;
-            }
-
-            // attempt to start plugin
-            ret = plugin->Startup(m64p::Core.GetHandle(), nullptr, nullptr);
-            if (ret != M64ERR_SUCCESS)
-            {
-                error = "CoreApplyRomPluginSettings m64p::PluginApi.Startup() Failed: ";
-                error += m64p::Core.ErrorMessage(ret);
-                CoreSetError(error);
-                return false;
-            }
-
-            l_PluginFiles[i] = settingValue;
-        }
-    }
-
-    return true;
+    return apply_plugin_settings(settings);
 }
 
 bool CoreArePluginsReady(void)
@@ -292,7 +282,9 @@ bool CoreArePluginsReady(void)
         if (!l_Plugins[i].IsHooked())
         {
             error = "CoreArePluginsReady Failed: ";
-            error += "PluginApi::IsHooked returned false!";
+            error += "(";
+            error += get_plugin_type_name((CorePluginType)(i + 1));
+            error += ")->IsHooked returned false!";
             CoreSetError(error);
             return false;
         }
@@ -315,7 +307,8 @@ bool CorePluginsOpenConfig(CorePluginType type)
     if (!CorePluginsHasConfig(type))
     {
         error = "CorePluginsOpenConfig Failed: ";
-        error += "plugin with given type doesn't have config function!";
+        error += get_plugin_type_name(type);
+        error += " doesn't have config function!";
         CoreSetError(error);
         return false;
     }
@@ -334,7 +327,9 @@ bool CorePluginsOpenConfig(CorePluginType type)
     ret = get_plugin(type)->Config();
     if (ret != M64ERR_SUCCESS)
     {
-        error = "CorePluginsOpenConfig m64p::PluginApi.Config() Failed: ";
+        error = "CorePluginsOpenConfig (";
+        error += get_plugin_type_name(type);
+        error += ")->Config() Failed: ";
         error += m64p::Core.ErrorMessage(ret);
         CoreSetError(error);
     }
@@ -365,7 +360,9 @@ bool CoreAttachPlugins(void)
         ret = m64p::Core.AttachPlugin(plugin_types[i], get_plugin((CorePluginType)plugin_types[i])->GetHandle());
         if (ret != M64ERR_SUCCESS)
         {
-            error = "CoreAttachPlugins m64p::Core.AttachPlugin() Failed: ";
+            error = "CoreAttachPlugins m64p::Core.AttachPlugin(";
+            error += get_plugin_type_name((CorePluginType)plugin_types[i]);
+            error += ") Failed: ";
             error += m64p::Core.ErrorMessage(ret);
             CoreSetError(error);
             break;
@@ -385,7 +382,9 @@ bool CoreDetachPlugins(void)
         ret = m64p::Core.DetachPlugin((m64p_plugin_type)(i + 1));
         if (ret != M64ERR_SUCCESS)
         {
-            error = "CoreDetachPlugins m64p::Core.DetachPlugin() Failed: ";
+            error = "CoreDetachPlugins m64p::Core.DetachPlugin(";
+            error += get_plugin_type_name((CorePluginType)(i + 1));
+            error += ") Failed: ";
             error += m64p::Core.ErrorMessage(ret);
             CoreSetError(error);
             break;
@@ -411,7 +410,9 @@ bool CorePluginsShutdown(void)
             ret = plugin->Shutdown();
             if (ret != M64ERR_SUCCESS)
             {
-                error = "CorePluginsShutdown m64p::PluginApi.Shutdown() Failed: ";
+                error = "CorePluginsShutdown (";
+                error += get_plugin_type_name((CorePluginType)(i + 1));
+                error += ")->Shutdown() Failed: ";
                 error += m64p::Core.ErrorMessage(ret);
                 CoreSetError(error);
                 break;
