@@ -5,6 +5,14 @@ include(ExternalProject)
 
 set(THIRDPARTY_DIR ${CMAKE_BINARY_DIR}/Source/3rdParty)
 
+find_program(RUST_CARGO cargo)
+if(${RUST_CARGO} STREQUAL "RUST_CARGO-NOTFOUND")
+    message(WARNING "mupen64plus-input-gca will not be built due to not having cargo installed")
+    set(BUILD_INPUT_GCA "0")
+else()
+    set(BUILD_INPUT_GCA "1")
+endif()
+
 set(M64P_CORE_DIR ${THIRDPARTY_DIR}/mupen64plus-core)
 if(WIN32)
     set(SO_EXT "dll")
@@ -100,6 +108,24 @@ ExternalProject_Add(mupen64plus-input-raphnetraw
     DEPENDS mupen64plus-core
 )
 
+if (${BUILD_INPUT_GCA} STREQUAL "1")
+    ExternalProject_Add(mupen64plus-input-gca
+        SOURCE_DIR mupen64plus-input-gca/
+    
+        CONFIGURE_COMMAND ""
+        INSTALL_COMMAND ""
+    
+        GIT_REPOSITORY https://github.com/amatho/mupen64plus-input-gca
+        GIT_TAG d440611d3639fa974c7d52bd0ed2079d16428d5e
+    
+        BUILD_COMMAND cargo build --release
+        BUILD_IN_SOURCE True
+    
+        BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-input-gca/target/release/libmupen64plus_input_gca.${SO_EXT}
+        DEPENDS mupen64plus-core
+    )
+endif()
+
 set(GLIDEN64_DIR "${THIRDPARTY_DIR}/mupen64plus-video-GLideN64")
 set(GLIDEN64_BUILD_DIR "${GLIDEN64_DIR}/projects/cmake")
 if (MSYS)
@@ -163,6 +189,11 @@ set(MUPEN64PLUS_PLUGIN_INPUT_QT ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 
 ExternalProject_Get_property(mupen64plus-input-raphnetraw BUILD_BYPRODUCTS)
 set(MUPEN64PLUS_PLUGIN_INPUT_RAPHNET ${BUILD_BYPRODUCTS} PARENT_SCOPE)
+
+if (${BUILD_INPUT_GCA} STREQUAL "1")
+    ExternalProject_Get_property(mupen64plus-input-gca BUILD_BYPRODUCTS)
+    set(MUPEN64PLUS_PLUGIN_INPUT_GCA ${BUILD_BYPRODUCTS} PARENT_SCOPE)
+endif()
 
 ExternalProject_Get_property(mupen64plus-video-GLideN64 BUILD_BYPRODUCTS)
 set(MUPEN64PLUS_PLUGIN_GFX_GLIDEN64 ${BUILD_BYPRODUCTS} PARENT_SCOPE)
