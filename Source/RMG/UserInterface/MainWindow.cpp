@@ -47,6 +47,11 @@ bool MainWindow::Init(QGuiApplication* app)
         return false;
     }
 
+    if (!CoreApplyPluginSettings())
+    {
+        this->ui_MessageBox("Error", "CoreApplyPluginSettings() Failed", QString::fromStdString(CoreGetError()));
+    }
+
     this->ui_Init();
     this->ui_Setup();
 
