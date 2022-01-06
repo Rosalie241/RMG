@@ -16,9 +16,11 @@ endif()
 set(M64P_CORE_DIR ${THIRDPARTY_DIR}/mupen64plus-core)
 if(WIN32)
     set(SO_EXT "dll")
+    set(GCA_LIB "mupen64plus_input_gca.${SO_EXT}")
     set(CORE_FILE "mupen64plus.dll")
 else(WIN32)
     set(SO_EXT "so")
+    set(GCA_LIB "libmupen64plus_input_gca.${SO_EXT}")
     set(CORE_FILE "libmupen64plus.so")
 endif(WIN32)
 
@@ -121,7 +123,7 @@ if (${BUILD_INPUT_GCA} STREQUAL "1")
         BUILD_COMMAND cargo build --release
         BUILD_IN_SOURCE True
     
-        BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-input-gca/target/release/libmupen64plus_input_gca.${SO_EXT}
+        BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-input-gca/target/release/${GCA_LIB}
         DEPENDS mupen64plus-core
     )
 endif()
