@@ -61,6 +61,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void loadDefaultGameSettings(void);
     void loadDefaultGameCoreSettings(void);
     void loadDefaultGamePluginSettings(void);
+    void loadDefaultPluginSettings(void);
     void loadDefaultDirectorySettings(void);
     void loadDefaultHotkeySettings(void);
     void loadDefaultInterfaceSettings(void);
@@ -76,6 +77,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void saveInterfaceSettings(void);
 
     void commonHotkeySettings(int);
+    void commonPluginSettings(int);
 
     void hideEmulationInfoText(void);
 

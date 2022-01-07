@@ -101,7 +101,7 @@ void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
         loadDefaultGamePluginSettings();
         break;
     case 4:
-        loadPluginSettings();
+        loadDefaultPluginSettings();
         break;
     case 5:
         loadDefaultDirectorySettings();
@@ -256,46 +256,7 @@ void SettingsDialog::loadGamePluginSettings(void)
 
 void SettingsDialog::loadPluginSettings(void)
 {
-    QComboBox *comboBoxArray[] = {this->rspPluginsComboBox, this->videoPluginsComboBox, 
-                                    this->audioPluginsComboBox, this->inputPluginsComboBox};
-    SettingsID settingsIdArray[] = {SettingsID::Core_RSP_Plugin, SettingsID::Core_GFX_Plugin, 
-                                    SettingsID::Core_AUDIO_Plugin, SettingsID::Core_INPUT_Plugin};
-    bool pluginFound[] = {false, false, false, false};
-
-    QComboBox *comboBox;
-    std::string pluginFileName;
-    int index = 0;
-
-    // clear combobox items
-    for (const auto& c : comboBoxArray)
-    {
-        c->clear();
-    }
-
-    for (const auto &p : this->pluginList)
-    {
-        index = ((int)p.Type - 1);
-        comboBox = comboBoxArray[index];
-        pluginFileName = CoreSettingsGetStringValue(settingsIdArray[index]);
-
-        comboBox->addItem(QString::fromStdString(p.Name), QString::fromStdString(p.File));
-
-        if (pluginFileName == p.File)
-        {
-            comboBox->setCurrentText(QString::fromStdString(p.Name));
-            pluginFound[index] = true;
-        }
-    }
-
-    for (int i = 0; i < 4; i++)
-    {
-        comboBox = comboBoxArray[i];
-        if (!pluginFound[i])
-        {
-            comboBox->addItem("", "");
-            comboBox->setCurrentText("");
-        }
-    }
+    this->commonPluginSettings(0);
 }
 
 void SettingsDialog::loadDirectorySettings(void)
@@ -411,6 +372,11 @@ void SettingsDialog::loadDefaultGamePluginSettings(void)
     {
         comboBox->setCurrentIndex(0);
     }
+}
+
+void SettingsDialog::loadDefaultPluginSettings(void)
+{
+    this->commonPluginSettings(1);
 }
 
 void SettingsDialog::loadDefaultDirectorySettings(void)
@@ -636,6 +602,53 @@ void SettingsDialog::commonHotkeySettings(int action)
         case 2:
             CoreSettingsSetValue(keybinding.settingId, keybinding.button->text().toStdString());
             break;
+        }
+    }
+}
+
+void SettingsDialog::commonPluginSettings(int action)
+{
+    QComboBox *comboBoxArray[] = {this->rspPluginsComboBox, this->videoPluginsComboBox, 
+                                    this->audioPluginsComboBox, this->inputPluginsComboBox};
+    SettingsID settingsIdArray[] = {SettingsID::Core_RSP_Plugin, SettingsID::Core_GFX_Plugin, 
+                                    SettingsID::Core_AUDIO_Plugin, SettingsID::Core_INPUT_Plugin};
+    bool pluginFound[] = {false, false, false, false};
+
+    QComboBox *comboBox;
+    std::string pluginFileName;
+    int index = 0;
+
+    // clear combobox items
+    for (const auto& c : comboBoxArray)
+    {
+        c->clear();
+    }
+
+    for (const auto &p : this->pluginList)
+    {
+        index = ((int)p.Type - 1);
+        comboBox = comboBoxArray[index];
+
+        pluginFileName = action == 0 ? 
+                            CoreSettingsGetStringValue(settingsIdArray[index]) :
+                            CoreSettingsGetDefaultStringValue(settingsIdArray[index]);
+
+        comboBox->addItem(QString::fromStdString(p.Name), QString::fromStdString(p.File));
+
+        if (pluginFileName == p.File)
+        {
+            comboBox->setCurrentText(QString::fromStdString(p.Name));
+            pluginFound[index] = true;
+        }
+    }
+
+    for (int i = 0; i < 4; i++)
+    {
+        comboBox = comboBoxArray[i];
+        if (!pluginFound[i])
+        {
+            comboBox->addItem("", "");
+            comboBox->setCurrentText("");
         }
     }
 }
