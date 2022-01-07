@@ -18,12 +18,19 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
 {
     this->setupUi(this);
 
-    this->inGame = CoreHasRomOpen();
-    if (inGame)
+    this->romOpened = CoreHasRomOpen();
+    if (romOpened)
     {
         CoreGetCurrentRomSettings(this->currentGameSettings);
         CoreGetCurrentDefaultRomSettings(this->defaultGameSettings);
         this->gameSection = this->currentGameSettings.MD5;
+
+        // no need to show emulation info text,
+        // when we're not running/paused
+        if (!CoreIsEmulationRunning() && !CoreIsEmulationPaused())
+        {
+            this->hideEmulationInfoText();
+        }
     }
     else
     {
@@ -436,7 +443,7 @@ void SettingsDialog::loadDefaultInterfaceSettings(void)
 void SettingsDialog::saveSettings(void)
 {
     this->saveCoreSettings();
-    if (inGame)
+    if (romOpened)
     {
         // clean 'game settings'
         CoreSettingsDeleteSection(this->gameSection);
@@ -635,7 +642,9 @@ void SettingsDialog::commonHotkeySettings(int action)
 
 void SettingsDialog::hideEmulationInfoText(void)
 {
-    QHBoxLayout *layouts[] = {this->emulationInfoLayout_0, this->emulationInfoLayout_1, this->emulationInfoLayout_2};
+    QHBoxLayout *layouts[] = {this->emulationInfoLayout_0, this->emulationInfoLayout_1, 
+                                this->emulationInfoLayout_2, this->emulationInfoLayout_9, 
+                                this->emulationInfoLayout_13};
 
     for (const auto &layout : layouts)
     {

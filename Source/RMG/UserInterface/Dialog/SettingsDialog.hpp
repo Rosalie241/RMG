@@ -34,7 +34,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     Q_OBJECT
 
   private:
-    bool inGame = false;
+    bool romOpened = false;
 
     CoreRomSettings currentGameSettings;
     CoreRomSettings defaultGameSettings;
