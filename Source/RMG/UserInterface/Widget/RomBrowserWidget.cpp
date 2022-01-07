@@ -373,6 +373,10 @@ void RomBrowserWidget::on_Action_RomInformation(void)
 
 void RomBrowserWidget::on_Action_EditGameSettings(void)
 {
+    QModelIndex index = this->selectedIndexes().first();
+    QString rom = this->model()->itemData(index).last().toString();
+
+    this->on_RomBrowser_EditGameSettings(rom);
 }
 
 void RomBrowserWidget::on_Action_EditCheats(void)

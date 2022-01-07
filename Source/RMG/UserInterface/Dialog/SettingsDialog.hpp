@@ -94,6 +94,8 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
   public:
     SettingsDialog(QWidget *parent);
     ~SettingsDialog(void);
+
+    void ShowGameTab(void);
 };
 } // namespace Dialog
 } // namespace UserInterface

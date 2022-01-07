@@ -127,6 +127,8 @@ void MainWindow::ui_Init(void)
 
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::on_RomBrowser_Select, this,
             &MainWindow::on_RomBrowser_Selected);
+    connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::on_RomBrowser_EditGameSettings, this,
+            &MainWindow::on_RomBrowser_EditGameSettings);
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::on_RomBrowser_FileDropped, this,
             &MainWindow::on_EventFilter_FileDropped);
 
@@ -1141,6 +1143,38 @@ void MainWindow::on_Emulation_Finished(bool ret)
 void MainWindow::on_RomBrowser_Selected(QString file)
 {
     this->emulationThread_Launch(file);
+}
+
+void MainWindow::on_RomBrowser_EditGameSettings(QString file)
+{
+    bool isRefreshingRomList = this->ui_Widget_RomBrowser->IsRefreshingRomList();
+    if (isRefreshingRomList)
+    {
+        this->ui_Widget_RomBrowser->StopRefreshRomList();
+    }
+
+    if (!CoreOpenRom(file.toStdString()))
+    {
+        this->ui_MessageBox("Error", "CoreOpenRom() Failed", QString::fromStdString(CoreGetError()));
+        return;
+    }
+
+    Dialog::SettingsDialog dialog(this);
+    dialog.ShowGameTab();
+    dialog.exec();
+
+    this->ui_InEmulation(false, false);
+
+    if (!CoreCloseRom())
+    {
+        this->ui_MessageBox("Error", "CoreCloseRom() Failed", QString::fromStdString(CoreGetError()));
+        return;
+    }
+
+    if (isRefreshingRomList)
+    {
+        this->ui_Widget_RomBrowser->RefreshRomList();
+    }
 }
 
 void MainWindow::on_VidExt_Init(void)

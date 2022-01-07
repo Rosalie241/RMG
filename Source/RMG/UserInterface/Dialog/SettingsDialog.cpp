@@ -18,7 +18,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
 {
     this->setupUi(this);
 
-    this->inGame = CoreIsEmulationRunning() || CoreIsEmulationPaused();
+    this->inGame = CoreHasRomOpen();
     if (inGame)
     {
         CoreGetCurrentRomSettings(this->currentGameSettings);
@@ -54,6 +54,11 @@ SettingsDialog::~SettingsDialog(void)
     CoreSettingsSetValue(SettingsID::GUI_SettingsDialogWidth, this->size().width());
     CoreSettingsSetValue(SettingsID::GUI_SettingsDialogHeight, this->size().height());
     CoreSettingsSave();
+}
+
+void SettingsDialog::ShowGameTab(void)
+{
+    this->tabWidget->setCurrentIndex(1);
 }
 
 int SettingsDialog::currentIndex(void)
