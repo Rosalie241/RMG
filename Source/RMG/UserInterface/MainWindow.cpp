@@ -92,6 +92,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
     this->on_Action_File_EndEmulation();
 
+    this->ui_Widget_RomBrowser->StopRefreshRomList();
+
     this->coreCallBacks->Stop();
 
     while (this->emulationThread->isRunning())

@@ -80,7 +80,7 @@ void RomBrowserWidget::StopRefreshRomList(void)
 {
     if (this->romSearcher_Thread->isRunning())
     {
-        this->romSearcher_Thread->terminate();
+        this->romSearcher_Thread->Stop();
     }
 }
 

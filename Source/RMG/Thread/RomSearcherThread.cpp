@@ -23,12 +23,7 @@ RomSearcherThread::RomSearcherThread(QObject *parent) : QThread(parent)
 
 RomSearcherThread::~RomSearcherThread(void)
 {
-    // kill the thread when we're running
-    if (this->isRunning())
-    {
-        this->terminate();
-        this->wait();
-    }
+    this->Stop();
 }
 
 void RomSearcherThread::SetDirectory(QString directory)
@@ -46,8 +41,18 @@ void RomSearcherThread::SetMaximumFiles(int value)
     this->rom_Search_MaxItems = value;
 }
 
+void RomSearcherThread::Stop(void)
+{
+    this->rom_Search_Stop = true;
+    while (this->isRunning())
+    {
+        this->wait();
+    }
+}
+
 void RomSearcherThread::run(void)
 {
+    this->rom_Search_Stop = false;
     this->rom_Search(this->rom_Directory);
     return;
 }
@@ -94,6 +99,11 @@ void RomSearcherThread::rom_Search(QString directory)
             }
 
             emit this->on_Rom_Found(file, header, settings);
+        }
+
+        if (this->rom_Search_Stop)
+        {
+            break;
         }
     }
 }

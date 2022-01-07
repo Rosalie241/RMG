@@ -28,6 +28,7 @@ class RomSearcherThread : public QThread
     void SetDirectory(QString);
     void SetRecursive(bool);
     void SetMaximumFiles(int);
+    void Stop(void);
 
     void run(void) override;
 
@@ -35,6 +36,7 @@ class RomSearcherThread : public QThread
     QString rom_Directory;
     bool rom_Search_Recursive;
     int rom_Search_MaxItems;
+    bool rom_Search_Stop = false;
 
     void rom_Search(QString);
 
