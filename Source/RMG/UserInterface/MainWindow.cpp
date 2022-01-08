@@ -131,6 +131,8 @@ void MainWindow::ui_Init(void)
             &MainWindow::on_RomBrowser_Selected);
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::on_RomBrowser_EditGameSettings, this,
             &MainWindow::on_RomBrowser_EditGameSettings);
+    connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::on_RomBrowser_ChooseRomDirectory, this,
+            &MainWindow::on_Action_File_ChooseDirectory);
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::on_RomBrowser_FileDropped, this,
             &MainWindow::on_EventFilter_FileDropped);
 

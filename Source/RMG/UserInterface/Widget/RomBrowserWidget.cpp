@@ -365,6 +365,7 @@ void RomBrowserWidget::on_Action_RefreshRomList(void)
 
 void RomBrowserWidget::on_Action_ChooseRomDirectory(void)
 {
+    this->on_RomBrowser_ChooseRomDirectory();
 }
 
 void RomBrowserWidget::on_Action_RomInformation(void)
