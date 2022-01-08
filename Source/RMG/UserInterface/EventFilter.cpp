@@ -27,17 +27,6 @@ bool EventFilter::eventFilter(QObject *object, QEvent *event)
     case QEvent::Type::KeyRelease:
         emit this->on_EventFilter_KeyReleased((QKeyEvent *)event);
         return true;
-    // it seems like Qt loses focus whenever you click on the menubar,
-    // even when re-implementing QMenuBar's focusIn/Out, it wont work correctly.
-    /*case QEvent::Type::FocusIn:
-        lastFocusObject = object;
-        std::cout << object << std::endl;
-        emit this->on_EventFilter_FocusIn((QFocusEvent *)event);
-        return true;
-    case QEvent::Type::FocusOut:
-        if (lastFocusObject == object)
-            emit this->on_EventFilter_FocusOut((QFocusEvent *)event);
-        return true;*/
     default:
         break;
     }
