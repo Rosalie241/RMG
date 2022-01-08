@@ -135,6 +135,8 @@ void MainWindow::ui_Init(void)
             &MainWindow::on_RomBrowser_EditGameSettings);
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::on_RomBrowser_ChooseRomDirectory, this,
             &MainWindow::on_Action_File_ChooseDirectory);
+    connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::on_RomBrowser_RomInformation, this,
+            &MainWindow::on_RomBrowser_RomInformation);
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::on_RomBrowser_FileDropped, this,
             &MainWindow::on_EventFilter_FileDropped);
 
@@ -292,7 +294,6 @@ void MainWindow::menuBar_Setup(bool inEmulation, bool isPaused)
     this->menuBar_Menu = this->menuBar->addMenu("File");
     this->menuBar_Menu->addAction(this->action_File_OpenRom);
     this->menuBar_Menu->addAction(this->action_File_OpenCombo);
-    this->menuBar_Menu->addAction(this->action_File_RomInfo);
     this->menuBar_Menu->addSeparator();
     this->menuBar_Menu->addAction(this->action_File_StartEmulation);
     this->menuBar_Menu->addAction(this->action_File_EndEmulation);
@@ -470,7 +471,6 @@ void MainWindow::ui_Actions_Init(void)
 {
     this->action_File_OpenRom = new QAction(this);
     this->action_File_OpenCombo = new QAction(this);
-    this->action_File_RomInfo = new QAction(this);
     this->action_File_StartEmulation = new QAction(this);
     this->action_File_EndEmulation = new QAction(this);
     this->action_File_Language = new QAction(this);
@@ -514,7 +514,6 @@ void MainWindow::ui_Actions_Setup(bool inEmulation, bool isPaused)
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_OpenCombo));
     this->action_File_OpenCombo->setText("Open Combo");
     this->action_File_OpenCombo->setShortcut(QKeySequence(keyBinding));
-    this->action_File_RomInfo->setText("ROM Info....");
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_StartEmulation));
     this->action_File_StartEmulation->setText("Start Emulation");
     this->action_File_StartEmulation->setShortcut(QKeySequence(keyBinding));
@@ -1195,6 +1194,24 @@ void MainWindow::on_RomBrowser_EditGameSettings(QString file)
         this->ui_MessageBox("Error", "CoreCloseRom() Failed", QString::fromStdString(CoreGetError()));
         return;
     }
+
+    if (isRefreshingRomList)
+    {
+        this->ui_Widget_RomBrowser->RefreshRomList();
+    }
+}
+
+void MainWindow::on_RomBrowser_RomInformation(QString file)
+{
+    bool isRefreshingRomList = this->ui_Widget_RomBrowser->IsRefreshingRomList();
+
+    if (isRefreshingRomList)
+    {
+        this->ui_Widget_RomBrowser->StopRefreshRomList();
+    }
+
+    Dialog::RomInfoDialog dialog(file, this);
+    dialog.exec();
 
     if (isRefreshingRomList)
     {

@@ -374,6 +374,7 @@ void RomBrowserWidget::on_Action_ChooseRomDirectory(void)
 
 void RomBrowserWidget::on_Action_RomInformation(void)
 {
+    this->on_RomBrowser_RomInformation(this->getCurrentRom());
 }
 
 void RomBrowserWidget::on_Action_EditGameSettings(void)

@@ -110,6 +110,7 @@ class RomBrowserWidget : public QTableView
     void on_RomBrowser_FileDropped(QDropEvent *);
     void on_RomBrowser_EditGameSettings(QString);
     void on_RomBrowser_ChooseRomDirectory(void);
+    void on_RomBrowser_RomInformation(QString);
 };
 } // namespace Widget
 } // namespace UserInterface

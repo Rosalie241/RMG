@@ -12,6 +12,7 @@
 
 #include "Thread/EmulationThread.hpp"
 #include "Dialog/SettingsDialog.hpp"
+#include "Dialog/RomInfoDialog.hpp"
 #include "EventFilter.hpp"
 #include "Widget/OGLWidget.hpp"
 #include "Widget/RomBrowserWidget.hpp"
@@ -55,7 +56,6 @@ class MainWindow : public QMainWindow
     QMenu *menuBar_Menu;
     QAction *action_File_OpenRom;
     QAction *action_File_OpenCombo;
-    QAction *action_File_RomInfo;
     QAction *action_File_StartEmulation;
     QAction *action_File_EndEmulation;
     QAction *action_File_Language;
@@ -171,6 +171,7 @@ class MainWindow : public QMainWindow
     void on_RomBrowser_PlayGame(QString);
     void on_RomBrowser_PlayGameWithDisk(QString);
     void on_RomBrowser_EditGameSettings(QString);
+    void on_RomBrowser_RomInformation(QString);
 
   public slots:
 
