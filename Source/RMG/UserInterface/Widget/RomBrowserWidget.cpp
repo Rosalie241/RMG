@@ -300,10 +300,13 @@ int RomBrowserWidget::column_GetSizeSettingIndex(int column)
 
 void RomBrowserWidget::launchSelectedRom(void)
 {
-    QModelIndex index = this->selectedIndexes().first();
-    QString rom = this->model()->itemData(index).last().toString();
+    emit this->on_RomBrowser_PlayGame(this->getCurrentRom());
+}
 
-    emit this->on_RomBrowser_Select(rom);
+QString RomBrowserWidget::getCurrentRom(void)
+{
+    QModelIndex index = this->selectedIndexes().first();
+    return this->model()->itemData(index).last().toString();
 }
 
 void RomBrowserWidget::dragMoveEvent(QDragMoveEvent *event)
@@ -356,6 +359,7 @@ void RomBrowserWidget::on_Action_PlayGame(void)
 
 void RomBrowserWidget::on_Action_PlayGameWithDisk(void)
 {
+    this->on_RomBrowser_PlayGameWithDisk(this->getCurrentRom());
 }
 
 void RomBrowserWidget::on_Action_RefreshRomList(void)
@@ -374,10 +378,7 @@ void RomBrowserWidget::on_Action_RomInformation(void)
 
 void RomBrowserWidget::on_Action_EditGameSettings(void)
 {
-    QModelIndex index = this->selectedIndexes().first();
-    QString rom = this->model()->itemData(index).last().toString();
-
-    this->on_RomBrowser_EditGameSettings(rom);
+    this->on_RomBrowser_EditGameSettings(this->getCurrentRom());
 }
 
 void RomBrowserWidget::on_Action_EditCheats(void)

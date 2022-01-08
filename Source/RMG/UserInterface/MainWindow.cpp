@@ -127,8 +127,10 @@ void MainWindow::ui_Init(void)
     this->ui_Widget_RomBrowser->SetDirectory(dir);
     this->ui_Widget_RomBrowser->RefreshRomList();
 
-    connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::on_RomBrowser_Select, this,
-            &MainWindow::on_RomBrowser_Selected);
+    connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::on_RomBrowser_PlayGame, this,
+            &MainWindow::on_RomBrowser_PlayGame);
+    connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::on_RomBrowser_PlayGameWithDisk, this,
+            &MainWindow::on_RomBrowser_PlayGameWithDisk);
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::on_RomBrowser_EditGameSettings, this,
             &MainWindow::on_RomBrowser_EditGameSettings);
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::on_RomBrowser_ChooseRomDirectory, this,
@@ -1144,9 +1146,28 @@ void MainWindow::on_Emulation_Finished(bool ret)
     this->ui_InEmulation(false, false);
 }
 
-void MainWindow::on_RomBrowser_Selected(QString file)
+void MainWindow::on_RomBrowser_PlayGame(QString file)
 {
     this->emulationThread_Launch(file);
+}
+
+void MainWindow::on_RomBrowser_PlayGameWithDisk(QString file)
+{
+    QFileDialog dialog(this);
+    int ret;
+    QString diskRom;
+
+    dialog.setFileMode(QFileDialog::FileMode::ExistingFile);
+    dialog.setNameFilter("N64DD Disk Image (*.ndd *.d64)");
+    ret = dialog.exec();
+    if (!ret)
+    {
+        return;
+    }
+
+    diskRom = dialog.selectedFiles().first();
+
+    this->emulationThread_Launch(file, diskRom);
 }
 
 void MainWindow::on_RomBrowser_EditGameSettings(QString file)

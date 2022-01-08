@@ -168,7 +168,8 @@ class MainWindow : public QMainWindow
     void on_Emulation_Started(void);
     void on_Emulation_Finished(bool);
 
-    void on_RomBrowser_Selected(QString);
+    void on_RomBrowser_PlayGame(QString);
+    void on_RomBrowser_PlayGameWithDisk(QString);
     void on_RomBrowser_EditGameSettings(QString);
 
   public slots:

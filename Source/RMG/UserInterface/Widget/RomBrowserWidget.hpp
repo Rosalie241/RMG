@@ -81,6 +81,8 @@ class RomBrowserWidget : public QTableView
 
     void launchSelectedRom(void);
 
+    QString getCurrentRom(void);
+
   protected:
     void dragMoveEvent(QDragMoveEvent *);
     void dragEnterEvent(QDragEnterEvent *);
@@ -103,7 +105,8 @@ class RomBrowserWidget : public QTableView
     void on_RomBrowserThread_Received(QString file, CoreRomHeader header, CoreRomSettings settings);
 
   signals:
-    void on_RomBrowser_Select(QString);
+    void on_RomBrowser_PlayGame(QString);
+    void on_RomBrowser_PlayGameWithDisk(QString);
     void on_RomBrowser_FileDropped(QDropEvent *);
     void on_RomBrowser_EditGameSettings(QString);
     void on_RomBrowser_ChooseRomDirectory(void);
