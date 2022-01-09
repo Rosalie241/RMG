@@ -48,6 +48,10 @@ if(UNIX)
     target_link_libraries(RMG-Core dl)
 endif(UNIX)
 
+if(WIN32)
+  target_link_libraries(RMG-Core wsock32 ws2_32)
+endif(WIN32)
+
 target_link_libraries(RMG-Core
     ${MINIZIP_LIBRARIES}
 )

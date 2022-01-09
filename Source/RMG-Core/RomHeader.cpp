@@ -14,7 +14,7 @@
 #include "Rom.hpp"
 
 #ifdef _WIN32
-#include <winsock.h>
+#include <winsock2.h>
 #else // Unix
 #include <arpa/inet.h>
 #endif // _WIN32
