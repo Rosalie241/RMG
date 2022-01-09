@@ -13,6 +13,12 @@
 #include "Error.hpp"
 #include "Rom.hpp"
 
+#ifdef _WIN32
+#include <winsock.h>
+#else // Unix
+#include <arpa/inet.h>
+#endif // _WIN32
+
 //
 // Exported Functions
 //
@@ -32,8 +38,8 @@ bool CoreGetCurrentRomHeader(CoreRomHeader& header)
         return false;
     }
 
-    header.CRC1 = m64p_header.CRC1;
-    header.CRC2 = m64p_header.CRC2;
+    header.CRC1 = ntohl(m64p_header.CRC1);
+    header.CRC2 = ntohl(m64p_header.CRC2);
     header.Name = std::string((char*)m64p_header.Name);
     return true;
 }
