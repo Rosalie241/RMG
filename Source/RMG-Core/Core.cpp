@@ -27,7 +27,7 @@ static osal_dynlib_lib_handle l_CoreLibHandle;
 
 std::string find_core_lib(void)
 {
-    for (const auto& entry : std::filesystem::recursive_directory_iterator("Core"))
+    for (const auto& entry : std::filesystem::recursive_directory_iterator(CoreGetCoreDirectory()))
     {
         std::string path = entry.path().string();
         if (path.ends_with(OSAL_DYNLIB_LIB_EXT_STR))
@@ -44,19 +44,7 @@ bool config_override_user_dirs(void)
     std::string error;
     m64p_error ret;
 
-    std::string dataDir;
-    std::string cacheDir;
-    bool overrideUserDirs;
-    dataDir = CoreSettingsGetStringValue(SettingsID::Core_UserDataDirOverride);
-    cacheDir = CoreSettingsGetStringValue(SettingsID::Core_UserCacheDirOverride);
-    overrideUserDirs = CoreSettingsGetBoolValue(SettingsID::Core_OverrideUserDirs);
-
-    if (!overrideUserDirs)
-    {
-        return true;
-    }
-
-    ret = m64p::Config.OverrideUserPaths(dataDir.c_str(), cacheDir.c_str());
+    ret = m64p::Config.OverrideUserPaths(CoreGetUserDataDirectory().c_str(), CoreGetUserCacheDirectory().c_str());
     if (ret != M64ERR_SUCCESS)
     {
         error = "config_override_user_dirs m64p::Config.OverrideUserPaths() Failed: ";
@@ -125,6 +113,12 @@ bool CoreInit(void)
     }
 
     ret = CoreSettingsSetupDefaults();
+    if (!ret)
+    {
+        return false;
+    }
+
+    ret = CoreCreateDirectories();
     if (!ret)
     {
         return false;

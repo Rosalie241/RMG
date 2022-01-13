@@ -3,6 +3,8 @@
 #
 cmake_minimum_required(VERSION 3.15)
 
+option(PORTABLE_INSTALL "Portable Installation" ON)
+
 project(RMG)
 
 find_package(Git REQUIRED)

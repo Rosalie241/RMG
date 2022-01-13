@@ -8,6 +8,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "Plugins.hpp"
+#include "Directories.hpp"
 #include "Error.hpp"
 #include "Emulation.hpp"
 #include "RomSettings.hpp"
@@ -216,7 +217,7 @@ std::vector<CorePlugin> CoreGetAllPlugins(void)
     osal_dynlib_lib_handle  handle;
     m64p::PluginApi         plugin;
 
-    for (const auto& entry : std::filesystem::recursive_directory_iterator("Plugin"))
+    for (const auto& entry : std::filesystem::recursive_directory_iterator(CoreGetPluginDirectory()))
     {
         std::string path = entry.path().string();
         if (!entry.is_directory() &&

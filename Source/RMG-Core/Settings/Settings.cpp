@@ -9,6 +9,7 @@
  */
 #include "Settings.hpp"
 
+#include "Directories.hpp"
 #include "m64p/Api.hpp"
 #include "Error.hpp"
 #include "m64p/api/m64p_types.h"
@@ -221,7 +222,7 @@ static l_Setting get_setting(SettingsID settingId)
         setting = {SETTING_SECTION_M64P, "SaveSRAMPath", "Save/Game", "", true};
         break;
     case SettingsID::Core_SharedDataPath:
-        setting = {SETTING_SECTION_M64P, "SharedDataPath", "Data", "", true};
+        setting = {SETTING_SECTION_M64P, "SharedDataPath", CoreGetSharedDataDirectory().c_str(), "", true};
         break;
 
     case SettingsID::Core_64DD_RomFile:

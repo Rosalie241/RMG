@@ -18,8 +18,9 @@ set(RMG_CORE_SOURCES
     Settings/Settings.cpp
     SpeedLimiter.cpp
     RomSettings.cpp
-    RomHeader.cpp
+    Directories.cpp
     Screenshot.cpp
+    RomHeader.cpp
     Emulation.cpp
     SaveState.cpp
     Callback.cpp
@@ -42,6 +43,10 @@ else()
     )
 endif()
 
+if (PORTABLE_INSTALL)
+add_definitions(-DPORTABLE_INSTALL)
+endif(PORTABLE_INSTALL)
+
 add_library(RMG-Core STATIC ${RMG_CORE_SOURCES})
 
 if(UNIX)
@@ -49,7 +54,7 @@ if(UNIX)
 endif(UNIX)
 
 if(WIN32)
-  target_link_libraries(RMG-Core wsock32 ws2_32)
+    target_link_libraries(RMG-Core wsock32 ws2_32)
 endif(WIN32)
 
 target_link_libraries(RMG-Core
