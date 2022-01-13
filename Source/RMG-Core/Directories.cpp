@@ -93,7 +93,7 @@ std::string CoreGetCoreDirectory(void)
 #ifdef _WIN32
     directory = "Core";
 #else // Unix
-    directory = "/usr/local/lib/RMG/Core/";
+    directory = "/usr/local/lib/RMG/Core";
 #endif // _WIN32
 #endif // PORTABLE_INSTALL
     return directory;
@@ -108,7 +108,7 @@ std::string CoreGetPluginDirectory(void)
 #ifdef _WIN32
     directory = "Plugin";
 #else // Unix
-    directory = "/usr/local/lib/RMG/Plugin/";
+    directory = "/usr/local/lib/RMG/Plugin";
 #endif // _WIN32
 #endif // PORTABLE_INSTALL
     return directory;
@@ -168,7 +168,7 @@ std::string CoreGetSharedDataDirectory(void)
 #ifdef _WIN32
     directory = "Data";
 #else // Unix
-    directory = "/usr/share/RMG/";
+    directory = "/usr/share/RMG";
 #endif // _WIN32
 #endif // PORTABLE_INSTALL
     return directory;
