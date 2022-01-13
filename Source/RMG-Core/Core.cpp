@@ -98,7 +98,7 @@ bool CoreInit(void)
         return false;
     }
 
-    m64p_ret = m64p::Core.Startup(FRONTEND_API_VERSION, "Config", "Data", nullptr, CoreDebugCallback, nullptr, CoreStateCallback);
+    m64p_ret = m64p::Core.Startup(FRONTEND_API_VERSION, CoreGetUserConfigDirectory().c_str(), CoreGetSharedDataDirectory().c_str(), nullptr, CoreDebugCallback, nullptr, CoreStateCallback);
     if (m64p_ret != M64ERR_SUCCESS)
     {
         error = "CoreInit M64P::Core.Startup() Failed: ";
