@@ -61,6 +61,8 @@ bool CoreCreateDirectories(void)
         CoreGetUserConfigDirectory(),
         CoreGetUserDataDirectory(),
         CoreGetUserCacheDirectory(),
+        CoreGetSaveDirectory(),
+        CoreGetSaveStateDirectory()
     };
 
     for (const auto& dir : directories)
@@ -168,6 +170,30 @@ std::string CoreGetSharedDataDirectory(void)
 #else // Unix
     directory = "/usr/share/RMG/";
 #endif // _WIN32
+#endif // PORTABLE_INSTALL
+    return directory;
+}
+
+std::string CoreGetSaveDirectory(void)
+{
+    std::string directory;
+#ifdef PORTABLE_INSTALL
+    directory = "Save/Game";
+#else
+    directory = CoreGetUserDataDirectory();
+    directory += "/Save/Game";
+#endif // PORTABLE_INSTALL
+    return directory;
+}
+
+std::string CoreGetSaveStateDirectory(void)
+{
+    std::string directory;
+#ifdef PORTABLE_INSTALL
+    directory = "Save/State";
+#else
+    directory = CoreGetUserDataDirectory();
+    directory += "/Save/State";
 #endif // PORTABLE_INSTALL
     return directory;
 }

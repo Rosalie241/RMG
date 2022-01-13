@@ -41,5 +41,12 @@ std::string CoreGetUserCacheDirectory(void);
 // shared data files should be located
 std::string CoreGetSharedDataDirectory(void);
 
+// returns the save directory where
+// game saves should be located
+std::string CoreGetSaveDirectory(void);
+
+// returns the save state directory where
+// save states should be located
+std::string CoreGetSaveStateDirectory(void);
 
 #endif // DIRECTORIES_HPP

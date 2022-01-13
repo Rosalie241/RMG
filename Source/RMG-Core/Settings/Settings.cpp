@@ -65,6 +65,12 @@ struct l_DynamicValue
         valueType = M64TYPE_STRING;
     }
 
+    l_DynamicValue(std::string value)
+    {
+        stringValue = value;
+        valueType = M64TYPE_STRING;
+    }
+
     l_DynamicValue(std::vector<int> value)
     {
         intListValue = value;
@@ -183,10 +189,10 @@ static l_Setting get_setting(SettingsID settingId)
         setting = {SETTING_SECTION_CORE, "OverrideUserDirectories", true};
         break;
     case SettingsID::Core_UserDataDirOverride:
-        setting = {SETTING_SECTION_CORE, "UserDataDirectory", "Data"};
+        setting = {SETTING_SECTION_CORE, "UserDataDirectory", CoreGetUserDataDirectory()};
         break;
     case SettingsID::Core_UserCacheDirOverride:
-        setting = {SETTING_SECTION_CORE, "UserCacheDirectory", "Cache"};
+        setting = {SETTING_SECTION_CORE, "UserCacheDirectory", CoreGetUserCacheDirectory()};
         break;
 
     case SettingsID::Core_OverrideGameSpecificSettings:
@@ -216,13 +222,13 @@ static l_Setting get_setting(SettingsID settingId)
         setting = {SETTING_SECTION_M64P, "ScreenshotPath", "Screenshots", "", true};
         break;
     case SettingsID::Core_SaveStatePath:
-        setting = {SETTING_SECTION_M64P, "SaveStatePath", "Save/State", "", true};
+        setting = {SETTING_SECTION_M64P, "SaveStatePath", CoreGetSaveStateDirectory(), "", true};
         break;
     case SettingsID::Core_SaveSRAMPath:
-        setting = {SETTING_SECTION_M64P, "SaveSRAMPath", "Save/Game", "", true};
+        setting = {SETTING_SECTION_M64P, "SaveSRAMPath", CoreGetSaveDirectory(), "", true};
         break;
     case SettingsID::Core_SharedDataPath:
-        setting = {SETTING_SECTION_M64P, "SharedDataPath", CoreGetSharedDataDirectory().c_str(), "", true};
+        setting = {SETTING_SECTION_M64P, "SharedDataPath", CoreGetSharedDataDirectory(), "", true};
         break;
 
     case SettingsID::Core_64DD_RomFile:
