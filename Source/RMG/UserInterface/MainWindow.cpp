@@ -184,7 +184,11 @@ void MainWindow::ui_Setup(void)
 
 void MainWindow::ui_Stylesheet_Setup(void)
 {
-    QFile stylesheet(APP_STYLESHEET_FILE);
+    QString stylesheetFile;
+    stylesheetFile = QString::fromStdString(CoreGetSharedDataDirectory());
+    stylesheetFile += "/stylesheet.qss";
+
+    QFile stylesheet(stylesheetFile);
 
     if (!stylesheet.open(QIODevice::ReadOnly))
     {

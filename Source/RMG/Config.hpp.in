@@ -6,6 +6,5 @@
 #define WINDOW_WIDGET_SIZE_H 480
 
 #define APP_URL_HOMEPAGE "https://github.com/Rosalie241/RMG"
-#define APP_STYLESHEET_FILE "Config/stylesheet.qss"
 
 #endif // CONFIG_HPP

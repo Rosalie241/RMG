@@ -41,11 +41,8 @@ add_subdirectory(Source/3rdParty)
 install(FILES ${MUPEN64PLUSCORE_LIB}
     DESTINATION ${INSTALL_PATH}/Core
 )
-install(FILES ${MUPEN64PLUSCORE_INI} ${MUPEN64PLUSCORE_CHT} Data/font.ttf
+install(FILES ${MUPEN64PLUSCORE_INI} ${MUPEN64PLUSCORE_CHT} Data/font.ttf Data/stylesheet.qss
     DESTINATION ${INSTALL_PATH}/Data
-)
-install(FILES Config/stylesheet.qss
-    DESTINATION ${INSTALL_PATH}/Config
 )
 install(FILES ${MUPEN64PLUS_PLUGIN_RSP_HLE}
     DESTINATION ${INSTALL_PATH}/Plugin/RSP
