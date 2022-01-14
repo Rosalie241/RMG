@@ -18,17 +18,20 @@ It offers a simple-to-use user interface.
 ## Building
 
 #### Linux
-**NOTE:** installation is **not** supported on linux at the moment, only running it portable will work
+* Portable
 ```
-# for debian based distros
 sudo apt-get -y install cmake libhidapi-dev libsamplerate0-dev libminizip-dev libsdl2-dev libfreetype6-dev libgl1-mesa-dev libglu1-mesa-dev pkg-config zlib1g-dev binutils-dev libspeexdsp-dev qt5-default build-essential nasm git zip
-# for arch based distros
-sudo pacman -S base-devel git hidapi libsamplerate minizip sdl2 freetype2 pkg-config zlib qt5 nasm
-# building
 ./Source/Script/Build.sh Release
 ```
 
 When it's done building, executables can be found in `Bin/Release`
+
+* Installation/Packaging
+```
+mkdir build && cd build
+cmake .. -DCMAKE_BUILD_TYPE="Release" -DPORTABLE_INSTALL="OFF" -G "Unix Makefiles"
+make install
+```
 
 #### Windows
 * Download & Install [MSYS2](https://www.msys2.org/)
