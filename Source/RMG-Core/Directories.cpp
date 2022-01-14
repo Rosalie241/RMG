@@ -90,11 +90,7 @@ std::string CoreGetCoreDirectory(void)
 #ifdef PORTABLE_INSTALL
     directory = "Core";
 #else // Not Portable
-#ifdef _WIN32
-    directory = "Core";
-#else // Unix
     directory = "/usr/local/lib/RMG/Core";
-#endif // _WIN32
 #endif // PORTABLE_INSTALL
     return directory;
 }
@@ -105,11 +101,7 @@ std::string CoreGetPluginDirectory(void)
 #ifdef PORTABLE_INSTALL
     directory = "Plugin";
 #else // Not Portable
-#ifdef _WIN32
-    directory = "Plugin";
-#else // Unix
     directory = "/usr/local/lib/RMG/Plugin";
-#endif // _WIN32
 #endif // PORTABLE_INSTALL
     return directory;
 }
@@ -120,11 +112,7 @@ std::string CoreGetUserConfigDirectory(void)
 #ifdef PORTABLE_INSTALL
     directory = "Config";
 #else // Not Portable
-#ifdef _WIN32
-    directory = get_var_directory("APPDATA", "/RMG/Config", "HOME", "/RMG/Config");
-#else // Unix
     directory = get_var_directory("XDG_CONFIG_HOME", "/RMG", "HOME", "/.config/RMG");
-#endif // _WIN32
 #endif // PORTABLE_INSTALL
     return directory;
 }
@@ -135,11 +123,7 @@ std::string CoreGetUserDataDirectory(void)
 #ifdef PORTABLE_INSTALL
     directory = "Data";
 #else // Not Portable
-#ifdef _WIN32
-    directory = get_var_directory("APPDATA", "/RMG/Data", "HOME", "/RMG/Data");
-#else // Unix
     directory = get_var_directory("XDG_DATA_HOME", "/RMG", "HOME", "/.local/share/RMG");
-#endif // _WIN32
 #endif // PORTABLE_INSTALL
     return directory;
 }
@@ -150,11 +134,7 @@ std::string CoreGetUserCacheDirectory(void)
 #ifdef PORTABLE_INSTALL
     directory = "Cache";
 #else // Not Portable
-#ifdef _WIN32
-    directory = get_var_directory("APPDATA", "/RMG/Cache", "HOME", "/RMG/Cache");
-#else // Unix
     directory = get_var_directory("XDG_CACHE_HOME", "/RMG", "HOME", "/.cache/RMG");
-#endif // _WIN32
 #endif // PORTABLE_INSTALL
     return directory;
 }
@@ -165,11 +145,7 @@ std::string CoreGetSharedDataDirectory(void)
 #ifdef PORTABLE_INSTALL
     directory = "Data";
 #else // Not Portable
-#ifdef _WIN32
-    directory = "Data";
-#else // Unix
     directory = "/usr/share/RMG";
-#endif // _WIN32
 #endif // PORTABLE_INSTALL
     return directory;
 }
