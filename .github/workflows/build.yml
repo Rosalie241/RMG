@@ -57,17 +57,14 @@ jobs:
       - name: Build RMG (Portable)
         run: env RMG_PORTABLE=ON ./Source/Script/Build.sh Release
         shell: msys2 {0}
+      - name: Create Installer
+        run: .\Build\Release\Source\Installer\CreateInstaller.bat
       - name: Upload RMG (Portable)
         uses: actions/upload-artifact@v2
         with:
           name: RMG-Portable-Windows64-${{ env.GIT_REVISION }}
           path: Bin/Release/*
-      - name: Build RMG (Not-Portable)
-        run: env RMG_PORTABLE=OFF ./Source/Script/Build.sh Release
-        shell: msys2 {0}
-      - name: Create Installer
-        run: .\Build\Release\Source\Installer\CreateInstaller.bat
-      - name: Upload RMG (Not-Portable)
+      - name: Upload RMG (Installer)
         uses: actions/upload-artifact@v2
         with:
           name: RMG-Setup-Windows64-${{ env.GIT_REVISION }}
