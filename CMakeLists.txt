@@ -4,6 +4,7 @@
 cmake_minimum_required(VERSION 3.15)
 
 option(PORTABLE_INSTALL "Portable Installation" ON)
+option(NO_GIT_CLONE     "Disables git clone usage for 3rdParty dependencies" OFF)
 
 project(RMG)
 

@@ -24,14 +24,40 @@ else(WIN32)
     set(CORE_FILE "libmupen64plus.so")
 endif(WIN32)
 
+if(NOT NO_GIT_CLONE)
+    set(MUPEN64PLUSCORE_URL           "https://github.com/mupen64plus/mupen64plus-core")
+    set(MUPEN64PLUSCORE_TAG           "57828d930280554c7400bb2bcf1e46c7f2ee8373")
+    
+    set(MUPEN64PLUS_RSP_HLE_URL       "https://github.com/mupen64plus/mupen64plus-rsp-hle")
+    set(MUPEN64PLUS_RSP_HLE_TAG       "88093cb43499eff53d343653cddcae2132af17ef")
+    
+    set(MUPEN64PLUS_RSP_PARALLEL_URL  "https://github.com/loganmc10/parallel-rsp")
+    set(MUPEN64PLUS_RSP_PARALLEL_TAG  "a9646b27c2ef399e5917735b4d84ebe93edcce39")
+    
+    set(MUPEN64PLUS_INPUT_QT_URL      "https://github.com/Rosalie241/mupen64plus-input-qt")
+    set(MUPEN64PLUS_INPUT_QT_TAG      "e6cacb7fe6513cac4b30f7171d8ca7d1cd5fdb81")
+    
+    set(MUPEN64PLUS_INPUT_RAPHNET_URL "https://github.com/raphnet/mupen64plus-input-raphnetraw")
+    set(MUPEN64PLUS_INPUT_RAPHNET_TAG "86112413e98a8648edb11d199673cc24d5799af8")
+
+    set(MUPEN64PLUS_INPUT_GCA_URL     "https://github.com/amatho/mupen64plus-input-gca")
+    set(MUPEN64PLUS_INPUT_GCA_TAG     "d440611d3639fa974c7d52bd0ed2079d16428d5e")
+
+    set(MUPEN64PLUS_GFX_GLIDEN64_URL  "https://github.com/gonetz/GLideN64")
+    set(MUPEN64PLUS_GFX_GLIDEN64_TAG  "8343fd05c9a01ce2d73f7e32bb8355036759a05b")
+
+    set(MUPEN64PLUS_GFX_PARALLEL_URL  "https://github.com/loganmc10/parallel-rdp-standalone")
+    set(MUPEN64PLUS_GFX_PARALLEL_TAG  "2efeaf014bad03ec26e081c22d8ca3566003b1ea")
+endif(NOT NO_GIT_CLONE)
+
 ExternalProject_Add(mupen64plus-core
     SOURCE_DIR mupen64plus-core/
 
     CONFIGURE_COMMAND ""
     INSTALL_COMMAND ""
 
-    GIT_REPOSITORY https://github.com/mupen64plus/mupen64plus-core
-    GIT_TAG 57828d930280554c7400bb2bcf1e46c7f2ee8373
+    GIT_REPOSITORY ${MUPEN64PLUSCORE_URL}
+    GIT_TAG ${MUPEN64PLUSCORE_TAG}
 
     BUILD_COMMAND make all OSD=0 NEW_DYNAREC=1 TARGET=${CORE_FILE} DEBUG=$<CONFIG:Debug> KEYBINDINGS=0
     BUILD_IN_SOURCE False
@@ -49,8 +75,8 @@ ExternalProject_Add(mupen64plus-rsp-hle
     CONFIGURE_COMMAND ""
     INSTALL_COMMAND ""
 
-    GIT_REPOSITORY https://github.com/mupen64plus/mupen64plus-rsp-hle
-    GIT_TAG 88093cb43499eff53d343653cddcae2132af17ef
+    GIT_REPOSITORY ${MUPEN64PLUS_RSP_HLE_URL}
+    GIT_TAG ${MUPEN64PLUS_RSP_HLE_TAG}
 
     BUILD_COMMAND make all APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug>
     BUILD_IN_SOURCE False
@@ -64,8 +90,8 @@ ExternalProject_Add(mupen64plus-rsp-hle
 ExternalProject_Add(mupen64plus-rsp-parallel
     SOURCE_DIR mupen64plus-rsp-parallel
 
-    GIT_REPOSITORY https://github.com/loganmc10/parallel-rsp
-    GIT_TAG a9646b27c2ef399e5917735b4d84ebe93edcce39
+    GIT_REPOSITORY ${MUPEN64PLUS_RSP_PARALLEL_URL}
+    GIT_TAG ${MUPEN64PLUS_RSP_PARALLEL_TAG}
 
     INSTALL_COMMAND ""
 
@@ -82,8 +108,8 @@ ExternalProject_Add(mupen64plus-input-qt
     CMAKE_ARGS -DAPIDIR=${APIDIR} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
     INSTALL_COMMAND ""
 
-    GIT_REPOSITORY https://github.com/Rosalie241/mupen64plus-input-qt
-    GIT_TAG e6cacb7fe6513cac4b30f7171d8ca7d1cd5fdb81
+    GIT_REPOSITORY ${MUPEN64PLUS_INPUT_QT_URL}
+    GIT_TAG ${MUPEN64PLUS_INPUT_QT_TAG}
 
     BUILD_COMMAND make all APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug>
     BUILD_IN_SOURCE True
@@ -98,8 +124,8 @@ ExternalProject_Add(mupen64plus-input-raphnetraw
     CONFIGURE_COMMAND ""
     INSTALL_COMMAND ""
 
-    GIT_REPOSITORY https://github.com/raphnet/mupen64plus-input-raphnetraw
-    GIT_TAG 86112413e98a8648edb11d199673cc24d5799af8
+    GIT_REPOSITORY ${MUPEN64PLUS_INPUT_RAPHNET_URL}
+    GIT_TAG ${MUPEN64PLUS_INPUT_RAPHNET_TAG}
 
     BUILD_COMMAND make all APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug>
     BUILD_IN_SOURCE False
@@ -117,8 +143,8 @@ if (${BUILD_INPUT_GCA} STREQUAL "1")
         CONFIGURE_COMMAND ""
         INSTALL_COMMAND ""
     
-        GIT_REPOSITORY https://github.com/amatho/mupen64plus-input-gca
-        GIT_TAG d440611d3639fa974c7d52bd0ed2079d16428d5e
+        GIT_REPOSITORY ${MUPEN64PLUS_INPUT_GCA_URL}
+        GIT_TAG ${MUPEN64PLUS_INPUT_GCA_TAG}
     
         BUILD_COMMAND cargo build --release
         BUILD_IN_SOURCE True
@@ -144,8 +170,8 @@ endforeach()
 ExternalProject_Add(mupen64plus-video-GLideN64
     SOURCE_DIR mupen64plus-video-GLideN64
 
-    GIT_REPOSITORY https://github.com/gonetz/GLideN64
-    GIT_TAG 8343fd05c9a01ce2d73f7e32bb8355036759a05b
+    GIT_REPOSITORY ${MUPEN64PLUS_GFX_GLIDEN64_URL}
+    GIT_TAG ${MUPEN64PLUS_GFX_GLIDEN64_TAG}
 
     INSTALL_COMMAND ""
 
@@ -163,8 +189,8 @@ ExternalProject_Add(mupen64plus-video-GLideN64
 ExternalProject_Add(mupen64plus-video-parallel
     SOURCE_DIR mupen64plus-video-parallel
 
-    GIT_REPOSITORY https://github.com/loganmc10/parallel-rdp-standalone
-    GIT_TAG 2efeaf014bad03ec26e081c22d8ca3566003b1ea
+    GIT_REPOSITORY ${MUPEN64PLUS_GFX_PARALLEL_URL}
+    GIT_TAG ${MUPEN64PLUS_GFX_PARALLEL_TAG}
 
     INSTALL_COMMAND ""
 
