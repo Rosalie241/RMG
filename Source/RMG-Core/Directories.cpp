@@ -9,6 +9,7 @@
  */
 #include "Directories.hpp"
 #include "Error.hpp"
+#include "Core.hpp"
 
 #include <cstdio>
 #include <iostream>
@@ -117,7 +118,7 @@ std::string CoreGetUserConfigDirectory(void)
     return directory;
 }
 
-std::string CoreGetUserDataDirectory(void)
+std::string CoreGetDefaultUserDataDirectory(void)
 {
     std::string directory;
 #ifdef PORTABLE_INSTALL
@@ -128,7 +129,7 @@ std::string CoreGetUserDataDirectory(void)
     return directory;
 }
 
-std::string CoreGetUserCacheDirectory(void)
+std::string CoreGetDefaultUserCacheDirectory(void)
 {
     std::string directory;
 #ifdef PORTABLE_INSTALL
@@ -139,7 +140,7 @@ std::string CoreGetUserCacheDirectory(void)
     return directory;
 }
 
-std::string CoreGetSharedDataDirectory(void)
+std::string CoreGetDefaultSharedDataDirectory(void)
 {
     std::string directory;
 #ifdef PORTABLE_INSTALL
@@ -150,7 +151,7 @@ std::string CoreGetSharedDataDirectory(void)
     return directory;
 }
 
-std::string CoreGetSaveDirectory(void)
+std::string CoreGetDefaultSaveDirectory(void)
 {
     std::string directory;
 #ifdef PORTABLE_INSTALL
@@ -162,7 +163,7 @@ std::string CoreGetSaveDirectory(void)
     return directory;
 }
 
-std::string CoreGetSaveStateDirectory(void)
+std::string CoreGetDefaultSaveStateDirectory(void)
 {
     std::string directory;
 #ifdef PORTABLE_INSTALL
@@ -173,3 +174,29 @@ std::string CoreGetSaveStateDirectory(void)
 #endif // PORTABLE_INSTALL
     return directory;
 }
+
+std::string CoreGetUserDataDirectory(void)
+{
+    return CoreSettingsGetStringValue(SettingsID::Core_UserDataDirOverride);
+}
+
+std::string CoreGetUserCacheDirectory(void)
+{
+    return CoreSettingsGetStringValue(SettingsID::Core_UserCacheDirOverride);
+}
+
+std::string CoreGetSharedDataDirectory(void)
+{
+    return CoreSettingsGetStringValue(SettingsID::Core_SharedDataPath);
+}
+
+std::string CoreGetSaveDirectory(void)
+{
+    return CoreSettingsGetStringValue(SettingsID::Core_SaveSRAMPath);
+}
+
+std::string CoreGetSaveStateDirectory(void)
+{
+    return CoreSettingsGetStringValue(SettingsID::Core_SaveStatePath);
+}
+

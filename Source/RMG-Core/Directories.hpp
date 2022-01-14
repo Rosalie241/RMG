@@ -25,6 +25,26 @@ std::string CoreGetCoreDirectory(void);
 // plugins should be located
 std::string CoreGetPluginDirectory(void);
 
+// returns the default user data directory where
+// data files should be located
+std::string CoreGetDefaultUserDataDirectory(void);
+
+// returns the default user cache directory where
+// cache files should be located
+std::string CoreGetDefaultUserCacheDirectory(void);
+
+// returns the default shared data directory where
+// shared data files should be located
+std::string CoreGetDefaultSharedDataDirectory(void);
+
+// returns the default save directory where
+// game saves should be located
+std::string CoreGetDefaultSaveDirectory(void);
+
+// returns the default save state directory where
+// save states should be located
+std::string CoreGetDefaultSaveStateDirectory(void);
+
 // returns the user config directory where
 // configuration files should be located
 std::string CoreGetUserConfigDirectory(void);

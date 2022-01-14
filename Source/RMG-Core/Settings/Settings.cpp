@@ -189,10 +189,10 @@ static l_Setting get_setting(SettingsID settingId)
         setting = {SETTING_SECTION_CORE, "OverrideUserDirectories", true};
         break;
     case SettingsID::Core_UserDataDirOverride:
-        setting = {SETTING_SECTION_CORE, "UserDataDirectory", CoreGetUserDataDirectory()};
+        setting = {SETTING_SECTION_CORE, "UserDataDirectory", CoreGetDefaultUserDataDirectory()};
         break;
     case SettingsID::Core_UserCacheDirOverride:
-        setting = {SETTING_SECTION_CORE, "UserCacheDirectory", CoreGetUserCacheDirectory()};
+        setting = {SETTING_SECTION_CORE, "UserCacheDirectory", CoreGetDefaultUserCacheDirectory()};
         break;
 
     case SettingsID::Core_OverrideGameSpecificSettings:
@@ -222,13 +222,13 @@ static l_Setting get_setting(SettingsID settingId)
         setting = {SETTING_SECTION_M64P, "ScreenshotPath", "Screenshots", "", true};
         break;
     case SettingsID::Core_SaveStatePath:
-        setting = {SETTING_SECTION_M64P, "SaveStatePath", CoreGetSaveStateDirectory(), "", true};
+        setting = {SETTING_SECTION_M64P, "SaveStatePath", CoreGetDefaultSaveStateDirectory(), "", true};
         break;
     case SettingsID::Core_SaveSRAMPath:
-        setting = {SETTING_SECTION_M64P, "SaveSRAMPath", CoreGetSaveDirectory(), "", true};
+        setting = {SETTING_SECTION_M64P, "SaveSRAMPath", CoreGetDefaultSaveDirectory(), "", true};
         break;
     case SettingsID::Core_SharedDataPath:
-        setting = {SETTING_SECTION_M64P, "SharedDataPath", CoreGetSharedDataDirectory(), "", true};
+        setting = {SETTING_SECTION_M64P, "SharedDataPath", CoreGetDefaultSharedDataDirectory(), "", true};
         break;
 
     case SettingsID::Core_64DD_RomFile:
