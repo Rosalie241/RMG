@@ -24,11 +24,15 @@ if (PORTABLE_INSTALL OR (NOT PORTABLE_INSTALL AND (WIN32 OR MSYS)))
     set(CORE_INSTALL_PATH "${INSTALL_PATH}/Core")
     set(PLUGIN_INSTALL_PATH "${INSTALL_PATH}/Plugin")
     set(DATA_INSTALL_PATH "${INSTALL_PATH}/Data")
+    set(INSTALL_DESKTOP_FILE "0")
 else()
     set(RMG_INSTALL_PATH "usr/bin/")
     set(CORE_INSTALL_PATH "usr/local/lib/RMG/Core")
     set(PLUGIN_INSTALL_PATH "usr/local/lib/RMG/Plugin")
     set(DATA_INSTALL_PATH "usr/share/RMG")
+    set(INSTALL_DESKTOP_FILE "1")
+    set(DESKTOP_INSTALL_PATH "usr/share/applications")
+    set(ICON_INSTALL_PATH "usr/share/pixmaps")
 endif()
 
 add_subdirectory(Source/RMG-Core)
@@ -77,3 +81,12 @@ install(FILES ${MUPEN64PLUS_PLUGIN_GFX_GLIDEN64}
 install(FILES ${MUPEN64PLUS_PLUGIN_GFX_PARALLEL}
     DESTINATION ${PLUGIN_INSTALL_PATH}/GFX
 )
+
+if (${INSTALL_DESKTOP_FILE} STREQUAL "1")
+    install(FILES "${CMAKE_SOURCE_DIR}/Package/RMG.desktop"
+        DESTINATION ${DESKTOP_INSTALL_PATH}
+    )
+    install(FILES "${CMAKE_SOURCE_DIR}/Artwork/RMG.svg"
+        DESTINATION ${ICON_INSTALL_PATH}
+    )
+endif()
