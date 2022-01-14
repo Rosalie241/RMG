@@ -18,6 +18,11 @@ execute_process(
 
 set(CMAKE_INSTALL_PREFIX "")
 
+if (NOT PORTABLE_INSTALL AND (WIN32 OR MSYS))
+    message(WARNING "Not-Portable build not supported on windows, re-enabling PORTABLE_INSTALL!")
+    set(PORTABLE_INSTALL ON)
+endif()
+
 if (PORTABLE_INSTALL OR (NOT PORTABLE_INSTALL AND (WIN32 OR MSYS)))
     set(INSTALL_PATH "Bin/${CMAKE_BUILD_TYPE}")
     set(RMG_INSTALL_PATH "${INSTALL_PATH}")
