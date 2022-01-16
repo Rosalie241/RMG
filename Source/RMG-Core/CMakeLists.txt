@@ -10,6 +10,8 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2)
 pkg_check_modules(MINIZIP REQUIRED minizip)
 
+configure_file(Config.hpp.in Config.hpp)
+
 set(RMG_CORE_SOURCES
     m64p/Api.cpp
     m64p/CoreApi.cpp

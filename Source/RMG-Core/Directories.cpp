@@ -8,6 +8,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "Directories.hpp"
+#include "Config.hpp"
 #include "Error.hpp"
 #include "Core.hpp"
 
@@ -91,7 +92,8 @@ std::string CoreGetCoreDirectory(void)
 #ifdef PORTABLE_INSTALL
     directory = "Core";
 #else // Not Portable
-    directory = "/usr/local/lib/RMG/Core";
+    directory = CORE_INSTAlL_PREFIX;
+    directory += "/lib/RMG/Core";
 #endif // PORTABLE_INSTALL
     return directory;
 }
@@ -102,7 +104,8 @@ std::string CoreGetPluginDirectory(void)
 #ifdef PORTABLE_INSTALL
     directory = "Plugin";
 #else // Not Portable
-    directory = "/usr/local/lib/RMG/Plugin";
+    directory = CORE_INSTAlL_PREFIX;
+    directory += "/lib/RMG/Plugin";
 #endif // PORTABLE_INSTALL
     return directory;
 }
@@ -146,7 +149,8 @@ std::string CoreGetDefaultSharedDataDirectory(void)
 #ifdef PORTABLE_INSTALL
     directory = "Data";
 #else // Not Portable
-    directory = "/usr/share/RMG";
+    directory = CORE_INSTAlL_PREFIX;
+    directory += "/share/RMG";
 #endif // PORTABLE_INSTALL
     return directory;
 }
