@@ -16,7 +16,7 @@ jobs:
         run: |
           echo "GIT_REVISION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
       - name: Build RMG (Portable)
-        run: env RMG_PORTABLE=ON ./Source/Script/Build.sh Release
+        run: ./Source/Script/Build.sh Release
         shell: bash
       - name: Upload RMG (Portable)
         uses: actions/upload-artifact@v2
@@ -55,7 +55,7 @@ jobs:
           echo "GIT_REVISION=$env:revision" >> $env:GITHUB_ENV
         shell: pwsh
       - name: Build RMG (Portable)
-        run: env RMG_PORTABLE=ON ./Source/Script/Build.sh Release
+        run: ./Source/Script/Build.sh Release
         shell: msys2 {0}
       - name: Create Installer
         run: .\Build\Release\Source\Installer\CreateInstaller.bat
