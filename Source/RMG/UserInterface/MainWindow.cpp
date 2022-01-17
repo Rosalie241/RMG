@@ -788,15 +788,11 @@ void MainWindow::on_Action_File_OpenRom(void)
         this->on_Action_System_Pause();
     }
 
-    QFileDialog dialog(this);
-    int ret;
-    QString dir;
+    QString diskRom;
 
-    dialog.setFileMode(QFileDialog::FileMode::ExistingFile);
-    dialog.setNameFilter("N64 ROMs & Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip)");
+    diskRom = QFileDialog::getOpenFileName(this, "", "", "N64 ROMs & Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip)");
 
-    ret = dialog.exec();
-    if (!ret)
+    if (diskRom.isEmpty())
     {
         if (isRunning && !isPaused)
         {
@@ -810,7 +806,7 @@ void MainWindow::on_Action_File_OpenRom(void)
         this->ui_NoSwitchToRomBrowser = true;
     }
 
-    this->emulationThread_Launch(dialog.selectedFiles().first());
+    this->emulationThread_Launch(diskRom);
 }
 
 void MainWindow::on_Action_File_OpenCombo(void)
@@ -823,15 +819,11 @@ void MainWindow::on_Action_File_OpenCombo(void)
         this->on_Action_System_Pause();
     }
 
-    QFileDialog dialog(this);
-    int ret;
-    QString dir, cartRom, diskRom;
+    QString cartRom, diskRom;
 
-    dialog.setFileMode(QFileDialog::FileMode::ExistingFile);
-    dialog.setNameFilter("N64 ROMs (*.n64 *.z64 *.v64 *.zip)");
-
-    ret = dialog.exec();
-    if (!ret)
+    cartRom = QFileDialog::getOpenFileName(this, "", "", "N64 ROMs (*.n64 *.z64 *.v64 *.zip)");
+    
+    if (cartRom.isEmpty())
     {
         if (isRunning && !isPaused)
         {
@@ -840,11 +832,10 @@ void MainWindow::on_Action_File_OpenCombo(void)
         return;
     }
 
-    cartRom = dialog.selectedFiles().first();
 
-    dialog.setNameFilter("N64DD Disk Image (*.ndd *.d64)");
-    ret = dialog.exec();
-    if (!ret)
+    diskRom = QFileDialog::getOpenFileName(this, "", "", "N64DD Disk Image (*.ndd *.d64)");
+
+    if (diskRom.isEmpty())
     {
         if (isRunning && !isPaused)
         {
@@ -852,8 +843,6 @@ void MainWindow::on_Action_File_OpenCombo(void)
         }
         return;
     }
-
-    diskRom = dialog.selectedFiles().first();
 
     if (this->ui_Widgets->currentIndex() != 0)
     {
@@ -1156,19 +1145,14 @@ void MainWindow::on_RomBrowser_PlayGame(QString file)
 
 void MainWindow::on_RomBrowser_PlayGameWithDisk(QString file)
 {
-    QFileDialog dialog(this);
-    int ret;
     QString diskRom;
 
-    dialog.setFileMode(QFileDialog::FileMode::ExistingFile);
-    dialog.setNameFilter("N64DD Disk Image (*.ndd *.d64)");
-    ret = dialog.exec();
-    if (!ret)
+    diskRom = QFileDialog::getOpenFileName(this, "", "", "N64DD Disk Image (*.ndd *.d64)");
+
+    if (diskRom.isEmpty())
     {
         return;
     }
-
-    diskRom = dialog.selectedFiles().first();
 
     this->emulationThread_Launch(file, diskRom);
 }
