@@ -872,18 +872,12 @@ void MainWindow::on_Action_File_EndEmulation(void)
 
 void MainWindow::on_Action_File_ChooseDirectory(void)
 {
-    QFileDialog dialog;
     QString dir;
-    int ret;
 
-    dialog.setFileMode(QFileDialog::Directory);
-    dialog.setOption(QFileDialog::ShowDirsOnly, true);
-    dialog.setWindowIcon(this->ui_Icon);
+    dir = QFileDialog::getExistingDirectory(this);
 
-    ret = dialog.exec();
-    if (ret)
+    if (!dir.isEmpty())
     {
-        dir = dialog.selectedFiles().first();
         CoreSettingsSetValue(SettingsID::RomBrowser_Directory, dir.toStdString());
         this->ui_Widget_RomBrowser->SetDirectory(dir);
         this->ui_Widget_RomBrowser->RefreshRomList();
