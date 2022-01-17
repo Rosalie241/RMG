@@ -21,7 +21,7 @@ pkgver()
 {
     cd "$_pkgname"
 
-    git describe --tags --always | sed -e 's|-|.|g'
+    git describe --tags --always | sed -e 's|^v||;s|-|.|g'
 }
 
 prepare()
