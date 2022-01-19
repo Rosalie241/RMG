@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='utf-8'?>
+<component type="desktop">
+  <!--Created with jdAppdataEdit 2.1-->
+  <id>com.github.Rosalie241.RMG</id>
+  <name>Rosalie's Mupen GUI</name>
+  <summary>An easy to use &amp; cross-platform mupen64plus front-end written in C++ &amp; Qt</summary>
+  <developer_name>Rosalie</developer_name>
+  <launchable type="desktop-id">com.github.Rosalie241.RMG.desktop</launchable>
+  <metadata_license>GPL-3.0-only</metadata_license>
+  <project_license>GPL-3.0-only</project_license>
+  <description><p>Rosalie's Mupen GUI is an easy to use yet customizable mupen64plus front-end, allowing you to easily play n64 games.</p></description>
+  <screenshots>
+    <screenshot type="default">
+      <caption>The Rom Browser</caption>
+      <image type="source">https://github.com/Rosalie241/RMG/raw/flatpak-build/Package/Flatpak/Screenshots/RomBrowser.png</image>
+    </screenshot>
+    <screenshot type="default">
+      <caption>During A Game</caption>
+      <image type="source">https://github.com/Rosalie241/RMG/raw/flatpak-build/Package/Flatpak/Screenshots/InGame.png</image>
+    </screenshot>
+    <screenshot type="default">
+      <caption>Settings</caption>
+      <image type="source">https://github.com/Rosalie241/RMG/raw/flatpak-build/Package/Flatpak/Screenshots/Settings.png</image>
+    </screenshot>
+  </screenshots>
+  <description/>
+  <releases>
+    <release version="v0.1.0" date="2022-01-07" type="stable"/>
+    <release version="v0.0.9" date="2021-12-25" type="stable"/>
+    <release version="v0.0.8" date="2021-12-24" type="stable"/>
+    <release version="v0.0.7" date="2021-12-23" type="stable"/>
+    <release version="v0.0.6" date="2021-10-18" type="stable"/>
+    <release version="v0.0.5" date="2021-10-17" type="stable"/>
+    <release version="v0.0.4" date="2021-10-06" type="stable"/>
+    <release version="v0.0.3" date="2021-10-04" type="stable"/>
+    <release version="v0.0.2" date="2021-09-26" type="stable"/>
+  </releases>
+  <url type="homepage">https://github.com/Rosalie241/RMG</url>
+  <url type="bugtracker">https://github.com/Rosalie241/RMG/issues</url>
+  <categories>
+    <category>Game</category>
+  </categories>
+  <recommends>
+    <control>pointing</control>
+    <control>keyboard</control>
+  </recommends>
+  <content_rating type="oars-1.1"/>
+  <keywords>
+    <keyword>mupen64plus</keyword>
+    <keyword>RMG</keyword>
+  </keywords>
+</component>

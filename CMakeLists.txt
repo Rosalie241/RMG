@@ -5,6 +5,7 @@ cmake_minimum_required(VERSION 3.15)
 
 option(PORTABLE_INSTALL "Portable Installation" ON)
 option(NO_GIT_CLONE     "Disables git clone usage for 3rdParty dependencies" OFF)
+option(FLATPAK_BUILD    "Enables NO_GIT_CLONE and installs the correct desktop/icon file" OFF)
 
 project(RMG)
 
@@ -16,6 +17,16 @@ execute_process(
     ERROR_QUIET
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
+
+if (FLATPAK_BUILD AND (WIN32 OR MSYS))
+    message(ERROR "FLATPAK_BUILD is not supported on windows, disabling FLATPAK_BUILD!")
+    set(FLATPAK_BUILD OFF)
+endif()
+
+if(FLATPAK_BUILD)
+    set(NO_GIT_CLONE ON)
+    set(PORTABLE_INSTALL OFF)
+endif(FLATPAK_BUILD)
 
 if (NOT PORTABLE_INSTALL AND (WIN32 OR MSYS))
     message(WARNING "Not-Portable build not supported on windows, re-enabling PORTABLE_INSTALL!")
@@ -36,8 +47,17 @@ else()
     set(PLUGIN_INSTALL_PATH "lib/RMG/Plugin")
     set(DATA_INSTALL_PATH "share/RMG")
     set(INSTALL_DESKTOP_FILE "1")
+    if (FLATPAK_BUILD)
+        set(APPDATA_FILE "${CMAKE_SOURCE_DIR}/Package/Flatpak/com.github.Rosalie241.RMG.appdata.xml")
+        set(APPDATA_INSTALL_PATH "share/metainfo/")
+        set(DESKTOP_FILE "${CMAKE_SOURCE_DIR}/Package/Flatpak/com.github.Rosalie241.RMG.desktop")
+        set(ICON_FILE "${CMAKE_SOURCE_DIR}/Package/Flatpak/com.github.Rosalie241.RMG.svg")
+    else(FLATPAK_BUILD)
+        set(DESKTOP_FILE "${CMAKE_SOURCE_DIR}/Package/RMG.desktop")
+        set(ICON_FILE "${CMAKE_SOURCE_DIR}/Artwork/RMG.svg")
+    endif(FLATPAK_BUILD)
     set(DESKTOP_INSTALL_PATH "share/applications")
-    set(ICON_INSTALL_PATH "share/pixmaps")
+    set(ICON_INSTALL_PATH "share/icons/hicolor/scalable/apps/")
 endif()
 
 add_subdirectory(Source/RMG-Core)
@@ -88,10 +108,16 @@ install(FILES ${MUPEN64PLUS_PLUGIN_GFX_PARALLEL}
 )
 
 if (${INSTALL_DESKTOP_FILE} STREQUAL "1")
-    install(FILES "${CMAKE_SOURCE_DIR}/Package/RMG.desktop"
+    install(FILES ${DESKTOP_FILE}
         DESTINATION ${DESKTOP_INSTALL_PATH}
     )
-    install(FILES "${CMAKE_SOURCE_DIR}/Artwork/RMG.svg"
+    install(FILES ${ICON_FILE}
         DESTINATION ${ICON_INSTALL_PATH}
     )
 endif()
+
+if (FLATPAK_BUILD)
+    install(FILES ${APPDATA_FILE}
+        DESTINATION ${APPDATA_INSTALL_PATH}
+    )
+endif(FLATPAK_BUILD)
