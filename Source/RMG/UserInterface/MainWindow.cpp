@@ -788,11 +788,11 @@ void MainWindow::on_Action_File_OpenRom(void)
         this->on_Action_System_Pause();
     }
 
-    QString diskRom;
+    QString romFile;
 
-    diskRom = QFileDialog::getOpenFileName(this, "", "", "N64 ROMs & Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip)");
+    romFile = QFileDialog::getOpenFileName(this, "", "", "N64 ROMs & Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip)");
 
-    if (diskRom.isEmpty())
+    if (romFile.isEmpty())
     {
         if (isRunning && !isPaused)
         {
@@ -806,7 +806,7 @@ void MainWindow::on_Action_File_OpenRom(void)
         this->ui_NoSwitchToRomBrowser = true;
     }
 
-    this->emulationThread_Launch(diskRom);
+    this->emulationThread_Launch(romFile);
 }
 
 void MainWindow::on_Action_File_OpenCombo(void)
