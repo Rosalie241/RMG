@@ -10,7 +10,8 @@ if(${RUST_CARGO} STREQUAL "RUST_CARGO-NOTFOUND")
     message(WARNING "mupen64plus-input-gca will not be built due to not having cargo installed")
     set(BUILD_INPUT_GCA "0")
 else()
-    set(BUILD_INPUT_GCA "1")
+    # disabled because build failure
+    set(BUILD_INPUT_GCA "0")
 endif()
 
 set(M64P_CORE_DIR ${THIRDPARTY_DIR}/mupen64plus-core)
