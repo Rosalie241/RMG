@@ -33,10 +33,6 @@ std::string CoreGetDefaultUserDataDirectory(void);
 // cache files should be located
 std::string CoreGetDefaultUserCacheDirectory(void);
 
-// returns the default shared data directory where
-// shared data files should be located
-std::string CoreGetDefaultSharedDataDirectory(void);
-
 // returns the default save directory where
 // game saves should be located
 std::string CoreGetDefaultSaveDirectory(void);

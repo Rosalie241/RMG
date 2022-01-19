@@ -228,7 +228,7 @@ static l_Setting get_setting(SettingsID settingId)
         setting = {SETTING_SECTION_M64P, "SaveSRAMPath", CoreGetDefaultSaveDirectory(), "", true};
         break;
     case SettingsID::Core_SharedDataPath:
-        setting = {SETTING_SECTION_M64P, "SharedDataPath", CoreGetDefaultSharedDataDirectory(), "", true};
+        setting = {SETTING_SECTION_M64P, "SharedDataPath", CoreGetSharedDataDirectory(), "", true};
         break;
 
     case SettingsID::Core_64DD_RomFile:

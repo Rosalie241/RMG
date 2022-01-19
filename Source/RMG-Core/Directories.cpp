@@ -143,18 +143,6 @@ std::string CoreGetDefaultUserCacheDirectory(void)
     return directory;
 }
 
-std::string CoreGetDefaultSharedDataDirectory(void)
-{
-    std::string directory;
-#ifdef PORTABLE_INSTALL
-    directory = "Data";
-#else // Not Portable
-    directory = CORE_INSTAlL_PREFIX;
-    directory += "/share/RMG";
-#endif // PORTABLE_INSTALL
-    return directory;
-}
-
 std::string CoreGetDefaultSaveDirectory(void)
 {
     std::string directory;
@@ -191,7 +179,14 @@ std::string CoreGetUserCacheDirectory(void)
 
 std::string CoreGetSharedDataDirectory(void)
 {
-    return CoreSettingsGetStringValue(SettingsID::Core_SharedDataPath);
+    std::string directory;
+#ifdef PORTABLE_INSTALL
+    directory = "Data";
+#else // Not Portable
+    directory = CORE_INSTAlL_PREFIX;
+    directory += "/share/RMG";
+#endif // PORTABLE_INSTALL
+    return directory;
 }
 
 std::string CoreGetSaveDirectory(void)
