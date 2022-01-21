@@ -41,6 +41,8 @@
   <url type="bugtracker">https://github.com/Rosalie241/RMG/issues</url>
   <categories>
     <category>Game</category>
+    <category>Emulator</category>
+    <category>Qt</category>
   </categories>
   <recommends>
     <control>pointing</control>
