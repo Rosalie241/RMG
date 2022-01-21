@@ -6,21 +6,21 @@
   <summary>An easy to use &amp; cross-platform mupen64plus front-end written in C++ &amp; Qt</summary>
   <developer_name>Rosalie</developer_name>
   <launchable type="desktop-id">com.github.Rosalie241.RMG.desktop</launchable>
-  <metadata_license>GPL-3.0-only</metadata_license>
+  <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-only</project_license>
-  <description><p>Rosalie's Mupen GUI is an easy to use yet customizable mupen64plus front-end, allowing you to easily play n64 games.</p></description>
+  <description><p>Rosalie's Mupen GUI is an easy to use yet customizable mupen64plus front-end, allowing you to easily play N64 games.</p></description>
   <screenshots>
     <screenshot type="default">
       <caption>The Rom Browser</caption>
-      <image type="source">https://github.com/Rosalie241/RMG/raw/flatpak-build/Package/Flatpak/Screenshots/RomBrowser.png</image>
+      <image type="source">https://github.com/Rosalie241/RMG/raw/master/Package/Screenshots/RomBrowser.png</image>
     </screenshot>
     <screenshot type="default">
       <caption>During A Game</caption>
-      <image type="source">https://github.com/Rosalie241/RMG/raw/flatpak-build/Package/Flatpak/Screenshots/InGame.png</image>
+      <image type="source">https://github.com/Rosalie241/RMG/raw/master/Package/Screenshots/InGame.png</image>
     </screenshot>
     <screenshot type="default">
       <caption>Settings</caption>
-      <image type="source">https://github.com/Rosalie241/RMG/raw/flatpak-build/Package/Flatpak/Screenshots/Settings.png</image>
+      <image type="source">https://github.com/Rosalie241/RMG/raw/master/Package/Screenshots/Settings.png</image>
     </screenshot>
   </screenshots>
   <description/>
