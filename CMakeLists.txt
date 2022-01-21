@@ -5,7 +5,6 @@ cmake_minimum_required(VERSION 3.15)
 
 option(PORTABLE_INSTALL "Portable Installation" ON)
 option(NO_GIT_CLONE     "Disables git clone usage for 3rdParty dependencies" OFF)
-option(FLATPAK_BUILD    "Enables NO_GIT_CLONE and installs the correct desktop/icon file" OFF)
 
 project(RMG)
 
@@ -40,22 +39,14 @@ if (PORTABLE_INSTALL)
     set(CORE_INSTALL_PATH "${INSTALL_PATH}/Core")
     set(PLUGIN_INSTALL_PATH "${INSTALL_PATH}/Plugin")
     set(DATA_INSTALL_PATH "${INSTALL_PATH}/Data")
-    set(INSTALL_DESKTOP_FILE "0")
+    set(INSTALL_DESKTOP_FILE OFF)
 else()
     set(RMG_INSTALL_PATH "bin")
     set(CORE_INSTALL_PATH "lib/RMG/Core")
     set(PLUGIN_INSTALL_PATH "lib/RMG/Plugin")
     set(DATA_INSTALL_PATH "share/RMG")
-    set(INSTALL_DESKTOP_FILE "1")
-    if (FLATPAK_BUILD)
-        set(APPDATA_FILE "${CMAKE_SOURCE_DIR}/Package/Flatpak/com.github.Rosalie241.RMG.appdata.xml")
-        set(APPDATA_INSTALL_PATH "share/metainfo/")
-        set(DESKTOP_FILE "${CMAKE_SOURCE_DIR}/Package/Flatpak/com.github.Rosalie241.RMG.desktop")
-        set(ICON_FILE "${CMAKE_SOURCE_DIR}/Package/Flatpak/com.github.Rosalie241.RMG.svg")
-    else(FLATPAK_BUILD)
-        set(DESKTOP_FILE "${CMAKE_SOURCE_DIR}/Package/RMG.desktop")
-        set(ICON_FILE "${CMAKE_SOURCE_DIR}/Artwork/RMG.svg")
-    endif(FLATPAK_BUILD)
+    set(INSTALL_DESKTOP_FILE ON)
+    set(APPDATA_INSTALL_PATH "share/metainfo/")
     set(DESKTOP_INSTALL_PATH "share/applications")
     set(ICON_INSTALL_PATH "share/icons/hicolor/scalable/apps/")
 endif()
@@ -107,17 +98,14 @@ install(FILES ${MUPEN64PLUS_PLUGIN_GFX_PARALLEL}
     DESTINATION ${PLUGIN_INSTALL_PATH}/GFX
 )
 
-if (${INSTALL_DESKTOP_FILE} STREQUAL "1")
-    install(FILES ${DESKTOP_FILE}
+if (INSTALL_DESKTOP_FILE)
+    install(FILES Package/com.github.Rosalie241.RMG.desktop
         DESTINATION ${DESKTOP_INSTALL_PATH}
     )
-    install(FILES ${ICON_FILE}
+    install(FILES Package/com.github.Rosalie241.RMG.svg
         DESTINATION ${ICON_INSTALL_PATH}
     )
-endif()
-
-if (FLATPAK_BUILD)
-    install(FILES ${APPDATA_FILE}
+    install(FILES Package/com.github.Rosalie241.RMG.appdata.xml
         DESTINATION ${APPDATA_INSTALL_PATH}
     )
-endif(FLATPAK_BUILD)
+endif(INSTALL_DESKTOP_FILE)
