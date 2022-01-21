@@ -5,4 +5,4 @@ Comment=An easy to use & cross-platform mupen64plus front-end written in C++ & Q
 Exec=RMG
 Icon=com.github.Rosalie241.RMG
 Terminal=false
-Categories=Game;
+Categories=Game;Emulator;Qt;
