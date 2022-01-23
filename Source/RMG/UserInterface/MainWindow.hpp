@@ -10,6 +10,7 @@
 #ifndef MAINWINDOW_HPP
 #define MAINWINDOW_HPP
 
+#include "UserInterface/Dialog/AboutDialog.hpp"
 #include "Thread/EmulationThread.hpp"
 #include "Dialog/SettingsDialog.hpp"
 #include "Dialog/RomInfoDialog.hpp"
@@ -126,6 +127,8 @@ class MainWindow : public QMainWindow
     void ui_Actions_Add(void);
     void ui_Actions_Remove(void);
     void ui_Actions_Connect(void);
+
+    UserInterface::Dialog::AboutDialog* aboutDialog;
 
   protected:
     void timerEvent(QTimerEvent *) Q_DECL_OVERRIDE;

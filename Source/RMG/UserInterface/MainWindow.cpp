@@ -52,6 +52,8 @@ bool MainWindow::Init(QGuiApplication* app)
         this->ui_MessageBox("Error", "CoreApplyPluginSettings() Failed", QString::fromStdString(CoreGetError()));
     }
 
+    aboutDialog = new UserInterface::Dialog::AboutDialog();
+
     this->ui_Init();
     this->ui_Setup();
 
@@ -1106,6 +1108,7 @@ void MainWindow::on_Action_Help_HomePage(void)
 
 void MainWindow::on_Action_Help_About(void)
 {
+    this->aboutDialog->exec();
 }
 
 void MainWindow::on_Emulation_Started(void)
