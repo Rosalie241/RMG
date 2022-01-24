@@ -10,7 +10,7 @@ project(RMG)
 
 find_package(Git REQUIRED)
 execute_process(
-    COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
+    COMMAND ${GIT_EXECUTABLE} describe --tags --always
     WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
     OUTPUT_VARIABLE GIT_VERSION
     ERROR_QUIET
