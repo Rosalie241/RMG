@@ -21,6 +21,7 @@ set(RMG_CORE_SOURCES
     SpeedLimiter.cpp
     RomSettings.cpp
     Directories.cpp
+    MediaLoader.cpp
     Screenshot.cpp
     RomHeader.cpp
     Emulation.cpp
