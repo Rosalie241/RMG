@@ -9,6 +9,7 @@
  */
 #include "MainWindow.hpp"
 
+#include "UserInterface/Dialog/AboutDialog.hpp"
 #include "UserInterface/EventFilter.hpp"
 #include "Utilities/QtKeyToSdl2Key.hpp"
 #include "Callbacks.hpp"
@@ -1106,6 +1107,8 @@ void MainWindow::on_Action_Help_HomePage(void)
 
 void MainWindow::on_Action_Help_About(void)
 {
+    Dialog::AboutDialog dialog(this);
+    dialog.exec();
 }
 
 void MainWindow::on_Emulation_Started(void)
