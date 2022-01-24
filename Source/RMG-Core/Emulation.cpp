@@ -8,6 +8,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "Emulation.hpp"
+#include "MediaLoader.hpp"
 #include "m64p/Api.hpp"
 #include "Plugins.hpp"
 #include "Error.hpp"
@@ -67,6 +68,9 @@ bool CoreStartEmulation(std::string n64rom, std::string n64ddrom)
         CoreCloseRom();
         return false;
     }
+
+    // set disk file in media loader
+    CoreMediaLoaderSetDiskFile(n64ddrom);
 
     ret = m64p::Core.DoCommand(M64CMD_EXECUTE, 0, nullptr);
     if (ret != M64ERR_SUCCESS)

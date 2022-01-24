@@ -14,6 +14,7 @@
 #include "SpeedLimiter.hpp"
 #include "RomSettings.hpp"
 #include "Directories.hpp"
+#include "MediaLoader.hpp"
 #include "Screenshot.hpp"
 #include "Emulation.hpp"
 #include "SaveState.hpp"

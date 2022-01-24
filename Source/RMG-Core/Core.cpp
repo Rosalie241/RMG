@@ -119,7 +119,14 @@ bool CoreInit(void)
         return false;
     }
 
-    if (!config_override_user_dirs())
+    ret = CoreSetupMediaLoader();
+    if (!ret)
+    {
+        return false;
+    }
+
+    ret = config_override_user_dirs();
+    if (!ret)
     {
         return false;
     }
