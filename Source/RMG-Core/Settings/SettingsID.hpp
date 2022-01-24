@@ -24,7 +24,10 @@ enum class SettingsID
     Core_UserCacheDirOverride,
 
     // Core 64DD ROM Settings
-    Core_64DD_RomFile,
+    Core_64DD_JapaneseIPL,
+    Core_64DD_AmericanIPL,
+    Core_64DD_DevelopmentIPL,
+    Core_64DD_SaveDiskFormat,
 
     // (mupen64plus) Core Settings
     Core_OverrideGameSpecificSettings,

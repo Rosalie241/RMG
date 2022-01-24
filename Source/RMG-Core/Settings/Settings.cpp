@@ -112,6 +112,7 @@ static std::vector<std::string> l_sectionList;
 #define SETTING_SECTION_KEYBIND     SETTING_SECTION_GUI  " KeyBindings"
 #define SETTING_SECTION_ROMBROWSER  SETTING_SECTION_GUI  " RomBrowser"
 #define SETTING_SECTION_SETTINGS    SETTING_SECTION_CORE " Settings"
+#define SETTING_SECTION_64DD        SETTING_SECTION_CORE " 64DD"
 #define SETTING_SECTION_M64P        "Core"
 #define SETTING_SECTION_AUDIO       SETTING_SECTION_GUI  " - Audio Plugin"
 
@@ -231,8 +232,17 @@ static l_Setting get_setting(SettingsID settingId)
         setting = {SETTING_SECTION_M64P, "SharedDataPath", CoreGetSharedDataDirectory(), "", true};
         break;
 
-    case SettingsID::Core_64DD_RomFile:
-        setting = {SETTING_SECTION_CORE, "64DD_RomFile", ""};
+    case SettingsID::Core_64DD_JapaneseIPL:
+        setting = {SETTING_SECTION_64DD, "64DD_JapaneseIPL", ""};
+        break;
+    case SettingsID::Core_64DD_AmericanIPL:
+        setting = {SETTING_SECTION_64DD, "64DD_AmericanIPL", ""};
+        break;
+    case SettingsID::Core_64DD_DevelopmentIPL:
+        setting = {SETTING_SECTION_64DD, "64DD_DevelopmentIPL", ""};
+        break;
+    case SettingsID::Core_64DD_SaveDiskFormat:
+        setting = {SETTING_SECTION_M64P, "SaveDiskFormat", 0};
         break;
 
     case SettingsID::Game_DisableExtraMem:
