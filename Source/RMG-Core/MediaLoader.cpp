@@ -87,6 +87,7 @@ bool CoreSetupMediaLoader(void)
     {
         error = "CoreSetupMediaLoader m64p::Core.DoCommand(M64CMD_SET_MEDIA_LOADER) Failed: ";
         error += m64p::Core.ErrorMessage(ret);
+        CoreSetError(error);
     }
  
     return ret == M64ERR_SUCCESS;
