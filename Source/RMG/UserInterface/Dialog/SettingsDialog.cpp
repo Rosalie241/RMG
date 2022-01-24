@@ -40,7 +40,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
 
     pluginList = CoreGetAllPlugins();
 
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < 9; i++)
     {
         this->reloadSettings(i);
     }
@@ -107,9 +107,12 @@ void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
         loadDefaultDirectorySettings();
         break;
     case 6:
-        loadDefaultHotkeySettings();
+        loadDefault64DDSettings();
         break;
     case 7:
+        loadDefaultHotkeySettings();
+        break;
+    case 8:
         loadDefaultInterfaceSettings();
         break;
     }
@@ -139,9 +142,12 @@ void SettingsDialog::reloadSettings(int stackedWidgetIndex)
         loadDirectorySettings();
         break;
     case 6:
-        loadHotkeySettings();
+        load64DDSettings();
         break;
     case 7:
+        loadHotkeySettings();
+        break;
+    case 8:
         loadInterfaceSettings();
         break;
     }
@@ -288,6 +294,24 @@ void SettingsDialog::loadDirectorySettings(void)
     this->userCacheDirLineEdit->setText(QString::fromStdString(userCacheDir));
 }
 
+void SettingsDialog::load64DDSettings(void)
+{
+    std::string japaneseIPLRom;
+    std::string americanIPlRom;
+    std::string developmentIPLRom;
+    int saveDiskFormat = 0;
+
+    japaneseIPLRom = CoreSettingsGetStringValue(SettingsID::Core_64DD_JapaneseIPL);
+    americanIPlRom = CoreSettingsGetStringValue(SettingsID::Core_64DD_AmericanIPL);
+    developmentIPLRom = CoreSettingsGetStringValue(SettingsID::Core_64DD_DevelopmentIPL);
+    saveDiskFormat = CoreSettingsGetIntValue(SettingsID::Core_64DD_SaveDiskFormat);
+
+    this->japaneseIPLRomLineEdit->setText(QString::fromStdString(japaneseIPLRom));
+    this->americanIPLRomLineEdit->setText(QString::fromStdString(americanIPlRom));
+    this->developmentIPLRomLineEdit->setText(QString::fromStdString(developmentIPLRom));
+    this->diskSaveTypeComboBox->setCurrentIndex(saveDiskFormat);
+}
+
 void SettingsDialog::loadHotkeySettings(void)
 {
     this->commonHotkeySettings(0);
@@ -390,6 +414,14 @@ void SettingsDialog::loadDefaultDirectorySettings(void)
     this->userCacheDirLineEdit->setText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::Core_UserCacheDirOverride)));
 }
 
+void SettingsDialog::loadDefault64DDSettings(void)
+{
+    this->japaneseIPLRomLineEdit->setText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::Core_64DD_JapaneseIPL)));
+    this->americanIPLRomLineEdit->setText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::Core_64DD_AmericanIPL)));
+    this->developmentIPLRomLineEdit->setText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::Core_64DD_DevelopmentIPL)));
+    this->diskSaveTypeComboBox->setCurrentIndex(CoreSettingsGetDefaultIntValue(SettingsID::Core_64DD_SaveDiskFormat));
+}
+
 void SettingsDialog::loadDefaultHotkeySettings(void)
 {
     this->commonHotkeySettings(1);
@@ -419,6 +451,7 @@ void SettingsDialog::saveSettings(void)
     }
     this->savePluginSettings();
     this->saveDirectorySettings();
+    this->save64DDSettings();
     this->saveHotkeySettings();
     this->saveInterfaceSettings();
 }
@@ -542,6 +575,14 @@ void SettingsDialog::saveDirectorySettings(void)
     CoreSettingsSetValue(SettingsID::Core_UserCacheDirOverride, this->userCacheDirLineEdit->text().toStdString());
 }
 
+void SettingsDialog::save64DDSettings(void)
+{
+    CoreSettingsSetValue(SettingsID::Core_64DD_JapaneseIPL, this->japaneseIPLRomLineEdit->text().toStdString());
+    CoreSettingsSetValue(SettingsID::Core_64DD_AmericanIPL, this->americanIPLRomLineEdit->text().toStdString());
+    CoreSettingsSetValue(SettingsID::Core_64DD_DevelopmentIPL, this->developmentIPLRomLineEdit->text().toStdString());
+    CoreSettingsSetValue(SettingsID::Core_64DD_SaveDiskFormat, this->diskSaveTypeComboBox->currentIndex());
+}
+
 void SettingsDialog::saveHotkeySettings(void)
 {
     this->commonHotkeySettings(2);
@@ -656,8 +697,8 @@ void SettingsDialog::commonPluginSettings(int action)
 void SettingsDialog::hideEmulationInfoText(void)
 {
     QHBoxLayout *layouts[] = {this->emulationInfoLayout_0, this->emulationInfoLayout_1, 
-                                this->emulationInfoLayout_2, this->emulationInfoLayout_9, 
-                                this->emulationInfoLayout_13};
+                                this->emulationInfoLayout_2, this->emulationInfoLayout_3,
+                                this->emulationInfoLayout_9, this->emulationInfoLayout_13};
 
     for (const auto &layout : layouts)
     {
@@ -671,19 +712,28 @@ void SettingsDialog::hideEmulationInfoText(void)
 
 void SettingsDialog::chooseDirectory(QLineEdit *lineEdit)
 {
-    QFileDialog dialog;
-    int ret;
+    QString dir;
 
-    dialog.setFileMode(QFileDialog::Directory);
-    dialog.setOption(QFileDialog::ShowDirsOnly, true);
-
-    ret = dialog.exec();
-    if (!ret)
+    dir = QFileDialog::getExistingDirectory(this);
+    if (dir.isEmpty())
     {
         return;
     }
 
-    lineEdit->setText(dialog.directory().path());
+    lineEdit->setText(dir);
+}
+
+void SettingsDialog::chooseIPLRom(QLineEdit *lineEdit)
+{
+    QString file;
+
+    file = QFileDialog::getOpenFileName(this, "", "", "IPL ROMs (*.n64)");
+    if (file.isEmpty())
+    {
+        return;
+    }
+
+    lineEdit->setText(file);
 }
 
 void SettingsDialog::on_buttonBox_clicked(QAbstractButton *button)
@@ -763,3 +813,19 @@ void SettingsDialog::on_changeUserCacheDirButton_clicked(void)
 {
     this->chooseDirectory(this->userCacheDirLineEdit);
 }
+
+void SettingsDialog::on_changeJapaneseIPLRomPathButton_clicked(void)
+{
+    this->chooseIPLRom(this->japaneseIPLRomLineEdit);
+}
+
+void SettingsDialog::on_changeAmericanIPLRomPathButton_clicked(void)
+{
+    this->chooseIPLRom(this->americanIPLRomLineEdit);
+}
+
+void SettingsDialog::on_changeDevelopmentIPLRomPathButton_clicked(void)
+{
+    this->chooseIPLRom(this->developmentIPLRomLineEdit);
+}
+

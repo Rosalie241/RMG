@@ -54,6 +54,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void loadGamePluginSettings(void);
     void loadPluginSettings(void);
     void loadDirectorySettings(void);
+    void load64DDSettings(void);
     void loadHotkeySettings(void);
     void loadInterfaceSettings(void);
 
@@ -63,6 +64,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void loadDefaultGamePluginSettings(void);
     void loadDefaultPluginSettings(void);
     void loadDefaultDirectorySettings(void);
+    void loadDefault64DDSettings(void);
     void loadDefaultHotkeySettings(void);
     void loadDefaultInterfaceSettings(void);
 
@@ -73,6 +75,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void saveGamePluginSettings(void);
     void savePluginSettings(void);
     void saveDirectorySettings(void);
+    void save64DDSettings(void);
     void saveHotkeySettings(void);
     void saveInterfaceSettings(void);
 
@@ -82,6 +85,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void hideEmulationInfoText(void);
 
     void chooseDirectory(QLineEdit *);
+    void chooseIPLRom(QLineEdit *);
 
   private slots:
     void on_buttonBox_clicked(QAbstractButton *);
@@ -92,6 +96,10 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void on_changeSharedDataDirButton_clicked(void);
     void on_changeUserDataDirButton_clicked(void);
     void on_changeUserCacheDirButton_clicked(void);
+
+    void on_changeJapaneseIPLRomPathButton_clicked(void);
+    void on_changeAmericanIPLRomPathButton_clicked(void);
+    void on_changeDevelopmentIPLRomPathButton_clicked(void);
 
   public:
     SettingsDialog(QWidget *parent);
