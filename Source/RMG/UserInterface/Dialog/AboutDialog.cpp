@@ -18,7 +18,4 @@ AboutDialog::AboutDialog(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenu
     this->setupUi(this);
 
     this->versionLabel->setText(QString("RMG %1").arg(VERSION_STR));
-
-    // Disable window resize
-    this->setFixedSize(this->width(), this->height());
 }
