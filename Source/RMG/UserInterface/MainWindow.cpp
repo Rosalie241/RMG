@@ -9,6 +9,7 @@
  */
 #include "MainWindow.hpp"
 
+#include "UserInterface/Dialog/AboutDialog.hpp"
 #include "UserInterface/EventFilter.hpp"
 #include "Utilities/QtKeyToSdl2Key.hpp"
 #include "Callbacks.hpp"
@@ -51,8 +52,6 @@ bool MainWindow::Init(QGuiApplication* app)
     {
         this->ui_MessageBox("Error", "CoreApplyPluginSettings() Failed", QString::fromStdString(CoreGetError()));
     }
-
-    aboutDialog = new UserInterface::Dialog::AboutDialog();
 
     this->ui_Init();
     this->ui_Setup();
@@ -1108,7 +1107,8 @@ void MainWindow::on_Action_Help_HomePage(void)
 
 void MainWindow::on_Action_Help_About(void)
 {
-    this->aboutDialog->exec();
+    Dialog::AboutDialog dialog(this);
+    dialog.exec();
 }
 
 void MainWindow::on_Emulation_Started(void)

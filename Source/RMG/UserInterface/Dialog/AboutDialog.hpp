@@ -22,11 +22,8 @@ class AboutDialog : public QDialog, private Ui::AboutDialog
 {
     Q_OBJECT
 
-  private slots:
-    void on_okButton_clicked(void);
-
   public:
-    AboutDialog();
+    AboutDialog(QWidget* parent);
 };
 } // namespace Dialog
 } // namespace UserInterface

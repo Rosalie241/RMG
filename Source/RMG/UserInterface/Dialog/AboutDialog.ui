@@ -52,7 +52,7 @@
    <item>
     <widget class="QLabel" name="versionLabel">
      <property name="text">
-      <string notr="true">RMG version {version}</string>
+      <string notr="true">RMG {version}</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -75,7 +75,7 @@
    <item>
     <widget class="QLabel" name="label_3">
      <property name="text">
-      <string>This Program is licensed under GPL 3</string>
+      <string>This Program is licensed under GPLv3</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -88,7 +88,7 @@
    <item>
     <widget class="QLabel" name="label_4">
      <property name="text">
-      <string>Copyright © 2020-2022 Rosalie241</string>
+      <string>Copyright © 2020-2022 Rosalie Wanders</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -96,7 +96,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="okButton">
+    <widget class="QDialogButtonBox" name="buttonBox">
      <property name="standardButtons">
       <set>QDialogButtonBox::Ok</set>
      </property>
@@ -107,5 +107,22 @@
  <resources>
   <include location="../UIResources.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>AboutDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>190</x>
+     <y>283</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>190</x>
+     <y>153</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

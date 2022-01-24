@@ -4,7 +4,7 @@
 #define WINDOW_TITLE "Rosalie's Mupen GUI (${GIT_VERSION})"
 #define WINDOW_WIDGET_SIZE_W 640
 #define WINDOW_WIDGET_SIZE_H 480
-#define VERSION "0.1.1"
+#define VERSION_STR "${GIT_VERSION}"
 
 #define APP_URL_HOMEPAGE "https://github.com/Rosalie241/RMG"
 

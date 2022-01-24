@@ -13,14 +13,12 @@
 
 using namespace UserInterface::Dialog;
 
-AboutDialog::AboutDialog()
+AboutDialog::AboutDialog(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint)
 {
     this->setupUi(this);
 
-    this->versionLabel->setText(QString("RMG version %1").arg(VERSION));
-}
+    this->versionLabel->setText(QString("RMG %1").arg(VERSION_STR));
 
-void AboutDialog::on_okButton_clicked(void)
-{
-    this->close();
+    // Disable window resize
+    this->setFixedSize(this->width(), this->height());
 }
