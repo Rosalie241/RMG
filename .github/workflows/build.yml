@@ -16,7 +16,7 @@ jobs:
           sudo apt-get -y install cmake libhidapi-dev libsamplerate0-dev libminizip-dev libsdl2-dev libfreetype6-dev libgl1-mesa-dev libglu1-mesa-dev pkg-config zlib1g-dev binutils-dev libspeexdsp-dev qt5-default build-essential nasm git zip
       - name: Prepare Environment
         run: |
-          echo "GIT_REVISION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          echo "GIT_REVISION=$(git describe --tags --always)" >> $GITHUB_ENV
       - name: Build RMG (Portable)
         run: ./Source/Script/Build.sh Release
         shell: bash
@@ -55,7 +55,7 @@ jobs:
             git
       - name: Prepare Environment
         run: |
-          $env:revision = git rev-parse --short HEAD
+          $env:revision = git describe --tags --always
           echo "GIT_REVISION=$env:revision" >> $env:GITHUB_ENV
         shell: pwsh
       - name: Build RMG (Portable)
