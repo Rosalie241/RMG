@@ -75,7 +75,7 @@
    <item>
     <widget class="QLabel" name="label_3">
      <property name="text">
-      <string>This Program is licensed under GPLv3</string>
+      <string>This program is licensed under GPLv3</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
