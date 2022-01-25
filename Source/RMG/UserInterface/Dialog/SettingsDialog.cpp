@@ -516,12 +516,14 @@ void SettingsDialog::saveGameCoreSettings(void)
     defaultRandomizeInterrupt = CoreSettingsGetDefaultBoolValue(SettingsID::Game_RandomizeInterrupt);
     defaultCpuEmulator = CoreSettingsGetDefaultIntValue(SettingsID::Game_CPU_Emulator);
 
-    if (defaultOverrideEnabled != overrideEnabled)
+    if ((defaultOverrideEnabled != overrideEnabled) ||
+        (defaultCpuEmulator != cpuEmulator) ||
+        (defaultRandomizeInterrupt != randomizeInterrupt))
+    {
         CoreSettingsSetValue(SettingsID::Game_OverrideCoreSettings, this->gameSection, overrideEnabled);
-    if (defaultCpuEmulator != cpuEmulator)
         CoreSettingsSetValue(SettingsID::Game_CPU_Emulator, this->gameSection, cpuEmulator);
-    if (defaultRandomizeInterrupt != randomizeInterrupt)
         CoreSettingsSetValue(SettingsID::Game_RandomizeInterrupt, this->gameSection, randomizeInterrupt);
+    }
 }
 
 void SettingsDialog::saveGamePluginSettings(void)
