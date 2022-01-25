@@ -1208,7 +1208,7 @@
              <item>
               <widget class="QLabel" name="label_3">
                <property name="text">
-                <string>Disk Save Type:</string>
+                <string>Disk Save Type</string>
                </property>
               </widget>
              </item>
