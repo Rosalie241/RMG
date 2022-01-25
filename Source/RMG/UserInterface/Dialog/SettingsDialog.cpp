@@ -163,12 +163,12 @@ void SettingsDialog::loadCoreSettings(void)
     bool debugger = false;
     bool overrideGameSettings = false;
 
-    disableExtraMem = CoreSettingsGetBoolValue(SettingsID::Core_DisableExtraMem);
-    counterFactor = CoreSettingsGetIntValue(SettingsID::Core_CountPerOp);
-    cpuEmulator = CoreSettingsGetIntValue(SettingsID::Core_CPU_Emulator);
-    siDmaDuration = CoreSettingsGetIntValue(SettingsID::Core_SiDmaDuration);
-    randomizeInterrupt = CoreSettingsGetBoolValue(SettingsID::Core_RandomizeInterrupt);
-    debugger = CoreSettingsGetBoolValue(SettingsID::Core_EnableDebugger);
+    disableExtraMem = CoreSettingsGetBoolValue(SettingsID::CoreOverlay_DisableExtraMem);
+    counterFactor = CoreSettingsGetIntValue(SettingsID::CoreOverlay_CountPerOp);
+    cpuEmulator = CoreSettingsGetIntValue(SettingsID::CoreOverlay_CPU_Emulator);
+    siDmaDuration = CoreSettingsGetIntValue(SettingsID::CoreOverlay_SiDmaDuration);
+    randomizeInterrupt = CoreSettingsGetBoolValue(SettingsID::CoreOverlay_RandomizeInterrupt);
+    debugger = CoreSettingsGetBoolValue(SettingsID::CoreOverlay_EnableDebugger);
     overrideGameSettings = CoreSettingsGetBoolValue(SettingsID::Core_OverrideGameSpecificSettings);
 
     this->coreCpuEmulatorComboBox->setCurrentIndex(cpuEmulator);
@@ -338,12 +338,12 @@ void SettingsDialog::loadDefaultCoreSettings(void)
     bool debugger = false;
     bool overrideGameSettings;
 
-    disableExtraMem = CoreSettingsGetDefaultBoolValue(SettingsID::Core_DisableExtraMem);
-    counterFactor = CoreSettingsGetDefaultIntValue(SettingsID::Core_CountPerOp);
-    cpuEmulator = CoreSettingsGetDefaultIntValue(SettingsID::Core_CPU_Emulator);
-    siDmaDuration = CoreSettingsGetDefaultIntValue(SettingsID::Core_SiDmaDuration);
-    randomizeInterrupt = CoreSettingsGetDefaultBoolValue(SettingsID::Core_RandomizeInterrupt);
-    debugger = CoreSettingsGetDefaultBoolValue(SettingsID::Core_EnableDebugger);
+    disableExtraMem = CoreSettingsGetDefaultBoolValue(SettingsID::CoreOverlay_DisableExtraMem);
+    counterFactor = CoreSettingsGetDefaultIntValue(SettingsID::CoreOverlay_CountPerOp);
+    cpuEmulator = CoreSettingsGetDefaultIntValue(SettingsID::CoreOverlay_CPU_Emulator);
+    siDmaDuration = CoreSettingsGetDefaultIntValue(SettingsID::CoreOverlay_SiDmaDuration);
+    randomizeInterrupt = CoreSettingsGetDefaultBoolValue(SettingsID::CoreOverlay_RandomizeInterrupt);
+    debugger = CoreSettingsGetDefaultBoolValue(SettingsID::CoreOverlay_EnableDebugger);
     overrideGameSettings = CoreSettingsGetDefaultBoolValue(SettingsID::Core_OverrideGameSpecificSettings);
 
     this->coreCpuEmulatorComboBox->setCurrentIndex(cpuEmulator);
@@ -466,9 +466,9 @@ void SettingsDialog::saveCoreSettings(void)
     bool debugger = this->coreDebuggerCheckBox->isChecked();
     bool overrideGameSettings = this->coreOverrideGameSettingsGroup->isChecked();
 
-    CoreSettingsSetValue(SettingsID::Core_CPU_Emulator, cpuEmulator);
-    CoreSettingsSetValue(SettingsID::Core_RandomizeInterrupt, randomizeInterrupt);
-    CoreSettingsSetValue(SettingsID::Core_EnableDebugger, debugger);
+    CoreSettingsSetValue(SettingsID::CoreOverlay_CPU_Emulator, cpuEmulator);
+    CoreSettingsSetValue(SettingsID::CoreOverlay_RandomizeInterrupt, randomizeInterrupt);
+    CoreSettingsSetValue(SettingsID::CoreOverlay_EnableDebugger, debugger);
     CoreSettingsSetValue(SettingsID::Core_OverrideGameSpecificSettings, overrideGameSettings);
 
     if (!overrideGameSettings)
@@ -478,9 +478,9 @@ void SettingsDialog::saveCoreSettings(void)
         siDmaDuration = -1;
     }
 
-    CoreSettingsSetValue(SettingsID::Core_DisableExtraMem, disableExtraMem);
-    CoreSettingsSetValue(SettingsID::Core_CountPerOp, counterFactor);
-    CoreSettingsSetValue(SettingsID::Core_SiDmaDuration, siDmaDuration);
+    CoreSettingsSetValue(SettingsID::CoreOverlay_DisableExtraMem, disableExtraMem);
+    CoreSettingsSetValue(SettingsID::CoreOverlay_CountPerOp, counterFactor);
+    CoreSettingsSetValue(SettingsID::CoreOverlay_SiDmaDuration, siDmaDuration);
 }
 
 void SettingsDialog::saveGameSettings(void)
