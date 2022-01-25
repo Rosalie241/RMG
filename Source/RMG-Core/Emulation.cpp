@@ -7,8 +7,10 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-#include "Emulation.hpp"
+#include "Settings/Settings.hpp"
 #include "MediaLoader.hpp"
+#include "RomSettings.hpp"
+#include "Emulation.hpp"
 #include "m64p/Api.hpp"
 #include "Plugins.hpp"
 #include "Error.hpp"
@@ -32,6 +34,45 @@ static bool get_emulation_state(m64p_emu_state* state)
     }
 
     return ret == M64ERR_SUCCESS;
+}
+
+static void apply_coresettings_overlay(void)
+{
+    CoreSettingsSetValue(SettingsID::Core_RandomizeInterrupt, CoreSettingsGetBoolValue(SettingsID::CoreOverlay_RandomizeInterrupt));
+    CoreSettingsSetValue(SettingsID::Core_CPU_Emulator, CoreSettingsGetIntValue(SettingsID::CoreOverlay_CPU_Emulator));
+    CoreSettingsSetValue(SettingsID::Core_DisableExtraMem, CoreSettingsGetBoolValue(SettingsID::CoreOverlay_DisableExtraMem));
+    CoreSettingsSetValue(SettingsID::Core_EnableDebugger, CoreSettingsGetBoolValue(SettingsID::CoreOverlay_EnableDebugger));
+    CoreSettingsSetValue(SettingsID::Core_CountPerOp, CoreSettingsGetIntValue(SettingsID::CoreOverlay_CountPerOp));
+    CoreSettingsSetValue(SettingsID::Core_SiDmaDuration, CoreSettingsGetIntValue(SettingsID::CoreOverlay_SiDmaDuration));
+}
+
+static void apply_game_coresettings_overlay(void)
+{
+    std::string section;
+    CoreRomSettings romSettings;
+    bool overrideCoreSettings;
+
+    // when we fail to retrieve the rom settings, return
+    if (!CoreGetCurrentDefaultRomSettings(romSettings))
+    {
+        return;
+    }
+
+    section = romSettings.MD5;
+
+    // when we don't need to override the core settings, return
+    overrideCoreSettings = CoreSettingsGetBoolValue(SettingsID::Game_OverrideCoreSettings, section);
+    if (!overrideCoreSettings)
+    {
+        return;
+    }
+
+    // apply settings overlay
+    CoreSettingsSetValue(SettingsID::Core_RandomizeInterrupt, CoreSettingsGetBoolValue(SettingsID::Game_RandomizeInterrupt, section));
+    CoreSettingsSetValue(SettingsID::Core_CPU_Emulator, CoreSettingsGetIntValue(SettingsID::Game_CPU_Emulator, section));
+    CoreSettingsSetValue(SettingsID::Core_DisableExtraMem, CoreSettingsGetBoolValue(SettingsID::Game_DisableExtraMem, section));
+    CoreSettingsSetValue(SettingsID::Core_CountPerOp, CoreSettingsGetIntValue(SettingsID::Game_CountPerOp, section));
+    CoreSettingsSetValue(SettingsID::Core_SiDmaDuration, CoreSettingsGetIntValue(SettingsID::Game_SiDmaDuration, section));
 }
 
 //
@@ -71,6 +112,12 @@ bool CoreStartEmulation(std::string n64rom, std::string n64ddrom)
 
     // set disk file in media loader
     CoreMediaLoaderSetDiskFile(n64ddrom);
+
+    // apply core settings overlay
+    apply_coresettings_overlay();
+
+    // apply game core settings overrides
+    apply_game_coresettings_overlay();
 
     ret = m64p::Core.DoCommand(M64CMD_EXECUTE, 0, nullptr);
     if (ret != M64ERR_SUCCESS)

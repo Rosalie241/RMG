@@ -201,21 +201,40 @@ static l_Setting get_setting(SettingsID settingId)
         break;
 
     case SettingsID::Core_RandomizeInterrupt:
-        setting = {SETTING_SECTION_OVERLAY, "RandomizeInterrupt", true};
+        setting = {SETTING_SECTION_M64P, "RandomizeInterrupt", true};
         break;
     case SettingsID::Core_CPU_Emulator:
-        setting = {SETTING_SECTION_OVERLAY, "CPU_Emulator", 2};
+        setting = {SETTING_SECTION_M64P, "R4300Emulator", 2};
         break;
     case SettingsID::Core_DisableExtraMem:
-        setting = {SETTING_SECTION_OVERLAY, "DisableExtraMem", false};
+        setting = {SETTING_SECTION_M64P, "DisableExtraMem", false};
         break;
     case SettingsID::Core_EnableDebugger:
-        setting = {SETTING_SECTION_OVERLAY, "EnableDebugger", false};
+        setting = {SETTING_SECTION_M64P, "EnableDebugger", false};
         break;
     case SettingsID::Core_CountPerOp:
-        setting = {SETTING_SECTION_OVERLAY, "CountPerOp", 0};
+        setting = {SETTING_SECTION_M64P, "CountPerOp", 0};
         break;
     case SettingsID::Core_SiDmaDuration:
+        setting = {SETTING_SECTION_M64P, "SiDmaDuration", -1};
+        break;
+
+    case SettingsID::CoreOverlay_RandomizeInterrupt:
+        setting = {SETTING_SECTION_OVERLAY, "RandomizeInterrupt", true};
+        break;
+    case SettingsID::CoreOverlay_CPU_Emulator:
+        setting = {SETTING_SECTION_OVERLAY, "CPU_Emulator", 2};
+        break;
+    case SettingsID::CoreOverlay_DisableExtraMem:
+        setting = {SETTING_SECTION_OVERLAY, "DisableExtraMem", false};
+        break;
+    case SettingsID::CoreOverlay_EnableDebugger:
+        setting = {SETTING_SECTION_OVERLAY, "EnableDebugger", false};
+        break;
+    case SettingsID::CoreOverlay_CountPerOp:
+        setting = {SETTING_SECTION_OVERLAY, "CountPerOp", 0};
+        break;
+    case SettingsID::CoreOverlay_SiDmaDuration:
         setting = {SETTING_SECTION_OVERLAY, "SiDmaDuration", -1};
         break;
 

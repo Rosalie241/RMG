@@ -38,6 +38,14 @@ enum class SettingsID
     Core_CountPerOp,
     Core_SiDmaDuration,
 
+    // (mupen64plus) Overlay Core Settings
+    CoreOverlay_RandomizeInterrupt,
+    CoreOverlay_CPU_Emulator,
+    CoreOverlay_DisableExtraMem,
+    CoreOverlay_EnableDebugger,
+    CoreOverlay_CountPerOp,
+    CoreOverlay_SiDmaDuration,
+
     // (mupen64plus) Core Directory Settings
     Core_ScreenshotPath,
     Core_SaveStatePath,
