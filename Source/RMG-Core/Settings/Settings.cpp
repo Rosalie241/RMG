@@ -652,7 +652,8 @@ bool CoreSettingsSetValue(SettingsID settingId, int value)
 bool CoreSettingsSetValue(SettingsID settingId, bool value)
 {
     l_Setting setting = get_setting(settingId);
-    return config_option_set(setting.Section, setting.Key, M64TYPE_BOOL, &value);
+    int intValue = value ? 1 : 0;
+    return config_option_set(setting.Section, setting.Key, M64TYPE_BOOL, &intValue);
 }
 
 bool CoreSettingsSetValue(SettingsID settingId, float value)
@@ -687,7 +688,8 @@ bool CoreSettingsSetValue(SettingsID settingId, std::string section, int value)
 bool CoreSettingsSetValue(SettingsID settingId, std::string section, bool value)
 {
     l_Setting setting = get_setting(settingId);
-    return config_option_set(section, setting.Key, M64TYPE_BOOL, &value);
+    int intValue = value ? 1 : 0;
+    return config_option_set(section, setting.Key, M64TYPE_BOOL, &intValue);
 }
 
 bool CoreSettingsSetValue(SettingsID settingId, std::string section, float value)
@@ -754,9 +756,9 @@ int CoreSettingsGetIntValue(SettingsID settingId)
 bool CoreSettingsGetBoolValue(SettingsID settingId)
 {
     l_Setting setting = get_setting(settingId);
-    int value = setting.DefaultValue.boolValue;
+    int value = setting.DefaultValue.boolValue ? 1 : 0;
     config_option_get(setting.Section, setting.Key, M64TYPE_BOOL, &value, sizeof(value));
-    return value;
+    return value > 0;
 }
 
 float CoreSettingsGetFloatValue(SettingsID settingId)
