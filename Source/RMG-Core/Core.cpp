@@ -125,13 +125,13 @@ bool CoreInit(void)
         return false;
     }
 
-    ret = config_override_user_dirs();
+    ret = CoreSettingsSetupDefaults();
     if (!ret)
     {
         return false;
     }
 
-    ret = CoreSettingsSetupDefaults();
+    ret = config_override_user_dirs();
     if (!ret)
     {
         return false;
