@@ -11,6 +11,7 @@
 #include "Config.hpp"
 #include "Error.hpp"
 #include "Core.hpp"
+#include "m64p/Api.hpp"
 
 #include <cstdio>
 #include <iostream>
@@ -169,12 +170,12 @@ std::string CoreGetDefaultSaveStateDirectory(void)
 
 std::string CoreGetUserDataDirectory(void)
 {
-    return CoreSettingsGetStringValue(SettingsID::Core_UserDataDirOverride);
+    return std::string(m64p::Config.GetUserDataPath());
 }
 
 std::string CoreGetUserCacheDirectory(void)
 {
-    return CoreSettingsGetStringValue(SettingsID::Core_UserCacheDirOverride);
+    return std::string(m64p::Config.GetUserCachePath());
 }
 
 std::string CoreGetSharedDataDirectory(void)
