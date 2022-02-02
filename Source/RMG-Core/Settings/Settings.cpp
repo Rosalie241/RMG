@@ -139,6 +139,9 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::GUI_HideCursorInEmulation:
         setting = {SETTING_SECTION_GUI, "HideCursorInEmulation", false};
         break;
+    case SettingsID::GUI_HideCursorInFullscreenEmulation:
+        setting = {SETTING_SECTION_GUI, "HideCursorInFullscreenEmulation", true};
+        break;
     case SettingsID::GUI_StatusbarMessageDuration:
         setting = {SETTING_SECTION_GUI, "StatusbarMessageDuration", 3};
         break;
