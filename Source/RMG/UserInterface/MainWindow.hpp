@@ -67,7 +67,7 @@ class MainWindow : public QMainWindow
     QAction *action_System_SoftReset;
     QAction *action_System_HardReset;
     QAction *action_System_Pause;
-    QAction *action_System_GenerateBitmap;
+    QAction *action_System_CaptureScreenshot;
     QAction *action_System_LimitFPS;
     QAction *action_System_SwapDisk;
     QAction *action_System_SaveState;

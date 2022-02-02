@@ -334,7 +334,7 @@ void MainWindow::menuBar_Setup(bool inEmulation, bool isPaused)
         this->menuBar_Menu = this->menuBar->addMenu("System");
         this->menuBar_Menu->addMenu(resetMenu);
         this->menuBar_Menu->addAction(this->action_System_Pause);
-        this->menuBar_Menu->addAction(this->action_System_GenerateBitmap);
+        this->menuBar_Menu->addAction(this->action_System_CaptureScreenshot);
         this->menuBar_Menu->addSeparator();
         this->menuBar_Menu->addAction(this->action_System_LimitFPS);
         this->menuBar_Menu->addSeparator();
@@ -489,7 +489,7 @@ void MainWindow::ui_Actions_Init(void)
     this->action_System_SoftReset = new QAction(this);
     this->action_System_HardReset = new QAction(this);
     this->action_System_Pause = new QAction(this);
-    this->action_System_GenerateBitmap = new QAction(this);
+    this->action_System_CaptureScreenshot = new QAction(this);
     this->action_System_LimitFPS = new QAction(this);
     this->action_System_SwapDisk = new QAction(this);
     this->action_System_SaveState = new QAction(this);
@@ -549,8 +549,8 @@ void MainWindow::ui_Actions_Setup(bool inEmulation, bool isPaused)
     this->action_System_Pause->setText(isPaused ? "Resume" : "Pause");
     this->action_System_Pause->setShortcut(QKeySequence(keyBinding));
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_GenerateBitmap));
-    this->action_System_GenerateBitmap->setText("Generate Bitmap");
-    this->action_System_GenerateBitmap->setShortcut(QKeySequence(keyBinding));
+    this->action_System_CaptureScreenshot->setText("Capture Screenshot");
+    this->action_System_CaptureScreenshot->setShortcut(QKeySequence(keyBinding));
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_LimitFPS));
     this->action_System_LimitFPS->setText("Limit FPS");
     this->action_System_LimitFPS->setShortcut(QKeySequence(keyBinding));
@@ -611,7 +611,7 @@ void MainWindow::ui_Actions_Add(void)
     this->addAction(this->action_System_SoftReset);
     this->addAction(this->action_System_HardReset);
     this->addAction(this->action_System_Pause);
-    this->addAction(this->action_System_GenerateBitmap);
+    this->addAction(this->action_System_CaptureScreenshot);
     this->addAction(this->action_System_LimitFPS);
     this->addAction(this->action_System_SwapDisk);
     this->addAction(this->action_System_SaveState);
@@ -641,7 +641,7 @@ void MainWindow::ui_Actions_Remove(void)
     this->removeAction(this->action_System_SoftReset);
     this->removeAction(this->action_System_HardReset);
     this->removeAction(this->action_System_Pause);
-    this->removeAction(this->action_System_GenerateBitmap);
+    this->removeAction(this->action_System_CaptureScreenshot);
     this->removeAction(this->action_System_LimitFPS);
     this->removeAction(this->action_System_SwapDisk);
     this->removeAction(this->action_System_SaveState);
@@ -672,7 +672,7 @@ void MainWindow::ui_Actions_Connect(void)
     connect(this->action_System_SoftReset, &QAction::triggered, this, &MainWindow::on_Action_System_SoftReset);
     connect(this->action_System_HardReset, &QAction::triggered, this, &MainWindow::on_Action_System_HardReset);
     connect(this->action_System_Pause, &QAction::triggered, this, &MainWindow::on_Action_System_Pause);
-    connect(this->action_System_GenerateBitmap, &QAction::triggered, this,
+    connect(this->action_System_CaptureScreenshot, &QAction::triggered, this,
             &MainWindow::on_Action_System_GenerateBitmap);
     connect(this->action_System_LimitFPS, &QAction::triggered, this, &MainWindow::on_Action_System_LimitFPS);
     connect(this->action_System_SwapDisk, &QAction::triggered, this, &MainWindow::on_Action_System_SwapDisk);

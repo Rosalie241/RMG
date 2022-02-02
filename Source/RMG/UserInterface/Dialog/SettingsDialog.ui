@@ -1487,7 +1487,7 @@
                  <item>
                   <widget class="QLabel" name="label_74">
                    <property name="text">
-                    <string>Generate Bitmap</string>
+                    <string>Capture Screenshot</string>
                    </property>
                   </widget>
                  </item>
