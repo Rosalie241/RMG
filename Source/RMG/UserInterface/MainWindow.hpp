@@ -94,6 +94,7 @@ class MainWindow : public QMainWindow
 
     bool ui_AllowManualResizing;
     bool ui_HideCursorInEmulation;
+    bool ui_HideCursorInFullscreenEmulation;
     bool ui_NoSwitchToRomBrowser = false;
     bool ui_VidExtForceSetMode;
     bool ui_RefreshRomListAfterEmulation = false;

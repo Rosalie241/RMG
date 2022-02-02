@@ -458,6 +458,7 @@ void MainWindow::emulationThread_Launch(QString cartRom, QString diskRom)
 
     this->ui_AllowManualResizing = CoreSettingsGetBoolValue(SettingsID::GUI_AllowManualResizing);
     this->ui_HideCursorInEmulation = CoreSettingsGetBoolValue(SettingsID::GUI_HideCursorInEmulation);
+    this->ui_HideCursorInFullscreenEmulation = CoreSettingsGetBoolValue(SettingsID::GUI_HideCursorInFullscreenEmulation);
 
     this->ui_Widget_OpenGL->SetAllowResizing(this->ui_AllowManualResizing);
     this->ui_Widget_OpenGL->SetHideCursor(this->ui_HideCursorInEmulation);
@@ -1250,6 +1251,11 @@ void MainWindow::on_VidExt_SetWindowedModeWithRate(int width, int height, int re
         this->statusBar()->show();
     }
 
+    if (!this->ui_HideCursorInEmulation && this->ui_HideCursorInFullscreenEmulation)
+    {
+        this->ui_Widget_OpenGL->SetHideCursor(false);
+    }
+
     this->ui_Actions_Remove();
     this->on_VidExt_ResizeWindow(width, height);
 }
@@ -1279,6 +1285,11 @@ void MainWindow::on_VidExt_SetFullscreenModeWithRate(int width, int height, int 
     if (!this->statusBar()->isHidden())
     {
         this->statusBar()->hide();
+    }
+
+    if (!this->ui_HideCursorInEmulation && this->ui_HideCursorInFullscreenEmulation)
+    {
+        this->ui_Widget_OpenGL->SetHideCursor(true);
     }
 
     this->ui_Actions_Add();
@@ -1352,6 +1363,11 @@ void MainWindow::on_VidExt_ToggleFS(bool fullscreen)
             this->statusBar()->hide();
         }
 
+        if (!this->ui_HideCursorInEmulation && this->ui_HideCursorInFullscreenEmulation)
+        {
+            this->ui_Widget_OpenGL->SetHideCursor(true);
+        }
+
         this->ui_Actions_Add();
     }
     else
@@ -1369,6 +1385,11 @@ void MainWindow::on_VidExt_ToggleFS(bool fullscreen)
         if (this->statusBar()->isHidden())
         {
             this->statusBar()->show();
+        }
+
+        if (!this->ui_HideCursorInEmulation && this->ui_HideCursorInFullscreenEmulation)
+        {
+            this->ui_Widget_OpenGL->SetHideCursor(false);
         }
 
         this->ui_Actions_Remove();

@@ -1738,6 +1738,13 @@
                </widget>
               </item>
               <item>
+               <widget class="QCheckBox" name="hideCursorFullscreenCheckBox">
+                <property name="text">
+                 <string>Hide Cursor During Fullscreen Emulation</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QCheckBox" name="manualResizingCheckBox">
                 <property name="text">
                  <string>Allow Manual Window Resizing</string>
