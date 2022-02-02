@@ -14,8 +14,6 @@ EventFilter::~EventFilter(void)
 
 bool EventFilter::eventFilter(QObject *object, QEvent *event)
 {
-    static QObject *lastFocusObject = nullptr;
-
     switch (event->type())
     {
     case QEvent::Type::KeyPress:
