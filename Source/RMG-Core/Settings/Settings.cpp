@@ -412,6 +412,7 @@ static bool config_section_exists(std::string section)
     {
         error = "config_section_exists m64p::Config.ListSections Failed: ";
         error += m64p::Core.ErrorMessage(ret);
+        CoreSetError(error);
         return false;
     }
 
