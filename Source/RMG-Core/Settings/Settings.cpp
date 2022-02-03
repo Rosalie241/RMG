@@ -837,7 +837,7 @@ std::vector<int> CoreSettingsGetIntListValue(SettingsID settingId, std::string s
         {
             value.emplace_back(std::stoi(tmp_str));
         }
-        catch (std::exception)
+        catch (...)
         { // ignore exception
             continue;
         }
