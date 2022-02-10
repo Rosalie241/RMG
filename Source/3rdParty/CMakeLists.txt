@@ -33,7 +33,7 @@ if(NOT NO_GIT_CLONE)
     set(MUPEN64PLUS_RSP_HLE_TAG       "88093cb43499eff53d343653cddcae2132af17ef")
     
     set(MUPEN64PLUS_RSP_PARALLEL_URL  "https://github.com/loganmc10/parallel-rsp")
-    set(MUPEN64PLUS_RSP_PARALLEL_TAG  "a9646b27c2ef399e5917735b4d84ebe93edcce39")
+    set(MUPEN64PLUS_RSP_PARALLEL_TAG  "e67cee3131651c3e48343294d94fa68a6f8ec14c")
     
     set(MUPEN64PLUS_INPUT_QT_URL      "https://github.com/Rosalie241/mupen64plus-input-qt")
     set(MUPEN64PLUS_INPUT_QT_TAG      "e6cacb7fe6513cac4b30f7171d8ca7d1cd5fdb81")
