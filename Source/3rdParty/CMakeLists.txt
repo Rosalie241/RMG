@@ -48,7 +48,7 @@ if(NOT NO_GIT_CLONE)
     set(MUPEN64PLUS_GFX_GLIDEN64_TAG  "49373fde71352cb2496fdaa64efcdc3207190d03")
 
     set(MUPEN64PLUS_GFX_PARALLEL_URL  "https://github.com/loganmc10/parallel-rdp-standalone")
-    set(MUPEN64PLUS_GFX_PARALLEL_TAG  "c8ff5b40ce457693be55260ab3101056c172295a")
+    set(MUPEN64PLUS_GFX_PARALLEL_TAG  "96368886b5808bc7bae9eb025d3c4f0988772e1d")
 endif(NOT NO_GIT_CLONE)
 
 ExternalProject_Add(mupen64plus-core
