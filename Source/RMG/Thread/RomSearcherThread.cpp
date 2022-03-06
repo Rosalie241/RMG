@@ -83,13 +83,24 @@ void RomSearcherThread::rom_Search(QString directory)
     {
         QString file = romDirIt.next();
 
-        // open rom, retrieve rom settings & header 
-        ret = CoreOpenRom(file.toStdString()) && 
-            CoreGetCurrentRomSettings(settings) && 
-            CoreGetCurrentRomHeader(header);
-        // always close the ROM,
-        // even when retrieving rom info failed
-        ret = CoreCloseRom() && ret;
+        if (CoreHasRomHeaderAndSettingsCached(file.toStdString()))
+        { // found cache entry
+            ret = CoreGetCachedRomHeaderAndSettings(file.toStdString(), header, settings);
+        }
+        else
+        { // no cache entry
+            // open rom, retrieve rom settings & header 
+            ret = CoreOpenRom(file.toStdString()) && 
+                CoreGetCurrentRomSettings(settings) && 
+                CoreGetCurrentRomHeader(header);
+            // always close the ROM,
+            // even when retrieving rom info failed
+            ret = CoreCloseRom() && ret;
+            if (ret)
+            { // add to cache when everything succeeded
+                CoreAddCachedRomHeaderAndSettings(file.toStdString(), header, settings);
+            }
+        }
         
         if (ret)
         {
