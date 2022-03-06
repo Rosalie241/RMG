@@ -39,3 +39,5 @@ do
 done
 
 windeployqt "$exe"
+
+exit 0
