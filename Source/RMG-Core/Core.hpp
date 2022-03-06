@@ -10,6 +10,7 @@
 #ifndef CORE_HPP
 #define CORE_HPP
 
+#include "CachedRomHeaderAndSettings.hpp"
 #include "Settings/Settings.hpp"
 #include "SpeedLimiter.hpp"
 #include "RomSettings.hpp"

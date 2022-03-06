@@ -17,6 +17,7 @@ set(RMG_CORE_SOURCES
     m64p/CoreApi.cpp
     m64p/ConfigApi.cpp
     m64p/PluginApi.cpp
+    CachedRomHeaderAndSettings.cpp
     Settings/Settings.cpp
     SpeedLimiter.cpp
     RomSettings.cpp
@@ -39,10 +40,12 @@ set(RMG_CORE_SOURCES
 if (WIN32 OR MSYS)
     list(APPEND RMG_CORE_SOURCES 
         osal/osal_dynlib_win32.cpp
+        osal/osal_files_win32.cpp
     )
 else()
     list(APPEND RMG_CORE_SOURCES 
 		osal/osal_dynlib_unix.cpp
+        osal/osal_files_unix.cpp
     )
 endif()
 

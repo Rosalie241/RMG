@@ -144,6 +144,8 @@ bool CoreInit(void)
         return false;
     }
 
+    CoreReadRomHeaderAndSettingsCache();
+
     return true;
 }
 
@@ -174,6 +176,8 @@ bool CoreInit(m64p_dynlib_handle handle)
 void CoreShutdown(void)
 {
     CorePluginsShutdown();
+
+    CoreSaveRomHeaderAndSettingsCache();
 
     osal_dynlib_close(l_CoreLibHandle);
 }
