@@ -2,7 +2,6 @@
 #
 # ./BundleDependencies.sh "./Bin/Release/rmg/RMG.exe" "./Bin/Release/rmg" "/mingw64/bin"
 #
-set -e
 
 exe="$1"
 bin_dir="$2"
