@@ -27,6 +27,7 @@
 #define MD5_LEN 33
 
 #define CACHE_FILE_MAGIC "RMGCoreHeaderAndSettingsCache_01"
+#define CACHE_FILE_ITEMS_MAX 1000
 
 //
 // Local Structures
@@ -45,7 +46,7 @@ struct l_CacheEntry
 // Local Variables
 //
 
-static bool                      l_HasReadCache = false;
+static bool                      l_CacheEntriesChanged = false;
 static std::vector<l_CacheEntry> l_CacheEntries;
 
 //
@@ -106,27 +107,29 @@ void CoreReadRomHeaderAndSettingsCache(void)
 
     // read all file entries
 #define FREAD(x) inputStream.read((char*)&x, sizeof(x))
+#define FREAD_STR(x) inputStream.read((char*)x, sizeof(x))
     while (!inputStream.eof())
     {
         // file info
-        inputStream.read((char*)fileNameBuf, sizeof(fileNameBuf));
+        FREAD_STR(fileNameBuf);
         cacheEntry.fileName = std::string(fileNameBuf);
         FREAD(cacheEntry.fileTime);
         // header
-        inputStream.read((char*)headerNameBuf, sizeof(headerNameBuf));
+        FREAD_STR(headerNameBuf);
         cacheEntry.header.Name = std::string(headerNameBuf);
         FREAD(cacheEntry.header.CRC1);
         FREAD(cacheEntry.header.CRC2);
         // (partial) settings
-        inputStream.read((char*)goodNameBuf, sizeof(goodNameBuf));
+        FREAD_STR(goodNameBuf);
+        FREAD_STR(md5Buf);
         cacheEntry.settings.GoodName = std::string(goodNameBuf);
-        inputStream.read((char*)md5Buf, sizeof(md5Buf));
         cacheEntry.settings.MD5 = std::string(md5Buf);
 
         // add to cached entries
         l_CacheEntries.push_back(cacheEntry);
     }
 #undef FREAD
+#undef FREAD_STR
 
     inputStream.close();
 }
@@ -138,6 +141,13 @@ bool CoreSaveRomHeaderAndSettingsCache(void)
     char headerNameBuf[ROMHEADER_NAME_LEN];
     char goodNameBuf[GOODNAME_LEN];
     char md5Buf[MD5_LEN];
+    l_CacheEntry cacheEntry;
+
+    // only save cache when the entries have changed
+    if (!l_CacheEntriesChanged)
+    {
+        return true;
+    }
 
     outputStream.open(get_cache_file_name());
     if (!outputStream.good())
@@ -150,25 +160,29 @@ bool CoreSaveRomHeaderAndSettingsCache(void)
 
     // write each entry in the file
 #define FWRITE(x) outputStream.write((char*)&x, sizeof(x))
-    for (const auto& entry : l_CacheEntries)
+#define FWRITE_STR(x) outputStream.write((char*)x, sizeof(x))
+    for (auto iter = l_CacheEntries.cbegin(); iter != l_CacheEntries.end(); iter++)
     {
-        strncpy(fileNameBuf, entry.fileName.c_str(), MAX_FILENAME_LEN);
-        strncpy(headerNameBuf, entry.header.Name.c_str(), sizeof(headerNameBuf));
-        strncpy(goodNameBuf, entry.settings.GoodName.c_str(), sizeof(goodNameBuf));
-        strncpy(md5Buf, entry.settings.MD5.c_str(), sizeof(md5Buf));
+        cacheEntry = (*iter);
+
+        strncpy(fileNameBuf, cacheEntry.fileName.c_str(), MAX_FILENAME_LEN);
+        strncpy(headerNameBuf, cacheEntry.header.Name.c_str(), sizeof(headerNameBuf));
+        strncpy(goodNameBuf, cacheEntry.settings.GoodName.c_str(), sizeof(goodNameBuf));
+        strncpy(md5Buf, cacheEntry.settings.MD5.c_str(), sizeof(md5Buf));
 
         // file info
-        outputStream.write((char*)fileNameBuf, sizeof(fileNameBuf));
-        FWRITE(entry.fileTime);
+        FWRITE_STR(fileNameBuf);
+        FWRITE(cacheEntry.fileTime);
         // header
-        outputStream.write((char*)headerNameBuf, sizeof(headerNameBuf));
-        FWRITE(entry.header.CRC1);
-        FWRITE(entry.header.CRC2);
+        FWRITE_STR(headerNameBuf);
+        FWRITE(cacheEntry.header.CRC1);
+        FWRITE(cacheEntry.header.CRC2);
         // (partial) settings
-        outputStream.write((char*)goodNameBuf, sizeof(goodNameBuf));
-        outputStream.write((char*)md5Buf, sizeof(md5Buf));
+        FWRITE_STR(goodNameBuf);
+        FWRITE_STR(md5Buf);
     }
 #undef FWRITE
+#undef FWRITE_STR
 
     outputStream.close();
     return true;
@@ -203,6 +217,10 @@ bool CoreAddCachedRomHeaderAndSettings(std::string file, CoreRomHeader header, C
     {
         l_CacheEntries.erase(iter);
     }
+    else if (l_CacheEntries.size() >= CACHE_FILE_ITEMS_MAX)
+    { // delete first item when we're over the item limit
+        l_CacheEntries.erase(l_CacheEntries.begin());
+    }
 
     cacheEntry.fileName = file;
     cacheEntry.fileTime = osal_files_get_file_time(file);
@@ -210,5 +228,6 @@ bool CoreAddCachedRomHeaderAndSettings(std::string file, CoreRomHeader header, C
     cacheEntry.settings = settings;
 
     l_CacheEntries.push_back(cacheEntry);
+    l_CacheEntriesChanged = true;
     return true;
 }
