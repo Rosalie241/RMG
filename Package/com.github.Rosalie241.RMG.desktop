@@ -6,3 +6,4 @@ Exec=RMG %f
 Icon=com.github.Rosalie241.RMG
 Terminal=false
 Categories=Game;Emulator;Qt;
+MimeType=application/x-n64-rom;
