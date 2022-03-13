@@ -242,7 +242,7 @@ static l_Setting get_setting(SettingsID settingId)
         break;
 
     case SettingsID::Core_ScreenshotPath:
-        setting = {SETTING_SECTION_M64P, "ScreenshotPath", "Screenshots", "", true};
+        setting = {SETTING_SECTION_M64P, "ScreenshotPath", CoreGetDefaultScreenshotDirectory(), "", true};
         break;
     case SettingsID::Core_SaveStatePath:
         setting = {SETTING_SECTION_M64P, "SaveStatePath", CoreGetDefaultSaveStateDirectory(), "", true};

@@ -41,6 +41,10 @@ std::string CoreGetDefaultSaveDirectory(void);
 // save states should be located
 std::string CoreGetDefaultSaveStateDirectory(void);
 
+// returns the default screenshot directory where
+// screenshots should be located
+std::string CoreGetDefaultScreenshotDirectory(void);
+
 // returns the user config directory where
 // configuration files should be located
 std::string CoreGetUserConfigDirectory(void);
@@ -64,5 +68,9 @@ std::string CoreGetSaveDirectory(void);
 // returns the save state directory where
 // save states should be located
 std::string CoreGetSaveStateDirectory(void);
+
+// returns the screenshot directory where
+// screenshots should be located
+std::string CoreGetScreenshotDirectory(void);
 
 #endif // DIRECTORIES_HPP

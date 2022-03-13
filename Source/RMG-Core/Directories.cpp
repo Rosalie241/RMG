@@ -46,6 +46,34 @@ static std::string get_var_directory(std::string var, std::string append, std::s
     return directory;
 }
 
+static std::string get_command_output(std::string command)
+{
+    std::string output;
+    char buf[2048];
+    FILE* pipe = nullptr;
+
+    pipe = popen(command.c_str(), "r");
+    if (pipe == nullptr)
+    {
+        return std::string();
+    }
+
+    while (fgets(buf, sizeof(buf), pipe) != nullptr)
+    {
+        output += buf;
+    }
+
+    pclose(pipe);
+
+    // strip newline
+    if (output.back() == '\n')
+    {
+        output.pop_back();
+    }
+
+    return output;
+}
+
 //
 // Exported Functions
 //
@@ -65,7 +93,8 @@ bool CoreCreateDirectories(void)
         CoreGetUserDataDirectory(),
         CoreGetUserCacheDirectory(),
         CoreGetSaveDirectory(),
-        CoreGetSaveStateDirectory()
+        CoreGetSaveStateDirectory(),
+        CoreGetScreenshotDirectory()
     };
 
     for (const auto& dir : directories)
@@ -168,6 +197,25 @@ std::string CoreGetDefaultSaveStateDirectory(void)
     return directory;
 }
 
+std::string CoreGetDefaultScreenshotDirectory(void)
+{
+    std::string directory;
+#ifdef PORTABLE_INSTALL
+    directory = "Screenshots";
+#else // Not Portable
+    directory = get_command_output("xdg-user-dir PICTURES");
+    if (!directory.empty())
+    {
+        directory += "/RMG";
+    }
+    else
+    {
+        directory = get_var_directory("XDG_PICTURES_DIR", "/RMG", "HOME", "/Pictures/RMG");
+    }
+#endif // PORTABLE_INSTALL
+    return directory;
+}
+
 std::string CoreGetUserDataDirectory(void)
 {
     return std::string(m64p::Config.GetUserDataPath());
@@ -200,3 +248,7 @@ std::string CoreGetSaveStateDirectory(void)
     return CoreSettingsGetStringValue(SettingsID::Core_SaveStatePath);
 }
 
+std::string CoreGetScreenshotDirectory(void)
+{
+    return CoreSettingsGetStringValue(SettingsID::Core_ScreenshotPath);
+}
