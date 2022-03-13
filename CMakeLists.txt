@@ -17,16 +17,6 @@ execute_process(
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
-if (FLATPAK_BUILD AND (WIN32 OR MSYS))
-    message(ERROR "FLATPAK_BUILD is not supported on windows, disabling FLATPAK_BUILD!")
-    set(FLATPAK_BUILD OFF)
-endif()
-
-if(FLATPAK_BUILD)
-    set(NO_GIT_CLONE ON)
-    set(PORTABLE_INSTALL OFF)
-endif(FLATPAK_BUILD)
-
 if (NOT PORTABLE_INSTALL AND (WIN32 OR MSYS))
     message(WARNING "Not-Portable build not supported on windows, re-enabling PORTABLE_INSTALL!")
     set(PORTABLE_INSTALL ON)
