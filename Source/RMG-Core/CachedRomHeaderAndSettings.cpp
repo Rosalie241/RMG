@@ -16,6 +16,7 @@
 #include <cstring>
 #include <vector>
 #include <fstream>
+#include <algorithm>
 
 //
 // Local Defines
