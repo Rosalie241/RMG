@@ -13,8 +13,8 @@
 #include "RomSettings.hpp"
 
 #include <unzip.h>
-#include <iostream>
 #include <fstream>
+#include <cstdlib>
 #include <cstring>
 
 //

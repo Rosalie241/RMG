@@ -14,6 +14,7 @@
 #include "m64p/Api.hpp"
 #include "m64p/api/version.h"
 #include <filesystem>
+#include <string>
 
 //
 // Local Variables

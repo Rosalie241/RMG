@@ -14,6 +14,8 @@
 
 #include <RMG-Core/Core.hpp>
 
+#include <string>
+
 class CoreCallbacks : public QObject
 {
     Q_OBJECT

@@ -10,6 +10,9 @@
 #ifndef SETTINGSDIALOG_HPP
 #define SETTINGSDIALOG_HPP
 
+#include <string>
+#include <vector>
+
 #include <QDialog>
 #include <QHBoxLayout>
 #include <QStandardItemModel>

@@ -11,6 +11,8 @@
 #include "m64p/Api.hpp"
 #include "Error.hpp"
 
+#include <string>
+
 //
 // Exported Functions
 //

@@ -11,6 +11,9 @@
 #define M64P_PLUGIN_PROTOTYPES 1
 #define AUDIO_PLUGIN_API_VERSION 0x020100
 
+#include <cstdint>
+#include <cstdlib>
+
 #include <SDL.h>
 #include <SDL_audio.h>
 

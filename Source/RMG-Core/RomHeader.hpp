@@ -10,7 +10,7 @@
 #ifndef CORE_ROMHEADER_HPP
 #define CORE_ROMHEADER_HPP
 
-#include <cinttypes>
+#include <cstdint>
 #include <string>
 
 struct CoreRomHeader

@@ -21,7 +21,6 @@
 #include "m64p/Api.hpp"
 
 #include <filesystem>
-#include <string>
 
 //
 // Local Variables
