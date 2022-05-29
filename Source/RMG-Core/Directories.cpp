@@ -14,6 +14,7 @@
 #include "m64p/Api.hpp"
 
 #include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include <filesystem>
 

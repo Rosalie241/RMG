@@ -15,6 +15,8 @@
 #include <QDir>
 #include <QDragMoveEvent>
 
+#include <vector>
+
 using namespace UserInterface::Widget;
 
 static QString columnIdToText(QString file, CoreRomHeader header, CoreRomSettings settings, ColumnID id)

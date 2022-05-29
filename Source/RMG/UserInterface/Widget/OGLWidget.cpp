@@ -1,9 +1,8 @@
 #include "OGLWidget.hpp"
 
-using namespace UserInterface::Widget;
-
-#include <iostream>
 #include <RMG-Core/Core.hpp>
+
+using namespace UserInterface::Widget;
 
 OGLWidget::OGLWidget(QWidget *parent)
 {

@@ -13,6 +13,7 @@
 
 #include "m64p/Api.hpp"
 
+#include <cstdint>
 #include <cstring>
 
 //

@@ -10,7 +10,7 @@
 #ifndef CORE_ROMSETTINGS_HPP
 #define CORE_ROMSETTINGS_HPP
 
-#include <cinttypes>
+#include <cstdint>
 #include <string>
 
 struct CoreRomSettings

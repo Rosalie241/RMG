@@ -14,8 +14,6 @@
 #include "Error.hpp"
 #include "m64p/api/m64p_types.h"
 
-#include <exception>
-#include <string>
 #include <sstream>
 #include <algorithm>
 
