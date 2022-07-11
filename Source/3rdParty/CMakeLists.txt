@@ -26,13 +26,13 @@ else(WIN32)
 endif(WIN32)
 
 if(NOT NO_GIT_CLONE)
-    set(MUPEN64PLUSCORE_URL           "https://github.com/Rosalie241/mupen64plus-core")
-    set(MUPEN64PLUSCORE_TAG           "6777f942eca0e94b1d433651b881e1bc18e903e6")
+    set(MUPEN64PLUSCORE_URL           "https://github.com/mupen64plus/mupen64plus-core")
+    set(MUPEN64PLUSCORE_TAG           "828784dd0ec00679acc727444043726d22749ba4")
     
     set(MUPEN64PLUS_RSP_HLE_URL       "https://github.com/mupen64plus/mupen64plus-rsp-hle")
     set(MUPEN64PLUS_RSP_HLE_TAG       "88093cb43499eff53d343653cddcae2132af17ef")
     
-    set(MUPEN64PLUS_RSP_PARALLEL_URL  "https://github.com/loganmc10/parallel-rsp")
+    set(MUPEN64PLUS_RSP_PARALLEL_URL  "https://github.com/Rosalie241/parallel-rsp")
     set(MUPEN64PLUS_RSP_PARALLEL_TAG  "e67cee3131651c3e48343294d94fa68a6f8ec14c")
     
     set(MUPEN64PLUS_INPUT_QT_URL      "https://github.com/Rosalie241/mupen64plus-input-qt")
@@ -45,9 +45,9 @@ if(NOT NO_GIT_CLONE)
     set(MUPEN64PLUS_INPUT_GCA_TAG     "d440611d3639fa974c7d52bd0ed2079d16428d5e")
 
     set(MUPEN64PLUS_GFX_GLIDEN64_URL  "https://github.com/gonetz/GLideN64")
-    set(MUPEN64PLUS_GFX_GLIDEN64_TAG  "b0385c5100de206130d244a647546be7e723b1cf")
+    set(MUPEN64PLUS_GFX_GLIDEN64_TAG  "a2f16608b395515c60067f29c12d95c63975d33b")
 
-    set(MUPEN64PLUS_GFX_PARALLEL_URL  "https://github.com/loganmc10/parallel-rdp-standalone")
+    set(MUPEN64PLUS_GFX_PARALLEL_URL  "https://github.com/Rosalie241/parallel-rdp-standalone")
     set(MUPEN64PLUS_GFX_PARALLEL_TAG  "96368886b5808bc7bae9eb025d3c4f0988772e1d")
 endif(NOT NO_GIT_CLONE)
 
