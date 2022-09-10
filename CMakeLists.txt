@@ -44,12 +44,20 @@ endif()
 add_subdirectory(Source/RMG-Core)
 add_subdirectory(Source/RMG)
 add_subdirectory(Source/RMG-Audio)
+if (NOT WIN32)
+    add_subdirectory(Source/RMG-Input)
+endif()
 install(TARGETS RMG
     DESTINATION ${RMG_INSTALL_PATH}
 )
 install(TARGETS RMG-Audio
     DESTINATION ${PLUGIN_INSTALL_PATH}/Audio
 )
+if (NOT WIN32)
+    install(TARGETS RMG-Input
+        DESTINATION ${PLUGIN_INSTALL_PATH}/Input
+    )
+endif()
 
 if (WIN32)
     add_subdirectory(Source/Installer)

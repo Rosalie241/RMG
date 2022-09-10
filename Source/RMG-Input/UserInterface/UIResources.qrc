@@ -1,0 +1,20 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+  <file>Resource/Controller_NoAnalogStick.svg</file>
+  <file>Resource/Controller_AnalogStick.svg</file>
+  <file>Resource/Controller_Pressed_A.svg</file>
+  <file>Resource/Controller_Pressed_B.svg</file>
+  <file>Resource/Controller_Pressed_DpadUp.svg</file>
+  <file>Resource/Controller_Pressed_DpadDown.svg</file>
+  <file>Resource/Controller_Pressed_DpadLeft.svg</file>
+  <file>Resource/Controller_Pressed_DpadRight.svg</file>
+  <file>Resource/Controller_Pressed_CButtonUp.svg</file>
+  <file>Resource/Controller_Pressed_CButtonDown.svg</file>
+  <file>Resource/Controller_Pressed_CButtonLeft.svg</file>
+  <file>Resource/Controller_Pressed_CButtonRight.svg</file>
+  <file>Resource/Controller_Pressed_Start.svg</file>
+  <file>Resource/Controller_Pressed_LeftTrigger.svg</file>
+  <file>Resource/Controller_Pressed_RightTrigger.svg</file>
+  <file>Resource/RMG.png</file>
+</qresource>
+</RCC>

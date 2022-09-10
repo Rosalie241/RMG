@@ -173,7 +173,7 @@ static l_Setting get_setting(SettingsID settingId)
 #ifdef _WIN32
                     CoreGetPluginDirectory() + "\\Input\\libmupen64plus-input-qt.dll",
 #else
-                    CoreGetPluginDirectory() + "/Input/libmupen64plus-input-qt.so",
+                    CoreGetPluginDirectory() + "/Input/RMG-Input.so",
 #endif // _WIN32
                   };
         break;
@@ -390,6 +390,247 @@ static l_Setting get_setting(SettingsID settingId)
         break;
     case SettingsID::Audio_Muted:
         setting = {SETTING_SECTION_AUDIO, "Muted", false};
+        break;
+
+    case SettingsID::Input_PluggedIn:
+        setting = {"", "PluggedIn"};
+        break;
+    case SettingsID::Input_DeviceType:
+        setting = {"", "DeviceType"};
+        break;
+    case SettingsID::Input_DeviceName:
+        setting = {"", "DeviceName"};
+        break;
+    case SettingsID::Input_DeviceNum:
+        setting = {"", "DeviceNum"};
+        break;
+    case SettingsID::Input_Range:
+        setting = {"", "Range"};
+        break;
+    case SettingsID::Input_Deadzone:
+        setting = {"", "Deadzone"};
+        break;
+    case SettingsID::Input_Pak:
+        setting = {"", "Pak"};
+        break;
+    case SettingsID::Input_RemoveDuplicateMappings:
+        setting = {"", "RemoveDuplicateMappings"};
+        break;
+    case SettingsID::Input_A_InputType:
+        setting = {"", "A_InputType"};
+        break;
+    case SettingsID::Input_A_Name:
+        setting = {"", "A_Name"};
+        break;
+    case SettingsID::Input_A_Data:
+        setting = {"", "A_Data"};
+        break;
+    case SettingsID::Input_A_ExtraData:
+        setting = {"", "A_ExtraData"};
+        break;
+    case SettingsID::Input_B_InputType:
+        setting = {"", "B_InputType"};
+        break;
+    case SettingsID::Input_B_Name:
+        setting = {"", "B_Name"};
+        break;
+    case SettingsID::Input_B_Data:
+        setting = {"", "B_Data"};
+        break;
+    case SettingsID::Input_B_ExtraData:
+        setting = {"", "B_ExtraData"};
+        break;
+    case SettingsID::Input_Start_InputType:
+        setting = {"", "Start_InputType"};
+        break;
+    case SettingsID::Input_Start_Name:
+        setting = {"", "Start_Name"};
+        break;
+    case SettingsID::Input_Start_Data:
+        setting = {"", "Start_Data"};
+        break;
+    case SettingsID::Input_Start_ExtraData:
+        setting = {"", "Start_ExtraData"};
+        break;
+    case SettingsID::Input_DpadUp_InputType:
+        setting = {"", "DpadUp_InputType"};
+        break;
+    case SettingsID::Input_DpadUp_Name:
+        setting = {"", "DpadUp_Name"};
+        break;
+    case SettingsID::Input_DpadUp_Data:
+        setting = {"", "DpadUp_Data"};
+        break;
+    case SettingsID::Input_DpadUp_ExtraData:
+        setting = {"", "DpadUp_ExtraData"};
+        break;
+    case SettingsID::Input_DpadDown_InputType:
+        setting = {"", "DpadDown_InputType"};
+        break;
+    case SettingsID::Input_DpadDown_Name:
+        setting = {"", "DpadDown_Name"};
+        break;
+    case SettingsID::Input_DpadDown_Data:
+        setting = {"", "DpadDown_Data"};
+        break;
+    case SettingsID::Input_DpadDown_ExtraData:
+        setting = {"", "DpadDown_ExtraData"};
+        break;
+    case SettingsID::Input_DpadLeft_InputType:
+        setting = {"", "DpadLeft_InputType"};
+        break;
+    case SettingsID::Input_DpadLeft_Name:
+        setting = {"", "DpadLeft_Name"};
+        break;
+    case SettingsID::Input_DpadLeft_Data:
+        setting = {"", "DpadLeft_Data"};
+        break;
+    case SettingsID::Input_DpadLeft_ExtraData:
+        setting = {"", "DpadLeft_ExtraData"};
+        break;
+    case SettingsID::Input_DpadRight_InputType:
+        setting = {"", "DpadRight_InputType"};
+        break;
+    case SettingsID::Input_DpadRight_Name:
+        setting = {"", "DpadRight_Name"};
+        break;
+    case SettingsID::Input_DpadRight_Data:
+        setting = {"", "DpadRight_Data"};
+        break;
+    case SettingsID::Input_DpadRight_ExtraData:
+        setting = {"", "DpadRight_ExtraData"};
+        break;
+    case SettingsID::Input_CButtonUp_InputType:
+        setting = {"", "CButtonUp_InputType"};
+        break;
+    case SettingsID::Input_CButtonUp_Name:
+        setting = {"", "CButtonUp_Name"};
+        break;
+    case SettingsID::Input_CButtonUp_Data:
+        setting = {"", "CButtonUp_Data"};
+        break;
+    case SettingsID::Input_CButtonUp_ExtraData:
+        setting = {"", "CButtonUp_ExtraData"};
+        break;
+    case SettingsID::Input_CButtonDown_InputType:
+        setting = {"", "CButtonDown_InputType"};
+        break;
+    case SettingsID::Input_CButtonDown_Name:
+        setting = {"", "CButtonDown_Name"};
+        break;
+    case SettingsID::Input_CButtonDown_Data:
+        setting = {"", "CButtonDown_Data"};
+        break;
+    case SettingsID::Input_CButtonDown_ExtraData:
+        setting = {"", "CButtonDown_ExtraData"};
+        break;
+    case SettingsID::Input_CButtonLeft_InputType:
+        setting = {"", "CButtonLeft_InputType"};
+        break;
+    case SettingsID::Input_CButtonLeft_Name:
+        setting = {"", "CButtonLeft_Name"};
+        break;
+    case SettingsID::Input_CButtonLeft_Data:
+        setting = {"", "CButtonLeft_Data"};
+        break;
+    case SettingsID::Input_CButtonLeft_ExtraData:
+        setting = {"", "CButtonLeft_ExtraData"};
+        break;
+    case SettingsID::Input_CButtonRight_InputType:
+        setting = {"", "CButtonRight_InputType"};
+        break;
+    case SettingsID::Input_CButtonRight_Name:
+        setting = {"", "CButtonRight_Name"};
+        break;
+    case SettingsID::Input_CButtonRight_Data:
+        setting = {"", "CButtonRight_Data"};
+        break;
+    case SettingsID::Input_CButtonRight_ExtraData:
+        setting = {"", "CButtonRight_ExtraData"};
+        break;
+    case SettingsID::Input_LeftTrigger_InputType:
+        setting = {"", "LeftTrigger_InputType"};
+        break;
+    case SettingsID::Input_LeftTrigger_Name:
+        setting = {"", "LeftTrigger_Name"};
+        break;
+    case SettingsID::Input_LeftTrigger_Data:
+        setting = {"", "LeftTrigger_Data"};
+        break;
+    case SettingsID::Input_LeftTrigger_ExtraData:
+        setting = {"", "LeftTrigger_ExtraData"};
+        break;
+    case SettingsID::Input_RightTrigger_InputType:
+        setting = {"", "RightTrigger_InputType"};
+        break;
+    case SettingsID::Input_RightTrigger_Name:
+        setting = {"", "RightTrigger_Name"};
+        break;
+    case SettingsID::Input_RightTrigger_Data:
+        setting = {"", "RightTrigger_Data"};
+        break;
+    case SettingsID::Input_RightTrigger_ExtraData:
+        setting = {"", "RightTrigger_ExtraData"};
+        break;
+    case SettingsID::Input_ZTrigger_InputType:
+        setting = {"", "ZTrigger_InputType"};
+        break;
+    case SettingsID::Input_ZTrigger_Name:
+        setting = {"", "ZTrigger_Name"};
+        break;
+    case SettingsID::Input_ZTrigger_Data:
+        setting = {"", "ZTrigger_Data"};
+        break;
+    case SettingsID::Input_ZTrigger_ExtraData:
+        setting = {"", "ZTrigger_ExtraData"};
+        break;
+    case SettingsID::Input_AnalogStickUp_InputType:
+        setting = {"", "AnalogStickUp_InputType"};
+        break;
+    case SettingsID::Input_AnalogStickUp_Name:
+        setting = {"", "AnalogStickUp_Name"};
+        break;
+    case SettingsID::Input_AnalogStickUp_Data:
+        setting = {"", "AnalogStickUp_Data"};
+        break;
+    case SettingsID::Input_AnalogStickUp_ExtraData:
+        setting = {"", "AnalogStickUp_ExtraData"};
+        break;
+    case SettingsID::Input_AnalogStickDown_InputType:
+        setting = {"", "AnalogStickDown_InputType"};
+        break;
+    case SettingsID::Input_AnalogStickDown_Name:
+        setting = {"", "AnalogStickDown_Name"};
+        break;
+    case SettingsID::Input_AnalogStickDown_Data:
+        setting = {"", "AnalogStickDown_Data"};
+        break;
+    case SettingsID::Input_AnalogStickDown_ExtraData:
+        setting = {"", "AnalogStickDown_ExtraData"};
+        break;
+    case SettingsID::Input_AnalogStickLeft_InputType:
+        setting = {"", "AnalogStickLeft_InputType"};
+        break;
+    case SettingsID::Input_AnalogStickLeft_Name:
+        setting = {"", "AnalogStickLeft_Name"};
+        break;
+    case SettingsID::Input_AnalogStickLeft_Data:
+        setting = {"", "AnalogStickLeft_Data"};
+        break;
+    case SettingsID::Input_AnalogStickLeft_ExtraData:
+        setting = {"", "AnalogStickLeft_ExtraData"};
+        break;
+    case SettingsID::Input_AnalogStickRight_InputType:
+        setting = {"", "AnalogStickRight_InputType"};
+        break;
+    case SettingsID::Input_AnalogStickRight_Name:
+        setting = {"", "AnalogStickRight_Name"};
+        break;
+    case SettingsID::Input_AnalogStickRight_Data:
+        setting = {"", "AnalogStickRight_Data"};
+        break;
+    case SettingsID::Input_AnalogStickRight_ExtraData:
+        setting = {"", "AnalogStickRight_ExtraData"};
         break;
     }
 
