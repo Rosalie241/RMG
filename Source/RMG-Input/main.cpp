@@ -570,6 +570,7 @@ EXPORT void CALL InitiateControllers(CONTROL_INFO ControlInfo)
         ControlInfo.Controls[i].Present = profile->PluggedIn ? 1 : 0;
         ControlInfo.Controls[i].Plugin = plugin;
         ControlInfo.Controls[i].RawData = 0;
+        ControlInfo.Controls[i].Type = CONT_TYPE_STANDARD;
     }
 
     for (int i = 0; i < SDL_NUM_SCANCODES; i++)
