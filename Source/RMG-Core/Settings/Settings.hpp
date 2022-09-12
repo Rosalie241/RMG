@@ -18,6 +18,9 @@
 // saves settings to file
 bool CoreSettingsSave(void);
 
+// upgrades existing settings to new version
+bool CoreSettingsUpgrade(void);
+
 // setup default settings
 bool CoreSettingsSetupDefaults(void);
 

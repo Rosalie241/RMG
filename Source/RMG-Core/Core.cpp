@@ -127,6 +127,12 @@ bool CoreInit(void)
         return false;
     }
 
+    ret = CoreSettingsUpgrade();
+    if (!ret)
+    {
+        return false;
+    }
+
     ret = CoreSettingsSetupDefaults();
     if (!ret)
     {

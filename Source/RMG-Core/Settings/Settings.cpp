@@ -10,6 +10,7 @@
 #include "Settings.hpp"
 
 #include "Directories.hpp"
+#include "Config.hpp"
 #include "m64p/Api.hpp"
 #include "Error.hpp"
 #include "m64p/api/m64p_types.h"
@@ -148,6 +149,9 @@ static l_Setting get_setting(SettingsID settingId)
         break;
     case SettingsID::GUI_ResumeEmulationOnFocus:
         setting = {SETTING_SECTION_GUI, "ResumeEmulationOnFocus", true};
+        break;
+    case SettingsID::GUI_Version:
+        setting = {SETTING_SECTION_GUI, "Version", CORE_VERSION};
         break;
 
     case SettingsID::Core_GFX_Plugin:
@@ -802,6 +806,43 @@ bool CoreSettingsSave(void)
     }
 
     return ret == M64ERR_SUCCESS;
+}
+
+bool CoreSettingsUpgrade(void)
+{
+    std::string settingsVersion;
+    std::string settingsString;
+
+    settingsVersion = CoreSettingsGetStringValue(SettingsID::GUI_Version);
+
+    // we don't need to do anything
+    // when the core version and the settings version match
+    if (settingsVersion == CORE_VERSION)
+    {
+        return true;
+    }
+
+    if (settingsVersion.empty())
+    { // settings version was introduced in >v0.1.5
+
+#ifndef PORTABLE_INSTALL // only applies to non-portable installs (i.e flatpak)
+        // sadly v0.1.5 introduced an issue,
+        // in v0.1.4 the screenshot directory was set to 'Screenshots',
+        // in v0.1.5 it was changed to '$HOME/Pictures/RMG'
+        // and it was included in CoreCreateDirectories(),
+        // which, when someone upgraded to v0.1.5 would fail
+        // because we lacked permissions to create the 'Screenshots' directory
+        settingsString = CoreGetScreenshotDirectory();
+        if (settingsString == "Screenshots")
+        {
+            CoreSettingsSetValue(SettingsID::Core_ScreenshotPath, CoreGetDefaultScreenshotDirectory());
+        }
+#endif
+
+    }
+
+    // save core version
+    return CoreSettingsSetValue(SettingsID::GUI_Version, std::string(CORE_VERSION));
 }
 
 bool CoreSettingsSetupDefaults(void)
