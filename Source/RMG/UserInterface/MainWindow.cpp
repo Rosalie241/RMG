@@ -983,7 +983,7 @@ void MainWindow::on_Action_System_SaveAs(void)
         this->on_Action_System_Pause();
     }
 
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save State"), "", tr("SaveState (*.dat);;All Files (*)"));
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save State"), "", tr("Save State (*.state);;All Files (*)"));
 
     if (!CoreSaveState(fileName.toStdString()))
     {
@@ -1014,7 +1014,7 @@ void MainWindow::on_Action_System_Load(void)
     }
 
     QString fileName =
-        QFileDialog::getOpenFileName(this, tr("Open Save State"), "", tr("SaveState (*.dat);;All Files (*)"));
+        QFileDialog::getOpenFileName(this, tr("Open Save State"), "", tr("Save State (*.dat *.state);;All Files (*)"));
 
     if (!CoreLoadSaveState(fileName.toStdString()))
     {
