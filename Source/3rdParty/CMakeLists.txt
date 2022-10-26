@@ -18,6 +18,9 @@ if(NOT NO_GIT_CLONE)
     set(MUPEN64PLUSCORE_URL           "https://github.com/mupen64plus/mupen64plus-core")
     set(MUPEN64PLUSCORE_TAG           "5a5ffc0c78b0e255f54b15d2480f617d5cbc33ec")
     
+    set(MUPEN64PLUS_RSP_CXD4_URL       "https://github.com/mupen64plus/mupen64plus-rsp-cxd4")
+    set(MUPEN64PLUS_RSP_CXD4_TAG       "39f79201baa15890c4cbae92f2215a634cc3ee6d")
+    
     set(MUPEN64PLUS_RSP_HLE_URL       "https://github.com/mupen64plus/mupen64plus-rsp-hle")
     set(MUPEN64PLUS_RSP_HLE_TAG       "88093cb43499eff53d343653cddcae2132af17ef")
     
@@ -55,6 +58,24 @@ ExternalProject_Add(mupen64plus-core
 )
 
 set(APIDIR "${CMAKE_BINARY_DIR}/Source/3rdParty/mupen64plus-core/src/api")
+
+ExternalProject_Add(mupen64plus-rsp-cxd4
+    SOURCE_DIR mupen64plus-rsp-cxd4/
+
+    CONFIGURE_COMMAND ""
+    INSTALL_COMMAND ""
+
+    GIT_REPOSITORY ${MUPEN64PLUS_RSP_CXD4_URL}
+    GIT_TAG ${MUPEN64PLUS_RSP_CXD4_TAG}
+
+    BUILD_COMMAND make all APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug> SSE=SSE2
+    BUILD_IN_SOURCE False
+
+    BINARY_DIR ${THIRDPARTY_DIR}/mupen64plus-rsp-cxd4/projects/unix
+    
+    BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-rsp-cxd4/projects/unix/mupen64plus-rsp-cxd4-sse2.${SO_EXT}
+    DEPENDS mupen64plus-core
+)
 
 ExternalProject_Add(mupen64plus-rsp-hle
     SOURCE_DIR mupen64plus-rsp-hle/
@@ -174,6 +195,9 @@ ExternalProject_Get_property(mupen64plus-core BUILD_BYPRODUCTS)
 set(MUPEN64PLUSCORE_LIB ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 set(MUPEN64PLUSCORE_INI ${M64P_CORE_DIR}/data/mupen64plus.ini PARENT_SCOPE)
 set(MUPEN64PLUSCORE_CHT ${M64P_CORE_DIR}/data/mupencheat.txt PARENT_SCOPE)
+
+ExternalProject_Get_property(mupen64plus-rsp-cxd4 BUILD_BYPRODUCTS)
+set(MUPEN64PLUS_PLUGIN_RSP_CXD4 ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 
 ExternalProject_Get_property(mupen64plus-rsp-hle BUILD_BYPRODUCTS)
 set(MUPEN64PLUS_PLUGIN_RSP_HLE ${BUILD_BYPRODUCTS} PARENT_SCOPE)
