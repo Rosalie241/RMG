@@ -68,12 +68,12 @@ ExternalProject_Add(mupen64plus-rsp-cxd4
     GIT_REPOSITORY ${MUPEN64PLUS_RSP_CXD4_URL}
     GIT_TAG ${MUPEN64PLUS_RSP_CXD4_TAG}
 
-    BUILD_COMMAND make all APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug> SSE=SSE2
+    BUILD_COMMAND make all APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug> SSE=none
     BUILD_IN_SOURCE False
 
     BINARY_DIR ${THIRDPARTY_DIR}/mupen64plus-rsp-cxd4/projects/unix
     
-    BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-rsp-cxd4/projects/unix/mupen64plus-rsp-cxd4-sse2.${SO_EXT}
+    BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-rsp-cxd4/projects/unix/mupen64plus-rsp-cxd4.${SO_EXT}
     DEPENDS mupen64plus-core
 )
 
