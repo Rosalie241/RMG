@@ -28,7 +28,7 @@ if(NOT NO_GIT_CLONE)
     set(MUPEN64PLUS_RSP_PARALLEL_TAG  "e67cee3131651c3e48343294d94fa68a6f8ec14c")
     
     set(MUPEN64PLUS_INPUT_QT_URL      "https://github.com/Rosalie241/mupen64plus-input-qt")
-    set(MUPEN64PLUS_INPUT_QT_TAG      "e6cacb7fe6513cac4b30f7171d8ca7d1cd5fdb81")
+    set(MUPEN64PLUS_INPUT_QT_TAG      "e6b23e127ca3d3b21cd715751c32deae5adccee6")
     
     set(MUPEN64PLUS_INPUT_RAPHNET_URL "https://github.com/raphnet/mupen64plus-input-raphnetraw")
     set(MUPEN64PLUS_INPUT_RAPHNET_TAG "86112413e98a8648edb11d199673cc24d5799af8")
