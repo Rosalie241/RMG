@@ -46,6 +46,9 @@ if(NOT NO_GIT_CLONE)
     set(MUPEN64PLUS_INPUT_GCA_URL     "https://github.com/amatho/mupen64plus-input-gca")
     set(MUPEN64PLUS_INPUT_GCA_TAG     "21639fb13dfa797a7c0949ffd9bbda9a3456fc69")
 
+    set(MUPEN64PLUS_GFX_ANGRYLION_URL  "https://github.com/ghostlydark/angrylion-rdp-plus")
+    set(MUPEN64PLUS_GFX_ANGRYLION_TAG  "dccbb2bf87192e49354c216abdd5ac9f66152a65")
+
     set(MUPEN64PLUS_GFX_GLIDEN64_URL  "https://github.com/gonetz/GLideN64")
     set(MUPEN64PLUS_GFX_GLIDEN64_TAG  "2973f5351b6326ca588b60521522df34ed7a426e")
 
@@ -188,6 +191,21 @@ foreach(LANG ${GLIDENUI_TRANSLATIONS_LANGS})
     list(APPEND GLIDENUI_TRANSLATIONS "${GLIDEN64_DIR}/translations/release/gliden64_${LANG}.qm")
 endforeach()
 
+ExternalProject_Add(mupen64plus-video-angrylion-plus
+    SOURCE_DIR mupen64plus-video-angrylion-plus
+
+    GIT_REPOSITORY ${MUPEN64PLUS_GFX_ANGRYLION_URL}
+    GIT_TAG ${MUPEN64PLUS_GFX_ANGRYLION_TAG}
+
+    INSTALL_COMMAND ""
+
+    BUILD_IN_SOURCE True
+    CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+
+    BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-video-angrylion-plus/mupen64plus-video-angrylion-plus.${SO_EXT}
+    DEPENDS mupen64plus-core
+)
+
 ExternalProject_Add(mupen64plus-video-GLideN64
     SOURCE_DIR mupen64plus-video-GLideN64
 
@@ -246,6 +264,9 @@ if (${BUILD_INPUT_GCA} STREQUAL "1")
     ExternalProject_Get_property(mupen64plus-input-gca BUILD_BYPRODUCTS)
     set(MUPEN64PLUS_PLUGIN_INPUT_GCA ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 endif()
+
+ExternalProject_Get_property(mupen64plus-video-angrylion-plus BUILD_BYPRODUCTS)
+set(MUPEN64PLUS_PLUGIN_GFX_ANGRYLION ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 
 ExternalProject_Get_property(mupen64plus-video-GLideN64 BUILD_BYPRODUCTS)
 set(MUPEN64PLUS_PLUGIN_GFX_GLIDEN64 ${BUILD_BYPRODUCTS} PARENT_SCOPE)
