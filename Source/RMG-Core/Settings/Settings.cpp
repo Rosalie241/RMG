@@ -220,6 +220,9 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::Core_CountPerOp:
         setting = {SETTING_SECTION_M64P, "CountPerOp", 0};
         break;
+    case SettingsID::Core_CountPerOpDenomPot:
+        setting = {SETTING_SECTION_M64P, "CountPerOpDenomPot", 0};
+        break;
     case SettingsID::Core_SiDmaDuration:
         setting = {SETTING_SECTION_M64P, "SiDmaDuration", -1};
         break;
@@ -238,6 +241,9 @@ static l_Setting get_setting(SettingsID settingId)
         break;
     case SettingsID::CoreOverlay_CountPerOp:
         setting = {SETTING_SECTION_OVERLAY, "CountPerOp", 0};
+        break;
+    case SettingsID::CoreOverlay_CountPerOpDenomPot:
+        setting = {SETTING_SECTION_OVERLAY, "CountPerOpDenomPot", 0};
         break;
     case SettingsID::CoreOverlay_SiDmaDuration:
         setting = {SETTING_SECTION_OVERLAY, "SiDmaDuration", -1};

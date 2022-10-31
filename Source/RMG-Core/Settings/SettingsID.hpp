@@ -38,6 +38,7 @@ enum class SettingsID
     Core_DisableExtraMem,
     Core_EnableDebugger,
     Core_CountPerOp,
+    Core_CountPerOpDenomPot,
     Core_SiDmaDuration,
 
     // (mupen64plus) Overlay Core Settings
@@ -46,6 +47,7 @@ enum class SettingsID
     CoreOverlay_DisableExtraMem,
     CoreOverlay_EnableDebugger,
     CoreOverlay_CountPerOp,
+    CoreOverlay_CountPerOpDenomPot,
     CoreOverlay_SiDmaDuration,
 
     // (mupen64plus) Core Directory Settings
