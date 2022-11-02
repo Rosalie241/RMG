@@ -732,7 +732,7 @@ void SettingsDialog::chooseIPLRom(QLineEdit *lineEdit)
 {
     QString file;
 
-    file = QFileDialog::getOpenFileName(this, "", "", "IPL ROMs (*.n64)");
+    file = QFileDialog::getOpenFileName(this, "", "", "IPL ROMs (*.n64 *.v64 *.z64)");
     if (file.isEmpty())
     {
         return;
