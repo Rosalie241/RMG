@@ -266,7 +266,7 @@ static l_Setting get_setting(SettingsID settingId)
         setting = {SETTING_SECTION_64DD, "64DD_DevelopmentIPL", ""};
         break;
     case SettingsID::Core_64DD_SaveDiskFormat:
-        setting = {SETTING_SECTION_M64P, "SaveDiskFormat", 0};
+        setting = {SETTING_SECTION_M64P, "SaveDiskFormat", 1};
         break;
 
     case SettingsID::Game_DisableExtraMem:
