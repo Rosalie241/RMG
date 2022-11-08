@@ -983,29 +983,6 @@
             </widget>
            </item>
            <item>
-            <widget class="QGroupBox" name="groupBox_29">
-             <property name="title">
-              <string>Shared Data Directory</string>
-             </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_66">
-              <item>
-               <widget class="QLineEdit" name="sharedDataDirLineEdit">
-                <property name="readOnly">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="changeSharedDataDirButton">
-                <property name="text">
-                 <string>Change</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
             <widget class="QGroupBox" name="overrideUserDirsGroupBox">
              <property name="enabled">
               <bool>true</bool>

@@ -252,9 +252,6 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::Core_SaveSRAMPath:
         setting = {SETTING_SECTION_M64P, "SaveSRAMPath", CoreGetDefaultSaveDirectory(), "", true};
         break;
-    case SettingsID::Core_SharedDataPath:
-        setting = {SETTING_SECTION_M64P, "SharedDataPath", CoreGetSharedDataDirectory(), "", true};
-        break;
 
     case SettingsID::Core_64DD_JapaneseIPL:
         setting = {SETTING_SECTION_64DD, "64DD_JapaneseIPL", ""};

@@ -52,7 +52,6 @@ enum class SettingsID
     Core_ScreenshotPath,
     Core_SaveStatePath,
     Core_SaveSRAMPath,
-    Core_SharedDataPath,
 
     // Game Specific Settings
     Game_DisableExtraMem,
