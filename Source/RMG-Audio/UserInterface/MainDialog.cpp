@@ -17,7 +17,7 @@ MainDialog::MainDialog(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHi
     this->setupUi(this);
     this->setWindowIcon(QIcon(":Resource/RMG.png"));
     this->volumeSlider->setValue(CoreSettingsGetIntValue(SettingsID::Audio_Volume));
-    this->mutedCheckbox->setChecked(CoreSettingsGetBoolValue(SettingsID::Audio_Muted));
+    this->mutedCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::Audio_Muted));
 }
 
 MainDialog::~MainDialog()
@@ -35,7 +35,7 @@ void MainDialog::on_buttonBox_clicked(QAbstractButton* button)
     QPushButton *okButton = this->buttonBox->button(QDialogButtonBox::Ok);
 
     int volume = this->volumeSlider->value();
-    bool muted = this->mutedCheckbox->isChecked();
+    bool muted = this->mutedCheckBox->isChecked();
 
     if (pushButton == okButton)
     {
