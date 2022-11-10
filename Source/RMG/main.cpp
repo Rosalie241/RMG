@@ -8,8 +8,10 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include <UserInterface/MainWindow.hpp>
+#include <Config.hpp>
 
 #include <QApplication>
+#include <QCommandLineParser>
 #include <QDir>
 #include <QFile>
 
@@ -21,25 +23,31 @@ int main(int argc, char **argv)
 
     QDir::setCurrent(app.applicationDirPath());
 
+    QCoreApplication::setApplicationName("Rosalie's Mupen GUI");
+    QCoreApplication::setApplicationVersion(VERSION_STR);
+
+    // setup commandline parser
+    QCommandLineParser parser;
+    // default options
+    parser.addHelpOption();
+    parser.addVersionOption();
+    // custom options
+    parser.addPositionalArgument("ROM", "ROM to open");
+
+    // parse arguments
+    parser.process(app);
+
+    // initialize window
     if (!window.Init(&app))
     {
         return 1;
     }
-
     window.show();
 
-    // try to find an argument
-    // with a file that exists,
-    // if such an argument exists,
-    // attempt to open that ROM
-    for (int i = 1; i < argc; i++)
+    QStringList args = parser.positionalArguments();
+    if (!args.empty())
     {
-        QString file = argv[i];
-        if (QFile().exists(file))
-        {
-            window.OpenROM(file);
-            break;
-        }
+        window.OpenROM(args.at(0));
     }
 
     return app.exec();
