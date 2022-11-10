@@ -89,17 +89,6 @@ static m64p_error VidExt_ListRates(m64p_2d_size Size, int *NumRates, int *Rates)
     return M64ERR_SUCCESS;
 }
 
-static m64p_error VidExt_SetMode(int Width, int Height, int BitsPerPixel, int ScreenMode, int Flags)
-{
-    if (!l_VidExtSetup)
-    {
-        VidExt_OglSetup();
-    }
-
-    l_EmuThread->on_VidExt_SetMode(Width, Height, BitsPerPixel, ScreenMode, Flags);
-    return M64ERR_SUCCESS;
-}
-
 static m64p_error VidExt_SetModeWithRate(int Width, int Height, int RefreshRate, int BitsPerPixel, int ScreenMode, int Flags)
 {
     if (!l_VidExtSetup)
@@ -119,6 +108,12 @@ static m64p_error VidExt_SetModeWithRate(int Width, int Height, int RefreshRate,
             break;
     }
 
+    return M64ERR_SUCCESS;
+}
+
+static m64p_error VidExt_SetMode(int Width, int Height, int BitsPerPixel, int ScreenMode, int Flags)
+{
+    VidExt_SetModeWithRate(Width, Height, 0, BitsPerPixel, ScreenMode, Flags);
     return M64ERR_SUCCESS;
 }
 
