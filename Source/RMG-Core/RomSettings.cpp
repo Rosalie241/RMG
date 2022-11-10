@@ -32,14 +32,6 @@ bool CoreGetCurrentRomSettings(CoreRomSettings& settings)
     m64p_error        ret;
     m64p_rom_settings m64p_settings;
 
-    if (!CoreHasRomOpen())
-    {
-        error = "CoreGetCurrentRomSettings Failed: ";
-        error += "cannot retrieve current rom settings when no ROM has been opened!";
-        CoreSetError(error);
-        return false;
-    }
-
     ret = m64p::Core.DoCommand(M64CMD_ROM_GET_SETTINGS, sizeof(m64p_rom_settings), &m64p_settings);
     if (ret != M64ERR_SUCCESS)
     {
