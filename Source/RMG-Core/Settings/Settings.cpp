@@ -291,6 +291,9 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::Game_CPU_Emulator:
         setting = {"", "CPU_Emulator", 2};
         break;
+    case SettingsID::Game_CountPerOpDenomPot:
+        setting = {"", "CountPerOpDenomPot", 0};
+        break;
     case SettingsID::Game_RandomizeInterrupt:
         setting = {"", "RandomizeInterrupt", true};
         break;

@@ -64,6 +64,7 @@ enum class SettingsID
     // Game Core Override Settings
     Game_OverrideCoreSettings,
     Game_CPU_Emulator,
+    Game_CountPerOpDenomPot,
     Game_RandomizeInterrupt,
 
     // Game Plugin Settings
