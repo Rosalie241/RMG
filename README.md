@@ -36,7 +36,7 @@ make install
 #### Windows
 * Download & Install [MSYS2](https://www.msys2.org/)
 ```
-sudo pacman -S make mingw-w64-x86_64-cmake mingw-w64-x86_64-gcc mingw-w64-x86_64-hidapi mingw-w64-x86_64-freetype mingw-w64-x86_64-libpng mingw-w64-x86_64-SDL2 mingw-w64-x86_64-jasper mingw-w64-x86_64-qt5 mingw-w64-x86_64-SDL2 mingw-w64-x86_64-hidapi mingw-w64-x86_64-libsamplerate mingw-w64-x86_64-python3-pip mingw-w64-x86_64-python3-pyopenssl mingw-w64-x86_64-nasm git
+sudo pacman -S git make mingw-w64-x86_64-cmake mingw-w64-x86_64-freetype mingw-w64-x86_64-gcc mingw-w64-x86_64-hidapi mingw-w64-x86_64-jasper mingw-w64-x86_64-libpng mingw-w64-x86_64-libsamplerate mingw-w64-x86_64-nasm mingw-w64-x86_64-python3-pip mingw-w64-x86_64-python3-pyopenssl mingw-w64-x86_64-qt5 mingw-w64-x86_64-rust mingw-w64-x86_64-SDL2
 ./Source/Script/Build.sh Release
 ```
 
