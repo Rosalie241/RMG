@@ -34,7 +34,8 @@ class ControllerWidget : public QWidget, Ui::ControllerWidget
 
 private:
     QString settingsSection;
-
+    QString gameSettingsSection;
+    
     QList<QString> inputDeviceNameList;
     CustomButton* currentButton = nullptr;
 
@@ -76,6 +77,8 @@ private:
 
     void removeDuplicates(CustomButton* button);
 
+    QString getCurrentSettingsSection();
+
     SDL_JoystickID currentJoystickId = -1;
 
 public:
@@ -95,6 +98,7 @@ public:
     void SetSettingsSection(QString section);
 
     void LoadSettings();
+    void LoadSettings(QString section);
     void SaveDefaultSettings();
     void SaveSettings();
 
@@ -104,11 +108,14 @@ private slots:
     void on_deadZoneSlider_valueChanged(int value);
     void on_analogStickRangeSlider_valueChanged(int value);
     
+    void on_profileComboBox_currentIndexChanged(int value);
+
     void on_inputDeviceComboBox_currentIndexChanged(int value);
     void on_inputDeviceRefreshButton_clicked();
     
     void on_controllerPluggedCheckBox_toggled(bool value);
 
+    void on_removeProfileButton_clicked();
     void on_setupButton_clicked();
     void on_resetButton_clicked();
     void on_optionsButton_clicked();

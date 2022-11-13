@@ -13,13 +13,19 @@
 
 using namespace UserInterface;
 
-OptionsDialog::OptionsDialog(QWidget* parent, QString settingsSection) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint)
+OptionsDialog::OptionsDialog(QWidget* parent, QString mainSettingsSection, QString settingsSection) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint)
 {
     this->setupUi(this);
 
+    std::string section = settingsSection.toStdString();
     this->settingsSection = settingsSection;
 
-    std::string section = settingsSection.toStdString();
+    // fallback to main settings section, 
+    // if the current settings section doesn't exist
+    if (!CoreSettingsSectionExists(settingsSection.toStdString()))
+    {
+        section = mainSettingsSection.toStdString();
+    }
 
     this->removeDuplicateMappingsCheckbox->setChecked(CoreSettingsGetBoolValue(SettingsID::Input_RemoveDuplicateMappings, section));
     this->controllerPakComboBox->setCurrentIndex(CoreSettingsGetIntValue(SettingsID::Input_Pak, section));

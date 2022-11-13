@@ -21,7 +21,7 @@ class OptionsDialog : public QDialog, private Ui::OptionsDialog
 Q_OBJECT
 
 public:
-    OptionsDialog(QWidget *parent, QString settingsSection);
+    OptionsDialog(QWidget *parent, QString mainSettingsSection, QString settingsSection);
 
 private:
     QString settingsSection;

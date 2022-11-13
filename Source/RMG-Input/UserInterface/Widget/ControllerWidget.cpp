@@ -15,10 +15,11 @@
 #include <RMG-Core/Core.hpp>
 
 #include <QPixmap>
-#include <QResizeEvent>
 #include <QPainter>
-#include <SDL.h>
+#include <QResizeEvent>
 #include <QSvgRenderer>
+#include <QMessageBox>
+#include <SDL.h>
 #include <iostream>
 
 using namespace UserInterface::Widget;
@@ -212,7 +213,7 @@ void ControllerWidget::enableAllChildren()
 
 void ControllerWidget::removeDuplicates(CustomButton* button)
 {
-    std::string section = this->settingsSection.toStdString();
+    std::string section = this->getCurrentSettingsSection().toStdString();
 
     if (!CoreSettingsGetBoolValue(SettingsID::Input_RemoveDuplicateMappings, section))
     {
@@ -234,6 +235,22 @@ void ControllerWidget::removeDuplicates(CustomButton* button)
             buttonWidget->Clear();
         }
     }
+}
+
+QString ControllerWidget::getCurrentSettingsSection()
+{
+    QString section;
+
+    if (this->profileComboBox->currentIndex() == 0)
+    {
+        section = this->settingsSection;
+    }
+    else
+    {
+        section = this->gameSettingsSection;
+    }
+
+    return section;
 }
 
 void ControllerWidget::AddInputDevice(QString deviceName, int deviceNum)
@@ -354,6 +371,11 @@ void ControllerWidget::on_analogStickRangeSlider_valueChanged(int value)
     this->controllerImageWidget->SetRange(value);
 }
 
+void ControllerWidget::on_profileComboBox_currentIndexChanged(int value)
+{
+    this->LoadSettings(this->getCurrentSettingsSection());
+}
+
 void ControllerWidget::on_inputDeviceComboBox_currentIndexChanged(int value)
 {
     QString deviceName = this->inputDeviceNameList.at(value);
@@ -420,6 +442,37 @@ void ControllerWidget::on_controllerPluggedCheckBox_toggled(bool value)
     this->ClearControllerImage();
 }
 
+void ControllerWidget::on_removeProfileButton_clicked()
+{
+    bool ret;
+
+    if (this->profileComboBox->currentIndex() == 0)
+    {
+        QMessageBox messageBox(this);
+        messageBox.setIcon(QMessageBox::Icon::Critical);
+        messageBox.setWindowTitle("Error");
+        messageBox.setText("Cannot remove main profile!");
+        messageBox.addButton(QMessageBox::Ok);
+        messageBox.exec();
+        return;
+    }
+
+    // reset profile to main profile
+    this->profileComboBox->setCurrentIndex(0);
+    // try to remove game settings section
+    ret = CoreSettingsDeleteSection(this->gameSettingsSection.toStdString());
+    if (!ret)
+    { // show error when failed
+        QMessageBox messageBox(this);
+        messageBox.setIcon(QMessageBox::Icon::Critical);
+        messageBox.setWindowTitle("Error");
+        messageBox.setText("CoreSettingsDeleteSection() Failed!");
+        messageBox.setDetailedText(QString::fromStdString(CoreGetError()));
+        messageBox.addButton(QMessageBox::Ok);
+        messageBox.exec();
+    }
+}
+
 void ControllerWidget::on_setupButton_clicked()
 {
     this->currentInSetup = true;
@@ -436,7 +489,7 @@ void ControllerWidget::on_resetButton_clicked()
 
 void ControllerWidget::on_optionsButton_clicked()
 {
-    OptionsDialog dialog(this, this->settingsSection);
+    OptionsDialog dialog(this, this->settingsSection, this->getCurrentSettingsSection());
     dialog.exec();
 }
 
@@ -790,11 +843,60 @@ void ControllerWidget::LoadSettings()
         return;
     }
 
-    std::string section = this->settingsSection.toStdString();
+    QString section = this->settingsSection;
+    QString gameSection;
 
-    if (!CoreSettingsSectionExists(section))
+    // if the main profile section doesn't exist,
+    // save default settings
+    if (!CoreSettingsSectionExists(section.toStdString()))
     {
         this->SaveDefaultSettings();
+    }
+
+    // try to retrieve the current rom's settings,
+    // if that succeeds, we know we're ingame
+    // and then we'll add a game specific profile to the combobox
+    CoreRomSettings romSettings;
+    CoreRomHeader romHeader;
+    if (CoreGetCurrentRomSettings(romSettings))
+    {
+        gameSection = section + " Game " + QString::fromStdString(romSettings.MD5);
+        this->gameSettingsSection = gameSection;
+
+        QString goodName = QString::fromStdString(romSettings.GoodName);
+        if (goodName.contains("(unknown rom)"))
+        {
+            
+            if (CoreGetCurrentRomHeader(romHeader))
+            { // only set to internal rom name when retrieving header succeeds
+                goodName = QString::fromStdString(romHeader.Name);
+            }
+        }
+
+        // add game specific profile
+        this->profileComboBox->addItem(goodName);
+
+        // if a game specific section exists,
+        // select it in the profile combobox
+        // and use it to load the settings
+        if (CoreSettingsSectionExists(gameSection.toStdString()))
+        {
+            this->profileComboBox->setCurrentText(goodName);
+            section = gameSection;
+        }
+    }
+
+    this->LoadSettings(section);
+}
+
+void ControllerWidget::LoadSettings(QString sectionQString)
+{
+    std::string section = sectionQString.toStdString();
+
+    // do nothing if the section doesn't exist
+    if (!CoreSettingsSectionExists(section))
+    {
+        return;
     }
 
     this->controllerPluggedCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::Input_PluggedIn, section));
@@ -810,7 +912,6 @@ void ControllerWidget::LoadSettings()
 
         buttonSetting.button->SetInputData(type, data, extraData, QString::fromStdString(name));
     }
-
 }
 
 void ControllerWidget::SaveDefaultSettings()
@@ -848,7 +949,20 @@ void ControllerWidget::SaveSettings()
     
     QString deviceName;
     int deviceNum;
-    std::string section = this->settingsSection.toStdString();
+    std::string section = this->getCurrentSettingsSection().toStdString();
+
+    // when a game specific profile has been selected,
+    // and the section doesn't exist yet,
+    // copy 2 missing settings from the main section
+    if (section == this->gameSettingsSection.toStdString() &&
+        !CoreSettingsSectionExists(section))
+    {
+        std::string mainSection = this->settingsSection.toStdString();
+        
+        // copy settings from main profile section
+        CoreSettingsSetValue(SettingsID::Input_Pak, section, CoreSettingsGetIntValue(SettingsID::Input_Pak, mainSection));
+        CoreSettingsSetValue(SettingsID::Input_RemoveDuplicateMappings, section, CoreSettingsGetBoolValue(SettingsID::Input_RemoveDuplicateMappings, mainSection));
+    }
 
     this->GetCurrentInputDevice(deviceName, deviceNum, true);
 

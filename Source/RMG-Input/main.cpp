@@ -118,10 +118,31 @@ static void load_inputmapping_settings(InputMapping* mapping, std::string sectio
 
 static void load_settings(void)
 {
+    std::string gameId;
+    CoreRomSettings romSettings;
+
+    // try to retrieve current ROM settings
+    if (CoreGetCurrentRomSettings(romSettings))
+    {
+        gameId = romSettings.MD5;
+    }
+
     for (int i = 0; i < NUM_CONTROLLERS; i++)
     {
         InputProfile* profile = &l_InputProfiles[i];
         std::string section = "Rosalie's Mupen GUI - Input Plugin Profile " + std::to_string(i);
+        std::string gameSection = section + " Game " + gameId;
+
+        // if game ID was retrieved,
+        // check if game section exists, if it does
+        // use that section instead of the main section
+        if (!gameId.empty())
+        {
+            if (CoreSettingsSectionExists(gameSection))
+            {
+                section = gameSection;
+            }
+        }
 
         // when the settings section doesn't exist,
         // disable profile
@@ -587,6 +608,7 @@ EXPORT void CALL ReadController(int Control, unsigned char *Command)
 
 EXPORT int CALL RomOpen(void)
 {
+    load_settings();
     return 1;
 }
 
