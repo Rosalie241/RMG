@@ -428,6 +428,8 @@ void ControllerWidget::on_controllerPluggedCheckBox_toggled(bool value)
         // misc UI elements
         this->deadZoneSlider,
         this->optionsButton,
+        this->profileComboBox,
+        this->removeProfileButton,
         //this->setupButton,
         this->resetButton,
         this->inputDeviceComboBox,
