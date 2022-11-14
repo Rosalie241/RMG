@@ -215,7 +215,7 @@ void ControllerWidget::removeDuplicates(CustomButton* button)
 {
     std::string section = this->getCurrentSettingsSection().toStdString();
 
-    if (!CoreSettingsGetBoolValue(SettingsID::Input_RemoveDuplicateMappings, section))
+    if (!this->settingRemoveDuplicateMappings)
     {
         return;
     }
@@ -493,6 +493,13 @@ void ControllerWidget::on_optionsButton_clicked()
 {
     OptionsDialog dialog(this, this->settingsSection, this->getCurrentSettingsSection());
     dialog.exec();
+
+    // when saved, store settings for later
+    if (dialog.HasSaved())
+    {
+        this->settingRemoveDuplicateMappings = dialog.GetRemoveDuplicateMappings();
+        this->settingControllerPak = dialog.GetControllerPak();
+    }
 }
 
 void ControllerWidget::on_CustomButton_released(CustomButton* button)
@@ -904,6 +911,8 @@ void ControllerWidget::LoadSettings(QString sectionQString)
     this->controllerPluggedCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::Input_PluggedIn, section));
     this->analogStickRangeSlider->setValue(CoreSettingsGetIntValue(SettingsID::Input_Range, section));
     this->deadZoneSlider->setValue(CoreSettingsGetIntValue(SettingsID::Input_Deadzone, section));
+    this->settingRemoveDuplicateMappings = CoreSettingsGetBoolValue(SettingsID::Input_RemoveDuplicateMappings, section);
+    this->settingControllerPak = CoreSettingsGetIntValue(SettingsID::Input_Pak, section);
 
     for (auto& buttonSetting : this->buttonSettingMappings)
     {
@@ -975,6 +984,8 @@ void ControllerWidget::SaveSettings()
     CoreSettingsSetValue(SettingsID::Input_DeviceNum, section, deviceNum);
     CoreSettingsSetValue(SettingsID::Input_Range, section, this->analogStickRangeSlider->value());
     CoreSettingsSetValue(SettingsID::Input_Deadzone, section, this->deadZoneSlider->value());
+    CoreSettingsSetValue(SettingsID::Input_Pak, section, this->settingControllerPak);
+    CoreSettingsSetValue(SettingsID::Input_RemoveDuplicateMappings, section, this->settingRemoveDuplicateMappings);
 
     for (auto& buttonSetting : this->buttonSettingMappings)
     {

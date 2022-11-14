@@ -23,8 +23,14 @@ Q_OBJECT
 public:
     OptionsDialog(QWidget *parent, QString mainSettingsSection, QString settingsSection);
 
+    bool HasSaved();
+    bool GetRemoveDuplicateMappings();
+    int  GetControllerPak();
+
 private:
-    QString settingsSection;
+    bool hasSaved = false;
+    bool removeDuplicateMappings = false;
+    int  controllerPak = 0;
 
 private slots:
     void on_buttonBox_clicked(QAbstractButton *);

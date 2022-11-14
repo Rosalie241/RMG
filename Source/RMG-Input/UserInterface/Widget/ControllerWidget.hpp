@@ -36,6 +36,9 @@ private:
     QString settingsSection;
     QString gameSettingsSection;
     
+    bool settingRemoveDuplicateMappings = false;
+    int settingControllerPak = 0;
+
     QList<QString> inputDeviceNameList;
     CustomButton* currentButton = nullptr;
 

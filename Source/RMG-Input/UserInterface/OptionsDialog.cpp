@@ -18,7 +18,6 @@ OptionsDialog::OptionsDialog(QWidget* parent, QString mainSettingsSection, QStri
     this->setupUi(this);
 
     std::string section = settingsSection.toStdString();
-    this->settingsSection = settingsSection;
 
     // fallback to main settings section, 
     // if the current settings section doesn't exist
@@ -31,6 +30,21 @@ OptionsDialog::OptionsDialog(QWidget* parent, QString mainSettingsSection, QStri
     this->controllerPakComboBox->setCurrentIndex(CoreSettingsGetIntValue(SettingsID::Input_Pak, section));
 }
 
+bool OptionsDialog::HasSaved()
+{
+    return this->hasSaved;
+}
+
+bool OptionsDialog::GetRemoveDuplicateMappings()
+{
+    return this->removeDuplicateMappings;
+}
+
+int OptionsDialog::GetControllerPak()
+{
+    return this->controllerPak;
+}
+
 void OptionsDialog::on_buttonBox_clicked(QAbstractButton *button)
 {
 
@@ -39,10 +53,9 @@ void OptionsDialog::on_buttonBox_clicked(QAbstractButton *button)
 
     if (pushButton == okButton)
     {
-        std::string section = this->settingsSection.toStdString();
-
-        CoreSettingsSetValue(SettingsID::Input_RemoveDuplicateMappings, section, this->removeDuplicateMappingsCheckbox->isChecked());
-        CoreSettingsSetValue(SettingsID::Input_Pak, section, this->controllerPakComboBox->currentIndex());
+        this->hasSaved = true;
+        this->removeDuplicateMappings = this->removeDuplicateMappingsCheckbox->isChecked();
+        this->controllerPak = this->controllerPakComboBox->currentIndex();
     }
     
     this->accept();
