@@ -101,6 +101,12 @@ static Thread::SDLThread *l_SDLThread = nullptr;
 // input profiles
 static InputProfile l_InputProfiles[NUM_CONTROLLERS];
 
+// whether we have mupen64plus' control info
+static bool l_HasControlInfo = false;
+
+// mupen64plus' control info
+static CONTROL_INFO l_ControlInfo;
+
 // keyboard state
 static bool l_KeyboardState[SDL_NUM_SCANCODES];
 
@@ -178,6 +184,40 @@ static void load_settings(void)
         load_inputmapping_settings(&profile->AnalogStick_Down, section, SettingsID::Input_AnalogStickDown_InputType, SettingsID::Input_AnalogStickDown_Data, SettingsID::Input_AnalogStickDown_ExtraData);
         load_inputmapping_settings(&profile->AnalogStick_Left, section, SettingsID::Input_AnalogStickLeft_InputType, SettingsID::Input_AnalogStickLeft_Data, SettingsID::Input_AnalogStickLeft_ExtraData);
         load_inputmapping_settings(&profile->AnalogStick_Right, section, SettingsID::Input_AnalogStickRight_InputType, SettingsID::Input_AnalogStickRight_Data, SettingsID::Input_AnalogStickRight_ExtraData);
+    }
+}
+
+static void apply_controller_profiles(void)
+{
+    // only apply profile when 
+    // we have the control info
+    if (!l_HasControlInfo)
+    {
+        return;
+    }
+
+    for (int i = 0; i < NUM_CONTROLLERS; i++)
+    {
+        InputProfile* profile = &l_InputProfiles[i];
+        int plugin = PLUGIN_NONE;
+
+        switch (profile->ControllerPak)
+        {
+            case N64ControllerPak::MemoryPak:
+                plugin = PLUGIN_MEMPAK;
+                break;
+            case N64ControllerPak::RumblePak:
+                plugin = PLUGIN_RAW;
+                break;
+            default:
+                plugin = PLUGIN_NONE;
+                break;
+        }
+
+        l_ControlInfo.Controls[i].Present = profile->PluggedIn ? 1 : 0;
+        l_ControlInfo.Controls[i].Plugin  = plugin;
+        l_ControlInfo.Controls[i].RawData = 0;
+        l_ControlInfo.Controls[i].Type    = CONT_TYPE_STANDARD;
     }
 }
 
@@ -439,6 +479,9 @@ EXPORT m64p_error CALL PluginConfig()
     // reload settings
     load_settings();
 
+    // apply profiles
+    apply_controller_profiles();
+
     // open controllers
     open_controllers();
 
@@ -570,36 +613,13 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
 
 EXPORT void CALL InitiateControllers(CONTROL_INFO ControlInfo)
 {
-    for (int i = 0; i < NUM_CONTROLLERS; i++)
-    {
-        InputProfile* profile = &l_InputProfiles[i];
-        int plugin = PLUGIN_NONE;
-
-        switch (profile->ControllerPak)
-        {
-            case N64ControllerPak::MemoryPak:
-                plugin = PLUGIN_MEMPAK;
-                break;
-            case N64ControllerPak::RumblePak:
-                plugin = PLUGIN_RAW;
-                break;
-            default:
-                plugin = PLUGIN_NONE;
-                break;
-        }
-
-        ControlInfo.Controls[i].Present = profile->PluggedIn ? 1 : 0;
-        ControlInfo.Controls[i].Plugin = plugin;
-        ControlInfo.Controls[i].RawData = 0;
-        ControlInfo.Controls[i].Type = CONT_TYPE_STANDARD;
-    }
-
     for (int i = 0; i < SDL_NUM_SCANCODES; i++)
     {
         l_KeyboardState[i] = 0;
     }
 
-    open_controllers();
+    l_ControlInfo = ControlInfo;
+    l_HasControlInfo = true;
 }
 
 EXPORT void CALL ReadController(int Control, unsigned char *Command)
@@ -608,7 +628,12 @@ EXPORT void CALL ReadController(int Control, unsigned char *Command)
 
 EXPORT int CALL RomOpen(void)
 {
+    // reload settings
     load_settings();
+    // apply profiles
+    apply_controller_profiles();
+    // open controllers
+    open_controllers();
     return 1;
 }
 
