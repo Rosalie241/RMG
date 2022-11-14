@@ -141,6 +141,7 @@ void ControllerImageWidget::paintEvent(QPaintEvent *event)
 
     // render base image first
     renderer.load(baseImageUri);
+    renderer.setAspectRatioMode(Qt::AspectRatioMode::KeepAspectRatio);
     renderer.render(&painter);
 
     // render button images on top
@@ -150,12 +151,14 @@ void ControllerImageWidget::paintEvent(QPaintEvent *event)
         if (this->buttonState[(int)button.button])
         {
             renderer.load(button.imageUri);
+            renderer.setAspectRatioMode(Qt::AspectRatioMode::KeepAspectRatio);
             renderer.render(&painter);
         }
     }
 
     // render analog stick
     renderer.load(analogStickImageUri);
+    renderer.setAspectRatioMode(Qt::AspectRatioMode::KeepAspectRatio);
 
     QRectF rectF = renderer.viewBoxF();
     double offsetx = 0, offsety = 0;
@@ -205,25 +208,4 @@ void ControllerImageWidget::paintEvent(QPaintEvent *event)
     // set viewbox and render
     renderer.setViewBox(rectF);
     renderer.render(&painter);
-}
-
-void ControllerImageWidget::resizeEvent(QResizeEvent *event)
-{
-    const QSize& currentSize = event->size();
-
-    // calculate expected width & height
-    const int width = currentSize.width();
-    const int height = std::ceil(currentSize.width() * 0.9759f);
-    const QSize expectedSize = QSize(width, height);
-
-    // set widget's size as needed,
-    // the widget resize function doesn't work
-    // as expected, so set the minimum size
-    if (currentSize != expectedSize)
-    {
-        this->setMinimumSize(expectedSize);
-        this->update();
-    }
-
-    QWidget::resizeEvent(event);
 }

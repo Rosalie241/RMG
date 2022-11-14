@@ -49,7 +49,6 @@ public:
     void UpdateImage();
 
     void paintEvent(QPaintEvent *event) override;
-    void resizeEvent(QResizeEvent *event) override;
 };
 }
 }
