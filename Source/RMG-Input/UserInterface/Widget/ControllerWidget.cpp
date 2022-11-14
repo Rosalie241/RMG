@@ -939,7 +939,9 @@ void ControllerWidget::SaveDefaultSettings()
         CoreSettingsSetValue(buttonSetting.nameSettingsId, section, std::string(" "));
         CoreSettingsSetValue(buttonSetting.dataSettingsId, section, 0);
         CoreSettingsSetValue(buttonSetting.extraDataSettingsId, section, 0);
-    }   
+    }
+
+    CoreSettingsSave();
 }
 
 void ControllerWidget::SaveSettings()
@@ -981,6 +983,8 @@ void ControllerWidget::SaveSettings()
         CoreSettingsSetValue(buttonSetting.dataSettingsId, section, buttonSetting.button->GetInputData());
         CoreSettingsSetValue(buttonSetting.extraDataSettingsId, section, buttonSetting.button->GetExtraInputData());
     }
+
+    CoreSettingsSave();
 }
 
 void ControllerWidget::SetCurrentJoystickID(SDL_JoystickID joystickId)
