@@ -34,7 +34,6 @@ class ControllerWidget : public QWidget, Ui::ControllerWidget
 
 private:
     QString settingsSection;
-    QString gameSettingsSection;
     
     bool settingRemoveDuplicateMappings = false;
     int settingControllerPak = 0;
