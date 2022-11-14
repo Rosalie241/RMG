@@ -287,7 +287,7 @@ void MainDialog::on_EventFilter_KeyPressed(QKeyEvent *event)
     sdlEvent.key = keyboardEvent;
     sdlEvent.type = SDL_KEYDOWN;
 
-    SDL_PushEvent(&sdlEvent);
+    SDL_PeepEvents(&sdlEvent, 1, SDL_ADDEVENT, 0, 0);
 }
 
 void MainDialog::on_EventFilter_KeyReleased(QKeyEvent *event)
@@ -306,7 +306,7 @@ void MainDialog::on_EventFilter_KeyReleased(QKeyEvent *event)
     sdlEvent.key = keyboardEvent;
     sdlEvent.type = SDL_KEYUP;
 
-    SDL_PushEvent(&sdlEvent);
+    SDL_PeepEvents(&sdlEvent, 1, SDL_ADDEVENT, 0, 0);
 }
 
 void MainDialog::on_buttonBox_clicked(QAbstractButton *button)
