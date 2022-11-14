@@ -37,9 +37,6 @@ if(NOT NO_GIT_CLONE)
     set(MUPEN64PLUS_RSP_PARALLEL_URL  "https://github.com/Rosalie241/parallel-rsp")
     set(MUPEN64PLUS_RSP_PARALLEL_TAG  "e67cee3131651c3e48343294d94fa68a6f8ec14c")
     
-    set(MUPEN64PLUS_INPUT_QT_URL      "https://github.com/Rosalie241/mupen64plus-input-qt")
-    set(MUPEN64PLUS_INPUT_QT_TAG      "e6b23e127ca3d3b21cd715751c32deae5adccee6")
-    
     set(MUPEN64PLUS_INPUT_RAPHNET_URL "https://github.com/raphnet/mupen64plus-input-raphnetraw")
     set(MUPEN64PLUS_INPUT_RAPHNET_TAG "86112413e98a8648edb11d199673cc24d5799af8")
 	
@@ -123,22 +120,6 @@ ExternalProject_Add(mupen64plus-rsp-parallel
     CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
 
     BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-rsp-parallel/mupen64plus-rsp-parallel.${SO_EXT}
-    DEPENDS mupen64plus-core
-)
-
-ExternalProject_Add(mupen64plus-input-qt
-    SOURCE_DIR mupen64plus-input-qt
-
-    CMAKE_ARGS -DAPIDIR=${APIDIR} -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-    INSTALL_COMMAND ""
-
-    GIT_REPOSITORY ${MUPEN64PLUS_INPUT_QT_URL}
-    GIT_TAG ${MUPEN64PLUS_INPUT_QT_TAG}
-
-    BUILD_COMMAND make all APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug>
-    BUILD_IN_SOURCE True
-    
-    BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-input-qt/libmupen64plus-input-qt.${SO_EXT}
     DEPENDS mupen64plus-core
 )
 
@@ -253,9 +234,6 @@ set(MUPEN64PLUS_PLUGIN_RSP_HLE ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 
 ExternalProject_Get_property(mupen64plus-rsp-parallel BUILD_BYPRODUCTS)
 set(MUPEN64PLUS_PLUGIN_RSP_PARALLEL ${BUILD_BYPRODUCTS} PARENT_SCOPE)
-
-ExternalProject_Get_property(mupen64plus-input-qt BUILD_BYPRODUCTS)
-set(MUPEN64PLUS_PLUGIN_INPUT_QT ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 
 ExternalProject_Get_property(mupen64plus-input-raphnetraw BUILD_BYPRODUCTS)
 set(MUPEN64PLUS_PLUGIN_INPUT_RAPHNET ${BUILD_BYPRODUCTS} PARENT_SCOPE)
