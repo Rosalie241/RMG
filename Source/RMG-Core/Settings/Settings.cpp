@@ -175,7 +175,7 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::Core_INPUT_Plugin:
         setting = {SETTING_SECTION_CORE, "INPUT_Plugin", 
 #ifdef _WIN32
-                    CoreGetPluginDirectory() + "\\Input\\libmupen64plus-input-qt.dll",
+                    CoreGetPluginDirectory() + "\\Input\\RMG-Input.dll",
 #else
                     CoreGetPluginDirectory() + "/Input/RMG-Input.so",
 #endif // _WIN32
