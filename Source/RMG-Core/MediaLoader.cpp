@@ -91,7 +91,6 @@ static char* mediaLoader_get_gb_cart_rom(void*, int index)
     std::string gameBoySave;
     SettingsID settingIds[] =
     {
-        
         SettingsID::Core_Gameboy_P1_Rom,
         SettingsID::Core_Gameboy_P2_Rom,
         SettingsID::Core_Gameboy_P3_Rom,
