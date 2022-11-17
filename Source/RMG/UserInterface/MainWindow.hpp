@@ -37,7 +37,7 @@ class MainWindow : public QMainWindow
     ~MainWindow(void);
 
     bool Init(QGuiApplication*);
-    void OpenROM(QString);
+    void OpenROM(QString, bool);
 
   private:
     QIcon ui_Icon;
@@ -97,12 +97,15 @@ class MainWindow : public QMainWindow
     bool ui_HideCursorInFullscreenEmulation;
     bool ui_NoSwitchToRomBrowser = false;
     bool ui_VidExtForceSetMode;
+    bool ui_LaunchInFullscreen = false;
     bool ui_RefreshRomListAfterEmulation = false;
 
     bool ui_ManuallyPaused = true;
 
     int ui_TimerId = 0;
     int ui_TimerTimeout = 0;
+
+    int ui_FullscreenTimerId = 0;
 
     void closeEvent(QCloseEvent *) Q_DECL_OVERRIDE;
 

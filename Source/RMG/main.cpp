@@ -32,6 +32,8 @@ int main(int argc, char **argv)
     parser.addHelpOption();
     parser.addVersionOption();
     // custom options
+    QCommandLineOption fullscreenOption({"f", "fullscreen"}, "Launches ROM in fullscreen mode");
+    parser.addOption(fullscreenOption);
     parser.addPositionalArgument("ROM", "ROM to open");
 
     // parse arguments
@@ -47,7 +49,7 @@ int main(int argc, char **argv)
     QStringList args = parser.positionalArguments();
     if (!args.empty())
     {
-        window.OpenROM(args.at(0));
+        window.OpenROM(args.at(0), parser.isSet(fullscreenOption));
     }
 
     return app.exec();

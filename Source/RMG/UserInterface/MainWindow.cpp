@@ -29,6 +29,7 @@
 #include <QString>
 #include <QUrl>
 #include <QActionGroup> 
+#include <QTimer>
 
 using namespace UserInterface;
 
@@ -84,8 +85,9 @@ bool MainWindow::Init(QGuiApplication* app)
     return true;
 }
 
-void MainWindow::OpenROM(QString file)
+void MainWindow::OpenROM(QString file, bool fullscreen)
 {
+    this->ui_LaunchInFullscreen = true;
     this->emulationThread_Launch(file);
 }
 
@@ -697,7 +699,29 @@ void MainWindow::ui_Actions_Connect(void)
 
 void MainWindow::timerEvent(QTimerEvent *event)
 {
-    this->ui_StatusBar_Label->clear();
+    int timerId = event->timerId();
+
+    if (timerId == this->ui_TimerId)
+    {
+        this->ui_StatusBar_Label->clear();
+    }
+    else if (timerId == this->ui_FullscreenTimerId)
+    {
+        // only try to go to fullscreen
+        // when emulation is running
+        if (!CoreIsEmulationRunning())
+        {
+            return;
+        }
+
+        // we're finished when we're in fullscreen already,
+        // or when switching to fullscreen succeeds
+        if (this->isFullScreen() || CoreToggleFullscreen())
+        {
+            this->killTimer(timerId);
+            this->ui_FullscreenTimerId = 0;
+        }
+    }
 }
 
 void MainWindow::on_EventFilter_KeyPressed(QKeyEvent *event)
@@ -1132,6 +1156,12 @@ void MainWindow::on_Emulation_Finished(bool ret)
         this->ui_RefreshRomListAfterEmulation = false;
     }
 
+    if (this->ui_FullscreenTimerId != 0)
+    {
+        this->killTimer(this->ui_FullscreenTimerId);
+        this->ui_FullscreenTimerId = 0;
+    }
+
     // always refresh UI
     this->ui_InEmulation(false, false);
 }
@@ -1333,6 +1363,12 @@ void MainWindow::on_VidExt_ResizeWindow(int width, int height)
     else
     {
         this->setFixedSize(width, height);
+    }
+
+    if (this->ui_LaunchInFullscreen)
+    {
+        this->ui_FullscreenTimerId = this->startTimer(100);
+        this->ui_LaunchInFullscreen = false;
     }
 
     // we've force set the size once,
