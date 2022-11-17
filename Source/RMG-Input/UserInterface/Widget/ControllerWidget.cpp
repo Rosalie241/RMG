@@ -475,6 +475,9 @@ void ControllerWidget::on_removeProfileButton_clicked()
         messageBox.addButton(QMessageBox::Ok);
         messageBox.exec();
     }
+
+    // change profile back to main
+    this->profileComboBox->setCurrentIndex(0);
 }
 
 void ControllerWidget::on_setupButton_clicked()
