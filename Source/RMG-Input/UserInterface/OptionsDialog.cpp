@@ -9,25 +9,19 @@
  */
 #include "OptionsDialog.hpp"
 
+#include <QFileDialog>
 #include <RMG-Core/Core.hpp>
 
 using namespace UserInterface;
 
-OptionsDialog::OptionsDialog(QWidget* parent, QString mainSettingsSection, QString settingsSection) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint)
+OptionsDialog::OptionsDialog(QWidget* parent, OptionsDialogSettings settings) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint)
 {
     this->setupUi(this);
 
-    std::string section = settingsSection.toStdString();
-
-    // fallback to main settings section, 
-    // if the current settings section doesn't exist
-    if (!CoreSettingsSectionExists(settingsSection.toStdString()))
-    {
-        section = mainSettingsSection.toStdString();
-    }
-
-    this->removeDuplicateMappingsCheckbox->setChecked(CoreSettingsGetBoolValue(SettingsID::Input_RemoveDuplicateMappings, section));
-    this->controllerPakComboBox->setCurrentIndex(CoreSettingsGetIntValue(SettingsID::Input_Pak, section));
+    this->controllerPakComboBox->setCurrentIndex(settings.ControllerPak);
+    this->gameboyRomLineEdit->setText(QString::fromStdString(settings.GameboyRom));
+    this->gameboySaveLineEdit->setText(QString::fromStdString(settings.GameboySave));
+    this->removeDuplicateMappingsCheckbox->setChecked(settings.RemoveDuplicateMappings);
 }
 
 bool OptionsDialog::HasSaved()
@@ -35,14 +29,9 @@ bool OptionsDialog::HasSaved()
     return this->hasSaved;
 }
 
-bool OptionsDialog::GetRemoveDuplicateMappings()
+OptionsDialogSettings OptionsDialog::GetSettings()
 {
-    return this->removeDuplicateMappings;
-}
-
-int OptionsDialog::GetControllerPak()
-{
-    return this->controllerPak;
+    return this->settings;
 }
 
 void OptionsDialog::on_buttonBox_clicked(QAbstractButton *button)
@@ -54,9 +43,33 @@ void OptionsDialog::on_buttonBox_clicked(QAbstractButton *button)
     if (pushButton == okButton)
     {
         this->hasSaved = true;
-        this->removeDuplicateMappings = this->removeDuplicateMappingsCheckbox->isChecked();
-        this->controllerPak = this->controllerPakComboBox->currentIndex();
+        this->settings.ControllerPak = this->controllerPakComboBox->currentIndex();
+        this->settings.GameboyRom = this->gameboyRomLineEdit->text().toStdString();
+        this->settings.GameboySave = this->gameboySaveLineEdit->text().toStdString();
+        this->settings.RemoveDuplicateMappings = this->removeDuplicateMappingsCheckbox->isChecked();
     }
     
     this->accept();
+}
+
+void OptionsDialog::on_changeGameboyRomButton_clicked()
+{
+    QString gameBoyRom;
+    gameBoyRom = QFileDialog::getOpenFileName(this, "", "", "Gameboy ROM (*.gb *.gbc)");
+
+    if (!gameBoyRom.isEmpty())
+    {
+        this->gameboyRomLineEdit->setText(gameBoyRom);
+    }
+}
+
+void OptionsDialog::on_changeGameboySaveButton_clicked()
+{
+    QString gameBoySave;
+    gameBoySave = QFileDialog::getOpenFileName(this, "", "", "Gameboy SAVE (*.sav *.ram)");
+
+    if (!gameBoySave.isEmpty())
+    {
+        this->gameboySaveLineEdit->setText(gameBoySave);
+    }
 }

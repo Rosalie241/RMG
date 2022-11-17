@@ -215,7 +215,7 @@ void ControllerWidget::removeDuplicates(CustomButton* button)
 {
     std::string section = this->getCurrentSettingsSection().toStdString();
 
-    if (!this->settingRemoveDuplicateMappings)
+    if (!this->optionsDialogSettings.RemoveDuplicateMappings)
     {
         return;
     }
@@ -493,14 +493,13 @@ void ControllerWidget::on_resetButton_clicked()
 
 void ControllerWidget::on_optionsButton_clicked()
 {
-    OptionsDialog dialog(this, this->settingsSection, this->getCurrentSettingsSection());
+    OptionsDialog dialog(this, this->optionsDialogSettings);
     dialog.exec();
 
     // when saved, store settings for later
     if (dialog.HasSaved())
     {
-        this->settingRemoveDuplicateMappings = dialog.GetRemoveDuplicateMappings();
-        this->settingControllerPak = dialog.GetControllerPak();
+        this->optionsDialogSettings = dialog.GetSettings();
     }
 }
 
@@ -892,8 +891,10 @@ void ControllerWidget::LoadSettings(QString sectionQString)
     this->controllerPluggedCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::Input_PluggedIn, section));
     this->analogStickRangeSlider->setValue(CoreSettingsGetIntValue(SettingsID::Input_Range, section));
     this->deadZoneSlider->setValue(CoreSettingsGetIntValue(SettingsID::Input_Deadzone, section));
-    this->settingRemoveDuplicateMappings = CoreSettingsGetBoolValue(SettingsID::Input_RemoveDuplicateMappings, section);
-    this->settingControllerPak = CoreSettingsGetIntValue(SettingsID::Input_Pak, section);
+    this->optionsDialogSettings.RemoveDuplicateMappings = CoreSettingsGetBoolValue(SettingsID::Input_RemoveDuplicateMappings, section);
+    this->optionsDialogSettings.ControllerPak = CoreSettingsGetIntValue(SettingsID::Input_Pak, section);
+    this->optionsDialogSettings.GameboyRom = CoreSettingsGetStringValue(SettingsID::Input_GameboyRom, section);
+    this->optionsDialogSettings.GameboySave = CoreSettingsGetStringValue(SettingsID::Input_GameboySave, section);
 
     for (auto& buttonSetting : this->buttonSettingMappings)
     {
@@ -952,8 +953,10 @@ void ControllerWidget::SaveSettings()
     CoreSettingsSetValue(SettingsID::Input_DeviceNum, section, deviceNum);
     CoreSettingsSetValue(SettingsID::Input_Range, section, this->analogStickRangeSlider->value());
     CoreSettingsSetValue(SettingsID::Input_Deadzone, section, this->deadZoneSlider->value());
-    CoreSettingsSetValue(SettingsID::Input_Pak, section, this->settingControllerPak);
-    CoreSettingsSetValue(SettingsID::Input_RemoveDuplicateMappings, section, this->settingRemoveDuplicateMappings);
+    CoreSettingsSetValue(SettingsID::Input_Pak, section, this->optionsDialogSettings.ControllerPak);
+    CoreSettingsSetValue(SettingsID::Input_GameboyRom, section, this->optionsDialogSettings.GameboyRom);
+    CoreSettingsSetValue(SettingsID::Input_GameboySave, section, this->optionsDialogSettings.GameboySave);
+    CoreSettingsSetValue(SettingsID::Input_RemoveDuplicateMappings, section, this->optionsDialogSettings.RemoveDuplicateMappings);
 
     for (auto& buttonSetting : this->buttonSettingMappings)
     {

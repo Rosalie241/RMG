@@ -65,6 +65,10 @@ struct InputProfile
     int DeviceNum = -1;
     std::chrono::time_point<std::chrono::high_resolution_clock> LastDeviceCheckTime = std::chrono::high_resolution_clock::now();
 
+    // Gameboy information
+    std::string GameboyRom;
+    std::string GameboySave;
+
     // input device
     Utilities::InputDevice InputDevice;
 
@@ -164,6 +168,8 @@ static void load_settings(void)
         profile->ControllerPak = (N64ControllerPak)CoreSettingsGetIntValue(SettingsID::Input_Pak, section);
         profile->DeviceName = CoreSettingsGetStringValue(SettingsID::Input_DeviceName, section);
         profile->DeviceNum = CoreSettingsGetIntValue(SettingsID::Input_DeviceNum, section);
+        profile->GameboyRom = CoreSettingsGetStringValue(SettingsID::Input_GameboyRom, section);
+        profile->GameboySave = CoreSettingsGetStringValue(SettingsID::Input_GameboySave, section);
 
         // load inputmapping settings
         load_inputmapping_settings(&profile->Button_A, section, SettingsID::Input_A_InputType, SettingsID::Input_A_Data, SettingsID::Input_A_ExtraData);
@@ -209,6 +215,9 @@ static void apply_controller_profiles(void)
             case N64ControllerPak::RumblePak:
                 plugin = PLUGIN_RAW;
                 break;
+             case N64ControllerPak::TransferPak:
+                plugin = PLUGIN_TRANSFER_PAK;
+                break;
             default:
                 plugin = PLUGIN_NONE;
                 break;
@@ -219,6 +228,37 @@ static void apply_controller_profiles(void)
         l_ControlInfo.Controls[i].RawData = 0;
         l_ControlInfo.Controls[i].Type    = CONT_TYPE_STANDARD;
     }
+}
+
+static void apply_gameboy_settings(void)
+{
+    SettingsID gameBoyRomSettings[] =
+    {
+        SettingsID::Core_Gameboy_P1_Rom,
+        SettingsID::Core_Gameboy_P2_Rom,
+        SettingsID::Core_Gameboy_P3_Rom,
+        SettingsID::Core_Gameboy_P4_Rom,
+    };
+
+    SettingsID gameBoySaveSettings[] =
+    {
+        SettingsID::Core_Gameboy_P1_Save,
+        SettingsID::Core_Gameboy_P2_Save,
+        SettingsID::Core_Gameboy_P3_Save,
+        SettingsID::Core_Gameboy_P4_Save,
+    };
+
+    for (int i = 0; i < NUM_CONTROLLERS; i++)
+    {
+        InputProfile* profile = &l_InputProfiles[i];
+        SettingsID gameBoyRomSettingId = gameBoyRomSettings[i];
+        SettingsID gameBoySaveSettingId = gameBoySaveSettings[i];
+
+        CoreSettingsSetValue(gameBoyRomSettingId, profile->GameboyRom);
+        CoreSettingsSetValue(gameBoySaveSettingId, profile->GameboySave);
+    }
+
+    CoreSettingsSave();
 }
 
 static void open_controllers(void)
@@ -482,6 +522,9 @@ EXPORT m64p_error CALL PluginConfig()
     // apply profiles
     apply_controller_profiles();
 
+    // apply gameboy settings
+    apply_gameboy_settings();
+
     // open controllers
     open_controllers();
 
@@ -620,6 +663,17 @@ EXPORT void CALL InitiateControllers(CONTROL_INFO ControlInfo)
 
     l_ControlInfo = ControlInfo;
     l_HasControlInfo = true;
+
+    std::cout << "InitiateControllers()" << std::endl;
+
+    // load settings
+    load_settings();
+    // apply profiles
+    apply_controller_profiles();
+    // apply gameboy settings
+    apply_gameboy_settings();
+    // open controllers
+    open_controllers();
 }
 
 EXPORT void CALL ReadController(int Control, unsigned char *Command)
@@ -628,12 +682,6 @@ EXPORT void CALL ReadController(int Control, unsigned char *Command)
 
 EXPORT int CALL RomOpen(void)
 {
-    // reload settings
-    load_settings();
-    // apply profiles
-    apply_controller_profiles();
-    // open controllers
-    open_controllers();
     return 1;
 }
 

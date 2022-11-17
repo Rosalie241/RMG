@@ -11,8 +11,20 @@
 #define OPTIONSDIALOG_HPP
 
 #include <QDialog>
+#include <string>
 
 #include "ui_OptionsDialog.h"
+
+struct OptionsDialogSettings
+{
+    // controller settings
+    int     ControllerPak = 0;
+    std::string GameboyRom;
+    std::string GameboySave;
+
+    // UI settings
+    bool RemoveDuplicateMappings = false;
+};
 
 namespace UserInterface
 {
@@ -21,19 +33,20 @@ class OptionsDialog : public QDialog, private Ui::OptionsDialog
 Q_OBJECT
 
 public:
-    OptionsDialog(QWidget *parent, QString mainSettingsSection, QString settingsSection);
+    OptionsDialog(QWidget *parent, OptionsDialogSettings settings);
 
     bool HasSaved();
-    bool GetRemoveDuplicateMappings();
-    int  GetControllerPak();
+    OptionsDialogSettings GetSettings();
 
 private:
     bool hasSaved = false;
-    bool removeDuplicateMappings = false;
-    int  controllerPak = 0;
+    OptionsDialogSettings settings;
 
 private slots:
     void on_buttonBox_clicked(QAbstractButton *);
+
+    void on_changeGameboyRomButton_clicked();
+    void on_changeGameboySaveButton_clicked();
 };
 }
 

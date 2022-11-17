@@ -54,6 +54,7 @@ enum class N64ControllerPak
 {
     MemoryPak = 0,
     RumblePak,
+    TransferPak,
     None,
 };
 

@@ -14,6 +14,7 @@
 #include "ControllerImageWidget.hpp"
 
 #include "UserInterface/EventFilter.hpp"
+#include "UserInterface/OptionsDialog.hpp"
 
 using namespace UserInterface::Widget;
 
@@ -35,8 +36,7 @@ class ControllerWidget : public QWidget, Ui::ControllerWidget
 private:
     QString settingsSection;
     
-    bool settingRemoveDuplicateMappings = false;
-    int settingControllerPak = 0;
+    OptionsDialogSettings optionsDialogSettings;
 
     QList<QString> inputDeviceNameList;
     CustomButton* currentButton = nullptr;
