@@ -66,6 +66,47 @@ static char* medialoader_get_dd_rom(void*)
     return strdup(l_DdRomFile.c_str());
 }
 
+static char* medialoader_get_gb_cart_ram(void*, int index)
+{
+    std::string gameBoyRom;
+    SettingsID settingIds[] =
+    {
+        SettingsID::Core_Gameboy_P1_Save,
+        SettingsID::Core_Gameboy_P2_Save,
+        SettingsID::Core_Gameboy_P3_Save,
+        SettingsID::Core_Gameboy_P4_Save,
+    };
+
+    gameBoyRom = CoreSettingsGetStringValue(settingIds[index]);
+    if (gameBoyRom.empty())
+    {
+        return nullptr;
+    }
+
+    return strdup(gameBoyRom.c_str());
+}
+
+static char* mediaLoader_get_gb_cart_rom(void*, int index)
+{
+    std::string gameBoySave;
+    SettingsID settingIds[] =
+    {
+        
+        SettingsID::Core_Gameboy_P1_Rom,
+        SettingsID::Core_Gameboy_P2_Rom,
+        SettingsID::Core_Gameboy_P3_Rom,
+        SettingsID::Core_Gameboy_P4_Rom,
+    };
+
+    gameBoySave = CoreSettingsGetStringValue(settingIds[index]);
+    if (gameBoySave.empty())
+    {
+        return nullptr;
+    }
+
+    return strdup(gameBoySave.c_str());
+}
+
 //
 // Exported Functions
 //
@@ -80,8 +121,8 @@ bool CoreSetupMediaLoader(void)
     mediaLoader.get_dd_disk       = medialoader_get_dd_disk;
     mediaLoader.set_dd_rom_region = medialoader_set_dd_rom_region;
     mediaLoader.get_dd_rom        = medialoader_get_dd_rom;
-    mediaLoader.get_gb_cart_ram   = nullptr;
-    mediaLoader.get_gb_cart_rom   = nullptr;
+    mediaLoader.get_gb_cart_ram   = medialoader_get_gb_cart_ram;
+    mediaLoader.get_gb_cart_rom   = mediaLoader_get_gb_cart_rom;
 
     ret = m64p::Core.DoCommand(M64CMD_SET_MEDIA_LOADER, sizeof(mediaLoader), &mediaLoader);
     if (ret != M64ERR_SUCCESS)

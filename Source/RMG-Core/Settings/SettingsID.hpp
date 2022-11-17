@@ -31,6 +31,16 @@ enum class SettingsID
     Core_64DD_DevelopmentIPL,
     Core_64DD_SaveDiskFormat,
 
+    // Core Gameboy ROM settings
+    Core_Gameboy_P1_Rom,
+    Core_Gameboy_P1_Save,
+    Core_Gameboy_P2_Rom,
+    Core_Gameboy_P2_Save,
+    Core_Gameboy_P3_Rom,
+    Core_Gameboy_P3_Save,
+    Core_Gameboy_P4_Rom,
+    Core_Gameboy_P4_Save,
+
     // (mupen64plus) Core Settings
     Core_OverrideGameSpecificSettings,
     Core_RandomizeInterrupt,
@@ -118,6 +128,8 @@ enum class SettingsID
     Input_Range,
     Input_Deadzone,
     Input_Pak,
+    Input_GameboyRom,
+    Input_GameboySave,
     Input_RemoveDuplicateMappings,
     Input_A_InputType,
     Input_A_Name,

@@ -112,6 +112,7 @@ static std::vector<std::string> l_sectionList;
 #define SETTING_SECTION_ROMBROWSER  SETTING_SECTION_GUI  " RomBrowser"
 #define SETTING_SECTION_SETTINGS    SETTING_SECTION_CORE " Settings"
 #define SETTING_SECTION_64DD        SETTING_SECTION_CORE " 64DD"
+#define SETTING_SECTION_GB          SETTING_SECTION_CORE " Gameboy"
 #define SETTING_SECTION_M64P        "Core"
 #define SETTING_SECTION_AUDIO       SETTING_SECTION_GUI  " - Audio Plugin"
 
@@ -272,6 +273,31 @@ static l_Setting get_setting(SettingsID settingId)
         setting = {SETTING_SECTION_M64P, "SaveDiskFormat", 1};
         break;
 
+    case SettingsID::Core_Gameboy_P1_Rom:
+        setting = {SETTING_SECTION_GB, "Gameboy_P1_Rom", ""};
+        break;
+    case SettingsID::Core_Gameboy_P1_Save:
+        setting = {SETTING_SECTION_GB, "Gameboy_P1_Save", ""};
+        break;
+    case SettingsID::Core_Gameboy_P2_Rom:
+        setting = {SETTING_SECTION_GB, "Gameboy_P2_Rom", ""};
+        break;
+    case SettingsID::Core_Gameboy_P2_Save:
+        setting = {SETTING_SECTION_GB, "Gameboy_P2_Save", ""};
+        break;
+    case SettingsID::Core_Gameboy_P3_Rom:
+        setting = {SETTING_SECTION_GB, "Gameboy_P3_Rom", ""};
+        break;
+    case SettingsID::Core_Gameboy_P3_Save:
+        setting = {SETTING_SECTION_GB, "Gameboy_P3_Save", ""};
+        break;
+    case SettingsID::Core_Gameboy_P4_Rom:
+        setting = {SETTING_SECTION_GB, "Gameboy_P4_Rom", ""};
+        break;
+    case SettingsID::Core_Gameboy_P4_Save:
+        setting = {SETTING_SECTION_GB, "Gameboy_P4_Save", ""};
+        break;
+
     case SettingsID::Game_DisableExtraMem:
         setting = {"", "DisableExtraMem", false};
         break;
@@ -422,6 +448,12 @@ static l_Setting get_setting(SettingsID settingId)
         break;
     case SettingsID::Input_Pak:
         setting = {"", "Pak"};
+        break;
+    case SettingsID::Input_GameboyRom:
+        setting = {"", "GameboyRom"};
+        break;
+    case SettingsID::Input_GameboySave:
+        setting = {"", "GameboySave"};
         break;
     case SettingsID::Input_RemoveDuplicateMappings:
         setting = {"", "RemoveDuplicateMappings"};
