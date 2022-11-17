@@ -25,6 +25,7 @@
   </screenshots>
   <description/>
   <releases>
+    <release version="v0.1.8" date="2022-11-17" type="stable"/>
     <release version="v0.1.7" date="2022-11-14" type="stable"/>
     <release version="v0.1.6" date="2022-09-12" type="stable"/>
     <release version="v0.1.5" date="2022-09-10" type="stable"/>
