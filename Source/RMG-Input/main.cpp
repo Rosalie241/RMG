@@ -251,11 +251,9 @@ static void apply_gameboy_settings(void)
     for (int i = 0; i < NUM_CONTROLLERS; i++)
     {
         InputProfile* profile = &l_InputProfiles[i];
-        SettingsID gameBoyRomSettingId = gameBoyRomSettings[i];
-        SettingsID gameBoySaveSettingId = gameBoySaveSettings[i];
 
-        CoreSettingsSetValue(gameBoyRomSettingId, profile->GameboyRom);
-        CoreSettingsSetValue(gameBoySaveSettingId, profile->GameboySave);
+        CoreSettingsSetValue(gameBoyRomSettings[i], profile->GameboyRom);
+        CoreSettingsSetValue(gameBoySaveSettings[i], profile->GameboySave);
     }
 
     CoreSettingsSave();
