@@ -664,8 +664,6 @@ EXPORT void CALL InitiateControllers(CONTROL_INFO ControlInfo)
     l_ControlInfo = ControlInfo;
     l_HasControlInfo = true;
 
-    std::cout << "InitiateControllers()" << std::endl;
-
     // load settings
     load_settings();
     // apply profiles
