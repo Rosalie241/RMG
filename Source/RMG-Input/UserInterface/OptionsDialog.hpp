@@ -42,6 +42,8 @@ private:
     bool hasSaved = false;
     OptionsDialogSettings settings;
 
+    void hideEmulationInfoText(void);
+
 private slots:
     void on_buttonBox_clicked(QAbstractButton *);
 

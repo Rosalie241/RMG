@@ -22,6 +22,13 @@ OptionsDialog::OptionsDialog(QWidget* parent, OptionsDialogSettings settings) : 
     this->gameboyRomLineEdit->setText(QString::fromStdString(settings.GameboyRom));
     this->gameboySaveLineEdit->setText(QString::fromStdString(settings.GameboySave));
     this->removeDuplicateMappingsCheckbox->setChecked(settings.RemoveDuplicateMappings);
+
+    CoreRomHeader romHeader;
+
+    if (!CoreGetCurrentRomHeader(romHeader))
+    {
+        this->hideEmulationInfoText();
+    }
 }
 
 bool OptionsDialog::HasSaved()
@@ -32,6 +39,20 @@ bool OptionsDialog::HasSaved()
 OptionsDialogSettings OptionsDialog::GetSettings()
 {
     return this->settings;
+}
+
+void OptionsDialog::hideEmulationInfoText(void)
+{
+    QHBoxLayout *layouts[] = {this->emulationInfoLayout_1};
+
+    for (const auto &layout : layouts)
+    {
+        for (int i = 0; i < layout->count(); i++)
+        {
+            QWidget *widget = layout->itemAt(i)->widget();
+            widget->hide();
+        }
+    }
 }
 
 void OptionsDialog::on_buttonBox_clicked(QAbstractButton *button)
