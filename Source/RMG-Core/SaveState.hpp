@@ -10,7 +10,7 @@
 #ifndef CORE_SAVESTATE_HPP
 #define CORE_SAVESTATE_HPP
 
-#include <string>
+#include <filesystem>
 
 // sets save state slot
 bool CoreSetSaveStateSlot(int slot);
@@ -23,12 +23,12 @@ int  CoreGetSaveStateSlot(void);
 bool CoreSaveState(void);
 
 // saves state to file
-bool CoreSaveState(std::string file);
+bool CoreSaveState(std::filesystem::path file);
 
 // loads saved state
 bool CoreLoadSaveState(void);
 
 // loads saved state from file
-bool CoreLoadSaveState(std::string file);
+bool CoreLoadSaveState(std::filesystem::path file);
 
 #endif // CORE_SAVESTATE_HPP

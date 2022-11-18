@@ -65,12 +65,12 @@ bool CoreSaveState(void)
     return ret == M64ERR_SUCCESS;
 }
 
-bool CoreSaveState(std::string file)
+bool CoreSaveState(std::filesystem::path file)
 {
     std::string error;
     m64p_error ret;
 
-    ret = m64p::Core.DoCommand(M64CMD_STATE_SAVE, 1, (void*)file.c_str());
+    ret = m64p::Core.DoCommand(M64CMD_STATE_SAVE, 1, (void*)file.string().c_str());
     if (ret != M64ERR_SUCCESS)
     {
         error = "CoreSaveState: m64p::Core.DoCommand(M64CMD_STATE_SAVE) Failed: ";
@@ -97,12 +97,12 @@ bool CoreLoadSaveState(void)
     return ret == M64ERR_SUCCESS;
 }
 
-bool CoreLoadSaveState(std::string file)
+bool CoreLoadSaveState(std::filesystem::path file)
 {
     std::string error;
     m64p_error ret;
 
-    ret = m64p::Core.DoCommand(M64CMD_STATE_LOAD, 0, (void*)file.c_str());
+    ret = m64p::Core.DoCommand(M64CMD_STATE_LOAD, 0, (void*)file.string().c_str());
     if (ret != M64ERR_SUCCESS)
     {
         error = "CoreLoadSaveState: m64p::Core.DoCommand(M64CMD_STATE_LOAD) Failed: ";
