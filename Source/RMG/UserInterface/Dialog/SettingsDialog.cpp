@@ -157,7 +157,6 @@ void SettingsDialog::loadCoreSettings(void)
 {
     bool disableExtraMem = false;
     int counterFactor = 0;
-    int overclockingFactor = 0;
     int cpuEmulator = 0;
     int siDmaDuration = -1;
     bool randomizeInterrupt = true;
@@ -166,7 +165,6 @@ void SettingsDialog::loadCoreSettings(void)
 
     disableExtraMem = CoreSettingsGetBoolValue(SettingsID::CoreOverlay_DisableExtraMem);
     counterFactor = CoreSettingsGetIntValue(SettingsID::CoreOverlay_CountPerOp);
-    overclockingFactor = CoreSettingsGetIntValue(SettingsID::CoreOverlay_CountPerOpDenomPot);
     cpuEmulator = CoreSettingsGetIntValue(SettingsID::CoreOverlay_CPU_Emulator);
     siDmaDuration = CoreSettingsGetIntValue(SettingsID::CoreOverlay_SiDmaDuration);
     randomizeInterrupt = CoreSettingsGetBoolValue(SettingsID::CoreOverlay_RandomizeInterrupt);
@@ -188,7 +186,6 @@ void SettingsDialog::loadCoreSettings(void)
 
     this->coreMemorySizeComboBox->setCurrentIndex(!disableExtraMem);
     this->coreCounterFactorComboBox->setCurrentIndex(counterFactor - 1);
-    this->coreOverclockingFactorComboBox->setCurrentIndex(overclockingFactor);
     this->coreSiDmaDurationSpinBox->setValue(siDmaDuration);
 }
 
@@ -335,7 +332,6 @@ void SettingsDialog::loadDefaultCoreSettings(void)
 {
     bool disableExtraMem = false;
     int counterFactor = 0;
-    int overclockingFactor = 0;
     int cpuEmulator = 0;
     int siDmaDuration = -1;
     bool randomizeInterrupt = true;
@@ -344,7 +340,6 @@ void SettingsDialog::loadDefaultCoreSettings(void)
 
     disableExtraMem = CoreSettingsGetDefaultBoolValue(SettingsID::CoreOverlay_DisableExtraMem);
     counterFactor = CoreSettingsGetDefaultIntValue(SettingsID::CoreOverlay_CountPerOp);
-    overclockingFactor = CoreSettingsGetDefaultIntValue(SettingsID::CoreOverlay_CountPerOpDenomPot);
     cpuEmulator = CoreSettingsGetDefaultIntValue(SettingsID::CoreOverlay_CPU_Emulator);
     siDmaDuration = CoreSettingsGetDefaultIntValue(SettingsID::CoreOverlay_SiDmaDuration);
     randomizeInterrupt = CoreSettingsGetDefaultBoolValue(SettingsID::CoreOverlay_RandomizeInterrupt);
@@ -366,7 +361,6 @@ void SettingsDialog::loadDefaultCoreSettings(void)
 
     this->coreMemorySizeComboBox->setCurrentIndex(!disableExtraMem);
     this->coreCounterFactorComboBox->setCurrentIndex(counterFactor - 1);
-    this->coreOverclockingFactorComboBox->setCurrentIndex(overclockingFactor);
     this->coreSiDmaDurationSpinBox->setValue(siDmaDuration);
 }
 
@@ -468,7 +462,6 @@ void SettingsDialog::saveCoreSettings(void)
 {
     bool disableExtraMem = (this->coreMemorySizeComboBox->currentIndex() == 0);
     int counterFactor = this->coreCounterFactorComboBox->currentIndex() + 1;
-    int overclockingFactor = this->coreOverclockingFactorComboBox->currentIndex();
     int cpuEmulator = this->coreCpuEmulatorComboBox->currentIndex();
     int siDmaDuration = this->coreSiDmaDurationSpinBox->value();
     bool randomizeInterrupt = this->coreRandomizeTimingCheckBox->isChecked();
@@ -489,7 +482,6 @@ void SettingsDialog::saveCoreSettings(void)
 
     CoreSettingsSetValue(SettingsID::CoreOverlay_DisableExtraMem, disableExtraMem);
     CoreSettingsSetValue(SettingsID::CoreOverlay_CountPerOp, counterFactor);
-    CoreSettingsSetValue(SettingsID::CoreOverlay_CountPerOpDenomPot, overclockingFactor);
     CoreSettingsSetValue(SettingsID::CoreOverlay_SiDmaDuration, siDmaDuration);
 }
 
