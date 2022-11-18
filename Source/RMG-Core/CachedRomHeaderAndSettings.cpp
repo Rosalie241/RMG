@@ -54,9 +54,9 @@ static std::vector<l_CacheEntry> l_CacheEntries;
 // Internal Functions
 //
 
-static std::string get_cache_file_name()
+static std::filesystem::path get_cache_file_name()
 {
-    std::string file;
+    std::filesystem::path file;
 
     file = CoreGetUserCacheDirectory();
     file += OSAL_FILES_DIR_SEPERATOR_STR;
