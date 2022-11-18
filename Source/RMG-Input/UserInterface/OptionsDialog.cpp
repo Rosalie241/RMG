@@ -23,9 +23,7 @@ OptionsDialog::OptionsDialog(QWidget* parent, OptionsDialogSettings settings) : 
     this->gameboySaveLineEdit->setText(QString::fromStdString(settings.GameboySave));
     this->removeDuplicateMappingsCheckbox->setChecked(settings.RemoveDuplicateMappings);
 
-    CoreRomHeader romHeader;
-
-    if (!CoreGetCurrentRomHeader(romHeader))
+    if (!CoreIsEmulationRunning() && !CoreIsEmulationPaused())
     {
         this->hideEmulationInfoText();
     }
