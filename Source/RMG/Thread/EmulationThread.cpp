@@ -36,7 +36,7 @@ void EmulationThread::run(void)
 
     bool ret;
 
-    ret = CoreStartEmulation(this->rom_File.toStdString(), this->disk_File.toStdString());
+    ret = CoreStartEmulation(this->rom_File.toStdU32String(), this->disk_File.toStdU32String());
 
     if (!ret)
     {

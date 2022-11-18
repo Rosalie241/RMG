@@ -1009,7 +1009,7 @@ void MainWindow::on_Action_System_SaveAs(void)
 
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save State"), "", tr("Save State (*.state);;All Files (*)"));
 
-    if (!CoreSaveState(fileName.toStdString()))
+    if (!CoreSaveState(fileName.toStdU32String()))
     {
         this->ui_MessageBox("Error", "CoreSaveState() Failed", QString::fromStdString(CoreGetError()));
     }
@@ -1040,7 +1040,7 @@ void MainWindow::on_Action_System_Load(void)
     QString fileName =
         QFileDialog::getOpenFileName(this, tr("Open Save State"), "", tr("Save State (*.dat *.state);;All Files (*)"));
 
-    if (!CoreLoadSaveState(fileName.toStdString()))
+    if (!CoreLoadSaveState(fileName.toStdU32String()))
     {
         this->ui_MessageBox("Error", "CoreLoadSaveState() Failed", QString::fromStdString(CoreGetError()));
     }
@@ -1193,7 +1193,7 @@ void MainWindow::on_RomBrowser_EditGameSettings(QString file)
         this->ui_Widget_RomBrowser->StopRefreshRomList();
     }
 
-    if (!CoreOpenRom(file.toStdString()))
+    if (!CoreOpenRom(file.toStdU32String()))
     {
         this->ui_MessageBox("Error", "CoreOpenRom() Failed", QString::fromStdString(CoreGetError()));
         return;

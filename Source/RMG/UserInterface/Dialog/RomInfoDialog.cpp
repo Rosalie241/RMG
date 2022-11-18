@@ -24,7 +24,7 @@ RomInfoDialog::RomInfoDialog(QString file, QWidget *parent) : QDialog(parent, Qt
     CoreRomSettings romSettings;
 
     // try to open ROM
-    if (!CoreOpenRom(file.toStdString()))
+    if (!CoreOpenRom(file.toStdU32String()))
     {
         this->showErrorMessage(parent, "CoreOpenRom() Failed", QString::fromStdString(CoreGetError()));
         return;
