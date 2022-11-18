@@ -33,7 +33,7 @@ static bool l_HasRomOpen = false;
 // Local Functions
 //
 
-static bool read_zip_file(std::string file, char** buf, int* size)
+static bool read_zip_file(std::filesystem::path file, char** buf, int* size)
 {
     std::string  error;
     std::fstream fileStream;
@@ -43,7 +43,7 @@ static bool read_zip_file(std::string file, char** buf, int* size)
     unzFile         zipFile;
     unz_global_info zipInfo;
 
-    zipFile = unzOpen(file.c_str());
+    zipFile = unzOpen(file.string().c_str());
     if (zipFile == nullptr)
     {
         error = "read_zip_file: unzOpen Failed!";
@@ -72,10 +72,10 @@ static bool read_zip_file(std::string file, char** buf, int* size)
 
         // make sure file has supported file format,
         // if it does, read it in memory
-        std::string fileNameStr(fileName);
-        if (fileNameStr.ends_with(".z64") ||
-            fileNameStr.ends_with(".v64") ||
-            fileNameStr.ends_with(".n64"))
+        std::filesystem::path fileNamePath(fileName);
+        if (fileNamePath.extension() == ".z64" ||
+            fileNamePath.extension() == ".v64" ||
+            fileNamePath.extension() == ".n64")
         {
             char* buffer;
             char* outBuffer;
@@ -177,7 +177,7 @@ static bool read_zip_file(std::string file, char** buf, int* size)
     return false;
 }
 
-static bool read_raw_file(std::string file, char** buf, int* size)
+static bool read_raw_file(std::filesystem::path file, char** buf, int* size)
 {
     std::string  error;
     std::fstream fileStream;
@@ -225,7 +225,7 @@ static bool read_raw_file(std::string file, char** buf, int* size)
 // Exported Functions
 //
 
-bool CoreOpenRom(std::string file)
+bool CoreOpenRom(std::filesystem::path file)
 {
     std::string error;
     m64p_error  ret;
@@ -240,7 +240,7 @@ bool CoreOpenRom(std::string file)
         return false;
     }
 
-    if (file.ends_with(".zip"))
+    if (file.has_extension() && file.extension() == ".zip")
     {
         if (!read_zip_file(file, &buf, &buf_size))
         {

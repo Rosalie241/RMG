@@ -10,12 +10,12 @@
 #ifndef CORE_MEDIALOADER_HPP
 #define CORE_MEDIALOADER_HPP
 
-#include <string>
+#include <filesystem>
 
 // sets up the medialoader
 bool CoreSetupMediaLoader(void);
 
 // sets the media loader disk file
-void CoreMediaLoaderSetDiskFile(std::string ddRom);
+void CoreMediaLoaderSetDiskFile(std::filesystem::path ddRom);
 
 #endif // CORE_MEDIALOADER_HPP

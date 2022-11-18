@@ -10,7 +10,7 @@
 #ifndef CORE_CACHEDROMHEADERANDSETTINGS_HPP
 #define CORE_CACHEDROMHEADERANDSETTINGS_HPP
 
-#include <string>
+#include <filesystem>
 
 #include "RomHeader.hpp"
 #include "RomSettings.hpp"
@@ -26,14 +26,14 @@ bool CoreSaveRomHeaderAndSettingsCache(void);
 
 // returns whether rom header & settings have been cached
 // for given filename
-bool CoreHasRomHeaderAndSettingsCached(std::string file);
+bool CoreHasRomHeaderAndSettingsCached(std::filesystem::path file);
 
 // returns whether retrieving the rom header & settings
 // for given filename succeeds
-bool CoreGetCachedRomHeaderAndSettings(std::string file, CoreRomHeader& header, CoreRomSettings& settings);
+bool CoreGetCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomHeader& header, CoreRomSettings& settings);
 
 // returns whether adding cached rom header & settings
 // for given filename succeeds
-bool CoreAddCachedRomHeaderAndSettings(std::string file, CoreRomHeader header, CoreRomSettings settings);
+bool CoreAddCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomHeader header, CoreRomSettings settings);
 
 #endif // CORE_CACHEDROMHEADERANDSETTINGS_HPP

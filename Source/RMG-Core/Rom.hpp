@@ -10,10 +10,10 @@
 #ifndef CORE_ROM_HPP
 #define CORE_ROM_HPP
 
-#include <string>
+#include <filesystem>
 
 // opens the given file as ROM
-bool CoreOpenRom(std::string file);
+bool CoreOpenRom(std::filesystem::path file);
 
 // returns whether core has a ROM opened
 bool CoreHasRomOpen(void);

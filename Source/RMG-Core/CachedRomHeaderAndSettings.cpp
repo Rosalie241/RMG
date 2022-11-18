@@ -36,8 +36,8 @@
 
 struct l_CacheEntry
 {
-    std::string          fileName;
-    osal_files_file_time fileTime;
+    std::filesystem::path fileName;
+    osal_files_file_time  fileTime;
 
     CoreRomHeader   header;
     CoreRomSettings settings;
@@ -65,7 +65,7 @@ static std::string get_cache_file_name()
     return file;
 }
 
-static std::vector<l_CacheEntry>::iterator get_cache_entry_iter(std::string file, bool checkFileTime = true)
+static std::vector<l_CacheEntry>::iterator get_cache_entry_iter(std::filesystem::path file, bool checkFileTime = true)
 {
     osal_files_file_time fileTime = osal_files_get_file_time(file);
 
@@ -113,7 +113,7 @@ void CoreReadRomHeaderAndSettingsCache(void)
     {
         // file info
         FREAD_STR(fileNameBuf);
-        cacheEntry.fileName = std::string(fileNameBuf);
+        cacheEntry.fileName = std::filesystem::path(fileNameBuf);
         FREAD(cacheEntry.fileTime);
         // header
         FREAD_STR(headerNameBuf);
@@ -166,7 +166,7 @@ bool CoreSaveRomHeaderAndSettingsCache(void)
     {
         cacheEntry = (*iter);
 
-        strncpy(fileNameBuf, cacheEntry.fileName.c_str(), MAX_FILENAME_LEN);
+        strncpy(fileNameBuf, cacheEntry.fileName.string().c_str(), MAX_FILENAME_LEN);
         strncpy(headerNameBuf, cacheEntry.header.Name.c_str(), sizeof(headerNameBuf));
         strncpy(goodNameBuf, cacheEntry.settings.GoodName.c_str(), sizeof(goodNameBuf));
         strncpy(md5Buf, cacheEntry.settings.MD5.c_str(), sizeof(md5Buf));
@@ -189,12 +189,12 @@ bool CoreSaveRomHeaderAndSettingsCache(void)
     return true;
 }
 
-bool CoreHasRomHeaderAndSettingsCached(std::string file)
+bool CoreHasRomHeaderAndSettingsCached(std::filesystem::path file)
 {
     return get_cache_entry_iter(file) != l_CacheEntries.end();
 }
 
-bool CoreGetCachedRomHeaderAndSettings(std::string file, CoreRomHeader& header, CoreRomSettings& settings)
+bool CoreGetCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomHeader& header, CoreRomSettings& settings)
 {
     auto iter = get_cache_entry_iter(file);
     if (iter == l_CacheEntries.end())
@@ -207,7 +207,7 @@ bool CoreGetCachedRomHeaderAndSettings(std::string file, CoreRomHeader& header, 
     return true;
 }
 
-bool CoreAddCachedRomHeaderAndSettings(std::string file, CoreRomHeader header, CoreRomSettings settings)
+bool CoreAddCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomHeader header, CoreRomSettings settings)
 {
     l_CacheEntry cacheEntry;
 

@@ -20,8 +20,8 @@
 // Local Variables
 //
 
-static std::string l_DdDiskFile;
-static std::string l_DdRomFile;
+static std::filesystem::path l_DdDiskFile;
+static std::filesystem::path l_DdRomFile;
 
 //
 // Local Functions
@@ -63,12 +63,12 @@ static char* medialoader_get_dd_rom(void*)
         return nullptr;
     }
 
-    return strdup(l_DdRomFile.c_str());
+    return strdup(l_DdRomFile.string().c_str());
 }
 
 static char* medialoader_get_gb_cart_ram(void*, int index)
 {
-    std::string gameBoyRom;
+    std::filesystem::path gameBoyRom;
     SettingsID settingIds[] =
     {
         SettingsID::Core_Gameboy_P1_Save,
@@ -83,12 +83,12 @@ static char* medialoader_get_gb_cart_ram(void*, int index)
         return nullptr;
     }
 
-    return strdup(gameBoyRom.c_str());
+    return strdup(gameBoyRom.string().c_str());
 }
 
 static char* mediaLoader_get_gb_cart_rom(void*, int index)
 {
-    std::string gameBoySave;
+    std::filesystem::path gameBoySave;
     SettingsID settingIds[] =
     {
         SettingsID::Core_Gameboy_P1_Rom,
@@ -103,7 +103,7 @@ static char* mediaLoader_get_gb_cart_rom(void*, int index)
         return nullptr;
     }
 
-    return strdup(gameBoySave.c_str());
+    return strdup(gameBoySave.string().c_str());
 }
 
 //
@@ -134,7 +134,7 @@ bool CoreSetupMediaLoader(void)
     return ret == M64ERR_SUCCESS;
 }
 
-void CoreMediaLoaderSetDiskFile(std::string ddRom)
+void CoreMediaLoaderSetDiskFile(std::filesystem::path ddRom)
 {
     l_DdDiskFile = ddRom;
 }

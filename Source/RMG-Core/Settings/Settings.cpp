@@ -70,6 +70,12 @@ struct l_DynamicValue
         valueType = M64TYPE_STRING;
     }
 
+    l_DynamicValue(std::filesystem::path value)
+    {
+        stringValue = value.string();
+        valueType = M64TYPE_STRING;
+    }
+
     l_DynamicValue(std::vector<int> value)
     {
         intListValue = value;
@@ -158,36 +164,36 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::Core_GFX_Plugin:
         setting = {SETTING_SECTION_CORE, "GFX_Plugin", 
 #ifdef _WIN32
-                    CoreGetPluginDirectory() + "\\GFX\\mupen64plus-video-GLideN64.dll",
+                    CoreGetPluginDirectory().string() + "\\GFX\\mupen64plus-video-GLideN64.dll",
 #else
-                    CoreGetPluginDirectory() + "/GFX/mupen64plus-video-GLideN64.so", 
+                    CoreGetPluginDirectory().string() + "/GFX/mupen64plus-video-GLideN64.so", 
 #endif // _WIN32
                   };
         break;
     case SettingsID::Core_AUDIO_Plugin:
         setting = {SETTING_SECTION_CORE, "AUDIO_Plugin", 
 #ifdef _WIN32
-                    CoreGetPluginDirectory() + "\\Audio\\RMG-Audio.dll",
+                    CoreGetPluginDirectory().string() + "\\Audio\\RMG-Audio.dll",
 #else
-                    CoreGetPluginDirectory() + "/Audio/RMG-Audio.so",
+                    CoreGetPluginDirectory().string() + "/Audio/RMG-Audio.so",
 #endif // _WIN32
                   };
         break;
     case SettingsID::Core_INPUT_Plugin:
         setting = {SETTING_SECTION_CORE, "INPUT_Plugin", 
 #ifdef _WIN32
-                    CoreGetPluginDirectory() + "\\Input\\RMG-Input.dll",
+                    CoreGetPluginDirectory().string() + "\\Input\\RMG-Input.dll",
 #else
-                    CoreGetPluginDirectory() + "/Input/RMG-Input.so",
+                    CoreGetPluginDirectory().string() + "/Input/RMG-Input.so",
 #endif // _WIN32
                   };
         break;
     case SettingsID::Core_RSP_Plugin:
         setting = {SETTING_SECTION_CORE, "RSP_Plugin", 
 #ifdef _WIN32
-                    CoreGetPluginDirectory() + "\\RSP\\mupen64plus-rsp-hle.dll",
+                    CoreGetPluginDirectory().string() + "\\RSP\\mupen64plus-rsp-hle.dll",
 #else
-                    CoreGetPluginDirectory() + "/RSP/mupen64plus-rsp-hle.so",
+                    CoreGetPluginDirectory().string() + "/RSP/mupen64plus-rsp-hle.so",
 #endif // _WIN32
                   };
         break;

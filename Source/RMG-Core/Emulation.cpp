@@ -78,7 +78,7 @@ static void apply_game_coresettings_overlay(void)
 // Exported Functions
 //
 
-bool CoreStartEmulation(std::string n64rom, std::string n64ddrom)
+bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64ddrom)
 {
     std::string error;
     m64p_error ret;

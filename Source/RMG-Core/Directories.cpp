@@ -22,9 +22,9 @@
 // Local Functions
 //
 
-static std::string get_var_directory(std::string var, std::string append, std::string fallbackVar, std::string fallbackAppend)
+static std::filesystem::path get_var_directory(std::string var, std::string append, std::string fallbackVar, std::string fallbackAppend)
 {
-    std::string directory;
+    std::filesystem::path directory;
 
     const char* env = std::getenv(var.c_str());
     if (env == nullptr)
@@ -47,7 +47,7 @@ static std::string get_var_directory(std::string var, std::string append, std::s
     return directory;
 }
 
-static std::string get_command_output(std::string command)
+static std::filesystem::path get_command_output(std::string command)
 {
     std::string output;
     char buf[2048];
@@ -117,9 +117,9 @@ bool CoreCreateDirectories(void)
     return true;
 }
 
-std::string CoreGetCoreDirectory(void)
+std::filesystem::path CoreGetCoreDirectory(void)
 {
-    std::string directory;
+    std::filesystem::path directory;
 #ifdef PORTABLE_INSTALL
     directory = "Core";
 #else // Not Portable
@@ -129,9 +129,9 @@ std::string CoreGetCoreDirectory(void)
     return directory;
 }
 
-std::string CoreGetPluginDirectory(void)
+std::filesystem::path CoreGetPluginDirectory(void)
 {
-    std::string directory;
+    std::filesystem::path directory;
 #ifdef PORTABLE_INSTALL
     directory = "Plugin";
 #else // Not Portable
@@ -141,9 +141,9 @@ std::string CoreGetPluginDirectory(void)
     return directory;
 }
 
-std::string CoreGetUserConfigDirectory(void)
+std::filesystem::path CoreGetUserConfigDirectory(void)
 {
-    std::string directory;
+    std::filesystem::path directory;
 #ifdef PORTABLE_INSTALL
     directory = "Config";
 #else // Not Portable
@@ -152,9 +152,9 @@ std::string CoreGetUserConfigDirectory(void)
     return directory;
 }
 
-std::string CoreGetDefaultUserDataDirectory(void)
+std::filesystem::path CoreGetDefaultUserDataDirectory(void)
 {
-    std::string directory;
+    std::filesystem::path directory;
 #ifdef PORTABLE_INSTALL
     directory = "Data";
 #else // Not Portable
@@ -163,9 +163,9 @@ std::string CoreGetDefaultUserDataDirectory(void)
     return directory;
 }
 
-std::string CoreGetDefaultUserCacheDirectory(void)
+std::filesystem::path CoreGetDefaultUserCacheDirectory(void)
 {
-    std::string directory;
+    std::filesystem::path directory;
 #ifdef PORTABLE_INSTALL
     directory = "Cache";
 #else // Not Portable
@@ -174,9 +174,9 @@ std::string CoreGetDefaultUserCacheDirectory(void)
     return directory;
 }
 
-std::string CoreGetDefaultSaveDirectory(void)
+std::filesystem::path CoreGetDefaultSaveDirectory(void)
 {
-    std::string directory;
+    std::filesystem::path directory;
 #ifdef PORTABLE_INSTALL
     directory = "Save/Game";
 #else // Not Portable
@@ -186,9 +186,9 @@ std::string CoreGetDefaultSaveDirectory(void)
     return directory;
 }
 
-std::string CoreGetDefaultSaveStateDirectory(void)
+std::filesystem::path CoreGetDefaultSaveStateDirectory(void)
 {
-    std::string directory;
+    std::filesystem::path directory;
 #ifdef PORTABLE_INSTALL
     directory = "Save/State";
 #else // Not Portable
@@ -198,9 +198,9 @@ std::string CoreGetDefaultSaveStateDirectory(void)
     return directory;
 }
 
-std::string CoreGetDefaultScreenshotDirectory(void)
+std::filesystem::path CoreGetDefaultScreenshotDirectory(void)
 {
-    std::string directory;
+    std::filesystem::path directory;
 #ifdef PORTABLE_INSTALL
     directory = "Screenshots";
 #else // Not Portable
@@ -217,19 +217,19 @@ std::string CoreGetDefaultScreenshotDirectory(void)
     return directory;
 }
 
-std::string CoreGetUserDataDirectory(void)
+std::filesystem::path CoreGetUserDataDirectory(void)
 {
-    return std::string(m64p::Config.GetUserDataPath());
+    return std::filesystem::path(m64p::Config.GetUserDataPath());
 }
 
-std::string CoreGetUserCacheDirectory(void)
+std::filesystem::path CoreGetUserCacheDirectory(void)
 {
-    return std::string(m64p::Config.GetUserCachePath());
+    return std::filesystem::path(m64p::Config.GetUserCachePath());
 }
 
-std::string CoreGetSharedDataDirectory(void)
+std::filesystem::path CoreGetSharedDataDirectory(void)
 {
-    std::string directory;
+    std::filesystem::path directory;
 #ifdef PORTABLE_INSTALL
     directory = "Data";
 #else // Not Portable
@@ -239,17 +239,17 @@ std::string CoreGetSharedDataDirectory(void)
     return directory;
 }
 
-std::string CoreGetSaveDirectory(void)
+std::filesystem::path CoreGetSaveDirectory(void)
 {
     return CoreSettingsGetStringValue(SettingsID::Core_SaveSRAMPath);
 }
 
-std::string CoreGetSaveStateDirectory(void)
+std::filesystem::path CoreGetSaveStateDirectory(void)
 {
     return CoreSettingsGetStringValue(SettingsID::Core_SaveStatePath);
 }
 
-std::string CoreGetScreenshotDirectory(void)
+std::filesystem::path CoreGetScreenshotDirectory(void)
 {
     return CoreSettingsGetStringValue(SettingsID::Core_ScreenshotPath);
 }

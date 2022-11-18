@@ -10,7 +10,7 @@
 #ifndef DIRECTORIES_HPP
 #define DIRECTORIES_HPP
 
-#include <string>
+#include <filesystem>
 
 // tries to create the needed directories,
 // returns false when failed
@@ -19,58 +19,58 @@ bool CoreCreateDirectories(void);
 // returns the core directory where
 // the mupen64plus library should be
 // located
-std::string CoreGetCoreDirectory(void);
+std::filesystem::path CoreGetCoreDirectory(void);
 
 // returns the plugin directory where
 // plugins should be located
-std::string CoreGetPluginDirectory(void);
+std::filesystem::path CoreGetPluginDirectory(void);
 
 // returns the default user data directory where
 // data files should be located
-std::string CoreGetDefaultUserDataDirectory(void);
+std::filesystem::path CoreGetDefaultUserDataDirectory(void);
 
 // returns the default user cache directory where
 // cache files should be located
-std::string CoreGetDefaultUserCacheDirectory(void);
+std::filesystem::path CoreGetDefaultUserCacheDirectory(void);
 
 // returns the default save directory where
 // game saves should be located
-std::string CoreGetDefaultSaveDirectory(void);
+std::filesystem::path CoreGetDefaultSaveDirectory(void);
 
 // returns the default save state directory where
 // save states should be located
-std::string CoreGetDefaultSaveStateDirectory(void);
+std::filesystem::path CoreGetDefaultSaveStateDirectory(void);
 
 // returns the default screenshot directory where
 // screenshots should be located
-std::string CoreGetDefaultScreenshotDirectory(void);
+std::filesystem::path CoreGetDefaultScreenshotDirectory(void);
 
 // returns the user config directory where
 // configuration files should be located
-std::string CoreGetUserConfigDirectory(void);
+std::filesystem::path CoreGetUserConfigDirectory(void);
 
 // returns the user data directory where
 // data files should be located
-std::string CoreGetUserDataDirectory(void);
+std::filesystem::path CoreGetUserDataDirectory(void);
 
 // returns the user cache directory where
 // cache files should be located
-std::string CoreGetUserCacheDirectory(void);
+std::filesystem::path CoreGetUserCacheDirectory(void);
 
 // returns the shared data directory where
 // shared data files should be located
-std::string CoreGetSharedDataDirectory(void);
+std::filesystem::path CoreGetSharedDataDirectory(void);
 
 // returns the save directory where
 // game saves should be located
-std::string CoreGetSaveDirectory(void);
+std::filesystem::path CoreGetSaveDirectory(void);
 
 // returns the save state directory where
 // save states should be located
-std::string CoreGetSaveStateDirectory(void);
+std::filesystem::path CoreGetSaveStateDirectory(void);
 
 // returns the screenshot directory where
 // screenshots should be located
-std::string CoreGetScreenshotDirectory(void);
+std::filesystem::path CoreGetScreenshotDirectory(void);
 
 #endif // DIRECTORIES_HPP
