@@ -188,7 +188,7 @@ void MainWindow::ui_Setup(void)
 void MainWindow::ui_Stylesheet_Setup(void)
 {
     QString stylesheetFile;
-    stylesheetFile = QString::fromStdString(CoreGetSharedDataDirectory());
+    stylesheetFile = QString::fromStdString(CoreGetSharedDataDirectory().string());
     stylesheetFile += "/stylesheet.qss";
 
     QFile stylesheet(stylesheetFile);
