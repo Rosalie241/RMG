@@ -83,7 +83,7 @@ bool CoreCreateDirectories(void)
 {
     std::string error;
 
-    std::string directories[] = 
+    std::filesystem::path directories[] = 
     {
 #ifdef PORTABLE_INSTALL
         CoreGetCoreDirectory(),
@@ -107,7 +107,7 @@ bool CoreCreateDirectories(void)
         catch (...)
         {
             error = "CoreCreateDirectories Failed: cannot create the '";
-            error += dir;
+            error += dir.string();
             error += "' directory!";
             CoreSetError(error);
             return false;

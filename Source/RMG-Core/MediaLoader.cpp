@@ -34,7 +34,7 @@ static char* medialoader_get_dd_disk(void*)
         return nullptr;
     }
 
-    return strdup(l_DdDiskFile.c_str());
+    return strdup(l_DdDiskFile.string().c_str());
 }
 
 static void medialoader_set_dd_rom_region(void*, uint8_t region)
