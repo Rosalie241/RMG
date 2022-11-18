@@ -11,12 +11,12 @@
 
 #include <sys/stat.h>
 
-osal_files_file_time osal_files_get_file_time(std::string file)
+osal_files_file_time osal_files_get_file_time(std::filesystem::path file)
 {
     int ret;
     struct stat file_stat;
 
-    ret = stat(file.c_str(), &file_stat);
+    ret = stat(file.string().c_str(), &file_stat);
     if (ret != 0)
     {
         return -1;

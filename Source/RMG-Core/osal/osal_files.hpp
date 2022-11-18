@@ -10,7 +10,7 @@
 #ifndef OSAL_FILES_HPP
 #define OSAL_FILES_HPP
 
-#include <string>
+#include <filesystem>
 
 typedef uint64_t osal_files_file_time;
 
@@ -22,6 +22,6 @@ typedef uint64_t osal_files_file_time;
 
 // returns file time for given file,
 // returns -1 on failure
-osal_files_file_time osal_files_get_file_time(std::string file);
+osal_files_file_time osal_files_get_file_time(std::filesystem::path file);
 
 #endif // OSAL_FILES_HPP

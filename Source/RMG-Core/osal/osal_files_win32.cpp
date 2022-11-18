@@ -12,13 +12,13 @@
 #include <windows.h>
 #include <fileapi.h>
 
-osal_files_file_time osal_files_get_file_time(std::string file)
+osal_files_file_time osal_files_get_file_time(std::filesystem::path file)
 {
     BOOL ret;
     HANDLE file_handle;
     FILETIME file_time;
 
-    file_handle = CreateFileA(file.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    file_handle = CreateFileA(file.string().c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (file_handle == INVALID_HANDLE_VALUE)
     {
         return -1;
