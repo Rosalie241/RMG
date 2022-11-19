@@ -157,6 +157,9 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::GUI_ResumeEmulationOnFocus:
         setting = {SETTING_SECTION_GUI, "ResumeEmulationOnFocus", true};
         break;
+    case SettingsID::GUI_AutomaticFullscreen:
+        setting = {SETTING_SECTION_GUI, "AutomaticFullscreen", false};
+        break;
     case SettingsID::GUI_Version:
         setting = {SETTING_SECTION_GUI, "Version", CORE_VERSION};
         break;
