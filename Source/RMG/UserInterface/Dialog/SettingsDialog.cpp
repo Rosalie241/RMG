@@ -497,6 +497,7 @@ void SettingsDialog::saveGameSettings(void)
         (this->defaultGameSettings.CountPerOp != countPerOp) ||
         (this->defaultGameSettings.SiDMADuration != siDmaDuration))
     {
+        CoreSettingsSetValue(SettingsID::Game_OverrideSettings, this->gameSection, true);
         CoreSettingsSetValue(SettingsID::Game_DisableExtraMem, this->gameSection, disableExtraMem);
         CoreSettingsSetValue(SettingsID::Game_SaveType, this->gameSection, saveType);
         CoreSettingsSetValue(SettingsID::Game_CountPerOp, this->gameSection, countPerOp);
