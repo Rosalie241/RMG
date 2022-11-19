@@ -27,7 +27,7 @@
 #define GOODNAME_LEN 256
 #define MD5_LEN 33
 
-#define CACHE_FILE_MAGIC "RMGCoreHeaderAndSettingsCache_01"
+#define CACHE_FILE_MAGIC "RMGCoreHeaderAndSettingsCache_02"
 #define CACHE_FILE_ITEMS_MAX 1000
 
 //
@@ -86,13 +86,13 @@ void CoreReadRomHeaderAndSettingsCache(void)
 {
     std::ifstream inputStream;
     char magicBuf[sizeof(CACHE_FILE_MAGIC)];
-    char fileNameBuf[MAX_FILENAME_LEN];
+    wchar_t fileNameBuf[MAX_FILENAME_LEN];
     char headerNameBuf[ROMHEADER_NAME_LEN];
     char goodNameBuf[GOODNAME_LEN];
     char md5Buf[MD5_LEN];
     l_CacheEntry cacheEntry;
 
-    inputStream.open(get_cache_file_name());
+    inputStream.open(get_cache_file_name(), std::ios::binary);
     if (!inputStream.good())
     {
         return;
@@ -138,7 +138,7 @@ void CoreReadRomHeaderAndSettingsCache(void)
 bool CoreSaveRomHeaderAndSettingsCache(void)
 {
     std::ofstream outputStream;
-    char fileNameBuf[MAX_FILENAME_LEN];
+    wchar_t fileNameBuf[MAX_FILENAME_LEN];
     char headerNameBuf[ROMHEADER_NAME_LEN];
     char goodNameBuf[GOODNAME_LEN];
     char md5Buf[MD5_LEN];
@@ -150,7 +150,7 @@ bool CoreSaveRomHeaderAndSettingsCache(void)
         return true;
     }
 
-    outputStream.open(get_cache_file_name());
+    outputStream.open(get_cache_file_name(), std::ios::binary);
     if (!outputStream.good())
     {
         return false;
@@ -166,7 +166,7 @@ bool CoreSaveRomHeaderAndSettingsCache(void)
     {
         cacheEntry = (*iter);
 
-        strncpy(fileNameBuf, cacheEntry.fileName.string().c_str(), MAX_FILENAME_LEN);
+        wcsncpy(fileNameBuf, cacheEntry.fileName.wstring().c_str(), MAX_FILENAME_LEN);
         strncpy(headerNameBuf, cacheEntry.header.Name.c_str(), sizeof(headerNameBuf));
         strncpy(goodNameBuf, cacheEntry.settings.GoodName.c_str(), sizeof(goodNameBuf));
         strncpy(md5Buf, cacheEntry.settings.MD5.c_str(), sizeof(md5Buf));
