@@ -66,6 +66,7 @@ enum class SettingsID
     Core_SaveSRAMPath,
 
     // Game Specific Settings
+    Game_OverrideSettings,
     Game_DisableExtraMem,
     Game_SaveType,
     Game_CountPerOp,

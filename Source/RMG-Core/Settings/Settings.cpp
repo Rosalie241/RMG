@@ -304,6 +304,9 @@ static l_Setting get_setting(SettingsID settingId)
         setting = {SETTING_SECTION_GB, "Gameboy_P4_Save", ""};
         break;
 
+    case SettingsID::Game_OverrideSettings:
+        setting = {"", "OverrideSettings", false};
+        break;
     case SettingsID::Game_DisableExtraMem:
         setting = {"", "DisableExtraMem", false};
         break;

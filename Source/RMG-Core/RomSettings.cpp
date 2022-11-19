@@ -132,7 +132,6 @@ bool CoreApplyRomSettings(CoreRomSettings settings)
 
 bool CoreApplyRomSettingsOverlay(void)
 {
-    std::string error;
     CoreRomSettings settings;
 
     if (!CoreGetCurrentDefaultRomSettings(settings))
@@ -140,11 +139,15 @@ bool CoreApplyRomSettingsOverlay(void)
         return false;
     }
 
+    // don't do anything when section doesn't exist
     if (!CoreSettingsSectionExists(settings.MD5))
     {
-        error = "CoreApplyRomSettingsOverlay Failed: ";
-        error += "cannot apply ROM settings overlay when no setting section exists for given ROM!";
-        CoreSetError(error);
+        return false;
+    }
+
+    // or when we don't override the settings
+    if (!CoreSettingsGetBoolValue(SettingsID::Game_OverrideSettings, settings.MD5))
+    {
         return false;
     }
 
