@@ -40,7 +40,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
 
     pluginList = CoreGetAllPlugins();
 
-    for (int i = 0; i < 9; i++)
+    for (int i = 0; i < 10; i++)
     {
         this->reloadSettings(i);
     }
@@ -75,9 +75,16 @@ int SettingsDialog::currentIndex(void)
     if (currentIndex == 1)
     { // game tab
         currentIndex += this->innerGameTabWidget->currentIndex();
-    } else if (currentIndex > 1)
+    }
+
+    if (currentIndex > 1)
     { // above game tab
         currentIndex += this->innerGameTabWidget->count() - 1;
+    }
+
+    if (currentIndex == 8)
+    { // interface tab
+        currentIndex += this->innerInterfaceTabWidget->currentIndex();
     }
 
     return currentIndex;
@@ -113,7 +120,10 @@ void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
         loadDefaultHotkeySettings();
         break;
     case 8:
-        loadDefaultInterfaceSettings();
+        loadDefaultInterfaceEmulationSettings();
+        break;
+    case 9:
+        loadDefaultInterfaceRomBrowserSettings();
         break;
     }
 }
@@ -148,7 +158,10 @@ void SettingsDialog::reloadSettings(int stackedWidgetIndex)
         loadHotkeySettings();
         break;
     case 8:
-        loadInterfaceSettings();
+        loadInterfaceEmulationSettings();
+        break;
+    case 9:
+        loadInterfaceRomBrowserSettings();
         break;
     }
 }
@@ -316,14 +329,19 @@ void SettingsDialog::loadHotkeySettings(void)
     this->commonHotkeySettings(0);
 }
 
-void SettingsDialog::loadInterfaceSettings(void)
+void SettingsDialog::loadInterfaceEmulationSettings(void)
 {
     this->manualResizingCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_AllowManualResizing));
     this->pauseEmulationOnFocusCheckbox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_PauseEmulationOnFocusLoss));
     this->resumeEmulationOnFocusCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_ResumeEmulationOnFocus));
     this->hideCursorCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_HideCursorInEmulation));
     this->hideCursorFullscreenCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_HideCursorInFullscreenEmulation));
+    this->automaticFullscreenCheckbox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_AutomaticFullscreen));
     this->statusBarMessageDurationSpinBox->setValue(CoreSettingsGetIntValue(SettingsID::GUI_StatusbarMessageDuration));
+}
+
+void SettingsDialog::loadInterfaceRomBrowserSettings(void)
+{
     this->searchSubDirectoriesCheckbox->setChecked(CoreSettingsGetBoolValue(SettingsID::RomBrowser_Recursive));
     this->romSearchLimitSpinBox->setValue(CoreSettingsGetIntValue(SettingsID::RomBrowser_MaxItems));
 }
@@ -428,14 +446,19 @@ void SettingsDialog::loadDefaultHotkeySettings(void)
     this->commonHotkeySettings(1);
 }
 
-void SettingsDialog::loadDefaultInterfaceSettings(void)
+void SettingsDialog::loadDefaultInterfaceEmulationSettings(void)
 {
     this->manualResizingCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_AllowManualResizing));
     this->pauseEmulationOnFocusCheckbox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_PauseEmulationOnFocusLoss));
     this->resumeEmulationOnFocusCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_ResumeEmulationOnFocus));
     this->hideCursorCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_HideCursorInEmulation));
     this->hideCursorFullscreenCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_HideCursorInFullscreenEmulation));
+    this->automaticFullscreenCheckbox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_AutomaticFullscreen));
     this->statusBarMessageDurationSpinBox->setValue(CoreSettingsGetDefaultIntValue(SettingsID::GUI_StatusbarMessageDuration));
+}
+
+void SettingsDialog::loadDefaultInterfaceRomBrowserSettings(void)
+{
     this->searchSubDirectoriesCheckbox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::RomBrowser_Recursive));
     this->romSearchLimitSpinBox->setValue(CoreSettingsGetDefaultIntValue(SettingsID::RomBrowser_MaxItems));
 }
@@ -455,7 +478,8 @@ void SettingsDialog::saveSettings(void)
     this->saveDirectorySettings();
     this->save64DDSettings();
     this->saveHotkeySettings();
-    this->saveInterfaceSettings();
+    this->saveInterfaceEmulationSettings();
+    this->saveInterfaceRomBrowserSettings();
 }
 
 void SettingsDialog::saveCoreSettings(void)
@@ -597,14 +621,19 @@ void SettingsDialog::saveHotkeySettings(void)
     this->commonHotkeySettings(2);
 }
 
-void SettingsDialog::saveInterfaceSettings(void)
+void SettingsDialog::saveInterfaceEmulationSettings(void)
 {
     CoreSettingsSetValue(SettingsID::GUI_AllowManualResizing, this->manualResizingCheckBox->isChecked());
     CoreSettingsSetValue(SettingsID::GUI_HideCursorInEmulation, this->hideCursorCheckBox->isChecked());
     CoreSettingsSetValue(SettingsID::GUI_HideCursorInFullscreenEmulation, this->hideCursorFullscreenCheckBox->isChecked());
     CoreSettingsSetValue(SettingsID::GUI_PauseEmulationOnFocusLoss, this->pauseEmulationOnFocusCheckbox->isChecked());
     CoreSettingsSetValue(SettingsID::GUI_ResumeEmulationOnFocus, this->resumeEmulationOnFocusCheckBox->isChecked());
+    CoreSettingsSetValue(SettingsID::GUI_AutomaticFullscreen, this->automaticFullscreenCheckbox->isChecked());
     CoreSettingsSetValue(SettingsID::GUI_StatusbarMessageDuration, this->statusBarMessageDurationSpinBox->value());
+}
+
+void SettingsDialog::saveInterfaceRomBrowserSettings(void)
+{
     CoreSettingsSetValue(SettingsID::RomBrowser_Recursive, this->searchSubDirectoriesCheckbox->isChecked());
     CoreSettingsSetValue(SettingsID::RomBrowser_MaxItems, this->romSearchLimitSpinBox->value());
 }

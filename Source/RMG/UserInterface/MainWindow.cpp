@@ -452,7 +452,7 @@ void MainWindow::emulationThread_Launch(QString cartRom, QString diskRom)
         this->ui_Widget_RomBrowser->StopRefreshRomList();
     }
 
-    if (this->ui_LaunchInFullscreen)
+    if (this->ui_LaunchInFullscreen || CoreSettingsGetBoolValue(SettingsID::GUI_AutomaticFullscreen))
     {
         this->ui_FullscreenTimerId = this->startTimer(100);
         this->ui_LaunchInFullscreen = false;
