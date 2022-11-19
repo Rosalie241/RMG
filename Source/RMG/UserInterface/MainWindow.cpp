@@ -452,6 +452,12 @@ void MainWindow::emulationThread_Launch(QString cartRom, QString diskRom)
         this->ui_Widget_RomBrowser->StopRefreshRomList();
     }
 
+    if (this->ui_LaunchInFullscreen)
+    {
+        this->ui_FullscreenTimerId = this->startTimer(100);
+        this->ui_LaunchInFullscreen = false;
+    }
+
     if (!CoreArePluginsReady())
     {
         this->ui_MessageBox("Error", "CoreArePluginsReady() Failed", QString::fromStdString(CoreGetError()));
@@ -1297,9 +1303,6 @@ void MainWindow::on_VidExt_SetFullscreenModeWithRate(int width, int height, int 
     {
         this->ui_VidExt_Geometry = this->saveGeometry();
         this->ui_VidExt_Geometry_Saved = true;
-
-        // force 'refresh' the video plugin
-        CoreSetVideoSize(width, height);
     }
 
     if (!this->isFullScreen())
@@ -1323,7 +1326,6 @@ void MainWindow::on_VidExt_SetFullscreenModeWithRate(int width, int height, int 
     }
 
     this->ui_Actions_Add();
-    this->on_VidExt_ResizeWindow(width, height);
 }
 
 void MainWindow::on_VidExt_ResizeWindow(int width, int height)
@@ -1363,12 +1365,6 @@ void MainWindow::on_VidExt_ResizeWindow(int width, int height)
     else
     {
         this->setFixedSize(width, height);
-    }
-
-    if (this->ui_LaunchInFullscreen)
-    {
-        this->ui_FullscreenTimerId = this->startTimer(100);
-        this->ui_LaunchInFullscreen = false;
     }
 
     // we've force set the size once,
