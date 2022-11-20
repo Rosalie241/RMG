@@ -28,8 +28,8 @@ if(NOT NO_GIT_CLONE)
     set(MUPEN64PLUSCORE_URL           "https://github.com/Rosalie241/mupen64plus-core")
     set(MUPEN64PLUSCORE_TAG           "468666e2ac575bed1fd75559e1eee70d684c3d4c")
     
-    set(MUPEN64PLUS_RSP_CXD4_URL       "https://github.com/mupen64plus/mupen64plus-rsp-cxd4")
-    set(MUPEN64PLUS_RSP_CXD4_TAG       "39f79201baa15890c4cbae92f2215a634cc3ee6d")
+    set(MUPEN64PLUS_RSP_CXD4_URL      "https://github.com/mupen64plus/mupen64plus-rsp-cxd4")
+    set(MUPEN64PLUS_RSP_CXD4_TAG      "39f79201baa15890c4cbae92f2215a634cc3ee6d")
     
     set(MUPEN64PLUS_RSP_HLE_URL       "https://github.com/mupen64plus/mupen64plus-rsp-hle")
     set(MUPEN64PLUS_RSP_HLE_TAG       "88093cb43499eff53d343653cddcae2132af17ef")
@@ -43,11 +43,11 @@ if(NOT NO_GIT_CLONE)
     set(MUPEN64PLUS_INPUT_GCA_URL     "https://github.com/amatho/mupen64plus-input-gca")
     set(MUPEN64PLUS_INPUT_GCA_TAG     "21639fb13dfa797a7c0949ffd9bbda9a3456fc69")
 
-    set(MUPEN64PLUS_GFX_ANGRYLION_URL  "https://github.com/ghostlydark/angrylion-rdp-plus")
-    set(MUPEN64PLUS_GFX_ANGRYLION_TAG  "dccbb2bf87192e49354c216abdd5ac9f66152a65")
+    set(MUPEN64PLUS_GFX_ANGRYLION_URL "https://github.com/ghostlydark/angrylion-rdp-plus")
+    set(MUPEN64PLUS_GFX_ANGRYLION_TAG "dccbb2bf87192e49354c216abdd5ac9f66152a65")
 
-    set(MUPEN64PLUS_GFX_GLIDEN64_URL  "https://github.com/Rosalie241/GLideN64")
-    set(MUPEN64PLUS_GFX_GLIDEN64_TAG  "2968caaf844405b710815c96fac04700fea037a7")
+    set(MUPEN64PLUS_GFX_GLIDEN64_URL  "https://github.com/gonetz/GLideN64")
+    set(MUPEN64PLUS_GFX_GLIDEN64_TAG  "a2ecb92e954fdc1dd1130b331935f04381b29e28")
 
     set(MUPEN64PLUS_GFX_PARALLEL_URL  "https://github.com/Rosalie241/parallel-rdp-standalone")
     set(MUPEN64PLUS_GFX_PARALLEL_TAG  "80c3458041c498f0503313c8aa0f69d751bd63fb")
