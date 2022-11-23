@@ -3,7 +3,7 @@ set -ex
 script_dir="$(dirname "$0")"
 toplvl_dir="$(realpath "$script_dir/../../")"
 m64psrc_dir="$toplvl_dir/Build/Release/Source/3rdParty/mupen64plus-core/src"
-header_dir="$toplvl_dir/Source/RMG/M64P/api"
+header_dir="$toplvl_dir/Source/RMG-Core/m64p/api"
 
 for h in common config debugger frontend plugin types vidext
 do
