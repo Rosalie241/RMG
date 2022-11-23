@@ -28,7 +28,10 @@
 // Local Defines
 //
 
-#define NUM_CONTROLLERS 4
+#define NUM_CONTROLLERS    4
+#define N64_AXIS_PEAK      85
+#define MAX_DIAGONAL_VALUE 69
+#define DEADZONE_VALUE     7
 
 #define RD_GETSTATUS        0x00   // get status
 #define RD_READKEYS         0x01   // read button values
@@ -362,9 +365,65 @@ static double get_axis_state(InputProfile* profile, InputMapping* inputMapping, 
     return value;
 }
 
-static bool is_deadzone(int x, int y, int deadzoneValue)
+static double simulate_deadzone(double n64InputAxis, double maxAxis, int deadzone, double axisRange)
 {
-    return sqrt(pow(x, 2) + pow(y, 2)) <= deadzoneValue;
+    double axisAbsolute = std::abs(n64InputAxis);
+
+    if (axisAbsolute < deadzone)
+    {
+        axisAbsolute = 0; // No input when inside deadzone
+    }
+    else
+    {
+        // Create linear scaling factor from 0 at inner deadzone to MAX_AXIS at outer limit
+        axisAbsolute = (axisAbsolute - deadzone) * maxAxis / axisRange / axisAbsolute;
+    }
+
+    return axisAbsolute;
+}
+
+// Credit: MerryMage
+static void simulate_octagon(double inputX, double inputY, double deadzoneFactor, double scalingFactor, int& outputX, int& outputY)
+{
+    double maxAxis = scalingFactor * N64_AXIS_PEAK;
+    double maxDiagonal = scalingFactor * MAX_DIAGONAL_VALUE;
+    int deadzone = static_cast<int>(deadzoneFactor * N64_AXIS_PEAK);
+    double axisRange = maxAxis - deadzone;
+    // scale to [-maxAxis, maxAxis]
+    double ax = inputX * maxAxis;
+    double ay = inputY * maxAxis;
+
+    // check whether (ax, ay) is within the circle of radius MAX_AXIS
+    double len = std::sqrt(ax*ax + ay*ay);
+    if (len <= maxAxis)
+    {
+        // scale inputs
+        ax *= simulate_deadzone(ax, maxAxis, deadzone, axisRange);
+        ay *= simulate_deadzone(ay, maxAxis, deadzone, axisRange);
+    }
+    else
+    {
+        // scale ax and ay to stay on the same line, but at the edge of the circle
+        len = maxAxis / len;
+        ax *= len;
+        ay *= len;
+    }
+
+    // bound diagonals to an octagonal range [-69, 69]
+    if (ax != 0.0 && ay != 0.0)
+    {
+        double slope = ay / ax;
+        double edgex = copysign(maxAxis / (std::abs(slope) + (maxAxis - maxDiagonal) / maxDiagonal), ax);
+        double edgey = copysign(std::min(std::abs(edgex * slope), maxAxis / (1.0 / std::abs(slope) + (maxAxis - maxDiagonal) / maxDiagonal)), ay);
+        edgex = edgey / slope;
+
+        double scale = std::sqrt(edgex*edgex + edgey*edgey) / maxAxis;
+        ax *= scale;
+        ay *= scale;
+    }
+
+    outputX = static_cast<int>(ax);
+    outputY = static_cast<int>(ay);
 }
 
 static unsigned char data_crc(unsigned char *data, int length)
@@ -639,20 +698,20 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
     Keys->R_TRIG       = get_button_state(profile, &profile->Button_RightTrigger);
     Keys->Z_TRIG       = get_button_state(profile, &profile->Button_ZTrigger);
 
-    double inputY = get_axis_state(profile, &profile->AnalogStick_Up, 1, Keys->Y_AXIS);
+    double inputX = 0, inputY = 0;
+    inputY = get_axis_state(profile, &profile->AnalogStick_Up,    1, inputY);
     inputY = get_axis_state(profile, &profile->AnalogStick_Down, -1, inputY);
-    double inputX = get_axis_state(profile, &profile->AnalogStick_Left, -1, Keys->X_AXIS);
+    inputX = get_axis_state(profile, &profile->AnalogStick_Left, -1, inputX);
     inputX = get_axis_state(profile, &profile->AnalogStick_Right, 1, inputX);
 
-    // Required temporaries because the axes are defined as bit fields
     int octagonX = 0, octagonY = 0;
-    simulateOctagon(
-        inputX,
-        inputY,
+    simulate_octagon(
+        inputX, // inputX
+        inputY, // inputY
         profile->DeadzoneValue / 100.0, // deadzoneFactor
-        profile->RangeValue / 100.0, // scalingFactor
+        profile->RangeValue / 100.0,    // scalingFactor
         octagonX, // outputX
-        octagonY // outputY
+        octagonY  // outputY
     );
 
     Keys->X_AXIS = octagonX;

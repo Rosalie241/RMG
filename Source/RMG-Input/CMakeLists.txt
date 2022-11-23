@@ -27,7 +27,6 @@ set(RMG_INPUT_SOURCES
     Utilities/QtKeyToSdl2Key.cpp
     Utilities/InputDevice.cpp
     Thread/SDLThread.cpp
-    common.cpp
     main.cpp
 )
 

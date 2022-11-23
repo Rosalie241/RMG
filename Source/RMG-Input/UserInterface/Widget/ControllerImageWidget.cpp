@@ -170,18 +170,23 @@ void ControllerImageWidget::paintEvent(QPaintEvent *event)
     const double maxOffsetx = maxOffsety;
     const double dist = sqrt(pow(this->xAxisState, 2) + pow(this->yAxisState, 2));
 
-    int octagonX = 0, octagonY = 0;
-    simulateOctagon(
-        this->xAxisState / 100.0, // inputX
-        this->yAxisState / 100.0, // inputY
-        this->deadzoneValue / 100.0, // deadzoneFactor
-        this->rangeValue / 100.0, // scalingFactor
-        octagonX, // outputX
-        octagonY // outputY
-    );
+    // take deadzone into account
+    if (dist > this->deadzoneValue)
+    {
+        offsetx = (maxOffsetx / 100 * this->xAxisState);
+        offsety = (maxOffsety / 100 * this->yAxisState);
+    }
 
-    offsetx = octagonX * (maxOffsetx / N64_AXIS_PEAK);
-    offsety = octagonY * (maxOffsety / N64_AXIS_PEAK);
+    // take circle range into account
+    if (dist > 100)
+    {
+        offsetx = (maxOffsetx / 100 * (this->xAxisState / dist * 100));
+        offsety = (maxOffsety / 100 * (this->yAxisState / dist * 100));
+    }
+
+    // take range into account
+    offsetx = offsetx / 100 * this->rangeValue;
+    offsety = offsety / 100 * this->rangeValue;
 
     // adjust rect with offset
     rectF.adjust(
