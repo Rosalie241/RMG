@@ -87,7 +87,7 @@ bool MainWindow::Init(QGuiApplication* app)
 
 void MainWindow::OpenROM(QString file, bool fullscreen)
 {
-    this->ui_LaunchInFullscreen = true;
+    this->ui_LaunchInFullscreen = fullscreen;
     this->emulationThread_Launch(file);
 }
 
