@@ -62,15 +62,6 @@ void ControllerImageWidget::SetDeadzone(int value)
     }
 }
 
-void ControllerImageWidget::SetRange(int value)
-{
-    if (this->rangeValue != value)
-    {
-        this->rangeValue = value;
-        this->needImageUpdate = true;
-    }
-}
-
 void ControllerImageWidget::ClearControllerState()
 {
     // reset button state
@@ -183,10 +174,6 @@ void ControllerImageWidget::paintEvent(QPaintEvent *event)
         offsetx = (maxOffsetx / 100 * (this->xAxisState / dist * 100));
         offsety = (maxOffsety / 100 * (this->yAxisState / dist * 100));
     }
-
-    // take range into account
-    offsetx = offsetx / 100 * this->rangeValue;
-    offsety = offsety / 100 * this->rangeValue;
 
     // adjust rect with offset
     rectF.adjust(

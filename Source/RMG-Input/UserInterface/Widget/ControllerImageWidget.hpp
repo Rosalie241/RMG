@@ -31,8 +31,6 @@ private:
     int yAxisState = 0;
     // deadzone value, 0-100
     int deadzoneValue = 0;
-    // range value, 0-100
-    int rangeValue = 100;
 
     bool needImageUpdate = false;
 public:
@@ -43,7 +41,6 @@ public:
     void SetXAxisState(int xAxis);
     void SetYAxisState(int yAxis);
     void SetDeadzone(int value);
-    void SetRange(int value);
 
     void ClearControllerState();
     void UpdateImage();
