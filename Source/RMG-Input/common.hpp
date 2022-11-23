@@ -11,6 +11,7 @@
 #define COMMON_HPP
 
 #define SDL_AXIS_PEAK 32767
+#define N64_AXIS_PEAK  85
 
 enum class N64ControllerButton
 {
@@ -57,5 +58,7 @@ enum class N64ControllerPak
     TransferPak,
     None,
 };
+
+void simulateOctagon(double inputX, double inputY, double deadzoneFactor, double scalingFactor, int& outputX, int& outputY);
 
 #endif // COMMON_HPP

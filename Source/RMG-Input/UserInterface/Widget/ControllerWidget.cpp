@@ -923,7 +923,7 @@ void ControllerWidget::SaveDefaultSettings()
     CoreSettingsSetValue(SettingsID::Input_DeviceName, section, std::string("Keyboard"));
     CoreSettingsSetValue(SettingsID::Input_DeviceNum, section, -1);
     CoreSettingsSetValue(SettingsID::Input_Range, section, 100);
-    CoreSettingsSetValue(SettingsID::Input_Deadzone, section, 15);
+    CoreSettingsSetValue(SettingsID::Input_Deadzone, section, 9);
     CoreSettingsSetValue(SettingsID::Input_Pak, section, 0);
     CoreSettingsSetValue(SettingsID::Input_RemoveDuplicateMappings, section, true);
 

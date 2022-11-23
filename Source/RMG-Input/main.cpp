@@ -29,7 +29,6 @@
 //
 
 #define NUM_CONTROLLERS 4
-#define MAX_AXIS_VALUE  85
 
 #define RD_GETSTATUS        0x00   // get status
 #define RD_READKEYS         0x01   // read button values
@@ -317,21 +316,22 @@ static int get_button_state(InputProfile* profile, InputMapping* inputMapping)
     return 0;
 }
 
-static int get_axis_state(InputProfile* profile, InputMapping* inputMapping, int direction, int value)
+// returns axis input scaled to the range [-1, 1]
+static double get_axis_state(InputProfile* profile, InputMapping* inputMapping, int direction, double value)
 {
     switch (inputMapping->Type)
     {
         case InputType::GamepadButton:
         {
             int buttonState = SDL_GameControllerGetButton(profile->InputDevice.GetGameControllerHandle(), (SDL_GameControllerButton)inputMapping->Data);
-            return buttonState ? MAX_AXIS_VALUE * direction : value;
+            return buttonState ? direction : value;
         } break;
         case InputType::GamepadAxis:
         {
-            int axis_value = SDL_GameControllerGetAxis(profile->InputDevice.GetGameControllerHandle(), (SDL_GameControllerAxis)inputMapping->Data);
+            double axis_value = SDL_GameControllerGetAxis(profile->InputDevice.GetGameControllerHandle(), (SDL_GameControllerAxis)inputMapping->Data);
             if (inputMapping->ExtraData ? axis_value > 0 : axis_value < 0)
             {
-                axis_value = ((float)((float)axis_value / SDL_AXIS_PEAK * 100) * ((float)MAX_AXIS_VALUE / 100 * profile->RangeValue / 100));
+                axis_value = (axis_value / SDL_AXIS_PEAK) * (profile->RangeValue / 100.0);
                 axis_value = abs(axis_value) * direction;
                 return axis_value;
             }
@@ -339,21 +339,21 @@ static int get_axis_state(InputProfile* profile, InputMapping* inputMapping, int
         case InputType::JoystickButton:
         {
             int buttonState =  SDL_JoystickGetButton(profile->InputDevice.GetJoystickHandle(), inputMapping->Data);
-            return buttonState ? MAX_AXIS_VALUE * direction : value;
+            return buttonState ? direction : value;
         } break;
         case InputType::JoystickAxis:
         {
-            int axis_value = SDL_JoystickGetAxis(profile->InputDevice.GetJoystickHandle(), inputMapping->Data);
+            double axis_value = SDL_JoystickGetAxis(profile->InputDevice.GetJoystickHandle(), inputMapping->Data);
             if (inputMapping->ExtraData ? axis_value > 0 : axis_value < 0)
             {
-                axis_value = ((float)((float)axis_value / SDL_AXIS_PEAK * 100) * ((float)MAX_AXIS_VALUE / 100 * profile->RangeValue / 100));
+                axis_value = (axis_value / SDL_AXIS_PEAK) * (profile->RangeValue / 100.0);
                 axis_value = abs(axis_value) * direction;
                 return axis_value;
             }
         } break;
         case InputType::Keyboard:
         {
-            return l_KeyboardState[inputMapping->Data] ? MAX_AXIS_VALUE * direction : value;
+            return l_KeyboardState[inputMapping->Data] ? direction : value;
         } break;
         default:
             break;
@@ -639,17 +639,24 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
     Keys->R_TRIG       = get_button_state(profile, &profile->Button_RightTrigger);
     Keys->Z_TRIG       = get_button_state(profile, &profile->Button_ZTrigger);
 
-    Keys->Y_AXIS       = get_axis_state(profile, &profile->AnalogStick_Up, 1, Keys->Y_AXIS);
-    Keys->Y_AXIS       = get_axis_state(profile, &profile->AnalogStick_Down, -1, Keys->Y_AXIS);
-    Keys->X_AXIS       = get_axis_state(profile, &profile->AnalogStick_Left, -1, Keys->X_AXIS);
-    Keys->X_AXIS       = get_axis_state(profile, &profile->AnalogStick_Right, 1, Keys->X_AXIS);
+    double inputY = get_axis_state(profile, &profile->AnalogStick_Up, 1, Keys->Y_AXIS);
+    inputY = get_axis_state(profile, &profile->AnalogStick_Down, -1, inputY);
+    double inputX = get_axis_state(profile, &profile->AnalogStick_Left, -1, Keys->X_AXIS);
+    inputX = get_axis_state(profile, &profile->AnalogStick_Right, 1, inputX);
 
-    // take deadzone into account
-    if (is_deadzone(Keys->X_AXIS, Keys->Y_AXIS, ((float)MAX_AXIS_VALUE / 100 * profile->DeadzoneValue)))
-    {
-        Keys->Y_AXIS = 0;
-        Keys->X_AXIS = 0;
-    }
+    // Required temporaries because the axes are defined as bit fields
+    int octagonX = 0, octagonY = 0;
+    simulateOctagon(
+        inputX,
+        inputY,
+        profile->DeadzoneValue / 100.0, // deadzoneFactor
+        profile->RangeValue / 100.0, // scalingFactor
+        octagonX, // outputX
+        octagonY // outputY
+    );
+
+    Keys->X_AXIS = octagonX;
+    Keys->Y_AXIS = octagonY;
 }
 
 EXPORT void CALL InitiateControllers(CONTROL_INFO ControlInfo)
