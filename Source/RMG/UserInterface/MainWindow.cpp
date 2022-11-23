@@ -85,10 +85,10 @@ bool MainWindow::Init(QGuiApplication* app)
     return true;
 }
 
-void MainWindow::OpenROM(QString file, bool fullscreen)
+void MainWindow::OpenROM(QString file, QString disk, bool fullscreen)
 {
     this->ui_LaunchInFullscreen = fullscreen;
-    this->emulationThread_Launch(file);
+    this->emulationThread_Launch(file, disk);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

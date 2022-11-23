@@ -37,7 +37,7 @@ class MainWindow : public QMainWindow
     ~MainWindow(void);
 
     bool Init(QGuiApplication*);
-    void OpenROM(QString, bool);
+    void OpenROM(QString, QString, bool);
 
   private:
     QIcon ui_Icon;
