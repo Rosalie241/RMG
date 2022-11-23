@@ -108,7 +108,6 @@ public:
 
 private slots:
     void on_deadZoneSlider_valueChanged(int value);
-    void on_analogStickRangeSlider_valueChanged(int value);
     
     void on_profileComboBox_currentIndexChanged(int value);
 

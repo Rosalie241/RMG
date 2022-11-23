@@ -127,7 +127,6 @@ enum class SettingsID
     Input_DeviceType,
     Input_DeviceName,
     Input_DeviceNum,
-    Input_Range,
     Input_Deadzone,
     Input_Pak,
     Input_GameboyRom,

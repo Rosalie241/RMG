@@ -358,14 +358,6 @@ void ControllerWidget::on_deadZoneSlider_valueChanged(int value)
     this->controllerImageWidget->SetDeadzone(value);
 }
 
-void ControllerWidget::on_analogStickRangeSlider_valueChanged(int value)
-{
-    QString text = QString::number(value);
-    text += "%";
-    this->analogStickRangeLabel->setText(text);
-    this->controllerImageWidget->SetRange(value);
-}
-
 void ControllerWidget::on_profileComboBox_currentIndexChanged(int value)
 {
     // reload settings from section
@@ -415,7 +407,6 @@ void ControllerWidget::on_controllerPluggedCheckBox_toggled(bool value)
         this->analogStickDownButton,
         this->analogStickLeftButton,
         this->analogStickRightButton,
-        this->analogStickRangeSlider,
         // cbuttons
         this->cbuttonUpButton,
         this->cbuttonDownButton,
@@ -892,7 +883,6 @@ void ControllerWidget::LoadSettings(QString sectionQString)
     }
 
     this->controllerPluggedCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::Input_PluggedIn, section));
-    this->analogStickRangeSlider->setValue(CoreSettingsGetIntValue(SettingsID::Input_Range, section));
     this->deadZoneSlider->setValue(CoreSettingsGetIntValue(SettingsID::Input_Deadzone, section));
     this->optionsDialogSettings.RemoveDuplicateMappings = CoreSettingsGetBoolValue(SettingsID::Input_RemoveDuplicateMappings, section);
     this->optionsDialogSettings.ControllerPak = CoreSettingsGetIntValue(SettingsID::Input_Pak, section);
@@ -922,7 +912,6 @@ void ControllerWidget::SaveDefaultSettings()
     CoreSettingsSetValue(SettingsID::Input_PluggedIn, section, false);
     CoreSettingsSetValue(SettingsID::Input_DeviceName, section, std::string("Keyboard"));
     CoreSettingsSetValue(SettingsID::Input_DeviceNum, section, -1);
-    CoreSettingsSetValue(SettingsID::Input_Range, section, 100);
     CoreSettingsSetValue(SettingsID::Input_Deadzone, section, 9);
     CoreSettingsSetValue(SettingsID::Input_Pak, section, 0);
     CoreSettingsSetValue(SettingsID::Input_RemoveDuplicateMappings, section, true);
@@ -954,7 +943,6 @@ void ControllerWidget::SaveSettings()
     CoreSettingsSetValue(SettingsID::Input_PluggedIn, section, this->IsPluggedIn());
     CoreSettingsSetValue(SettingsID::Input_DeviceName, section, deviceName.toStdString());
     CoreSettingsSetValue(SettingsID::Input_DeviceNum, section, deviceNum);
-    CoreSettingsSetValue(SettingsID::Input_Range, section, this->analogStickRangeSlider->value());
     CoreSettingsSetValue(SettingsID::Input_Deadzone, section, this->deadZoneSlider->value());
     CoreSettingsSetValue(SettingsID::Input_Pak, section, this->optionsDialogSettings.ControllerPak);
     CoreSettingsSetValue(SettingsID::Input_GameboyRom, section, this->optionsDialogSettings.GameboyRom);

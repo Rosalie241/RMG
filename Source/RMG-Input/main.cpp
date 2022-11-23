@@ -58,7 +58,6 @@ struct InputProfile
 {
     bool PluggedIn    = false;
     int DeadzoneValue = 0;
-    int RangeValue    = 100;
 
     N64ControllerPak ControllerPak = N64ControllerPak::None;
 
@@ -166,7 +165,6 @@ static void load_settings(void)
 
         profile->PluggedIn = CoreSettingsGetBoolValue(SettingsID::Input_PluggedIn, section);
         profile->DeadzoneValue = CoreSettingsGetIntValue(SettingsID::Input_Deadzone, section);
-        profile->RangeValue = CoreSettingsGetIntValue(SettingsID::Input_Range, section);
         profile->ControllerPak = (N64ControllerPak)CoreSettingsGetIntValue(SettingsID::Input_Pak, section);
         profile->DeviceName = CoreSettingsGetStringValue(SettingsID::Input_DeviceName, section);
         profile->DeviceNum = CoreSettingsGetIntValue(SettingsID::Input_DeviceNum, section);
@@ -334,7 +332,7 @@ static double get_axis_state(InputProfile* profile, InputMapping* inputMapping, 
             double axis_value = SDL_GameControllerGetAxis(profile->InputDevice.GetGameControllerHandle(), (SDL_GameControllerAxis)inputMapping->Data);
             if (inputMapping->ExtraData ? axis_value > 0 : axis_value < 0)
             {
-                axis_value = (axis_value / SDL_AXIS_PEAK) * (profile->RangeValue / 100.0);
+                axis_value = (axis_value / SDL_AXIS_PEAK);
                 axis_value = abs(axis_value) * direction;
                 return axis_value;
             }
@@ -349,7 +347,7 @@ static double get_axis_state(InputProfile* profile, InputMapping* inputMapping, 
             double axis_value = SDL_JoystickGetAxis(profile->InputDevice.GetJoystickHandle(), inputMapping->Data);
             if (inputMapping->ExtraData ? axis_value > 0 : axis_value < 0)
             {
-                axis_value = (axis_value / SDL_AXIS_PEAK) * (profile->RangeValue / 100.0);
+                axis_value = (axis_value / SDL_AXIS_PEAK);
                 axis_value = abs(axis_value) * direction;
                 return axis_value;
             }
@@ -383,12 +381,12 @@ static double simulate_deadzone(double n64InputAxis, double maxAxis, int deadzon
 }
 
 // Credit: MerryMage
-static void simulate_octagon(double inputX, double inputY, double deadzoneFactor, double scalingFactor, int& outputX, int& outputY)
+static void simulate_octagon(double inputX, double inputY, double deadzoneFactor, int& outputX, int& outputY)
 {
-    double maxAxis = scalingFactor * N64_AXIS_PEAK;
-    double maxDiagonal = scalingFactor * MAX_DIAGONAL_VALUE;
-    int deadzone = static_cast<int>(deadzoneFactor * N64_AXIS_PEAK);
-    double axisRange = maxAxis - deadzone;
+    double maxAxis     = N64_AXIS_PEAK;
+    double maxDiagonal = MAX_DIAGONAL_VALUE;
+    int deadzone       = static_cast<int>(deadzoneFactor * N64_AXIS_PEAK);
+    double axisRange   = maxAxis - deadzone;
     // scale to [-maxAxis, maxAxis]
     double ax = inputX * maxAxis;
     double ay = inputY * maxAxis;
@@ -709,7 +707,6 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
         inputX, // inputX
         inputY, // inputY
         profile->DeadzoneValue / 100.0, // deadzoneFactor
-        profile->RangeValue / 100.0,    // scalingFactor
         octagonX, // outputX
         octagonY  // outputY
     );

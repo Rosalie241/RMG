@@ -452,9 +452,6 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::Input_DeviceNum:
         setting = {"", "DeviceNum"};
         break;
-    case SettingsID::Input_Range:
-        setting = {"", "Range"};
-        break;
     case SettingsID::Input_Deadzone:
         setting = {"", "Deadzone"};
         break;
