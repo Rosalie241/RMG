@@ -17,6 +17,7 @@ struct CoreRomHeader
 {
     uint32_t    CRC1;
     uint32_t    CRC2;
+    uint32_t    CountryCode;
     std::string Name;
 };
 

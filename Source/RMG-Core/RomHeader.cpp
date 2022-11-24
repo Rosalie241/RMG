@@ -38,8 +38,9 @@ bool CoreGetCurrentRomHeader(CoreRomHeader& header)
         return false;
     }
 
-    header.CRC1 = ntohl(m64p_header.CRC1);
-    header.CRC2 = ntohl(m64p_header.CRC2);
-    header.Name = std::string((char*)m64p_header.Name);
+    header.CRC1        = ntohl(m64p_header.CRC1);
+    header.CRC2        = ntohl(m64p_header.CRC2);
+    header.CountryCode = m64p_header.Country_code;
+    header.Name        = std::string((char*)m64p_header.Name);
     return true;
 }
