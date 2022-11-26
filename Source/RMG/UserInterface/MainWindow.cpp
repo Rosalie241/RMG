@@ -1006,9 +1006,10 @@ void MainWindow::on_Action_System_SaveState(void)
 
 void MainWindow::on_Action_System_SaveAs(void)
 {
+    bool isRunning = CoreIsEmulationRunning();
     bool isPaused = CoreIsEmulationPaused();
 
-    if (!isPaused)
+    if (isRunning && !isPaused)
     {
         this->on_Action_System_Pause();
     }
@@ -1020,7 +1021,7 @@ void MainWindow::on_Action_System_SaveAs(void)
         this->ui_MessageBox("Error", "CoreSaveState() Failed", QString::fromStdString(CoreGetError()));
     }
 
-    if (!isPaused)
+    if (isRunning && !isPaused)
     {
         this->on_Action_System_Pause();
     }
@@ -1036,9 +1037,10 @@ void MainWindow::on_Action_System_LoadState(void)
 
 void MainWindow::on_Action_System_Load(void)
 {
+    bool isRunning = CoreIsEmulationRunning();
     bool isPaused = CoreIsEmulationPaused();
 
-    if (!isPaused)
+    if (isRunning && !isPaused)
     {
         this->on_Action_System_Pause();
     }
@@ -1051,7 +1053,7 @@ void MainWindow::on_Action_System_Load(void)
         this->ui_MessageBox("Error", "CoreLoadSaveState() Failed", QString::fromStdString(CoreGetError()));
     }
 
-    if (!isPaused)
+    if (isRunning && !isPaused)
     {
         this->on_Action_System_Pause();
     }
