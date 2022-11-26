@@ -1046,6 +1046,38 @@ bool CoreSettingsSetValue(SettingsID settingId, std::string section, std::vector
     return CoreSettingsSetValue(settingId, section, value_str);
 }
 
+bool CoreSettingsSetValue(std::string section, std::string key, int value)
+{
+    return config_option_set(section, key, M64TYPE_INT, &value);
+}
+
+bool CoreSettingsSetValue(std::string section, std::string key, bool value)
+{
+    int intValue = value ? 1 : 0;
+    return config_option_set(section, key, M64TYPE_BOOL, &intValue);
+}
+
+bool CoreSettingsSetValue(std::string section, std::string key, float value)
+{
+    return config_option_set(section, key, M64TYPE_FLOAT, &value);
+}
+
+bool CoreSettingsSetValue(std::string section, std::string key, std::string value)
+{
+    return config_option_set(section, key, M64TYPE_STRING, (void*)value.c_str());
+}
+
+bool CoreSettingsSetValue(std::string section, std::string key, std::vector<int> value)
+{
+    std::string value_str;
+    for (const int& num : value)
+    {
+        value_str += std::to_string(num);
+        value_str += ";";
+    }
+    return CoreSettingsSetValue(section, key, value_str);
+}
+
 int CoreSettingsGetDefaultIntValue(SettingsID settingId)
 {
     l_Setting setting = get_setting(settingId);
@@ -1153,6 +1185,60 @@ std::vector<int> CoreSettingsGetIntListValue(SettingsID settingId, std::string s
 
     std::string value_str;
     value_str = CoreSettingsGetStringValue(settingId, section);
+
+    // split string by ';'
+    // and append list with each item
+    std::stringstream value_str_stream(value_str);
+    std::string tmp_str;
+    while (std::getline(value_str_stream, tmp_str, ';'))
+    {
+        try
+        {
+            value.emplace_back(std::stoi(tmp_str));
+        }
+        catch (...)
+        { // ignore exception
+            continue;
+        }
+    }
+
+    return value;
+}
+
+int CoreSettingsGetIntValue(std::string section, std::string key, int defaultValue)
+{
+    int value = defaultValue;
+    config_option_get(section, key, M64TYPE_INT, &value, sizeof(value));
+    return value;
+}
+
+bool CoreSettingsGetBoolValue(std::string section, std::string key, bool defaultValue)
+{
+    int value = defaultValue;
+    config_option_get(section, key, M64TYPE_BOOL, &value, sizeof(value));
+    return value;
+}
+
+float CoreSettingsGetFloatValue(std::string section, std::string key, float defaultValue)
+{
+    float value = defaultValue;
+    config_option_get(section, key, M64TYPE_FLOAT, &value, sizeof(value));
+    return value;
+}
+
+std::string CoreSettingsGetStringValue(std::string section, std::string key)
+{
+    char value[STR_SIZE] = {0};
+    config_option_get(section, key, M64TYPE_STRING, (char*)value, sizeof(value));
+    return std::string(value);
+}
+
+std::vector<int> CoreSettingsGetIntListValue(std::string section, std::string key, std::vector<int> defaultValue)
+{
+    std::vector<int> value;
+
+    std::string value_str;
+    value_str = CoreSettingsGetStringValue(section, key);
 
     // split string by ';'
     // and append list with each item

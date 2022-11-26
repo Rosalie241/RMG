@@ -52,6 +52,19 @@ bool CoreSettingsSetValue(SettingsID settingId, std::string section, std::string
 // sets setting in section as int list value
 bool CoreSettingsSetValue(SettingsID settingId, std::string section, std::vector<int> value);
 
+#ifdef CORE_INTERNAL
+// sets key in section as int value
+bool CoreSettingsSetValue(std::string section, std::string key, int value);
+// sets key in section as bool value
+bool CoreSettingsSetValue(std::string section, std::string key, bool value);
+// sets key in section as float value
+bool CoreSettingsSetValue(std::string section, std::string key, float value);
+// sets key in section as string value
+bool CoreSettingsSetValue(std::string section, std::string key, std::string value);
+// sets key in section as int list value
+bool CoreSettingsSetValue(std::string section, std::string key, std::vector<int> value);
+#endif // CORE_INTERNAL
+
 // retrieves default setting as int
 int CoreSettingsGetDefaultIntValue(SettingsID settingId);
 // retrieves default setting as bool
@@ -83,6 +96,19 @@ float CoreSettingsGetFloatValue(SettingsID settingId, std::string section);
 // retrieves setting in section as string
 std::string CoreSettingsGetStringValue(SettingsID settingId, std::string section);
 // retrieves setting in section as int list
-std::vector<int>CoreSettingsGetIntListValue(SettingsID settingId, std::string section);
+std::vector<int> CoreSettingsGetIntListValue(SettingsID settingId, std::string section);
+
+#ifdef CORE_INTERNAL
+// retrieves key in section as int
+int CoreSettingsGetIntValue(std::string section, std::string key, int defaultValue);
+// retrieves key in section as bool
+bool CoreSettingsGetBoolValue(std::string section, std::string key, bool defaultValue);
+// retrieves key in section as float
+float CoreSettingsGetFloatValue(std::string section, std::string key, float defaultValue);
+// retrieves key in section as string
+std::string CoreSettingsGetStringValue(std::string section, std::string key);
+// retrieves key in section as int list
+std::vector<int> CoreSettingsGetIntListValue(std::string section, std::string key);
+#endif // CORE_INTERNAL
 
 #endif // CORE_SETTINGS_HPP
