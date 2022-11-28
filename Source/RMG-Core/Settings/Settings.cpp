@@ -106,6 +106,7 @@ struct l_Setting
 
 static m64p_handle              l_sectionHandle = nullptr;
 static std::vector<std::string> l_sectionList;
+static std::vector<std::string> l_keyList;
 
 //
 // Local Functions
@@ -730,12 +731,41 @@ static bool config_section_open(std::string section)
     ret = m64p::Config.OpenSection(section.c_str(), &l_sectionHandle);
     if (ret != M64ERR_SUCCESS)
     {
-        error = "config_section_open Failed: ";
+        error = "config_section_open m64p::Config.OpenSection Failed: ";
         error = m64p::Core.ErrorMessage(ret);
         CoreSetError(error);
     }
 
     return ret == M64ERR_SUCCESS;
+}
+
+static void config_listkeys_callback(void* context, const char* key, m64p_type type)
+{
+    l_keyList.push_back(std::string(key));
+}
+
+static bool config_key_exists(std::string section, std::string key)
+{
+    std::string error;
+    m64p_error ret;
+
+    if (!config_section_open(section))
+    {
+        return false;
+    }
+
+    l_keyList.clear();
+
+    ret = m64p::Config.ListParameters(l_sectionHandle, nullptr, &config_listkeys_callback);
+    if (ret != M64ERR_SUCCESS)
+    {
+        error = "config_key_exists m64p::Config.ListParameters Failed: ";
+        error += m64p::Core.ErrorMessage(ret);
+        CoreSetError(error);
+        return false;
+    }
+
+    return std::find(l_keyList.begin(), l_keyList.end(), key) != l_keyList.end();;
 }
 
 static bool config_option_set(std::string section, std::string key, m64p_type type, void *value)
@@ -975,6 +1005,11 @@ bool CoreSettingsDeleteSection(std::string section)
     }
 
     return ret == M64ERR_SUCCESS;
+}
+
+bool CoreSettingsKeyExists(std::string section, std::string key)
+{
+    return config_key_exists(section, key);
 }
 
 bool CoreSettingsSetValue(SettingsID settingId, int value)

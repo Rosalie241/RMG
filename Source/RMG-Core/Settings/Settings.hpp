@@ -30,6 +30,9 @@ bool CoreSettingsSectionExists(std::string section);
 // deletes given section
 bool CoreSettingsDeleteSection(std::string section);
 
+// returns whether a key in the given section exists
+bool CoreSettingsKeyExists(std::string section, std::string key);
+
 // sets setting as int value
 bool CoreSettingsSetValue(SettingsID settingId, int value);
 // sets setting as bool value
