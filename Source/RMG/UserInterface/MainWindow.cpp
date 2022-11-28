@@ -1135,7 +1135,7 @@ void MainWindow::on_Action_Options_Settings(void)
 
 void MainWindow::on_Action_Help_HomePage(void)
 {
-    QDesktopServices::openUrl(QUrl(APP_URL_HOMEPAGE));
+    QDesktopServices::openUrl(QUrl("https://github.com/Rosalie241/RMG"));
 }
 
 void MainWindow::on_Action_Help_About(void)
