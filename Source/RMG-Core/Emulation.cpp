@@ -13,6 +13,7 @@
 #include "Emulation.hpp"
 #include "m64p/Api.hpp"
 #include "Plugins.hpp"
+#include "Cheats.hpp"
 #include "Error.hpp"
 #include "Rom.hpp"
 
@@ -109,6 +110,13 @@ bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64d
         return false;
     }
 
+    if (!CoreApplyCheats())
+    {
+        CoreApplyPluginSettings();
+        CoreCloseRom();
+        return false;
+    }
+
     // set disk file in media loader
     CoreMediaLoaderSetDiskFile(n64ddrom);
 
@@ -126,6 +134,7 @@ bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64d
         CoreSetError(error);
     }
 
+    CoreClearCheats();
     CoreDetachPlugins();
     CoreCloseRom();
 
