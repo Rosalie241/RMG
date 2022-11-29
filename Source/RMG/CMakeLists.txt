@@ -20,6 +20,12 @@ set(RMG_SOURCES
     UserInterface/Dialog/SettingsDialog.cpp
     UserInterface/Dialog/SettingsDialog.ui
     UserInterface/Dialog/SettingsDialog.qrc
+    UserInterface/Dialog/CheatsDialog.cpp
+    UserInterface/Dialog/CheatsDialog.ui
+    UserInterface/Dialog/AddCheatDialog.cpp
+    UserInterface/Dialog/AddCheatDialog.ui
+    UserInterface/Dialog/ChooseCheatOptionDialog.cpp
+    UserInterface/Dialog/ChooseCheatOptionDialog.ui
     UserInterface/Dialog/RomInfoDialog.cpp
     UserInterface/Dialog/RomInfoDialog.ui
     UserInterface/Dialog/AboutDialog.cpp

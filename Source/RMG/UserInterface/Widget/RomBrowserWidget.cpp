@@ -10,6 +10,8 @@
 #include "RomBrowserWidget.hpp"
 #include "Config.hpp"
 #include "ColumnID.hpp"
+#include "UserInterface/Dialog/CheatsDialog.hpp"
+
 #include <RMG-Core/Core.hpp>
 
 #include <QDir>
@@ -386,6 +388,7 @@ void RomBrowserWidget::on_Action_EditGameSettings(void)
 
 void RomBrowserWidget::on_Action_EditCheats(void)
 {
+   this->on_RomBrowser_Cheats(this->getCurrentRom());
 }
 
 void RomBrowserWidget::on_Row_DoubleClicked(const QModelIndex &index)

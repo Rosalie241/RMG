@@ -12,6 +12,7 @@
 
 #include "Thread/EmulationThread.hpp"
 #include "Dialog/SettingsDialog.hpp"
+#include "Dialog/CheatsDialog.hpp"
 #include "Dialog/RomInfoDialog.hpp"
 #include "EventFilter.hpp"
 #include "Widget/OGLWidget.hpp"
@@ -107,6 +108,8 @@ class MainWindow : public QMainWindow
 
     int ui_FullscreenTimerId = 0;
 
+    int ui_GamesharkButtonTimerId = 0;
+
     void closeEvent(QCloseEvent *) Q_DECL_OVERRIDE;
 
     void ui_Init();
@@ -174,8 +177,9 @@ class MainWindow : public QMainWindow
 
     void on_RomBrowser_PlayGame(QString);
     void on_RomBrowser_PlayGameWithDisk(QString);
-    void on_RomBrowser_EditGameSettings(QString);
     void on_RomBrowser_RomInformation(QString);
+    void on_RomBrowser_EditGameSettings(QString);
+    void on_RomBrowser_Cheats(QString);
 
   public slots:
 

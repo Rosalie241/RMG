@@ -136,6 +136,8 @@ void MainWindow::ui_Init(void)
             &MainWindow::on_RomBrowser_PlayGameWithDisk);
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::on_RomBrowser_EditGameSettings, this,
             &MainWindow::on_RomBrowser_EditGameSettings);
+    connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::on_RomBrowser_Cheats, this,
+            &MainWindow::on_RomBrowser_Cheats);
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::on_RomBrowser_ChooseRomDirectory, this,
             &MainWindow::on_Action_File_ChooseDirectory);
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::on_RomBrowser_RomInformation, this,
@@ -728,6 +730,19 @@ void MainWindow::timerEvent(QTimerEvent *event)
             this->ui_FullscreenTimerId = 0;
         }
     }
+    else if (timerId == this->ui_GamesharkButtonTimerId)
+    {
+        if (!CoreIsEmulationRunning())
+        {
+            return;
+        }
+
+        if (CorePressGamesharkButton(false))
+        {
+            this->killTimer(timerId);
+            this->ui_GamesharkButtonTimerId = 0;
+        }
+    }
 }
 
 void MainWindow::on_EventFilter_KeyPressed(QKeyEvent *event)
@@ -1069,16 +1084,34 @@ void MainWindow::on_Action_System_CurrentSaveState(int slot)
 
 void MainWindow::on_Action_System_Cheats(void)
 {
+    bool isRunning = CoreIsEmulationRunning();
+    bool isPaused = CoreIsEmulationPaused();
+
+    if (isRunning && !isPaused)
+    {
+        this->on_Action_System_Pause();
+    }
+
+    Dialog::CheatsDialog dialog(this);
+    dialog.exec();
+
+    if (isRunning && !isPaused)
+    {
+        this->on_Action_System_Pause();
+    }
 }
 
 void MainWindow::on_Action_System_GSButton(void)
 {
-    /* TODO
-    if (!g_MupenApi.Core.PressGameSharkButton())
+    if (!CorePressGamesharkButton(true))
     {
-        this->ui_MessageBox("Error", "Api::Core::PressGameSharkButton Failed", g_MupenApi.Core.GetLastError());
+        this->ui_MessageBox("Error", "CorePressGamesharkButton() Failed", QString::fromStdString(CoreGetError()));
     }
-    */
+    else
+    {
+        // only hold the gameshark button for 1 second
+        this->ui_GamesharkButtonTimerId = this->startTimer(1000);
+    }
 }
 
 void MainWindow::on_Action_Options_FullScreen(void)
@@ -1193,6 +1226,24 @@ void MainWindow::on_RomBrowser_PlayGameWithDisk(QString file)
     this->emulationThread_Launch(file, diskRom);
 }
 
+void MainWindow::on_RomBrowser_RomInformation(QString file)
+{
+    bool isRefreshingRomList = this->ui_Widget_RomBrowser->IsRefreshingRomList();
+
+    if (isRefreshingRomList)
+    {
+        this->ui_Widget_RomBrowser->StopRefreshRomList();
+    }
+
+    Dialog::RomInfoDialog dialog(file, this);
+    dialog.exec();
+
+    if (isRefreshingRomList)
+    {
+        this->ui_Widget_RomBrowser->RefreshRomList();
+    }
+}
+
 void MainWindow::on_RomBrowser_EditGameSettings(QString file)
 {
     bool isRefreshingRomList = this->ui_Widget_RomBrowser->IsRefreshingRomList();
@@ -1225,17 +1276,28 @@ void MainWindow::on_RomBrowser_EditGameSettings(QString file)
     }
 }
 
-void MainWindow::on_RomBrowser_RomInformation(QString file)
+void MainWindow::on_RomBrowser_Cheats(QString file)
 {
     bool isRefreshingRomList = this->ui_Widget_RomBrowser->IsRefreshingRomList();
-
     if (isRefreshingRomList)
     {
         this->ui_Widget_RomBrowser->StopRefreshRomList();
     }
 
-    Dialog::RomInfoDialog dialog(file, this);
+    if (!CoreOpenRom(file.toStdU32String()))
+    {
+        this->ui_MessageBox("Error", "CoreOpenRom() Failed", QString::fromStdString(CoreGetError()));
+        return;
+    }
+
+    Dialog::CheatsDialog dialog(this);
     dialog.exec();
+
+    if (!CoreCloseRom())
+    {
+        this->ui_MessageBox("Error", "CoreCloseRom() Failed", QString::fromStdString(CoreGetError()));
+        return;
+    }
 
     if (isRefreshingRomList)
     {
