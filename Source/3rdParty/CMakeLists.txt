@@ -43,8 +43,8 @@ if(NOT NO_GIT_CLONE)
     set(MUPEN64PLUS_INPUT_GCA_URL     "https://github.com/amatho/mupen64plus-input-gca")
     set(MUPEN64PLUS_INPUT_GCA_TAG     "21639fb13dfa797a7c0949ffd9bbda9a3456fc69")
 
-    set(MUPEN64PLUS_GFX_ANGRYLION_URL "https://github.com/ata4/angrylion-rdp-plus")
-    set(MUPEN64PLUS_GFX_ANGRYLION_TAG "325cb22bc8f9bf7b5615f68052deddd01fa5aaa6")
+    set(MUPEN64PLUS_GFX_ANGRYLION_URL "https://github.com/Rosalie241/angrylion-rdp-plus")
+    set(MUPEN64PLUS_GFX_ANGRYLION_TAG "9d71074f6b71750e99ad06a713f28a9c32ad15cb")
 
     set(MUPEN64PLUS_GFX_GLIDEN64_URL  "https://github.com/gonetz/GLideN64")
     set(MUPEN64PLUS_GFX_GLIDEN64_TAG  "a2ecb92e954fdc1dd1130b331935f04381b29e28")
