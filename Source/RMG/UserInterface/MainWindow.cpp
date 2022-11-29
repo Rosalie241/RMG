@@ -267,7 +267,10 @@ void MainWindow::ui_LoadGeometry(void)
         return;
     }
 
-    // restore from fullscreen aswell
+    this->setMinimumSize(0, 0);
+    this->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+    this->restoreGeometry(this->ui_Geometry);
+
     if (this->isFullScreen())
     {
         this->showNormal();
@@ -283,9 +286,6 @@ void MainWindow::ui_LoadGeometry(void)
         this->statusBar()->show();
     }
 
-    this->setMinimumSize(0, 0);
-    this->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
-    this->restoreGeometry(this->ui_Geometry);
     this->ui_Geometry_Saved = false;
 }
 
