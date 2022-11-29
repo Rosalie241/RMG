@@ -221,7 +221,7 @@ static bool parse_cheat(std::vector<std::string> lines, int startIndex, CoreChea
         if (splitLine.size() == 2 && address.size() == 8 && (value.size() == 4 || value.size() == 9))
         { // cheat code
             CoreCheatCode cheatCode;
-            cheatCode.Address = std::strtol(address.c_str(), nullptr, 16);
+            cheatCode.Address = std::strtoll(address.c_str(), nullptr, 16);
 
             // we don't support 'value:old value',
             // so strip the old value
@@ -254,13 +254,13 @@ static bool parse_cheat(std::vector<std::string> lines, int startIndex, CoreChea
                 }
                 else
                 {
-                    cheatCode.Value = std::strtol(value.c_str(), nullptr, 16);
+                    cheatCode.Value = std::strtoll(value.c_str(), nullptr, 16);
                 }
             }
             else
             { // value doesn't use options
                 cheatCode.UseOptions = false;
-                cheatCode.Value      = std::strtol(value.c_str(), nullptr, 16);
+                cheatCode.Value      = std::strtoll(value.c_str(), nullptr, 16);
             }
 
             // add code to cheat
@@ -270,7 +270,7 @@ static bool parse_cheat(std::vector<std::string> lines, int startIndex, CoreChea
             CoreCheatOption option;
 
             option.Name  = join_split_string(splitLine, ' ', 1);
-            option.Value = std::strtol(address.c_str(), nullptr, 16);
+            option.Value = std::strtoll(address.c_str(), nullptr, 16);
             option.Size  = address.size();
 
             // add option to cheat
@@ -330,9 +330,9 @@ static bool parse_cheat_file(std::vector<std::string> lines, CoreCheatFile& chea
             std::string crc2 = split_string(line, '-').at(1);
             std::string countryCode = split_string(line, ':').at(1);
 
-            cheatFile.CRC1 = std::strtol(crc1.c_str(), nullptr, 16);;
-            cheatFile.CRC2 = std::strtol(crc2.c_str(), nullptr, 16);;;
-            cheatFile.CountryCode = std::strtol(countryCode.c_str(), nullptr, 16);;;
+            cheatFile.CRC1 = std::strtoll(crc1.c_str(), nullptr, 16);;
+            cheatFile.CRC2 = std::strtoll(crc2.c_str(), nullptr, 16);;;
+            cheatFile.CountryCode = std::strtoll(countryCode.c_str(), nullptr, 16);;;
             readHeader = true;
         } else if (readHeader && !readHeaderName && line.starts_with("Name="))
         {
@@ -473,7 +473,7 @@ bool combine_cheat_code_and_option(CoreCheatCode code, CoreCheatOption option, i
     codeValueString.replace(code.OptionIndex, code.OptionSize, optionValueString);
 
     // convert to int32_t
-    combinedValue = std::strtol(codeValueString.c_str(), nullptr, 16);
+    combinedValue = std::strtoll(codeValueString.c_str(), nullptr, 16);
     return true;
 }
 
