@@ -311,6 +311,8 @@ void CheatsDialog::on_removeCheatButton_clicked(void)
 
 void CheatsDialog::accept(void)
 {
+    CoreSettingsSave();
+
     if (!CoreApplyCheats())
     {
         this->showErrorMessage("CoreApplyCheats() Failed!", QString::fromStdString(CoreGetError()));
