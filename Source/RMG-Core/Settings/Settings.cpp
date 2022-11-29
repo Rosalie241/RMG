@@ -421,7 +421,7 @@ static l_Setting get_setting(SettingsID settingId)
         setting = {SETTING_SECTION_ROMBROWSER, "Recursive", true};
         break;
     case SettingsID::RomBrowser_MaxItems:
-        setting = {SETTING_SECTION_ROMBROWSER, "MaxItems", 50};
+        setting = {SETTING_SECTION_ROMBROWSER, "MaxItems", 250};
         break;
     case SettingsID::RomBrowser_Columns:
         setting = {SETTING_SECTION_ROMBROWSER, "Columns", std::vector<int>({0, 1, 2})};
