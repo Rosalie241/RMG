@@ -71,21 +71,34 @@ static bool read_file_lines(std::filesystem::path file, std::vector<std::string>
     return true;
 }
 
-static std::filesystem::path get_cheat_file_name_from_header(CoreRomHeader romHeader)
+static std::filesystem::path get_cheat_file_name(CoreRomHeader romHeader, CoreRomSettings romSettings)
 {
     std::filesystem::path cheatFileName;
     std::stringstream stringStream;
 
-    stringStream << std::uppercase << std::hex << std::setw(8) << std::setfill('0') << romHeader.CRC1 << "-";
-    stringStream << std::uppercase << std::hex << std::setw(8) << std::setfill('0') << romHeader.CRC2 << "-";
-    stringStream << std::uppercase << std::hex << std::setw(2) << (uint32_t)romHeader.CountryCode << ".cht";
+    // fallback to using MD5 as file name when CRC1 & CRC2 & CountryCode are 0
+    if (romHeader.CRC1 == 0 && romHeader.CRC2 == 0 && romHeader.CountryCode == 0)
+    {
+        // ensure MD5 is a valid length
+        if (romSettings.MD5.size() != 32)
+        { // if it's invalid, return an empty path
+            return std::filesystem::path();
+        }
+
+        stringStream << romSettings.MD5 << ".cht";
+    }
+    else
+    { // else use CRC1 & CRC2 & CountryCode
+        stringStream << std::uppercase << std::hex << std::setw(8) << std::setfill('0') << romHeader.CRC1 << "-";
+        stringStream << std::uppercase << std::hex << std::setw(8) << std::setfill('0') << romHeader.CRC2 << "-";
+        stringStream << std::uppercase << std::hex << std::setw(2) << (uint32_t)romHeader.CountryCode << ".cht";
+    }
 
     cheatFileName = stringStream.str();
-
     return cheatFileName;
 }
 
-static std::filesystem::path get_shared_cheat_file_path_from_header(CoreRomHeader romHeader)
+static std::filesystem::path get_shared_cheat_file_path(CoreRomHeader romHeader, CoreRomSettings romSettings)
 {
     std::filesystem::path cheatFilePath;
 
@@ -93,12 +106,12 @@ static std::filesystem::path get_shared_cheat_file_path_from_header(CoreRomHeade
     cheatFilePath += OSAL_FILES_DIR_SEPERATOR_STR;
     cheatFilePath += "Cheats";
     cheatFilePath += OSAL_FILES_DIR_SEPERATOR_STR;
-    cheatFilePath += get_cheat_file_name_from_header(romHeader);
+    cheatFilePath += get_cheat_file_name(romHeader, romSettings);
 
-    return cheatFilePath;
+   return cheatFilePath;
 }
 
-static std::filesystem::path get_user_cheat_file_path_from_header(CoreRomHeader romHeader)
+static std::filesystem::path get_user_cheat_file_path(CoreRomHeader romHeader, CoreRomSettings romSettings)
 {
     std::filesystem::path cheatFilePath;
 
@@ -106,7 +119,7 @@ static std::filesystem::path get_user_cheat_file_path_from_header(CoreRomHeader 
     cheatFilePath += OSAL_FILES_DIR_SEPERATOR_STR;
     cheatFilePath += "Cheats-User";
     cheatFilePath += OSAL_FILES_DIR_SEPERATOR_STR;
-    cheatFilePath += get_cheat_file_name_from_header(romHeader);
+    cheatFilePath += get_cheat_file_name(romHeader, romSettings);
 
     // try to make the user cheats directory
     // if it doesn't exist yet
@@ -314,25 +327,34 @@ static bool parse_cheat_file(std::vector<std::string> lines, CoreCheatFile& chea
             line.erase(0, 1);                 // strip '['
             line.erase((line.size() - 1), 1); // strip ']'
 
-            // header = "635A2BFF-8B022326-C:45"
-            // so validate it
-            if (line.at(8) != '-' || line.at(17) != '-' || line.at(18) != 'C')
-            {
-                error = "parse_cheat_file Failed: ";
-                error += "invalid header: \"";
-                error += line;
-                error += "\"";
-                CoreSetError(error);
-                return false;
+            if (line.size() == 32)
+            { // MD5
+                cheatFile.CRC1 = 0;
+                cheatFile.CRC2 = 0;
+                cheatFile.CountryCode = 0;
+                cheatFile.MD5 = line;
             }
+            else
+            { // CRC1 & CRC2 & CountryCode
+                // validate header
+                if (line.size() != 22 || line.at(8) != '-' || line.at(17) != '-' || line.at(18) != 'C')
+                {
+                    error = "parse_cheat_file Failed: ";
+                    error += "invalid header: \"";
+                    error += line;
+                    error += "\"";
+                    CoreSetError(error);
+                    return false;
+                }
 
-            std::string crc1 = split_string(line, '-').at(0);
-            std::string crc2 = split_string(line, '-').at(1);
-            std::string countryCode = split_string(line, ':').at(1);
+                std::string crc1 = split_string(line, '-').at(0);
+                std::string crc2 = split_string(line, '-').at(1);
+                std::string countryCode = split_string(line, ':').at(1);
 
-            cheatFile.CRC1 = std::strtoll(crc1.c_str(), nullptr, 16);;
-            cheatFile.CRC2 = std::strtoll(crc2.c_str(), nullptr, 16);;;
-            cheatFile.CountryCode = std::strtoll(countryCode.c_str(), nullptr, 16);;;
+                cheatFile.CRC1 = std::strtoll(crc1.c_str(), nullptr, 16);
+                cheatFile.CRC2 = std::strtoll(crc2.c_str(), nullptr, 16);
+                cheatFile.CountryCode = std::strtoll(countryCode.c_str(), nullptr, 16);
+            }
             readHeader = true;
         } else if (readHeader && !readHeaderName && line.starts_with("Name="))
         {
@@ -381,9 +403,18 @@ static bool write_cheat_file(CoreCheatFile cheatFile, std::filesystem::path path
         return false;
     }
 
-    stringStream << "[" << std::uppercase << std::hex << std::setw(8) << std::setfill('0') << cheatFile.CRC1 << "-" 
+    // fallback to using MD5 when CRC1 & CRC2 & CountryCode are 0
+    if (cheatFile.CRC1 == 0 && cheatFile.CRC2 == 0 && cheatFile.CountryCode == 0)
+    {
+        stringStream << "[" << cheatFile.MD5 << "]" << std::endl;
+    }
+    else
+    { // else use CRC1 & CRC2 & CountryCode
+        stringStream << "[" << std::uppercase << std::hex << std::setw(8) << std::setfill('0') << cheatFile.CRC1 << "-" 
                         << std::uppercase << std::hex << std::setw(8) << std::setfill('0') << cheatFile.CRC2 << "-C:" 
                         << std::uppercase << std::hex << std::setw(2) << std::setfill('0') << cheatFile.CountryCode << "]" << std::endl;
+    }
+
     stringStream << "Name=" << cheatFile.Name << std::endl << std::endl;
 
     for (CoreCheat& cheat : cheatFile.Cheats)
@@ -494,6 +525,7 @@ static std::vector<CoreCheat>::iterator find_user_cheat_using_name(std::string n
 bool CoreGetCurrentCheats(std::vector<CoreCheat>& cheats)
 {
     CoreRomHeader romHeader;
+    CoreRomSettings romSettings;
     CoreCheatFile sharedCheatFile;
     CoreCheatFile userCheatFile;
     std::filesystem::path sharedCheatFilePath;
@@ -503,13 +535,14 @@ bool CoreGetCurrentCheats(std::vector<CoreCheat>& cheats)
     bool ret1 = false;
     bool ret2 = false;
 
-    if (!CoreGetCurrentRomHeader(romHeader))
+    if (!CoreGetCurrentRomHeader(romHeader) ||
+        !CoreGetCurrentRomSettings(romSettings))
     {
         return false;
     }
 
-    sharedCheatFilePath = get_shared_cheat_file_path_from_header(romHeader);
-    userCheatFilePath = get_user_cheat_file_path_from_header(romHeader);
+    sharedCheatFilePath = get_shared_cheat_file_path(romHeader, romSettings);
+    userCheatFilePath = get_user_cheat_file_path(romHeader, romSettings);
 
     // do nothing if neither the shared or user cheat file exists
     ret1 = std::filesystem::is_regular_file(sharedCheatFilePath);
@@ -630,7 +663,7 @@ bool CoreAddCheat(CoreCheat cheat)
         return false;
     }
 
-    cheatFilePath = get_user_cheat_file_path_from_header(romHeader);
+    cheatFilePath = get_user_cheat_file_path(romHeader, romSettings);
 
     // try to find another cheat with the same name,
     // if it exists, fail because we don't allow that
@@ -647,6 +680,7 @@ bool CoreAddCheat(CoreCheat cheat)
     l_UserCheatFile.CRC1 = romHeader.CRC1;
     l_UserCheatFile.CRC2 = romHeader.CRC2;
     l_UserCheatFile.CountryCode = romHeader.CountryCode;
+    l_UserCheatFile.MD5 = romSettings.MD5;
     l_UserCheatFile.Name = romSettings.GoodName;
     l_UserCheatFile.Cheats.push_back(cheat);
 
@@ -665,7 +699,7 @@ bool CoreUpdateCheat(CoreCheat oldCheat, CoreCheat newCheat)
         return false;
     }
 
-    cheatFilePath = get_user_cheat_file_path_from_header(romHeader);
+    cheatFilePath = get_user_cheat_file_path(romHeader, romSettings);
 
     // try to find old cheat in user cheats,
     // when it isnt found, it's most likely a system cheat
@@ -696,12 +730,13 @@ bool CoreRemoveCheat(CoreCheat cheat)
         return false;
     }
 
-    if (!CoreGetCurrentRomHeader(romHeader))
+    if (!CoreGetCurrentRomHeader(romHeader) ||
+        !CoreGetCurrentRomSettings(romSettings))
     {
         return false;
     }
 
-    cheatFilePath = get_user_cheat_file_path_from_header(romHeader);
+    cheatFilePath = get_user_cheat_file_path(romHeader, romSettings);
 
     // try to find the cheat
     auto iter = std::find(l_UserCheatFile.Cheats.begin(), l_UserCheatFile.Cheats.end(), cheat);

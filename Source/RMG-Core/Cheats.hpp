@@ -17,10 +17,10 @@
 struct CoreCheatCode
 {
     // Cheat Code Address
-    uint32_t Address;
+    uint32_t Address = 0;
 
     // Cheat Code Address Value
-    int32_t  Value;
+    int32_t  Value   = 0;
 
     bool UseOptions  = false;
     int  OptionIndex = 0;
@@ -42,10 +42,10 @@ struct CoreCheatOption
     std::string Name;
 
     // Cheat Option Value
-    uint32_t    Value;
+    uint32_t    Value = 0;
 
     // Cheat Option Value Size
-    int32_t     Size;
+    int32_t     Size  = 0;
 
     bool operator==(const CoreCheatOption other) const
     {
@@ -88,9 +88,11 @@ struct CoreCheat
 #ifdef CORE_INTERNAL
 struct CoreCheatFile
 {
-    uint32_t CRC1;
-    uint32_t CRC2;
-    uint32_t CountryCode;
+    uint32_t CRC1 = 0;
+    uint32_t CRC2 = 0;
+    uint32_t CountryCode = 0;
+
+    std::string MD5;
 
     std::string Name;
 
