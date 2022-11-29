@@ -24,6 +24,7 @@ class CoreApi
     ~CoreApi();
 
     bool Hook(m64p_dynlib_handle handle);
+    bool Unhook(void);
     bool IsHooked(void);
 
     m64p_dynlib_handle GetHandle(void);

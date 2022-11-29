@@ -14,6 +14,7 @@ using namespace m64p;
 
 ConfigApi::ConfigApi(void)
 {
+    this->Unhook();
 }
 
 ConfigApi::~ConfigApi(void)
@@ -57,6 +58,44 @@ bool ConfigApi::Hook(m64p_dynlib_handle handle)
     HOOK_FUNC(handle, Config, OverrideUserPaths);
 
     this->hooked = true;
+    return true;
+}
+
+bool ConfigApi::Unhook(void)
+{
+    UNHOOK_FUNC(Config, ListSections);
+    UNHOOK_FUNC(Config, OpenSection);
+    UNHOOK_FUNC(Config, ListParameters);
+    UNHOOK_FUNC(Config, SaveFile);
+    UNHOOK_FUNC(Config, SaveSection);
+    UNHOOK_FUNC(Config, HasUnsavedChanges);
+    UNHOOK_FUNC(Config, DeleteSection);
+    UNHOOK_FUNC(Config, RevertChanges);
+    UNHOOK_FUNC(Config, SetParameter);
+    UNHOOK_FUNC(Config, SetParameterHelp);
+    UNHOOK_FUNC(Config, GetParameter);
+    UNHOOK_FUNC(Config, GetParameterType);
+    UNHOOK_FUNC(Config, GetParameterHelp);
+    UNHOOK_FUNC(Config, SetDefaultInt);
+    UNHOOK_FUNC(Config, SetDefaultFloat);
+    UNHOOK_FUNC(Config, SetDefaultBool);
+    UNHOOK_FUNC(Config, SetDefaultString);
+    UNHOOK_FUNC(Config, GetParamInt);
+    UNHOOK_FUNC(Config, GetParamFloat);
+    UNHOOK_FUNC(Config, GetParamBool);
+    UNHOOK_FUNC(Config, GetParamString);
+    UNHOOK_FUNC(Config, GetSharedDataFilepath);
+    UNHOOK_FUNC(Config, GetUserConfigPath);
+    UNHOOK_FUNC(Config, GetUserDataPath);
+    UNHOOK_FUNC(Config, GetUserCachePath);
+    UNHOOK_FUNC(Config, ExternalOpen);
+    UNHOOK_FUNC(Config, ExternalClose);
+    UNHOOK_FUNC(Config, ExternalGetParameter);
+    UNHOOK_FUNC(Config, SendNetplayConfig);
+    UNHOOK_FUNC(Config, ReceiveNetplayConfig);
+    UNHOOK_FUNC(Config, OverrideUserPaths);
+
+    this->hooked = false;
     return true;
 }
 

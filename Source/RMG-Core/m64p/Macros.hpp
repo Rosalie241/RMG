@@ -23,4 +23,7 @@
         return false;                                                     \
     }
 
+#define UNHOOK_FUNC(prevar, var) \
+    this->var = (ptr_##prevar##var)nullptr;
+
 #endif // M64P_MACROS_HPP

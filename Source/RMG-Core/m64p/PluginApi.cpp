@@ -14,6 +14,7 @@ using namespace m64p;
 
 PluginApi::PluginApi(void)
 {
+    this->Unhook();
 }
 
 PluginApi::~PluginApi(void)
@@ -36,10 +37,11 @@ bool PluginApi::Hook(m64p_dynlib_handle handle)
 
 bool PluginApi::Unhook(void)
 {
-    this->Startup = nullptr;
-    this->Shutdown = nullptr;
-    this->Config = nullptr;
-    this->GetVersion = nullptr;
+    UNHOOK_FUNC(Plugin, Startup);
+    UNHOOK_FUNC(Plugin, Shutdown);
+    UNHOOK_FUNC(Plugin, Config);
+    UNHOOK_FUNC(Plugin, GetVersion);
+
     this->handle = nullptr;
     this->hooked = false;
     return true;

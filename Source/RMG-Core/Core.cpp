@@ -186,5 +186,8 @@ void CoreShutdown(void)
 
     CoreSaveRomHeaderAndSettingsCache();
 
+    m64p::Core.Unhook();
+    m64p::Config.Unhook();
+
     osal_dynlib_close(l_CoreLibHandle);
 }

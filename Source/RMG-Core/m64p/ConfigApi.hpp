@@ -23,6 +23,7 @@ class ConfigApi
     ~ConfigApi(void);
 
     bool Hook(m64p_dynlib_handle handle);
+    bool Unhook(void);
     bool IsHooked(void);
 
     std::string GetLastError(void);

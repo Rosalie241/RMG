@@ -14,6 +14,7 @@ using namespace m64p;
 
 CoreApi::CoreApi(void)
 {
+    this->Unhook();
 }
 
 CoreApi::~CoreApi(void)
@@ -38,6 +39,25 @@ bool CoreApi::Hook(m64p_dynlib_handle handle)
 
     this->handle = handle;
     this->hooked = true;
+    return true;
+}
+
+bool CoreApi::Unhook(void)
+{
+    UNHOOK_FUNC(Core, Startup);
+    UNHOOK_FUNC(Core, Shutdown);
+    UNHOOK_FUNC(Core, AttachPlugin);
+    UNHOOK_FUNC(Core, DetachPlugin);
+    UNHOOK_FUNC(Core, DoCommand);
+    UNHOOK_FUNC(Core, OverrideVidExt);
+    UNHOOK_FUNC(Core, AddCheat);
+    UNHOOK_FUNC(Core, CheatEnabled);
+    UNHOOK_FUNC(Core, GetRomSettings);
+    UNHOOK_FUNC(Core, GetAPIVersions);
+    UNHOOK_FUNC(Core, ErrorMessage);
+
+    this->handle = nullptr;
+    this->hooked = false;
     return true;
 }
 
