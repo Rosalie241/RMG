@@ -826,6 +826,11 @@ bool CoreApplyCheats(void)
     bool skipCheat = false;
     int32_t combinedValue;
 
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
+
     // we shouldn't fail emulation
     // just because parsing cheats failed
     if (!CoreGetCurrentCheats(cheats))
@@ -907,6 +912,11 @@ bool CoreClearCheats(void)
     std::string error;
     m64p_error ret;
 
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
+
     for (l_LoadedCheat& loadedCheat : l_LoadedCheats)
     {
         ret = m64p::Core.CheatEnabled(loadedCheat.cheat.Name.c_str(), 0);
@@ -932,6 +942,11 @@ bool CorePressGamesharkButton(bool enabled)
     std::string error;
     m64p_error ret;
     int tmpValue = enabled ? 1 : 0;
+
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
 
     ret = m64p::Core.DoCommand(M64CMD_CORE_STATE_SET, M64CORE_INPUT_GAMESHARK, &tmpValue);
     if (ret != M64ERR_SUCCESS)

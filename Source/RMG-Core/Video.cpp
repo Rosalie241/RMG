@@ -24,6 +24,11 @@ bool CoreSetVideoSize(int width, int height)
     m64p_error ret;
     int size;
 
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
+
     size = (width << 16) + height;
 
     ret = m64p::Core.DoCommand(M64CMD_CORE_STATE_SET, M64CORE_VIDEO_SIZE, &size);
@@ -42,6 +47,11 @@ bool CoreToggleFullscreen(void)
     std::string error;
     m64p_error ret;
     m64p_video_mode mode;
+
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
 
     ret = m64p::Core.DoCommand(M64CMD_CORE_STATE_QUERY, M64CORE_VIDEO_MODE, &mode);
     if (ret != M64ERR_SUCCESS)

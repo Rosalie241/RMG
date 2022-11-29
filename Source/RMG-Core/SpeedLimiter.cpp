@@ -24,6 +24,11 @@ bool CoreIsSpeedLimiterEnabled(void)
     m64p_error ret;
     int value = 0;
 
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
+
     ret = m64p::Core.DoCommand(M64CMD_CORE_STATE_QUERY, M64CORE_SPEED_LIMITER, &value);
     if (ret != M64ERR_SUCCESS)
     {
@@ -40,6 +45,11 @@ bool CoreSetSpeedLimiterState(bool enabled)
     std::string error;
     m64p_error ret;
     int value = enabled ? 1 : 0;
+
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
 
     ret = m64p::Core.DoCommand(M64CMD_CORE_STATE_SET, M64CORE_SPEED_LIMITER, &value);
     if (ret != M64ERR_SUCCESS)

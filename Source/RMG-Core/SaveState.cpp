@@ -21,6 +21,11 @@ bool CoreSetSaveStateSlot(int slot)
     std::string error;
     m64p_error ret;
 
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
+
     ret = m64p::Core.DoCommand(M64CMD_CORE_STATE_SET, M64CORE_SAVESTATE_SLOT, &slot);
     if (ret != M64ERR_SUCCESS)
     {
@@ -38,6 +43,11 @@ int CoreGetSaveStateSlot(void)
     m64p_error ret;
     int slot = -1;
 
+    if (!m64p::Core.IsHooked())
+    {
+        return -1;
+    }
+
     ret = m64p::Core.DoCommand(M64CMD_CORE_STATE_QUERY, M64CORE_SAVESTATE_SLOT, &slot);
     if (ret != M64ERR_SUCCESS)
     {
@@ -53,6 +63,11 @@ bool CoreSaveState(void)
 {
     std::string error;
     m64p_error ret;
+
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
 
     ret = m64p::Core.DoCommand(M64CMD_STATE_SAVE, 0, nullptr);
     if (ret != M64ERR_SUCCESS)
@@ -70,6 +85,11 @@ bool CoreSaveState(std::filesystem::path file)
     std::string error;
     m64p_error ret;
 
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
+
     ret = m64p::Core.DoCommand(M64CMD_STATE_SAVE, 1, (void*)file.string().c_str());
     if (ret != M64ERR_SUCCESS)
     {
@@ -86,6 +106,11 @@ bool CoreLoadSaveState(void)
     std::string error;
     m64p_error ret;
 
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
+
     ret = m64p::Core.DoCommand(M64CMD_STATE_LOAD, 0, nullptr);
     if (ret != M64ERR_SUCCESS)
     {
@@ -101,6 +126,11 @@ bool CoreLoadSaveState(std::filesystem::path file)
 {
     std::string error;
     m64p_error ret;
+
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
 
     ret = m64p::Core.DoCommand(M64CMD_STATE_LOAD, 0, (void*)file.string().c_str());
     if (ret != M64ERR_SUCCESS)

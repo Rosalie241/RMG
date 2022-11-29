@@ -702,6 +702,11 @@ static bool config_section_exists(std::string section)
     std::string error;
     m64p_error ret;
 
+    if (!m64p::Config.IsHooked())
+    {
+        return false;
+    }
+
     l_sectionList.clear();
 
     ret = m64p::Config.ListSections(nullptr, &config_listsections_callback);
@@ -720,6 +725,11 @@ static bool config_section_open(std::string section)
 {
     std::string error;
     m64p_error ret;
+
+    if (!m64p::Config.IsHooked())
+    {
+        return false;
+    }
 
     if (section.empty())
     {
@@ -749,6 +759,11 @@ static bool config_key_exists(std::string section, std::string key)
     std::string error;
     m64p_error ret;
 
+    if (!m64p::Config.IsHooked())
+    {
+        return false;
+    }
+
     if (!config_section_open(section))
     {
         return false;
@@ -773,6 +788,11 @@ static bool config_option_set(std::string section, std::string key, m64p_type ty
     std::string error;
     m64p_error ret;
 
+    if (!m64p::Config.IsHooked())
+    {
+        return false;
+    }
+
     if (!config_section_open(section))
     {
         return false;
@@ -793,6 +813,11 @@ static bool config_option_get(std::string section, std::string key, m64p_type ty
 {
     std::string error;
     m64p_error ret;
+
+    if (!m64p::Config.IsHooked())
+    {
+        return false;
+    }
 
     if (!config_section_exists(section))
     {
@@ -876,6 +901,11 @@ bool CoreSettingsSave(void)
 {
     std::string error;
     m64p_error ret;
+
+    if (!m64p::Config.IsHooked())
+    {
+        return false;
+    }
 
     ret = m64p::Config.SaveFile();
     if (ret != M64ERR_SUCCESS)
@@ -988,6 +1018,11 @@ bool CoreSettingsDeleteSection(std::string section)
 {
     std::string error;
     m64p_error ret;
+
+    if (!m64p::Config.IsHooked())
+    {
+        return false;
+    }
 
     if (!config_section_exists(section))
     {

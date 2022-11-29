@@ -232,6 +232,11 @@ bool CoreOpenRom(std::filesystem::path file)
     char*       buf;
     int         buf_size;
 
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
+
     if (CoreHasRomOpen())
     {
         error = "CoreOpenRom Failed: ";
@@ -286,6 +291,11 @@ bool CoreCloseRom(void)
 {
     std::string error;
     m64p_error ret;
+
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
 
     if (!CoreHasRomOpen())
     {

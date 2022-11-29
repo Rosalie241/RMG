@@ -362,6 +362,11 @@ bool CoreAttachPlugins(void)
         M64PLUGIN_RSP
     };
 
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
+
     for (int i = 0; i < 4; i++)
     {
         ret = m64p::Core.AttachPlugin(plugin_types[i], get_plugin((CorePluginType)plugin_types[i])->GetHandle());
@@ -383,6 +388,11 @@ bool CoreDetachPlugins(void)
 {
     std::string error;
     m64p_error ret;
+
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
 
     for (int i = 0; i < 4; i++)
     {

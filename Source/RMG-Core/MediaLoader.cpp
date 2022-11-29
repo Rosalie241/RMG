@@ -123,6 +123,11 @@ bool CoreSetupMediaLoader(void)
     mediaLoader.get_gb_cart_ram   = medialoader_get_gb_cart_ram;
     mediaLoader.get_gb_cart_rom   = mediaLoader_get_gb_cart_rom;
 
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
+
     ret = m64p::Core.DoCommand(M64CMD_SET_MEDIA_LOADER, sizeof(mediaLoader), &mediaLoader);
     if (ret != M64ERR_SUCCESS)
     {

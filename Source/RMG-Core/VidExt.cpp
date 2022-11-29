@@ -23,6 +23,11 @@ bool CoreSetupVidExt(m64p_video_extension_functions functions)
     std::string error;
     m64p_error ret;
 
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
+
     ret = m64p::Core.OverrideVidExt(&functions);
     if (ret != M64ERR_SUCCESS)
     {

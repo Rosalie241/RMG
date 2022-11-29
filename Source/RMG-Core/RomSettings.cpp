@@ -32,6 +32,11 @@ bool CoreGetCurrentRomSettings(CoreRomSettings& settings)
     m64p_error        ret;
     m64p_rom_settings m64p_settings;
 
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
+
     ret = m64p::Core.DoCommand(M64CMD_ROM_GET_SETTINGS, sizeof(m64p_rom_settings), &m64p_settings);
     if (ret != M64ERR_SUCCESS)
     {
@@ -91,6 +96,11 @@ bool CoreApplyRomSettings(CoreRomSettings settings)
     std::string       error;
     m64p_error        ret;
     m64p_rom_settings m64p_settings;
+
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
 
     if (!CoreHasRomOpen())
     {

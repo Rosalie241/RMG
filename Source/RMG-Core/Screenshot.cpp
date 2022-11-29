@@ -22,6 +22,11 @@ bool CoreTakeScreenshot(void)
     std::string error;
     m64p_error ret;
 
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
+
     ret = m64p::Core.DoCommand(M64CMD_TAKE_NEXT_SCREENSHOT, 0, nullptr);
     if (ret != M64ERR_SUCCESS)
     {

@@ -26,6 +26,11 @@ static bool get_emulation_state(m64p_emu_state* state)
     std::string error;
     m64p_error ret;
 
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
+
     ret = m64p::Core.DoCommand(M64CMD_CORE_STATE_QUERY, M64CORE_EMU_STATE, state);
     if (ret != M64ERR_SUCCESS)
     {
@@ -149,6 +154,11 @@ bool CoreStopEmulation(void)
     std::string error;
     m64p_error ret;
 
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
+
     ret = m64p::Core.DoCommand(M64CMD_STOP, 0, nullptr);
     if (ret != M64ERR_SUCCESS)
     {
@@ -165,6 +175,11 @@ bool CorePauseEmulation(void)
 {
     std::string error;
     m64p_error ret;
+
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
 
     if (!CoreIsEmulationRunning())
     {
@@ -190,6 +205,11 @@ bool CoreResumeEmulation(void)
     std::string error;
     m64p_error ret;
 
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
+
     if (!CoreIsEmulationPaused())
     {
         error = "CoreIsEmulationPaused Failed: ";
@@ -213,6 +233,11 @@ bool CoreResetEmulation(bool hard)
 {
     std::string error;
     m64p_error ret;
+
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
 
     if (CoreIsEmulationPaused())
     {
