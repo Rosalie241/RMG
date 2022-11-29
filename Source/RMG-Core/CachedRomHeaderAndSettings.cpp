@@ -28,7 +28,7 @@
 #define MD5_LEN 33
 
 #define CACHE_FILE_MAGIC "RMGCoreHeaderAndSettingsCache_03"
-#define CACHE_FILE_ITEMS_MAX 1000
+#define CACHE_FILE_ITEMS_MAX 10000
 
 //
 // Local Structures
