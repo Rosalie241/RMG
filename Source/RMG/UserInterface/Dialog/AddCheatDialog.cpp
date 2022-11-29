@@ -25,6 +25,8 @@ using namespace UserInterface::Dialog;
 AddCheatDialog::AddCheatDialog(QWidget *parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint)
 {
     this->setupUi(this);
+
+    this->validateOkButton();
 }
 
 AddCheatDialog::~AddCheatDialog(void)
@@ -207,6 +209,12 @@ bool AddCheatDialog::validate(void)
     return true;
 }
 
+void AddCheatDialog::validateOkButton(void)
+{
+    QPushButton* okButton = this->buttonBox->button(QDialogButtonBox::Ok);
+    okButton->setEnabled(this->validate());
+}
+
 bool AddCheatDialog::getCheat(CoreCheat& cheat)
 {
     std::vector<std::string> lines;
@@ -325,18 +333,15 @@ void AddCheatDialog::accept(void)
 
 void AddCheatDialog::on_nameLineEdit_textChanged(QString text)
 {
-    QPushButton* okButton = this->buttonBox->button(QDialogButtonBox::Ok);
-    okButton->setEnabled(this->validate());
+    this->validateOkButton();
 }
 
 void AddCheatDialog::on_codeTextEdit_textChanged(void)
 {
-    QPushButton* okButton = this->buttonBox->button(QDialogButtonBox::Ok);
-    okButton->setEnabled(this->validate());
+    this->validateOkButton();
 }
 
 void AddCheatDialog::on_optionsTextEdit_textChanged(void)
 {
-    QPushButton* okButton = this->buttonBox->button(QDialogButtonBox::Ok);
-    okButton->setEnabled(this->validate());
+    this->validateOkButton();
 }
