@@ -65,6 +65,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="editCheatButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="text">
         <string>Edit</string>
        </property>
@@ -72,6 +75,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="removeCheatButton">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="text">
         <string>Remove</string>
        </property>
