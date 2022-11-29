@@ -7,17 +7,17 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-#include "RomHeader.hpp"
-#include "Emulation.hpp"
-#include "m64p/Api.hpp"
-#include "Error.hpp"
-#include "Rom.hpp"
-
 #ifdef _WIN32
 #include <winsock2.h>
 #else // Unix
 #include <arpa/inet.h>
 #endif // _WIN32
+
+#include "RomHeader.hpp"
+#include "Emulation.hpp"
+#include "m64p/Api.hpp"
+#include "Error.hpp"
+#include "Rom.hpp"
 
 //
 // Exported Functions
