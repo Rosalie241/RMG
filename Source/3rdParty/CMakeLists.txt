@@ -50,7 +50,7 @@ if(NOT NO_GIT_CLONE)
     set(MUPEN64PLUS_GFX_GLIDEN64_TAG  "a2ecb92e954fdc1dd1130b331935f04381b29e28")
 
     set(MUPEN64PLUS_GFX_PARALLEL_URL  "https://github.com/Rosalie241/parallel-rdp-standalone")
-    set(MUPEN64PLUS_GFX_PARALLEL_TAG  "80c3458041c498f0503313c8aa0f69d751bd63fb")
+    set(MUPEN64PLUS_GFX_PARALLEL_TAG  "693f607728aca78d94ba5d45b0ce119b4ccbcd8c")
 endif(NOT NO_GIT_CLONE)
 
 ExternalProject_Add(mupen64plus-core
