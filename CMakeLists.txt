@@ -67,7 +67,7 @@ add_subdirectory(Source/3rdParty)
 install(FILES ${MUPEN64PLUSCORE_LIB}
     DESTINATION ${CORE_INSTALL_PATH}
 )
-install(FILES ${MUPEN64PLUSCORE_INI} ${MUPEN64PLUSCORE_CHT} Data/font.ttf Data/stylesheet.qss
+install(FILES ${MUPEN64PLUSCORE_INI} Data/font.ttf Data/stylesheet.qss
     DESTINATION ${DATA_INSTALL_PATH}
 )
 file(GLOB CHEAT_FILES ${CMAKE_SOURCE_DIR}/Data/Cheats/*.cht)
