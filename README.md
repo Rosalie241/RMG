@@ -18,11 +18,18 @@ It offers a simple-to-use user interface.
 ## Building
 
 #### Linux
-* Portable
-```
-sudo apt-get -y install cmake libhidapi-dev libsamplerate0-dev libminizip-dev libsdl2-dev libfreetype6-dev libgl1-mesa-dev libglu1-mesa-dev pkg-config zlib1g-dev binutils-dev libspeexdsp-dev qt5-default build-essential nasm git zip
-./Source/Script/Build.sh Release
-```
+* Portable Debian/Ubuntu
+
+  ```shell
+  sudo apt-get -y install cmake libhidapi-dev libsamplerate0-dev libminizip-dev libsdl2-dev libfreetype6-dev libgl1-mesa-dev libglu1-mesa-dev pkg-config zlib1g-dev binutils-dev libspeexdsp-dev qt5-default build-essential nasm git zip
+  ./Source/Script/Build.sh Release
+  ```
+  
+* Portable Fedora
+  ```shell
+  sudo dnf install hidapi-devel libsamplerate-devel minizip-compat-devel SDL2-devel freetype-devel mesa-libGL-devel mesa-libGLU-devel zlib-ng-devel binutils-devel speexdsp-devel qt5-qtbase-devel qt5-qtsvg-devel gcc-c++ nasm git
+  ./Source/Script/Build.sh Release 
+  ```
 
 When it's done building, executables can be found in `Bin/Release`
 
