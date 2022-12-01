@@ -64,6 +64,11 @@ static bool read_file_lines(std::filesystem::path file, std::vector<std::string>
     // read file line by line
     while (std::getline(inputStream, line))
     {
+        // strip '\r' to support CRLF (for windows users)
+        if (line.ends_with("\r"))
+        {
+            line.erase((line.size() - 1), 1);
+        }
         lines.push_back(line);
     }
 
