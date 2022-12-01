@@ -751,6 +751,7 @@ bool CoreRemoveCheat(CoreCheat cheat)
 bool CoreEnableCheat(CoreCheat cheat, bool enabled)
 {
     CoreRomSettings romSettings;
+    std::string settingSection;
     std::string settingKey;
 
     if (!CoreGetCurrentRomSettings(romSettings))
@@ -758,20 +759,22 @@ bool CoreEnableCheat(CoreCheat cheat, bool enabled)
         return false;
     }
 
+    settingSection = romSettings.MD5 + " Cheats";
     settingKey = "Cheat \"" + cheat.Name + "\" Enabled";
 
     // if the cheat is disabled and the settings key doesn't exist, do nothing
-    if (!enabled && !CoreSettingsKeyExists(romSettings.MD5, settingKey))
+    if (!enabled && !CoreSettingsKeyExists(settingSection, settingKey))
     {
         return true;
     }
 
-    return CoreSettingsSetValue(romSettings.MD5, settingKey, enabled);
+    return CoreSettingsSetValue(settingSection, settingKey, enabled);
 }
 
 bool CoreIsCheatEnabled(CoreCheat cheat)
 {
     CoreRomSettings romSettings;
+    std::string settingSection;
     std::string settingKey;
 
     if (!CoreGetCurrentRomSettings(romSettings))
@@ -779,14 +782,16 @@ bool CoreIsCheatEnabled(CoreCheat cheat)
         return false;
     }
 
+    settingSection = romSettings.MD5 + " Cheats";
     settingKey = "Cheat \"" + cheat.Name + "\" Enabled";
 
-    return CoreSettingsGetBoolValue(romSettings.MD5, settingKey, false);
+    return CoreSettingsGetBoolValue(settingSection, settingKey, false);
 }
 
 bool CoreHasCheatOptionSet(CoreCheat cheat)
 {
     CoreRomSettings romSettings;
+    std::string settingSection;
     std::string settingKey;
 
     if (!CoreGetCurrentRomSettings(romSettings))
@@ -794,14 +799,16 @@ bool CoreHasCheatOptionSet(CoreCheat cheat)
         return false;
     }
 
+    settingSection = romSettings.MD5 + " Cheats";
     settingKey = "Cheat \"" + cheat.Name + "\" Option";
 
-    return CoreSettingsGetIntValue(romSettings.MD5, settingKey, -1) != -1;
+    return CoreSettingsGetIntValue(settingSection, settingKey, -1) != -1;
 }
 
 bool CoreSetCheatOption(CoreCheat cheat, CoreCheatOption option)
 {   
     CoreRomSettings romSettings;
+    std::string settingSection;
     std::string settingKey;
 
     if (!CoreGetCurrentRomSettings(romSettings))
@@ -809,14 +816,16 @@ bool CoreSetCheatOption(CoreCheat cheat, CoreCheatOption option)
         return false;
     }
 
+    settingSection = romSettings.MD5 + " Cheats";
     settingKey = "Cheat \"" + cheat.Name + "\" Option";
 
-    return CoreSettingsSetValue(romSettings.MD5, settingKey, (int)option.Value);
+    return CoreSettingsSetValue(settingSection, settingKey, (int)option.Value);
 }
 
 bool CoreGetCheatOption(CoreCheat cheat, CoreCheatOption& option)
 {
     CoreRomSettings romSettings;
+    std::string settingSection;
     std::string settingKey;
     int value = 0;
 
@@ -830,9 +839,10 @@ bool CoreGetCheatOption(CoreCheat cheat, CoreCheatOption& option)
         return false;
     }
 
+    settingSection = romSettings.MD5 + " Cheats";
     settingKey = "Cheat \"" + cheat.Name + "\" Option";
 
-    value = CoreSettingsGetIntValue(romSettings.MD5, settingKey, -1);
+    value = CoreSettingsGetIntValue(settingSection, settingKey, -1);
     if (value == -1)
     {
         return false;
