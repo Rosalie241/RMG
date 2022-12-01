@@ -22,7 +22,7 @@
 #include <RMG-Core/Core.hpp>
 
 // needed for KeyBindButton in ui_SettingsDialog
-#include "UserInterface/Widget/KeyBindButton.hpp"
+#include "UserInterface/Widget/KeybindButton.hpp"
 
 using namespace UserInterface::Widget;
 
@@ -106,6 +106,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void on_changeAmericanIPLRomPathButton_clicked(void);
     void on_changeDevelopmentIPLRomPathButton_clicked(void);
 
+    void on_KeybindButton_KeybindingChanged(KeybindButton* button);
   public:
     SettingsDialog(QWidget *parent);
     ~SettingsDialog(void);

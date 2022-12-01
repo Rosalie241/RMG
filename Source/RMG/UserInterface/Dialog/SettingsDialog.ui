@@ -1362,7 +1362,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="KeyBindButton" name="openRomKeyButton">
+                  <widget class="KeybindButton" name="openRomKeyButton">
                    <property name="text">
                     <string/>
                    </property>
@@ -1380,7 +1380,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="KeyBindButton" name="openComboKeyButton">
+                  <widget class="KeybindButton" name="openComboKeyButton">
                    <property name="text">
                     <string/>
                    </property>
@@ -1398,7 +1398,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="KeyBindButton" name="startEmuKeyButton">
+                  <widget class="KeybindButton" name="startEmuKeyButton">
                    <property name="text">
                     <string/>
                    </property>
@@ -1416,7 +1416,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="KeyBindButton" name="endEmuKeyButton">
+                  <widget class="KeybindButton" name="endEmuKeyButton">
                    <property name="text">
                     <string/>
                    </property>
@@ -1434,7 +1434,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="KeyBindButton" name="refreshRomListKeyButton">
+                  <widget class="KeybindButton" name="refreshRomListKeyButton">
                    <property name="text">
                     <string/>
                    </property>
@@ -1452,7 +1452,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="KeyBindButton" name="exitKeyButton">
+                  <widget class="KeybindButton" name="exitKeyButton">
                    <property name="text">
                     <string/>
                    </property>
@@ -1490,7 +1490,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="KeyBindButton" name="softResetKeyButton">
+                  <widget class="KeybindButton" name="softResetKeyButton">
                    <property name="text">
                     <string/>
                    </property>
@@ -1508,7 +1508,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="KeyBindButton" name="hardResetKeyButton">
+                  <widget class="KeybindButton" name="hardResetKeyButton">
                    <property name="text">
                     <string/>
                    </property>
@@ -1526,7 +1526,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="KeyBindButton" name="pauseKeyButton">
+                  <widget class="KeybindButton" name="pauseKeyButton">
                    <property name="text">
                     <string/>
                    </property>
@@ -1544,7 +1544,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="KeyBindButton" name="generateBitmapKeyButton">
+                  <widget class="KeybindButton" name="generateBitmapKeyButton">
                    <property name="text">
                     <string/>
                    </property>
@@ -1562,7 +1562,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="KeyBindButton" name="limitFPSKeyButton">
+                  <widget class="KeybindButton" name="limitFPSKeyButton">
                    <property name="text">
                     <string/>
                    </property>
@@ -1580,7 +1580,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="KeyBindButton" name="swapDiskKeyButton">
+                  <widget class="KeybindButton" name="swapDiskKeyButton">
                    <property name="text">
                     <string/>
                    </property>
@@ -1598,7 +1598,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="KeyBindButton" name="saveStateKeyButton">
+                  <widget class="KeybindButton" name="saveStateKeyButton">
                    <property name="text">
                     <string/>
                    </property>
@@ -1616,7 +1616,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="KeyBindButton" name="saveAsKeyButton">
+                  <widget class="KeybindButton" name="saveAsKeyButton">
                    <property name="text">
                     <string/>
                    </property>
@@ -1634,7 +1634,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="KeyBindButton" name="loadStateKeyButton">
+                  <widget class="KeybindButton" name="loadStateKeyButton">
                    <property name="text">
                     <string/>
                    </property>
@@ -1652,7 +1652,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="KeyBindButton" name="loadKeyButton">
+                  <widget class="KeybindButton" name="loadKeyButton">
                    <property name="text">
                     <string/>
                    </property>
@@ -1670,7 +1670,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="KeyBindButton" name="cheatsKeyButton">
+                  <widget class="KeybindButton" name="cheatsKeyButton">
                    <property name="text">
                     <string/>
                    </property>
@@ -1688,7 +1688,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="KeyBindButton" name="gsButtonKeyButton">
+                  <widget class="KeybindButton" name="gsButtonKeyButton">
                    <property name="text">
                     <string/>
                    </property>
@@ -1726,7 +1726,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="KeyBindButton" name="fullscreenKeyButton">
+                  <widget class="KeybindButton" name="fullscreenKeyButton">
                    <property name="text">
                     <string/>
                    </property>
@@ -1744,7 +1744,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="KeyBindButton" name="settingsKeyButton">
+                  <widget class="KeybindButton" name="settingsKeyButton">
                    <property name="text">
                     <string/>
                    </property>
@@ -1767,6 +1767,13 @@
                </item>
               </layout>
              </widget>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="removeDuplicateHotkeysCheckBox">
+             <property name="text">
+              <string>Remove Duplicate Keybindings</string>
+             </property>
             </widget>
            </item>
           </layout>
@@ -1981,9 +1988,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>KeyBindButton</class>
+   <class>KeybindButton</class>
    <extends>QPushButton</extends>
-   <header>UserInterface/Widget/KeyBindButton.hpp</header>
+   <header>UserInterface/Widget/KeybindButton.hpp</header>
   </customwidget>
  </customwidgets>
  <resources>

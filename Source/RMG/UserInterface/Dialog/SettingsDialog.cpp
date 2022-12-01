@@ -8,6 +8,8 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "SettingsDialog.hpp"
+#include "RMG-Core/Settings/Settings.hpp"
+#include "UserInterface/Widget/KeybindButton.hpp"
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -44,6 +46,9 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
     {
         this->reloadSettings(i);
     }
+
+    // connect hotkey settings to slot
+    this->commonHotkeySettings(-1);
 
     int width = CoreSettingsGetIntValue(SettingsID::GUI_SettingsDialogWidth);
     int height = CoreSettingsGetIntValue(SettingsID::GUI_SettingsDialogHeight);
@@ -642,7 +647,7 @@ void SettingsDialog::commonHotkeySettings(int action)
 {
     struct
     {
-        KeyBindButton *button;
+        KeybindButton* button;
         SettingsID settingId;
     } keybindings[] =
     {
@@ -668,11 +673,28 @@ void SettingsDialog::commonHotkeySettings(int action)
         { this->settingsKeyButton, SettingsID::KeyBinding_Settings },
     };
 
+    switch (action)
+    {
+        default:
+            break;
+        case 0:
+            this->removeDuplicateHotkeysCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::KeyBinding_RemoveDuplicates));
+            break;
+        case 1:
+            this->removeDuplicateHotkeysCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::KeyBinding_RemoveDuplicates));
+            break;
+        case 2:
+            CoreSettingsSetValue(SettingsID::KeyBinding_RemoveDuplicates, this->removeDuplicateHotkeysCheckBox->isChecked());
+            break;
+    }
+
     for (const auto& keybinding : keybindings)
     {
         switch (action)
         {
         default:
+        case -1:
+            connect(keybinding.button, &KeybindButton::on_KeybindButton_KeybindingChanged, this, &SettingsDialog::on_KeybindButton_KeybindingChanged);
         case 0:
             keybinding.button->setText(QString::fromStdString(CoreSettingsGetStringValue(keybinding.settingId)));
             break;
@@ -863,3 +885,51 @@ void SettingsDialog::on_changeDevelopmentIPLRomPathButton_clicked(void)
     this->chooseIPLRom(this->developmentIPLRomLineEdit);
 }
 
+void SettingsDialog::on_KeybindButton_KeybindingChanged(KeybindButton* button)
+{
+    if (!this->removeDuplicateHotkeysCheckBox->isChecked())
+    {
+        return;
+    }
+
+    QString text = button->text();
+    if (text.isEmpty())
+    {
+        return;
+    }
+
+    KeybindButton* keybindButtons[] = 
+    {
+        this->openRomKeyButton,
+        this->openComboKeyButton,
+        this->startEmuKeyButton,
+        this->endEmuKeyButton,
+        this->refreshRomListKeyButton,
+        this->exitKeyButton,
+        this->softResetKeyButton,
+        this->hardResetKeyButton,
+        this->pauseKeyButton, 
+        this->generateBitmapKeyButton,
+        this->limitFPSKeyButton,
+        this->swapDiskKeyButton,
+        this->saveStateKeyButton,
+        this->saveAsKeyButton, 
+        this->loadStateKeyButton,
+        this->loadKeyButton,
+        this->cheatsKeyButton, 
+        this->gsButtonKeyButton,
+        this->fullscreenKeyButton,
+        this->settingsKeyButton,
+    };
+    
+    for (KeybindButton* keybindButton : keybindButtons)
+    {
+        if (keybindButton != button)
+        {
+            if (keybindButton->text() == text)
+            {
+                keybindButton->Clear();
+            }
+        }
+    }
+}

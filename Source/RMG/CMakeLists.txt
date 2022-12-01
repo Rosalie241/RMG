@@ -16,7 +16,7 @@ set(RMG_SOURCES
     UserInterface/MainWindow.cpp
     UserInterface/Widget/RomBrowserWidget.cpp
     UserInterface/Widget/OGLWidget.cpp
-    UserInterface/Widget/KeyBindButton.cpp
+    UserInterface/Widget/KeybindButton.cpp
     UserInterface/Dialog/SettingsDialog.cpp
     UserInterface/Dialog/SettingsDialog.ui
     UserInterface/Dialog/SettingsDialog.qrc

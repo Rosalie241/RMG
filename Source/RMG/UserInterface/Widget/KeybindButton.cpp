@@ -1,18 +1,31 @@
-#include "KeyBindButton.hpp"
+/*
+ * Rosalie's Mupen GUI - https://github.com/Rosalie241/RMG
+ *  Copyright (C) 2020 Rosalie Wanders <rosalie@mailbox.org>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 3.
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+#include "KeybindButton.hpp"
 
 using namespace UserInterface::Widget;
 
-KeyBindButton::KeyBindButton(QWidget* parent) : QPushButton(parent)
+KeybindButton::KeybindButton(QWidget* parent) : QPushButton(parent)
 {
-
 }
 
-KeyBindButton::~KeyBindButton(void)
+KeybindButton::~KeybindButton(void)
 {
-
 }
 
-void KeyBindButton::keyPressEvent(QKeyEvent * event)
+void KeybindButton::Clear(void)
+{
+    this->setText("");
+    emit this->on_KeybindButton_KeybindingChanged(this);
+}
+
+void KeybindButton::keyPressEvent(QKeyEvent * event)
 {   
     // filter keys
     switch (event->key())
@@ -56,27 +69,28 @@ void KeyBindButton::keyPressEvent(QKeyEvent * event)
     }
 }
 
-void KeyBindButton::keyReleaseEvent(QKeyEvent *event)
+void KeybindButton::keyReleaseEvent(QKeyEvent *event)
 {
     this->currentText = this->keySequence.toString();
     this->clearFocus();
 }
 
-void KeyBindButton::mousePressEvent(QMouseEvent *event)
+void KeybindButton::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::RightButton)
     {
-        this->setText("");
+        this->Clear();
     }
 }
 
-void KeyBindButton::focusInEvent(QFocusEvent *event)
+void KeybindButton::focusInEvent(QFocusEvent *event)
 {
     currentText = this->text();
     this->setText("...");
 }
 
-void KeyBindButton::focusOutEvent(QFocusEvent *event)
+void KeybindButton::focusOutEvent(QFocusEvent *event)
 {
     this->setText(this->currentText);
+    emit this->on_KeybindButton_KeybindingChanged(this);
 }
