@@ -43,6 +43,7 @@ void CheatsDialog::loadCheats(void)
 
     if (!CoreGetCurrentCheats(cheats))
     {
+        this->showErrorMessage("CoreGetCurrentCheats() Failed!", QString::fromStdString(CoreGetError()));
         return;
     }
 
