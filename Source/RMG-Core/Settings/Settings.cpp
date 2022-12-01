@@ -350,6 +350,9 @@ static l_Setting get_setting(SettingsID settingId)
         setting = {"", "RSP_Plugin", ""};
         break;
 
+    case SettingsID::KeyBinding_RemoveDuplicates:
+        setting = {SETTING_SECTION_KEYBIND, "RemoveDuplicates", true};
+        break;
     case SettingsID::KeyBinding_OpenROM:
         setting = {SETTING_SECTION_KEYBIND, "OpenROM", "Ctrl+O"};
         break;

@@ -86,6 +86,7 @@ enum class SettingsID
     Game_RSP_Plugin,
 
     // GUI KeyBindings
+    KeyBinding_RemoveDuplicates,
     KeyBinding_OpenROM,
     KeyBinding_OpenCombo,
     KeyBinding_StartEmulation,
