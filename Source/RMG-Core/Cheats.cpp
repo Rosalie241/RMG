@@ -196,17 +196,19 @@ static bool parse_cheat(std::vector<std::string> lines, int startIndex, CoreChea
             line.erase(0, 1);
             cheat.Name = line;
             continue;
-        } else if (line.starts_with("Author="))
+        }
+        else if (line.starts_with("Author="))
         {
             line.erase(0, 7);
             cheat.Author = line;
             continue;
-        } else if (line.starts_with("Note="))
+        }
+        else if (line.starts_with("Note="))
         {
             line.erase(0, 5);
             cheat.Note = line;
             continue;
-        } 
+        }
 
         // newline = new cheat
         if (line.empty())
@@ -278,7 +280,8 @@ static bool parse_cheat(std::vector<std::string> lines, int startIndex, CoreChea
 
             // add code to cheat
             cheat.CheatCodes.push_back(cheatCode);
-        } else if (address.size() <= 4 && value.size() > 0)
+        }
+        else if (address.size() <= 4 && value.size() > 0)
         { // cheat option
             CoreCheatOption option;
 
@@ -289,7 +292,8 @@ static bool parse_cheat(std::vector<std::string> lines, int startIndex, CoreChea
             // add option to cheat
             cheat.HasOptions = true;
             cheat.CheatOptions.push_back(option);
-        } else
+        }
+        else
         { // invalid line?
             error = "parse_cheat Failed: ";
             error += "invalid line: \"";
@@ -337,7 +341,7 @@ static bool parse_cheat_file(std::vector<std::string> lines, CoreCheatFile& chea
             else
             { // CRC1 & CRC2 & CountryCode
                 // validate header
-                if (line.size() != 22 || line.at(8) != '-' || line.at(17) != '-' || line.at(18) != 'C')
+                if (line.size() != 22 || line.at(8) != '-' || line.at(17) != '-' || line.at(18) != 'C' || line.at(19) != ':')
                 {
                     error = "parse_cheat_file Failed: ";
                     error += "invalid header: \"";
@@ -356,12 +360,14 @@ static bool parse_cheat_file(std::vector<std::string> lines, CoreCheatFile& chea
                 cheatFile.CountryCode = std::strtoll(countryCode.c_str(), nullptr, 16);
             }
             readHeader = true;
-        } else if (readHeader && !readHeaderName && line.starts_with("Name="))
+        }
+        else if (readHeader && !readHeaderName && line.starts_with("Name="))
         {
             line.erase(0, 5);
             cheatFile.Name = line;
             readHeaderName = true;
-        } else if (readHeader && readHeaderName && line.starts_with('$'))
+        }
+        else if (readHeader && readHeaderName && line.starts_with('$'))
         {
             CoreCheat cheat;
             endIndex = 0;
@@ -382,6 +388,22 @@ static bool parse_cheat_file(std::vector<std::string> lines, CoreCheatFile& chea
             CoreSetError(error);
             return false;
         }
+    }
+
+    if (!readHeader)
+    {
+        error = "parse_cheat_file Failed: ";
+        error += "no header found!";
+        CoreSetError(error);
+        return false;
+    }
+
+    if (!readHeaderName)
+    {
+        error = "parse_cheat_file Failed: ";
+        error += "no header name found!";
+        CoreSetError(error);
+        return false;
     }
 
     return true;
@@ -530,10 +552,10 @@ bool CoreGetCurrentCheats(std::vector<CoreCheat>& cheats)
     CoreCheatFile userCheatFile;
     std::filesystem::path sharedCheatFilePath;
     std::filesystem::path userCheatFilePath;
+    bool hasSharedCheatFile = false;
+    bool hasUserCheatFile   = false;
     std::vector<std::string> sharedCheatFilelines;
     std::vector<std::string> userCheatFileLines;
-    bool ret1 = false;
-    bool ret2 = false;
 
     if (!CoreGetCurrentRomHeader(romHeader) ||
         !CoreGetCurrentRomSettings(romSettings))
@@ -542,34 +564,32 @@ bool CoreGetCurrentCheats(std::vector<CoreCheat>& cheats)
     }
 
     sharedCheatFilePath = get_shared_cheat_file_path(romHeader, romSettings);
-    userCheatFilePath = get_user_cheat_file_path(romHeader, romSettings);
+    userCheatFilePath   = get_user_cheat_file_path(romHeader, romSettings);
 
     // do nothing if neither the shared or user cheat file exists
-    ret1 = std::filesystem::is_regular_file(sharedCheatFilePath);
-    ret2 = std::filesystem::is_regular_file(userCheatFilePath);
-    if (!ret1 && !ret2)
+    hasSharedCheatFile = std::filesystem::is_regular_file(sharedCheatFilePath);
+    hasUserCheatFile   = std::filesystem::is_regular_file(userCheatFilePath);
+    if (!hasSharedCheatFile && !hasUserCheatFile)
     {
         return true;
     }
 
-    // fail when we fail to read both the shared & user cheat file
-    ret1 = read_file_lines(sharedCheatFilePath, sharedCheatFilelines);
-    ret2 = read_file_lines(userCheatFilePath, userCheatFileLines);
-    if (!ret1 && !ret2)
+    // fail when we fail to the shared or user cheat file
+    if ((hasSharedCheatFile && !read_file_lines(sharedCheatFilePath, sharedCheatFilelines)) ||
+        (hasUserCheatFile   && !read_file_lines(userCheatFilePath, userCheatFileLines)))
     {
         return false;
     }
 
-    // fail when we fail to parse both the shared & user cheat file
-    ret1 = parse_cheat_file(sharedCheatFilelines, sharedCheatFile);
-    ret2 = parse_cheat_file(userCheatFileLines, userCheatFile);
-    if (!ret1 && !ret2)
+    // fail when we fail to parse the shared or user cheat file
+    if ((hasSharedCheatFile && !parse_cheat_file(sharedCheatFilelines, sharedCheatFile)) ||
+        (hasUserCheatFile   && !parse_cheat_file(userCheatFileLines, userCheatFile)))
     {
         return false;
     }
 
     l_SharedCheatFile = sharedCheatFile;
-    l_UserCheatFile = userCheatFile;
+    l_UserCheatFile   = userCheatFile;
 
     // add shared & user cheats
     // add user cheats first
@@ -680,7 +700,7 @@ bool CoreAddCheat(CoreCheat cheat)
     l_UserCheatFile.CRC1 = romHeader.CRC1;
     l_UserCheatFile.CRC2 = romHeader.CRC2;
     l_UserCheatFile.CountryCode = romHeader.CountryCode;
-    l_UserCheatFile.MD5 = romSettings.MD5;
+    l_UserCheatFile.MD5  = romSettings.MD5;
     l_UserCheatFile.Name = romSettings.GoodName;
     l_UserCheatFile.Cheats.push_back(cheat);
 
@@ -709,7 +729,12 @@ bool CoreUpdateCheat(CoreCheat oldCheat, CoreCheat newCheat)
         l_UserCheatFile.Cheats.erase(iter);
     }
 
-    // add cheat to user cheats
+    // copy info to cheat file & add cheat
+    l_UserCheatFile.CRC1 = romHeader.CRC1;
+    l_UserCheatFile.CRC2 = romHeader.CRC2;
+    l_UserCheatFile.CountryCode = romHeader.CountryCode;
+    l_UserCheatFile.MD5  = romSettings.MD5;
+    l_UserCheatFile.Name = romSettings.GoodName;
     l_UserCheatFile.Cheats.push_back(newCheat);
     return write_cheat_file(l_UserCheatFile, cheatFilePath);
 }
@@ -857,7 +882,8 @@ bool CoreGetCheatOption(CoreCheat cheat, CoreCheatOption& option)
         }
     }
 
-    // nothing found
+    // when nothing was found, reset option
+    CoreSettingsSetValue(settingSection, settingKey, -1);
     return false;
 }
 
@@ -876,16 +902,17 @@ bool CoreApplyCheats(void)
         return false;
     }
 
-    // we shouldn't fail emulation
-    // just because parsing cheats failed
+    // fail when parsing cheats fails
     if (!CoreGetCurrentCheats(cheats))
     {
-        return true;
+        return false;
     }
 
-    // TODO: does this matter at all?
-    // we apply cheats when emulation is paused
-    CoreClearCheats();
+    // fail when clearing cheats fails
+    if (!CoreClearCheats())
+    {
+        return false;
+    }
 
     for (CoreCheat& cheat : cheats)
     {

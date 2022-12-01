@@ -117,6 +117,7 @@ bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64d
 
     if (!CoreApplyCheats())
     {
+        CoreDetachPlugins();
         CoreApplyPluginSettings();
         CoreCloseRom();
         return false;
