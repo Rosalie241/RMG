@@ -4,7 +4,7 @@ script_dir="$(dirname "$0")"
 toplvl_dir="$(realpath "$script_dir/../../")"
 tmp_dir="$toplvl_dir/Build/project64"
 source_cheat_dir="$tmp_dir/Config/Cheats"
-target_cheat_dir="$toplvl_dir/Data/Cheats"
+target_cheat_dir="$toplvl_dir/Data/Cheats/Generated"
 
 # remove generated cheats & tmp dir
 rm -rf "$tmp_dir" "$target_cheat_dir"/*.cht
