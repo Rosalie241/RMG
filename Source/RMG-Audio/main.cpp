@@ -1,137 +1,176 @@
-/*
- * Rosalie's Mupen GUI - https://github.com/Rosalie241/RMG
- *  Copyright (C) 2020 Rosalie Wanders <rosalie@mailbox.org>
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 3.
- *  You should have received a copy of the GNU General Public License
- *  along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-#define CORE_PLUGIN 1
-#define M64P_PLUGIN_PROTOTYPES 1
-#define AUDIO_PLUGIN_API_VERSION 0x020100
-
-#include <cstdint>
-#include <cstdlib>
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *   Mupen64plus-sdl-audio - main.c                                        *
+ *   Mupen64Plus homepage: https://mupen64plus.org/                        *
+ *   Copyright (C) 2007-2009 Richard Goedeken                              *
+ *   Copyright (C) 2007-2008 Ebenblues                                     *
+ *   Copyright (C) 2003 JttL                                               *
+ *   Copyright (C) 2002 Hacktarux                                          *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or modify  *
+ *   it under the terms of the GNU General Public License as published by  *
+ *   the Free Software Foundation; either version 2 of the License, or     *
+ *   (at your option) any later version.                                   *
+ *                                                                         *
+ *   This program is distributed in the hope that it will be useful,       *
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *   GNU General Public License for more details.                          *
+ *                                                                         *
+ *   You should have received a copy of the GNU General Public License     *
+ *   along with this program; if not, write to the                         *
+ *   Free Software Foundation, Inc.,                                       *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include <SDL.h>
 #include <SDL_audio.h>
+#include <stdio.h>
+#include <stdarg.h>
 
-#include <UserInterface/MainDialog.hpp>
+#include "RMG-Core/Settings/Settings.hpp"
+#include "RMG-Core/Settings/SettingsID.hpp"
+#include "main.hpp"
 
+#include "sdl_backend.hpp"
+#include "Resamplers/resamplers.hpp"
+
+#define M64P_PLUGIN_PROTOTYPES 1
+#define CORE_PLUGIN
 #include <RMG-Core/Core.hpp>
 
-//
-// Local variables
-//
+#include "UserInterface//MainDialog.hpp"
 
-static SDL_AudioDeviceID l_SDLDevice;
-static SDL_AudioSpec* l_HardwareSpec  = nullptr;
+/* version info */
+#define SDL_AUDIO_PLUGIN_VERSION 0x020509
+#define AUDIO_PLUGIN_API_VERSION 0x020000
+#define CONFIG_PARAM_VERSION     1.00
 
-static bool l_PluginInit              = false;
-static int l_GameFreq                 = 0;
-static AUDIO_INFO l_AudioInfo;
-static bool l_VolIsMuted              = false;
-static bool l_Paused                  = false;
-static bool l_FastForward             = false;
-static int  l_VolSDL                  = SDL_MIX_MAXVOLUME;
-static SDL_AudioStream* l_AudioStream = nullptr;
+#if SDL_VERSION_ATLEAST(2,0,0)
+#define SDL_MixAudio(A, B, C, D) SDL_MixAudioFormat(A, B, AUDIO_S16SYS, C, D)
+#endif
 
-static uint8_t l_PrimaryBuffer[0x40000];
-static uint8_t l_OutputBuffer[0x40000];
-static uint8_t l_MixBuffer[0x40000];
+/* local variables */
+static void (*l_DebugCallback)(void *, int, const char *) = nullptr;
+static void *l_DebugCallContext = nullptr;
+static int l_PluginInit = 0;
 
-//
-// Local Functions
-//
+static struct sdl_backend* l_sdl_backend = nullptr;
 
-static void load_settings(void)
+/* Read header for type definition */
+static AUDIO_INFO AudioInfo;
+// volume to scale the audio by, range of 0..100
+// if muted, this holds the volume when not muted
+static int VolPercent = 80;
+// how much percent to increment/decrement volume by
+static int VolDelta = 5;
+// the actual volume passed into SDL, range of 0..SDL_MIX_MAXVOLUME
+static int VolSDL = SDL_MIX_MAXVOLUME;
+// Muted or not
+static int VolIsMuted = 0;
+
+/* Helper functions */
+static void LoadVolumeSettings(void)
 {
-    l_VolIsMuted = CoreSettingsGetBoolValue(SettingsID::Audio_Muted);
-    l_VolSDL = SDL_MIX_MAXVOLUME * CoreSettingsGetIntValue(SettingsID::Audio_Volume) / 100;
-    l_FastForward = false;
+    VolIsMuted = CoreSettingsGetBoolValue(SettingsID::Audio_Muted);
+    VolPercent = CoreSettingsGetIntValue(SettingsID::Audio_Volume);
+
+    int levelToCommit = VolIsMuted ? 0 : VolPercent;
+
+    VolSDL = SDL_MIX_MAXVOLUME * levelToCommit / 100;
 }
 
-//
-// Basic Plugin Functions
-//
-
-EXPORT m64p_error CALL PluginStartup(m64p_dynlib_handle CoreLibHandle, void *Context, void (*DebugCallback)(void *, int, const char *))
+/* Global functions */
+void DebugMessage(int level, const char *message, ...)
 {
+  char msgbuf[1024];
+  va_list args;
+
+  if (l_DebugCallback == nullptr)
+      return;
+
+  va_start(args, message);
+  vsprintf(msgbuf, message, args);
+
+  (*l_DebugCallback)(l_DebugCallContext, level, msgbuf);
+
+  va_end(args);
+}
+
+/* Mupen64Plus plugin functions */
+EXPORT m64p_error CALL PluginStartup(m64p_dynlib_handle CoreLibHandle, void *Context,
+                                   void (*DebugCallback)(void *, int, const char *))
+{
+    ptr_CoreGetAPIVersions CoreAPIVersionFunc;
+
+    int ConfigAPIVersion, DebugAPIVersion, VidextAPIVersion;
+    float fConfigParamsVersion = 0.0f;
+
     if (l_PluginInit)
-    {
         return M64ERR_ALREADY_INIT;
-    }
 
-    if (SDL_Init(SDL_INIT_AUDIO) < 0)
-    {
-        return M64ERR_SYSTEM_FAIL;
-    }
+    /* first thing is to set the callback function for debug info */
+    l_DebugCallback = DebugCallback;
+    l_DebugCallContext = Context;
 
+    /* Init RMG-Core */
     if (!CoreInit(CoreLibHandle))
     {
         return M64ERR_SYSTEM_FAIL;
     }
 
-    load_settings();
+    // apply volume settings
+    LoadVolumeSettings();
 
-    l_PluginInit = true;
+    l_PluginInit = 1;
     return M64ERR_SUCCESS;
 }
 
 EXPORT m64p_error CALL PluginShutdown(void)
 {
     if (!l_PluginInit)
-    {
         return M64ERR_NOT_INIT;
-    }
 
-    if (l_HardwareSpec != nullptr)\
-    { 
-        free(l_HardwareSpec);
-        l_HardwareSpec = NULL;
-    }
+    /* reset some local variables */
+    l_DebugCallback = nullptr;
+    l_DebugCallContext = nullptr;
 
-    SDL_QuitSubSystem(SDL_INIT_AUDIO);
-    l_PluginInit = false;
+    l_PluginInit = 0;
     return M64ERR_SUCCESS;
 }
 
-EXPORT m64p_error CALL PluginGetVersion(m64p_plugin_type *pluginType, int *pluginVersion, 
-    int *apiVersion, const char **pluginNamePtr, int *capabilities)
+EXPORT m64p_error CALL PluginGetVersion(m64p_plugin_type *PluginType, int *PluginVersion, int *APIVersion, const char **PluginNamePtr, int *Capabilities)
 {
-    if (pluginType != nullptr)
+    if (PluginType != nullptr)
     {
-        *pluginType = M64PLUGIN_AUDIO;
+        *PluginType = M64PLUGIN_AUDIO;
     }
 
-    if (pluginVersion != nullptr)
+    if (PluginVersion != nullptr)
     {
-        *pluginVersion = 0x010000;
+        *PluginVersion = SDL_AUDIO_PLUGIN_VERSION;
     }
 
-    if (apiVersion != nullptr)
+    if (APIVersion != nullptr)
     {
-        *apiVersion = AUDIO_PLUGIN_API_VERSION;
+        *APIVersion = AUDIO_PLUGIN_API_VERSION;
     }
 
-    if (pluginNamePtr != nullptr)
+    if (PluginNamePtr != nullptr)
     {
-        *pluginNamePtr = "Rosalie's Mupen GUI - Audio Plugin";
+        *PluginNamePtr = "Rosalie's Mupen GUI - Audio Plugin";
     }
 
-    if (capabilities != nullptr)
+    if (Capabilities != nullptr)
     {
-        *capabilities = 0;
+        *Capabilities = 0;
     }
 
     return M64ERR_SUCCESS;
 }
 
-//
-// Custom Plugin Functions
-//
+/* ----------- Custom Functions ------------ */
 
+#include <iostream>
 EXPORT m64p_error CALL PluginConfig(void)
 {
     if (!l_PluginInit)
@@ -142,157 +181,78 @@ EXPORT m64p_error CALL PluginConfig(void)
     UserInterface::MainDialog dialog(nullptr);
     dialog.exec();
 
-    // reload settings
-    load_settings();
+    // apply volume settings
+    LoadVolumeSettings();
 
     return M64ERR_SUCCESS;
 }
 
-//
-// Audio Plugin Functions
-//
-
-EXPORT void CALL AiDacrateChanged( int SystemType )
+/* ----------- Audio Functions ------------- */
+static unsigned int vi_clock_from_system_type(int system_type)
 {
-    if (!l_PluginInit)
+    switch (system_type)
     {
-        return;
-    }
-
-    switch (SystemType)
-    {
-        case SYSTEM_NTSC:
-            l_GameFreq = 48681812 / (*l_AudioInfo.AI_DACRATE_REG + 1);
-            break;
-        case SYSTEM_PAL:
-            l_GameFreq = 49656530 / (*l_AudioInfo.AI_DACRATE_REG + 1);
-            break;
-        case SYSTEM_MPAL:
-            l_GameFreq = 48628316 / (*l_AudioInfo.AI_DACRATE_REG + 1);
-            break;
-    }
-    SDL_FreeAudioStream(l_AudioStream);
-    l_AudioStream = SDL_NewAudioStream(AUDIO_S16SYS, 2, l_GameFreq, l_HardwareSpec->format, 2, l_HardwareSpec->freq);
-}
-
-EXPORT void CALL AiLenChanged( void )
-{
-    if (!l_PluginInit)
-    {
-        return;
-    }
-
-    unsigned int LenReg = *l_AudioInfo.AI_LEN_REG;
-    unsigned char *p = l_AudioInfo.RDRAM + (*l_AudioInfo.AI_DRAM_ADDR_REG & 0xFFFFFF);
-
-    unsigned int i;
-
-    for ( i = 0 ; i < LenReg ; i += 4 )
-    {
-        // Left channel
-        l_PrimaryBuffer[ i ] = p[ i + 2 ];
-        l_PrimaryBuffer[ i + 1 ] = p[ i + 3 ];
-
-        // Right channel
-        l_PrimaryBuffer[ i + 2 ] = p[ i ];
-        l_PrimaryBuffer[ i + 3 ] = p[ i + 1 ];
-    }
-
-    if (!l_VolIsMuted && !l_FastForward)
-    {
-        unsigned int audio_queued = SDL_GetQueuedAudioSize(l_SDLDevice);
-        unsigned int acceptable_latency = (l_HardwareSpec->freq * 0.2) * 4;
-        unsigned int min_latency = (l_HardwareSpec->freq * 0.02) * 4;
-
-        if (!l_Paused && audio_queued < min_latency)
-        {
-            SDL_PauseAudioDevice(l_SDLDevice, 1);
-            l_Paused = true;
-        }
-        else if (l_Paused && audio_queued >= (min_latency * 2))
-        {
-            SDL_PauseAudioDevice(l_SDLDevice, 0);
-            l_Paused = true;
-        }
-
-        if (audio_queued < acceptable_latency)
-        {
-            SDL_AudioStreamPut(l_AudioStream, l_PrimaryBuffer, LenReg);
-        }
-
-        int output_length = SDL_AudioStreamGet(l_AudioStream, l_OutputBuffer, sizeof(l_OutputBuffer));
-        if (output_length > 0)
-        {
-            SDL_memset(l_MixBuffer, 0, output_length);
-            SDL_MixAudioFormat(l_MixBuffer, l_OutputBuffer, l_HardwareSpec->format, output_length, l_VolSDL);
-            SDL_QueueAudio(l_SDLDevice, l_MixBuffer, output_length);
-        }
+    default:
+        DebugMessage(M64MSG_WARNING, "Invalid system_type %d. Assuming NTSC", system_type);
+        /* fallback */
+    case SYSTEM_NTSC: return 48681812;
+    case SYSTEM_PAL:  return 49656530;
+    case SYSTEM_MPAL: return 48628316;
     }
 }
 
-EXPORT int CALL InitiateAudio( AUDIO_INFO Audio_Info )
+static unsigned int dacrate2freq(unsigned int vi_clock, uint32_t dacrate)
+{
+    return vi_clock / (dacrate + 1);
+}
+
+EXPORT void CALL AiDacrateChanged(int SystemType)
+{
+    if (!l_PluginInit || l_sdl_backend == nullptr)
+        return;
+
+    unsigned int frequency = dacrate2freq(vi_clock_from_system_type(SystemType), *AudioInfo.AI_DACRATE_REG);
+
+    sdl_set_frequency(l_sdl_backend, frequency);
+}
+
+EXPORT void CALL AiLenChanged(void)
+{
+    if (!l_PluginInit || l_sdl_backend == nullptr)
+        return;
+
+    sdl_push_samples(l_sdl_backend, AudioInfo.RDRAM + (*AudioInfo.AI_DRAM_ADDR_REG & 0xffffff), *AudioInfo.AI_LEN_REG);
+
+    sdl_synchronize_audio(l_sdl_backend);
+}
+
+EXPORT int CALL InitiateAudio(AUDIO_INFO Audio_Info)
 {
     if (!l_PluginInit)
-    {
         return 0;
-    }
 
-    l_GameFreq = 33600;
-    l_AudioInfo = Audio_Info;
-
+    AudioInfo = Audio_Info;
     return 1;
 }
 
 EXPORT int CALL RomOpen(void)
 {
-    if (!l_PluginInit)
-    {
+    if (!l_PluginInit || l_sdl_backend != nullptr)
         return 0;
-    }
 
-    SDL_AudioSpec *desired, *obtained;
-    if (l_HardwareSpec != nullptr)
-    {
-        free(l_HardwareSpec);
-    }
-    desired = (SDL_AudioSpec*)malloc(sizeof(SDL_AudioSpec));
-    obtained = (SDL_AudioSpec*)malloc(sizeof(SDL_AudioSpec));
-    desired->freq = 44100;
-    desired->format = AUDIO_S16SYS;
-    desired->channels = 2;
-    desired->samples = 1024;
-    desired->callback = nullptr;
-    desired->userdata = nullptr;
-
-    const char *dev_name = SDL_GetAudioDeviceName(-1, 0);
-    l_SDLDevice = SDL_OpenAudioDevice(dev_name, 0, desired, obtained, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE);
-    free(desired);
-    l_HardwareSpec = obtained;
-    SDL_PauseAudioDevice(l_SDLDevice, 0);
-    l_Paused = 0;
-    l_AudioStream = SDL_NewAudioStream(AUDIO_S16SYS, 2, l_GameFreq, l_HardwareSpec->format, 2, l_HardwareSpec->freq);
+    VolPercent = CoreSettingsGetIntValue(SettingsID::Audio_Volume);
+    l_sdl_backend = init_sdl_backend();
 
     return 1;
 }
 
-EXPORT void CALL RomClosed( void )
+EXPORT void CALL RomClosed(void)
 {
     if (!l_PluginInit)
-    {
         return;
-    }
 
-    SDL_ClearQueuedAudio(l_SDLDevice);
-    SDL_CloseAudioDevice(l_SDLDevice);
-
-    if (l_HardwareSpec != nullptr)
-    { 
-        free(l_HardwareSpec);
-        l_HardwareSpec = nullptr;
-    }
-
-    SDL_FreeAudioStream(l_AudioStream);
-    l_AudioStream = nullptr;
+    release_sdl_backend(l_sdl_backend);
+    l_sdl_backend = nullptr;
 }
 
 EXPORT void CALL ProcessAList(void)
@@ -301,24 +261,40 @@ EXPORT void CALL ProcessAList(void)
 
 EXPORT void CALL SetSpeedFactor(int percentage)
 {
-    if (percentage > 100)
-    {
-        l_FastForward = true;
-    }
-    else
-    {
-        l_FastForward = false;
-    }
+    if (!l_PluginInit || l_sdl_backend == nullptr)
+        return;
+
+    sdl_set_speed_factor(l_sdl_backend, percentage);
+}
+
+size_t ResampleAndMix(void* resampler, const struct resampler_interface* iresampler,
+        void* mix_buffer,
+        const void* src, size_t src_size, unsigned int src_freq,
+        void* dst, size_t dst_size, unsigned int dst_freq)
+{
+    size_t consumed;
+
+    consumed = iresampler->resample(resampler, src, src_size, src_freq, mix_buffer, dst_size, dst_freq);
+    memset(dst, 0, dst_size);
+    SDL_MixAudio((Uint8*)dst, (Uint8*)mix_buffer, dst_size, VolSDL);
+
+    return consumed;
+}
+
+void SetPlaybackVolume(void)
+{
+    VolSDL = SDL_MIX_MAXVOLUME * VolPercent / 100;
+}
+
+
+// Returns the most recent ummuted volume level.
+static int VolumeGetUnmutedLevel(void)
+{
+    return 0;
 }
 
 EXPORT void CALL VolumeMute(void)
 {
-    if (!l_PluginInit)
-    {
-        return;
-    }
-
-    l_VolIsMuted = !l_VolIsMuted;
 }
 
 EXPORT void CALL VolumeUp(void)
@@ -331,24 +307,15 @@ EXPORT void CALL VolumeDown(void)
 
 EXPORT int CALL VolumeGetLevel(void)
 {
-    return l_VolIsMuted ? 0 : 100;
+    return 0;
 }
 
 EXPORT void CALL VolumeSetLevel(int level)
 {
-    if (level < 0)
-    {
-        level = 0;
-    }
-    else if (level > 100)
-    {
-        level = 100;
-    }
-
-    l_VolSDL = SDL_MIX_MAXVOLUME * level / 100;
 }
 
 EXPORT const char * CALL VolumeGetString(void)
 {
     return "";
 }
+

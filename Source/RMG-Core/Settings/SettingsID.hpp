@@ -120,8 +120,15 @@ enum class SettingsID
     Settings_HasForceUsedSetOnce,
 
     // Audio Plugin Settings
+    Audio_DefaultFrequency,
+    Audio_SwapChannels,
+    Audio_PrimaryBufferSize,
+    Audio_PrimaryBufferTarget,
+    Audio_SecondaryBufferSize,
+    Audio_Resampler,
     Audio_Volume,
     Audio_Muted,
+    Audio_Synchronize,
 
     // Input Plugin Settings
     Input_PluggedIn,

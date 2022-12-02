@@ -24,9 +24,13 @@ public:
     MainDialog(QWidget *parent);
     ~MainDialog(void);
 
+private:
+    void hideEmulationInfoText(void);
+
 private slots:
     void on_volumeSlider_valueChanged(int value);
-    void on_buttonBox_clicked(QAbstractButton* button);
+
+    void on_buttonBox_clicked(QAbstractButton *);
 };
 }
 

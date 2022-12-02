@@ -437,11 +437,32 @@ static l_Setting get_setting(SettingsID settingId)
         setting = {SETTING_SECTION_SETTINGS, "HasForceUsedSetOnce", false};
         break;
 
+    case SettingsID::Audio_DefaultFrequency:
+        setting = {SETTING_SECTION_AUDIO, "DefaultFrequency", 33600};
+        break;
+    case SettingsID::Audio_SwapChannels:
+        setting = {SETTING_SECTION_AUDIO, "SwapChannels", false};
+        break;
+    case SettingsID::Audio_PrimaryBufferSize:
+        setting = {SETTING_SECTION_AUDIO, "PrimaryBufferSize", 16384};
+        break;
+    case SettingsID::Audio_PrimaryBufferTarget:
+        setting = {SETTING_SECTION_AUDIO, "PrimaryBufferTarget", 2048};
+        break;
+    case SettingsID::Audio_SecondaryBufferSize:
+        setting = {SETTING_SECTION_AUDIO, "SecondaryBufferSize", 1024};
+        break;
+    case SettingsID::Audio_Resampler:
+        setting = {SETTING_SECTION_AUDIO, "Resampler", std::string("trivial")};
+        break;
     case SettingsID::Audio_Volume:
         setting = {SETTING_SECTION_AUDIO, "Volume", 100};
         break;
     case SettingsID::Audio_Muted:
         setting = {SETTING_SECTION_AUDIO, "Muted", false};
+        break;
+    case SettingsID::Audio_Synchronize:
+        setting = {SETTING_SECTION_AUDIO, "Synchronize", true};
         break;
 
     case SettingsID::Input_PluggedIn:
