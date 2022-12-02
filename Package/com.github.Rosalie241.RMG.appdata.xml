@@ -25,6 +25,22 @@
   </screenshots>
   <description/>
   <releases>
+    <release version="v0.2.1" date="2022-12-02" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Improve cheat error handling</li>
+          <li>Improve cheat dialog slightly (ok button is now disabled by default)</li>
+          <li>Improve RMG-Audio by using mupen64plus-audio-sdl as base</li>
+          <li>Add iQue cheats from Gent</li>
+          <li>Add CRLF support in cheat files</li>
+          <li>Add 'Remove Duplicate Keybindings' in settings dialog</li>
+          <li>Change maximum ROM browser cache items to 10000</li>
+          <li>Change default ROM browser limit to 250</li>
+          <li>Fix cheat settings being gone after opening the settings dialog in-game</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.2.0" date="2022-11-29" type="stable">
       <description>
         <p>Changes:</p>
