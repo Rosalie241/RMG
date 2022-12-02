@@ -71,12 +71,17 @@ static int VolIsMuted = 0;
 /* Helper functions */
 static void LoadVolumeSettings(void)
 {
-    VolIsMuted = CoreSettingsGetBoolValue(SettingsID::Audio_Muted);
+    VolIsMuted = CoreSettingsGetBoolValue(SettingsID::Audio_Muted) ? 1 : 0;
     VolPercent = CoreSettingsGetIntValue(SettingsID::Audio_Volume);
 
-    int levelToCommit = VolIsMuted ? 0 : VolPercent;
-
-    VolSDL = SDL_MIX_MAXVOLUME * levelToCommit / 100;
+    if (VolIsMuted)
+    {
+        VolSDL = 0;
+    }
+    else
+    {
+        VolSDL = SDL_MIX_MAXVOLUME * VolPercent / 100;
+    }
 }
 
 /* Global functions */
@@ -170,7 +175,6 @@ EXPORT m64p_error CALL PluginGetVersion(m64p_plugin_type *PluginType, int *Plugi
 
 /* ----------- Custom Functions ------------ */
 
-#include <iostream>
 EXPORT m64p_error CALL PluginConfig(void)
 {
     if (!l_PluginInit)
@@ -240,9 +244,7 @@ EXPORT int CALL RomOpen(void)
     if (!l_PluginInit || l_sdl_backend != nullptr)
         return 0;
 
-    VolPercent = CoreSettingsGetIntValue(SettingsID::Audio_Volume);
     l_sdl_backend = init_sdl_backend();
-
     return 1;
 }
 
@@ -279,18 +281,6 @@ size_t ResampleAndMix(void* resampler, const struct resampler_interface* iresamp
     SDL_MixAudio((Uint8*)dst, (Uint8*)mix_buffer, dst_size, VolSDL);
 
     return consumed;
-}
-
-void SetPlaybackVolume(void)
-{
-    VolSDL = SDL_MIX_MAXVOLUME * VolPercent / 100;
-}
-
-
-// Returns the most recent ummuted volume level.
-static int VolumeGetUnmutedLevel(void)
-{
-    return 0;
 }
 
 EXPORT void CALL VolumeMute(void)

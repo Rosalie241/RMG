@@ -235,9 +235,6 @@ static void sdl_init_audio_device(struct sdl_backend* sdl_backend)
     DebugMessage(M64MSG_VERBOSE, "Silence: %i", obtained.silence);
     DebugMessage(M64MSG_VERBOSE, "Samples: %i", obtained.samples);
     DebugMessage(M64MSG_VERBOSE, "Size: %i", obtained.size);
-
-    /* set playback volume */
-    SetPlaybackVolume();
 }
 
 static void release_audio_device(struct sdl_backend* sdl_backend)

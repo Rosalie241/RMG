@@ -29,8 +29,6 @@
 
 struct resampler_interface;
 
-void SetPlaybackVolume(void);
-
 size_t ResampleAndMix(void* resampler, const struct resampler_interface* iresampler,
         void* mix_buffer,
         const void* src, size_t src_size, unsigned int src_freq,
