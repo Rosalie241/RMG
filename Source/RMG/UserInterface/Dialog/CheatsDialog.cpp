@@ -34,6 +34,11 @@ CheatsDialog::~CheatsDialog(void)
 {
 }
 
+bool CheatsDialog::HasFailed(void)
+{
+    return this->failedToParseCheats;
+}
+
 void CheatsDialog::loadCheats(void)
 {
     std::vector<CoreCheat> cheats;
@@ -44,6 +49,7 @@ void CheatsDialog::loadCheats(void)
     if (!CoreGetCurrentCheats(cheats))
     {
         this->showErrorMessage("CoreGetCurrentCheats() Failed!", QString::fromStdString(CoreGetError()));
+        this->failedToParseCheats = true;
         return;
     }
 
@@ -183,7 +189,7 @@ QString CheatsDialog::getTreeWidgetItemTextFromCheat(CoreCheat cheat)
 
 void CheatsDialog::showErrorMessage(QString error, QString details)
 {
-    QMessageBox msgBox(this);
+    QMessageBox msgBox((this->isVisible() ? this : this->parentWidget()));
     msgBox.setIcon(QMessageBox::Icon::Critical);
     msgBox.setWindowTitle("Error");
     msgBox.setText(error);

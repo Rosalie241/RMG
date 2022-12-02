@@ -1093,7 +1093,10 @@ void MainWindow::on_Action_System_Cheats(void)
     }
 
     Dialog::CheatsDialog dialog(this);
-    dialog.exec();
+    if (!dialog.HasFailed())
+    {
+        dialog.exec();
+    }
 
     if (isRunning && !isPaused)
     {
@@ -1291,7 +1294,10 @@ void MainWindow::on_RomBrowser_Cheats(QString file)
     }
 
     Dialog::CheatsDialog dialog(this);
-    dialog.exec();
+    if (!dialog.HasFailed())
+    {
+        dialog.exec();
+    }
 
     if (!CoreCloseRom())
     {

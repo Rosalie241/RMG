@@ -29,8 +29,11 @@ class CheatsDialog : public QDialog, private Ui::CheatsDialog
     CheatsDialog(QWidget *parent);
     ~CheatsDialog(void);
 
+    bool HasFailed(void);
+
   private:
     bool needCloseRom = false;
+    bool failedToParseCheats = false;
 
     void loadCheats(void);
     
