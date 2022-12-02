@@ -11,6 +11,7 @@
 #include "Error.hpp"
 #include "m64p/Api.hpp"
 #include "RomSettings.hpp"
+#include "Cheats.hpp"
 
 #include <unzip.h>
 #include <fstream>
@@ -302,6 +303,11 @@ bool CoreCloseRom(void)
         error = "CoreCloseRom Failed: ";
         error += "cannot close rom when no rom is open!";
         CoreSetError(error);
+        return false;
+    }
+
+    if (!CoreClearCheats())
+    {
         return false;
     }
 
