@@ -1,0 +1,17 @@
+[B6BBEE96-61A68F52-C:43]
+Name=Custom Robo (CHN) [SaveFix]
+
+$Player 1 HP 1000
+81241A70 3F80
+81241A72 00??
+00 Off
+01 On
+
+$Enemy HP 0
+8128B8A8 0000
+8128B8AA 0000
+
+$Have all the story mode part
+50001802 0000
+81125E84 FFFF
+

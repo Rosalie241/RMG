@@ -1,0 +1,28 @@
+[7331A7C7-B5C2937C-C:43]
+Name=Sin and Punishment (CHN) [SaveFix]
+
+$Infinite\Time
+800DF337 0063
+
+$Infinite\Max Continues
+800E404A 00FF
+
+$Unlock All Options
+Note=This Unlocks the Scene Select and Option Menus.
+8107BDCA FFFF
+8107BDCC FFFF
+
+$Press GS Button to Kill Big Bomb
+891CB734 0000
+891CF05E 0000
+
+$Earth  has Infinite Energy
+Note=This give the Earth Infinite Health whilst being attacked by the Planet
+8110A1B4 CC75
+
+$Infinite\Energy  (All Levels)
+800DF33F 0064
+
+$Infinite\Air Jumping (All Levels)
+810B6628 2400
+

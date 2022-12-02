@@ -1,0 +1,30 @@
+[EF62A343-11E41E37-C:00]
+Name=Dr. Mario 64 (Ch) (iQue) [!]
+
+$Low Timer
+810CA2BA 04CB
+
+$Games Per Match Select
+8009322B 00??
+01 1 Game
+02 2 Games
+03 3 Games
+
+$Have Low to No Virus (For Easy Win)
+Note=As soon as the game starts, press Start then redo to clear virus screen. Now just play stacking the pills up to win
+8013A984 00??
+8013A985 0000
+8013A986 0000
+8013AD49 0063
+04 On Classic-Story-VS-and-Marathon Modes
+28 On Flash and Score Attack Modes
+
+$Unlock Vampire Wario
+8009321C 0001
+
+$Unlock Metal Mario
+8009321D 0001
+
+$Player 2 / CPU has Full Infection
+8013AD4A 0020
+
