@@ -38,7 +38,7 @@ const struct resampler_interface* get_iresampler(const char* resampler_id, void*
         const struct resampler_interface* iresampler;
         const char* cmp_str;
     } resamplers[] = {
-      //  { &g_trivial_iresampler, "trivial" },
+        { &g_trivial_iresampler, "trivial" },
         { &g_speex_iresampler, "speex-" },
         { &g_src_iresampler, "src-" }
     };
