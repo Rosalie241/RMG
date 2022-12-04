@@ -7,6 +7,11 @@ set(CMAKE_AUTOUIC ON)
 
 find_package(Qt5 COMPONENTS Gui Widgets Core REQUIRED)
 
+if (UPDATER)
+find_package(Qt5 COMPONENTS Network REQUIRED)
+add_definitions(-DUPDATER)
+endif(UPDATER)
+
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2)
 
@@ -42,6 +47,17 @@ set(RMG_SOURCES
     main.cpp
 )
 
+if (UPDATER)
+list(APPEND RMG_SOURCES
+    UserInterface/Dialog/UpdateDialog.cpp
+    UserInterface/Dialog/UpdateDialog.ui
+    UserInterface/Dialog/DownloadUpdateDialog.cpp
+    UserInterface/Dialog/DownloadUpdateDialog.ui
+    UserInterface/Dialog/InstallUpdateDialog.cpp
+    UserInterface/Dialog/InstallUpdateDialog.ui
+)
+endif(UPDATER)
+
 if (CMAKE_BUILD_TYPE MATCHES Release)
     add_executable(RMG WIN32 ${RMG_SOURCES})
 else()
@@ -61,3 +77,8 @@ target_include_directories(RMG PRIVATE
 )
 
 target_link_libraries(RMG Qt5::Gui Qt5::Widgets)
+
+if (UPDATER)
+target_link_libraries(RMG Qt5::Network)
+endif(UPDATER)
+

@@ -27,6 +27,13 @@
 #include <QStackedWidget>
 #include <QGuiApplication>
 
+#ifdef UPDATER
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QJsonDocument>
+#include <QJsonObject>
+#endif // UPDATER
+
 namespace UserInterface
 {
 class MainWindow : public QMainWindow
@@ -134,6 +141,9 @@ class MainWindow : public QMainWindow
     void ui_Actions_Remove(void);
     void ui_Actions_Connect(void);
 
+#ifdef UPDATER
+    void ui_CheckForUpdates(void);
+#endif // UPDATER
   protected:
     void timerEvent(QTimerEvent *) Q_DECL_OVERRIDE;
 
@@ -143,6 +153,10 @@ class MainWindow : public QMainWindow
     void on_EventFilter_FileDropped(QDropEvent *);
 
     void on_QGuiApplication_applicationStateChanged(Qt::ApplicationState);
+ 
+#ifdef UPDATER
+    void on_networkAccessManager_Finished(QNetworkReply *);
+#endif // UPDATER
 
     void on_Action_File_OpenRom(void);
     void on_Action_File_OpenCombo(void);

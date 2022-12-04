@@ -33,6 +33,7 @@ set(RMG_CORE_SOURCES
     VidExt.cpp
     Video.cpp
     Error.cpp
+    Unzip.cpp
     Core.cpp
     Key.cpp
     Rom.cpp

@@ -10,6 +10,11 @@
 #include "MainWindow.hpp"
 
 #include "UserInterface/Dialog/AboutDialog.hpp"
+#ifdef UPDATER
+#include "UserInterface/Dialog/UpdateDialog.hpp"
+#include "UserInterface/Dialog/DownloadUpdateDialog.hpp"
+#include "UserInterface/Dialog/InstallUpdateDialog.hpp"
+#endif // UPDATER
 #include "UserInterface/EventFilter.hpp"
 #include "Utilities/QtKeyToSdl2Key.hpp"
 #include "Callbacks.hpp"
@@ -59,6 +64,10 @@ bool MainWindow::Init(QGuiApplication* app)
 
     this->ui_Actions_Init();
     this->ui_Actions_Connect();
+
+#ifdef UPDATER
+    this->ui_CheckForUpdates();
+#endif // UPDATER
 
     this->menuBar_Init();
     this->menuBar_Setup(false, false);
@@ -705,6 +714,20 @@ void MainWindow::ui_Actions_Connect(void)
     connect(this->action_Help_About, &QAction::triggered, this, &MainWindow::on_Action_Help_About);
 }
 
+#ifdef UPDATER
+void MainWindow::ui_CheckForUpdates(void)
+{
+    if (!CoreSettingsGetBoolValue(SettingsID::GUI_CheckForUpdates))
+    {
+        return;
+    }
+
+    QNetworkAccessManager* networkAccessManager = new QNetworkAccessManager(this);
+    connect(networkAccessManager, &QNetworkAccessManager::finished, this, &MainWindow::on_networkAccessManager_Finished);
+    networkAccessManager->get(QNetworkRequest(QUrl("https://api.github.com/repos/Rosalie241/RMG/releases/latest")));
+}
+#endif // UPDATER
+
 void MainWindow::timerEvent(QTimerEvent *event)
 {
     int timerId = event->timerId();
@@ -824,6 +847,61 @@ void MainWindow::on_QGuiApplication_applicationStateChanged(Qt::ApplicationState
         } break;
     }
 }
+
+#ifdef UPDATER
+void MainWindow::on_networkAccessManager_Finished(QNetworkReply* reply)
+{
+    if (reply->error())
+    {
+        reply->deleteLater();
+        return;
+    }
+
+    QJsonDocument jsonDocument = QJsonDocument::fromJson(reply->readAll());
+    QJsonObject jsonObject = jsonDocument.object();
+
+    QString currentVersion = QString(VERSION_STR);
+    QString latestVersion = jsonObject.value("tag_name").toString();
+
+    reply->deleteLater();
+
+    // make sure the current version is valid
+    // and not a dev version
+    if (currentVersion.size() != 6)
+    {
+        return;
+    }
+
+    // do nothing when versions match
+    if (currentVersion == latestVersion)
+    {
+        return;
+    }
+
+    int ret = 0;
+
+    Dialog::UpdateDialog updateDialog(this, jsonObject);
+    ret = updateDialog.exec();
+    if (ret != QDialog::Accepted)
+    {
+        return;
+    }
+
+    Dialog::DownloadUpdateDialog downloadUpdateDialog(this, updateDialog.GetUrl(), updateDialog.GetFileName());
+    ret = downloadUpdateDialog.exec();
+    if (ret != QDialog::Accepted)
+    {
+        return;
+    }
+
+    Dialog::InstallUpdateDialog installUpdateDialog(this, QCoreApplication::applicationDirPath(), downloadUpdateDialog.GetTempDirectory(), downloadUpdateDialog.GetFileName());
+    ret = installUpdateDialog.exec();
+    if (ret != QDialog::Accepted)
+    {
+        return;
+    }
+}
+#endif // UPDATER
 
 void MainWindow::on_Action_File_OpenRom(void)
 {

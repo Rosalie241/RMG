@@ -40,4 +40,8 @@ done
 
 windeployqt "$exe"
 
+# needed by Qt at runtime
+cp "$path/libcrypto-1_1-x64.dll" "$bin_dir/"
+cp "$path/libssl-1_1-x64.dll"    "$bin_dir/"
+
 exit 0

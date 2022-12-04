@@ -24,6 +24,7 @@
 #include "Plugins.hpp"
 #include "Cheats.hpp"
 #include "Error.hpp"
+#include "Unzip.hpp"
 #include "Video.hpp"
 #include "Key.hpp"
 #include "Rom.hpp"

@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.15)
 
 option(PORTABLE_INSTALL "Portable Installation" ON)
 option(NO_GIT_CLONE     "Disables git clone usage for 3rdParty dependencies" OFF)
-
+option(UPDATER          "Enables updater" ${PORTABLE_INSTALL})
 project(RMG)
 
 find_package(Git REQUIRED)
@@ -20,6 +20,11 @@ execute_process(
 if (NOT PORTABLE_INSTALL AND (WIN32 OR MSYS))
     message(WARNING "Not-Portable build not supported on windows, re-enabling PORTABLE_INSTALL!")
     set(PORTABLE_INSTALL ON)
+endif()
+
+if (NOT PORTABLE_INSTALL AND UPDATER)
+    message(WARNING "Not-Portable builds don't support the updater, disabling UPDATER")
+    set(UPDATER OFF)
 endif()
 
 if (PORTABLE_INSTALL)
