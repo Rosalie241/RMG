@@ -25,6 +25,15 @@
   </screenshots>
   <description/>
   <releases>
+    <release version="v0.2.3" date="2022-12-05" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Add updater for portable installations</li>
+          <li>Add Discord Rich Presence</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.2.2" date="2022-12-03" type="stable">
       <description>
         <p>Changes:</p>
