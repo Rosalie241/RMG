@@ -17,12 +17,10 @@ set(M64P_CORE_DIR ${THIRDPARTY_DIR}/mupen64plus-core)
 if(WIN32)
     set(SO_EXT "dll")
     set(GCA_LIB "mupen64plus_input_gca.${SO_EXT}")
-    set(DISCORD_RPC_LIB "discord-rpc.a")
     set(CORE_FILE "mupen64plus.dll")
 else(WIN32)
     set(SO_EXT "so")
     set(GCA_LIB "libmupen64plus_input_gca.${SO_EXT}")
-    set(DISCORD_RPC_LIB "libdiscord-rpc.a")
     set(CORE_FILE "libmupen64plus.so")
 endif(WIN32)
 
@@ -238,7 +236,7 @@ if (DISCORD_RPC)
         BUILD_IN_SOURCE True
         CMAKE_ARGS -DBUILD_EXAMPLES=OFF -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_POSITION_INDEPENDENT_CODE=ON
 
-        BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/discord-rpc/src/${DISCORD_RPC_LIB}
+        BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/discord-rpc/src/libdiscord-rpc.a
     )
 endif(DISCORD_RPC)
 
