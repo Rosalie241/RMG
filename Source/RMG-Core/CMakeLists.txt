@@ -80,6 +80,7 @@ if (DISCORD_RPC)
     target_link_libraries(RMG-Core
         ${DISCORD_RPC_LIB}
     )
+    add_dependencies(RMG-Core discord-rpc)
 endif(DISCORD_RPC)
 
 target_include_directories(RMG-Core PRIVATE 
