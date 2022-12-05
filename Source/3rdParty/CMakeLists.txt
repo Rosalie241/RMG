@@ -8,19 +8,21 @@ set(THIRDPARTY_DIR ${CMAKE_BINARY_DIR}/Source/3rdParty)
 find_program(RUST_CARGO cargo)
 if(${RUST_CARGO} STREQUAL "RUST_CARGO-NOTFOUND")
     message(WARNING "mupen64plus-input-gca will not be built due to not having cargo installed")
-    set(BUILD_INPUT_GCA "0")
+    set(BUILD_INPUT_GCA OFF)
 else()
-    set(BUILD_INPUT_GCA "1")
+    set(BUILD_INPUT_GCA ON)
 endif()
 
 set(M64P_CORE_DIR ${THIRDPARTY_DIR}/mupen64plus-core)
 if(WIN32)
     set(SO_EXT "dll")
     set(GCA_LIB "mupen64plus_input_gca.${SO_EXT}")
+    set(DISCORD_RPC_LIB "discord-rpc.a")
     set(CORE_FILE "mupen64plus.dll")
 else(WIN32)
     set(SO_EXT "so")
     set(GCA_LIB "libmupen64plus_input_gca.${SO_EXT}")
+    set(DISCORD_RPC_LIB "libdiscord-rpc.a")
     set(CORE_FILE "libmupen64plus.so")
 endif(WIN32)
 
@@ -51,6 +53,9 @@ if(NOT NO_GIT_CLONE)
 
     set(MUPEN64PLUS_GFX_PARALLEL_URL  "https://github.com/Rosalie241/parallel-rdp-standalone")
     set(MUPEN64PLUS_GFX_PARALLEL_TAG  "693f607728aca78d94ba5d45b0ce119b4ccbcd8c")
+
+    set(DISCORD_RPC_URL               "https://github.com/discord/discord-rpc")
+    set(DISCORD_RPC_TAG               "963aa9f3e5ce81a4682c6ca3d136cddda614db33")
 endif(NOT NO_GIT_CLONE)
 
 ExternalProject_Add(mupen64plus-core
@@ -141,7 +146,7 @@ ExternalProject_Add(mupen64plus-input-raphnetraw
     DEPENDS mupen64plus-core
 )
 
-if (${BUILD_INPUT_GCA} STREQUAL "1")
+if (BUILD_INPUT_GCA)
     ExternalProject_Add(mupen64plus-input-gca
         SOURCE_DIR mupen64plus-input-gca/
 
@@ -157,7 +162,7 @@ if (${BUILD_INPUT_GCA} STREQUAL "1")
         BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-input-gca/target/release/${GCA_LIB}
         DEPENDS mupen64plus-core
     )
-endif()
+endif(BUILD_INPUT_GCA)
 
 set(GLIDEN64_DIR "${THIRDPARTY_DIR}/mupen64plus-video-GLideN64")
 set(GLIDEN64_BUILD_DIR "${GLIDEN64_DIR}/projects/cmake")
@@ -221,6 +226,22 @@ ExternalProject_Add(mupen64plus-video-parallel
     DEPENDS mupen64plus-core
 )
 
+if (DISCORD_RPC)
+    ExternalProject_Add(discord-rpc
+        SOURCE_DIR discord-rpc
+
+        GIT_REPOSITORY ${DISCORD_RPC_URL}
+        GIT_TAG ${DISCORD_RPC_TAG}
+
+        INSTALL_COMMAND ""
+
+        BUILD_IN_SOURCE True
+        CMAKE_ARGS -DBUILD_EXAMPLES=OFF -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+
+        BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/discord-rpc/src/${DISCORD_RPC_LIB}
+    )
+endif(DISCORD_RPC)
+
 ExternalProject_Get_property(mupen64plus-core BUILD_BYPRODUCTS)
 set(MUPEN64PLUSCORE_LIB ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 set(MUPEN64PLUSCORE_INI ${M64P_CORE_DIR}/data/mupen64plus.ini PARENT_SCOPE)
@@ -237,10 +258,10 @@ set(MUPEN64PLUS_PLUGIN_RSP_PARALLEL ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 ExternalProject_Get_property(mupen64plus-input-raphnetraw BUILD_BYPRODUCTS)
 set(MUPEN64PLUS_PLUGIN_INPUT_RAPHNET ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 
-if (${BUILD_INPUT_GCA} STREQUAL "1")
+if (BUILD_INPUT_GCA)
     ExternalProject_Get_property(mupen64plus-input-gca BUILD_BYPRODUCTS)
     set(MUPEN64PLUS_PLUGIN_INPUT_GCA ${BUILD_BYPRODUCTS} PARENT_SCOPE)
-endif()
+endif(BUILD_INPUT_GCA)
 
 ExternalProject_Get_property(mupen64plus-video-angrylion-plus BUILD_BYPRODUCTS)
 set(MUPEN64PLUS_PLUGIN_GFX_ANGRYLION ${BUILD_BYPRODUCTS} PARENT_SCOPE)
@@ -250,3 +271,8 @@ set(MUPEN64PLUS_PLUGIN_GFX_GLIDEN64 ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 
 ExternalProject_Get_property(mupen64plus-video-parallel BUILD_BYPRODUCTS)
 set(MUPEN64PLUS_PLUGIN_GFX_PARALLEL ${BUILD_BYPRODUCTS} PARENT_SCOPE)
+
+if (DISCORD_RPC)
+ExternalProject_Get_property(discord-rpc BUILD_BYPRODUCTS)
+set(DISCORD_RPC_LIB ${BUILD_BYPRODUCTS} PARENT_SCOPE)
+endif(DISCORD_RPC)

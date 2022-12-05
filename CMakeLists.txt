@@ -6,6 +6,8 @@ cmake_minimum_required(VERSION 3.15)
 option(PORTABLE_INSTALL "Portable Installation" ON)
 option(NO_GIT_CLONE     "Disables git clone usage for 3rdParty dependencies" OFF)
 option(UPDATER          "Enables updater" ${PORTABLE_INSTALL})
+option(DISCORD_RPC      "Enables Discord Rich Presence" ON)
+
 project(RMG)
 
 find_package(Git REQUIRED)
@@ -46,6 +48,8 @@ else()
     set(ICON_INSTALL_PATH "share/icons/hicolor/scalable/apps/")
 endif()
 
+add_subdirectory(Source/3rdParty)
+
 add_subdirectory(Source/RMG-Core)
 add_subdirectory(Source/RMG)
 add_subdirectory(Source/RMG-Audio)
@@ -68,7 +72,6 @@ if (WIN32)
 	)
 endif()
 
-add_subdirectory(Source/3rdParty)
 install(FILES ${MUPEN64PLUSCORE_LIB}
     DESTINATION ${CORE_INSTALL_PATH}
 )
