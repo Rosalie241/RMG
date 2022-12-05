@@ -870,14 +870,6 @@ void SettingsDialog::on_buttonBox_clicked(QAbstractButton *button)
                 return;
             }
         }
-
-#ifdef DISCORD_RPC
-        // re-initialize Discord Rpc to make sure the settings apply now
-        CoreDiscordRpcShutdown();
-        CoreDiscordRpcInit();
-        CoreDiscordRpcUpdate(CoreIsEmulationRunning() || CoreIsEmulationPaused());
-#endif // DISCORD_RPC
-
     }
 
     if (pushButton == defaultButton)
