@@ -8,6 +8,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "SettingsDialog.hpp"
+#include "RMG-Core/DiscordRpc.hpp"
 #include "RMG-Core/Settings/Settings.hpp"
 #include "UserInterface/Widget/KeybindButton.hpp"
 
@@ -42,13 +43,28 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
 
     pluginList = CoreGetAllPlugins();
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 11; i++)
     {
         this->reloadSettings(i);
     }
 
     // connect hotkey settings to slot
     this->commonHotkeySettings(-1);
+
+#ifndef UPDATER
+    this->checkForUpdatesCheckBox->setHidden(true);
+#endif // !UPDATER
+
+#ifndef DISCORD_RPC
+    this->discordRpcCheckBox->setHidden(true);
+
+    // if both DISCORD_RPC & UPDATER
+    // aren't defined, hide the tab
+    // with the settings for those
+#ifndef UPDATER
+    this->innerInterfaceTabWidget->removeTab(2);
+#endif // !UPDATER
+#endif // !DISCORD_RPC
 
     int width = CoreSettingsGetIntValue(SettingsID::GUI_SettingsDialogWidth);
     int height = CoreSettingsGetIntValue(SettingsID::GUI_SettingsDialogHeight);
@@ -130,6 +146,9 @@ void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
     case 9:
         loadDefaultInterfaceRomBrowserSettings();
         break;
+    case 10:
+        loadDefaultInterfaceMiscSettings();
+        break;
     }
 }
 
@@ -167,6 +186,9 @@ void SettingsDialog::reloadSettings(int stackedWidgetIndex)
         break;
     case 9:
         loadInterfaceRomBrowserSettings();
+        break;
+    case 10:
+        loadInterfaceMiscSettings();
         break;
     }
 }
@@ -351,6 +373,12 @@ void SettingsDialog::loadInterfaceRomBrowserSettings(void)
     this->romSearchLimitSpinBox->setValue(CoreSettingsGetIntValue(SettingsID::RomBrowser_MaxItems));
 }
 
+void SettingsDialog::loadInterfaceMiscSettings(void)
+{
+    this->checkForUpdatesCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_CheckForUpdates));
+    this->discordRpcCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_DiscordRpc));
+}
+
 void SettingsDialog::loadDefaultCoreSettings(void)
 {
     bool disableExtraMem = false;
@@ -468,6 +496,12 @@ void SettingsDialog::loadDefaultInterfaceRomBrowserSettings(void)
     this->romSearchLimitSpinBox->setValue(CoreSettingsGetDefaultIntValue(SettingsID::RomBrowser_MaxItems));
 }
 
+void SettingsDialog::loadDefaultInterfaceMiscSettings(void)
+{
+    this->checkForUpdatesCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_CheckForUpdates));
+    this->discordRpcCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_DiscordRpc));
+}
+
 void SettingsDialog::saveSettings(void)
 {
     this->saveCoreSettings();
@@ -485,6 +519,7 @@ void SettingsDialog::saveSettings(void)
     this->saveHotkeySettings();
     this->saveInterfaceEmulationSettings();
     this->saveInterfaceRomBrowserSettings();
+    this->saveInterfaceMiscSettings();
 }
 
 void SettingsDialog::saveCoreSettings(void)
@@ -641,6 +676,12 @@ void SettingsDialog::saveInterfaceRomBrowserSettings(void)
 {
     CoreSettingsSetValue(SettingsID::RomBrowser_Recursive, this->searchSubDirectoriesCheckbox->isChecked());
     CoreSettingsSetValue(SettingsID::RomBrowser_MaxItems, this->romSearchLimitSpinBox->value());
+}
+
+void SettingsDialog::saveInterfaceMiscSettings(void)
+{
+    CoreSettingsSetValue(SettingsID::GUI_CheckForUpdates, this->checkForUpdatesCheckBox->isChecked());
+    CoreSettingsSetValue(SettingsID::GUI_DiscordRpc, this->discordRpcCheckBox->isChecked());
 }
 
 void SettingsDialog::commonHotkeySettings(int action)
@@ -829,6 +870,14 @@ void SettingsDialog::on_buttonBox_clicked(QAbstractButton *button)
                 return;
             }
         }
+
+#ifdef DISCORD_RPC
+        // re-initialize Discord Rpc to make sure the settings apply now
+        CoreDiscordRpcShutdown();
+        CoreDiscordRpcInit();
+        CoreDiscordRpcUpdate(CoreIsEmulationRunning() || CoreIsEmulationPaused());
+#endif // DISCORD_RPC
+
     }
 
     if (pushButton == defaultButton)

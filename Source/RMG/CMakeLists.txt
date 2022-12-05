@@ -12,6 +12,10 @@ find_package(Qt5 COMPONENTS Network REQUIRED)
 add_definitions(-DUPDATER)
 endif(UPDATER)
 
+if (DISCORD_RPC)
+add_definitions(-DDISCORD_RPC)
+endif(DISCORD_RPC)
+
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2)
 

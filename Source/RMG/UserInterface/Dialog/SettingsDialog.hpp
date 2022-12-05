@@ -61,6 +61,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void loadHotkeySettings(void);
     void loadInterfaceEmulationSettings(void);
     void loadInterfaceRomBrowserSettings(void);
+    void loadInterfaceMiscSettings(void);
 
     void loadDefaultCoreSettings(void);
     void loadDefaultGameSettings(void);
@@ -72,6 +73,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void loadDefaultHotkeySettings(void);
     void loadDefaultInterfaceEmulationSettings(void);
     void loadDefaultInterfaceRomBrowserSettings(void);
+    void loadDefaultInterfaceMiscSettings(void);
 
     void saveSettings(void);
     void saveCoreSettings(void);
@@ -84,6 +86,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void saveHotkeySettings(void);
     void saveInterfaceEmulationSettings(void);
     void saveInterfaceRomBrowserSettings(void);
+    void saveInterfaceMiscSettings(void);
 
     void commonHotkeySettings(int);
     void commonPluginSettings(int);
