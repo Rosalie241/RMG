@@ -9,7 +9,9 @@
  */
 #define CORE_INTERNAL
 #include "Core.hpp"
-
+#ifdef DISCORD_RPC
+#include "DiscordRpc.hpp"
+#endif // DISCORD_RPC
 #include "osal/osal_dynlib.hpp"
 #include "m64p/Api.hpp"
 #include "m64p/api/version.h"
@@ -153,6 +155,11 @@ bool CoreInit(void)
 
     CoreReadRomHeaderAndSettingsCache();
 
+#ifdef DISCORD_RPC
+    CoreDiscordRpcInit();
+    CoreDiscordRpcUpdate(false);
+#endif // DISCORD_RPC
+
     return true;
 }
 
@@ -185,6 +192,10 @@ void CoreShutdown(void)
     CorePluginsShutdown();
 
     CoreSaveRomHeaderAndSettingsCache();
+
+#ifdef DISCORD_RPC
+    CoreDiscordRpcShutdown();
+#endif // DISCORD_RPC
 
     m64p::Core.Unhook();
     m64p::Config.Unhook();

@@ -14,6 +14,7 @@ enum class SettingsID
     GUI_ResumeEmulationOnFocus,
     GUI_AutomaticFullscreen,
     GUI_CheckForUpdates,
+    GUI_DiscordRpc,
     GUI_Version,
     
     // Core Plugin Settings

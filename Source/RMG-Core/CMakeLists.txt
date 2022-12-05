@@ -51,8 +51,15 @@ else()
     )
 endif()
 
+if (DISCORD_RPC)
+    list(APPEND RMG_CORE_SOURCES 
+        DiscordRpc.cpp
+    )
+    add_definitions(-DDISCORD_RPC)
+endif(DISCORD_RPC)
+
 if (PORTABLE_INSTALL)
-add_definitions(-DPORTABLE_INSTALL)
+    add_definitions(-DPORTABLE_INSTALL)
 endif(PORTABLE_INSTALL)
 
 add_library(RMG-Core STATIC ${RMG_CORE_SOURCES})
@@ -68,6 +75,12 @@ endif(WIN32)
 target_link_libraries(RMG-Core
     ${MINIZIP_LIBRARIES}
 )
+
+if (DISCORD_RPC)
+    target_link_libraries(RMG-Core
+        ${DISCORD_RPC_LIB}
+    )
+endif(DISCORD_RPC)
 
 target_include_directories(RMG-Core PRIVATE 
     ${CMAKE_CURRENT_BINARY_DIR}

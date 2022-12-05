@@ -16,6 +16,9 @@
 #include "Cheats.hpp"
 #include "Error.hpp"
 #include "Rom.hpp"
+#ifdef DISCORD_RPC
+#include "DiscordRpc.hpp"
+#endif // DISCORD_RPC
 
 //
 // Local Functions
@@ -132,6 +135,10 @@ bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64d
     // apply game core settings overrides
     apply_game_coresettings_overlay();
 
+#ifdef DISCORD_RPC
+    CoreDiscordRpcUpdate(true);
+#endif // DISCORD_RPC
+
     ret = m64p::Core.DoCommand(M64CMD_EXECUTE, 0, nullptr);
     if (ret != M64ERR_SUCCESS)
     {
@@ -146,6 +153,10 @@ bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64d
 
     // restore plugin settings
     CoreApplyPluginSettings();
+
+#ifdef DISCORD_RPC
+    CoreDiscordRpcUpdate(false);
+#endif // DISCORD_RPC
 
     return ret == M64ERR_SUCCESS;
 }
