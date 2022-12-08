@@ -26,7 +26,7 @@ endif(WIN32)
 
 if(NOT NO_GIT_CLONE)
     set(MUPEN64PLUSCORE_URL           "https://github.com/mupen64plus/mupen64plus-core")
-    set(MUPEN64PLUSCORE_TAG           "673aa48d1ddf843e4889274d1e666f0dca1ab468")
+    set(MUPEN64PLUSCORE_TAG           "ba9a52483052248b67c324e3fd0e073b807bbea4")
     
     set(MUPEN64PLUS_RSP_CXD4_URL      "https://github.com/mupen64plus/mupen64plus-rsp-cxd4")
     set(MUPEN64PLUS_RSP_CXD4_TAG      "39f79201baa15890c4cbae92f2215a634cc3ee6d")
