@@ -468,7 +468,7 @@ static l_Setting get_setting(SettingsID settingId)
         setting = {SETTING_SECTION_AUDIO, "Muted", false};
         break;
     case SettingsID::Audio_Synchronize:
-        setting = {SETTING_SECTION_AUDIO, "Synchronize", true};
+        setting = {SETTING_SECTION_AUDIO, "Synchronize", false};
         break;
 
     case SettingsID::Input_PluggedIn:
@@ -978,11 +978,27 @@ bool CoreSettingsUpgrade(void)
             CoreSettingsSetValue(SettingsID::Core_ScreenshotPath, CoreGetDefaultScreenshotDirectory());
         }
 #endif
+    }
 
+    if (settingsVersion == "v0.2.1" ||
+        settingsVersion == "v0.2.2" ||
+        settingsVersion == "v0.2.3")
+    {
+        // sadly when introducing the new RMG-Audio based on mupen64plus-audio-sdl
+        // 1) sync audio seems to cause crackling for some users
+        // 2) sync audio breaks the 'Limit FPS' option
+        // so to fix those issues, we'll disable the sync audio option
+        // if it's enabled
+        if (CoreSettingsGetBoolValue(SettingsID::Audio_Synchronize))
+        {
+            CoreSettingsSetValue(SettingsID::Audio_Synchronize, false);
+        }
     }
 
     // save core version
-    return CoreSettingsSetValue(SettingsID::GUI_Version, std::string(CORE_VERSION));
+    CoreSettingsSetValue(SettingsID::GUI_Version, std::string(CORE_VERSION));
+    CoreSettingsSave();
+    return true;
 }
 
 bool CoreSettingsSetupDefaults(void)
