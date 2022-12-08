@@ -36,6 +36,9 @@ class InstallUpdateDialog : public QDialog, private Ui::InstallUpdateDialog
     void launchProcess(QString file, QStringList arguments);
     void showErrorMessage(QString error, QString details);
 
+  protected:
+    void timerEvent(QTimerEvent *) Q_DECL_OVERRIDE;
+
   public:
     InstallUpdateDialog(QWidget *parent, QString installationDirectory, QString temporaryDirectory, QString filename);
     ~InstallUpdateDialog(void);

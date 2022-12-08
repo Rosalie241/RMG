@@ -24,7 +24,7 @@ InstallUpdateDialog::InstallUpdateDialog(QWidget *parent, QString installationDi
     this->installationDirectory = installationDirectory;
     this->temporaryDirectory = temporaryDirectory;
     this->filename = filename;
-    this->install();
+    this->startTimer(100);
 }
 
 InstallUpdateDialog::~InstallUpdateDialog(void)
@@ -33,9 +33,6 @@ InstallUpdateDialog::~InstallUpdateDialog(void)
 
 void InstallUpdateDialog::install(void)
 {
-    this->label->setText("Extracting " + this->filename + "...");
-    this->progressBar->setValue(50);
-
     QString fullFilePath;
     fullFilePath = this->temporaryDirectory;
     fullFilePath += "/" + this->filename;   
@@ -46,6 +43,7 @@ void InstallUpdateDialog::install(void)
 #ifdef _WIN32
     if (this->filename.endsWith(".exe"))
     {
+        this->label->setText("Executing " + this->filename + "...");
         QStringList scriptLines = 
         {
             "@echo off",
@@ -58,6 +56,9 @@ void InstallUpdateDialog::install(void)
         return;
     }
 #endif // _WIN32
+
+    this->label->setText("Extracting " + this->filename + "...");
+    this->progressBar->setValue(50);
 
     QDir dir(this->temporaryDirectory);
     if (!dir.mkdir("extract"))
@@ -77,6 +78,9 @@ void InstallUpdateDialog::install(void)
         this->reject();
         return;
     }    
+
+    this->label->setText("Executing update script...");
+    this->progressBar->setValue(100);
 
 #ifdef _WIN32
     QStringList scriptLines = 
@@ -154,4 +158,10 @@ void InstallUpdateDialog::showErrorMessage(QString error, QString details)
     msgBox.addButton(QMessageBox::Ok);
     msgBox.exec();
 }
+
+ void InstallUpdateDialog::timerEvent(QTimerEvent *event)
+ {
+    this->killTimer(event->timerId());
+    this->install();
+ }
 
