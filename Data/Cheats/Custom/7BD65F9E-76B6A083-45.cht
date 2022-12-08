@@ -1,0 +1,33 @@
+[7BD65F9E-76B6A083-C:45]
+Name=007 - The World is Not Enough (U) (Prototype - 2020 release)
+
+$Enable Cheats Menu
+800811F0 0005
+
+$Invincible
+80130ACD 00??
+01 On
+00 Off
+
+$All Weapons
+80130AE0 00??
+01 On
+00 Off
+
+$All Gadgets
+80130AE1 00??
+01 On
+00 Off
+
+$All Missions
+80130AE2 00??
+01 On
+00 Off
+
+$Infinite Health (All Levels)
+81045D68 2400
+
+$Infinite Ammo (All Guns for all Levels)
+Note=The Clip will count down but you will never run out of Ammo.
+81040730 2400
+

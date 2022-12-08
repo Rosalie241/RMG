@@ -1,0 +1,36 @@
+[8825E18B-3297746B-C:50]
+Name=Aidyn Chronicles - The First Mage (Europe) (Prototype) (2)
+
+$Infinite\Max Health
+80279308 001E
+
+$Infinite\99 Health Potions
+Note=Do Not put this cheat on until you have collected your 1st Health Potion from the 1st Cheat or you will not be able to get into the Sub menu and Continue the game.
+80278D3B 0063
+
+$Have\Max Gold
+50000401 0000
+80277AA5 00FF
+
+$Have\Max Total XP
+50000401 0000
+8027931D 00FF
+
+$Have\Max Total XP Remaning to Start
+Note=This will give you 16777215 Total XP Remaning to start with and after your 1st batle will allow you to buy your Max Stats
+50000401 0000
+80279321 00FF
+
+$Play As Character
+Note=Enable this at the start of a Game, before a next Level, or before a Cutscene to become your chosen option.
+810E108E ????
+25F9 Alaron
+2A43 Marari Female
+2C17 Spirit
+2CC0 Marari Male
+2D4A GiantBat
+2E82 Chaos Trooper
+3094 Gryphon
+324D Ogre
+32CC GiantRat
+
