@@ -18,16 +18,30 @@
 #include <fstream>
 #include <algorithm>
 
+#ifdef _WIN32
+#include <Windows.h>
+#else // Linux
+#include <linux/limits.h>
+#endif // _WIN32
+
 //
 // Local Defines
 //
 
-#define MAX_FILENAME_LEN 4096
-#define ROMHEADER_NAME_LEN 21
+#ifdef _WIN32
+#define MAX_FILENAME_LEN MAX_PATH
+#else // Linux
+#define MAX_FILENAME_LEN PATH_MAX
+#endif // _WIN32
+#define ROMHEADER_NAME_LEN 256
 #define GOODNAME_LEN 256
 #define MD5_LEN 33
 
-#define CACHE_FILE_MAGIC "RMGCoreHeaderAndSettingsCache_03"
+#ifdef _WIN32
+#define CACHE_FILE_MAGIC "RMGCoreHeaderAndSettingsCacheWindows_04"
+#else // Linux
+#define CACHE_FILE_MAGIC "RMGCoreHeaderAndSettingsCacheLinux_04"
+#endif // _WIN32
 #define CACHE_FILE_ITEMS_MAX 10000
 
 //
@@ -90,6 +104,7 @@ void CoreReadRomHeaderAndSettingsCache(void)
     char headerNameBuf[ROMHEADER_NAME_LEN];
     char goodNameBuf[GOODNAME_LEN];
     char md5Buf[MD5_LEN];
+    uint32_t size;
     l_CacheEntry cacheEntry;
 
     inputStream.open(get_cache_file_name(), std::ios::binary);
@@ -108,27 +123,32 @@ void CoreReadRomHeaderAndSettingsCache(void)
 
     // read all file entries
 #define FREAD(x) inputStream.read((char*)&x, sizeof(x))
-#define FREAD_STR(x) inputStream.read((char*)x, sizeof(x))
+#define FREAD_STR(x, y) inputStream.read((char*)x, y)
     while (!inputStream.eof())
     {
         // reset buffers
+        size = 0;
         memset(fileNameBuf, 0, sizeof(fileNameBuf));
         memset(headerNameBuf, 0, sizeof(headerNameBuf));
         memset(goodNameBuf, 0, sizeof(goodNameBuf));
         memset(md5Buf, 0, sizeof(md5Buf));
 
         // file info
-        FREAD_STR(fileNameBuf);
+        FREAD(size);
+        FREAD_STR(fileNameBuf, size);
         cacheEntry.fileName = std::filesystem::path(fileNameBuf);
         FREAD(cacheEntry.fileTime);
         // header
-        FREAD_STR(headerNameBuf);
+        FREAD(size);
+        FREAD_STR(headerNameBuf, size);
         cacheEntry.header.Name = std::string(headerNameBuf);
         FREAD(cacheEntry.header.CRC1);
         FREAD(cacheEntry.header.CRC2);
         // (partial) settings
-        FREAD_STR(goodNameBuf);
-        FREAD_STR(md5Buf);
+        FREAD(size);
+        FREAD_STR(goodNameBuf, size);
+        FREAD(size);
+        FREAD_STR(md5Buf, size);
         cacheEntry.settings.GoodName = std::string(goodNameBuf);
         cacheEntry.settings.MD5 = std::string(md5Buf);
 
@@ -148,6 +168,7 @@ bool CoreSaveRomHeaderAndSettingsCache(void)
     char headerNameBuf[ROMHEADER_NAME_LEN];
     char goodNameBuf[GOODNAME_LEN];
     char md5Buf[MD5_LEN];
+    uint32_t size;
     l_CacheEntry cacheEntry;
 
     // only save cache when the entries have changed
@@ -167,12 +188,13 @@ bool CoreSaveRomHeaderAndSettingsCache(void)
 
     // write each entry in the file
 #define FWRITE(x) outputStream.write((char*)&x, sizeof(x))
-#define FWRITE_STR(x) outputStream.write((char*)x, sizeof(x))
+#define FWRITE_STR(x, y) outputStream.write((char*)x, y)
     for (auto iter = l_CacheEntries.cbegin(); iter != l_CacheEntries.end(); iter++)
     {
         cacheEntry = (*iter);
 
         // reset buffers
+        size = 0;
         memset(fileNameBuf, 0, sizeof(fileNameBuf));
         memset(headerNameBuf, 0, sizeof(headerNameBuf));
         memset(goodNameBuf, 0, sizeof(goodNameBuf));
@@ -185,15 +207,23 @@ bool CoreSaveRomHeaderAndSettingsCache(void)
         strncpy(md5Buf, cacheEntry.settings.MD5.c_str(), sizeof(md5Buf));
 
         // file info
-        FWRITE_STR(fileNameBuf);
+        size = cacheEntry.fileName.wstring().size() * sizeof(wchar_t);
+        FWRITE(size);
+        FWRITE_STR(fileNameBuf, size);
         FWRITE(cacheEntry.fileTime);
         // header
-        FWRITE_STR(headerNameBuf);
+        size = cacheEntry.header.Name.size();
+        FWRITE(size);
+        FWRITE_STR(headerNameBuf, size);
         FWRITE(cacheEntry.header.CRC1);
         FWRITE(cacheEntry.header.CRC2);
         // (partial) settings
-        FWRITE_STR(goodNameBuf);
-        FWRITE_STR(md5Buf);
+        size = cacheEntry.settings.GoodName.size();
+        FWRITE(size);
+        FWRITE_STR(goodNameBuf, size);
+        size = cacheEntry.settings.MD5.size();
+        FWRITE(size);
+        FWRITE_STR(md5Buf, size);
     }
 #undef FWRITE
 #undef FWRITE_STR
