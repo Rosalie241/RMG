@@ -9,6 +9,9 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2)
 pkg_check_modules(MINIZIP REQUIRED minizip)
+if (WIN32)
+    pkg_check_modules(ICONV REQUIRED iconv)
+endif(WIN32)
 
 configure_file(Config.hpp.in Config.hpp)
 
@@ -18,6 +21,7 @@ set(RMG_CORE_SOURCES
     m64p/ConfigApi.cpp
     m64p/PluginApi.cpp
     CachedRomHeaderAndSettings.cpp
+    ConvertStringEncoding.cpp
     Settings/Settings.cpp
     SpeedLimiter.cpp
     RomSettings.cpp
@@ -69,7 +73,7 @@ if(UNIX)
 endif(UNIX)
 
 if(WIN32)
-    target_link_libraries(RMG-Core wsock32 ws2_32)
+    target_link_libraries(RMG-Core wsock32 ws2_32 ${ICONV_LIBRARIES})
 endif(WIN32)
 
 target_link_libraries(RMG-Core

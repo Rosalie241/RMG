@@ -9,6 +9,7 @@
  */
 #define CORE_INTERNAL
 #include "Core.hpp"
+#include "ConvertStringEncoding.hpp"
 
 //
 // Local Variables
@@ -28,7 +29,19 @@ void CoreDebugCallback(void* context, int level, const char* message)
         return;
     }
 
-    l_DebugCallbackFunc((CoreDebugMessageType)level, std::string(message));
+    std::string messageString(message);
+
+    // convert string encoding accordingly
+    if (messageString.starts_with("IS64:"))
+    {
+        messageString = CoreConvertStringEncoding(message, CoreStringEncoding::EUC_JP);
+    }
+    else
+    {
+        messageString = CoreConvertStringEncoding(message, CoreStringEncoding::Shift_JIS);
+    }
+
+    l_DebugCallbackFunc((CoreDebugMessageType)level, messageString);
 }
 
 void CoreStateCallback(void* context, m64p_core_param param, int value)

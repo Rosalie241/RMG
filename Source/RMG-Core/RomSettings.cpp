@@ -7,13 +7,16 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+#define CORE_INTERNAL
 #include "RomSettings.hpp"
 #include "Emulation.hpp"
+#include "RomHeader.hpp"
 #include "m64p/Api.hpp"
 #include "Error.hpp"
 #include "Rom.hpp"
 
 #include "Settings/Settings.hpp"
+#include "ConvertStringEncoding.hpp"
 
 //
 // Local Variables
@@ -46,7 +49,7 @@ bool CoreGetCurrentRomSettings(CoreRomSettings& settings)
         return false;
     }
 
-    settings.GoodName = std::string(m64p_settings.goodname);
+    settings.GoodName = CoreConvertStringEncoding(m64p_settings.goodname, CoreStringEncoding::Shift_JIS);
     settings.MD5 = std::string(m64p_settings.MD5);
     settings.SaveType = m64p_settings.savetype;
     settings.DisableExtraMem = m64p_settings.disableextramem;

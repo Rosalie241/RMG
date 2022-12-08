@@ -13,7 +13,9 @@
 #include <arpa/inet.h>
 #endif // _WIN32
 
+#define CORE_INTERNAL
 #include "RomHeader.hpp"
+#include "ConvertStringEncoding.hpp"
 #include "Emulation.hpp"
 #include "m64p/Api.hpp"
 #include "Error.hpp"
@@ -46,6 +48,7 @@ bool CoreGetCurrentRomHeader(CoreRomHeader& header)
     header.CRC1        = ntohl(m64p_header.CRC1);
     header.CRC2        = ntohl(m64p_header.CRC2);
     header.CountryCode = m64p_header.Country_code;
-    header.Name        = std::string((char*)m64p_header.Name);
+    header.Name        = CoreConvertStringEncoding((char*)m64p_header.Name, CoreStringEncoding::Shift_JIS);
+    
     return true;
 }
