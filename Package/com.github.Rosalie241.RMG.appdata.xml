@@ -25,6 +25,19 @@
   </screenshots>
   <description/>
   <releases>
+    <release version="v0.2.4" date="2022-12-08" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix Discord Rich Presence breaking when opening the settings dialog</li>
+          <li>Fix install update window not showing</li>
+          <li>Fix 'Limit FPS' not working with new RMG-Audio (this disables the 'synchronize audio' option)</li>
+          <li>Implement support for Japanese characters in the ROM header</li>
+          <li>Implement dynamic buffer sizes in the ROM browser cache (this reduces the ROM browser cache size)</li>
+          <li>Add more cheats from Gent</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.2.3" date="2022-12-05" type="stable">
       <description>
         <p>Changes:</p>
