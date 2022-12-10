@@ -302,11 +302,11 @@ void ControllerWidget::CheckInputDeviceSettings()
 
     int deviceNameIndex = this->inputDeviceComboBox->findText(QString::fromStdString(deviceName), Qt::MatchFlag::MatchStartsWith);
     int deviceNumIndex = this->inputDeviceComboBox->findData(deviceNum);
-    
-    if ((deviceNameIndex == deviceNumIndex) &&
-        (deviceNameIndex != -1))
+
+    if ((deviceNumIndex != -1) &&
+        (this->inputDeviceComboBox->itemText(deviceNumIndex).startsWith(QString::fromStdString(deviceName))))
     { // full match
-        this->inputDeviceComboBox->setCurrentIndex(deviceNameIndex);
+        this->inputDeviceComboBox->setCurrentIndex(deviceNumIndex);
     }
     else if (deviceNameIndex != -1)
     { // name only match
