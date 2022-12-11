@@ -28,7 +28,7 @@ private:
         QString deviceName;
         int deviceNum;
 
-        bool operator== (inputDevice_t other)
+        bool operator== (inputDevice_t other) const
         {
             return other.deviceNum == deviceNum &&
                 other.deviceName == deviceName;
