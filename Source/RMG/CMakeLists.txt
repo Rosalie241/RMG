@@ -70,7 +70,6 @@ endif()
 
 target_link_libraries(RMG 
     RMG-Core
-    ${SDL2_LIBRARIES}
 )
 
 target_include_directories(RMG PRIVATE 
