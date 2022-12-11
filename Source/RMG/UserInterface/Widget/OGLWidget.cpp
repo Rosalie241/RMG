@@ -1,3 +1,12 @@
+/*
+ * Rosalie's Mupen GUI - https://github.com/Rosalie241/RMG
+ *  Copyright (C) 2020 Rosalie Wanders <rosalie@mailbox.org>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License version 3.
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 #include "OGLWidget.hpp"
 
 #include <RMG-Core/Core.hpp>
@@ -6,51 +15,40 @@ using namespace UserInterface::Widget;
 
 OGLWidget::OGLWidget(QWidget *parent)
 {
-    this->parent = parent;
-    this->timerId = 0;
+    this->widgetParent = parent;
+    this->setSurfaceType(QWindow::OpenGLSurface);
+    this->openGLcontext = new QOpenGLContext();
 }
 
 OGLWidget::~OGLWidget(void)
 {
+    this->openGLcontext->deleteLater();
 }
 
-void OGLWidget::MoveToThread(QThread *thread)
+void OGLWidget::MoveContextToThread(QThread* thread)
 {
-    this->doneCurrent();
-
-    this->context()->create();
-
-    this->context()->moveToThread(thread);
+    this->GetContext()->doneCurrent();
+    this->GetContext()->create();
+    this->GetContext()->moveToThread(thread);
 }
 
-void OGLWidget::SetAllowResizing(bool value)
+QOpenGLContext* OGLWidget::GetContext()
 {
-    this->allowResizing = value;
+    return this->openGLcontext;
 }
 
-void OGLWidget::SetHideCursor(bool value)
+void OGLWidget::SetHideCursor(bool hide)
 {
-    this->setCursor(value ? Qt::BlankCursor : Qt::ArrowCursor);
+    this->setCursor(hide ? Qt::BlankCursor : Qt::ArrowCursor);
 }
 
 QWidget *OGLWidget::GetWidget(void)
 {
-    QWidget *widget = QWidget::createWindowContainer(this);
-    widget->setParent(this->parent);
-    return widget;
-}
-
-void OGLWidget::exposeEvent(QExposeEvent *)
-{
+    return QWidget::createWindowContainer(this, this->widgetParent);
 }
 
 void OGLWidget::resizeEvent(QResizeEvent *event)
 {
-    QOpenGLWindow::resizeEvent(event);
-
-    if (!this->allowResizing)
-        return;
-
     if (this->timerId != 0)
     {
         this->killTimer(this->timerId);
@@ -61,8 +59,8 @@ void OGLWidget::resizeEvent(QResizeEvent *event)
 
     // account for HiDPI scaling
     // see https://github.com/Rosalie241/RMG/issues/2
-    this->width = event->size().width() * this->devicePixelRatioF();
-    this->height = event->size().height() * this->devicePixelRatioF();
+    this->width = event->size().width() * this->devicePixelRatio();
+    this->height = event->size().height() * this->devicePixelRatio();
 }
 
 void OGLWidget::timerEvent(QTimerEvent *event)
@@ -72,5 +70,4 @@ void OGLWidget::timerEvent(QTimerEvent *event)
     // remove current timer
     this->killTimer(this->timerId);
     this->timerId = 0;
-    this->requestActivate();
 }

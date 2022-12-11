@@ -36,12 +36,12 @@ static void VidExt_OglSetup(void)
 {
     l_EmuThread->on_VidExt_SetupOGL(l_SurfaceFormat, QThread::currentThread());
 
-    while (!l_OGLWidget->isValid())
+    while (!l_OGLWidget->GetContext()->isValid())
     {
         continue;
     }
 
-    l_OGLWidget->makeCurrent();
+    l_OGLWidget->GetContext()->makeCurrent(l_OGLWidget);
     l_VidExtSetup = true;
 }
 
@@ -64,7 +64,7 @@ static m64p_error VidExt_Init(void)
 
 static m64p_error VidExt_Quit(void)
 {
-    l_OGLWidget->MoveToThread(QApplication::instance()->thread());
+    l_OGLWidget->MoveContextToThread(QApplication::instance()->thread());
     l_EmuThread->on_VidExt_Quit();
     l_VidExtSetup = false;
 
@@ -119,7 +119,7 @@ static m64p_error VidExt_SetMode(int Width, int Height, int BitsPerPixel, int Sc
 
 static m64p_function VidExt_GLGetProc(const char *Proc)
 {
-    return l_OGLWidget->context()->getProcAddress(Proc);
+    return l_OGLWidget->GetContext()->getProcAddress(Proc);
 }
 
 static m64p_error VidExt_GLSetAttr(m64p_GLattr Attr, int Value)
@@ -253,8 +253,8 @@ static m64p_error VidExt_GLSwapBuf(void)
         return M64ERR_UNSUPPORTED;
     }
 
-    l_OGLWidget->context()->swapBuffers(l_OGLWidget);
-    l_OGLWidget->context()->makeCurrent(l_OGLWidget);
+    l_OGLWidget->GetContext()->swapBuffers(l_OGLWidget);
+    l_OGLWidget->GetContext()->makeCurrent(l_OGLWidget);
 
     return M64ERR_SUCCESS;
 }
@@ -294,7 +294,7 @@ static m64p_error VidExt_ResizeWindow(int Width, int Height)
 
 static uint32_t VidExt_GLGetDefaultFramebuffer(void)
 {
-    return l_OGLWidget->context()->defaultFramebufferObject();
+    return l_OGLWidget->GetContext()->defaultFramebufferObject();
 }
 
 //

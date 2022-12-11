@@ -479,7 +479,6 @@ void MainWindow::emulationThread_Launch(QString cartRom, QString diskRom)
     this->ui_HideCursorInEmulation = CoreSettingsGetBoolValue(SettingsID::GUI_HideCursorInEmulation);
     this->ui_HideCursorInFullscreenEmulation = CoreSettingsGetBoolValue(SettingsID::GUI_HideCursorInFullscreenEmulation);
 
-    this->ui_Widget_OpenGL->SetAllowResizing(this->ui_AllowManualResizing);
     this->ui_Widget_OpenGL->SetHideCursor(this->ui_HideCursorInEmulation);
 
     this->emulationThread->SetRomFile(cartRom);
@@ -1399,7 +1398,7 @@ void MainWindow::on_VidExt_Init(void)
 
 void MainWindow::on_VidExt_SetupOGL(QSurfaceFormat format, QThread* thread)
 {
-    this->ui_Widget_OpenGL->MoveToThread(thread);
+    this->ui_Widget_OpenGL->MoveContextToThread(thread);
     this->ui_Widget_OpenGL->setFormat(format);
 }
 
