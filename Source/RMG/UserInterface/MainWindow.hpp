@@ -22,7 +22,6 @@
 #include <QAction>
 #include <QCloseEvent>
 #include <QMainWindow>
-#include <QOpenGLWidget>
 #include <QSettings>
 #include <QStackedWidget>
 #include <QGuiApplication>
