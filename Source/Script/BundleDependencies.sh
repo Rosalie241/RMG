@@ -38,7 +38,7 @@ do
 	done < <(find "$bin_dir" -name "*.$ext")
 done
 
-windeployqt "$exe"
+windeployqt-qt6 "$exe"
 
 # needed by Qt at runtime
 cp "$path/libcrypto-1_1-x64.dll" "$bin_dir/"
