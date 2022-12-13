@@ -122,7 +122,7 @@ ControllerWidget::ControllerWidget(QWidget* parent, EventFilter* eventFilter) : 
         this->setupButtonWidgets.append(button);
     }
 
-
+    this->on_controllerPluggedCheckBox_toggled(false);
     this->initializeButtons();
 }
 
@@ -919,6 +919,8 @@ void ControllerWidget::LoadSettings(QString sectionQString)
 
         buttonSetting.button->SetInputData(type, data, extraData, QString::fromStdString(name));
     }
+
+    this->on_controllerPluggedCheckBox_toggled(this->IsPluggedIn());
 }
 
 void ControllerWidget::SaveDefaultSettings()
