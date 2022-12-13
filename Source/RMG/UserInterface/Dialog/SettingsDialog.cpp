@@ -853,6 +853,12 @@ void SettingsDialog::commonInterfaceStyleSettings(int action)
         }
     }
 
+    if (currentStyle.isEmpty())
+    {
+        this->styleComboBox->setCurrentText("None");
+        styleFound = true;
+    }
+
     if (!styleFound)
     {
         this->styleComboBox->addItem("", "");
