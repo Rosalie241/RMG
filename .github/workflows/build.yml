@@ -69,6 +69,9 @@ jobs:
       - name: Build RMG (Portable)
         run: ./Source/Script/Build.sh Release
         shell: msys2 {0}
+      - name: Download Styles
+        run: ./Source/Script/DownloadStyles.sh
+        shell: msys2 {0}
       - name: Create Installer
         run: .\Build\Release\Source\Installer\CreateInstaller.bat
       - name: Upload RMG (Portable)
