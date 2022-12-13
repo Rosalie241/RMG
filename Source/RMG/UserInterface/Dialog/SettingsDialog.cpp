@@ -44,7 +44,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
 
     pluginList = CoreGetAllPlugins();
 
-    for (int i = 0; i < 11; i++)
+    for (int i = 0; i < 12; i++)
     {
         this->reloadSettings(i);
     }
