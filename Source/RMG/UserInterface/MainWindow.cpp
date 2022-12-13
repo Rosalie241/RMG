@@ -164,9 +164,7 @@ void MainWindow::ui_Init(void)
 
 void MainWindow::ui_Setup(QApplication* app)
 {
-#ifdef _WIN32
     this->ui_Stylesheet_Setup(app);
-#endif // _WIN32
 
     this->setWindowIcon(this->ui_Icon);
     this->setWindowTitle(WINDOW_TITLE);
@@ -198,25 +196,31 @@ void MainWindow::ui_Setup(QApplication* app)
     this->ui_Widget_OpenGL->installEventFilter(this->ui_EventFilter);
 }
 
-#ifdef _WIN32
 void MainWindow::ui_Stylesheet_Setup(QApplication* app)
 {
+    QString fallbackStyleSheet = "QTableView { border: none; color: #0096d3; selection-color: #FFFFFF; selection-background-color: #0096d3; }";
+
+#ifndef _WIN32
+    this->setStyleSheet(fallbackStyleSheet);
+#else // _WIN32
     QString styleFilePath = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_Style));
     QFile styleFile(styleFilePath);
 
-    if (!styleFile.exists())
+    if (styleFilePath.isEmpty() || !styleFile.exists())
     {
+        this->setStyleSheet(fallbackStyleSheet);
         return;
     }
 
     if (!styleFile.open(QIODevice::ReadOnly))
     {
+        this->setStyleSheet(fallbackStyleSheet);
         return;
     }
 
     app->setStyleSheet(styleFile.readAll());
-}
 #endif // _WIN32
+}
 
 void MainWindow::ui_MessageBox(QString title, QString text, QString details = "")
 {

@@ -50,9 +50,6 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QTableView(parent)
     this->setAcceptDrops(true);
     this->setDropIndicatorShown(true);
 
-    // TODO, make this customizable
-    this->setStyleSheet("QTableView { border: none; color: #0096d3; selection-color: #FFFFFF; selection-background-color: #0096d3; }");
-
     this->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
     connect(this, SIGNAL(customContextMenuRequested(QPoint)), SLOT(customContextMenuRequested(QPoint)));
 

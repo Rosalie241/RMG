@@ -120,9 +120,7 @@ class MainWindow : public QMainWindow
 
     void ui_Init();
     void ui_Setup(QApplication*);
-#ifdef _WIN32
     void ui_Stylesheet_Setup(QApplication*);
-#endif // _WIN32
     void ui_MessageBox(QString, QString, QString);
     void ui_InEmulation(bool, bool);
     void ui_SaveGeometry(void);
