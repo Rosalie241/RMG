@@ -13,6 +13,7 @@ enum class SettingsID
     GUI_PauseEmulationOnFocusLoss,
     GUI_ResumeEmulationOnFocus,
     GUI_AutomaticFullscreen,
+    GUI_Style,
     GUI_CheckForUpdates,
     GUI_DiscordRpc,
     GUI_Version,

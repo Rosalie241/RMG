@@ -161,6 +161,9 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::GUI_AutomaticFullscreen:
         setting = {SETTING_SECTION_GUI, "AutomaticFullscreen", false};
         break;
+    case SettingsID::GUI_Style:
+        setting = {SETTING_SECTION_GUI, "Style", ""};
+        break;
     case SettingsID::GUI_CheckForUpdates:
         setting = {SETTING_SECTION_GUI, "CheckForUpdates", true};
         break;
