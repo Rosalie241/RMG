@@ -58,6 +58,7 @@ ControllerWidget::ControllerWidget(QWidget* parent, EventFilter* eventFilter) : 
         { N64ControllerButton::CButtonRight, this->cbuttonRightButton },
         { N64ControllerButton::LeftTrigger, this->leftTriggerButton },
         { N64ControllerButton::RightTrigger, this->rightTriggerButton },
+        { N64ControllerButton::ZTrigger, this->zTriggerButton }
     });
 
     this->joystickWidgetMappings.append(

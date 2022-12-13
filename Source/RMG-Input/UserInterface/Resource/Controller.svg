@@ -8,7 +8,7 @@
    style="clip-rule:evenodd;fill-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2"
    id="svg21"
    sodipodi:docname="Controller.svg"
-   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
+   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -23,15 +23,17 @@
    inkscape:pageopacity="0.0"
    inkscape:pagecheckerboard="0"
    showgrid="false"
-   inkscape:zoom="0.28240146"
-   inkscape:cx="-426.69751"
-   inkscape:cy="3454.3023"
+   inkscape:zoom="0.070600365"
+   inkscape:cx="6019.7989"
+   inkscape:cy="1600.5583"
    inkscape:window-width="1920"
    inkscape:window-height="1017"
    inkscape:window-x="-8"
    inkscape:window-y="-8"
    inkscape:window-maximized="1"
-   inkscape:current-layer="svg21" />
+   inkscape:current-layer="layer2"
+   inkscape:showpageshadow="2"
+   inkscape:deskcolor="#d1d1d1" />
     <path
    id="Dark-Grey-Background"
    serif:id="Dark Grey Background"
@@ -111,4 +113,39 @@
    style="fill:#ec3f21"
    id="circle18" />
     </g>
-</svg>
+<g
+   id="layer2"
+   inkscape:label="Z-Button"
+   style="display:inline;opacity:1;stroke-width:1;stroke-dasharray:none;paint-order:markers stroke fill"
+   transform="matrix(50.366966,0,0,50.366966,3240.0678,-579.56452)"><g
+     id="layer2-0"
+     inkscape:label="Z-Button"
+     style="clip-rule:evenodd;display:inline;fill-rule:evenodd;stroke-width:1;stroke-linejoin:round;stroke-miterlimit:2;stroke-dasharray:none;paint-order:markers stroke fill"><rect
+       style="clip-rule:evenodd;display:inline;opacity:1;fill:#5c5c5c;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.999999;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill;image-rendering:auto"
+       id="rect1917-0-4"
+       width="11.478539"
+       height="16.72587"
+       x="-32.517441"
+       y="86.256668"
+       ry="3.4675589"
+       inkscape:label="btnZ-outline"
+       class="theme-button"
+       ojd-button="Z" /><rect
+       style="display:inline;opacity:1;fill:#bcbdbf;fill-opacity:1;stroke:none;stroke-width:0.960842;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers stroke fill;image-rendering:auto"
+       id="rect1917-8"
+       width="10.956328"
+       height="16.177647"
+       x="-32.225891"
+       y="86.523468"
+       ry="3.3539019"
+       inkscape:label="btnZ"
+       class="theme-button"
+       ojd-button="Z" /><g
+       aria-label="Z"
+       style="font-style:normal;font-weight:normal;font-size:5.73478px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;clip-rule:evenodd;display:inline;opacity:1;fill:#56575b;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.751267;stroke-linejoin:round;stroke-miterlimit:2;stroke-dasharray:none;paint-order:markers stroke fill"
+       id="text1921-7"
+       transform="matrix(1.3310888,0,0,1.3310888,-67.459296,-40.853038)"><path
+         d="m 28.805176,99.685474 h 3.514231 v 0.652446 l -2.242948,2.71338 h 2.307352 v 0.81485 h -3.64304 v -0.65244 l 2.242948,-2.71338 h -2.178543 z"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#56575b;fill-opacity:1;stroke-width:0.751267;stroke-dasharray:none;paint-order:markers stroke fill"
+         id="path2008-2"
+         inkscape:connector-curvature="0" /></g></g></g></svg>
