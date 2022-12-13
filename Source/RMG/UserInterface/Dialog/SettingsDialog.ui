@@ -196,13 +196,6 @@
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="coreDebuggerCheckBox">
-             <property name="text">
-              <string>Debugger</string>
-             </property>
-            </widget>
-           </item>
-           <item>
             <spacer name="verticalSpacer_7">
              <property name="orientation">
               <enum>Qt::Vertical</enum>

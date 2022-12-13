@@ -213,7 +213,7 @@ void SettingsDialog::loadCoreSettings(void)
 
     this->coreCpuEmulatorComboBox->setCurrentIndex(cpuEmulator);
     this->coreRandomizeTimingCheckBox->setChecked(randomizeInterrupt);
-    this->coreDebuggerCheckBox->setChecked(debugger);
+    //this->coreDebuggerCheckBox->setChecked(debugger);
 
     this->coreOverrideGameSettingsGroup->setChecked(overrideGameSettings);
 
@@ -399,7 +399,7 @@ void SettingsDialog::loadDefaultCoreSettings(void)
 
     this->coreCpuEmulatorComboBox->setCurrentIndex(cpuEmulator);
     this->coreRandomizeTimingCheckBox->setChecked(randomizeInterrupt);
-    this->coreDebuggerCheckBox->setChecked(debugger);
+    //this->coreDebuggerCheckBox->setChecked(debugger);
 
     this->coreOverrideGameSettingsGroup->setChecked(overrideGameSettings);
 
@@ -529,12 +529,12 @@ void SettingsDialog::saveCoreSettings(void)
     int cpuEmulator = this->coreCpuEmulatorComboBox->currentIndex();
     int siDmaDuration = this->coreSiDmaDurationSpinBox->value();
     bool randomizeInterrupt = this->coreRandomizeTimingCheckBox->isChecked();
-    bool debugger = this->coreDebuggerCheckBox->isChecked();
+    //bool debugger = this->coreDebuggerCheckBox->isChecked();
     bool overrideGameSettings = this->coreOverrideGameSettingsGroup->isChecked();
 
     CoreSettingsSetValue(SettingsID::CoreOverlay_CPU_Emulator, cpuEmulator);
     CoreSettingsSetValue(SettingsID::CoreOverlay_RandomizeInterrupt, randomizeInterrupt);
-    CoreSettingsSetValue(SettingsID::CoreOverlay_EnableDebugger, debugger);
+    //CoreSettingsSetValue(SettingsID::CoreOverlay_EnableDebugger, debugger);
     CoreSettingsSetValue(SettingsID::Core_OverrideGameSpecificSettings, overrideGameSettings);
 
     if (!overrideGameSettings)
