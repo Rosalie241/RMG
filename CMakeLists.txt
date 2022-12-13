@@ -8,6 +8,7 @@ option(NO_GIT_CLONE     "Disables git clone usage for 3rdParty dependencies" OFF
 option(UPDATER          "Enables updater" ${PORTABLE_INSTALL})
 option(DISCORD_RPC      "Enables Discord Rich Presence" ON)
 option(USE_QT5          "Enables Qt5 instead of Qt6 (will be removed in the future)" OFF)
+option(USE_CCACHE       "Enables usage of ccache when ccache has been found" ON)
 
 project(RMG)
 
@@ -19,6 +20,15 @@ execute_process(
     ERROR_QUIET
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
+
+if (USE_CCACHE)
+    find_program(CCACHE_FOUND ccache)
+    if (CCACHE_FOUND)
+        set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+    else(CCACHE_FOUND)
+        set(USE_CCACHE OFF)
+    endif(CCACHE_FOUND)
+endif(USE_CCACHE)
 
 if (NOT PORTABLE_INSTALL AND (WIN32 OR MSYS))
     message(WARNING "Not-Portable build not supported on windows, re-enabling PORTABLE_INSTALL!")
