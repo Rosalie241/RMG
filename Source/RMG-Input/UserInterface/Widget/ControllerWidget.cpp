@@ -293,6 +293,13 @@ void ControllerWidget::CheckInputDeviceSettings()
     std::string deviceName = CoreSettingsGetStringValue(SettingsID::Input_DeviceName, section);
     int deviceNum = CoreSettingsGetIntValue(SettingsID::Input_DeviceNum, section);
 
+    // do nothing when input device combobox
+    // is empty
+    if (this->inputDeviceComboBox->count() == 0)
+    {
+        return;
+    }
+
     // clear (not found) devices first
     int notFoundIndex = this->inputDeviceComboBox->findText("(not found)", Qt::MatchFlag::MatchEndsWith);
     if (notFoundIndex != -1)
@@ -364,7 +371,7 @@ void ControllerWidget::on_profileComboBox_currentIndexChanged(int value)
     // reload settings from section
     this->LoadSettings(this->getCurrentSettingsSection());
     // reload input device settings
-    CheckInputDeviceSettings();
+    this->CheckInputDeviceSettings();
 }
 
 void ControllerWidget::on_inputDeviceComboBox_currentIndexChanged(int value)
