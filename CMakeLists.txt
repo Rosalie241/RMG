@@ -7,6 +7,7 @@ option(PORTABLE_INSTALL "Portable Installation" ON)
 option(NO_GIT_CLONE     "Disables git clone usage for 3rdParty dependencies" OFF)
 option(UPDATER          "Enables updater" ${PORTABLE_INSTALL})
 option(DISCORD_RPC      "Enables Discord Rich Presence" ON)
+option(USE_QT5          "Enables Qt5 instead of Qt6 (will be removed in the future)" OFF)
 
 project(RMG)
 
@@ -47,6 +48,14 @@ else()
     set(DESKTOP_INSTALL_PATH "share/applications")
     set(ICON_INSTALL_PATH "share/icons/hicolor/scalable/apps/")
 endif()
+
+if (USE_QT5)
+    set(QT_VERSION "Qt5")
+    set(USE_QT6 OFF)
+else(USE_QT5)
+    set(QT_VERSION "Qt6")
+    set(USE_QT6 ON)
+endif(USE_QT5)
 
 add_subdirectory(Source/3rdParty)
 

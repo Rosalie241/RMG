@@ -5,10 +5,10 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt6 COMPONENTS Gui Widgets Core OpenGL REQUIRED)
+find_package(${QT_VERSION} COMPONENTS Gui Widgets Core OpenGL REQUIRED)
 
 if (UPDATER)
-find_package(Qt6 COMPONENTS Network REQUIRED)
+find_package(${QT_VERSION} COMPONENTS Network REQUIRED)
 add_definitions(-DUPDATER)
 endif(UPDATER)
 
@@ -79,9 +79,9 @@ target_include_directories(RMG PRIVATE
     ${SDL2_INCLUDE_DIRS}
 )
 
-target_link_libraries(RMG Qt6::Gui Qt6::Widgets Qt6::OpenGL)
+target_link_libraries(RMG ${QT_VERSION}::Gui ${QT_VERSION}::Widgets ${QT_VERSION}::OpenGL)
 
 if (UPDATER)
-target_link_libraries(RMG Qt6::Network)
+target_link_libraries(RMG ${QT_VERSION}::Network)
 endif(UPDATER)
 

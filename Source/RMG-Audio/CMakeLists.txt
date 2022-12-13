@@ -7,7 +7,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt6 COMPONENTS Gui Widgets Core REQUIRED)
+find_package(${QT_VERSION} COMPONENTS Gui Widgets Core REQUIRED)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2)
@@ -36,7 +36,7 @@ target_link_libraries(RMG-Audio
     ${SDL2_LIBRARIES}
     ${SPEEX_LIBRARIES}
     ${SAMPLERATE_LIBRARIES}
-    Qt6::Gui Qt6::Widgets
+    ${QT_VERSION}::Gui ${QT_VERSION}::Widgets
 )
 
 target_include_directories(RMG-Audio PRIVATE 
