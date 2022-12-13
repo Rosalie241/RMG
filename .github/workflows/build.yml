@@ -10,6 +10,8 @@ jobs:
         with:
           fetch-depth: 0
       - uses: hendrikmuhs/ccache-action@v1.2.5
+        with:
+          key: Linux
       - name: Install Packages
         run: |
           sudo apt-get -qq update
@@ -34,6 +36,8 @@ jobs:
         with:
           fetch-depth: 0
       - uses: hendrikmuhs/ccache-action@v1.2.5
+        with:
+          key: Windows
       - uses: msys2/setup-msys2@v2
         with:
           path-type: inherit
