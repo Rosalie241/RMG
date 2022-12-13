@@ -164,7 +164,9 @@ void MainWindow::ui_Init(void)
 
 void MainWindow::ui_Setup(QApplication* app)
 {
+#ifdef _WIN32
     this->ui_Stylesheet_Setup(app);
+#endif // _WIN32
 
     this->setWindowIcon(this->ui_Icon);
     this->setWindowTitle(WINDOW_TITLE);
@@ -196,6 +198,7 @@ void MainWindow::ui_Setup(QApplication* app)
     this->ui_Widget_OpenGL->installEventFilter(this->ui_EventFilter);
 }
 
+#ifdef _WIN32
 void MainWindow::ui_Stylesheet_Setup(QApplication* app)
 {
     QString styleFilePath = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_Style));
@@ -213,6 +216,7 @@ void MainWindow::ui_Stylesheet_Setup(QApplication* app)
 
     app->setStyleSheet(styleFile.readAll());
 }
+#endif // _WIN32
 
 void MainWindow::ui_MessageBox(QString title, QString text, QString details = "")
 {
