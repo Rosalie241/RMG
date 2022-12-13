@@ -1785,7 +1785,7 @@
               <attribute name="title">
                <string>Emulation Window</string>
               </attribute>
-              <layout class="QVBoxLayout" name="verticalLayout_5">
+              <layout class="QVBoxLayout" name="verticalLayout_2">
                <item>
                 <widget class="QCheckBox" name="hideCursorCheckBox">
                  <property name="text">
@@ -1865,13 +1865,55 @@
                  </property>
                 </spacer>
                </item>
+               <item>
+                <layout class="QHBoxLayout" name="emulationInfoLayout_2">
+                 <item>
+                  <widget class="QLabel" name="label_85">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="pixmap">
+                    <pixmap resource="SettingsDialog.qrc">:/newPrefix/Resource/Info.ico</pixmap>
+                   </property>
+                   <property name="wordWrap">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_86">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="midLineWidth">
+                    <number>1</number>
+                   </property>
+                   <property name="text">
+                    <string>Changes will be applied on next emulation run</string>
+                   </property>
+                   <property name="textFormat">
+                    <enum>Qt::PlainText</enum>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
               </layout>
              </widget>
              <widget class="QWidget" name="tab_2">
               <attribute name="title">
                <string>ROM Browser</string>
               </attribute>
-              <layout class="QVBoxLayout" name="verticalLayout_7">
+              <layout class="QVBoxLayout" name="verticalLayout_5">
                <item>
                 <widget class="QCheckBox" name="searchSubDirectoriesCheckbox">
                  <property name="text">
@@ -1919,7 +1961,7 @@
               <attribute name="title">
                <string>Styles</string>
               </attribute>
-              <layout class="QVBoxLayout" name="verticalLayout_8">
+              <layout class="QVBoxLayout" name="verticalLayout_7">
                <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_6">
                  <item>
@@ -1947,13 +1989,55 @@
                  </property>
                 </spacer>
                </item>
+               <item>
+                <layout class="QHBoxLayout" name="emulationInfoLayout_4">
+                 <item>
+                  <widget class="QLabel" name="label_87">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="pixmap">
+                    <pixmap resource="SettingsDialog.qrc">:/newPrefix/Resource/Info.ico</pixmap>
+                   </property>
+                   <property name="wordWrap">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_89">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="midLineWidth">
+                    <number>1</number>
+                   </property>
+                   <property name="text">
+                    <string>Changes will be applied on next application run</string>
+                   </property>
+                   <property name="textFormat">
+                    <enum>Qt::PlainText</enum>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
               </layout>
              </widget>
              <widget class="QWidget" name="tab_3">
               <attribute name="title">
                <string>Miscellaneous</string>
               </attribute>
-              <layout class="QVBoxLayout" name="verticalLayout_2">
+              <layout class="QVBoxLayout" name="verticalLayout_8">
                <item>
                 <widget class="QCheckBox" name="checkForUpdatesCheckBox">
                  <property name="text">
@@ -1981,51 +2065,51 @@
                  </property>
                 </spacer>
                </item>
+               <item>
+                <layout class="QHBoxLayout" name="emulationInfoLayout_5">
+                 <item>
+                  <widget class="QLabel" name="label_90">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="pixmap">
+                    <pixmap resource="SettingsDialog.qrc">:/newPrefix/Resource/Info.ico</pixmap>
+                   </property>
+                   <property name="wordWrap">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_91">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="midLineWidth">
+                    <number>1</number>
+                   </property>
+                   <property name="text">
+                    <string>Changes will be applied on next application run</string>
+                   </property>
+                   <property name="textFormat">
+                    <enum>Qt::PlainText</enum>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
               </layout>
              </widget>
             </widget>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="emulationInfoLayout_2">
-             <item>
-              <widget class="QLabel" name="label_85">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-               <property name="pixmap">
-                <pixmap resource="SettingsDialog.qrc">:/newPrefix/Resource/Info.ico</pixmap>
-               </property>
-               <property name="wordWrap">
-                <bool>false</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_86">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="midLineWidth">
-                <number>1</number>
-               </property>
-               <property name="text">
-                <string>Changes will be applied on next emulation run</string>
-               </property>
-               <property name="textFormat">
-                <enum>Qt::PlainText</enum>
-               </property>
-              </widget>
-             </item>
-            </layout>
            </item>
           </layout>
          </widget>
