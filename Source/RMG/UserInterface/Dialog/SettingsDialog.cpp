@@ -14,6 +14,7 @@
 
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QDirIterator>
 
 using namespace UserInterface::Dialog;
 
@@ -62,9 +63,13 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSyst
     // aren't defined, hide the tab
     // with the settings for those
 #ifndef UPDATER
-    this->innerInterfaceTabWidget->removeTab(2);
+    this->innerInterfaceTabWidget->removeTab(3);
 #endif // !UPDATER
 #endif // !DISCORD_RPC
+
+#ifndef _WIN32
+    this->innerInterfaceTabWidget->removeTab(2);
+#endif
 
     int width = CoreSettingsGetIntValue(SettingsID::GUI_SettingsDialogWidth);
     int height = CoreSettingsGetIntValue(SettingsID::GUI_SettingsDialogHeight);
@@ -147,6 +152,8 @@ void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
         loadDefaultInterfaceRomBrowserSettings();
         break;
     case 10:
+        loadDefaultInterfaceStyleSettings();
+    case 11:
         loadDefaultInterfaceMiscSettings();
         break;
     }
@@ -188,6 +195,9 @@ void SettingsDialog::reloadSettings(int stackedWidgetIndex)
         loadInterfaceRomBrowserSettings();
         break;
     case 10:
+        loadInterfaceStyleSettings();
+        break;
+    case 11:
         loadInterfaceMiscSettings();
         break;
     }
@@ -373,6 +383,11 @@ void SettingsDialog::loadInterfaceRomBrowserSettings(void)
     this->romSearchLimitSpinBox->setValue(CoreSettingsGetIntValue(SettingsID::RomBrowser_MaxItems));
 }
 
+void SettingsDialog::loadInterfaceStyleSettings(void)
+{
+    this->commonInterfaceStyleSettings(0);
+}
+
 void SettingsDialog::loadInterfaceMiscSettings(void)
 {
     this->checkForUpdatesCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_CheckForUpdates));
@@ -496,6 +511,11 @@ void SettingsDialog::loadDefaultInterfaceRomBrowserSettings(void)
     this->romSearchLimitSpinBox->setValue(CoreSettingsGetDefaultIntValue(SettingsID::RomBrowser_MaxItems));
 }
 
+void SettingsDialog::loadDefaultInterfaceStyleSettings(void)
+{
+    this->commonInterfaceStyleSettings(1);
+}
+
 void SettingsDialog::loadDefaultInterfaceMiscSettings(void)
 {
     this->checkForUpdatesCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_CheckForUpdates));
@@ -519,6 +539,7 @@ void SettingsDialog::saveSettings(void)
     this->saveHotkeySettings();
     this->saveInterfaceEmulationSettings();
     this->saveInterfaceRomBrowserSettings();
+    this->saveInterfaceStyleSettings();
     this->saveInterfaceMiscSettings();
 }
 
@@ -678,6 +699,11 @@ void SettingsDialog::saveInterfaceRomBrowserSettings(void)
     CoreSettingsSetValue(SettingsID::RomBrowser_MaxItems, this->romSearchLimitSpinBox->value());
 }
 
+void SettingsDialog::saveInterfaceStyleSettings(void)
+{
+    CoreSettingsSetValue(SettingsID::GUI_Style, this->styleComboBox->currentData().toString().toStdString());
+}
+
 void SettingsDialog::saveInterfaceMiscSettings(void)
 {
     CoreSettingsSetValue(SettingsID::GUI_CheckForUpdates, this->checkForUpdatesCheckBox->isChecked());
@@ -796,11 +822,49 @@ void SettingsDialog::commonPluginSettings(int action)
     }
 }
 
+void SettingsDialog::commonInterfaceStyleSettings(int action)
+{
+    this->styleComboBox->clear();
+    this->styleComboBox->addItem("None", "");
+
+    QString currentStyle = action == 0 ?
+        QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_Style)) :
+        QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::GUI_Style));
+
+    QString directory;
+    directory = QString::fromStdString(CoreGetSharedDataDirectory().string());
+    directory += "\\Styles\\";
+
+    QStringList filter;
+    filter << "*.qss";
+
+    bool styleFound = false;
+    QDirIterator stylesDirectoryIter(directory, filter, QDir::Files, QDirIterator::NoIteratorFlags);
+    while (stylesDirectoryIter.hasNext())
+    {
+        QString filePath = stylesDirectoryIter.next();
+        QFileInfo fileInfo(filePath);
+
+        this->styleComboBox->addItem(fileInfo.baseName(), filePath);
+        if (filePath == currentStyle)
+        {
+            styleFound = true;
+            this->styleComboBox->setCurrentText(fileInfo.baseName());
+        }
+    }
+
+    if (!styleFound)
+    {
+        this->styleComboBox->addItem("", "");
+        this->styleComboBox->setCurrentText("");
+    }
+}
+
 void SettingsDialog::hideEmulationInfoText(void)
 {
     QHBoxLayout *layouts[] = {this->emulationInfoLayout_0, this->emulationInfoLayout_1, 
                                 this->emulationInfoLayout_2, this->emulationInfoLayout_3,
-                                this->emulationInfoLayout_9, this->emulationInfoLayout_13};
+                                this->emulationInfoLayout_9};
 
     for (const auto &layout : layouts)
     {

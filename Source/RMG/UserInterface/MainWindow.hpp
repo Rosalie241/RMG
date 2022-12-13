@@ -43,7 +43,7 @@ class MainWindow : public QMainWindow
     MainWindow(void);
     ~MainWindow(void);
 
-    bool Init(QGuiApplication*);
+    bool Init(QApplication*);
     void OpenROM(QString, QString, bool);
 
   private:
@@ -119,8 +119,8 @@ class MainWindow : public QMainWindow
     void closeEvent(QCloseEvent *) Q_DECL_OVERRIDE;
 
     void ui_Init();
-    void ui_Setup();
-    void ui_Stylesheet_Setup();
+    void ui_Setup(QApplication*);
+    void ui_Stylesheet_Setup(QApplication*);
     void ui_MessageBox(QString, QString, QString);
     void ui_InEmulation(bool, bool);
     void ui_SaveGeometry(void);

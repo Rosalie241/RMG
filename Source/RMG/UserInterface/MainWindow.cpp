@@ -46,7 +46,7 @@ MainWindow::~MainWindow()
 {
 }
 
-bool MainWindow::Init(QGuiApplication* app)
+bool MainWindow::Init(QApplication* app)
 {
     if (!CoreInit())
     {
@@ -60,7 +60,7 @@ bool MainWindow::Init(QGuiApplication* app)
     }
 
     this->ui_Init();
-    this->ui_Setup();
+    this->ui_Setup(app);
 
     this->ui_Actions_Init();
     this->ui_Actions_Connect();
@@ -162,9 +162,9 @@ void MainWindow::ui_Init(void)
             &MainWindow::on_EventFilter_FileDropped);
 }
 
-void MainWindow::ui_Setup(void)
+void MainWindow::ui_Setup(QApplication* app)
 {
-    this->ui_Stylesheet_Setup();
+    this->ui_Stylesheet_Setup(app);
 
     this->setWindowIcon(this->ui_Icon);
     this->setWindowTitle(WINDOW_TITLE);
@@ -196,20 +196,22 @@ void MainWindow::ui_Setup(void)
     this->ui_Widget_OpenGL->installEventFilter(this->ui_EventFilter);
 }
 
-void MainWindow::ui_Stylesheet_Setup(void)
+void MainWindow::ui_Stylesheet_Setup(QApplication* app)
 {
-    QString stylesheetFile;
-    stylesheetFile = QString::fromStdString(CoreGetSharedDataDirectory().string());
-    stylesheetFile += "/stylesheet.qss";
+    QString styleFilePath = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_Style));
+    QFile styleFile(styleFilePath);
 
-    QFile stylesheet(stylesheetFile);
-
-    if (!stylesheet.open(QIODevice::ReadOnly))
+    if (!styleFile.exists())
     {
         return;
     }
 
-    this->setStyleSheet(stylesheet.readAll());
+    if (!styleFile.open(QIODevice::ReadOnly))
+    {
+        return;
+    }
+
+    app->setStyleSheet(styleFile.readAll());
 }
 
 void MainWindow::ui_MessageBox(QString title, QString text, QString details = "")
