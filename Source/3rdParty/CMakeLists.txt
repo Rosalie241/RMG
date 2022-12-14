@@ -61,11 +61,7 @@ if(NOT NO_GIT_CLONE)
     set(MUPEN64PLUS_GFX_GLIDEN64_TAG  "27a64b83559c7f0ef89de79996fc9d1702637da9")
 
     set(MUPEN64PLUS_GFX_PARALLEL_URL  "https://github.com/Rosalie241/parallel-rdp-standalone")
-    if (USE_QT5)
-        set(MUPEN64PLUS_GFX_PARALLEL_TAG  "693f607728aca78d94ba5d45b0ce119b4ccbcd8c")
-    else(USE_QT5)
-        set(MUPEN64PLUS_GFX_PARALLEL_TAG  "92312a376a1a1d342f42a5982f9d35e8b6adc50a")
-    endif(USE_QT5)
+    set(MUPEN64PLUS_GFX_PARALLEL_TAG  "471253703c0e1fc84454708d5dd7bba2743ee66a")
 
     set(DISCORD_RPC_URL               "https://github.com/discord/discord-rpc")
     set(DISCORD_RPC_TAG               "963aa9f3e5ce81a4682c6ca3d136cddda614db33")
@@ -233,7 +229,7 @@ ExternalProject_Add(mupen64plus-video-parallel
     INSTALL_COMMAND ""
 
     BUILD_IN_SOURCE True
-    CMAKE_ARGS ${CMAKE_CONFIGURE_ARGS}
+    CMAKE_ARGS -DUSE_QT5=${USE_QT5} ${CMAKE_CONFIGURE_ARGS}
 
     BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-video-parallel/mupen64plus-video-parallel.${SO_EXT}
     DEPENDS mupen64plus-core
