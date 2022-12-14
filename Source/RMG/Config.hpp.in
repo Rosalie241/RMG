@@ -1,7 +1,0 @@
-#ifndef CONFIG_HPP
-#define CONFIG_HPP
-
-#define WINDOW_TITLE "Rosalie's Mupen GUI (${GIT_VERSION})"
-#define VERSION_STR "${GIT_VERSION}"
-
-#endif // CONFIG_HPP

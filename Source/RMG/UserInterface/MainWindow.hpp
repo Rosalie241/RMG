@@ -116,6 +116,8 @@ class MainWindow : public QMainWindow
 
     int ui_GamesharkButtonTimerId = 0;
 
+    QString ui_WindowTitle;
+
     void closeEvent(QCloseEvent *) Q_DECL_OVERRIDE;
 
     void ui_Init();

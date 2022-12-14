@@ -9,7 +9,7 @@
  */
 #include "AboutDialog.hpp"
 
-#include "Config.hpp"
+#include <RMG-Core/Core.hpp>
 
 using namespace UserInterface::Dialog;
 
@@ -17,5 +17,5 @@ AboutDialog::AboutDialog(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenu
 {
     this->setupUi(this);
 
-    this->versionLabel->setText(QString("RMG %1").arg(VERSION_STR));
+    this->versionLabel->setText(QString("RMG %1").arg(QString::fromStdString(CoreGetVersion())));
 }

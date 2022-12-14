@@ -18,7 +18,6 @@
 #include "UserInterface/EventFilter.hpp"
 #include "Utilities/QtKeyToSdl2Key.hpp"
 #include "Callbacks.hpp"
-#include "Config.hpp"
 #include "VidExt.hpp"
 
 #include <RMG-Core/Core.hpp>
@@ -167,7 +166,6 @@ void MainWindow::ui_Setup(QApplication* app)
     this->ui_Stylesheet_Setup(app);
 
     this->setWindowIcon(this->ui_Icon);
-    this->setWindowTitle(WINDOW_TITLE);
     this->setCentralWidget(this->ui_Widgets);
 
     QString geometry;
@@ -194,6 +192,12 @@ void MainWindow::ui_Setup(QApplication* app)
     this->setFocusPolicy(Qt::FocusPolicy::StrongFocus);
     this->installEventFilter(this->ui_EventFilter);
     this->ui_Widget_OpenGL->installEventFilter(this->ui_EventFilter);
+
+    this->ui_WindowTitle = "Rosalie's Mupen GUI (";
+    this->ui_WindowTitle += QString::fromStdString(CoreGetVersion());
+    this->ui_WindowTitle += ")";
+
+    this->setWindowTitle(this->ui_WindowTitle);
 }
 
 void MainWindow::ui_Stylesheet_Setup(QApplication* app)
@@ -247,7 +251,7 @@ void MainWindow::ui_InEmulation(bool inEmulation, bool isPaused)
 
         if (!settings.GoodName.empty())
         {
-            this->setWindowTitle(QString::fromStdString(settings.GoodName) + QString(" - ") + QString(WINDOW_TITLE));
+            this->setWindowTitle(QString::fromStdString(settings.GoodName) + QString(" - ") + this->ui_WindowTitle);
         }
 
         this->ui_Widgets->setCurrentIndex(1);
@@ -255,7 +259,7 @@ void MainWindow::ui_InEmulation(bool inEmulation, bool isPaused)
     }
     else if (!this->ui_NoSwitchToRomBrowser)
     {
-        this->setWindowTitle(QString(WINDOW_TITLE));
+        this->setWindowTitle(this->ui_WindowTitle);
         this->ui_Widgets->setCurrentIndex(0);
         this->ui_LoadGeometry();
     }
@@ -869,7 +873,7 @@ void MainWindow::on_networkAccessManager_Finished(QNetworkReply* reply)
     QJsonDocument jsonDocument = QJsonDocument::fromJson(reply->readAll());
     QJsonObject jsonObject = jsonDocument.object();
 
-    QString currentVersion = QString(VERSION_STR);
+    QString currentVersion = QString::fromStdString(CoreGetVersion());
     QString latestVersion = jsonObject.value("tag_name").toString();
 
     reply->deleteLater();
