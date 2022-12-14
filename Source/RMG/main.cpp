@@ -8,7 +8,6 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include <UserInterface/MainWindow.hpp>
-#include <Config.hpp>
 
 #include <QApplication>
 #include <QCommandLineParser>
