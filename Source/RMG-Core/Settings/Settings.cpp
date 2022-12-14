@@ -10,7 +10,7 @@
 #include "Settings.hpp"
 
 #include "Directories.hpp"
-#include "Config.hpp"
+#include "Version.hpp"
 #include "m64p/Api.hpp"
 #include "Error.hpp"
 #include "m64p/api/m64p_types.h"
@@ -171,7 +171,7 @@ static l_Setting get_setting(SettingsID settingId)
         setting = {SETTING_SECTION_GUI, "DiscordRpc", true};
         break;
     case SettingsID::GUI_Version:
-        setting = {SETTING_SECTION_GUI, "Version", CORE_VERSION};
+        setting = {SETTING_SECTION_GUI, "Version", CoreGetVersion()};
         break;
 
     case SettingsID::Core_GFX_Plugin:
@@ -960,7 +960,7 @@ bool CoreSettingsUpgrade(void)
 
     // we don't need to do anything
     // when the core version and the settings version match
-    if (settingsVersion == CORE_VERSION)
+    if (settingsVersion == CoreGetVersion())
     {
         return true;
     }
@@ -999,7 +999,7 @@ bool CoreSettingsUpgrade(void)
     }
 
     // save core version
-    CoreSettingsSetValue(SettingsID::GUI_Version, std::string(CORE_VERSION));
+    CoreSettingsSetValue(SettingsID::GUI_Version, CoreGetVersion());
     CoreSettingsSave();
     return true;
 }

@@ -22,6 +22,7 @@
 #include "RomHeader.hpp"
 #include "Callback.hpp"
 #include "Plugins.hpp"
+#include "Version.hpp"
 #include "Cheats.hpp"
 #include "Error.hpp"
 #include "Unzip.hpp"

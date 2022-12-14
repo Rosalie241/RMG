@@ -8,7 +8,6 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "Directories.hpp"
-#include "Config.hpp"
 #include "Error.hpp"
 #include "Core.hpp"
 #include "m64p/Api.hpp"

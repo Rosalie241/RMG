@@ -33,6 +33,7 @@ set(RMG_CORE_SOURCES
     SaveState.cpp
     Callback.cpp
     Plugins.cpp
+    Version.cpp
     Cheats.cpp
     VidExt.cpp
     Video.cpp
