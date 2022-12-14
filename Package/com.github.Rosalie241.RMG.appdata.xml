@@ -19,8 +19,16 @@
       <image type="source">https://github.com/Rosalie241/RMG/raw/master/Package/Screenshots/InGame.png</image>
     </screenshot>
     <screenshot type="default">
+      <caption>Cheats</caption>
+      <image type="source">https://github.com/Rosalie241/RMG/raw/master/Package/Screenshots/Cheats.png</image>
+    </screenshot>
+    <screenshot type="default">
       <caption>Settings</caption>
       <image type="source">https://github.com/Rosalie241/RMG/raw/master/Package/Screenshots/Settings.png</image>
+    </screenshot>
+    <screenshot type="default">
+      <caption>Input Settings</caption>
+      <image type="source">https://github.com/Rosalie241/RMG/raw/master/Package/Screenshots/InputSettings.png</image>
     </screenshot>
   </screenshots>
   <description/>
