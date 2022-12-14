@@ -18,7 +18,7 @@
 
 using namespace UserInterface;
 
-MainDialog::MainDialog(QWidget* parent, Thread::SDLThread* sdlThread) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint)
+MainDialog::MainDialog(QWidget* parent, Thread::SDLThread* sdlThread) : QDialog(parent)
 {
     this->setupUi(this);
     this->setWindowIcon(QIcon(":Resource/RMG.png"));
