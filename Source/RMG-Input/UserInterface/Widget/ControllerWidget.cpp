@@ -454,11 +454,15 @@ void ControllerWidget::on_removeProfileButton_clicked()
     if (this->profileComboBox->currentIndex() == 0)
     {
         QMessageBox messageBox(this);
-        messageBox.setIcon(QMessageBox::Icon::Critical);
-        messageBox.setWindowTitle("Error");
-        messageBox.setText("Cannot remove main profile!");
-        messageBox.addButton(QMessageBox::Ok);
-        messageBox.exec();
+        messageBox.setIcon(QMessageBox::Icon::Warning);
+        messageBox.setText("Are you sure you want to reset the main profile?");
+        messageBox.addButton(QMessageBox::Yes);
+        messageBox.addButton(QMessageBox::No);
+        if (messageBox.exec() == QMessageBox::Yes)
+        {
+            this->SaveDefaultSettings();
+            this->LoadSettings(this->getCurrentSettingsSection());
+        }
         return;
     }
 
