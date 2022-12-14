@@ -8,7 +8,6 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "RomBrowserWidget.hpp"
-#include "Config.hpp"
 #include "ColumnID.hpp"
 #include "UserInterface/Dialog/CheatsDialog.hpp"
 
