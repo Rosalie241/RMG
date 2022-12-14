@@ -33,6 +33,25 @@
   </screenshots>
   <description/>
   <releases>
+    <release version="v0.2.5" date="2022-12-14" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix incorrect controller being selected in RMG-Input when having 2 controllers with the same name</li>
+          <li>Fix some UI elements being enabled while the 'Controller Is Plugged In' checkbox is disabled in RMG-Input</li>
+          <li>Fix extra padding being added when having a controller selected and opening RMG-Input</li>
+          <li>Fix creating a new profile in GLideN64</li>
+          <li>Add Z-Trigger visualization in RMG-Input</li>
+          <li>Remove Debugger checkbox in the settings dialog because it did nothing</li>
+          <li>Remove About buttons in the plugin tab of the settings dialog because it did nothing</li>
+          <li>Implement close button on all dialogs</li>
+          <li>Implement custom style support (for Windows only)</li>
+          <li>Implement the ability to remove/reset the main profile in RMG-Input</li>
+          <li>Rename Interface tab in settings dialog to User Interface</li>
+          <li>Migrate to Qt6 (currently the flatpak will remain Qt5)</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.2.4" date="2022-12-08" type="stable">
       <description>
         <p>Changes:</p>
