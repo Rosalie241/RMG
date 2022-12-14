@@ -619,13 +619,6 @@
                     </property>
                    </widget>
                   </item>
-                  <item>
-                   <widget class="QPushButton" name="pushButton_10">
-                    <property name="text">
-                     <string>About</string>
-                    </property>
-                   </widget>
-                  </item>
                  </layout>
                 </widget>
                </item>
@@ -654,13 +647,6 @@
                     </property>
                    </widget>
                   </item>
-                  <item>
-                   <widget class="QPushButton" name="pushButton_9">
-                    <property name="text">
-                     <string>About</string>
-                    </property>
-                   </widget>
-                  </item>
                  </layout>
                 </widget>
                </item>
@@ -686,13 +672,6 @@
                       <horstretch>0</horstretch>
                       <verstretch>0</verstretch>
                      </sizepolicy>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="pushButton_11">
-                    <property name="text">
-                     <string>About</string>
                     </property>
                    </widget>
                   </item>
@@ -727,13 +706,6 @@
                       <horstretch>0</horstretch>
                       <verstretch>0</verstretch>
                      </sizepolicy>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="pushButton_12">
-                    <property name="text">
-                     <string>About</string>
                     </property>
                    </widget>
                   </item>
@@ -822,13 +794,6 @@
                 </property>
                </widget>
               </item>
-              <item>
-               <widget class="QPushButton" name="pushButton_16">
-                <property name="text">
-                 <string>About</string>
-                </property>
-               </widget>
-              </item>
              </layout>
             </widget>
            </item>
@@ -848,13 +813,6 @@
                 </property>
                </widget>
               </item>
-              <item>
-               <widget class="QPushButton" name="pushButton_15">
-                <property name="text">
-                 <string>About</string>
-                </property>
-               </widget>
-              </item>
              </layout>
             </widget>
            </item>
@@ -871,13 +829,6 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="pushButton_14">
-                <property name="text">
-                 <string>About</string>
                 </property>
                </widget>
               </item>
@@ -906,13 +857,6 @@
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="pushButton_13">
-                <property name="text">
-                 <string>About</string>
                 </property>
                </widget>
               </item>
