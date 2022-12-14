@@ -10,6 +10,7 @@
 #include "Directories.hpp"
 #include "Error.hpp"
 #include "Core.hpp"
+#include "Config.hpp"
 #include "m64p/Api.hpp"
 
 #include <cstdio>
