@@ -11,8 +11,8 @@ license=('GPLv3')
 provides=("$_pkgname")
 conflicts=("$_pkgname")
 
-depends=("hidapi" "libsamplerate" "minizip" "sdl2" "zlib" "freetype2" "qt5-base" "qt5-svg")
-makedepends=("git" "pkg-config" "nasm" "cmake" "rustup")
+depends=("hidapi" "libsamplerate" "minizip" "sdl2" "zlib" "freetype2" "qt6-base" "qt6-svg")
+makedepends=("git" "pkg-config" "nasm" "cmake" "cargo")
 
 source=("git+https://github.com/Rosalie241/${_pkgname}.git")
 sha256sums=('SKIP')
