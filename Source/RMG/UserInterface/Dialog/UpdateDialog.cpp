@@ -23,7 +23,7 @@
 
 using namespace UserInterface::Dialog;
 
-UpdateDialog::UpdateDialog(QWidget *parent, QJsonObject jsonObject) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint)
+UpdateDialog::UpdateDialog(QWidget *parent, QJsonObject jsonObject) : QDialog(parent)
 {
     this->setupUi(this);
 

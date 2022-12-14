@@ -17,7 +17,7 @@
 
 using namespace UserInterface::Dialog;
 
-InstallUpdateDialog::InstallUpdateDialog(QWidget *parent, QString installationDirectory, QString temporaryDirectory, QString filename) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint)
+InstallUpdateDialog::InstallUpdateDialog(QWidget *parent, QString installationDirectory, QString temporaryDirectory, QString filename) : QDialog(parent)
 {
     this->setupUi(this);
 

@@ -22,7 +22,7 @@
 
 using namespace UserInterface::Dialog;
 
-AddCheatDialog::AddCheatDialog(QWidget *parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint)
+AddCheatDialog::AddCheatDialog(QWidget *parent) : QDialog(parent)
 {
     this->setupUi(this);
 

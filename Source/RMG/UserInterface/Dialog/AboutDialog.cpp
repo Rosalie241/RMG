@@ -13,7 +13,7 @@
 
 using namespace UserInterface::Dialog;
 
-AboutDialog::AboutDialog(QWidget* parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint)
+AboutDialog::AboutDialog(QWidget* parent) : QDialog(parent)
 {
     this->setupUi(this);
 

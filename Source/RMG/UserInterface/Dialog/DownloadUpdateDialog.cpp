@@ -21,7 +21,7 @@
 
 using namespace UserInterface::Dialog;
 
-DownloadUpdateDialog::DownloadUpdateDialog(QWidget *parent, QUrl url, QString filename) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint)
+DownloadUpdateDialog::DownloadUpdateDialog(QWidget *parent, QUrl url, QString filename) : QDialog(parent)
 {
     this->setupUi(this);
 

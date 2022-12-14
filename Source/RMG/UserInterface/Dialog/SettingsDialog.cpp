@@ -18,7 +18,7 @@
 
 using namespace UserInterface::Dialog;
 
-SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint)
+SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 {
     this->setupUi(this);
 
@@ -908,6 +908,40 @@ void SettingsDialog::chooseIPLRom(QLineEdit *lineEdit)
     lineEdit->setText(file);
 }
 
+bool SettingsDialog::applyPluginSettings(void)
+{
+    // attempt to apply plugin settings when emulation
+    // isn't running, when it fails, show the user the error and
+    // don't allow the user to save invalid settings
+    if (!CoreIsEmulationPaused() && !CoreIsEmulationRunning())
+    {
+        if (!CoreApplyPluginSettings())
+        {
+            QMessageBox msgBox(this);
+            msgBox.setIcon(QMessageBox::Icon::Critical);
+            msgBox.setWindowTitle("Error");
+            msgBox.setText("CoreApplyPluginSettings() Failed");
+            msgBox.setDetailedText(QString::fromStdString(CoreGetError()));
+            msgBox.addButton(QMessageBox::Ok);
+            msgBox.exec();
+            return false;
+        }
+    }
+    return true;
+}
+
+void SettingsDialog::closeEvent(QCloseEvent* event)
+{
+    if (this->applyPluginSettings())
+    {
+        event->accept();
+    }
+    else
+    {
+        event->ignore();
+    }
+}
+
 void SettingsDialog::on_buttonBox_clicked(QAbstractButton *button)
 {
     QPushButton *pushButton = (QPushButton *)button;
@@ -923,22 +957,9 @@ void SettingsDialog::on_buttonBox_clicked(QAbstractButton *button)
             this->saveSettings();
         }
 
-        // attempt to apply plugin settings when emulation
-        // isn't running, when it fails, show the user the error and
-        // don't allow the user to save invalid settings
-        if (!CoreIsEmulationPaused() && !CoreIsEmulationRunning())
+        if (!this->applyPluginSettings())
         {
-            if (!CoreApplyPluginSettings())
-            {
-                QMessageBox msgBox(this);
-                msgBox.setIcon(QMessageBox::Icon::Critical);
-                msgBox.setWindowTitle("Error");
-                msgBox.setText("CoreApplyPluginSettings() Failed");
-                msgBox.setDetailedText(QString::fromStdString(CoreGetError()));
-                msgBox.addButton(QMessageBox::Ok);
-                msgBox.exec();
-                return;
-            }
+            return;
         }
     }
 

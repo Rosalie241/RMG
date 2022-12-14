@@ -100,6 +100,11 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void chooseDirectory(QLineEdit *);
     void chooseIPLRom(QLineEdit *);
 
+    bool applyPluginSettings(void);
+
+  protected:
+    void closeEvent(QCloseEvent* event) Q_DECL_OVERRIDE;
+
   private slots:
     void on_buttonBox_clicked(QAbstractButton *);
 

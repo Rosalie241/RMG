@@ -14,7 +14,7 @@
 
 using namespace UserInterface::Dialog;
 
-RomInfoDialog::RomInfoDialog(QString file, QWidget *parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint)
+RomInfoDialog::RomInfoDialog(QString file, QWidget *parent) : QDialog(parent)
 {
     this->setupUi(this);
 

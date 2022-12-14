@@ -22,7 +22,7 @@ Q_DECLARE_METATYPE(CoreCheat);
 
 using namespace UserInterface::Dialog;
 
-CheatsDialog::CheatsDialog(QWidget *parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint)
+CheatsDialog::CheatsDialog(QWidget *parent) : QDialog(parent)
 {
     qRegisterMetaType<CoreCheat>();
 

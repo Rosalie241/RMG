@@ -18,7 +18,7 @@ Q_DECLARE_METATYPE(CoreCheatOption);
 
 using namespace UserInterface::Dialog;
 
-ChooseCheatOptionDialog::ChooseCheatOptionDialog(CoreCheat cheat, QWidget *parent) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint)
+ChooseCheatOptionDialog::ChooseCheatOptionDialog(CoreCheat cheat, QWidget *parent) : QDialog(parent)
 {
     qRegisterMetaType<CoreCheatOption>();
 
