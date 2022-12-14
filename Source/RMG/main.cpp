@@ -14,6 +14,8 @@
 #include <QDir>
 #include <QFile>
 
+#include <RMG-Core/Core.hpp>
+
 int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
@@ -23,7 +25,7 @@ int main(int argc, char **argv)
     QDir::setCurrent(app.applicationDirPath());
 
     QCoreApplication::setApplicationName("Rosalie's Mupen GUI");
-    QCoreApplication::setApplicationVersion(VERSION_STR);
+    QCoreApplication::setApplicationVersion(QString::fromStdString(CoreGetVersion()));
 
     // setup commandline parser
     QCommandLineParser parser;
