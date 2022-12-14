@@ -94,7 +94,7 @@ endif()
 install(FILES ${MUPEN64PLUSCORE_LIB}
     DESTINATION ${CORE_INSTALL_PATH}
 )
-install(FILES ${MUPEN64PLUSCORE_INI} Data/font.ttf Data/stylesheet.qss
+install(FILES ${MUPEN64PLUSCORE_INI} Data/font.ttf
     DESTINATION ${DATA_INSTALL_PATH}
 )
 file(GLOB GENERATED_CHEAT_FILES ${CMAKE_SOURCE_DIR}/Data/Cheats/Generated/*.cht)
