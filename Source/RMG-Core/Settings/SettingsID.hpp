@@ -13,7 +13,10 @@ enum class SettingsID
     GUI_PauseEmulationOnFocusLoss,
     GUI_ResumeEmulationOnFocus,
     GUI_AutomaticFullscreen,
+    GUI_Toolbar,
+    GUI_StatusBar,
     GUI_Style,
+    GUI_IconTheme,
     GUI_CheckForUpdates,
     GUI_DiscordRpc,
     GUI_Version,
@@ -118,6 +121,7 @@ enum class SettingsID
     RomBrowser_MaxItems,
     RomBrowser_Columns,
     RomBrowser_ColumnSizes,
+    RomBrowser_ViewMode,
 
     // Settings Settings
     Settings_HasForceUsedSetOnce,

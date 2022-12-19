@@ -161,8 +161,17 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::GUI_AutomaticFullscreen:
         setting = {SETTING_SECTION_GUI, "AutomaticFullscreen", false};
         break;
+    case SettingsID::GUI_Toolbar:
+        setting = {SETTING_SECTION_GUI, "Toolbar", true};
+        break;
+    case SettingsID::GUI_StatusBar:
+        setting = {SETTING_SECTION_GUI, "StatusBar", true};
+        break;
     case SettingsID::GUI_Style:
         setting = {SETTING_SECTION_GUI, "Style", ""};
+        break;
+    case SettingsID::GUI_IconTheme:
+        setting = {SETTING_SECTION_GUI, "IconTheme", "black"};
         break;
     case SettingsID::GUI_CheckForUpdates:
         setting = {SETTING_SECTION_GUI, "CheckForUpdates", true};
@@ -440,6 +449,9 @@ static l_Setting get_setting(SettingsID settingId)
         break;
     case SettingsID::RomBrowser_ColumnSizes:
         setting = {SETTING_SECTION_ROMBROWSER, "ColumnSizes", std::vector<int>({0, 250, 1, 100, 2, 100})};
+        break;
+    case SettingsID::RomBrowser_ViewMode:
+        setting = {SETTING_SECTION_ROMBROWSER, "ViewMode", 0};
         break;
 
     case SettingsID::Settings_HasForceUsedSetOnce:
