@@ -73,20 +73,12 @@ static m64p_error VidExt_Quit(void)
 
 static m64p_error VidExt_ListModes(m64p_2d_size *SizeArray, int *NumSizes)
 {
-    QSize size = QApplication::primaryScreen()->size();
-    SizeArray[0].uiHeight = size.height();
-    SizeArray[0].uiWidth = size.width();
-    *NumSizes = 1;
-
-    return M64ERR_SUCCESS;
+    return M64ERR_UNSUPPORTED;
 }
 
 static m64p_error VidExt_ListRates(m64p_2d_size Size, int *NumRates, int *Rates)
 {
-    Rates[0] = QApplication::primaryScreen()->refreshRate();
-    *NumRates = 1;
-
-    return M64ERR_SUCCESS;
+    return M64ERR_UNSUPPORTED;
 }
 
 static m64p_error VidExt_SetModeWithRate(int Width, int Height, int RefreshRate, int BitsPerPixel, int ScreenMode, int Flags)
