@@ -180,7 +180,7 @@ std::filesystem::path CoreGetDefaultSaveDirectory(void)
 #ifdef PORTABLE_INSTALL
     directory = "Save/Game";
 #else // Not Portable
-    directory = CoreGetUserDataDirectory();
+    directory = CoreGetDefaultUserDataDirectory();
     directory += "/Save/Game";
 #endif // PORTABLE_INSTALL
     return directory;
@@ -192,7 +192,7 @@ std::filesystem::path CoreGetDefaultSaveStateDirectory(void)
 #ifdef PORTABLE_INSTALL
     directory = "Save/State";
 #else // Not Portable
-    directory = CoreGetUserDataDirectory();
+    directory = CoreGetDefaultUserDataDirectory();
     directory += "/Save/State";
 #endif // PORTABLE_INSTALL
     return directory;
