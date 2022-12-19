@@ -136,6 +136,9 @@ bool CoreSetCheatOption(CoreCheat cheat, CoreCheatOption option);
 // attempts to retrieve the currently's set cheat's option
 bool CoreGetCheatOption(CoreCheat cheat, CoreCheatOption& option);
 
+// attempts to reset the cheat option
+bool CoreResetCheatOption(CoreCheat cheat);
+
 // attempts to apply the enabled cheats to the currently opened ROM
 bool CoreApplyCheats(void);
 

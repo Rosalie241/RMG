@@ -717,6 +717,7 @@ bool CoreUpdateCheat(CoreCheat oldCheat, CoreCheat newCheat)
     CoreRomHeader romHeader;
     CoreRomSettings romSettings;
     std::filesystem::path cheatFilePath;
+    CoreCheatOption cheatOption;
 
     if (!CoreGetCurrentRomHeader(romHeader) ||
         !CoreGetCurrentRomSettings(romSettings))
@@ -725,6 +726,23 @@ bool CoreUpdateCheat(CoreCheat oldCheat, CoreCheat newCheat)
     }
 
     cheatFilePath = get_user_cheat_file_path(romHeader, romSettings);
+
+    // copy over cheat settings when name has changed
+    if (oldCheat.Name != newCheat.Name)
+    {
+        CoreEnableCheat(newCheat, CoreIsCheatEnabled(oldCheat));
+
+        // only set option to new cheat when 
+        // retrieving from old one succeeds
+        if (CoreGetCheatOption(oldCheat, cheatOption))
+        {
+            CoreSetCheatOption(newCheat, cheatOption);
+        }
+
+        // reset old cheat settings
+        CoreEnableCheat(oldCheat, false);
+        CoreResetCheatOption(oldCheat);
+    }
 
     // try to find old cheat in user cheats,
     // when it isnt found, it's most likely a system cheat
@@ -890,6 +908,29 @@ bool CoreGetCheatOption(CoreCheat cheat, CoreCheatOption& option)
     // when nothing was found, reset option
     CoreSettingsSetValue(settingSection, settingKey, -1);
     return false;
+}
+
+bool CoreResetCheatOption(CoreCheat cheat)
+{
+    CoreRomSettings romSettings;
+    std::string settingSection;
+    std::string settingKey;
+
+    if (!cheat.HasOptions)
+    {
+        return false;
+    }
+
+    if (!CoreGetCurrentRomSettings(romSettings))
+    {
+        return false;
+    }
+
+    settingSection = romSettings.MD5 + " Cheats";
+    settingKey = "Cheat \"" + cheat.Name + "\" Option";
+
+    CoreSettingsSetValue(settingSection, settingKey, -1);
+    return true;
 }
 
 bool CoreApplyCheats(void)
