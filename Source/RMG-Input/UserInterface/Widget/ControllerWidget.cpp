@@ -941,7 +941,11 @@ void ControllerWidget::SaveDefaultSettings()
     CoreSettingsSetValue(SettingsID::Input_DeviceNum, section, -1);
     CoreSettingsSetValue(SettingsID::Input_Deadzone, section, 9);
     CoreSettingsSetValue(SettingsID::Input_Pak, section, 0);
+#ifdef _WIN32
     CoreSettingsSetValue(SettingsID::Input_RemoveDuplicateMappings, section, true);
+#else
+    CoreSettingsSetValue(SettingsID::Input_RemoveDuplicateMappings, section, false);
+#endif // _WIN32
     CoreSettingsSetValue(SettingsID::Input_InvertAxis, section, true);
 
     for (auto& buttonSetting : this->buttonSettingMappings)
