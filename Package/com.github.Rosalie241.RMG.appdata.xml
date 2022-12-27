@@ -33,6 +33,24 @@
   </screenshots>
   <description/>
   <releases>
+    <release version="v0.2.6" date="2022-12-28" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix default save state/game directory being incorrect on first run (on non-portable installs)</li>
+          <li>Fix angrylion-rdp-plus not loading settings correctly</li>
+          <li>Fix cheat settings not moving over when renaming a cheat</li>
+          <li>Remove fullscreen resolution combobox from GLideN64 because it did nothing</li>
+          <li>Remove File menu from menu bar</li>
+          <li>Implement disk support without requiring a cartridge</li>
+          <li>Add toolbar</li>
+          <li>Add View menu to menu bar</li>
+          <li>Add Grid view to ROM browser</li>
+          <li>Add icons to all menu bar items</li>
+          <li>Add log dialog</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.2.5" date="2022-12-14" type="stable">
       <description>
         <p>Changes:</p>
