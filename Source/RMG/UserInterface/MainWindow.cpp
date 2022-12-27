@@ -1579,11 +1579,6 @@ void MainWindow::on_Core_DebugCallback(CoreDebugMessageType type, QString contex
         return;
     }
 
-    if (!this->ui_ShowStatusbar)
-    {
-        return;
-    }
-
     if (!context.startsWith("[CORE]"))
     {
         return;
@@ -1604,6 +1599,11 @@ void MainWindow::on_Core_DebugCallback(CoreDebugMessageType type, QString contex
     if (type == CoreDebugMessageType::Error)
     {
         this->showErrorMessage("Core Error", message);
+        return;
+    }
+
+    if (!this->ui_ShowStatusbar)
+    {
         return;
     }
 
