@@ -17,6 +17,8 @@ MainDialog::MainDialog(QWidget* parent) : QDialog(parent)
     this->setupUi(this);
     this->setWindowIcon(QIcon(":Resource/RMG.png"));
 
+    this->setIconsForEmulationInfoText();
+
     this->volumeSlider->setValue(CoreSettingsGetIntValue(SettingsID::Audio_Volume));
     this->muteCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::Audio_Muted));
 
@@ -36,6 +38,21 @@ MainDialog::MainDialog(QWidget* parent) : QDialog(parent)
 
 MainDialog::~MainDialog()
 {
+}
+
+void MainDialog::setIconsForEmulationInfoText(void)
+{
+    QLabel* labels[] = {
+        this->infoIconLabel_0
+    };
+
+    QIcon infoIcon = QIcon::fromTheme("information-line");
+    QPixmap infoIconPixmap = infoIcon.pixmap(16, 16);
+    
+    for (QLabel* label : labels)
+    {
+        label->setPixmap(infoIconPixmap);
+    }
 }
 
 void MainDialog::hideEmulationInfoText(void)

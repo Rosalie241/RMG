@@ -43,6 +43,7 @@ private:
     bool hasSaved = false;
     OptionsDialogSettings settings;
 
+    void setIconsForEmulationInfoText(void);
     void hideEmulationInfoText(void);
 
 private slots:

@@ -16,6 +16,7 @@
 //
 
 static CoreCallbacks* l_CoreCallbacks = nullptr;
+static bool           l_showVerboseMessages = false;
 
 //
 // Exported Functions
@@ -36,6 +37,8 @@ bool CoreCallbacks::Init(void)
     // needed for Qt
     qRegisterMetaType<CoreDebugMessageType>("CoreDebugMessageType");
 
+    this->LoadSettings();
+
     l_CoreCallbacks = this;
     return CoreSetupCallbacks(this->coreDebugCallback);
 }
@@ -45,12 +48,23 @@ void CoreCallbacks::Stop(void)
     l_CoreCallbacks = nullptr;
 }
 
-void CoreCallbacks::coreDebugCallback(CoreDebugMessageType type, std::string message)
+void CoreCallbacks::LoadSettings(void)
+{
+    l_showVerboseMessages = CoreSettingsGetBoolValue(SettingsID::GUI_ShowVerboseLogMessages);
+}
+
+void CoreCallbacks::coreDebugCallback(CoreDebugMessageType type, std::string context, std::string message)
 {
     if (l_CoreCallbacks == nullptr)
     {
         return;
     }
 
-    emit l_CoreCallbacks->OnCoreDebugCallback(type, QString::fromStdString(message));
+    // only show verbose messages when enabled
+    if (!l_showVerboseMessages && type == CoreDebugMessageType::Verbose)
+    {
+        return;
+    }
+
+    emit l_CoreCallbacks->OnCoreDebugCallback(type, QString::fromStdString(context), QString::fromStdString(message));
 }

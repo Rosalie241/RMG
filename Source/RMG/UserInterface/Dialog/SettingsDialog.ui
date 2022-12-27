@@ -211,7 +211,7 @@
            <item>
             <layout class="QHBoxLayout" name="emulationInfoLayout_0">
              <item>
-              <widget class="QLabel" name="label_48">
+              <widget class="QLabel" name="infoIconLabel_0">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -222,7 +222,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap resource="SettingsDialog.qrc">:/newPrefix/Resource/Info.ico</pixmap>
+                <pixmap>:/newPrefix/Resource/Info.ico</pixmap>
                </property>
                <property name="wordWrap">
                 <bool>false</bool>
@@ -732,7 +732,7 @@
            <item>
             <layout class="QHBoxLayout" name="emulationInfoLayout_9">
              <item>
-              <widget class="QLabel" name="label_53">
+              <widget class="QLabel" name="infoIconLabel_1">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -743,7 +743,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap resource="SettingsDialog.qrc">:/newPrefix/Resource/Info.ico</pixmap>
+                <pixmap>:/newPrefix/Resource/Info.ico</pixmap>
                </property>
                <property name="wordWrap">
                 <bool>false</bool>
@@ -879,7 +879,7 @@
            <item>
             <layout class="QHBoxLayout" name="emulationInfoLayout_1">
              <item>
-              <widget class="QLabel" name="label_62">
+              <widget class="QLabel" name="infoIconLabel_2">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -890,7 +890,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap resource="SettingsDialog.qrc">:/newPrefix/Resource/Info.ico</pixmap>
+                <pixmap>:/newPrefix/Resource/Info.ico</pixmap>
                </property>
                <property name="wordWrap">
                 <bool>false</bool>
@@ -1077,7 +1077,7 @@
               <enum>QLayout::SetDefaultConstraint</enum>
              </property>
              <item>
-              <widget class="QLabel" name="label_64">
+              <widget class="QLabel" name="infoIconLabel_3">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -1088,7 +1088,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap resource="SettingsDialog.qrc">:/newPrefix/Resource/Info.ico</pixmap>
+                <pixmap>:/newPrefix/Resource/Info.ico</pixmap>
                </property>
                <property name="wordWrap">
                 <bool>false</bool>
@@ -1233,7 +1233,7 @@
            <item>
             <layout class="QHBoxLayout" name="emulationInfoLayout_3">
              <item>
-              <widget class="QLabel" name="label_58">
+              <widget class="QLabel" name="infoIconLabel_4">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -1244,7 +1244,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap resource="SettingsDialog.qrc">:/newPrefix/Resource/Info.ico</pixmap>
+                <pixmap>:/newPrefix/Resource/Info.ico</pixmap>
                </property>
                <property name="wordWrap">
                 <bool>false</bool>
@@ -1280,427 +1280,413 @@
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_33">
            <item>
-            <widget class="QTabWidget" name="keybindingsMenuTabWidget">
-             <property name="currentIndex">
-              <number>0</number>
+            <widget class="QScrollArea" name="scrollArea">
+             <property name="frameShadow">
+              <enum>QFrame::Plain</enum>
              </property>
-             <widget class="QWidget" name="fileMenuTab">
-              <attribute name="title">
-               <string>File</string>
-              </attribute>
-              <layout class="QVBoxLayout" name="verticalLayout_35">
+             <property name="widgetResizable">
+              <bool>true</bool>
+             </property>
+             <widget class="QWidget" name="scrollAreaWidgetContents">
+              <property name="geometry">
+               <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>442</width>
+                <height>692</height>
+               </rect>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_11">
                <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_69">
-                 <item>
-                  <widget class="QLabel" name="label_66">
-                   <property name="text">
-                    <string>Open ROM</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="KeybindButton" name="openRomKeyButton">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_70">
-                 <item>
-                  <widget class="QLabel" name="label_67">
-                   <property name="text">
-                    <string>Open Combo</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="KeybindButton" name="openComboKeyButton">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_71">
-                 <item>
-                  <widget class="QLabel" name="label_68">
-                   <property name="text">
-                    <string>Start Emulation</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="KeybindButton" name="startEmuKeyButton">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_72">
-                 <item>
-                  <widget class="QLabel" name="label_69">
-                   <property name="text">
-                    <string>End Emulation</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="KeybindButton" name="endEmuKeyButton">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_73">
-                 <item>
-                  <widget class="QLabel" name="label_70">
-                   <property name="text">
-                    <string>Refresh ROM List</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="KeybindButton" name="refreshRomListKeyButton">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_74">
-                 <item>
-                  <widget class="QLabel" name="label_71">
-                   <property name="text">
-                    <string>Exit</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="KeybindButton" name="exitKeyButton">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <spacer name="verticalSpacer_13">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
+                <widget class="QTabWidget" name="keybindingsMenuTabWidget">
+                 <property name="currentIndex">
+                  <number>0</number>
                  </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-              </layout>
-             </widget>
-             <widget class="QWidget" name="systemMenuTab">
-              <attribute name="title">
-               <string>System</string>
-              </attribute>
-              <layout class="QVBoxLayout" name="verticalLayout_3">
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_75">
-                 <item>
-                  <widget class="QLabel" name="label_72">
-                   <property name="text">
-                    <string>Soft Reset</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="KeybindButton" name="softResetKeyButton">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_76">
-                 <item>
-                  <widget class="QLabel" name="label_73">
-                   <property name="text">
-                    <string>Hard Reset</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="KeybindButton" name="hardResetKeyButton">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_89">
-                 <item>
-                  <widget class="QLabel" name="label_88">
-                   <property name="text">
-                    <string>Pause</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="KeybindButton" name="pauseKeyButton">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_77">
-                 <item>
-                  <widget class="QLabel" name="label_74">
-                   <property name="text">
-                    <string>Capture Screenshot</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="KeybindButton" name="generateBitmapKeyButton">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_78">
-                 <item>
-                  <widget class="QLabel" name="label_75">
-                   <property name="text">
-                    <string>Limit FPS</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="KeybindButton" name="limitFPSKeyButton">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_79">
-                 <item>
-                  <widget class="QLabel" name="label_76">
-                   <property name="text">
-                    <string>Swap Disk</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="KeybindButton" name="swapDiskKeyButton">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_80">
-                 <item>
-                  <widget class="QLabel" name="label_77">
-                   <property name="text">
-                    <string>Save State</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="KeybindButton" name="saveStateKeyButton">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_81">
-                 <item>
-                  <widget class="QLabel" name="label_78">
-                   <property name="text">
-                    <string>Save As</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="KeybindButton" name="saveAsKeyButton">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_82">
-                 <item>
-                  <widget class="QLabel" name="label_79">
-                   <property name="text">
-                    <string>Load State</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="KeybindButton" name="loadStateKeyButton">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_83">
-                 <item>
-                  <widget class="QLabel" name="label_80">
-                   <property name="text">
-                    <string>Load</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="KeybindButton" name="loadKeyButton">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_84">
-                 <item>
-                  <widget class="QLabel" name="label_81">
-                   <property name="text">
-                    <string>Cheats</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="KeybindButton" name="cheatsKeyButton">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_85">
-                 <item>
-                  <widget class="QLabel" name="label_82">
-                   <property name="text">
-                    <string>GS Button</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="KeybindButton" name="gsButtonKeyButton">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <spacer name="verticalSpacer_14">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-              </layout>
-             </widget>
-             <widget class="QWidget" name="optionsMenuTab">
-              <attribute name="title">
-               <string>Options</string>
-              </attribute>
-              <layout class="QVBoxLayout" name="verticalLayout_37">
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_86">
-                 <item>
-                  <widget class="QLabel" name="label_83">
-                   <property name="text">
-                    <string>Full Screen</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="KeybindButton" name="fullscreenKeyButton">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_87">
-                 <item>
-                  <widget class="QLabel" name="label_84">
-                   <property name="text">
-                    <string>Settings</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="KeybindButton" name="settingsKeyButton">
-                   <property name="text">
-                    <string/>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <spacer name="verticalSpacer_15">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
+                 <widget class="QWidget" name="systemMenuTab">
+                  <attribute name="title">
+                   <string>System</string>
+                  </attribute>
+                  <layout class="QVBoxLayout" name="verticalLayout_3">
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_69">
+                     <item>
+                      <widget class="QLabel" name="label_66">
+                       <property name="text">
+                        <string>Start ROM</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="startRomKeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_70">
+                     <item>
+                      <widget class="QLabel" name="label_67">
+                       <property name="text">
+                        <string>Start Combo</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="startComboKeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_72">
+                     <item>
+                      <widget class="QLabel" name="label_69">
+                       <property name="text">
+                        <string>Shutdown</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="shutdownKeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_76">
+                     <item>
+                      <widget class="QLabel" name="label_73">
+                       <property name="text">
+                        <string>Hard Reset</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="hardResetKeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_89">
+                     <item>
+                      <widget class="QLabel" name="label_88">
+                       <property name="text">
+                        <string>Pause</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="pauseKeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_75">
+                     <item>
+                      <widget class="QLabel" name="label_72">
+                       <property name="text">
+                        <string>Soft Reset</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="softResetKeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_77">
+                     <item>
+                      <widget class="QLabel" name="label_74">
+                       <property name="text">
+                        <string>Capture Screenshot</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="generateBitmapKeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_78">
+                     <item>
+                      <widget class="QLabel" name="label_75">
+                       <property name="text">
+                        <string>Limit FPS</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="limitFPSKeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_80">
+                     <item>
+                      <widget class="QLabel" name="label_77">
+                       <property name="text">
+                        <string>Save State</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="saveStateKeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_81">
+                     <item>
+                      <widget class="QLabel" name="label_78">
+                       <property name="text">
+                        <string>Save As</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="saveAsKeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_82">
+                     <item>
+                      <widget class="QLabel" name="label_79">
+                       <property name="text">
+                        <string>Load State</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="loadStateKeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_83">
+                     <item>
+                      <widget class="QLabel" name="label_80">
+                       <property name="text">
+                        <string>Load</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="loadKeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_84">
+                     <item>
+                      <widget class="QLabel" name="label_81">
+                       <property name="text">
+                        <string>Cheats</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="cheatsKeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_85">
+                     <item>
+                      <widget class="QLabel" name="label_82">
+                       <property name="text">
+                        <string>GS Button</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="gsButtonKeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_74">
+                     <item>
+                      <widget class="QLabel" name="label_71">
+                       <property name="text">
+                        <string>Exit</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="exitKeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <spacer name="verticalSpacer_14">
+                     <property name="orientation">
+                      <enum>Qt::Vertical</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>20</width>
+                       <height>40</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                  </layout>
+                 </widget>
+                 <widget class="QWidget" name="settingsMenuTab">
+                  <attribute name="title">
+                   <string>Settings</string>
+                  </attribute>
+                  <layout class="QVBoxLayout" name="verticalLayout_37">
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_87">
+                     <item>
+                      <widget class="QLabel" name="label_84">
+                       <property name="text">
+                        <string>Settings</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="settingsKeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <spacer name="verticalSpacer_15">
+                     <property name="orientation">
+                      <enum>Qt::Vertical</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>20</width>
+                       <height>40</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                  </layout>
+                 </widget>
+                 <widget class="QWidget" name="viewMenuTab">
+                  <attribute name="title">
+                   <string>View</string>
+                  </attribute>
+                  <layout class="QVBoxLayout" name="verticalLayout_10">
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_86">
+                     <item>
+                      <widget class="QLabel" name="label_83">
+                       <property name="text">
+                        <string>Full Screen</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="fullscreenKeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_73">
+                     <item>
+                      <widget class="QLabel" name="label_70">
+                       <property name="text">
+                        <string>Refresh ROM List</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="refreshRomListKeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <spacer name="verticalSpacer_16">
+                     <property name="orientation">
+                      <enum>Qt::Vertical</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>20</width>
+                       <height>419</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                  </layout>
+                 </widget>
+                </widget>
                </item>
               </layout>
              </widget>
@@ -1812,7 +1798,7 @@
                <item>
                 <layout class="QHBoxLayout" name="emulationInfoLayout_2">
                  <item>
-                  <widget class="QLabel" name="label_85">
+                  <widget class="QLabel" name="infoIconLabel_5">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                      <horstretch>0</horstretch>
@@ -1823,7 +1809,7 @@
                     <string/>
                    </property>
                    <property name="pixmap">
-                    <pixmap resource="SettingsDialog.qrc">:/newPrefix/Resource/Info.ico</pixmap>
+                    <pixmap>:/newPrefix/Resource/Info.ico</pixmap>
                    </property>
                    <property name="wordWrap">
                     <bool>false</bool>
@@ -1901,6 +1887,33 @@
                </item>
               </layout>
              </widget>
+             <widget class="QWidget" name="tab_5">
+              <attribute name="title">
+               <string>Log Window</string>
+              </attribute>
+              <layout class="QVBoxLayout" name="verticalLayout_9">
+               <item>
+                <widget class="QCheckBox" name="showVerboseLogMessagesCheckBox">
+                 <property name="text">
+                  <string>Show Verbose Messages</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="verticalSpacer_12">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>503</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
              <widget class="QWidget" name="tab_4">
               <attribute name="title">
                <string>Styles</string>
@@ -1921,6 +1934,31 @@
                 </layout>
                </item>
                <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_7">
+                 <item>
+                  <widget class="QLabel" name="label_6">
+                   <property name="text">
+                    <string>Icon Theme</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="iconThemeComboBox">
+                   <item>
+                    <property name="text">
+                     <string>white</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>black</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
                 <spacer name="verticalSpacer_9">
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
@@ -1936,7 +1974,7 @@
                <item>
                 <layout class="QHBoxLayout" name="emulationInfoLayout_4">
                  <item>
-                  <widget class="QLabel" name="label_87">
+                  <widget class="QLabel" name="infoIconLabel_6">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                      <horstretch>0</horstretch>
@@ -1947,7 +1985,7 @@
                     <string/>
                    </property>
                    <property name="pixmap">
-                    <pixmap resource="SettingsDialog.qrc">:/newPrefix/Resource/Info.ico</pixmap>
+                    <pixmap>:/newPrefix/Resource/Info.ico</pixmap>
                    </property>
                    <property name="wordWrap">
                     <bool>false</bool>
@@ -2012,7 +2050,7 @@
                <item>
                 <layout class="QHBoxLayout" name="emulationInfoLayout_5">
                  <item>
-                  <widget class="QLabel" name="label_90">
+                  <widget class="QLabel" name="infoIconLabel_7">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                      <horstretch>0</horstretch>
@@ -2023,7 +2061,7 @@
                     <string/>
                    </property>
                    <property name="pixmap">
-                    <pixmap resource="SettingsDialog.qrc">:/newPrefix/Resource/Info.ico</pixmap>
+                    <pixmap>:/newPrefix/Resource/Info.ico</pixmap>
                    </property>
                    <property name="wordWrap">
                     <bool>false</bool>
@@ -2082,9 +2120,7 @@
    <header>UserInterface/Widget/KeybindButton.hpp</header>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="SettingsDialog.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>buttonBox</sender>

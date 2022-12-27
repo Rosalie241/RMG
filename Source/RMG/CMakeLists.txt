@@ -21,12 +21,17 @@ pkg_check_modules(SDL2 REQUIRED sdl2)
 
 set(RMG_SOURCES
     UserInterface/MainWindow.cpp
+    UserInterface/MainWindow.ui
     UserInterface/Widget/RomBrowserWidget.cpp
+    UserInterface/Widget/RomBrowserListViewWidget.cpp
+    UserInterface/Widget/RomBrowserGridViewWidget.cpp
+    UserInterface/Widget/RomBrowserLoadingWidget.cpp
+    UserInterface/Widget/RomBrowserEmptyWidget.cpp
+    UserInterface/Widget/RomBrowserEmptyWidget.ui
     UserInterface/Widget/OGLWidget.cpp
     UserInterface/Widget/KeybindButton.cpp
     UserInterface/Dialog/SettingsDialog.cpp
     UserInterface/Dialog/SettingsDialog.ui
-    UserInterface/Dialog/SettingsDialog.qrc
     UserInterface/Dialog/CheatsDialog.cpp
     UserInterface/Dialog/CheatsDialog.ui
     UserInterface/Dialog/AddCheatDialog.cpp
@@ -37,6 +42,8 @@ set(RMG_SOURCES
     UserInterface/Dialog/RomInfoDialog.ui
     UserInterface/Dialog/AboutDialog.cpp
     UserInterface/Dialog/AboutDialog.ui
+    UserInterface/Dialog/LogDialog.cpp
+    UserInterface/Dialog/LogDialog.ui
     UserInterface/NoFocusDelegate.cpp
     UserInterface/EventFilter.cpp
     UserInterface/UIResources.rc

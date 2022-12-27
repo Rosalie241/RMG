@@ -25,6 +25,7 @@ public:
     ~MainDialog(void);
 
 private:
+    void setIconsForEmulationInfoText(void);
     void hideEmulationInfoText(void);
 
 private slots:

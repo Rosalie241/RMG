@@ -1,5 +1,56 @@
-<!DOCTYPE RCC><RCC version="1.0">
+<RCC>
 <qresource>
   <file>Resource/RMG.png</file>
+  <file>Resource/CoverFallback.png</file>
+
+  <file alias="icons/black/index.theme">Resource/icons/black/index.theme</file>
+  <file alias="icons/black/svg/brush-line.svg">Resource/icons/black/svg/brush-line.svg</file>
+  <file alias="icons/black/svg/code-box-line.svg">Resource/icons/black/svg/code-box-line.svg</file>
+  <file alias="icons/black/svg/delete-bin-line.svg">Resource/icons/black/svg/delete-bin-line.svg</file>
+  <file alias="icons/black/svg/door-open-line.svg">Resource/icons/black/svg/door-open-line.svg</file>
+  <file alias="icons/black/svg/file-line.svg">Resource/icons/black/svg/file-line.svg</file>
+  <file alias="icons/black/svg/file-list-line.svg">Resource/icons/black/svg/file-list-line.svg</file>
+  <file alias="icons/black/svg/folder-open-line.svg">Resource/icons/black/svg/folder-open-line.svg</file>
+  <file alias="icons/black/svg/fullscreen-line.svg">Resource/icons/black/svg/fullscreen-line.svg</file>
+  <file alias="icons/black/svg/function-line.svg">Resource/icons/black/svg/function-line.svg</file>
+  <file alias="icons/black/svg/gamepad-line.svg">Resource/icons/black/svg/gamepad-line.svg</file>
+  <file alias="icons/black/svg/github-fill.svg">Resource/icons/black/svg/github-fill.svg</file>
+  <file alias="icons/black/svg/information-line.svg">Resource/icons/black/svg/information-line.svg</file>
+  <file alias="icons/black/svg/list-check.svg">Resource/icons/black/svg/list-check.svg</file>
+  <file alias="icons/black/svg/pause-line.svg">Resource/icons/black/svg/pause-line.svg</file>
+  <file alias="icons/black/svg/play-line.svg">Resource/icons/black/svg/play-line.svg</file>
+  <file alias="icons/black/svg/refresh-line.svg">Resource/icons/black/svg/refresh-line.svg</file>
+  <file alias="icons/black/svg/restart-line.svg">Resource/icons/black/svg/restart-line.svg</file>
+  <file alias="icons/black/svg/save-3-line.svg">Resource/icons/black/svg/save-3-line.svg</file>
+  <file alias="icons/black/svg/screenshot-2-line.svg">Resource/icons/black/svg/screenshot-2-line.svg</file>
+  <file alias="icons/black/svg/shut-down-line.svg">Resource/icons/black/svg/shut-down-line.svg</file>
+  <file alias="icons/black/svg/speed-line.svg">Resource/icons/black/svg/speed-line.svg</file>
+  <file alias="icons/black/svg/settings-3-line.svg">Resource/icons/black/svg/settings-3-line.svg</file>
+  <file alias="icons/black/svg/volume-up-line.svg">Resource/icons/black/svg/volume-up-line.svg</file>
+
+  <file alias="icons/white/index.theme">Resource/icons/white/index.theme</file>
+  <file alias="icons/white/svg/brush-line.svg">Resource/icons/white/svg/brush-line.svg</file>
+  <file alias="icons/white/svg/code-box-line.svg">Resource/icons/white/svg/code-box-line.svg</file>
+  <file alias="icons/white/svg/delete-bin-line.svg">Resource/icons/white/svg/delete-bin-line.svg</file>
+  <file alias="icons/white/svg/door-open-line.svg">Resource/icons/white/svg/door-open-line.svg</file>
+  <file alias="icons/white/svg/file-line.svg">Resource/icons/white/svg/file-line.svg</file>
+  <file alias="icons/white/svg/file-list-line.svg">Resource/icons/white/svg/file-list-line.svg</file>
+  <file alias="icons/white/svg/folder-open-line.svg">Resource/icons/white/svg/folder-open-line.svg</file>
+  <file alias="icons/white/svg/fullscreen-line.svg">Resource/icons/white/svg/fullscreen-line.svg</file>
+  <file alias="icons/white/svg/function-line.svg">Resource/icons/white/svg/function-line.svg</file>
+  <file alias="icons/white/svg/gamepad-line.svg">Resource/icons/white/svg/gamepad-line.svg</file>
+  <file alias="icons/white/svg/github-fill.svg">Resource/icons/white/svg/github-fill.svg</file>
+  <file alias="icons/white/svg/information-line.svg">Resource/icons/white/svg/information-line.svg</file>
+  <file alias="icons/white/svg/list-check.svg">Resource/icons/white/svg/list-check.svg</file>
+  <file alias="icons/white/svg/pause-line.svg">Resource/icons/white/svg/pause-line.svg</file>
+  <file alias="icons/white/svg/play-line.svg">Resource/icons/white/svg/play-line.svg</file>
+  <file alias="icons/white/svg/refresh-line.svg">Resource/icons/white/svg/refresh-line.svg</file>
+  <file alias="icons/white/svg/restart-line.svg">Resource/icons/white/svg/restart-line.svg</file>
+  <file alias="icons/white/svg/save-3-line.svg">Resource/icons/white/svg/save-3-line.svg</file>
+  <file alias="icons/white/svg/screenshot-2-line.svg">Resource/icons/white/svg/screenshot-2-line.svg</file>
+  <file alias="icons/white/svg/shut-down-line.svg">Resource/icons/white/svg/shut-down-line.svg</file>
+  <file alias="icons/white/svg/speed-line.svg">Resource/icons/white/svg/speed-line.svg</file>
+  <file alias="icons/white/svg/settings-3-line.svg">Resource/icons/white/svg/settings-3-line.svg</file>
+  <file alias="icons/white/svg/volume-up-line.svg">Resource/icons/white/svg/volume-up-line.svg</file>
 </qresource>
 </RCC>

@@ -14,12 +14,14 @@
 #include "Dialog/SettingsDialog.hpp"
 #include "Dialog/CheatsDialog.hpp"
 #include "Dialog/RomInfoDialog.hpp"
+#include "Dialog/LogDialog.hpp"
 #include "EventFilter.hpp"
 #include "Widget/OGLWidget.hpp"
 #include "Widget/RomBrowserWidget.hpp"
 #include "Callbacks.hpp"
 
 #include <QAction>
+#include <QToolBar>
 #include <QCloseEvent>
 #include <QMainWindow>
 #include <QSettings>
@@ -33,9 +35,11 @@
 #include <QJsonObject>
 #endif // UPDATER
 
+#include "ui_MainWindow.h"
+
 namespace UserInterface
 {
-class MainWindow : public QMainWindow
+class MainWindow : public QMainWindow, private Ui::MainWindow
 {
     Q_OBJECT
 
@@ -47,8 +51,6 @@ class MainWindow : public QMainWindow
     void OpenROM(QString, QString, bool);
 
   private:
-    QIcon ui_Icon;
-
     Thread::EmulationThread *emulationThread;
 
     CoreCallbacks* coreCallBacks;
@@ -59,91 +61,63 @@ class MainWindow : public QMainWindow
     EventFilter *ui_EventFilter;
     QLabel *ui_StatusBar_Label;
 
-    QMenuBar *menuBar;
-    QMenu *menuBar_Menu;
-    QAction *action_File_OpenRom;
-    QAction *action_File_OpenCombo;
-    QAction *action_File_StartEmulation;
-    QAction *action_File_EndEmulation;
-    QAction *action_File_Language;
-    QAction *action_File_ChooseDirectory;
-    QAction *action_File_RefreshRomList;
-    QAction *action_File_RecentRom;
-    QAction *action_File_RecentRomDirectories;
-    QAction *action_File_Exit;
-    QAction *action_System_SoftReset;
-    QAction *action_System_HardReset;
-    QAction *action_System_Pause;
-    QAction *action_System_CaptureScreenshot;
-    QAction *action_System_LimitFPS;
-    QAction *action_System_SwapDisk;
-    QAction *action_System_SaveState;
-    QAction *action_System_SaveAs;
-    QAction *action_System_LoadState;
-    QAction *action_System_Load;
-    QMenu *menu_System_CurrentSaveState;
-    QAction *action_System_Cheats;
-    QAction *action_System_GSButton;
-    QAction *action_Options_FullScreen;
-    QAction *action_Options_ConfigGfx;
-    QAction *action_Options_ConfigAudio;
-    QAction *action_Options_ConfigRsp;
-    QAction *action_Options_ConfigControl;
-    QAction *action_Options_Settings;
-    QAction *action_Help_HomePage;
-    QAction *action_Help_About;
-
     QByteArray ui_Geometry;
     bool ui_Geometry_Saved = false;
 
     QByteArray ui_VidExt_Geometry;
-    bool ui_VidExt_Geometry_Saved;
+    bool ui_VidExt_Geometry_Saved = false;
 
-    bool ui_AllowManualResizing;
-    bool ui_HideCursorInEmulation;
-    bool ui_HideCursorInFullscreenEmulation;
+    bool ui_AllowManualResizing   = false;
+    bool ui_HideCursorInEmulation = false;
+    bool ui_HideCursorInFullscreenEmulation = false;
     bool ui_NoSwitchToRomBrowser = false;
-    bool ui_VidExtForceSetMode;
-    bool ui_LaunchInFullscreen = false;
+    bool ui_VidExtForceSetMode   = false;
+    bool ui_LaunchInFullscreen   = false;
     bool ui_RefreshRomListAfterEmulation = false;
+
+    bool ui_ShowToolbar   = false;
+    bool ui_ShowStatusbar = false;
 
     bool ui_ManuallyPaused = true;
 
-    int ui_TimerId = 0;
+    int ui_TimerId      = 0;
     int ui_TimerTimeout = 0;
 
     int ui_FullscreenTimerId = 0;
-
     int ui_GamesharkButtonTimerId = 0;
 
     QString ui_WindowTitle;
 
+    Dialog::LogDialog logDialog;
+
     void closeEvent(QCloseEvent *) Q_DECL_OVERRIDE;
 
-    void ui_Init();
-    void ui_Setup(QApplication*);
-    void ui_Stylesheet_Setup(QApplication*);
-    void ui_MessageBox(QString, QString, QString);
-    void ui_InEmulation(bool, bool);
-    void ui_SaveGeometry(void);
-    void ui_LoadGeometry(void);
+    void initializeUI();
+    
+    void configureUI(QApplication*);
+    void configureTheme(QApplication*);
 
-    void menuBar_Init(void);
-    void menuBar_Setup(bool, bool);
+    void showErrorMessage(QString, QString);
+    
+    void updateUI(bool, bool);
 
-    void emulationThread_Init(void);
-    void emulationThread_Connect(void);
-    void emulationThread_Launch(QString, QString);
-    void emulationThread_Launch(QString);
+    void storeGeometry(void);
+    void loadGeometry(void);
 
-    void ui_Actions_Init(void);
-    void ui_Actions_Setup(bool, bool);
-    void ui_Actions_Add(void);
-    void ui_Actions_Remove(void);
-    void ui_Actions_Connect(void);
+    void initializeEmulationThread(void);
+    void connectEmulationThreadSignals(void);
+    void launchEmulationThread(QString, QString);
+    void launchEmulationThread(QString);
+
+    void configureActions(void);
+    void connectActionSignals(void);
+    void updateActions(bool, bool);
+
+    void addFullscreenActions(void);
+    void removeFullscreenActions(void);
 
 #ifdef UPDATER
-    void ui_CheckForUpdates(void);
+    void checkForUpdates(void);
 #endif // UPDATER
   protected:
     void timerEvent(QTimerEvent *) Q_DECL_OVERRIDE;
@@ -151,7 +125,6 @@ class MainWindow : public QMainWindow
   private slots:
     void on_EventFilter_KeyPressed(QKeyEvent *);
     void on_EventFilter_KeyReleased(QKeyEvent *);
-    void on_EventFilter_FileDropped(QDropEvent *);
 
     void on_QGuiApplication_applicationStateChanged(Qt::ApplicationState);
  
@@ -159,18 +132,17 @@ class MainWindow : public QMainWindow
     void on_networkAccessManager_Finished(QNetworkReply *);
 #endif // UPDATER
 
-    void on_Action_File_OpenRom(void);
-    void on_Action_File_OpenCombo(void);
-    void on_Action_File_EndEmulation(void);
     void on_Action_File_ChooseDirectory(void);
     void on_Action_File_RefreshRomList(void);
-    void on_Action_File_Exit(void);
+
+    void on_Action_System_OpenRom(void);
+    void on_Action_System_OpenCombo(void);
+    void on_Action_System_Shutdown(void);
     void on_Action_System_SoftReset(void);
     void on_Action_System_HardReset(void);
     void on_Action_System_Pause(void);
     void on_Action_System_GenerateBitmap(void);
     void on_Action_System_LimitFPS(void);
-    void on_Action_System_SwapDisk(void);
     void on_Action_System_SaveState(void);
     void on_Action_System_SaveAs(void);
     void on_Action_System_LoadState(void);
@@ -178,13 +150,24 @@ class MainWindow : public QMainWindow
     void on_Action_System_CurrentSaveState(int);
     void on_Action_System_Cheats(void);
     void on_Action_System_GSButton(void);
-    void on_Action_Options_FullScreen(void);
-    void on_Action_Options_ConfigGfx(void);
-    void on_Action_Options_ConfigAudio(void);
-    void on_Action_Options_ConfigRsp(void);
-    void on_Action_Options_ConfigControl(void);
-    void on_Action_Options_Settings(void);
-    void on_Action_Help_HomePage(void);
+    void on_Action_System_Exit(void);
+
+    void on_Action_Settings_Graphics(void);
+    void on_Action_Settings_Audio(void);
+    void on_Action_Settings_Rsp(void);
+    void on_Action_Settings_Input(void);
+    void on_Action_Settings_Settings(void);
+
+    void on_Action_View_Toolbar(bool);
+    void on_Action_View_StatusBar(bool);
+    void on_Action_View_GameList(bool);
+    void on_Action_View_GameGrid(bool);
+    void on_Action_View_Fullscreen(void);
+    void on_Action_View_RefreshRoms(void);
+    void on_Action_View_ClearRomCache(void);
+    void on_Action_View_Log(void);
+
+    void on_Action_Help_Github(void);
     void on_Action_Help_About(void);
 
     void on_Emulation_Started(void);
@@ -208,7 +191,7 @@ class MainWindow : public QMainWindow
     void on_VidExt_ToggleFS(bool);
     void on_VidExt_Quit(void);
 
-    void on_Core_DebugCallback(CoreDebugMessageType, QString);
+    void on_Core_DebugCallback(CoreDebugMessageType, QString, QString);
 };
 } // namespace UserInterface
 

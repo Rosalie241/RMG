@@ -18,11 +18,14 @@ OptionsDialog::OptionsDialog(QWidget* parent, OptionsDialogSettings settings) : 
 {
     this->setupUi(this);
 
+    this->setIconsForEmulationInfoText();
+
     this->controllerPakComboBox->setCurrentIndex(settings.ControllerPak);
     this->gameboyRomLineEdit->setText(QString::fromStdString(settings.GameboyRom));
     this->gameboySaveLineEdit->setText(QString::fromStdString(settings.GameboySave));
     this->removeDuplicateMappingsCheckbox->setChecked(settings.RemoveDuplicateMappings);
     this->invertAxisCheckBox->setChecked(settings.InvertAxis);
+
     if (!CoreIsEmulationRunning() && !CoreIsEmulationPaused())
     {
         this->hideEmulationInfoText();
@@ -37,6 +40,21 @@ bool OptionsDialog::HasSaved()
 OptionsDialogSettings OptionsDialog::GetSettings()
 {
     return this->settings;
+}
+
+void OptionsDialog::setIconsForEmulationInfoText(void)
+{
+    QLabel* labels[] = {
+        this->infoIconLabel_0
+    };
+
+    QIcon infoIcon = QIcon::fromTheme("information-line");
+    QPixmap infoIconPixmap = infoIcon.pixmap(16, 16);
+    
+    for (QLabel* label : labels)
+    {
+        label->setPixmap(infoIconPixmap);
+    }
 }
 
 void OptionsDialog::hideEmulationInfoText(void)

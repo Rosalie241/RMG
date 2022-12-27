@@ -31,7 +31,7 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>ROM Name:</string>
+           <string>Name</string>
           </property>
          </widget>
         </item>
@@ -64,7 +64,7 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>File Name:</string>
+           <string>File Name</string>
           </property>
          </widget>
         </item>
@@ -97,7 +97,7 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>Location:</string>
+           <string>Location</string>
           </property>
          </widget>
         </item>
@@ -124,7 +124,7 @@
         <item>
          <widget class="QLabel" name="label_4">
           <property name="text">
-           <string>MD5:</string>
+           <string>MD5</string>
           </property>
          </widget>
         </item>
@@ -151,7 +151,7 @@
         <item>
          <widget class="QLabel" name="label_5">
           <property name="text">
-           <string>CRC1:</string>
+           <string>CRC1</string>
           </property>
          </widget>
         </item>
@@ -181,6 +181,30 @@
         </item>
         <item>
          <widget class="QLineEdit" name="crc2LineEdit">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_7">
+        <item>
+         <widget class="QLabel" name="label_7">
+          <property name="text">
+           <string>Country Code</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="countryCodeLineEdit">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
             <horstretch>0</horstretch>

@@ -33,15 +33,16 @@ class RomSearcherThread : public QThread
     void run(void) override;
 
   private:
-    QString rom_Directory;
-    bool rom_Search_Recursive;
-    int rom_Search_MaxItems;
-    bool rom_Search_Stop = false;
+    QString directory;
+    bool recursive = false;
+    int  maxItems = 0;
+    bool stop = false;
 
-    void rom_Search(QString);
+    void searchDirectory(QString);
 
   signals:
-    void on_Rom_Found(QString file, CoreRomHeader header, CoreRomSettings settings);
+    void RomFound(QString file, CoreRomHeader header, CoreRomSettings settings);
+    void Finished(bool canceled);
 };
 } // namespace Thread
 

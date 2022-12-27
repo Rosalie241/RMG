@@ -17,12 +17,14 @@
 #include "m64p/api/version.h"
 #include <filesystem>
 #include <string>
+#include <cstring>
 
 //
 // Local Variables
 //
 
 static osal_dynlib_lib_handle l_CoreLibHandle;
+static char l_CoreContextString[20];
 
 //
 // Local Functions
@@ -81,6 +83,9 @@ bool CoreInit(void)
     m64p_error  m64p_ret;
     bool ret = false;
 
+    // initialize context string
+    std::strcpy(l_CoreContextString, "[CORE]  ");
+
     core_file = find_core_lib();
     if (core_file.empty())
     {
@@ -114,7 +119,7 @@ bool CoreInit(void)
         return false;
     }
 
-    m64p_ret = m64p::Core.Startup(FRONTEND_API_VERSION, CoreGetUserConfigDirectory().string().c_str(), CoreGetSharedDataDirectory().string().c_str(), nullptr, CoreDebugCallback, nullptr, CoreStateCallback);
+    m64p_ret = m64p::Core.Startup(FRONTEND_API_VERSION, CoreGetUserConfigDirectory().string().c_str(), CoreGetSharedDataDirectory().string().c_str(), (void*)l_CoreContextString, CoreDebugCallback, nullptr, CoreStateCallback);
     if (m64p_ret != M64ERR_SUCCESS)
     {
         error = "CoreInit M64P::Core.Startup() Failed: ";

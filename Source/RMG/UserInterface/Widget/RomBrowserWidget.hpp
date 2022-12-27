@@ -13,6 +13,11 @@
 #include "Thread/RomSearcherThread.hpp"
 #include "UserInterface/NoFocusDelegate.hpp"
 
+#include "RomBrowserListViewWidget.hpp"
+#include "RomBrowserGridViewWidget.hpp"
+#include "RomBrowserLoadingWidget.hpp"
+#include "RomBrowserEmptyWidget.hpp"
+
 #include <QHeaderView>
 #include <QList>
 #include <QStandardItemModel>
@@ -20,15 +25,18 @@
 #include <QTableView>
 #include <QMenu>
 #include <QAction>
+#include <QGridLayout>
+#include <QListWidget>
+#include <QStackedWidget>
 
-#define MAX_ROM_INFO 50
+// forward declaration of internal struct
+struct RomBrowserModelData;
 
 namespace UserInterface
 {
 namespace Widget
 {
-
-class RomBrowserWidget : public QTableView
+class RomBrowserWidget : public QStackedWidget
 {
     Q_OBJECT
 
@@ -40,12 +48,27 @@ class RomBrowserWidget : public QTableView
     bool IsRefreshingRomList(void);
     void StopRefreshRomList(void);
 
-    void SetDirectory(QString);
+    void ShowList(void);
+    void ShowGrid(void);
 
   private:
-    QString directory;
+    Widget::RomBrowserEmptyWidget*    emptyWidget    = nullptr;
+    Widget::RomBrowserLoadingWidget*  loadingWidget  = nullptr;
 
-    QMenu* contextMenu;
+    Widget::RomBrowserListViewWidget* listViewWidget = nullptr;
+    QStandardItemModel* listViewModel                = nullptr;
+    Widget::RomBrowserGridViewWidget* gridViewWidget = nullptr;
+    QStandardItemModel* gridViewModel                = nullptr;
+
+    QWidget* currentViewWidget = nullptr;
+
+    QElapsedTimer romSearcherTimer;
+    Thread::RomSearcherThread* romSearcherThread = nullptr;
+
+    int listViewSortSection = 0;
+    int listViewSortOrder = 0;
+
+    QMenu*   contextMenu;
     QAction* action_PlayGame;
     QAction* action_PlayGameWithDisk;
     QAction* action_RefreshRomList;
@@ -53,44 +76,36 @@ class RomBrowserWidget : public QTableView
     QAction* action_RomInformation;
     QAction* action_EditGameSettings;
     QAction* action_EditCheats;
+    QAction* action_SetCoverImage;
+    QAction* action_RemoveCoverImage;
 
-    void contextMenu_Init(void);
-    void contextMenu_Setup(void);
+    QString coversDirectory;
 
-    void contextMenu_Actions_Init(void);
-    void contextMenu_Actions_Setup(void);
-    void contextMenu_Actions_Connect(void);
-    void contextMenu_Actions_Update(void);
-
-    QStandardItemModel *model_Model;
-    std::vector<int> model_Columns;
-
-    void model_Init(void);
-    void model_Setup(void);
-    void model_Setup_Labels(void);
-
-    NoFocusDelegate *widget_Delegate;
-    void widget_Init(void);
-
-    Thread::RomSearcherThread *romSearcher_Thread;
-    void romSearcher_Init(void);
-    void romSearcher_Launch(QString);
-
-    void column_SetSize();
-    int column_GetSizeSettingIndex(int);
-
-    void launchSelectedRom(void);
+    QStandardItemModel* getCurrentModel(void);
+    QAbstractItemView*  getCurrentModelView(void);
+    bool getCurrentData(RomBrowserModelData& data);
 
     QString getCurrentRom(void);
 
+    QIcon getCurrentCover(CoreRomHeader header, CoreRomSettings settings, QString& coverFileName);
+
   protected:
-    void dragMoveEvent(QDragMoveEvent *);
-    void dragEnterEvent(QDragEnterEvent *);
-    void dropEvent(QDropEvent *);
+    void timerEvent(QTimerEvent *event) Q_DECL_OVERRIDE;
 
   private slots:
-    void customContextMenuRequested(QPoint);
-    void on_columnResized(int, int, int);
+    void on_DoubleClicked(const QModelIndex& index);
+    void customContextMenuRequested(QPoint point);
+
+    void on_listViewWidget_sortIndicatorChanged(int logicalIndex, Qt::SortOrder sortOrder);
+    void on_listViewWidget_sectionResized(int logicalIndex, int oldWidth, int newWidth);
+    
+    void on_gridViewWidget_iconSizeChanged(const QSize& size);
+
+    void on_ZoomIn(void);
+    void on_ZoomOut(void);
+
+    void on_RomBrowserThread_RomFound(QString file, CoreRomHeader header, CoreRomSettings settings);
+    void on_RomBrowserThread_Finished(bool canceled);
 
     void on_Action_PlayGame(void);
     void on_Action_PlayGameWithDisk(void);
@@ -99,19 +114,16 @@ class RomBrowserWidget : public QTableView
     void on_Action_RomInformation(void);
     void on_Action_EditGameSettings(void);
     void on_Action_EditCheats(void);
-
-  public slots:
-    void on_Row_DoubleClicked(const QModelIndex &);
-    void on_RomBrowserThread_Received(QString file, CoreRomHeader header, CoreRomSettings settings);
+    void on_Action_SetCoverImage(void);
+    void on_Action_RemoveCoverImage(void);
 
   signals:
-    void on_RomBrowser_PlayGame(QString);
-    void on_RomBrowser_PlayGameWithDisk(QString);
-    void on_RomBrowser_FileDropped(QDropEvent *);
-    void on_RomBrowser_EditGameSettings(QString);
-    void on_RomBrowser_Cheats(QString);
-    void on_RomBrowser_ChooseRomDirectory(void);
-    void on_RomBrowser_RomInformation(QString);
+    void PlayGame(QString);
+    void PlayGameWithDisk(QString);
+    void EditGameSettings(QString);
+    void Cheats(QString);
+    void ChooseRomDirectory(void);
+    void RomInformation(QString);
 };
 } // namespace Widget
 } // namespace UserInterface

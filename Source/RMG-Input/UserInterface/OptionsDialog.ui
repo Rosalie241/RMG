@@ -151,7 +151,7 @@
            <item>
             <layout class="QHBoxLayout" name="emulationInfoLayout_1">
              <item>
-              <widget class="QLabel" name="label_2">
+              <widget class="QLabel" name="infoIconLabel_0">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -162,7 +162,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap resource="UIResources.qrc">:/Resource/Info.ico</pixmap>
+                <pixmap>:/Resource/Info.ico</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>false</bool>

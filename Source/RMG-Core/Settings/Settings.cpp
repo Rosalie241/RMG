@@ -161,6 +161,9 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::GUI_AutomaticFullscreen:
         setting = {SETTING_SECTION_GUI, "AutomaticFullscreen", false};
         break;
+    case SettingsID::GUI_ShowVerboseLogMessages:
+        setting = {SETTING_SECTION_GUI, "ShowVerboseLogMessages", false};
+        break;
     case SettingsID::GUI_Toolbar:
         setting = {SETTING_SECTION_GUI, "Toolbar", true};
         break;
@@ -371,17 +374,14 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::KeyBinding_RemoveDuplicates:
         setting = {SETTING_SECTION_KEYBIND, "RemoveDuplicates", true};
         break;
-    case SettingsID::KeyBinding_OpenROM:
-        setting = {SETTING_SECTION_KEYBIND, "OpenROM", "Ctrl+O"};
+    case SettingsID::KeyBinding_StartROM:
+        setting = {SETTING_SECTION_KEYBIND, "StartROM", "Ctrl+O"};
         break;
-    case SettingsID::KeyBinding_OpenCombo:
-        setting = {SETTING_SECTION_KEYBIND, "OpenCombo", "Ctrl+Shift+O"};
+    case SettingsID::KeyBinding_StartCombo:
+        setting = {SETTING_SECTION_KEYBIND, "StartCombo", "Ctrl+Shift+O"};
         break;
-    case SettingsID::KeyBinding_StartEmulation:
-        setting = {SETTING_SECTION_KEYBIND, "StartEmulation", "F11"};
-        break;
-    case SettingsID::KeyBinding_EndEmulation:
-        setting = {SETTING_SECTION_KEYBIND, "EndEmulation", "F12"};
+    case SettingsID::KeyBinding_Shutdown:
+        setting = {SETTING_SECTION_KEYBIND, "Shutdown", "F12"};
         break;
     case SettingsID::KeyBinding_RefreshROMList:
         setting = {SETTING_SECTION_KEYBIND, "RefreshROMList", "F5"};
@@ -398,14 +398,11 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::KeyBinding_Resume:
         setting = {SETTING_SECTION_KEYBIND, "Resume", "F2"};
         break;
-    case SettingsID::KeyBinding_GenerateBitmap:
-        setting = {SETTING_SECTION_KEYBIND, "GenerateBitmap", "F3"};
+    case SettingsID::KeyBinding_Screenshot:
+        setting = {SETTING_SECTION_KEYBIND, "Screenshot", "F3"};
         break;
     case SettingsID::KeyBinding_LimitFPS:
         setting = {SETTING_SECTION_KEYBIND, "LimitFPS", "F4"};
-        break;
-    case SettingsID::KeyBinding_SwapDisk:
-        setting = {SETTING_SECTION_KEYBIND, "SwapDisk", "Ctrl+D"};
         break;
     case SettingsID::KeyBinding_SaveState:
         setting = {SETTING_SECTION_KEYBIND, "SaveState", "F5"};
@@ -448,10 +445,22 @@ static l_Setting get_setting(SettingsID settingId)
         setting = {SETTING_SECTION_ROMBROWSER, "Columns", std::vector<int>({0, 1, 2})};
         break;
     case SettingsID::RomBrowser_ColumnSizes:
-        setting = {SETTING_SECTION_ROMBROWSER, "ColumnSizes", std::vector<int>({0, 250, 1, 100, 2, 100})};
+        setting = {SETTING_SECTION_ROMBROWSER, "ColumnSizes", std::vector<int>({-1, -1, -1})};
         break;
     case SettingsID::RomBrowser_ViewMode:
         setting = {SETTING_SECTION_ROMBROWSER, "ViewMode", 0};
+        break;
+    case SettingsID::RomBrowser_ListViewSortSection:
+        setting = {SETTING_SECTION_ROMBROWSER, "ListViewSortSection", 0};
+        break;
+    case SettingsID::RomBrowser_ListViewSortOrder:
+        setting = {SETTING_SECTION_ROMBROWSER, "ListViewSortOrder", 0};
+        break;
+    case SettingsID::RomBrowser_GridViewIconWidth:
+        setting = {SETTING_SECTION_ROMBROWSER, "GridViewIconWidth", 180};
+        break;
+    case SettingsID::RomBrowser_GridViewIconHeight:
+        setting = {SETTING_SECTION_ROMBROWSER, "GridViewIconHeight", 126};
         break;
 
     case SettingsID::Settings_HasForceUsedSetOnce:

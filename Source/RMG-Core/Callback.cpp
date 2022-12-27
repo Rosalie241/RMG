@@ -16,7 +16,7 @@
 //
 
 static bool l_SetupCallbacks = false;
-static std::function<void(enum CoreDebugMessageType, std::string)> l_DebugCallbackFunc;
+static std::function<void(enum CoreDebugMessageType, std::string, std::string)> l_DebugCallbackFunc;
 
 //
 // Internal Functions
@@ -29,6 +29,7 @@ void CoreDebugCallback(void* context, int level, const char* message)
         return;
     }
 
+    std::string contextString((const char*)context);
     std::string messageString(message);
 
     // convert string encoding accordingly
@@ -41,7 +42,7 @@ void CoreDebugCallback(void* context, int level, const char* message)
         messageString = CoreConvertStringEncoding(message, CoreStringEncoding::Shift_JIS);
     }
 
-    l_DebugCallbackFunc((CoreDebugMessageType)level, messageString);
+    l_DebugCallbackFunc((CoreDebugMessageType)level, contextString, messageString);
 }
 
 void CoreStateCallback(void* context, m64p_core_param param, int value)
@@ -53,7 +54,7 @@ void CoreStateCallback(void* context, m64p_core_param param, int value)
 // Exported Functions
 //
 
-bool CoreSetupCallbacks(std::function<void(enum CoreDebugMessageType, std::string)> debugCallbackFunc)
+bool CoreSetupCallbacks(std::function<void(enum CoreDebugMessageType, std::string, std::string)> debugCallbackFunc)
 {
     l_DebugCallbackFunc = debugCallbackFunc;
     l_SetupCallbacks = true;

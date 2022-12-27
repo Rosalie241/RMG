@@ -13,6 +13,7 @@ enum class SettingsID
     GUI_PauseEmulationOnFocusLoss,
     GUI_ResumeEmulationOnFocus,
     GUI_AutomaticFullscreen,
+    GUI_ShowVerboseLogMessages,
     GUI_Toolbar,
     GUI_StatusBar,
     GUI_Style,
@@ -93,18 +94,16 @@ enum class SettingsID
 
     // GUI KeyBindings
     KeyBinding_RemoveDuplicates,
-    KeyBinding_OpenROM,
-    KeyBinding_OpenCombo,
-    KeyBinding_StartEmulation,
-    KeyBinding_EndEmulation,
+    KeyBinding_StartROM,
+    KeyBinding_StartCombo,
+    KeyBinding_Shutdown,
     KeyBinding_RefreshROMList,
     KeyBinding_Exit,
     KeyBinding_SoftReset,
     KeyBinding_HardReset,
     KeyBinding_Resume,
-    KeyBinding_GenerateBitmap,
+    KeyBinding_Screenshot,
     KeyBinding_LimitFPS,
-    KeyBinding_SwapDisk,
     KeyBinding_SaveState,
     KeyBinding_SaveAs,
     KeyBinding_LoadState,
@@ -122,7 +121,11 @@ enum class SettingsID
     RomBrowser_Columns,
     RomBrowser_ColumnSizes,
     RomBrowser_ViewMode,
-
+    RomBrowser_ListViewSortSection,
+    RomBrowser_ListViewSortOrder,
+    RomBrowser_GridViewIconWidth,
+    RomBrowser_GridViewIconHeight,
+    
     // Settings Settings
     Settings_HasForceUsedSetOnce,
 

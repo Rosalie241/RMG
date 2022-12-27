@@ -61,6 +61,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void loadHotkeySettings(void);
     void loadInterfaceEmulationSettings(void);
     void loadInterfaceRomBrowserSettings(void);
+    void loadInterfaceLogWindowSettings(void);
     void loadInterfaceStyleSettings(void);
     void loadInterfaceMiscSettings(void);
 
@@ -74,6 +75,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void loadDefaultHotkeySettings(void);
     void loadDefaultInterfaceEmulationSettings(void);
     void loadDefaultInterfaceRomBrowserSettings(void);
+    void loadDefaultInterfaceLogWindowSettings(void);
     void loadDefaultInterfaceStyleSettings(void);
     void loadDefaultInterfaceMiscSettings(void);
 
@@ -88,6 +90,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void saveHotkeySettings(void);
     void saveInterfaceEmulationSettings(void);
     void saveInterfaceRomBrowserSettings(void);
+    void saveInterfaceLogWindowSettings(void);
     void saveInterfaceStyleSettings(void);
     void saveInterfaceMiscSettings(void);
 
@@ -95,6 +98,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void commonPluginSettings(int);
     void commonInterfaceStyleSettings(int);
 
+    void setIconsForEmulationInfoText(void);
     void hideEmulationInfoText(void);
 
     void chooseDirectory(QLineEdit *);

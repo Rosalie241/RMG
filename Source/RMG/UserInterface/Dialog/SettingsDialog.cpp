@@ -15,12 +15,15 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QDirIterator>
+#include <QLabel>
 
 using namespace UserInterface::Dialog;
 
 SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 {
     this->setupUi(this);
+
+    this->setIconsForEmulationInfoText();
 
     this->romOpened = CoreHasRomOpen();
     if (romOpened)
@@ -44,7 +47,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 
     pluginList = CoreGetAllPlugins();
 
-    for (int i = 0; i < 12; i++)
+    for (int i = 0; i < 13; i++)
     {
         this->reloadSettings(i);
     }
@@ -63,12 +66,12 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
     // aren't defined, hide the tab
     // with the settings for those
 #ifndef UPDATER
-    this->innerInterfaceTabWidget->removeTab(3);
+    this->innerInterfaceTabWidget->removeTab(4);
 #endif // !UPDATER
 #endif // !DISCORD_RPC
 
 #ifndef _WIN32
-    this->innerInterfaceTabWidget->removeTab(2);
+    this->innerInterfaceTabWidget->removeTab(3);
 #endif
 
     int width = CoreSettingsGetIntValue(SettingsID::GUI_SettingsDialogWidth);
@@ -122,39 +125,43 @@ void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
     {
     default:
     case 0:
-        loadDefaultCoreSettings();
+        this->loadDefaultCoreSettings();
         break;
     case 1:
-        loadDefaultGameSettings();
+        this->loadDefaultGameSettings();
         break;
     case 2:
-        loadDefaultGameCoreSettings();
+        this->loadDefaultGameCoreSettings();
         break;
     case 3:
-        loadDefaultGamePluginSettings();
+        this->loadDefaultGamePluginSettings();
         break;
     case 4:
-        loadDefaultPluginSettings();
+        this->loadDefaultPluginSettings();
         break;
     case 5:
-        loadDefaultDirectorySettings();
+        this->loadDefaultDirectorySettings();
         break;
     case 6:
-        loadDefault64DDSettings();
+        this->loadDefault64DDSettings();
         break;
     case 7:
-        loadDefaultHotkeySettings();
+        this->loadDefaultHotkeySettings();
         break;
     case 8:
-        loadDefaultInterfaceEmulationSettings();
+        this->loadDefaultInterfaceEmulationSettings();
         break;
     case 9:
-        loadDefaultInterfaceRomBrowserSettings();
+        this->loadDefaultInterfaceRomBrowserSettings();
         break;
     case 10:
-        loadDefaultInterfaceStyleSettings();
+        this->loadDefaultInterfaceLogWindowSettings();
+        break;
     case 11:
-        loadDefaultInterfaceMiscSettings();
+        this->loadDefaultInterfaceStyleSettings();
+        break;
+    case 12:
+        this->loadDefaultInterfaceMiscSettings();
         break;
     }
 }
@@ -165,40 +172,43 @@ void SettingsDialog::reloadSettings(int stackedWidgetIndex)
     {
     default:
     case 0:
-        loadCoreSettings();
+        this->loadCoreSettings();
         break;
     case 1:
-        loadGameSettings();
+        this->loadGameSettings();
         break;
     case 2:
-        loadGameCoreSettings();
+        this->loadGameCoreSettings();
         break;
     case 3:
-        loadGamePluginSettings();
+        this->loadGamePluginSettings();
         break;
     case 4:
-        loadPluginSettings();
+        this->loadPluginSettings();
         break;
     case 5:
-        loadDirectorySettings();
+        this->loadDirectorySettings();
         break;
     case 6:
-        load64DDSettings();
+        this->load64DDSettings();
         break;
     case 7:
-        loadHotkeySettings();
+        this->loadHotkeySettings();
         break;
     case 8:
-        loadInterfaceEmulationSettings();
+        this->loadInterfaceEmulationSettings();
         break;
     case 9:
-        loadInterfaceRomBrowserSettings();
+        this->loadInterfaceRomBrowserSettings();
         break;
     case 10:
-        loadInterfaceStyleSettings();
+        this->loadInterfaceLogWindowSettings();
         break;
     case 11:
-        loadInterfaceMiscSettings();
+        this->loadInterfaceStyleSettings();
+        break;
+    case 12:
+        this->loadInterfaceMiscSettings();
         break;
     }
 }
@@ -383,6 +393,11 @@ void SettingsDialog::loadInterfaceRomBrowserSettings(void)
     this->romSearchLimitSpinBox->setValue(CoreSettingsGetIntValue(SettingsID::RomBrowser_MaxItems));
 }
 
+void SettingsDialog::loadInterfaceLogWindowSettings(void)
+{
+    this->showVerboseLogMessagesCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_ShowVerboseLogMessages));
+}
+
 void SettingsDialog::loadInterfaceStyleSettings(void)
 {
     this->commonInterfaceStyleSettings(0);
@@ -390,8 +405,12 @@ void SettingsDialog::loadInterfaceStyleSettings(void)
 
 void SettingsDialog::loadInterfaceMiscSettings(void)
 {
+#ifdef UPDATER
     this->checkForUpdatesCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_CheckForUpdates));
+#endif // UPDATER
+#ifdef DISCORD_RPC
     this->discordRpcCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_DiscordRpc));
+#endif // DISCORD_RPC
 }
 
 void SettingsDialog::loadDefaultCoreSettings(void)
@@ -511,6 +530,11 @@ void SettingsDialog::loadDefaultInterfaceRomBrowserSettings(void)
     this->romSearchLimitSpinBox->setValue(CoreSettingsGetDefaultIntValue(SettingsID::RomBrowser_MaxItems));
 }
 
+void SettingsDialog::loadDefaultInterfaceLogWindowSettings(void)
+{
+    this->showVerboseLogMessagesCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_ShowVerboseLogMessages));
+}
+
 void SettingsDialog::loadDefaultInterfaceStyleSettings(void)
 {
     this->commonInterfaceStyleSettings(1);
@@ -518,8 +542,12 @@ void SettingsDialog::loadDefaultInterfaceStyleSettings(void)
 
 void SettingsDialog::loadDefaultInterfaceMiscSettings(void)
 {
+#ifdef UPDATER
     this->checkForUpdatesCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_CheckForUpdates));
+#endif // UPDATER
+#ifdef DISCORD_RPC
     this->discordRpcCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_DiscordRpc));
+#endif // DISCORD_RPC
 }
 
 void SettingsDialog::saveSettings(void)
@@ -539,6 +567,7 @@ void SettingsDialog::saveSettings(void)
     this->saveHotkeySettings();
     this->saveInterfaceEmulationSettings();
     this->saveInterfaceRomBrowserSettings();
+    this->saveInterfaceLogWindowSettings();
     this->saveInterfaceStyleSettings();
     this->saveInterfaceMiscSettings();
 }
@@ -699,15 +728,27 @@ void SettingsDialog::saveInterfaceRomBrowserSettings(void)
     CoreSettingsSetValue(SettingsID::RomBrowser_MaxItems, this->romSearchLimitSpinBox->value());
 }
 
+void SettingsDialog::saveInterfaceLogWindowSettings(void)
+{
+    CoreSettingsSetValue(SettingsID::GUI_ShowVerboseLogMessages, this->showVerboseLogMessagesCheckBox->isChecked());
+}
+
 void SettingsDialog::saveInterfaceStyleSettings(void)
 {
+#ifdef _WIN32
     CoreSettingsSetValue(SettingsID::GUI_Style, this->styleComboBox->currentData().toString().toStdString());
+    CoreSettingsSetValue(SettingsID::GUI_IconTheme, this->iconThemeComboBox->currentText().toStdString());
+#endif // _WIN32
 }
 
 void SettingsDialog::saveInterfaceMiscSettings(void)
 {
+#ifdef UPDATER
     CoreSettingsSetValue(SettingsID::GUI_CheckForUpdates, this->checkForUpdatesCheckBox->isChecked());
+#endif // UPDATER
+#ifdef DISCORD_RPC
     CoreSettingsSetValue(SettingsID::GUI_DiscordRpc, this->discordRpcCheckBox->isChecked());
+#endif // DISCORD_RPC
 }
 
 void SettingsDialog::commonHotkeySettings(int action)
@@ -718,18 +759,16 @@ void SettingsDialog::commonHotkeySettings(int action)
         SettingsID settingId;
     } keybindings[] =
     {
-        { this->openRomKeyButton, SettingsID::KeyBinding_OpenROM },
-        { this->openComboKeyButton, SettingsID::KeyBinding_OpenCombo },
-        { this->startEmuKeyButton, SettingsID::KeyBinding_StartEmulation },
-        { this->endEmuKeyButton, SettingsID::KeyBinding_EndEmulation },
+        { this->startRomKeyButton, SettingsID::KeyBinding_StartROM },
+        { this->startComboKeyButton, SettingsID::KeyBinding_StartCombo },
+        { this->shutdownKeyButton, SettingsID::KeyBinding_Shutdown },
         { this->refreshRomListKeyButton, SettingsID::KeyBinding_RefreshROMList },
         { this->exitKeyButton, SettingsID::KeyBinding_Exit },
         { this->softResetKeyButton, SettingsID::KeyBinding_SoftReset },
         { this->hardResetKeyButton, SettingsID::KeyBinding_HardReset },
         { this->pauseKeyButton, SettingsID::KeyBinding_Resume },
-        { this->generateBitmapKeyButton, SettingsID::KeyBinding_GenerateBitmap },
+        { this->generateBitmapKeyButton, SettingsID::KeyBinding_Screenshot },
         { this->limitFPSKeyButton, SettingsID::KeyBinding_LimitFPS },
-        { this->swapDiskKeyButton, SettingsID::KeyBinding_SwapDisk },
         { this->saveStateKeyButton, SettingsID::KeyBinding_SaveState },
         { this->saveAsKeyButton, SettingsID::KeyBinding_SaveAs },
         { this->loadStateKeyButton, SettingsID::KeyBinding_LoadState },
@@ -824,6 +863,7 @@ void SettingsDialog::commonPluginSettings(int action)
 
 void SettingsDialog::commonInterfaceStyleSettings(int action)
 {
+#ifdef _WIN32
     this->styleComboBox->clear();
     this->styleComboBox->addItem("None", "");
 
@@ -863,6 +903,29 @@ void SettingsDialog::commonInterfaceStyleSettings(int action)
     {
         this->styleComboBox->addItem("", "");
         this->styleComboBox->setCurrentText("");
+    }
+
+    QString currentIconTheme = action == 0 ?
+                QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_IconTheme)) :
+                QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::GUI_IconTheme));
+    this->iconThemeComboBox->setCurrentText(currentIconTheme);
+#endif // _WIN32
+}
+
+void SettingsDialog::setIconsForEmulationInfoText(void)
+{
+    QLabel* labels[] = {
+        this->infoIconLabel_0, this->infoIconLabel_1, this->infoIconLabel_2,
+        this->infoIconLabel_3, this->infoIconLabel_4, this->infoIconLabel_5,
+        this->infoIconLabel_6, this->infoIconLabel_7
+    };
+
+    QIcon infoIcon = QIcon::fromTheme("information-line");
+    QPixmap infoIconPixmap = infoIcon.pixmap(16, 16);
+
+    for (QLabel* label : labels)
+    {
+        label->setPixmap(infoIconPixmap);
     }
 }
 
@@ -1032,10 +1095,9 @@ void SettingsDialog::on_KeybindButton_KeybindingChanged(KeybindButton* button)
 
     KeybindButton* keybindButtons[] = 
     {
-        this->openRomKeyButton,
-        this->openComboKeyButton,
-        this->startEmuKeyButton,
-        this->endEmuKeyButton,
+        this->startRomKeyButton,
+        this->startComboKeyButton,
+        this->shutdownKeyButton,
         this->refreshRomListKeyButton,
         this->exitKeyButton,
         this->softResetKeyButton,
@@ -1043,7 +1105,6 @@ void SettingsDialog::on_KeybindButton_KeybindingChanged(KeybindButton* button)
         this->pauseKeyButton, 
         this->generateBitmapKeyButton,
         this->limitFPSKeyButton,
-        this->swapDiskKeyButton,
         this->saveStateKeyButton,
         this->saveAsKeyButton, 
         this->loadStateKeyButton,

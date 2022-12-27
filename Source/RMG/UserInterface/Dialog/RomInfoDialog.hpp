@@ -25,11 +25,8 @@ class RomInfoDialog : public QDialog, private Ui::RomInfoDialog
 {
     Q_OBJECT
 
-  private:
-    void showErrorMessage(QWidget* parent, QString error, QString details);
-
   public:
-    RomInfoDialog(QString file, QWidget *parent);
+    RomInfoDialog(QString file, CoreRomHeader romHeader, CoreRomSettings romSettings, QWidget *parent);
     ~RomInfoDialog(void);
 };
 } // namespace Dialog

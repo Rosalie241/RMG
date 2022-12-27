@@ -27,11 +27,13 @@ public:
     bool Init(void);
     void Stop(void);
 
+    void LoadSettings(void);
+
 private:
-    static void coreDebugCallback(CoreDebugMessageType type, std::string message);
+    static void coreDebugCallback(CoreDebugMessageType type, std::string context, std::string message);
 
 signals:
-    void OnCoreDebugCallback(CoreDebugMessageType type, QString message);
+    void OnCoreDebugCallback(CoreDebugMessageType type, QString context, QString message);
 };
 
 #endif // RMG_CALLBACKS_HPP

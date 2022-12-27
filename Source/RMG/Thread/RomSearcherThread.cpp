@@ -12,6 +12,7 @@
 
 #include <QDir>
 #include <QDirIterator>
+#include <QElapsedTimer>
 
 using namespace Thread;
 
@@ -28,22 +29,22 @@ RomSearcherThread::~RomSearcherThread(void)
 
 void RomSearcherThread::SetDirectory(QString directory)
 {
-    this->rom_Directory = directory;
+    this->directory = directory;
 }
 
 void RomSearcherThread::SetRecursive(bool value)
 {
-    this->rom_Search_Recursive = value;
+    this->recursive = value;
 }
 
 void RomSearcherThread::SetMaximumFiles(int value)
 {
-    this->rom_Search_MaxItems = value;
+    this->maxItems = value;
 }
 
 void RomSearcherThread::Stop(void)
 {
-    this->rom_Search_Stop = true;
+    this->stop = true;
     while (this->isRunning())
     {
         this->wait();
@@ -52,12 +53,12 @@ void RomSearcherThread::Stop(void)
 
 void RomSearcherThread::run(void)
 {
-    this->rom_Search_Stop = false;
-    this->rom_Search(this->rom_Directory);
+    this->stop = false;
+    this->searchDirectory(this->directory);
     return;
 }
 
-void RomSearcherThread::rom_Search(QString directory)
+void RomSearcherThread::searchDirectory(QString directory)
 {
     QDir dir(directory);
 
@@ -69,7 +70,7 @@ void RomSearcherThread::rom_Search(QString directory)
     filter << "*.D64";
     filter << "*.ZIP";
 
-    QDirIterator::IteratorFlag flag = this->rom_Search_Recursive ? 
+    QDirIterator::IteratorFlag flag = this->recursive ? 
         QDirIterator::Subdirectories : 
         QDirIterator::NoIteratorFlags;
     QDirIterator romDirIt(directory, filter, QDir::Files, flag);
@@ -82,6 +83,9 @@ void RomSearcherThread::rom_Search(QString directory)
     while (romDirIt.hasNext())
     {
         QString file = romDirIt.next();
+
+        QElapsedTimer timer;
+        timer.start();
 
         if (CoreHasRomHeaderAndSettingsCached(file.toStdU32String()))
         { // found cache entry
@@ -104,18 +108,27 @@ void RomSearcherThread::rom_Search(QString directory)
         
         if (ret)
         {
-            if (count++ >= this->rom_Search_MaxItems)
+            if (count++ >= this->maxItems)
             {
                 return;
             }
 
-            emit this->on_Rom_Found(file, header, settings);
+            emit this->RomFound(file, header, settings);
         }
 
-        if (this->rom_Search_Stop)
+        if (this->stop)
         {
             break;
         }
+
+        // ensure the UI thread has some breathing room
+        // instead of being locked up and unable to render anything
+        if (timer.elapsed() < 10)
+        {
+            QThread::msleep(10 - timer.elapsed());
+        }
     }
+
+    emit this->Finished(this->stop);
 }
 

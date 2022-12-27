@@ -8,103 +8,163 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "RomBrowserWidget.hpp"
-#include "ColumnID.hpp"
-#include "UserInterface/Dialog/CheatsDialog.hpp"
 
 #include <RMG-Core/Core.hpp>
 
 #include <QDir>
-#include <QDragMoveEvent>
-
+#include <QBoxLayout>
+#include <QGridLayout>
+#include <QFileDialog>
+#include <QLabel>
+#include <QPixmap>
 #include <vector>
+#include <QList>
 
 using namespace UserInterface::Widget;
 
-static QString columnIdToText(QString file, CoreRomHeader header, CoreRomSettings settings, ColumnID id)
+//
+// Internal Struct
+//
+
+struct RomBrowserModelData
 {
-    switch (id)
+    QString         file;
+    CoreRomHeader   header;
+    CoreRomSettings settings;
+    QString         coverFile;
+
+    RomBrowserModelData() {}
+
+    RomBrowserModelData(QString file, CoreRomHeader header, CoreRomSettings settings)
     {
-        case ColumnID::GoodName:
-        {
-            QString name = QString::fromStdString(settings.GoodName);
-            if (name.contains("(unknown rom)"))
-            {
-                name = QFileInfo(file).fileName();
-            }
-            return name;
-        }
-        case ColumnID::InternalName:
-            return QString::fromStdString(header.Name);
-        case ColumnID::MD5:
-            return QString::fromStdString(settings.MD5);
-        default:
-            return "";
-    };
-}
-
-RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QTableView(parent)
-{
-    // needed for drag & drop
-    this->setDragDropMode(QAbstractItemView::DragDropMode::DropOnly);
-    this->setAcceptDrops(true);
-    this->setDropIndicatorShown(true);
-
-    this->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
-    connect(this, SIGNAL(customContextMenuRequested(QPoint)), SLOT(customContextMenuRequested(QPoint)));
-
-    this->contextMenu_Init();
-    this->contextMenu_Setup();
-
-    this->romSearcher_Init();
-
-    this->model_Init();
-    this->model_Setup();
-
-    this->widget_Init();
-
-    connect(this->horizontalHeader(), SIGNAL(sectionResized(int,int,int)), this, SLOT(on_columnResized(int,int,int)));
-}
-
-RomBrowserWidget::~RomBrowserWidget()
-{
-}
-
-void RomBrowserWidget::RefreshRomList(void)
-{
-    this->model_Setup();
-}
-
-bool RomBrowserWidget::IsRefreshingRomList(void)
-{
-    return this->romSearcher_Thread->isRunning();
-}
-
-void RomBrowserWidget::StopRefreshRomList(void)
-{
-    if (this->romSearcher_Thread->isRunning())
-    {
-        this->romSearcher_Thread->Stop();
+        this->file = file;
+        this->header = header;
+        this->settings = settings;
     }
-}
+};
 
-void RomBrowserWidget::SetDirectory(QString directory)
-{
-    this->directory = directory;
-}
+Q_DECLARE_METATYPE(RomBrowserModelData);
 
-void RomBrowserWidget::contextMenu_Init(void)
+//
+// Exported Functions
+// 
+
+RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
 {
-    this->contextMenu_Actions_Init();
+    // configure rom searcher thread
+    this->romSearcherThread = new Thread::RomSearcherThread(this);
+    connect(this->romSearcherThread, &Thread::RomSearcherThread::RomFound, this, &RomBrowserWidget::on_RomBrowserThread_RomFound);
+    connect(this->romSearcherThread, &Thread::RomSearcherThread::Finished, this, &RomBrowserWidget::on_RomBrowserThread_Finished);
+
+    // configure empty widget
+    this->emptyWidget = new Widget::RomBrowserEmptyWidget(this);
+    this->addWidget(this->emptyWidget);
+    connect(this->emptyWidget, &RomBrowserEmptyWidget::SelectRomDirectory, this, &RomBrowserWidget::on_Action_ChooseRomDirectory);
+    connect(this->emptyWidget, &RomBrowserEmptyWidget::Refresh, this, &RomBrowserWidget::on_Action_RefreshRomList);
+
+    // configure loading widget
+    this->loadingWidget = new Widget::RomBrowserLoadingWidget(this);
+    connect(this, &QStackedWidget::currentChanged, this->loadingWidget, &RomBrowserLoadingWidget::on_RomBrowserWidget_currentChanged);
+    this->loadingWidget->SetWidgetIndex(this->addWidget(this->loadingWidget));
+
+    // configure list view widget
+    this->listViewWidget = new Widget::RomBrowserListViewWidget(this);
+    this->listViewModel  = new QStandardItemModel(this);
+    this->listViewWidget->setModel(this->listViewModel);
+    this->listViewWidget->setFrameStyle(QFrame::NoFrame);
+    this->listViewWidget->setItemDelegate(new NoFocusDelegate(this));
+    this->listViewWidget->setWordWrap(false);
+    this->listViewWidget->setShowGrid(false);
+    this->listViewWidget->setSortingEnabled(true);
+    this->listViewWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    this->listViewWidget->setSelectionBehavior(QTableView::SelectRows);
+    this->listViewWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+    this->listViewWidget->verticalHeader()->hide();
+    this->listViewWidget->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    this->listViewWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+    this->listViewWidget->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
+    this->listViewWidget->horizontalHeader()->setStretchLastSection(true);
+    this->listViewWidget->horizontalHeader()->setSortIndicatorShown(false);
+    this->listViewWidget->horizontalHeader()->setHighlightSections(false);
+    this->listViewWidget->horizontalHeader()->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
+    this->addWidget(this->listViewWidget);
+    connect(this->listViewWidget, &QTableView::doubleClicked, this, &RomBrowserWidget::on_DoubleClicked);
+    connect(this->listViewWidget, &QTableView::customContextMenuRequested, this, &RomBrowserListViewWidget::customContextMenuRequested);
+    connect(this->listViewWidget->horizontalHeader(), &QHeaderView::sortIndicatorChanged, this, &RomBrowserWidget::on_listViewWidget_sortIndicatorChanged);
+    connect(this->listViewWidget->horizontalHeader(), &QHeaderView::sectionResized, this, &RomBrowserWidget::on_listViewWidget_sectionResized);
+    connect(this->listViewWidget, &Widget::RomBrowserListViewWidget::ZoomIn, this, &RomBrowserWidget::on_ZoomIn);
+    connect(this->listViewWidget, &Widget::RomBrowserListViewWidget::ZoomOut, this, &RomBrowserWidget::on_ZoomOut);
+
+    // TODO
+    QStringList labels;
+    labels << "Name";
+    labels << "Internal Name";
+    labels << "MD5";
+    this->listViewModel->setColumnCount(labels.size());
+    this->listViewModel->setHorizontalHeaderLabels(labels);
+
+    // configure grid view widget
+    this->gridViewWidget = new Widget::RomBrowserGridViewWidget(this);
+    this->gridViewModel  = new QStandardItemModel(this);
+    this->gridViewWidget->setModel(this->gridViewModel);
+    this->gridViewWidget->setFlow(QListView::Flow::LeftToRight);
+    this->gridViewWidget->setResizeMode(QListView::Adjust);
+    this->gridViewWidget->setMovement(QListView::Static);
+    this->gridViewWidget->setUniformItemSizes(true);
+    this->gridViewWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    this->gridViewWidget->setViewMode(QListView::ViewMode::IconMode);
+    this->gridViewWidget->setTextElideMode(Qt::ElideNone);    
+    this->gridViewWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    this->gridViewWidget->setWordWrap(true);
+    this->gridViewWidget->setUniformItemSizes(false); // TODO? make this configurable maybe
+    this->gridViewWidget->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
+    this->gridViewWidget->setFrameStyle(QFrame::NoFrame);
+    int iconWidth = CoreSettingsGetIntValue(SettingsID::RomBrowser_GridViewIconWidth);
+    int iconHeight = CoreSettingsGetIntValue(SettingsID::RomBrowser_GridViewIconHeight);
+    this->gridViewWidget->setIconSize(QSize(iconWidth, iconHeight));
+    this->addWidget(this->gridViewWidget);
+    connect(this->gridViewWidget, &QListView::doubleClicked, this, &RomBrowserWidget::on_DoubleClicked);
+    connect(this->gridViewWidget, &QListView::customContextMenuRequested, this, &RomBrowserListViewWidget::customContextMenuRequested);
+    connect(this->gridViewWidget, &QListView::iconSizeChanged, this, &RomBrowserWidget::on_gridViewWidget_iconSizeChanged);
+    connect(this->gridViewWidget, &Widget::RomBrowserGridViewWidget::ZoomIn, this, &RomBrowserWidget::on_ZoomIn);
+    connect(this->gridViewWidget, &Widget::RomBrowserGridViewWidget::ZoomOut, this, &RomBrowserWidget::on_ZoomOut);
+
+    // configure context menu policy
+    this->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
+    connect(this, &QStackedWidget::customContextMenuRequested, this, &RomBrowserWidget::customContextMenuRequested);
+
+    // configure context menu actions
+    this->action_PlayGame = new QAction(this);
+    this->action_PlayGameWithDisk = new QAction(this);
+    this->action_RefreshRomList = new QAction(this);
+    this->action_ChooseRomDirectory = new QAction(this);
+    this->action_RomInformation = new QAction(this);
+    this->action_EditGameSettings = new QAction(this);
+    this->action_EditCheats = new QAction(this);
+    this->action_SetCoverImage = new QAction(this);
+    this->action_RemoveCoverImage = new QAction(this);
+    this->action_PlayGame->setText("Play Game");
+    this->action_PlayGameWithDisk->setText("Play Game with Disk");
+    this->action_RefreshRomList->setText("Refresh ROM List");
+    this->action_ChooseRomDirectory->setText("Choose ROM Directory...");
+    this->action_RomInformation->setText("ROM Information");
+    this->action_EditGameSettings->setText("Edit Game Settings");
+    this->action_EditCheats->setText("Edit Cheats");
+    this->action_SetCoverImage->setText("Set Cover Image...");
+    this->action_RemoveCoverImage->setText("Remove Cover Image");
+    connect(this->action_PlayGame, &QAction::triggered, this, &RomBrowserWidget::on_Action_PlayGame);
+    connect(this->action_PlayGameWithDisk, &QAction::triggered, this, &RomBrowserWidget::on_Action_PlayGameWithDisk);
+    connect(this->action_RefreshRomList, &QAction::triggered, this, &RomBrowserWidget::on_Action_RefreshRomList);
+    connect(this->action_ChooseRomDirectory, &QAction::triggered, this,
+            &RomBrowserWidget::on_Action_ChooseRomDirectory);
+    connect(this->action_RomInformation, &QAction::triggered, this, &RomBrowserWidget::on_Action_RomInformation);
+    connect(this->action_EditGameSettings, &QAction::triggered, this, &RomBrowserWidget::on_Action_EditGameSettings);
+    connect(this->action_EditCheats, &QAction::triggered, this, &RomBrowserWidget::on_Action_EditCheats);
+    connect(this->action_SetCoverImage, &QAction::triggered, this, &RomBrowserWidget::on_Action_SetCoverImage);
+    connect(this->action_RemoveCoverImage, &QAction::triggered, this, &RomBrowserWidget::on_Action_RemoveCoverImage);
+
+    // configure context menu
     this->contextMenu = new QMenu(this);
-}
-
-void RomBrowserWidget::contextMenu_Setup(void)
-{
-    this->contextMenu_Actions_Setup();
-    this->contextMenu_Actions_Connect();
-
-    this->contextMenu->clear();
-
     this->contextMenu->addAction(this->action_PlayGame);
     this->contextMenu->addAction(this->action_PlayGameWithDisk);
     this->contextMenu->addSeparator();
@@ -115,254 +175,395 @@ void RomBrowserWidget::contextMenu_Setup(void)
     this->contextMenu->addSeparator();
     this->contextMenu->addAction(this->action_EditGameSettings);
     this->contextMenu->addAction(this->action_EditCheats);
+    this->contextMenu->addSeparator();
+    this->contextMenu->addAction(this->action_SetCoverImage);
+    this->contextMenu->addAction(this->action_RemoveCoverImage);
 }
 
-void RomBrowserWidget::contextMenu_Actions_Init(void)
+RomBrowserWidget::~RomBrowserWidget()
 {
-    this->action_PlayGame = new QAction(this);
-    this->action_PlayGameWithDisk = new QAction(this);
-    this->action_RefreshRomList = new QAction(this);
-    this->action_ChooseRomDirectory = new QAction(this);
-    this->action_RomInformation = new QAction(this);
-    this->action_EditGameSettings = new QAction(this);
-    this->action_EditCheats = new QAction(this);
 }
 
-void RomBrowserWidget::contextMenu_Actions_Setup(void)
+void RomBrowserWidget::RefreshRomList(void)
 {
-    this->action_PlayGame->setText("Play Game");
-    this->action_PlayGameWithDisk->setText("Play Game with Disk");
-    this->action_RefreshRomList->setText("Refresh ROM List");
-    this->action_ChooseRomDirectory->setText("Choose ROM Directory...");
-    this->action_RomInformation->setText("ROM Information");
-    this->action_EditGameSettings->setText("Edit Game Settings");
-    this->action_EditCheats->setText("Edit Cheats");
-}
+    this->listViewModel->removeRows(0, this->listViewModel->rowCount());
+    this->gridViewModel->removeRows(0, this->gridViewModel->rowCount());
 
-void RomBrowserWidget::contextMenu_Actions_Connect(void)
-{
-    connect(this->action_PlayGame, &QAction::triggered, this, &RomBrowserWidget::on_Action_PlayGame);
-    connect(this->action_PlayGameWithDisk, &QAction::triggered, this, &RomBrowserWidget::on_Action_PlayGameWithDisk);
-    connect(this->action_RefreshRomList, &QAction::triggered, this, &RomBrowserWidget::on_Action_RefreshRomList);
-    connect(this->action_ChooseRomDirectory, &QAction::triggered, this,
-            &RomBrowserWidget::on_Action_ChooseRomDirectory);
-    connect(this->action_RomInformation, &QAction::triggered, this, &RomBrowserWidget::on_Action_RomInformation);
-    connect(this->action_EditGameSettings, &QAction::triggered, this, &RomBrowserWidget::on_Action_EditGameSettings);
-    connect(this->action_EditCheats, &QAction::triggered, this, &RomBrowserWidget::on_Action_EditCheats);
-}
+    this->coversDirectory = QString::fromStdString(CoreGetUserDataDirectory().string());
+    this->coversDirectory += "/Covers";
 
-void RomBrowserWidget::contextMenu_Actions_Update(void)
-{
-    bool enabled = this->selectedIndexes().count() > 0;
+    this->listViewSortSection = CoreSettingsGetIntValue(SettingsID::RomBrowser_ListViewSortSection);
+    this->listViewSortOrder   = CoreSettingsGetIntValue(SettingsID::RomBrowser_ListViewSortOrder);
 
-    this->action_PlayGame->setEnabled(enabled);
-    this->action_PlayGameWithDisk->setEnabled(enabled);
-    this->action_RomInformation->setEnabled(enabled);
-    this->action_EditGameSettings->setEnabled(enabled);
-    this->action_EditCheats->setEnabled(enabled);
-}
-
-void RomBrowserWidget::model_Init(void)
-{
-    this->model_Model = new QStandardItemModel(this);
-    this->model_Model->installEventFilter(this);
-
-    connect(this, &QTableView::doubleClicked, this, &RomBrowserWidget::on_Row_DoubleClicked);
-}
-
-void RomBrowserWidget::model_Setup(void)
-{
-    if (this->romSearcher_Thread->isRunning())
-        return;
-
-    this->model_Model->clear();
-    this->romSearcher_Launch(this->directory);
-
-    this->model_Columns = CoreSettingsGetIntListValue(SettingsID::RomBrowser_Columns);
-    // sanitize list
-    for (int column : this->model_Columns)
-    {
-        if (column >= (int)ColumnID::Invalid || column < 0)
-        {
-            this->model_Columns.erase(this->model_Columns.begin() + column);
-        }
-    }
-
-    this->model_Setup_Labels();
-
-    this->column_SetSize();
-}
-
-void RomBrowserWidget::model_Setup_Labels(void)
-{
-    QStringList labels;
-
-    for (int id : this->model_Columns)
-    {
-        labels.append(g_ColumnTitles[id].Text);
-    }
-
-    this->model_Model->setColumnCount(labels.size());
-    this->model_Model->setHorizontalHeaderLabels(labels);
-}
-
-void RomBrowserWidget::widget_Init(void)
-{
-    this->widget_Delegate = new NoFocusDelegate(this);
-
-    this->setModel(this->model_Model);
-    this->setItemDelegate(this->widget_Delegate);
-    this->setWordWrap(false);
-    this->setShowGrid(false);
-    this->setSortingEnabled(true);
-    this->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    this->setSelectionBehavior(QTableView::SelectRows);
-    this->setSelectionMode(QAbstractItemView::SingleSelection);
-
-    this->verticalHeader()->hide();
-
-    this->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
-    this->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
-    this->horizontalHeader()->setSortIndicatorShown(false);
-    this->horizontalHeader()->setHighlightSections(false);
-
-    this->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-}
-
-void RomBrowserWidget::romSearcher_Init(void)
-{
-    this->romSearcher_Thread = new Thread::RomSearcherThread(this);
-
-    connect(romSearcher_Thread, &Thread::RomSearcherThread::on_Rom_Found, this,
-            &RomBrowserWidget::on_RomBrowserThread_Received);
-}
-
-void RomBrowserWidget::romSearcher_Launch(QString directory)
-{
+    QString directory = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::RomBrowser_Directory));
     if (directory.isEmpty())
     {
+        this->setCurrentWidget(this->emptyWidget);
         return;
     }
 
-    this->romSearcher_Thread->SetMaximumFiles(CoreSettingsGetIntValue(SettingsID::RomBrowser_MaxItems));
-    this->romSearcher_Thread->SetRecursive(CoreSettingsGetBoolValue(SettingsID::RomBrowser_Recursive));
-    this->romSearcher_Thread->SetDirectory(directory);
-    this->romSearcher_Thread->start();
+    this->setCurrentWidget(this->loadingWidget);
+    this->romSearcherTimer.start();
+
+    this->romSearcherThread->SetMaximumFiles(CoreSettingsGetIntValue(SettingsID::RomBrowser_MaxItems));
+    this->romSearcherThread->SetRecursive(CoreSettingsGetBoolValue(SettingsID::RomBrowser_Recursive));
+    this->romSearcherThread->SetDirectory(directory);
+    this->romSearcherThread->start();
 }
 
-void RomBrowserWidget::column_SetSize(void)
+bool RomBrowserWidget::IsRefreshingRomList(void)
 {
-    int index = 0;
-    int columnCount = (this->model_Model->columnCount() - 1);
+    return this->romSearcherThread->isRunning();
+}
 
-    std::vector<int> sizes = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnSizes);
+void RomBrowserWidget::StopRefreshRomList(void)
+{
+    return this->romSearcherThread->Stop();
+}
 
-    for (int id : this->model_Columns)
+void RomBrowserWidget::ShowList(void)
+{
+    this->currentViewWidget = this->listViewWidget;
+
+    // only change widget now when we're not refreshing
+    if (!this->IsRefreshingRomList() &&
+        this->currentWidget() != this->emptyWidget)
     {
-        // don't set size for the last column
-        if (columnCount == index)
-        {
-            break;
-        }
-
-        for (int i = 0; i < sizes.size(); i += 2)
-        {
-            int columnId = sizes[i];
-            if (columnId == id)
-            {
-                this->setColumnWidth(index++, sizes[i + 1]);
-            }
-        }
+        this->setCurrentWidget(this->listViewWidget);        
     }
 }
 
-int RomBrowserWidget::column_GetSizeSettingIndex(int column)
+void RomBrowserWidget::ShowGrid(void)
 {
-    std::vector<int> sizes = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnSizes);
+    this->currentViewWidget = this->gridViewWidget;
 
-    for (int id : this->model_Columns)
+    // only change widget now when we're not refreshing
+    if (!this->IsRefreshingRomList() &&
+        this->currentWidget() != this->emptyWidget)
     {
-        // skip irrelevant columns
-        if (id != column)
-        {
-            continue;
-        }
+        this->setCurrentWidget(this->gridViewWidget);        
+    }
+}
 
-        for (int i = 0; i < sizes.size(); i += 2)
-        {
-            int columnId = sizes[i];
-            if (columnId == id)
-            {
-                return (i + 1);
-            }
-        }
+QStandardItemModel* RomBrowserWidget::getCurrentModel(void)
+{
+    QWidget* currentWidget = this->currentWidget();
+    if (currentWidget == this->listViewWidget)
+    {
+        return this->listViewModel;
+    }
+    else if (currentWidget == this->gridViewWidget)
+    {
+        return this->gridViewModel;
     }
 
-    return -1;
+    return nullptr;
 }
 
-void RomBrowserWidget::launchSelectedRom(void)
+QAbstractItemView* RomBrowserWidget::getCurrentModelView(void)
 {
-    emit this->on_RomBrowser_PlayGame(this->getCurrentRom());
+    QWidget* currentWidget = this->currentWidget();
+    if (currentWidget == this->listViewWidget)
+    {
+        return this->listViewWidget;
+    }
+    else if (currentWidget == this->gridViewWidget)
+    {
+        return this->gridViewWidget;
+    }
+
+    return nullptr;
 }
+
+bool RomBrowserWidget::getCurrentData(RomBrowserModelData& data)
+{
+    QStandardItemModel* model = this->getCurrentModel();
+    QAbstractItemView*  view  = this->getCurrentModelView();
+
+    if (model == nullptr || view == nullptr)
+    {
+        return false;
+    }
+
+    QModelIndex         index = view->currentIndex();
+    QStandardItem*      item  = model->item(index.row(), index.column());
+
+    if (item == nullptr)
+    {
+        return false;
+    }
+
+    data  = model->itemData(index).last().value<RomBrowserModelData>();
+    return true;
+}
+
 
 QString RomBrowserWidget::getCurrentRom(void)
 {
-    QModelIndex index = this->selectedIndexes().first();
-    return this->model()->itemData(index).last().toString();
+    RomBrowserModelData data;
+
+    if (!this->getCurrentData(data))
+    {
+        return "";
+    }
+
+    return data.file;
 }
 
-void RomBrowserWidget::dragMoveEvent(QDragMoveEvent *event)
+QIcon RomBrowserWidget::getCurrentCover(CoreRomHeader header, CoreRomSettings settings, QString& coverFileName)
 {
-    event->accept();
+    QPixmap pixmap;
+
+    // try to load cover using
+    // 1) MD5
+    // 2) good name
+    // 3) internal name
+    bool foundCover = false;
+    for (QString name : { 
+        QString::fromStdString(settings.MD5), 
+        QString::fromStdString(settings.GoodName), 
+        QString::fromStdString(header.Name) })
+    {
+        // we support jpg & png as file extensions
+        for (QString ext : { ".png", ".jpg", ".jpeg" })
+        {
+            QString coverPath = this->coversDirectory;
+            coverPath += "/";
+            coverPath += name;
+            coverPath += ext;
+
+            if (QFile::exists(coverPath) && 
+                pixmap.load(coverPath))
+            {
+                coverFileName = coverPath;
+                foundCover = true;
+                break;
+            }
+        }
+
+        if (foundCover)
+        {
+            break;
+        }
+    }
+    // fallback
+    if (!foundCover)
+    {
+        pixmap.load(":Resource/CoverFallback.png");
+    }
+
+    return QIcon(pixmap);
 }
 
-void RomBrowserWidget::dragEnterEvent(QDragEnterEvent *event)
+void RomBrowserWidget::timerEvent(QTimerEvent* event)
 {
-    event->accept();
+    this->killTimer(event->timerId());
+    this->setCurrentWidget(this->currentViewWidget);
 }
 
-void RomBrowserWidget::dropEvent(QDropEvent *event)
+void RomBrowserWidget::on_DoubleClicked(const QModelIndex& index)
 {
-    // sadly installing an EventFilter doesn't work
-    // on a QTableView, so just override the event,
-    // emit the signal and pass it through to QTableView
-    emit this->on_RomBrowser_FileDropped(event);
-    QTableView::dropEvent(event);
+    emit this->PlayGame(this->getCurrentRom());
 }
 
 void RomBrowserWidget::customContextMenuRequested(QPoint position)
 {
-    this->contextMenu_Actions_Update();
-    this->contextMenu->popup(this->viewport()->mapToGlobal(position));
-}
-
-void RomBrowserWidget::on_columnResized(int column, int oldWidth, int newWidth)
-{
-    std::vector<int> sizes = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnSizes);
-
-    int sizeIndex = this->column_GetSizeSettingIndex(column);
-
-    // when we've failed to find the setting index,
-    // return because that shouldn't happen
-    if (sizeIndex == -1)
+    QStandardItemModel* model = this->getCurrentModel();
+    QAbstractItemView*  view = this->getCurrentModelView();
+    if (view == nullptr || model == nullptr)
     {
         return;
     }
 
-    sizes[sizeIndex] = newWidth;
+    RomBrowserModelData data;
+    bool hasSelection = view->selectionModel()->hasSelection();
 
-    CoreSettingsSetValue(SettingsID::RomBrowser_ColumnSizes, sizes);
+    if (!this->getCurrentData(data))
+    {
+        return;
+    }
+
+    this->action_PlayGame->setEnabled(hasSelection);
+    this->action_PlayGameWithDisk->setEnabled(hasSelection);
+    this->action_RomInformation->setEnabled(hasSelection);
+    this->action_EditGameSettings->setEnabled(hasSelection);
+    this->action_EditCheats->setEnabled(hasSelection);
+    this->action_SetCoverImage->setEnabled(hasSelection);
+    this->action_SetCoverImage->setVisible(view == this->gridViewWidget);
+    this->action_RemoveCoverImage->setEnabled(hasSelection && !data.coverFile.isEmpty());
+    this->action_RemoveCoverImage->setVisible(view == this->gridViewWidget);
+
+    if (view == this->gridViewWidget)
+    { // grid view
+        if (data.coverFile.isEmpty())
+        {
+            this->action_SetCoverImage->setText("Set Cover Image...");
+        }
+        else
+        {
+            this->action_SetCoverImage->setText("Change Cover Image...");
+        }
+    }
+
+    this->contextMenu->popup(this->mapToGlobal(position));
+}
+
+void RomBrowserWidget::on_listViewWidget_sortIndicatorChanged(int logicalIndex, Qt::SortOrder sortOrder)
+{
+    CoreSettingsSetValue(SettingsID::RomBrowser_ListViewSortSection, logicalIndex);
+    CoreSettingsSetValue(SettingsID::RomBrowser_ListViewSortOrder, (int)sortOrder);
+}
+
+void RomBrowserWidget::on_listViewWidget_sectionResized(int logicalIndex, int oldWidth, int newWidth)
+{
+    std::vector<int> columnSizes = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnSizes);
+
+    if (columnSizes.size() <= logicalIndex)
+    {
+        columnSizes.push_back(newWidth);
+    }
+    else
+    {
+        columnSizes.at(logicalIndex) = newWidth;
+    }
+
+    CoreSettingsSetValue(SettingsID::RomBrowser_ColumnSizes, columnSizes);
+}
+
+void RomBrowserWidget::on_gridViewWidget_iconSizeChanged(const QSize& size)
+{
+    CoreSettingsSetValue(SettingsID::RomBrowser_GridViewIconWidth, size.width());
+    CoreSettingsSetValue(SettingsID::RomBrowser_GridViewIconHeight, size.height());
+}
+
+void RomBrowserWidget::on_ZoomIn(void)
+{
+    QAbstractItemView* view = this->getCurrentModelView();
+    if (view == nullptr)
+    {
+        return;
+    }
+
+    view->setIconSize(view->iconSize() + QSize(10, 10));
+}
+
+void RomBrowserWidget::on_ZoomOut(void)
+{
+    QAbstractItemView* view = this->getCurrentModelView();
+    if (view == nullptr)
+    {
+        return;
+    }
+
+    view->setIconSize(view->iconSize() - QSize(10, 10));
+}
+
+void RomBrowserWidget::on_RomBrowserThread_RomFound(QString file, CoreRomHeader header, CoreRomSettings settings)
+{
+    QString name;
+    QString coverFile;
+    QIcon   coverIcon;
+    QVariant itemData;
+    RomBrowserModelData modelData;
+
+    // create item data
+    modelData = RomBrowserModelData(file, header, settings);
+
+    // generate name to use in UI
+    name = QString::fromStdString(settings.GoodName);
+    if (name.endsWith("(unknown rom)") ||
+        name.endsWith("(unknown disk)"))
+    {
+        name = QFileInfo(file).fileName();
+    }
+
+    // retrieve cover image
+    coverIcon = this->getCurrentCover(header, settings, coverFile);
+    modelData.coverFile = coverFile;
+
+    // create item data
+    itemData = QVariant::fromValue<RomBrowserModelData>(modelData);
+
+    QList<QStandardItem*> listViewRow;
+    // goodname
+    QStandardItem* listViewItem1 = new QStandardItem();
+    listViewItem1->setText(name);
+    listViewItem1->setData(itemData);
+    listViewRow.append(listViewItem1);
+    // internal name
+    QStandardItem* listViewItem2 = new QStandardItem();
+    listViewItem2->setText(QString::fromStdString(header.Name));
+    listViewItem2->setData(itemData);
+    listViewRow.append(listViewItem2);
+    // MD5
+    QStandardItem* listViewItem3 = new QStandardItem();
+    listViewItem3->setText(QString::fromStdString(settings.MD5));
+    listViewItem3->setData(itemData);
+    listViewRow.append(listViewItem3);
+    this->listViewModel->appendRow(listViewRow);
+
+    QStandardItem* gridViewItem = new QStandardItem();
+    gridViewItem->setIcon(coverIcon);
+    gridViewItem->setText(name);
+    gridViewItem->setData(itemData);
+    this->gridViewModel->appendRow(gridViewItem);
+}
+
+void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
+{
+    // sort data
+    this->listViewModel->sort(this->listViewSortSection, (Qt::SortOrder)this->listViewSortOrder);
+    this->gridViewModel->sort(0, Qt::SortOrder::AscendingOrder);
+
+    // resize list view's columns
+    std::vector<int> columnSizes = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnSizes);
+    if (columnSizes.size() != this->listViewModel->columnCount() ||
+        columnSizes.at(0) == -1)
+    {
+        // reset column sizes setting
+        columnSizes.clear();
+        CoreSettingsSetValue(SettingsID::RomBrowser_ColumnSizes, columnSizes);
+
+        this->listViewWidget->resizeColumnsToContents();
+    }
+    else
+    {
+        // use settings' width
+        for (int i = 0; i < (columnSizes.size() - 1); i++)
+        {
+            this->listViewWidget->setColumnWidth(i, columnSizes.at(i));
+        }
+    }
+
+    if (!canceled)
+    {
+        if (this->listViewModel->rowCount() == 0)
+        {
+            this->setCurrentWidget(this->emptyWidget);
+            return;
+        }
+    }
+
+    // prevent flicker by forcing the loading screen
+    // to be shown at least 300ms
+    qint64 elapsedTime = this->romSearcherTimer.elapsed();
+    if (elapsedTime < 300)
+    {
+        this->startTimer(300 - elapsedTime);
+        return;
+    }
+
+    this->setCurrentWidget(this->currentViewWidget);
 }
 
 void RomBrowserWidget::on_Action_PlayGame(void)
 {
-    this->launchSelectedRom();
+    emit this->PlayGame(this->getCurrentRom());
 }
 
 void RomBrowserWidget::on_Action_PlayGameWithDisk(void)
 {
-    this->on_RomBrowser_PlayGameWithDisk(this->getCurrentRom());
+    emit this->PlayGameWithDisk(this->getCurrentRom());
 }
 
 void RomBrowserWidget::on_Action_RefreshRomList(void)
@@ -372,43 +573,108 @@ void RomBrowserWidget::on_Action_RefreshRomList(void)
 
 void RomBrowserWidget::on_Action_ChooseRomDirectory(void)
 {
-    this->on_RomBrowser_ChooseRomDirectory();
+    emit this->ChooseRomDirectory();
 }
 
 void RomBrowserWidget::on_Action_RomInformation(void)
 {
-    this->on_RomBrowser_RomInformation(this->getCurrentRom());
+    emit this->RomInformation(this->getCurrentRom());
 }
 
 void RomBrowserWidget::on_Action_EditGameSettings(void)
 {
-    this->on_RomBrowser_EditGameSettings(this->getCurrentRom());
+    emit this->EditGameSettings(this->getCurrentRom());
 }
 
 void RomBrowserWidget::on_Action_EditCheats(void)
 {
-   this->on_RomBrowser_Cheats(this->getCurrentRom());
+    emit this->Cheats(this->getCurrentRom());
 }
 
-void RomBrowserWidget::on_Row_DoubleClicked(const QModelIndex &index)
+void RomBrowserWidget::on_Action_SetCoverImage(void)
 {
-    this->launchSelectedRom();
-}
+    QString sourceFile;
+    QFileInfo sourceFileInfo;
+    QString coverFile;
 
-void RomBrowserWidget::on_RomBrowserThread_Received(QString file, CoreRomHeader header, CoreRomSettings settings)
-{
-    QList<QStandardItem *> rowList;
-
-    for (int id : this->model_Columns)
+    QStandardItemModel* model = this->getCurrentModel();
+    QAbstractItemView*  view  = this->getCurrentModelView();
+    if (model == nullptr || view == nullptr)
     {
-        QStandardItem *item = new QStandardItem();
-
-        item->setText(columnIdToText(file, header, settings, (ColumnID)id));
-        item->setData(file);
-        rowList.append(item);
+        return;
     }
 
-    this->model_Model->appendRow(rowList);
+    if (this->coversDirectory.isEmpty())
+    {
+        return;
+    }
 
-    this->horizontalHeader()->setStretchLastSection(true);
+    sourceFile = QFileDialog::getOpenFileName(this, tr("Open Cover Image"), "", tr("Cover Image (*.png *.jpeg *.jpg)"));
+    if (sourceFile.isEmpty())
+    {
+        return;
+    }
+
+    // retrieve file info
+    sourceFileInfo = QFileInfo(sourceFile);
+
+    QModelIndex         index = view->currentIndex();
+    QStandardItem*      item  = model->item(index.row(), index.column());
+    RomBrowserModelData data  = model->itemData(index).last().value<RomBrowserModelData>();
+
+    // construct new file name (for the cover)
+    QString newFileName = this->coversDirectory;
+    newFileName += "/";
+    newFileName += QString::fromStdString(data.settings.MD5);
+    newFileName += ".";
+    newFileName += sourceFileInfo.suffix();
+
+    // create covers directory when needed
+    if (!QDir().exists(this->coversDirectory))
+    {
+        QDir().mkdir(this->coversDirectory);
+    }
+
+    // remove old cover when
+    // cover file exists
+    // and contains the MD5
+    if (!data.coverFile.isEmpty() && 
+        QFile::exists(data.coverFile) &&
+        data.coverFile.contains(QString::fromStdString(data.settings.MD5)))
+    {
+        QFile::remove(data.coverFile);
+    }
+
+    // copy new one
+    QFile::copy(sourceFile, newFileName);
+
+    // update item
+    item->setIcon(this->getCurrentCover(data.header, data.settings, coverFile));
+    data.coverFile = coverFile;
+    item->setData(QVariant::fromValue<RomBrowserModelData>(data));
+}
+
+void RomBrowserWidget::on_Action_RemoveCoverImage(void)
+{
+    QStandardItemModel* model = this->getCurrentModel();
+    QAbstractItemView*  view  = this->getCurrentModelView();
+    if (model == nullptr || view == nullptr)
+    {
+        return;
+    }
+
+    QModelIndex         index = view->currentIndex();
+    QStandardItem*      item  = model->item(index.row(), index.column());
+    RomBrowserModelData data  = model->itemData(index).last().value<RomBrowserModelData>();
+    QString coverFile;
+
+    if (!data.coverFile.isEmpty() && QFile::exists(data.coverFile))
+    {
+        QFile::remove(data.coverFile);
+    }
+
+    // update item
+    item->setIcon(this->getCurrentCover(data.header, data.settings, coverFile));
+    data.coverFile = coverFile;
+    item->setData(QVariant::fromValue<RomBrowserModelData>(data));
 }
