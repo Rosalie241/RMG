@@ -9,6 +9,7 @@
  */
 #include "Rom.hpp"
 #include "Error.hpp"
+#include "MediaLoader.hpp"
 #include "m64p/Api.hpp"
 #include "RomSettings.hpp"
 #include "Cheats.hpp"
@@ -17,6 +18,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <cstring>
+#include <algorithm>
 
 //
 // Local Defines
@@ -29,10 +31,25 @@
 //
 
 static bool l_HasRomOpen = false;
+static bool l_HasDisk  = false;
 
 //
 // Local Functions
 //
+
+static std::string to_lower_str(std::string str)
+{
+    std::string resultString = str;
+
+    std::transform(resultString.begin(), resultString.end(), resultString.begin(), 
+        [](unsigned char c)
+        { 
+            return std::tolower(c); 
+        }
+    );
+
+    return resultString;
+}
 
 static bool read_zip_file(std::filesystem::path file, char** buf, int* size)
 {
@@ -74,9 +91,11 @@ static bool read_zip_file(std::filesystem::path file, char** buf, int* size)
         // make sure file has supported file format,
         // if it does, read it in memory
         std::filesystem::path fileNamePath(fileName);
-        if (fileNamePath.extension() == ".z64" ||
-            fileNamePath.extension() == ".v64" ||
-            fileNamePath.extension() == ".n64")
+        std::string fileExtension = fileNamePath.has_extension() ? fileNamePath.extension().string() : "";
+        fileExtension = to_lower_str(fileExtension);
+        if (fileExtension == ".z64" ||
+            fileExtension == ".v64" ||
+            fileExtension == ".n64")
         {
             char* buffer;
             char* outBuffer;
@@ -232,6 +251,7 @@ bool CoreOpenRom(std::filesystem::path file)
     m64p_error  ret;
     char*       buf;
     int         buf_size;
+    std::string file_extension;
 
     if (!m64p::Core.IsHooked())
     {
@@ -246,12 +266,23 @@ bool CoreOpenRom(std::filesystem::path file)
         return false;
     }
 
-    if (file.has_extension() && file.extension() == ".zip")
+    file_extension = file.has_extension() ? file.extension().string() : "";
+    file_extension = to_lower_str(file_extension);
+
+    if (file_extension == ".zip")
     {
         if (!read_zip_file(file, &buf, &buf_size))
         {
             return false;
         }
+
+        l_HasDisk = false;
+    }
+    else if (file_extension == ".d64" || 
+             file_extension == ".ndd")
+    {
+        CoreMediaLoaderSetDiskFile(file);
+        l_HasDisk = true;
     }
     else
     {
@@ -259,12 +290,23 @@ bool CoreOpenRom(std::filesystem::path file)
         {
             return false;
         }
+
+        l_HasDisk = false;
     }
 
-    ret = m64p::Core.DoCommand(M64CMD_ROM_OPEN, buf_size, buf);
+    if (l_HasDisk)
+    {
+        ret = m64p::Core.DoCommand(M64CMD_DISK_OPEN, 0, nullptr);
+        error = "CoreOpenRom: m64p::Core.DoCommand(M64CMD_DISK_OPEN) Failed: ";
+    }
+    else
+    {
+        ret = m64p::Core.DoCommand(M64CMD_ROM_OPEN, buf_size, buf);
+        error = "CoreOpenRom: m64p::Core.DoCommand(M64CMD_ROM_OPEN) Failed: ";
+    }
+
     if (ret != M64ERR_SUCCESS)
     {
-        error = "CoreOpenRom: m64p::Core.DoCommand(M64CMD_ROM_OPEN) Failed: ";
         error += m64p::Core.ErrorMessage(ret);
         CoreSetError(error);
     }
@@ -286,6 +328,11 @@ bool CoreOpenRom(std::filesystem::path file)
 bool CoreHasRomOpen(void)
 {
     return l_HasRomOpen;
+}
+
+CoreRomType CoreGetRomType(void)
+{
+    return l_HasDisk ? CoreRomType::Disk : CoreRomType::Cartridge;
 }
 
 bool CoreCloseRom(void)
@@ -311,10 +358,19 @@ bool CoreCloseRom(void)
         return false;
     }
 
-    ret = m64p::Core.DoCommand(M64CMD_ROM_CLOSE, 0, nullptr);
+    if (l_HasDisk)
+    {
+        ret = m64p::Core.DoCommand(M64CMD_DISK_CLOSE, 0, nullptr);
+        error = "CoreCloseRom: m64p::Core.DoCommand(M64CMD_DISK_CLOSE) Failed: ";
+    }
+    else
+    {
+        ret = m64p::Core.DoCommand(M64CMD_ROM_CLOSE, 0, nullptr);
+        error = "CoreCloseRom: m64p::Core.DoCommand(M64CMD_ROM_CLOSE) Failed: ";
+    }
+
     if (ret != M64ERR_SUCCESS)
     {
-        error = "CoreCloseRom: m64p::Core.DoCommand(M64CMD_ROM_CLOSE) Failed: ";
         error += m64p::Core.ErrorMessage(ret);
         CoreSetError(error);
         return false;

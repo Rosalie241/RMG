@@ -126,8 +126,11 @@ bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64d
         return false;
     }
 
-    // set disk file in media loader
-    CoreMediaLoaderSetDiskFile(n64ddrom);
+    // set disk file in media loader when ROM is a cartridge
+    if (CoreGetRomType() == CoreRomType::Cartridge)
+    {
+        CoreMediaLoaderSetDiskFile(n64ddrom);
+    }
 
     // apply core settings overlay
     apply_coresettings_overlay();

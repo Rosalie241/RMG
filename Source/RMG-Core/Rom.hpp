@@ -12,11 +12,20 @@
 
 #include <filesystem>
 
+enum class CoreRomType
+{
+    Cartridge,
+    Disk
+};
+
 // opens the given file as ROM
 bool CoreOpenRom(std::filesystem::path file);
 
 // returns whether core has a ROM opened
 bool CoreHasRomOpen(void);
+
+// returns the opened ROM's type
+CoreRomType CoreGetRomType(void);
 
 // closes ROM
 bool CoreCloseRom(void);
