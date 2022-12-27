@@ -36,4 +36,8 @@ bool CoreGetCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomHeader
 // for given filename succeeds
 bool CoreAddCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomHeader header, CoreRomSettings settings);
 
+// returns whether clearing rom header & settings cache
+// succeeds
+bool CoreClearRomHeaderAndSettingsCache(void);
+
 #endif // CORE_CACHEDROMHEADERANDSETTINGS_HPP

@@ -275,3 +275,10 @@ bool CoreAddCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomHeader
     l_CacheEntriesChanged = true;
     return true;
 }
+
+bool CoreClearRomHeaderAndSettingsCache(void)
+{
+    l_CacheEntries.clear();
+    l_CacheEntriesChanged = true;
+    return true;
+}
