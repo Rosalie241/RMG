@@ -378,10 +378,7 @@ void RomBrowserWidget::customContextMenuRequested(QPoint position)
     RomBrowserModelData data;
     bool hasSelection = view->selectionModel()->hasSelection();
 
-    if (!this->getCurrentData(data))
-    {
-        return;
-    }
+    this->getCurrentData(data);
 
     this->action_PlayGame->setEnabled(hasSelection);
     this->action_PlayGameWithDisk->setEnabled(hasSelection);
