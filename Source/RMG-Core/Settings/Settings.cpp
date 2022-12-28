@@ -462,6 +462,9 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::RomBrowser_GridViewIconHeight:
         setting = {SETTING_SECTION_ROMBROWSER, "GridViewIconHeight", 126};
         break;
+    case SettingsID::RomBrowser_GridViewUniformItemSizes:
+        setting = {SETTING_SECTION_ROMBROWSER, "GridViewUniformItemSizes", true};
+        break;
 
     case SettingsID::Settings_HasForceUsedSetOnce:
         setting = {SETTING_SECTION_SETTINGS, "HasForceUsedSetOnce", false};

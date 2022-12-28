@@ -125,6 +125,7 @@ enum class SettingsID
     RomBrowser_ListViewSortOrder,
     RomBrowser_GridViewIconWidth,
     RomBrowser_GridViewIconHeight,
+    RomBrowser_GridViewUniformItemSizes,
     
     // Settings Settings
     Settings_HasForceUsedSetOnce,
