@@ -33,6 +33,23 @@
   </screenshots>
   <description/>
   <releases>
+    <release version="v0.2.7" date="2022-12-29" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix core error not showing when the statusbar was hidden</li>
+          <li>Fix .ndd/.64d not being in the empty ROM Browser widget</li>
+          <li>Fix .jpg/.jpeg files not working on covers on Windows</li>
+          <li>Fix updater script not copying subdirectories on Windows (for portable installs)</li>
+          <li>Fix 64DD Disks which required the development IPL not working</li>
+          <li>Fix 64DD Disks showing the wrong internal ROM name (this fix requires clearing the ROM cache)</li>
+          <li>Fix cover filenames allowing invalid characters (they will now be replaced by _)</li>
+          <li>Add more icons to View menu in the menu bar</li>
+          <li>Add 'Uniform Size (Grid View)' to View menu in the menu bar</li>
+          <li>Add smooth scrolling to List View and Grid View</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.2.6" date="2022-12-28" type="stable">
       <description>
         <p>Changes:</p>
