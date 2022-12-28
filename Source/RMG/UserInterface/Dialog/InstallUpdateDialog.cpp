@@ -88,7 +88,7 @@ void InstallUpdateDialog::install(void)
         "@echo off",
         "del /F /Q \""      + fullFilePath + "\"",
         "taskkill /F /PID:" + appPid,
-        "copy /Y \""        + extractDirectory + "\\*\" \"" + appPath + "/\"",
+        "xcopy /S /Y /I \"" + extractDirectory + "\\*\" \"" + appPath + "/\"",
         "start \"\" \""     + appPath + "\\RMG.exe\"",
         "rmdir /S /Q \""    + this->temporaryDirectory + "\"",
     };
