@@ -103,6 +103,8 @@
     <addaction name="action_View_GameList"/>
     <addaction name="action_View_GameGrid"/>
     <addaction name="separator"/>
+    <addaction name="action_View_UniformSize"/>
+    <addaction name="separator"/>
     <addaction name="action_View_Fullscreen"/>
     <addaction name="separator"/>
     <addaction name="action_View_RefreshRoms"/>
@@ -445,6 +447,10 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset theme="tools-line">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
    <property name="text">
     <string>Toolbar</string>
    </property>
@@ -452,6 +458,10 @@
   <action name="action_View_StatusBar">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="information-line">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Status Bar</string>
