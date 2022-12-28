@@ -502,6 +502,18 @@
     <string>Clear ROM Cache</string>
    </property>
   </action>
+  <action name="action_View_UniformSize">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="function-line">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Uniform Size (Grid View)</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="UIResources.qrc"/>

@@ -573,6 +573,9 @@ void MainWindow::configureActions(void)
         action->setChecked(i == currentView);
         action->setActionGroup(romBrowserViewActionGroup);
     }
+
+    // configure grid view options actions
+    this->action_View_UniformSize->setChecked(CoreSettingsGetBoolValue(SettingsID::RomBrowser_GridViewUniformItemSizes));
 }
 
 void MainWindow::connectActionSignals(void)
@@ -606,6 +609,7 @@ void MainWindow::connectActionSignals(void)
     connect(this->action_View_StatusBar, &QAction::toggled, this, &MainWindow::on_Action_View_StatusBar);
     connect(this->action_View_GameList, &QAction::toggled, this, &MainWindow::on_Action_View_GameList);
     connect(this->action_View_GameGrid, &QAction::toggled, this, &MainWindow::on_Action_View_GameGrid);
+    connect(this->action_View_UniformSize, &QAction::toggled, this, &MainWindow::on_Action_View_UniformSize);
     connect(this->action_View_Fullscreen, &QAction::triggered, this, &MainWindow::on_Action_View_Fullscreen);
     connect(this->action_View_RefreshRoms, &QAction::triggered, this, &MainWindow::on_Action_View_RefreshRoms);
     connect(this->action_View_ClearRomCache, &QAction::triggered, this, &MainWindow::on_Action_View_ClearRomCache);
@@ -1153,6 +1157,12 @@ void MainWindow::on_Action_View_GameGrid(bool checked)
         this->ui_Widget_RomBrowser->ShowGrid();
         CoreSettingsSetValue(SettingsID::RomBrowser_ViewMode, 1);
     }
+}
+
+void MainWindow::on_Action_View_UniformSize(bool checked)
+{
+    this->ui_Widget_RomBrowser->SetGridViewUniformSizes(checked);
+    CoreSettingsSetValue(SettingsID::RomBrowser_GridViewUniformItemSizes, checked);
 }
 
 void MainWindow::on_Action_View_Fullscreen(void)

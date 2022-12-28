@@ -110,7 +110,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->gridViewWidget->setFlow(QListView::Flow::LeftToRight);
     this->gridViewWidget->setResizeMode(QListView::Adjust);
     this->gridViewWidget->setMovement(QListView::Static);
-    this->gridViewWidget->setUniformItemSizes(true);
+    this->gridViewWidget->setUniformItemSizes(CoreSettingsGetBoolValue(SettingsID::RomBrowser_GridViewUniformItemSizes));
     this->gridViewWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
     this->gridViewWidget->setViewMode(QListView::ViewMode::IconMode);
     this->gridViewWidget->setTextElideMode(Qt::ElideNone);    
@@ -243,6 +243,21 @@ void RomBrowserWidget::ShowGrid(void)
     {
         this->setCurrentWidget(this->gridViewWidget);        
     }
+}
+
+void RomBrowserWidget::SetGridViewUniformSizes(bool value)
+{
+    if (!this->IsRefreshingRomList())
+    {
+        if (this->gridViewWidget->uniformItemSizes() != value)
+        {
+            this->gridViewWidget->setUniformItemSizes(value);
+            this->RefreshRomList();
+            return;
+        }
+    }
+
+    this->gridViewWidget->setUniformItemSizes(value);
 }
 
 QStandardItemModel* RomBrowserWidget::getCurrentModel(void)

@@ -162,6 +162,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     void on_Action_View_StatusBar(bool);
     void on_Action_View_GameList(bool);
     void on_Action_View_GameGrid(bool);
+    void on_Action_View_UniformSize(bool);
     void on_Action_View_Fullscreen(void);
     void on_Action_View_RefreshRoms(void);
     void on_Action_View_ClearRomCache(void);

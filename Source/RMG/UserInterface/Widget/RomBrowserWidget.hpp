@@ -51,6 +51,8 @@ class RomBrowserWidget : public QStackedWidget
     void ShowList(void);
     void ShowGrid(void);
 
+    void SetGridViewUniformSizes(bool value);
+
   private:
     Widget::RomBrowserEmptyWidget*    emptyWidget    = nullptr;
     Widget::RomBrowserLoadingWidget*  loadingWidget  = nullptr;
