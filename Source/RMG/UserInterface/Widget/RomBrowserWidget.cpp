@@ -250,7 +250,10 @@ void RomBrowserWidget::ShowGrid(void)
 
 void RomBrowserWidget::SetGridViewUniformSizes(bool value)
 {
-    if (!this->IsRefreshingRomList())
+    // refresh ROM list when we're currently in the grid view
+    // and we're not refreshing already
+    if (this->currentWidget() == this->gridViewWidget &&
+        !this->IsRefreshingRomList())
     {
         if (this->gridViewWidget->uniformItemSizes() != value)
         {
