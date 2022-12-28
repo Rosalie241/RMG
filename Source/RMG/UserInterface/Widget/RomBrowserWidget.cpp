@@ -324,12 +324,25 @@ QIcon RomBrowserWidget::getCurrentCover(CoreRomHeader header, CoreRomSettings se
         QString::fromStdString(settings.GoodName), 
         QString::fromStdString(header.Name) })
     {
+        // fixup file name
+        QString fixedName = name;
+        for (const char c : ":<>\"/\\|?*")
+        {
+            // skip empty characters
+            if (c == '\0')
+            {
+                continue;
+            }
+
+            fixedName.replace(c, "_");
+        }
+
         // we support jpg & png as file extensions
         for (QString ext : { ".png", ".jpg", ".jpeg" })
         {
             QString coverPath = this->coversDirectory;
             coverPath += "/";
-            coverPath += name;
+            coverPath += fixedName;
             coverPath += ext;
 
             if (QFile::exists(coverPath) && 
