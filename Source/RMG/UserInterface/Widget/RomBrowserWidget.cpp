@@ -19,6 +19,7 @@
 #include <QPixmap>
 #include <vector>
 #include <QList>
+#include <QScrollBar>
 
 using namespace UserInterface::Widget;
 
@@ -79,6 +80,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->listViewWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     this->listViewWidget->setSelectionBehavior(QTableView::SelectRows);
     this->listViewWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+    this->listViewWidget->setVerticalScrollMode(QAbstractItemView::ScrollMode::ScrollPerPixel);
     this->listViewWidget->verticalHeader()->hide();
     this->listViewWidget->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     this->listViewWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
@@ -113,10 +115,11 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->gridViewWidget->setUniformItemSizes(CoreSettingsGetBoolValue(SettingsID::RomBrowser_GridViewUniformItemSizes));
     this->gridViewWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
     this->gridViewWidget->setViewMode(QListView::ViewMode::IconMode);
-    this->gridViewWidget->setTextElideMode(Qt::ElideNone);    
+    this->gridViewWidget->setTextElideMode(Qt::TextElideMode::ElideNone);    
     this->gridViewWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    this->gridViewWidget->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    this->gridViewWidget->verticalScrollBar()->setSingleStep(15);
     this->gridViewWidget->setWordWrap(true);
-    this->gridViewWidget->setUniformItemSizes(false); // TODO? make this configurable maybe
     this->gridViewWidget->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
     this->gridViewWidget->setFrameStyle(QFrame::NoFrame);
     int iconWidth = CoreSettingsGetIntValue(SettingsID::RomBrowser_GridViewIconWidth);
