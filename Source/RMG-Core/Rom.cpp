@@ -209,7 +209,11 @@ static bool read_raw_file(std::filesystem::path file, char** buf, int* size)
     if (!fileStream.is_open())
     {
         error = "read_raw_file Failed: ";
-        error += "failed to open file!";
+        error += "failed to open file: ";
+        error += strerror(errno);
+        error += " (";
+        error += std::to_string(errno);
+        error += ")";
         CoreSetError(error);
         return false;
     }
