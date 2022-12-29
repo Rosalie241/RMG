@@ -457,10 +457,10 @@ void MainWindow::updateActions(bool inEmulation, bool isPaused)
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_Settings));
     this->action_Settings_Settings->setShortcut(QKeySequence(keyBinding));
 
+    this->action_View_UniformSize->setEnabled(!inEmulation);
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_Fullscreen));
     this->action_View_Fullscreen->setEnabled(inEmulation);
     this->action_View_Fullscreen->setShortcut(QKeySequence(keyBinding));
-    
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_RefreshROMList));
     this->action_View_RefreshRoms->setEnabled(!inEmulation);
     this->action_View_RefreshRoms->setShortcut(QKeySequence(keyBinding));
