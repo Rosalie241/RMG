@@ -131,7 +131,7 @@ ExternalProject_Add(mupen64plus-rsp-parallel
     INSTALL_COMMAND ""
 
     BUILD_IN_SOURCE True
-    CMAKE_ARGS -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+    CMAKE_ARGS ${CMAKE_CONFIGURE_ARGS}
 
     BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-rsp-parallel/mupen64plus-rsp-parallel.${SO_EXT}
     DEPENDS mupen64plus-core
