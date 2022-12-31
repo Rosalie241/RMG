@@ -110,7 +110,7 @@ void RomSearcherThread::searchDirectory(QString directory)
         {
             if (count++ >= this->maxItems)
             {
-                return;
+                break;
             }
 
             emit this->RomFound(file, header, settings);
