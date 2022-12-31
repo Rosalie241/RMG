@@ -167,8 +167,13 @@ void MainWindow::configureUI(QApplication* app)
         this->restoreGeometry(QByteArray::fromBase64(geometry.toLocal8Bit()));
     }
 
-    this->statusBar()->setHidden(true);
+    this->ui_ShowToolbar = CoreSettingsGetBoolValue(SettingsID::GUI_Toolbar);
+    this->ui_ShowStatusbar = CoreSettingsGetBoolValue(SettingsID::GUI_StatusBar);
+
+    this->toolBar->setVisible(this->ui_ShowToolbar);
+    this->statusBar()->setVisible(this->ui_ShowStatusbar);
     this->statusBar()->addPermanentWidget(this->ui_StatusBar_Label, 1);
+
     this->ui_TimerTimeout = CoreSettingsGetIntValue(SettingsID::GUI_StatusbarMessageDuration);
 
     this->ui_Widgets->addWidget(this->ui_Widget_RomBrowser);
@@ -257,14 +262,12 @@ void MainWindow::updateUI(bool inEmulation, bool isPaused)
 
         this->ui_Widgets->setCurrentIndex(1);
         this->storeGeometry();
-        this->statusBar()->setVisible(this->ui_ShowStatusbar);
     }
     else if (!this->ui_NoSwitchToRomBrowser)
     {
         this->setWindowTitle(this->ui_WindowTitle);
         this->ui_Widgets->setCurrentIndex(0);
         this->loadGeometry();
-        this->statusBar()->setVisible(this->ui_ShowStatusbar);
     }
     else
     {
