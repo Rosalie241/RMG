@@ -181,6 +181,17 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->contextMenu->addSeparator();
     this->contextMenu->addAction(this->action_SetCoverImage);
     this->contextMenu->addAction(this->action_RemoveCoverImage);
+
+    // configure current view widget
+    int currentView = CoreSettingsGetIntValue(SettingsID::RomBrowser_ViewMode);
+    if (currentView == 0)
+    {
+        this->currentViewWidget = this->listViewWidget;
+    }
+    else
+    {
+        this->currentViewWidget = this->gridViewWidget;
+    }
 }
 
 RomBrowserWidget::~RomBrowserWidget()
