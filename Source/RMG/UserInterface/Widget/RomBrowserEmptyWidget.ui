@@ -56,7 +56,7 @@
    <item>
     <widget class="QLabel" name="label_4">
      <property name="text">
-      <string>.ndd/.64d (64DD Disks)</string>
+      <string>.ndd/.d64 (64DD Disks)</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
