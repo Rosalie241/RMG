@@ -81,7 +81,7 @@ static m64p_error VidExt_ListRates(m64p_2d_size Size, int *NumRates, int *Rates)
     return M64ERR_UNSUPPORTED;
 }
 
-static m64p_error VidExt_SetModeWithRate(int Width, int Height, int RefreshRate, int BitsPerPixel, int ScreenMode, int Flags)
+static m64p_error VidExt_SetMode(int Width, int Height, int BitsPerPixel, int ScreenMode, int Flags)
 {
     if (!l_VidExtSetup)
     {
@@ -90,23 +90,23 @@ static m64p_error VidExt_SetModeWithRate(int Width, int Height, int RefreshRate,
 
     switch (ScreenMode)
     {
+        default:
         case M64VIDEO_NONE:
             return M64ERR_INPUT_INVALID;
         case M64VIDEO_WINDOWED:
-            l_EmuThread->on_VidExt_SetWindowedModeWithRate(Width, Height, RefreshRate, BitsPerPixel, Flags);
+            l_EmuThread->on_VidExt_SetWindowedMode(Width, Height, BitsPerPixel, Flags);
             break;
         case M64VIDEO_FULLSCREEN:
-            l_EmuThread->on_VidExt_SetFullscreenModeWithRate(Width, Height, RefreshRate, BitsPerPixel, Flags);
+            l_EmuThread->on_VidExt_SetFullscreenMode(Width, Height, BitsPerPixel, Flags);
             break;
     }
 
     return M64ERR_SUCCESS;
 }
 
-static m64p_error VidExt_SetMode(int Width, int Height, int BitsPerPixel, int ScreenMode, int Flags)
+static m64p_error VidExt_SetModeWithRate(int Width, int Height, int RefreshRate, int BitsPerPixel, int ScreenMode, int Flags)
 {
-    VidExt_SetModeWithRate(Width, Height, 0, BitsPerPixel, ScreenMode, Flags);
-    return M64ERR_SUCCESS;
+    return VidExt_SetMode(Width, Height, BitsPerPixel, ScreenMode, Flags);
 }
 
 static m64p_function VidExt_GLGetProc(const char *Proc)
@@ -116,7 +116,6 @@ static m64p_function VidExt_GLGetProc(const char *Proc)
 
 static m64p_error VidExt_GLSetAttr(m64p_GLattr Attr, int Value)
 {
-
     switch (Attr)
     {
     case M64P_GL_DOUBLEBUFFER:

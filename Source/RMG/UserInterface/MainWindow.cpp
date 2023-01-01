@@ -334,19 +334,13 @@ void MainWindow::connectEmulationThreadSignals(void)
             Qt::BlockingQueuedConnection);
     connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_SetupOGL, this, &MainWindow::on_VidExt_SetupOGL,
             Qt::BlockingQueuedConnection);
-    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_SetMode, this, &MainWindow::on_VidExt_SetMode,
-            Qt::BlockingQueuedConnection);
-    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_SetWindowedModeWithRate, this,
-            &MainWindow::on_VidExt_SetWindowedModeWithRate, Qt::BlockingQueuedConnection);
-    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_SetFullscreenModeWithRate, this,
-            &MainWindow::on_VidExt_SetFullscreenModeWithRate, Qt::BlockingQueuedConnection);
+    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_SetWindowedMode, this,
+            &MainWindow::on_VidExt_SetWindowedMode, Qt::BlockingQueuedConnection);
+    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_SetFullscreenMode, this,
+            &MainWindow::on_VidExt_SetFullscreenMode, Qt::BlockingQueuedConnection);
     connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_ResizeWindow, this,
             &MainWindow::on_VidExt_ResizeWindow, Qt::BlockingQueuedConnection);
-    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_SetCaption, this,
-            &MainWindow::on_VidExt_SetCaption, Qt::BlockingQueuedConnection);
     connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_ToggleFS, this, &MainWindow::on_VidExt_ToggleFS,
-            Qt::BlockingQueuedConnection);
-    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_Quit, this, &MainWindow::on_VidExt_Quit,
             Qt::BlockingQueuedConnection);
 }
 
@@ -364,8 +358,8 @@ void MainWindow::launchEmulationThread(QString cartRom, QString diskRom)
         }
     }
 
-    ui_RefreshRomListAfterEmulation = this->ui_Widget_RomBrowser->IsRefreshingRomList();
-    if (ui_RefreshRomListAfterEmulation)
+    this->ui_RefreshRomListAfterEmulation = this->ui_Widget_RomBrowser->IsRefreshingRomList();
+    if (this->ui_RefreshRomListAfterEmulation)
     {
         this->ui_Widget_RomBrowser->StopRefreshRomList();
     }
@@ -1370,9 +1364,7 @@ void MainWindow::on_RomBrowser_Cheats(QString file)
 
 void MainWindow::on_VidExt_Init(void)
 {
-    this->ui_VidExt_Geometry_Saved = false;
     this->ui_VidExtForceSetMode = true;
-
     this->updateUI(true, false);
 }
 
@@ -1382,23 +1374,8 @@ void MainWindow::on_VidExt_SetupOGL(QSurfaceFormat format, QThread* thread)
     this->ui_Widget_OpenGL->setFormat(format);
 }
 
-void MainWindow::on_VidExt_SetMode(int width, int height, int bps, int mode, int flags)
+void MainWindow::on_VidExt_SetWindowedMode(int width, int height, int bps, int flags)
 {
-    this->on_VidExt_ResizeWindow(width, height);
-}
-
-void MainWindow::on_VidExt_SetWindowedModeWithRate(int width, int height, int refresh, int bps, int flags)
-{
-    // load window geometry
-    if (this->ui_VidExt_Geometry_Saved)
-    {
-        this->restoreGeometry(this->ui_VidExt_Geometry);
-        this->ui_VidExt_Geometry_Saved = false;
-
-        // force 'refresh' the video plugin
-        CoreSetVideoSize(width, height);
-    }
-
     if (this->isFullScreen())
     {
         this->showNormal();
@@ -1428,15 +1405,8 @@ void MainWindow::on_VidExt_SetWindowedModeWithRate(int width, int height, int re
     this->on_VidExt_ResizeWindow(width, height);
 }
 
-void MainWindow::on_VidExt_SetFullscreenModeWithRate(int width, int height, int refresh, int bps, int flags)
+void MainWindow::on_VidExt_SetFullscreenMode(int width, int height, int bps, int flags)
 {
-    // save window geometry
-    if (!this->ui_VidExt_Geometry_Saved)
-    {
-        this->ui_VidExt_Geometry = this->saveGeometry();
-        this->ui_VidExt_Geometry_Saved = true;
-    }
-
     if (!this->isFullScreen())
     {
         this->showFullScreen();
@@ -1477,12 +1447,12 @@ void MainWindow::on_VidExt_ResizeWindow(int width, int height)
         height += this->menuBar()->height();
     }
 
-    if (this->ui_ShowToolbar && !this->toolBar->isHidden())
+    if (!this->toolBar->isHidden())
     {
         height += this->toolBar->height();
     }
 
-    if (this->ui_ShowStatusbar && !this->statusBar()->isHidden())
+    if (!this->statusBar()->isHidden())
     {
         height += this->statusBar()->height();
     }
@@ -1512,10 +1482,6 @@ void MainWindow::on_VidExt_ResizeWindow(int width, int height)
     // we've force set the size once,
     // we can safely disable it now
     this->ui_VidExtForceSetMode = false;
-}
-
-void MainWindow::on_VidExt_SetCaption(QString title)
-{
 }
 
 void MainWindow::on_VidExt_ToggleFS(bool fullscreen)
@@ -1578,10 +1544,6 @@ void MainWindow::on_VidExt_ToggleFS(bool fullscreen)
 
         this->removeFullscreenActions();
     }
-}
-
-void MainWindow::on_VidExt_Quit(void)
-{
 }
 
 void MainWindow::on_Core_DebugCallback(CoreDebugMessageType type, QString context, QString message)
