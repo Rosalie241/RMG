@@ -33,6 +33,17 @@
   </screenshots>
   <description/>
   <releases>
+    <release version="v0.2.8" date="2023-01-01" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix 'Uniform Size (Grid View)' not being disabled during emulation</li>
+          <li>Fix toolbar not respecting the view setting</li>
+          <li>Fix being stuck at the loading screen when having more ROMs than the ROM search limit</li>
+          <li>Improve error message when opening a ROM fails</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.2.7" date="2022-12-29" type="stable">
       <description>
         <p>Changes:</p>
