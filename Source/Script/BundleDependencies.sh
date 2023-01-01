@@ -29,13 +29,10 @@ function findAndCopyDLL() {
 }
 
 
-for ext in dll exe
+for file in "$bin_dir"/*.exe "$bin_dir/Plugin"/*/*.dll
 do
-	while read -r file_line
-	do
-		echo "=> Copying dependencies for $file_line"
-		copyForOBJ "$file_line"
-	done < <(find "$bin_dir" -name "*.$ext")
+	echo "=> Copying dependencies for $file"
+	copyForOBJ "$file"
 done
 
 windeployqt-qt6 "$exe"
