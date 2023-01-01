@@ -1376,8 +1376,11 @@ void MainWindow::on_VidExt_SetupOGL(QSurfaceFormat format, QThread* thread)
 
 void MainWindow::on_VidExt_SetWindowedMode(int width, int height, int bps, int flags)
 {
+    bool returnedFromFullscreen = false;
+
     if (this->isFullScreen())
     {
+        returnedFromFullscreen = true;
         this->showNormal();
     }
 
@@ -1402,7 +1405,13 @@ void MainWindow::on_VidExt_SetWindowedMode(int width, int height, int bps, int f
     }
 
     this->removeFullscreenActions();
-    this->on_VidExt_ResizeWindow(width, height);
+
+    // only resize window when we're
+    // not returning from fullscreen
+    if (!returnedFromFullscreen)
+    {
+        this->on_VidExt_ResizeWindow(width, height);
+    }
 }
 
 void MainWindow::on_VidExt_SetFullscreenMode(int width, int height, int bps, int flags)
