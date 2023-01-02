@@ -31,7 +31,7 @@
 //
 
 static bool l_HasRomOpen = false;
-static bool l_HasDisk  = false;
+static bool l_HasDisk    = false;
 
 //
 // Local Functions
@@ -253,8 +253,8 @@ bool CoreOpenRom(std::filesystem::path file)
 {
     std::string error;
     m64p_error  ret;
-    char*       buf;
-    int         buf_size;
+    char*       buf      = nullptr;
+    int         buf_size = 0;
     std::string file_extension;
 
     if (!m64p::Core.IsHooked())
@@ -307,6 +307,7 @@ bool CoreOpenRom(std::filesystem::path file)
     {
         ret = m64p::Core.DoCommand(M64CMD_ROM_OPEN, buf_size, buf);
         error = "CoreOpenRom: m64p::Core.DoCommand(M64CMD_ROM_OPEN) Failed: ";
+        free(buf);
     }
 
     if (ret != M64ERR_SUCCESS)
@@ -315,7 +316,6 @@ bool CoreOpenRom(std::filesystem::path file)
         CoreSetError(error);
     }
 
-    free(buf);
     l_HasRomOpen = (ret == M64ERR_SUCCESS);
 
     if (l_HasRomOpen)
