@@ -123,7 +123,7 @@ std::filesystem::path CoreGetCoreDirectory(void)
 #ifdef PORTABLE_INSTALL
     directory = "Core";
 #else // Not Portable
-    directory = CORE_INSTAlL_PREFIX;
+    directory = CORE_INSTALL_PREFIX;
     directory += "/lib/RMG/Core";
 #endif // PORTABLE_INSTALL
     return directory;
@@ -135,7 +135,7 @@ std::filesystem::path CoreGetPluginDirectory(void)
 #ifdef PORTABLE_INSTALL
     directory = "Plugin";
 #else // Not Portable
-    directory = CORE_INSTAlL_PREFIX;
+    directory = CORE_INSTALL_PREFIX;
     directory += "/lib/RMG/Plugin";
 #endif // PORTABLE_INSTALL
     return directory;
@@ -233,7 +233,7 @@ std::filesystem::path CoreGetSharedDataDirectory(void)
 #ifdef PORTABLE_INSTALL
     directory = "Data";
 #else // Not Portable
-    directory = CORE_INSTAlL_PREFIX;
+    directory = CORE_INSTALL_PREFIX;
     directory += "/share/RMG";
 #endif // PORTABLE_INSTALL
     return directory;
