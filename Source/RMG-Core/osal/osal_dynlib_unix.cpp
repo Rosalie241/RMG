@@ -11,14 +11,14 @@
 
 #include <dlfcn.h>
 
-osal_dynlib_lib_handle osal_dynlib_open(const char* file)
+osal_dynlib_lib_handle osal_dynlib_open(std::filesystem::path path)
 {
-    return dlopen(file, RTLD_LAZY);
+    return dlopen(path.string().c_str(), RTLD_LAZY);
 }
 
-osal_dynlib_lib_sym osal_dynlib_sym(osal_dynlib_lib_handle handle, const char *sym)
+osal_dynlib_lib_sym osal_dynlib_sym(osal_dynlib_lib_handle handle, const char* symbol)
 {
-    return dlsym(handle, sym);
+    return dlsym(handle, symbol);
 }
 
 void osal_dynlib_close(osal_dynlib_lib_handle handle)

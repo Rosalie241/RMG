@@ -30,18 +30,19 @@ static char l_CoreContextString[20];
 // Local Functions
 //
 
-std::string find_core_lib(void)
+std::filesystem::path find_core_lib(void)
 {
     for (const auto& entry : std::filesystem::recursive_directory_iterator(CoreGetCoreDirectory()))
     {
-        std::string path = entry.path().string();
-        if (path.ends_with(OSAL_DYNLIB_LIB_EXT_STR))
+        std::filesystem::path path = entry.path();
+        if (path.has_extension() && 
+            path.extension() == OSAL_DYNLIB_LIB_EXT_STR)
         {
             return path;
         }
     }
 
-    return std::string();
+    return std::filesystem::path();
 }
 
 bool config_override_user_dirs(void)
@@ -78,9 +79,9 @@ bool config_override_user_dirs(void)
 
 bool CoreInit(void)
 {
-    std::string error;
-    std::string core_file;
-    m64p_error  m64p_ret;
+    std::string           error;
+    std::filesystem::path core_file;
+    m64p_error            m64p_ret;
     bool ret = false;
 
     // initialize context string
@@ -94,7 +95,7 @@ bool CoreInit(void)
         return false;
     }
 
-    l_CoreLibHandle = osal_dynlib_open(core_file.c_str());
+    l_CoreLibHandle = osal_dynlib_open(core_file);
     if (l_CoreLibHandle == nullptr)
     {
         error = "osal_dynlib_open Failed: ";

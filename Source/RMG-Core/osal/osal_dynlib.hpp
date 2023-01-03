@@ -11,6 +11,7 @@
 #define OSAL_DYNLIB_HPP
 
 #include <string>
+#include <filesystem>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -25,11 +26,11 @@ typedef void*   osal_dynlib_lib_sym;
 
 // returns library handle for given filename,
 // return nullptr when invalid library
-osal_dynlib_lib_handle osal_dynlib_open(const char *);
+osal_dynlib_lib_handle osal_dynlib_open(std::filesystem::path path);
 
 // retrieves symbol handle for given library 
 // handle, returns nullptr when not found
-osal_dynlib_lib_sym osal_dynlib_sym(osal_dynlib_lib_handle, const char *);
+osal_dynlib_lib_sym osal_dynlib_sym(osal_dynlib_lib_handle, const char* symbol);
 
 // closes library handle
 void osal_dynlib_close(osal_dynlib_lib_handle);

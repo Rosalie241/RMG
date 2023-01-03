@@ -9,14 +9,14 @@
  */
 #include "osal_dynlib.hpp"
 
-osal_dynlib_lib_handle osal_dynlib_open(const char* file)
+osal_dynlib_lib_handle osal_dynlib_open(std::filesystem::path path)
 {
-    return LoadLibrary(file);
+    return LoadLibraryW(path.wstring().c_str());
 }
 
-osal_dynlib_lib_sym osal_dynlib_sym(osal_dynlib_lib_handle handle, const char *sym)
+osal_dynlib_lib_sym osal_dynlib_sym(osal_dynlib_lib_handle handle, const char* symbol)
 {
-    return GetProcAddress(handle, sym);
+    return GetProcAddress(handle, symbol);
 }
 
 void osal_dynlib_close(osal_dynlib_lib_handle handle)
