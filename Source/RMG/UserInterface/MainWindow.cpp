@@ -103,6 +103,7 @@ void MainWindow::OpenROM(QString file, QString disk, bool fullscreen, bool quitA
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    this->ui_NoSwitchToRomBrowser = true;
     this->on_Action_System_Shutdown();
 
     this->ui_Widget_RomBrowser->StopRefreshRomList();
