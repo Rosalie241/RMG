@@ -36,7 +36,8 @@ static void VidExt_OglSetup(void)
 {
     l_EmuThread->on_VidExt_SetupOGL(l_SurfaceFormat, QThread::currentThread());
 
-    while (!l_OGLWidget->GetContext()->isValid())
+    while (!l_OGLWidget->isVisible() ||
+           !l_OGLWidget->GetContext()->isValid())
     {
         continue;
     }
