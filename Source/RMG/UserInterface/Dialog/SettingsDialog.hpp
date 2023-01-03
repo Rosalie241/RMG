@@ -37,6 +37,14 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     Q_OBJECT
 
   private:
+    enum class SettingsDialogAction
+    {
+      ConnectSignals = 0,
+      LoadSettings,
+      LoadDefaultSettings,
+      SaveSettings
+    };
+
     bool romOpened = false;
 
     CoreRomSettings currentGameSettings;
@@ -94,9 +102,9 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void saveInterfaceStyleSettings(void);
     void saveInterfaceMiscSettings(void);
 
-    void commonHotkeySettings(int);
-    void commonPluginSettings(int);
-    void commonInterfaceStyleSettings(int);
+    void commonHotkeySettings(SettingsDialogAction);
+    void commonPluginSettings(SettingsDialogAction);
+    void commonInterfaceStyleSettings(SettingsDialogAction);
 
     void setIconsForEmulationInfoText(void);
     void hideEmulationInfoText(void);

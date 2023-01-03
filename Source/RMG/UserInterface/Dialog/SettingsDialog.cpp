@@ -53,7 +53,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
     }
 
     // connect hotkey settings to slot
-    this->commonHotkeySettings(-1);
+    this->commonHotkeySettings(SettingsDialogAction::ConnectSignals);
 
 #ifndef UPDATER
     this->checkForUpdatesCheckBox->setHidden(true);
@@ -324,7 +324,7 @@ void SettingsDialog::loadGamePluginSettings(void)
 
 void SettingsDialog::loadPluginSettings(void)
 {
-    this->commonPluginSettings(0);
+    this->commonPluginSettings(SettingsDialogAction::LoadSettings);
 }
 
 void SettingsDialog::loadDirectorySettings(void)
@@ -373,7 +373,7 @@ void SettingsDialog::load64DDSettings(void)
 
 void SettingsDialog::loadHotkeySettings(void)
 {
-    this->commonHotkeySettings(0);
+    this->commonHotkeySettings(SettingsDialogAction::LoadSettings);
 }
 
 void SettingsDialog::loadInterfaceEmulationSettings(void)
@@ -400,7 +400,7 @@ void SettingsDialog::loadInterfaceLogWindowSettings(void)
 
 void SettingsDialog::loadInterfaceStyleSettings(void)
 {
-    this->commonInterfaceStyleSettings(0);
+    this->commonInterfaceStyleSettings(SettingsDialogAction::LoadSettings);
 }
 
 void SettingsDialog::loadInterfaceMiscSettings(void)
@@ -487,7 +487,7 @@ void SettingsDialog::loadDefaultGamePluginSettings(void)
 
 void SettingsDialog::loadDefaultPluginSettings(void)
 {
-    this->commonPluginSettings(1);
+    this->commonPluginSettings(SettingsDialogAction::LoadDefaultSettings);
 }
 
 void SettingsDialog::loadDefaultDirectorySettings(void)
@@ -510,7 +510,7 @@ void SettingsDialog::loadDefault64DDSettings(void)
 
 void SettingsDialog::loadDefaultHotkeySettings(void)
 {
-    this->commonHotkeySettings(1);
+    this->commonHotkeySettings(SettingsDialogAction::LoadDefaultSettings);
 }
 
 void SettingsDialog::loadDefaultInterfaceEmulationSettings(void)
@@ -537,7 +537,7 @@ void SettingsDialog::loadDefaultInterfaceLogWindowSettings(void)
 
 void SettingsDialog::loadDefaultInterfaceStyleSettings(void)
 {
-    this->commonInterfaceStyleSettings(1);
+    this->commonInterfaceStyleSettings(SettingsDialogAction::LoadDefaultSettings);
 }
 
 void SettingsDialog::loadDefaultInterfaceMiscSettings(void)
@@ -708,7 +708,7 @@ void SettingsDialog::save64DDSettings(void)
 
 void SettingsDialog::saveHotkeySettings(void)
 {
-    this->commonHotkeySettings(2);
+    this->commonHotkeySettings(SettingsDialogAction::SaveSettings);
 }
 
 void SettingsDialog::saveInterfaceEmulationSettings(void)
@@ -751,13 +751,17 @@ void SettingsDialog::saveInterfaceMiscSettings(void)
 #endif // DISCORD_RPC
 }
 
-void SettingsDialog::commonHotkeySettings(int action)
+void SettingsDialog::commonHotkeySettings(SettingsDialogAction action)
 {
-    struct
+    struct keybinding
     {
         KeybindButton* button;
         SettingsID settingId;
-    } keybindings[] =
+    };
+
+    std::vector<keybinding> keybindings;
+
+    std::vector<keybinding> keybindings_System =
     {
         { this->startRomKeyButton, SettingsID::KeyBinding_StartROM },
         { this->startComboKeyButton, SettingsID::KeyBinding_StartCombo },
@@ -775,6 +779,10 @@ void SettingsDialog::commonHotkeySettings(int action)
         { this->loadKeyButton, SettingsID::KeyBinding_Load },
         { this->cheatsKeyButton, SettingsID::KeyBinding_Cheats },
         { this->gsButtonKeyButton, SettingsID::KeyBinding_GSButton },
+    };
+
+    std::vector<keybinding> keybindings_CurrentSaveState =
+    {
         { this->saveState0KeyButton, SettingsID::KeyBinding_SaveStateSlot0 },
         { this->saveState1KeyButton, SettingsID::KeyBinding_SaveStateSlot1 },
         { this->saveState2KeyButton, SettingsID::KeyBinding_SaveStateSlot2 },
@@ -785,21 +793,58 @@ void SettingsDialog::commonHotkeySettings(int action)
         { this->saveState7KeyButton, SettingsID::KeyBinding_SaveStateSlot7 },
         { this->saveState8KeyButton, SettingsID::KeyBinding_SaveStateSlot8 },
         { this->saveState9KeyButton, SettingsID::KeyBinding_SaveStateSlot9 },
-        { this->fullscreenKeyButton, SettingsID::KeyBinding_Fullscreen },
+    };
+
+    std::vector<keybinding> keybindings_Settings =
+    {
         { this->settingsKeyButton, SettingsID::KeyBinding_Settings },
     };
+
+    std::vector<keybinding> keybindings_View =
+    {
+        { this->fullscreenKeyButton, SettingsID::KeyBinding_Fullscreen },
+    };
+
+
+    if (action == SettingsDialogAction::LoadDefaultSettings)
+    {
+        int index = this->keybindingsMenuTabWidget->currentIndex();
+        switch (index)
+        {
+        default:
+        case 0:
+            keybindings.insert(keybindings.end(), keybindings_System.begin(), keybindings_System.end());
+            break;
+        case 1:
+            keybindings.insert(keybindings.end(), keybindings_CurrentSaveState.begin(), keybindings_CurrentSaveState.end());
+            break;
+        case 2:
+            keybindings.insert(keybindings.end(), keybindings_Settings.begin(), keybindings_Settings.end());
+            break;
+        case 3:
+            keybindings.insert(keybindings.end(), keybindings_View.begin(), keybindings_View.end());
+            break;
+        }
+    }
+    else
+    {
+        keybindings.insert(keybindings.end(), keybindings_System.begin(), keybindings_System.end());
+        keybindings.insert(keybindings.end(), keybindings_CurrentSaveState.begin(), keybindings_CurrentSaveState.end());
+        keybindings.insert(keybindings.end(), keybindings_Settings.begin(), keybindings_Settings.end());
+        keybindings.insert(keybindings.end(), keybindings_View.begin(), keybindings_View.end());
+    }
 
     switch (action)
     {
         default:
             break;
-        case 0:
+        case SettingsDialogAction::LoadSettings:
             this->removeDuplicateHotkeysCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::KeyBinding_RemoveDuplicates));
             break;
-        case 1:
+        case SettingsDialogAction::LoadDefaultSettings:
             this->removeDuplicateHotkeysCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::KeyBinding_RemoveDuplicates));
             break;
-        case 2:
+        case SettingsDialogAction::SaveSettings:
             CoreSettingsSetValue(SettingsID::KeyBinding_RemoveDuplicates, this->removeDuplicateHotkeysCheckBox->isChecked());
             break;
     }
@@ -809,22 +854,22 @@ void SettingsDialog::commonHotkeySettings(int action)
         switch (action)
         {
         default:
-        case -1:
+        case SettingsDialogAction::ConnectSignals:
             connect(keybinding.button, &KeybindButton::on_KeybindButton_KeybindingChanged, this, &SettingsDialog::on_KeybindButton_KeybindingChanged);
-        case 0:
+        case SettingsDialogAction::LoadSettings:
             keybinding.button->setText(QString::fromStdString(CoreSettingsGetStringValue(keybinding.settingId)));
             break;
-        case 1:
+        case SettingsDialogAction::LoadDefaultSettings:
             keybinding.button->setText(QString::fromStdString(CoreSettingsGetDefaultStringValue(keybinding.settingId)));
             break;
-        case 2:
+        case SettingsDialogAction::SaveSettings:
             CoreSettingsSetValue(keybinding.settingId, keybinding.button->text().toStdString());
             break;
         }
     }
 }
 
-void SettingsDialog::commonPluginSettings(int action)
+void SettingsDialog::commonPluginSettings(SettingsDialogAction action)
 {
     QComboBox *comboBoxArray[] = {this->rspPluginsComboBox, this->videoPluginsComboBox, 
                                     this->audioPluginsComboBox, this->inputPluginsComboBox};
@@ -847,7 +892,7 @@ void SettingsDialog::commonPluginSettings(int action)
         index = ((int)p.Type - 1);
         comboBox = comboBoxArray[index];
 
-        pluginFileName = action == 0 ? 
+        pluginFileName = action == SettingsDialogAction::LoadSettings ? 
                             CoreSettingsGetStringValue(settingsIdArray[index]) :
                             CoreSettingsGetDefaultStringValue(settingsIdArray[index]);
 
@@ -871,7 +916,7 @@ void SettingsDialog::commonPluginSettings(int action)
     }
 }
 
-void SettingsDialog::commonInterfaceStyleSettings(int action)
+void SettingsDialog::commonInterfaceStyleSettings(SettingsDialogAction action)
 {
 #ifdef _WIN32
     this->styleComboBox->clear();
@@ -915,7 +960,7 @@ void SettingsDialog::commonInterfaceStyleSettings(int action)
         this->styleComboBox->setCurrentText("");
     }
 
-    QString currentIconTheme = action == 0 ?
+    QString currentIconTheme = action == SettingsDialogAction::LoadSettings ?
                 QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_IconTheme)) :
                 QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::GUI_IconTheme));
     this->iconThemeComboBox->setCurrentText(currentIconTheme);
@@ -1121,8 +1166,18 @@ void SettingsDialog::on_KeybindButton_KeybindingChanged(KeybindButton* button)
         this->loadKeyButton,
         this->cheatsKeyButton, 
         this->gsButtonKeyButton,
-        this->fullscreenKeyButton,
+        this->saveState0KeyButton,
+        this->saveState1KeyButton,
+        this->saveState2KeyButton,
+        this->saveState3KeyButton,
+        this->saveState4KeyButton,
+        this->saveState5KeyButton,
+        this->saveState6KeyButton,
+        this->saveState7KeyButton,
+        this->saveState8KeyButton,
+        this->saveState9KeyButton,
         this->settingsKeyButton,
+        this->fullscreenKeyButton,
     };
     
     for (KeybindButton* keybindButton : keybindButtons)
