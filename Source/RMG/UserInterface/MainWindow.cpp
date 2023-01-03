@@ -103,6 +103,15 @@ void MainWindow::OpenROM(QString file, QString disk, bool fullscreen, bool quitA
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    // we have to make sure we save the geomtry
+    // for the ROM browser when emulation
+    // isn't running (or hasn't run at all)
+    if (!this->ui_QuitAfterEmulation && 
+        !this->emulationThread->isRunning())
+    {
+        this->storeGeometry();    
+    }
+
     this->ui_NoSwitchToRomBrowser = true;
     this->on_Action_System_Shutdown();
 
