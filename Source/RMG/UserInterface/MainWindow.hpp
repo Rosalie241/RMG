@@ -130,9 +130,6 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     void on_networkAccessManager_Finished(QNetworkReply *);
 #endif // UPDATER
 
-    void on_Action_File_ChooseDirectory(void);
-    void on_Action_File_RefreshRomList(void);
-
     void on_Action_System_OpenRom(void);
     void on_Action_System_OpenCombo(void);
     void on_Action_System_Shutdown(void);
@@ -174,6 +171,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 
     void on_RomBrowser_PlayGame(QString);
     void on_RomBrowser_PlayGameWithDisk(QString);
+    void on_RomBrowser_ChangeRomDirectory(void);
     void on_RomBrowser_RomInformation(QString);
     void on_RomBrowser_EditGameSettings(QString);
     void on_RomBrowser_Cheats(QString);

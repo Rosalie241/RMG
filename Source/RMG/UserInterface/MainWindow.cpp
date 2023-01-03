@@ -152,8 +152,8 @@ void MainWindow::initializeUI(void)
             &MainWindow::on_RomBrowser_EditGameSettings);
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::Cheats, this,
             &MainWindow::on_RomBrowser_Cheats);
-    connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::ChooseRomDirectory, this,
-            &MainWindow::on_Action_File_ChooseDirectory);
+    connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::ChangeRomDirectory, this,
+            &MainWindow::on_RomBrowser_ChangeRomDirectory);
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::RomInformation, this,
             &MainWindow::on_RomBrowser_RomInformation);
 
@@ -887,24 +887,6 @@ void MainWindow::on_Action_System_Shutdown(void)
     }
 }
 
-void MainWindow::on_Action_File_ChooseDirectory(void)
-{
-    QString dir;
-
-    dir = QFileDialog::getExistingDirectory(this);
-
-    if (!dir.isEmpty())
-    {
-        CoreSettingsSetValue(SettingsID::RomBrowser_Directory, dir.toStdString());
-        this->ui_Widget_RomBrowser->RefreshRomList();
-    }
-}
-
-void MainWindow::on_Action_File_RefreshRomList(void)
-{
-    this->ui_Widget_RomBrowser->RefreshRomList();
-}
-
 void MainWindow::on_Action_System_Exit(void)
 {
     this->close();
@@ -1266,6 +1248,19 @@ void MainWindow::on_RomBrowser_PlayGameWithDisk(QString file)
     }
 
     this->launchEmulationThread(file, diskRom);
+}
+
+void MainWindow::on_RomBrowser_ChangeRomDirectory(void)
+{
+    QString dir;
+
+    dir = QFileDialog::getExistingDirectory(this);
+
+    if (!dir.isEmpty())
+    {
+        CoreSettingsSetValue(SettingsID::RomBrowser_Directory, dir.toStdString());
+        this->ui_Widget_RomBrowser->RefreshRomList();
+    }
 }
 
 void MainWindow::on_RomBrowser_RomInformation(QString file)

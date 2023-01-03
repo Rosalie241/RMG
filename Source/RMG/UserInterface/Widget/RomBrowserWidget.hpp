@@ -74,7 +74,7 @@ class RomBrowserWidget : public QStackedWidget
     QAction* action_PlayGame;
     QAction* action_PlayGameWithDisk;
     QAction* action_RefreshRomList;
-    QAction* action_ChooseRomDirectory;
+    QAction* action_ChangeRomDirectory;
     QAction* action_RomInformation;
     QAction* action_EditGameSettings;
     QAction* action_EditCheats;
@@ -112,7 +112,7 @@ class RomBrowserWidget : public QStackedWidget
     void on_Action_PlayGame(void);
     void on_Action_PlayGameWithDisk(void);
     void on_Action_RefreshRomList(void);
-    void on_Action_ChooseRomDirectory(void);
+    void on_Action_ChangeRomDirectory(void);
     void on_Action_RomInformation(void);
     void on_Action_EditGameSettings(void);
     void on_Action_EditCheats(void);
@@ -124,7 +124,7 @@ class RomBrowserWidget : public QStackedWidget
     void PlayGameWithDisk(QString);
     void EditGameSettings(QString);
     void Cheats(QString);
-    void ChooseRomDirectory(void);
+    void ChangeRomDirectory(void);
     void RomInformation(QString);
 };
 } // namespace Widget

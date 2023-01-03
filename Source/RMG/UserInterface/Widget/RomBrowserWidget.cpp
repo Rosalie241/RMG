@@ -60,7 +60,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     // configure empty widget
     this->emptyWidget = new Widget::RomBrowserEmptyWidget(this);
     this->addWidget(this->emptyWidget);
-    connect(this->emptyWidget, &RomBrowserEmptyWidget::SelectRomDirectory, this, &RomBrowserWidget::on_Action_ChooseRomDirectory);
+    connect(this->emptyWidget, &RomBrowserEmptyWidget::SelectRomDirectory, this, &RomBrowserWidget::on_Action_ChangeRomDirectory);
     connect(this->emptyWidget, &RomBrowserEmptyWidget::Refresh, this, &RomBrowserWidget::on_Action_RefreshRomList);
 
     // configure loading widget
@@ -140,7 +140,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->action_PlayGame = new QAction(this);
     this->action_PlayGameWithDisk = new QAction(this);
     this->action_RefreshRomList = new QAction(this);
-    this->action_ChooseRomDirectory = new QAction(this);
+    this->action_ChangeRomDirectory = new QAction(this);
     this->action_RomInformation = new QAction(this);
     this->action_EditGameSettings = new QAction(this);
     this->action_EditCheats = new QAction(this);
@@ -149,7 +149,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->action_PlayGame->setText("Play Game");
     this->action_PlayGameWithDisk->setText("Play Game with Disk");
     this->action_RefreshRomList->setText("Refresh ROM List");
-    this->action_ChooseRomDirectory->setText("Choose ROM Directory...");
+    this->action_ChangeRomDirectory->setText("Change ROM Directory...");
     this->action_RomInformation->setText("ROM Information");
     this->action_EditGameSettings->setText("Edit Game Settings");
     this->action_EditCheats->setText("Edit Cheats");
@@ -158,8 +158,8 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     connect(this->action_PlayGame, &QAction::triggered, this, &RomBrowserWidget::on_Action_PlayGame);
     connect(this->action_PlayGameWithDisk, &QAction::triggered, this, &RomBrowserWidget::on_Action_PlayGameWithDisk);
     connect(this->action_RefreshRomList, &QAction::triggered, this, &RomBrowserWidget::on_Action_RefreshRomList);
-    connect(this->action_ChooseRomDirectory, &QAction::triggered, this,
-            &RomBrowserWidget::on_Action_ChooseRomDirectory);
+    connect(this->action_ChangeRomDirectory, &QAction::triggered, this,
+            &RomBrowserWidget::on_Action_ChangeRomDirectory);
     connect(this->action_RomInformation, &QAction::triggered, this, &RomBrowserWidget::on_Action_RomInformation);
     connect(this->action_EditGameSettings, &QAction::triggered, this, &RomBrowserWidget::on_Action_EditGameSettings);
     connect(this->action_EditCheats, &QAction::triggered, this, &RomBrowserWidget::on_Action_EditCheats);
@@ -172,7 +172,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->contextMenu->addAction(this->action_PlayGameWithDisk);
     this->contextMenu->addSeparator();
     this->contextMenu->addAction(this->action_RefreshRomList);
-    this->contextMenu->addAction(this->action_ChooseRomDirectory);
+    this->contextMenu->addAction(this->action_ChangeRomDirectory);
     this->contextMenu->addSeparator();
     this->contextMenu->addAction(this->action_RomInformation);
     this->contextMenu->addSeparator();
@@ -613,9 +613,9 @@ void RomBrowserWidget::on_Action_RefreshRomList(void)
     this->RefreshRomList();
 }
 
-void RomBrowserWidget::on_Action_ChooseRomDirectory(void)
+void RomBrowserWidget::on_Action_ChangeRomDirectory(void)
 {
-    emit this->ChooseRomDirectory();
+    emit this->ChangeRomDirectory();
 }
 
 void RomBrowserWidget::on_Action_RomInformation(void)
