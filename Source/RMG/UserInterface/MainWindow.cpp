@@ -186,7 +186,7 @@ void MainWindow::configureUI(QApplication* app)
     this->ui_Widgets->addWidget(this->ui_Widget_RomBrowser);
     this->ui_Widgets->addWidget(this->ui_Widget_OpenGL->GetWidget());
 
-    this->ui_Widgets->setCurrentIndex(0);
+    this->ui_Widgets->setCurrentWidget(this->ui_Widget_RomBrowser);
 
     this->setFocusPolicy(Qt::FocusPolicy::StrongFocus);
     this->installEventFilter(this->ui_EventFilter);
@@ -267,13 +267,13 @@ void MainWindow::updateUI(bool inEmulation, bool isPaused)
             this->setWindowTitle(QString::fromStdString(settings.GoodName) + QString(" - ") + this->ui_WindowTitle);
         }
 
-        this->ui_Widgets->setCurrentIndex(1);
+        this->ui_Widgets->setCurrentWidget(this->ui_Widget_OpenGL->GetWidget());
         this->storeGeometry();
     }
     else if (!this->ui_NoSwitchToRomBrowser)
     {
         this->setWindowTitle(this->ui_WindowTitle);
-        this->ui_Widgets->setCurrentIndex(0);
+        this->ui_Widgets->setCurrentWidget(this->ui_Widget_RomBrowser);
         this->loadGeometry();
     }
     else

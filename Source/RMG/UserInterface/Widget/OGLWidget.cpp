@@ -15,7 +15,7 @@ using namespace UserInterface::Widget;
 
 OGLWidget::OGLWidget(QWidget *parent)
 {
-    this->widgetParent = parent;
+    this->widgetContainer = QWidget::createWindowContainer(this, parent);
     this->setSurfaceType(QWindow::OpenGLSurface);
     this->openGLcontext = new QOpenGLContext();
 }
@@ -44,7 +44,7 @@ void OGLWidget::SetHideCursor(bool hide)
 
 QWidget *OGLWidget::GetWidget(void)
 {
-    return QWidget::createWindowContainer(this, this->widgetParent);
+    return this->widgetContainer;
 }
 
 void OGLWidget::resizeEvent(QResizeEvent *event)

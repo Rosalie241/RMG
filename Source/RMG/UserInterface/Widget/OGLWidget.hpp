@@ -39,7 +39,7 @@ class OGLWidget : public QWindow
     void timerEvent(QTimerEvent *) Q_DECL_OVERRIDE;
 
   private:
-    QWidget* widgetParent         = nullptr;
+    QWidget* widgetContainer      = nullptr;
     QOpenGLContext* openGLcontext = nullptr;
     int width                     = 0;
     int height                    = 0;
