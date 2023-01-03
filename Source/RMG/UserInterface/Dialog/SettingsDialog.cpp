@@ -922,7 +922,7 @@ void SettingsDialog::commonInterfaceStyleSettings(SettingsDialogAction action)
     this->styleComboBox->clear();
     this->styleComboBox->addItem("None", "");
 
-    QString currentStyle = action == 0 ?
+    QString currentStyle = action == SettingsDialogAction::LoadSettings ?
         QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_Style)) :
         QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::GUI_Style));
 
