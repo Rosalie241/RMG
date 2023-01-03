@@ -94,9 +94,10 @@ bool MainWindow::Init(QApplication* app)
     return true;
 }
 
-void MainWindow::OpenROM(QString file, QString disk, bool fullscreen)
+void MainWindow::OpenROM(QString file, QString disk, bool fullscreen, bool quitAfterEmulation)
 {
     this->ui_LaunchInFullscreen = fullscreen;
+    this->ui_QuitAfterEmulation = quitAfterEmulation;
     this->launchEmulationThread(file, disk);
 }
 
@@ -115,11 +116,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
         QCoreApplication::processEvents();
     }
 
-    std::string geometryStr = this->saveGeometry().toBase64().toStdString();
-
-    CoreSettingsSetValue(SettingsID::RomBrowser_Geometry, geometryStr);
     CoreSettingsSave();
-
     CoreShutdown();
 
     QMainWindow::closeEvent(event);
@@ -287,6 +284,9 @@ void MainWindow::storeGeometry(void)
 
     this->ui_Geometry = this->saveGeometry();
     this->ui_Geometry_Saved = true;
+
+    std::string geometryStr = this->ui_Geometry.toBase64().toStdString();
+    CoreSettingsSetValue(SettingsID::RomBrowser_Geometry, geometryStr);
 }
 
 void MainWindow::loadGeometry(void)
@@ -1227,6 +1227,12 @@ void MainWindow::on_Emulation_Finished(bool ret)
     {
         this->killTimer(this->ui_FullscreenTimerId);
         this->ui_FullscreenTimerId = 0;
+    }
+
+    if (this->ui_QuitAfterEmulation)
+    {
+        this->close();
+        return;
     }
 
     // always refresh UI

@@ -48,7 +48,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     ~MainWindow(void);
 
     bool Init(QApplication*);
-    void OpenROM(QString, QString, bool);
+    void OpenROM(QString, QString, bool, bool);
 
   private:
     Thread::EmulationThread *emulationThread;
@@ -70,6 +70,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     bool ui_NoSwitchToRomBrowser = false;
     bool ui_VidExtForceSetMode   = false;
     bool ui_LaunchInFullscreen   = false;
+    bool ui_QuitAfterEmulation   = false;
     bool ui_RefreshRomListAfterEmulation = false;
 
     bool ui_ShowToolbar   = false;

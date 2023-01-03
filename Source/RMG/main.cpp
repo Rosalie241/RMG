@@ -36,8 +36,10 @@ int main(int argc, char **argv)
     parser.addVersionOption();
     // custom options
     QCommandLineOption fullscreenOption({"f", "fullscreen"}, "Launches ROM in fullscreen mode");
+    QCommandLineOption quitAfterEmulation({"q", "quit-after-emulation"}, "Quits RMG when emulation has finished");
     QCommandLineOption diskOption("disk", "64DD Disk to open ROM in combination with", "64DD Disk");
     parser.addOption(fullscreenOption);
+    parser.addOption(quitAfterEmulation);
     parser.addOption(diskOption);
     parser.addPositionalArgument("ROM", "ROM to open");
 
@@ -54,7 +56,7 @@ int main(int argc, char **argv)
     QStringList args = parser.positionalArguments();
     if (!args.empty())
     {
-        window.OpenROM(args.at(0), parser.value(diskOption), parser.isSet(fullscreenOption));
+        window.OpenROM(args.at(0), parser.value(diskOption), parser.isSet(fullscreenOption), parser.isSet(quitAfterEmulation));
     }
 
     return app.exec();
