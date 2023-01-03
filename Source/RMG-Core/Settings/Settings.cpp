@@ -422,6 +422,36 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::KeyBinding_GSButton:
         setting = {SETTING_SECTION_KEYBIND, "GSButton", "F9"};
         break;
+    case SettingsID::KeyBinding_SaveStateSlot0:
+        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot0", "Ctrl+0"};
+        break;
+    case SettingsID::KeyBinding_SaveStateSlot1:
+        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot1", "Ctrl+1"};
+        break;
+    case SettingsID::KeyBinding_SaveStateSlot2:
+        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot2", "Ctrl+2"};
+        break;
+    case SettingsID::KeyBinding_SaveStateSlot3:
+        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot3", "Ctrl+3"};
+        break;
+    case SettingsID::KeyBinding_SaveStateSlot4:
+        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot4", "Ctrl+4"};
+        break;
+    case SettingsID::KeyBinding_SaveStateSlot5:
+        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot5", "Ctrl+5"};
+        break;
+    case SettingsID::KeyBinding_SaveStateSlot6:
+        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot6", "Ctrl+6"};
+        break;
+    case SettingsID::KeyBinding_SaveStateSlot7:
+        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot7", "Ctrl+7"};
+        break;
+    case SettingsID::KeyBinding_SaveStateSlot8:
+        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot8", "Ctrl+8"};
+        break;
+    case SettingsID::KeyBinding_SaveStateSlot9:
+        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot9", "Ctrl+9"};
+        break;
     case SettingsID::KeyBinding_Fullscreen:
         setting = {SETTING_SECTION_KEYBIND, "Fullscreen", "Alt+Return"};
         break;
