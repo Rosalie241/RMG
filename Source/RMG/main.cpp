@@ -15,9 +15,65 @@
 #include <QFile>
 
 #include <RMG-Core/Core.hpp>
+#include <iostream>
+
+//
+// Local Functions
+//
+
+void message_handler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    QByteArray localMsg = msg.toLocal8Bit();
+    bool showDebugQtMessages = false;
+
+    const char* env = std::getenv("RMG_SHOW_DEBUG_QT_MESSAGES");
+    showDebugQtMessages = env != nullptr && std::string(env) == "1";
+
+    std::string typeString;
+
+    switch (type)
+    {
+    case QtDebugMsg:
+        if (!showDebugQtMessages)
+        {
+            return;
+        }
+        typeString = "[QT DEBUG] ";
+        break;
+    case QtWarningMsg:
+        if (!showDebugQtMessages)
+        {
+            return;
+        }
+        typeString = "[QT WARNING] ";
+        break;
+    case QtInfoMsg:
+        if (!showDebugQtMessages)
+        {
+            return;
+        }
+        typeString = "[QT INFO] ";
+        break;
+    case QtCriticalMsg:
+        typeString = "[QT CRITICAL] ";
+        break;
+    case QtFatalMsg:
+        typeString = "[QT FATAL] ";
+        break;
+    }
+
+    std::cerr << typeString << localMsg.constData() << std::endl;
+}
+
+//
+// Exported Functions
+//
 
 int main(int argc, char **argv)
 {
+    // install message handler
+    qInstallMessageHandler(message_handler);
+
     QApplication app(argc, argv);
 
     UserInterface::MainWindow window;
