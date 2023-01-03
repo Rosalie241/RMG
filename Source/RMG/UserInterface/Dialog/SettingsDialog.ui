@@ -1592,6 +1592,206 @@
                    </item>
                   </layout>
                  </widget>
+                 <widget class="QWidget" name="currentSaveStateTab">
+                  <attribute name="title">
+                   <string>Current Save State</string>
+                  </attribute>
+                  <layout class="QVBoxLayout" name="verticalLayout_12">
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_95">
+                     <item>
+                      <widget class="QLabel" name="label_92">
+                       <property name="text">
+                        <string>Slot 0</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="saveState0KeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_96">
+                     <item>
+                      <widget class="QLabel" name="label_93">
+                       <property name="text">
+                        <string>Slot 1</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="saveState1KeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_97">
+                     <item>
+                      <widget class="QLabel" name="label_94">
+                       <property name="text">
+                        <string>Slot 2</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="saveState2KeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_98">
+                     <item>
+                      <widget class="QLabel" name="label_95">
+                       <property name="text">
+                        <string>Slot 3</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="saveState3KeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_99">
+                     <item>
+                      <widget class="QLabel" name="label_96">
+                       <property name="text">
+                        <string>Slot 4</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="saveState4KeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_100">
+                     <item>
+                      <widget class="QLabel" name="label_97">
+                       <property name="text">
+                        <string>Slot 5</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="saveState5KeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_101">
+                     <item>
+                      <widget class="QLabel" name="label_98">
+                       <property name="text">
+                        <string>Slot 6</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="saveState6KeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_102">
+                     <item>
+                      <widget class="QLabel" name="label_99">
+                       <property name="text">
+                        <string>Slot 7</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="saveState7KeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_104">
+                     <item>
+                      <widget class="QLabel" name="label_101">
+                       <property name="text">
+                        <string>Slot 8</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="saveState8KeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_103">
+                     <item>
+                      <widget class="QLabel" name="label_100">
+                       <property name="text">
+                        <string>Slot 9</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="saveState9KeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <spacer name="verticalSpacer_13">
+                     <property name="orientation">
+                      <enum>Qt::Vertical</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>20</width>
+                       <height>40</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                  </layout>
+                 </widget>
                  <widget class="QWidget" name="settingsMenuTab">
                   <attribute name="title">
                    <string>Settings</string>
