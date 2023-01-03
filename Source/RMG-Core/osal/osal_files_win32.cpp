@@ -17,8 +17,9 @@ osal_files_file_time osal_files_get_file_time(std::filesystem::path file)
     BOOL ret;
     HANDLE file_handle;
     FILETIME file_time;
+    ULARGE_INTEGER ularge_int;
 
-    file_handle = CreateFileA(file.string().c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    file_handle = CreateFileW(file.wstring().c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (file_handle == INVALID_HANDLE_VALUE)
     {
         return -1;
@@ -36,7 +37,8 @@ osal_files_file_time osal_files_get_file_time(std::filesystem::path file)
         return -1;
     }
 
-    // this is probably incorrect but it doesn't matter
-    // for our use-case
-    return file_time.dwLowDateTime + file_time.dwHighDateTime;
+    ularge_int.LowPart  = file_time.dwLowDateTime;
+    ularge_int.HighPart = file_time.dwHighDateTime;
+
+    return ularge_int.QuadPart;
 }
