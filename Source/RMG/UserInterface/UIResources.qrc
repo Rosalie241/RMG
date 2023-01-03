@@ -5,6 +5,7 @@
 
   <file alias="icons/black/index.theme">Resource/icons/black/index.theme</file>
   <file alias="icons/black/svg/brush-line.svg">Resource/icons/black/svg/brush-line.svg</file>
+  <file alias="icons/black/svg/checkbox-blank-circle-line.svg">Resource/icons/black/svg/checkbox-blank-circle-line.svg</file>
   <file alias="icons/black/svg/code-box-line.svg">Resource/icons/black/svg/code-box-line.svg</file>
   <file alias="icons/black/svg/delete-bin-line.svg">Resource/icons/black/svg/delete-bin-line.svg</file>
   <file alias="icons/black/svg/door-open-line.svg">Resource/icons/black/svg/door-open-line.svg</file>
@@ -31,6 +32,7 @@
 
   <file alias="icons/white/index.theme">Resource/icons/white/index.theme</file>
   <file alias="icons/white/svg/brush-line.svg">Resource/icons/white/svg/brush-line.svg</file>
+  <file alias="icons/white/svg/checkbox-blank-circle-line.svg">Resource/icons/white/svg/checkbox-blank-circle-line.svg</file>
   <file alias="icons/white/svg/code-box-line.svg">Resource/icons/white/svg/code-box-line.svg</file>
   <file alias="icons/white/svg/delete-bin-line.svg">Resource/icons/white/svg/delete-bin-line.svg</file>
   <file alias="icons/white/svg/door-open-line.svg">Resource/icons/white/svg/door-open-line.svg</file>

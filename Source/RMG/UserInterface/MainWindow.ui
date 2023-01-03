@@ -26,7 +26,7 @@
      <x>0</x>
      <y>0</y>
      <width>639</width>
-     <height>22</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuSystem">
@@ -47,6 +47,10 @@
     <widget class="QMenu" name="menuCurrent_Save_State">
      <property name="title">
       <string>Current Save State</string>
+     </property>
+     <property name="icon">
+      <iconset theme="save-3-line">
+       <normaloff>.</normaloff>.</iconset>
      </property>
      <addaction name="actionSlot_0"/>
      <addaction name="actionSlot_1"/>
@@ -358,6 +362,10 @@
    </property>
   </action>
   <action name="action_System_GSButton">
+   <property name="icon">
+    <iconset theme="checkbox-blank-circle-line">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
    <property name="text">
     <string>GS Button</string>
    </property>
