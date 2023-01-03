@@ -33,6 +33,24 @@
   </screenshots>
   <description/>
   <releases>
+    <release version="v0.2.9" date="2023-01-03" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix wrong 64DD Disk extension being listed in empty ROM browser</li>
+          <li>Fix memory corruption when having 64DD Disk files</li>
+          <li>Fix possible crash when render window wasn't visible yet</li>
+          <li>Fix RMG changing the current directory on non-portable installs</li>
+          <li>Remove Qt warning messages (you can view them by setting RMG_SHOW_DEBUG_QT_MESSAGES to 1)</li>
+          <li>Change "Choose ROM Directory" to "Change ROM Directory"</li>
+          <li>Add -q/--quit-after-emulation commandline option</li>
+          <li>Add 2 more icons to menubar menus/items</li>
+          <li>Add "Current Save State" tab to Hotkeys tab in settings dialog (this allows you to use a hotkey to change save state slots)</li>
+          <li>Improve behavior of Hotkeys tab in settings dialog</li>
+          <li>Improve behavior of window when exiting RMG while in-game</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.2.8" date="2023-01-01" type="stable">
       <description>
         <p>Changes:</p>
