@@ -22,7 +22,9 @@ int main(int argc, char **argv)
 
     UserInterface::MainWindow window;
 
+#ifdef PORTABLE_INSTALL
     QDir::setCurrent(app.applicationDirPath());
+#endif
 
     QCoreApplication::setApplicationName("Rosalie's Mupen GUI");
     QCoreApplication::setApplicationVersion(QString::fromStdString(CoreGetVersion()));

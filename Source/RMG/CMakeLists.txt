@@ -7,13 +7,17 @@ set(CMAKE_AUTOUIC ON)
 
 find_package(${QT_VERSION} COMPONENTS Gui Widgets Core OpenGL REQUIRED)
 
+if (PORTABLE_INSTALL)
+    add_definitions(-DPORTABLE_INSTALL)
+endif(PORTABLE_INSTALL)
+
 if (UPDATER)
-find_package(${QT_VERSION} COMPONENTS Network REQUIRED)
-add_definitions(-DUPDATER)
+    find_package(${QT_VERSION} COMPONENTS Network REQUIRED)
+    add_definitions(-DUPDATER)
 endif(UPDATER)
 
 if (DISCORD_RPC)
-add_definitions(-DDISCORD_RPC)
+    add_definitions(-DDISCORD_RPC)
 endif(DISCORD_RPC)
 
 find_package(PkgConfig REQUIRED)
