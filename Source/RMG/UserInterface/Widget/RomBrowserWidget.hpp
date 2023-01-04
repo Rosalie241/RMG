@@ -74,6 +74,7 @@ class RomBrowserWidget : public QStackedWidget
     QAction* action_PlayGame;
     QAction* action_PlayGameWith;
     QAction* action_RefreshRomList;
+    QAction* action_OpenRomDirectory;
     QAction* action_ChangeRomDirectory;
     QAction* action_RomInformation;
     QAction* action_EditGameSettings;
@@ -112,6 +113,7 @@ class RomBrowserWidget : public QStackedWidget
     void on_Action_PlayGame(void);
     void on_Action_PlayGameWith(void);
     void on_Action_RefreshRomList(void);
+    void on_Action_OpenRomDirectory(void);
     void on_Action_ChangeRomDirectory(void);
     void on_Action_RomInformation(void);
     void on_Action_EditGameSettings(void);

@@ -20,6 +20,7 @@
 #include <vector>
 #include <QList>
 #include <QScrollBar>
+#include <QDesktopServices>
 
 using namespace UserInterface::Widget;
 
@@ -145,6 +146,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->action_PlayGame = new QAction(this);
     this->action_PlayGameWith = new QAction(this);
     this->action_RefreshRomList = new QAction(this);
+    this->action_OpenRomDirectory = new QAction(this);
     this->action_ChangeRomDirectory = new QAction(this);
     this->action_RomInformation = new QAction(this);
     this->action_EditGameSettings = new QAction(this);
@@ -154,6 +156,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->action_PlayGame->setText("Play Game");
     this->action_PlayGameWith->setText("Play Game with Disk");
     this->action_RefreshRomList->setText("Refresh ROM List");
+    this->action_OpenRomDirectory->setText("Open ROM Directory");
     this->action_ChangeRomDirectory->setText("Change ROM Directory...");
     this->action_RomInformation->setText("ROM Information");
     this->action_EditGameSettings->setText("Edit Game Settings");
@@ -163,8 +166,8 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     connect(this->action_PlayGame, &QAction::triggered, this, &RomBrowserWidget::on_Action_PlayGame);
     connect(this->action_PlayGameWith, &QAction::triggered, this, &RomBrowserWidget::on_Action_PlayGameWith);
     connect(this->action_RefreshRomList, &QAction::triggered, this, &RomBrowserWidget::on_Action_RefreshRomList);
-    connect(this->action_ChangeRomDirectory, &QAction::triggered, this,
-            &RomBrowserWidget::on_Action_ChangeRomDirectory);
+    connect(this->action_OpenRomDirectory, &QAction::triggered, this, &RomBrowserWidget::on_Action_OpenRomDirectory);
+    connect(this->action_ChangeRomDirectory, &QAction::triggered, this, &RomBrowserWidget::on_Action_ChangeRomDirectory);
     connect(this->action_RomInformation, &QAction::triggered, this, &RomBrowserWidget::on_Action_RomInformation);
     connect(this->action_EditGameSettings, &QAction::triggered, this, &RomBrowserWidget::on_Action_EditGameSettings);
     connect(this->action_EditCheats, &QAction::triggered, this, &RomBrowserWidget::on_Action_EditCheats);
@@ -177,6 +180,8 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->contextMenu->addAction(this->action_PlayGameWith);
     this->contextMenu->addSeparator();
     this->contextMenu->addAction(this->action_RefreshRomList);
+    this->contextMenu->addSeparator();
+    this->contextMenu->addAction(this->action_OpenRomDirectory);
     this->contextMenu->addAction(this->action_ChangeRomDirectory);
     this->contextMenu->addSeparator();
     this->contextMenu->addAction(this->action_RomInformation);
@@ -633,6 +638,18 @@ void RomBrowserWidget::on_Action_RefreshRomList(void)
 {
     this->RefreshRomList();
 }
+
+void RomBrowserWidget::on_Action_OpenRomDirectory(void)
+{
+    QString directory = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::RomBrowser_Directory));
+
+    if (directory.isEmpty())
+    {
+        return;
+    }
+
+    QDesktopServices::openUrl(QUrl(directory));
+}   
 
 void RomBrowserWidget::on_Action_ChangeRomDirectory(void)
 {
