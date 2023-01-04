@@ -175,11 +175,12 @@ endif(BUILD_INPUT_GCA)
 
 set(GLIDEN64_DIR "${THIRDPARTY_DIR}/mupen64plus-video-GLideN64")
 set(GLIDEN64_BUILD_DIR "${GLIDEN64_DIR}/projects/cmake")
+set(GLIDEN64_CUSTOM_INI "${GLIDEN64_DIR}/ini/GLideN64.custom.ini")
 if (MSYS)
 	set(GLIDEN64_LIB "${GLIDEN64_BUILD_DIR}/mupen64plus-video-GLideN64.${SO_EXT}")
-else()
+else(MSYS)
 	set(GLIDEN64_LIB "${GLIDEN64_BUILD_DIR}/plugin/${CMAKE_BUILD_TYPE}/mupen64plus-video-GLideN64.${SO_EXT}")
-endif()
+endif(MSYS)
 
 set(GLIDENUI_TRANSLATIONS_LANGS "de;es;fr;it;ja;pl;pt_BR")
 foreach(LANG ${GLIDENUI_TRANSLATIONS_LANGS})
@@ -216,8 +217,6 @@ ExternalProject_Add(mupen64plus-video-GLideN64
     BINARY_DIR ${GLIDEN64_BUILD_DIR}
 
     BUILD_BYPRODUCTS ${GLIDEN64_LIB}
-    BUILD_BYPRODUCTS ${GLIDEN64_DIR}/ini/GLideN64.custom.ini
-    BUILD_BYPRODUCTS ${GLIDENUI_TRANSLATIONS}
 )
 
 ExternalProject_Add(mupen64plus-video-parallel
@@ -276,12 +275,12 @@ ExternalProject_Get_property(mupen64plus-video-angrylion-plus BUILD_BYPRODUCTS)
 set(MUPEN64PLUS_PLUGIN_GFX_ANGRYLION ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 
 ExternalProject_Get_property(mupen64plus-video-GLideN64 BUILD_BYPRODUCTS)
-set(MUPEN64PLUS_PLUGIN_GFX_GLIDEN64 ${BUILD_BYPRODUCTS} PARENT_SCOPE)
+set(MUPEN64PLUS_PLUGIN_GFX_GLIDEN64 ${BUILD_BYPRODUCTS} ${GLIDENUI_TRANSLATIONS} ${GLIDEN64_CUSTOM_INI} PARENT_SCOPE)
 
 ExternalProject_Get_property(mupen64plus-video-parallel BUILD_BYPRODUCTS)
 set(MUPEN64PLUS_PLUGIN_GFX_PARALLEL ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 
 if (DISCORD_RPC)
-ExternalProject_Get_property(discord-rpc BUILD_BYPRODUCTS)
-set(DISCORD_RPC_LIB ${BUILD_BYPRODUCTS} PARENT_SCOPE)
+    ExternalProject_Get_property(discord-rpc BUILD_BYPRODUCTS)
+    set(DISCORD_RPC_LIB ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 endif(DISCORD_RPC)
