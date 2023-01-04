@@ -14,8 +14,8 @@
 
 enum class CoreRomType
 {
-    Cartridge,
-    Disk
+    Cartridge = 0,
+    Disk      = 1
 };
 
 // opens the given file as ROM

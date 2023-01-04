@@ -12,6 +12,7 @@
 
 #include <filesystem>
 
+#include "Rom.hpp"
 #include "RomHeader.hpp"
 #include "RomSettings.hpp"
 
@@ -30,11 +31,11 @@ bool CoreHasRomHeaderAndSettingsCached(std::filesystem::path file);
 
 // returns whether retrieving the rom header & settings
 // for given filename succeeds
-bool CoreGetCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomHeader& header, CoreRomSettings& settings);
+bool CoreGetCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType& type, CoreRomHeader& header, CoreRomSettings& settings);
 
 // returns whether adding cached rom header & settings
 // for given filename succeeds
-bool CoreAddCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomHeader header, CoreRomSettings settings);
+bool CoreAddCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType type, CoreRomHeader header, CoreRomSettings settings);
 
 // returns whether clearing rom header & settings cache
 // succeeds

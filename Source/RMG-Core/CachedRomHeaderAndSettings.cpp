@@ -38,9 +38,9 @@
 #define MD5_LEN 33
 
 #ifdef _WIN32
-#define CACHE_FILE_MAGIC "RMGCoreHeaderAndSettingsCacheWindows_04"
+#define CACHE_FILE_MAGIC "RMGCoreHeaderAndSettingsCacheWindows_05"
 #else // Linux
-#define CACHE_FILE_MAGIC "RMGCoreHeaderAndSettingsCacheLinux_04"
+#define CACHE_FILE_MAGIC "RMGCoreHeaderAndSettingsCacheLinux_05"
 #endif // _WIN32
 #define CACHE_FILE_ITEMS_MAX 10000
 
@@ -53,6 +53,7 @@ struct l_CacheEntry
     std::filesystem::path fileName;
     osal_files_file_time  fileTime;
 
+    CoreRomType     type;
     CoreRomHeader   header;
     CoreRomSettings settings;
 };
@@ -138,6 +139,8 @@ void CoreReadRomHeaderAndSettingsCache(void)
         FREAD_STR(fileNameBuf, size);
         cacheEntry.fileName = std::filesystem::path(fileNameBuf);
         FREAD(cacheEntry.fileTime);
+        // type
+        FREAD(cacheEntry.type);
         // header
         FREAD(size);
         FREAD_STR(headerNameBuf, size);
@@ -211,6 +214,8 @@ bool CoreSaveRomHeaderAndSettingsCache(void)
         FWRITE(size);
         FWRITE_STR(fileNameBuf, size);
         FWRITE(cacheEntry.fileTime);
+        // type
+        FWRITE(cacheEntry.type);
         // header
         size = cacheEntry.header.Name.size();
         FWRITE(size);
@@ -237,7 +242,7 @@ bool CoreHasRomHeaderAndSettingsCached(std::filesystem::path file)
     return get_cache_entry_iter(file) != l_CacheEntries.end();
 }
 
-bool CoreGetCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomHeader& header, CoreRomSettings& settings)
+bool CoreGetCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType& type, CoreRomHeader& header, CoreRomSettings& settings)
 {
     auto iter = get_cache_entry_iter(file);
     if (iter == l_CacheEntries.end())
@@ -245,12 +250,13 @@ bool CoreGetCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomHeader
         return false;
     }
 
+    type     = (*iter).type;
     header   = (*iter).header;
     settings = (*iter).settings;
     return true;
 }
 
-bool CoreAddCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomHeader header, CoreRomSettings settings)
+bool CoreAddCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType type, CoreRomHeader header, CoreRomSettings settings)
 {
     l_CacheEntry cacheEntry;
 
@@ -268,6 +274,7 @@ bool CoreAddCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomHeader
 
     cacheEntry.fileName = file;
     cacheEntry.fileTime = osal_files_get_file_time(file);
+    cacheEntry.type     = type;
     cacheEntry.header   = header;
     cacheEntry.settings = settings;
 
