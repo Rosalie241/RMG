@@ -170,7 +170,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     void on_Emulation_Finished(bool);
 
     void on_RomBrowser_PlayGame(QString);
-    void on_RomBrowser_PlayGameWithDisk(QString);
+    void on_RomBrowser_PlayGameWith(CoreRomType, QString);
     void on_RomBrowser_ChangeRomDirectory(void);
     void on_RomBrowser_RomInformation(QString);
     void on_RomBrowser_EditGameSettings(QString);

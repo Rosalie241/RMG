@@ -72,7 +72,7 @@ class RomBrowserWidget : public QStackedWidget
 
     QMenu*   contextMenu;
     QAction* action_PlayGame;
-    QAction* action_PlayGameWithDisk;
+    QAction* action_PlayGameWith;
     QAction* action_RefreshRomList;
     QAction* action_ChangeRomDirectory;
     QAction* action_RomInformation;
@@ -106,11 +106,11 @@ class RomBrowserWidget : public QStackedWidget
     void on_ZoomIn(void);
     void on_ZoomOut(void);
 
-    void on_RomBrowserThread_RomFound(QString file, CoreRomHeader header, CoreRomSettings settings);
+    void on_RomBrowserThread_RomFound(QString file, CoreRomType type, CoreRomHeader header, CoreRomSettings settings);
     void on_RomBrowserThread_Finished(bool canceled);
 
     void on_Action_PlayGame(void);
-    void on_Action_PlayGameWithDisk(void);
+    void on_Action_PlayGameWith(void);
     void on_Action_RefreshRomList(void);
     void on_Action_ChangeRomDirectory(void);
     void on_Action_RomInformation(void);
@@ -121,7 +121,7 @@ class RomBrowserWidget : public QStackedWidget
 
   signals:
     void PlayGame(QString);
-    void PlayGameWithDisk(QString);
+    void PlayGameWith(CoreRomType, QString);
     void EditGameSettings(QString);
     void Cheats(QString);
     void ChangeRomDirectory(void);

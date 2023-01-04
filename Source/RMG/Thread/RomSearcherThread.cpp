@@ -18,6 +18,7 @@ using namespace Thread;
 
 RomSearcherThread::RomSearcherThread(QObject *parent) : QThread(parent)
 {
+    qRegisterMetaType<CoreRomType>("CoreRomType");
     qRegisterMetaType<CoreRomHeader>("CoreRomHeader");
     qRegisterMetaType<CoreRomSettings>("CoreRomSettings");
 }
@@ -75,6 +76,7 @@ void RomSearcherThread::searchDirectory(QString directory)
         QDirIterator::NoIteratorFlags;
     QDirIterator romDirIt(directory, filter, QDir::Files, flag);
 
+    CoreRomType     type;
     CoreRomHeader   header;
     CoreRomSettings settings;
     bool            ret;
@@ -89,20 +91,24 @@ void RomSearcherThread::searchDirectory(QString directory)
 
         if (CoreHasRomHeaderAndSettingsCached(file.toStdU32String()))
         { // found cache entry
-            ret = CoreGetCachedRomHeaderAndSettings(file.toStdU32String(), header, settings);
+            ret = CoreGetCachedRomHeaderAndSettings(file.toStdU32String(), type, header, settings);
         }
         else
         { // no cache entry
             // open rom, retrieve rom settings & header 
-            ret = CoreOpenRom(file.toStdU32String()) && 
+            ret = CoreOpenRom(file.toStdU32String()) &&
                 CoreGetCurrentRomSettings(settings) && 
                 CoreGetCurrentRomHeader(header);
+            if (ret)
+            {
+                type = CoreGetRomType();
+            }
             // always close the ROM,
             // even when retrieving rom info failed
             ret = CoreCloseRom() && ret;
             if (ret)
             { // add to cache when everything succeeded
-                CoreAddCachedRomHeaderAndSettings(file.toStdU32String(), header, settings);
+                CoreAddCachedRomHeaderAndSettings(file.toStdU32String(), type, header, settings);
             }
         }
         
@@ -113,7 +119,7 @@ void RomSearcherThread::searchDirectory(QString directory)
                 break;
             }
 
-            emit this->RomFound(file, header, settings);
+            emit this->RomFound(file, type, header, settings);
         }
 
         if (this->stop)

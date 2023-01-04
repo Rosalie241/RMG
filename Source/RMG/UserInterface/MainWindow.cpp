@@ -146,8 +146,8 @@ void MainWindow::initializeUI(void)
 
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::PlayGame, this,
             &MainWindow::on_RomBrowser_PlayGame);
-    connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::PlayGameWithDisk, this,
-            &MainWindow::on_RomBrowser_PlayGameWithDisk);
+    connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::PlayGameWith, this,
+            &MainWindow::on_RomBrowser_PlayGameWith);
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::EditGameSettings, this,
             &MainWindow::on_RomBrowser_EditGameSettings);
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::Cheats, this,
@@ -1258,18 +1258,28 @@ void MainWindow::on_RomBrowser_PlayGame(QString file)
     this->launchEmulationThread(file);
 }
 
-void MainWindow::on_RomBrowser_PlayGameWithDisk(QString file)
+void MainWindow::on_RomBrowser_PlayGameWith(CoreRomType type, QString file)
 {
-    QString diskRom;
+    QString mainRom;
+    QString otherRom;
 
-    diskRom = QFileDialog::getOpenFileName(this, "", "", "N64DD Disk Image (*.ndd *.d64)");
+    if (type == CoreRomType::Cartridge)
+    { // cartridge
+        mainRom = file;
+        otherRom = QFileDialog::getOpenFileName(this, "", "", "N64DD Disk Image (*.ndd *.d64)");
+    }
+    else
+    { // disk
+        mainRom = QFileDialog::getOpenFileName(this, "", "", "N64 ROMs (*.n64 *.z64 *.v64 *.zip)");
+        otherRom = file;
+    }
 
-    if (diskRom.isEmpty())
+    if (mainRom.isEmpty() || otherRom.isEmpty())
     {
         return;
     }
 
-    this->launchEmulationThread(file, diskRom);
+    this->launchEmulationThread(mainRom, otherRom);
 }
 
 void MainWindow::on_RomBrowser_ChangeRomDirectory(void)

@@ -30,16 +30,18 @@ using namespace UserInterface::Widget;
 struct RomBrowserModelData
 {
     QString         file;
+    CoreRomType     type;
     CoreRomHeader   header;
     CoreRomSettings settings;
     QString         coverFile;
 
     RomBrowserModelData() {}
 
-    RomBrowserModelData(QString file, CoreRomHeader header, CoreRomSettings settings)
+    RomBrowserModelData(QString file, CoreRomType type, CoreRomHeader header, CoreRomSettings settings)
     {
-        this->file = file;
-        this->header = header;
+        this->file     = file;
+        this->type     = type;
+        this->header   = header;
         this->settings = settings;
     }
 };
@@ -52,6 +54,9 @@ Q_DECLARE_METATYPE(RomBrowserModelData);
 
 RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
 {
+    // configure signal types
+    qRegisterMetaType<CoreRomType>("CoreRomType");
+
     // configure rom searcher thread
     this->romSearcherThread = new Thread::RomSearcherThread(this);
     connect(this->romSearcherThread, &Thread::RomSearcherThread::RomFound, this, &RomBrowserWidget::on_RomBrowserThread_RomFound);
@@ -138,7 +143,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
 
     // configure context menu actions
     this->action_PlayGame = new QAction(this);
-    this->action_PlayGameWithDisk = new QAction(this);
+    this->action_PlayGameWith = new QAction(this);
     this->action_RefreshRomList = new QAction(this);
     this->action_ChangeRomDirectory = new QAction(this);
     this->action_RomInformation = new QAction(this);
@@ -147,7 +152,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->action_SetCoverImage = new QAction(this);
     this->action_RemoveCoverImage = new QAction(this);
     this->action_PlayGame->setText("Play Game");
-    this->action_PlayGameWithDisk->setText("Play Game with Disk");
+    this->action_PlayGameWith->setText("Play Game with Disk");
     this->action_RefreshRomList->setText("Refresh ROM List");
     this->action_ChangeRomDirectory->setText("Change ROM Directory...");
     this->action_RomInformation->setText("ROM Information");
@@ -156,7 +161,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->action_SetCoverImage->setText("Set Cover Image...");
     this->action_RemoveCoverImage->setText("Remove Cover Image");
     connect(this->action_PlayGame, &QAction::triggered, this, &RomBrowserWidget::on_Action_PlayGame);
-    connect(this->action_PlayGameWithDisk, &QAction::triggered, this, &RomBrowserWidget::on_Action_PlayGameWithDisk);
+    connect(this->action_PlayGameWith, &QAction::triggered, this, &RomBrowserWidget::on_Action_PlayGameWith);
     connect(this->action_RefreshRomList, &QAction::triggered, this, &RomBrowserWidget::on_Action_RefreshRomList);
     connect(this->action_ChangeRomDirectory, &QAction::triggered, this,
             &RomBrowserWidget::on_Action_ChangeRomDirectory);
@@ -169,7 +174,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     // configure context menu
     this->contextMenu = new QMenu(this);
     this->contextMenu->addAction(this->action_PlayGame);
-    this->contextMenu->addAction(this->action_PlayGameWithDisk);
+    this->contextMenu->addAction(this->action_PlayGameWith);
     this->contextMenu->addSeparator();
     this->contextMenu->addAction(this->action_RefreshRomList);
     this->contextMenu->addAction(this->action_ChangeRomDirectory);
@@ -426,7 +431,7 @@ void RomBrowserWidget::customContextMenuRequested(QPoint position)
     this->getCurrentData(data);
 
     this->action_PlayGame->setEnabled(hasSelection);
-    this->action_PlayGameWithDisk->setEnabled(hasSelection);
+    this->action_PlayGameWith->setEnabled(hasSelection);
     this->action_RomInformation->setEnabled(hasSelection);
     this->action_EditGameSettings->setEnabled(hasSelection);
     this->action_EditCheats->setEnabled(hasSelection);
@@ -434,6 +439,15 @@ void RomBrowserWidget::customContextMenuRequested(QPoint position)
     this->action_SetCoverImage->setVisible(view == this->gridViewWidget);
     this->action_RemoveCoverImage->setEnabled(hasSelection && !data.coverFile.isEmpty());
     this->action_RemoveCoverImage->setVisible(view == this->gridViewWidget);
+
+    if (hasSelection && data.type == CoreRomType::Disk)
+    { // disk selected
+        this->action_PlayGameWith->setText("Play Game with Cartridge");
+    }
+    else
+    { // cartridge selected
+        this->action_PlayGameWith->setText("Play Game with Disk");
+    }
 
     if (view == this->gridViewWidget)
     { // grid view
@@ -500,7 +514,7 @@ void RomBrowserWidget::on_ZoomOut(void)
     view->setIconSize(view->iconSize() - QSize(10, 10));
 }
 
-void RomBrowserWidget::on_RomBrowserThread_RomFound(QString file, CoreRomHeader header, CoreRomSettings settings)
+void RomBrowserWidget::on_RomBrowserThread_RomFound(QString file, CoreRomType type, CoreRomHeader header, CoreRomSettings settings)
 {
     QString name;
     QString coverFile;
@@ -509,7 +523,7 @@ void RomBrowserWidget::on_RomBrowserThread_RomFound(QString file, CoreRomHeader 
     RomBrowserModelData modelData;
 
     // create item data
-    modelData = RomBrowserModelData(file, header, settings);
+    modelData = RomBrowserModelData(file, type, header, settings);
 
     // generate name to use in UI
     name = QString::fromStdString(settings.GoodName);
@@ -603,9 +617,16 @@ void RomBrowserWidget::on_Action_PlayGame(void)
     emit this->PlayGame(this->getCurrentRom());
 }
 
-void RomBrowserWidget::on_Action_PlayGameWithDisk(void)
+void RomBrowserWidget::on_Action_PlayGameWith(void)
 {
-    emit this->PlayGameWithDisk(this->getCurrentRom());
+    RomBrowserModelData data;
+
+    if (!this->getCurrentData(data))
+    {
+        return;
+    }
+
+    emit this->PlayGameWith(data.type, data.file);
 }
 
 void RomBrowserWidget::on_Action_RefreshRomList(void)
