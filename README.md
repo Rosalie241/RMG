@@ -4,16 +4,19 @@ Rosalie's Mupen GUI is a free and open-source mupen64plus GUI written in C++.
 
 It offers a simple-to-use user interface.
 
-## System Requirements
+## Support
 
-* Operating System
-  * Windows Or Linux
-* CPU
-  * Intel or AMD processor with SSE2 support
-* RAM
-  * 512MB or more
-* Graphics card
-  * OpenGL 3.3 capable
+Join the [Rosalie's Mupen GUI Discord Server](https://discord.gg/k9GuyJ2PpF) for support
+
+## License
+
+Rosalie's Mupen GUI is licensed under the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html).
+
+## Showcase
+
+![RomBrowser](Package/Screenshots/RomBrowser.png)
+![InGame](Package/Screenshots/InGame.png)
+![InputSettings](Package/Screenshots/InputSettings.png)
 
 ## Building
 
@@ -48,11 +51,3 @@ sudo pacman -S git make mingw-w64-x86_64-cmake mingw-w64-x86_64-freetype mingw-w
 ```
 
 When it's done building, executables can be found in `Bin/Release`
-
-## Support
-
-Join the [Rosalie's Mupen GUI Discord Server](https://discord.gg/k9GuyJ2PpF) for support
-
-## License
-
-Rosalie's Mupen GUI is licensed under the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html).
