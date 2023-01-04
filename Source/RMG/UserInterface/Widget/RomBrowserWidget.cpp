@@ -648,7 +648,7 @@ void RomBrowserWidget::on_Action_OpenRomDirectory(void)
         return;
     }
 
-    QDesktopServices::openUrl(QUrl("file://" + directory));
+    QDesktopServices::openUrl(QUrl("file:///" + directory));
 }   
 
 void RomBrowserWidget::on_Action_ChangeRomDirectory(void)
