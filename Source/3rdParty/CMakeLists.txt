@@ -65,6 +65,9 @@ if(NOT NO_GIT_CLONE)
 
     set(DISCORD_RPC_URL               "https://github.com/discord/discord-rpc")
     set(DISCORD_RPC_TAG               "963aa9f3e5ce81a4682c6ca3d136cddda614db33")
+
+    set(IMGUI_URL                     "https://github.com/ocornut/imgui")
+    set(IMGUI_TAG                     "d7c8516a4b848c0291e3d75b627c0843f515f591")
 endif(NOT NO_GIT_CLONE)
 
 ExternalProject_Add(mupen64plus-core
@@ -250,6 +253,38 @@ if (DISCORD_RPC)
     )
 endif(DISCORD_RPC)
 
+set(IMGUI_DIR ${THIRDPARTY_DIR}/imgui)
+set(IMGUI_SOURCES_IN
+    ${IMGUI_DIR}/imgui_draw.cpp
+    ${IMGUI_DIR}/imgui_tables.cpp 
+    ${IMGUI_DIR}/imgui_widgets.cpp 
+    ${IMGUI_DIR}/imgui.cpp 
+    ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
+    ${IMGUI_DIR}/backends/imgui_impl_opengl3.h 
+    ${IMGUI_DIR}/backends/imgui_impl_opengl3_loader.h 
+)
+set(IMGUI_SOURCES_OUT
+    ${IMGUI_DIR}/build/imgui_draw.cpp
+    ${IMGUI_DIR}/build/imgui_tables.cpp
+    ${IMGUI_DIR}/build/imgui_widgets.cpp
+    ${IMGUI_DIR}/build/imgui.cpp
+    ${IMGUI_DIR}/build/imgui_impl_opengl3.cpp
+    ${IMGUI_DIR}/build/imgui_impl_opengl3.h 
+    ${IMGUI_DIR}/build/imgui_impl_opengl3_loader.h 
+)
+ExternalProject_Add(imgui
+    SOURCE_DIR imgui
+
+    GIT_REPOSITORY ${IMGUI_URL}
+    GIT_TAG ${IMGUI_TAG}
+
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ${CMAKE_COMMAND} -E copy ${IMGUI_SOURCES_IN} ${IMGUI_DIR}/build/
+    INSTALL_COMMAND ""
+
+    BUILD_BYPRODUCTS ${IMGUI_SOURCES_OUT}
+)
+
 ExternalProject_Get_property(mupen64plus-core BUILD_BYPRODUCTS)
 set(MUPEN64PLUSCORE_LIB ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 set(MUPEN64PLUSCORE_INI ${M64P_CORE_DIR}/data/mupen64plus.ini PARENT_SCOPE)
@@ -284,3 +319,7 @@ if (DISCORD_RPC)
     ExternalProject_Get_property(discord-rpc BUILD_BYPRODUCTS)
     set(DISCORD_RPC_LIB ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 endif(DISCORD_RPC)
+
+ExternalProject_Get_property(imgui BUILD_BYPRODUCTS)
+set(IMGUI_SOURCES ${BUILD_BYPRODUCTS} PARENT_SCOPE)
+set(IMGUI_DIR ${THIRDPARTY_DIR}/imgui PARENT_SCOPE)

@@ -61,15 +61,18 @@ set(RMG_SOURCES
 )
 
 if (UPDATER)
-list(APPEND RMG_SOURCES
-    UserInterface/Dialog/UpdateDialog.cpp
-    UserInterface/Dialog/UpdateDialog.ui
-    UserInterface/Dialog/DownloadUpdateDialog.cpp
-    UserInterface/Dialog/DownloadUpdateDialog.ui
-    UserInterface/Dialog/InstallUpdateDialog.cpp
-    UserInterface/Dialog/InstallUpdateDialog.ui
-)
+    list(APPEND RMG_SOURCES
+        UserInterface/Dialog/UpdateDialog.cpp
+        UserInterface/Dialog/UpdateDialog.ui
+        UserInterface/Dialog/DownloadUpdateDialog.cpp
+        UserInterface/Dialog/DownloadUpdateDialog.ui
+        UserInterface/Dialog/InstallUpdateDialog.cpp
+        UserInterface/Dialog/InstallUpdateDialog.ui
+    )
 endif(UPDATER)
+
+set_source_files_properties(${IMGUI_SOURCES} PROPERTIES GENERATED TRUE)
+list(APPEND RMG_SOURCES ${IMGUI_SOURCES})
 
 if (CMAKE_BUILD_TYPE MATCHES Release)
     add_executable(RMG WIN32 ${RMG_SOURCES})
