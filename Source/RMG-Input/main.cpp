@@ -367,7 +367,7 @@ static double simulate_deadzone(double n64InputAxis, double maxAxis, int deadzon
 {
     double axisAbsolute = std::abs(n64InputAxis);
 
-    if (axisAbsolute < deadzone)
+    if (axisAbsolute <= deadzone)
     {
         axisAbsolute = 0; // No input when inside deadzone
     }
