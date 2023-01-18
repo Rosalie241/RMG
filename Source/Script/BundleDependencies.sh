@@ -38,8 +38,8 @@ done
 windeployqt-qt6 "$exe"
 
 # needed by Qt at runtime
-cp "$path/libcrypto-1_1-x64.dll" "$bin_dir/"
-cp "$path/libssl-1_1-x64.dll"    "$bin_dir/"
-cp "$path/libjpeg-8.dll"         "$bin_dir/"
+cp "$path/libcrypto-3-x64.dll" "$bin_dir/"
+cp "$path/libssl-3-x64.dll"    "$bin_dir/"
+cp "$path/libjpeg-8.dll"       "$bin_dir/"
 
 exit 0
