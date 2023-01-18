@@ -924,6 +924,8 @@ void ControllerWidget::LoadSettings(QString sectionQString)
         buttonSetting.button->SetInputData(type, data, extraData, QString::fromStdString(name));
     }
 
+    // force refresh some UI elements
+    this->on_deadZoneSlider_valueChanged(this->deadZoneSlider->value());
     this->on_controllerPluggedCheckBox_toggled(this->IsPluggedIn());
 }
 
