@@ -136,7 +136,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     void on_Action_System_SoftReset(void);
     void on_Action_System_HardReset(void);
     void on_Action_System_Pause(void);
-    void on_Action_System_GenerateBitmap(void);
+    void on_Action_System_Screenshot(void);
     void on_Action_System_LimitFPS(void);
     void on_Action_System_SaveState(void);
     void on_Action_System_SaveAs(void);

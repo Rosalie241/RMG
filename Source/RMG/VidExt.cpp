@@ -11,12 +11,14 @@
 
 #include <RMG-Core/VidExt.hpp>
 #include <RMG-Core/m64p/Api.hpp>
+#include "OnScreenDisplay.hpp"
 
 #include <QApplication>
 #include <QOpenGLContext>
 #include <QThread>
 #include <QScreen>
 
+#include <iostream>
 //
 // Local Variables
 //
@@ -25,7 +27,8 @@ static Thread::EmulationThread* l_EmuThread          = nullptr;
 static UserInterface::MainWindow* l_MainWindow       = nullptr;
 static UserInterface::Widget::OGLWidget* l_OGLWidget = nullptr;
 static QThread* l_RenderThread                       = nullptr;
-static bool l_VidExtSetup                            = false;
+static bool l_VidExtInitialized                      = false;
+static bool l_OsdInitialized                         = false;
 static QSurfaceFormat l_SurfaceFormat;
 
 //
@@ -43,7 +46,7 @@ static void VidExt_OglSetup(void)
     }
 
     l_OGLWidget->GetContext()->makeCurrent(l_OGLWidget);
-    l_VidExtSetup = true;
+    l_VidExtInitialized = true;
 }
 
 static m64p_error VidExt_Init(void)
@@ -54,8 +57,8 @@ static m64p_error VidExt_Init(void)
     l_SurfaceFormat.setOption(QSurfaceFormat::DeprecatedFunctions, 1);
     l_SurfaceFormat.setDepthBufferSize(24);
     l_SurfaceFormat.setProfile(QSurfaceFormat::CompatibilityProfile);
-    l_SurfaceFormat.setMajorVersion(2);
-    l_SurfaceFormat.setMinorVersion(1);
+    l_SurfaceFormat.setMajorVersion(3);
+    l_SurfaceFormat.setMinorVersion(0);
     l_SurfaceFormat.setSwapInterval(0);
 
     l_EmuThread->on_VidExt_Init();
@@ -67,7 +70,10 @@ static m64p_error VidExt_Quit(void)
 {
     l_OGLWidget->MoveContextToThread(QApplication::instance()->thread());
     l_EmuThread->on_VidExt_Quit();
-    l_VidExtSetup = false;
+    OnScreenDisplayShutdown();
+
+    l_VidExtInitialized = false;
+    l_OsdInitialized    = false;
 
     return M64ERR_SUCCESS;
 }
@@ -84,9 +90,23 @@ static m64p_error VidExt_ListRates(m64p_2d_size Size, int *NumRates, int *Rates)
 
 static m64p_error VidExt_SetMode(int Width, int Height, int BitsPerPixel, int ScreenMode, int Flags)
 {
-    if (!l_VidExtSetup)
+    if (!l_VidExtInitialized)
     {
         VidExt_OglSetup();
+    }
+
+    // try to initialize the OSD
+    // when opengl 3 is used
+    if (l_SurfaceFormat.majorVersion() == 3 &&
+        !l_OsdInitialized)
+    {
+        if (!OnScreenDisplayInit())
+        {
+            return M64ERR_SYSTEM_FAIL;
+        }
+
+        OnScreenDisplayLoadSettings();
+        l_OsdInitialized = true;
     }
 
     switch (ScreenMode)
@@ -102,6 +122,7 @@ static m64p_error VidExt_SetMode(int Width, int Height, int BitsPerPixel, int Sc
             break;
     }
 
+    OnScreenDisplaySetDisplaySize(Width, Height);
     return M64ERR_SUCCESS;
 }
 
@@ -238,12 +259,16 @@ static m64p_error VidExt_GLGetAttr(m64p_GLattr Attr, int *pValue)
     return M64ERR_SUCCESS;
 }
 
+#include <QOpenGLFunctions>
+#include <QOpenGLExtraFunctions>
 static m64p_error VidExt_GLSwapBuf(void)
 {
     if (l_RenderThread != QThread::currentThread())
     {
         return M64ERR_UNSUPPORTED;
     }
+
+    OnScreenDisplayRender();
 
     l_OGLWidget->GetContext()->swapBuffers(l_OGLWidget);
     l_OGLWidget->GetContext()->makeCurrent(l_OGLWidget);
@@ -281,6 +306,7 @@ static m64p_error VidExt_ToggleFS(void)
 static m64p_error VidExt_ResizeWindow(int Width, int Height)
 {
     l_EmuThread->on_VidExt_ResizeWindow(Width, Height);
+    OnScreenDisplaySetDisplaySize(Width, Height);
     return M64ERR_SUCCESS;
 }
 

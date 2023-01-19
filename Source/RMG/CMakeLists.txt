@@ -55,6 +55,7 @@ set(RMG_SOURCES
     Thread/RomSearcherThread.cpp
     Thread/EmulationThread.cpp
     Utilities/QtKeyToSdl2Key.cpp
+    OnScreenDisplay.cpp
     Callbacks.cpp
     VidExt.cpp
     main.cpp
@@ -80,6 +81,10 @@ else()
     add_executable(RMG ${RMG_SOURCES})
 endif()
 
+add_dependencies(RMG 
+    imgui
+)
+
 target_link_libraries(RMG 
     RMG-Core
 )
@@ -89,11 +94,12 @@ target_include_directories(RMG PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/../
     ${SDL2_INCLUDE_DIRS}
+    ${IMGUI_DIR}
 )
 
 target_link_libraries(RMG ${QT_VERSION}::Gui ${QT_VERSION}::Widgets ${QT_VERSION}::OpenGL)
 
 if (UPDATER)
-target_link_libraries(RMG ${QT_VERSION}::Network)
+    target_link_libraries(RMG ${QT_VERSION}::Network)
 endif(UPDATER)
 

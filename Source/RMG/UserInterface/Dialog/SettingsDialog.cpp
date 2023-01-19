@@ -8,6 +8,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "SettingsDialog.hpp"
+#include "OnScreenDisplay.hpp"
 #include "RMG-Core/DiscordRpc.hpp"
 #include "RMG-Core/Settings/Settings.hpp"
 #include "UserInterface/Widget/KeybindButton.hpp"
@@ -47,7 +48,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 
     pluginList = CoreGetAllPlugins();
 
-    for (int i = 0; i < 13; i++)
+    for (int i = 0; i < 14; i++)
     {
         this->reloadSettings(i);
     }
@@ -66,12 +67,12 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
     // aren't defined, hide the tab
     // with the settings for those
 #ifndef UPDATER
-    this->innerInterfaceTabWidget->removeTab(4);
+    this->innerInterfaceTabWidget->removeTab(5);
 #endif // !UPDATER
 #endif // !DISCORD_RPC
 
 #ifndef _WIN32
-    this->innerInterfaceTabWidget->removeTab(3);
+    this->innerInterfaceTabWidget->removeTab(4);
 #endif
 
     int width = CoreSettingsGetIntValue(SettingsID::GUI_SettingsDialogWidth);
@@ -105,8 +106,7 @@ int SettingsDialog::currentIndex(void)
     { // game tab
         currentIndex += this->innerGameTabWidget->currentIndex();
     }
-
-    if (currentIndex > 1)
+    else if (currentIndex > 1)
     { // above game tab
         currentIndex += this->innerGameTabWidget->count() - 1;
     }
@@ -158,9 +158,12 @@ void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
         this->loadDefaultInterfaceLogWindowSettings();
         break;
     case 11:
-        this->loadDefaultInterfaceStyleSettings();
+        this->loadDefaultInterfaceOSDSettings();
         break;
     case 12:
+        this->loadDefaultInterfaceStyleSettings();
+        break;
+    case 13:
         this->loadDefaultInterfaceMiscSettings();
         break;
     }
@@ -205,9 +208,12 @@ void SettingsDialog::reloadSettings(int stackedWidgetIndex)
         this->loadInterfaceLogWindowSettings();
         break;
     case 11:
-        this->loadInterfaceStyleSettings();
+        this->loadInterfaceOSDSettings();
         break;
     case 12:
+        this->loadInterfaceStyleSettings();
+        break;
+    case 13:
         this->loadInterfaceMiscSettings();
         break;
     }
@@ -398,6 +404,14 @@ void SettingsDialog::loadInterfaceLogWindowSettings(void)
     this->showVerboseLogMessagesCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_ShowVerboseLogMessages));
 }
 
+void SettingsDialog::loadInterfaceOSDSettings(void)
+{
+    this->osdEnabledCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_OnScreenDisplayEnabled));
+    this->osdLocationComboBox->setCurrentIndex(CoreSettingsGetIntValue(SettingsID::GUI_OnScreenDisplayLocation));
+    this->osdVerticalPaddingSpinBox->setValue(CoreSettingsGetIntValue(SettingsID::GUI_OnScreenDisplayPaddingY));
+    this->osdHorizontalPaddingSpinBox->setValue(CoreSettingsGetIntValue(SettingsID::GUI_OnScreenDisplayPaddingX));
+}
+
 void SettingsDialog::loadInterfaceStyleSettings(void)
 {
     this->commonInterfaceStyleSettings(SettingsDialogAction::LoadSettings);
@@ -535,6 +549,14 @@ void SettingsDialog::loadDefaultInterfaceLogWindowSettings(void)
     this->showVerboseLogMessagesCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_ShowVerboseLogMessages));
 }
 
+void SettingsDialog::loadDefaultInterfaceOSDSettings(void)
+{
+    this->osdEnabledCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_OnScreenDisplayEnabled));
+    this->osdLocationComboBox->setCurrentIndex(CoreSettingsGetDefaultIntValue(SettingsID::GUI_OnScreenDisplayLocation));
+    this->osdVerticalPaddingSpinBox->setValue(CoreSettingsGetDefaultIntValue(SettingsID::GUI_OnScreenDisplayPaddingY));
+    this->osdHorizontalPaddingSpinBox->setValue(CoreSettingsGetDefaultIntValue(SettingsID::GUI_OnScreenDisplayPaddingX));
+}
+
 void SettingsDialog::loadDefaultInterfaceStyleSettings(void)
 {
     this->commonInterfaceStyleSettings(SettingsDialogAction::LoadDefaultSettings);
@@ -568,6 +590,7 @@ void SettingsDialog::saveSettings(void)
     this->saveInterfaceEmulationSettings();
     this->saveInterfaceRomBrowserSettings();
     this->saveInterfaceLogWindowSettings();
+    this->saveInterfaceOSDSettings();
     this->saveInterfaceStyleSettings();
     this->saveInterfaceMiscSettings();
 }
@@ -731,6 +754,14 @@ void SettingsDialog::saveInterfaceRomBrowserSettings(void)
 void SettingsDialog::saveInterfaceLogWindowSettings(void)
 {
     CoreSettingsSetValue(SettingsID::GUI_ShowVerboseLogMessages, this->showVerboseLogMessagesCheckBox->isChecked());
+}
+
+void SettingsDialog::saveInterfaceOSDSettings(void)
+{
+    CoreSettingsSetValue(SettingsID::GUI_OnScreenDisplayEnabled, this->osdEnabledCheckBox->isChecked());
+    CoreSettingsSetValue(SettingsID::GUI_OnScreenDisplayLocation, this->osdLocationComboBox->currentIndex());
+    CoreSettingsSetValue(SettingsID::GUI_OnScreenDisplayPaddingY, this->osdVerticalPaddingSpinBox->value());
+    CoreSettingsSetValue(SettingsID::GUI_OnScreenDisplayPaddingX, this->osdHorizontalPaddingSpinBox->value());
 }
 
 void SettingsDialog::saveInterfaceStyleSettings(void)
@@ -1073,6 +1104,9 @@ void SettingsDialog::on_buttonBox_clicked(QAbstractButton *button)
         if (pushButton == okButton)
         {
             this->saveSettings();
+
+            // re-load OSD settings
+            OnScreenDisplayLoadSettings();
         }
 
         if (!this->applyPluginSettings())

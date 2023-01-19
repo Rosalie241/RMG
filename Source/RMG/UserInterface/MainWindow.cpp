@@ -17,6 +17,7 @@
 #endif // UPDATER
 #include "UserInterface/EventFilter.hpp"
 #include "Utilities/QtKeyToSdl2Key.hpp"
+#include "OnScreenDisplay.hpp"
 #include "Callbacks.hpp"
 #include "VidExt.hpp"
 
@@ -638,7 +639,7 @@ void MainWindow::connectActionSignals(void)
     connect(this->action_System_HardReset, &QAction::triggered, this, &MainWindow::on_Action_System_HardReset);
     connect(this->action_System_Pause, &QAction::triggered, this, &MainWindow::on_Action_System_Pause);
     connect(this->action_System_Screenshot, &QAction::triggered, this,
-            &MainWindow::on_Action_System_GenerateBitmap);
+            &MainWindow::on_Action_System_Screenshot);
     connect(this->action_System_LimitFPS, &QAction::triggered, this, &MainWindow::on_Action_System_LimitFPS);
     connect(this->action_System_SaveState, &QAction::triggered, this, &MainWindow::on_Action_System_SaveState);
     connect(this->action_System_SaveAs, &QAction::triggered, this, &MainWindow::on_Action_System_SaveAs);
@@ -949,9 +950,9 @@ void MainWindow::on_Action_System_HardReset(void)
         this->showErrorMessage("CoreResetEmulation() Failed!", QString::fromStdString(CoreGetError()));
     }
 }
-
 void MainWindow::on_Action_System_Pause(void)
 {
+    bool isRunning = CoreIsEmulationRunning();
     bool isPaused = CoreIsEmulationPaused();
 
     bool ret;
@@ -959,11 +960,19 @@ void MainWindow::on_Action_System_Pause(void)
 
     if (!isPaused)
     {
+        if (isRunning)
+        {
+            OnScreenDisplayPause();
+        }
         ret = CorePauseEmulation();
         error = "CorePauseEmulation() Failed!";
     }
     else
     {
+        if (isPaused)
+        {
+            OnScreenDisplayResume();
+        }
         ret = CoreResumeEmulation();
         error = "CoreResumeEmulation() Failed!";
     }
@@ -977,11 +986,15 @@ void MainWindow::on_Action_System_Pause(void)
     this->ui_ManuallyPaused = true;
 }
 
-void MainWindow::on_Action_System_GenerateBitmap(void)
+void MainWindow::on_Action_System_Screenshot(void)
 {
     if (!CoreTakeScreenshot())
     {
         this->showErrorMessage("CoreTakeScreenshot() Failed!", QString::fromStdString(CoreGetError()));
+    }
+    else
+    {
+        OnScreenDisplaySetMessage("Captured screenshot.");
     }
 }
 
@@ -1005,6 +1018,10 @@ void MainWindow::on_Action_System_SaveState(void)
     {
         this->showErrorMessage("CoreSaveState() Failed", QString::fromStdString(CoreGetError()));
     }
+    else
+    {
+        OnScreenDisplaySetMessage("Saved state to slot: " + std::to_string(CoreGetSaveStateSlot()));
+    }
 }
 
 void MainWindow::on_Action_System_SaveAs(void)
@@ -1025,6 +1042,10 @@ void MainWindow::on_Action_System_SaveAs(void)
         {
             this->showErrorMessage("CoreSaveState() Failed", QString::fromStdString(CoreGetError()));
         }
+        else
+        {
+            OnScreenDisplaySetMessage("Saved state to: " + fileName.toStdString());
+        }
     }
 
     if (isRunning && !isPaused)
@@ -1038,6 +1059,10 @@ void MainWindow::on_Action_System_LoadState(void)
     if (!CoreLoadSaveState())
     {
         this->showErrorMessage("CoreLoadSaveState() Failed", QString::fromStdString(CoreGetError()));
+    }
+    else
+    {
+        OnScreenDisplaySetMessage("State loaded from slot: " + std::to_string(CoreGetSaveStateSlot()));
     }
 }
 
@@ -1060,6 +1085,10 @@ void MainWindow::on_Action_System_Load(void)
         {
             this->showErrorMessage("CoreLoadSaveState() Failed", QString::fromStdString(CoreGetError()));
         }
+        else
+        {
+            OnScreenDisplaySetMessage("State loaded from: " + fileName.toStdString());
+        }
     }
 
     if (isRunning && !isPaused)
@@ -1073,6 +1102,10 @@ void MainWindow::on_Action_System_CurrentSaveState(int slot)
     if (!CoreSetSaveStateSlot(slot))
     {
         this->showErrorMessage("CoreSetSaveStateSlot() Failed", QString::fromStdString(CoreGetError()));
+    }
+    else
+    {
+        OnScreenDisplaySetMessage("Selected save slot: " + std::to_string(slot));
     }
 }
 

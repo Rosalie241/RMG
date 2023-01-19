@@ -2114,6 +2114,110 @@
                </item>
               </layout>
              </widget>
+             <widget class="QWidget" name="tab_6">
+              <attribute name="title">
+               <string>OSD</string>
+              </attribute>
+              <layout class="QVBoxLayout" name="verticalLayout_13">
+               <item>
+                <widget class="QCheckBox" name="osdEnabledCheckBox">
+                 <property name="text">
+                  <string>Enable On-Screen Display</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_10">
+                 <item>
+                  <widget class="QLabel" name="label_9">
+                   <property name="text">
+                    <string>Location</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="osdLocationComboBox">
+                   <item>
+                    <property name="text">
+                     <string>Bottom Left</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Top Left</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Top Right</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Bottom Right</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_8">
+                 <item>
+                  <widget class="QLabel" name="label_7">
+                   <property name="text">
+                    <string>Vertical Padding</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSpinBox" name="osdVerticalPaddingSpinBox">
+                   <property name="specialValueText">
+                    <string/>
+                   </property>
+                   <property name="suffix">
+                    <string> px</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_9">
+                 <item>
+                  <widget class="QLabel" name="label_8">
+                   <property name="text">
+                    <string>Horizontal Padding</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSpinBox" name="osdHorizontalPaddingSpinBox">
+                   <property name="specialValueText">
+                    <string/>
+                   </property>
+                   <property name="suffix">
+                    <string> px</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <spacer name="verticalSpacer_17">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
              <widget class="QWidget" name="tab_4">
               <attribute name="title">
                <string>Styles</string>
