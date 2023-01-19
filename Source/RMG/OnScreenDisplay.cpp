@@ -29,6 +29,8 @@ static int                                                         l_MessagePosi
 static float                                                       l_MessagePaddingX = 20.0f;
 static float                                                       l_MessagePaddingY = 20.0f;
 static float                                                       l_MessageOpacity  = 1.0f;
+static int                                                         l_MessageDuration = 3;
+
 //
 // Exported Functions
 //
@@ -73,6 +75,7 @@ void OnScreenDisplayLoadSettings(void)
     l_MessagePaddingX = CoreSettingsGetIntValue(SettingsID::GUI_OnScreenDisplayPaddingX);
     l_MessagePaddingY = CoreSettingsGetIntValue(SettingsID::GUI_OnScreenDisplayPaddingY);
     l_MessageOpacity  = CoreSettingsGetFloatValue(SettingsID::GUI_OnScreenDisplayOpacity);
+    l_MessageDuration = CoreSettingsGetIntValue(SettingsID::GUI_OnScreenDisplayDuration);
 }
 
 bool OnScreenDisplaySetDisplaySize(int width, int height)
@@ -108,7 +111,7 @@ void OnScreenDisplayRender(void)
 
     const auto currentTime = std::chrono::high_resolution_clock::now();
     const int secondsPassed = std::chrono::duration_cast<std::chrono::seconds>(currentTime - l_MessageTime).count();
-    if (secondsPassed >= 3)
+    if (secondsPassed >= l_MessageDuration)
     {
         return;
     }
