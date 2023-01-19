@@ -1106,7 +1106,7 @@ bool CoreSettingsSetupDefaults(void)
             ret = config_option_default_set(setting.Section, setting.Key, M64TYPE_BOOL, &setting.DefaultValue.boolValue, setting.Description.c_str());
             break;
         case M64TYPE_FLOAT:
-            ret = config_option_default_set(setting.Section, setting.Key, M64TYPE_FLOAT, &setting.DefaultValue.intValue, setting.Description.c_str());
+            ret = config_option_default_set(setting.Section, setting.Key, M64TYPE_FLOAT, &setting.DefaultValue.floatValue, setting.Description.c_str());
             break;
         }
 
