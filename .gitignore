@@ -1,7 +1,10 @@
 # CMake build directory
 Build/
 Bin/
-# VSCode Configuration
-.vscode/
 # Clangd cache
 .cache/
+# Archlinux Package
+Package/ArchLinux/pkg/
+Package/ArchLinux/rmg/
+Package/ArchLinux/src/
+Package/ArchLinux/*.pkg.*
