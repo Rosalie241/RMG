@@ -19,6 +19,7 @@ enum class SettingsID
     GUI_OnScreenDisplayPaddingX,
     GUI_OnScreenDisplayPaddingY,
     GUI_OnScreenDisplayOpacity,
+    GUI_OnScreenDisplayDuration,
     GUI_Toolbar,
     GUI_StatusBar,
     GUI_Style,

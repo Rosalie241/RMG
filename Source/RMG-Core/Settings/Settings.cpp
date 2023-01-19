@@ -179,6 +179,9 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::GUI_OnScreenDisplayOpacity:
         setting = {SETTING_SECTION_GUI, "OnScreenDisplayOpacity", 0.5f};
         break;
+    case SettingsID::GUI_OnScreenDisplayDuration:
+        setting = {SETTING_SECTION_GUI, "OnScreenDisplayDuration", 3};
+        break;
     case SettingsID::GUI_Toolbar:
         setting = {SETTING_SECTION_GUI, "Toolbar", true};
         break;
