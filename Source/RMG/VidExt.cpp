@@ -18,7 +18,6 @@
 #include <QThread>
 #include <QScreen>
 
-#include <iostream>
 //
 // Local Variables
 //
@@ -259,8 +258,6 @@ static m64p_error VidExt_GLGetAttr(m64p_GLattr Attr, int *pValue)
     return M64ERR_SUCCESS;
 }
 
-#include <QOpenGLFunctions>
-#include <QOpenGLExtraFunctions>
 static m64p_error VidExt_GLSwapBuf(void)
 {
     if (l_RenderThread != QThread::currentThread())
