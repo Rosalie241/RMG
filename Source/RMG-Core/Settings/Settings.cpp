@@ -164,6 +164,18 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::GUI_ShowVerboseLogMessages:
         setting = {SETTING_SECTION_GUI, "ShowVerboseLogMessages", false};
         break;
+    case SettingsID::GUI_OnScreenDisplayEnabled:
+        setting = {SETTING_SECTION_GUI, "OnScreenDisplayEnabled", true};
+        break;
+    case SettingsID::GUI_OnScreenDisplayLocation:
+        setting = {SETTING_SECTION_GUI, "OnScreenDisplayLocation", 0};
+        break;
+    case SettingsID::GUI_OnScreenDisplayPaddingX:
+        setting = {SETTING_SECTION_GUI, "OnScreenDisplayPaddingX", 20};
+        break;
+    case SettingsID::GUI_OnScreenDisplayPaddingY:
+        setting = {SETTING_SECTION_GUI, "OnScreenDisplayPaddingY", 20};
+        break;
     case SettingsID::GUI_Toolbar:
         setting = {SETTING_SECTION_GUI, "Toolbar", true};
         break;
