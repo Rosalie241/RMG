@@ -82,7 +82,8 @@ bool OnScreenDisplaySetDisplaySize(int width, int height)
         return false;
     }
 
-    ImGuiIO& io = ImGui::GetIO();
+    ImGuiIO& io    = ImGui::GetIO();
+    io.IniFilename = nullptr;
     io.DisplaySize = ImVec2((float)width, (float)height);
     return true;
 }
