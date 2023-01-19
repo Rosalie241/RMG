@@ -321,6 +321,11 @@ void MainWindow::loadGeometry(void)
         this->menuBar()->show();
     }
 
+    if (this->ui_ShowToolbar && this->toolBar->isHidden())
+    {
+        this->toolBar->show();
+    }
+
     if (this->ui_ShowStatusbar && this->statusBar()->isHidden())
     {
         this->statusBar()->show();
