@@ -28,7 +28,7 @@ static std::string                                                 l_Message;
 static int                                                         l_MessagePosition = 1;
 static float                                                       l_MessagePaddingX = 20.0f;
 static float                                                       l_MessagePaddingY = 20.0f;
-
+static float                                                       l_MessageOpacity  = 1.0f;
 //
 // Exported Functions
 //
@@ -72,6 +72,7 @@ void OnScreenDisplayLoadSettings(void)
     l_MessagePosition = CoreSettingsGetIntValue(SettingsID::GUI_OnScreenDisplayLocation);
     l_MessagePaddingX = CoreSettingsGetIntValue(SettingsID::GUI_OnScreenDisplayPaddingX);
     l_MessagePaddingY = CoreSettingsGetIntValue(SettingsID::GUI_OnScreenDisplayPaddingY);
+    l_MessageOpacity  = CoreSettingsGetFloatValue(SettingsID::GUI_OnScreenDisplayOpacity);
 }
 
 bool OnScreenDisplaySetDisplaySize(int width, int height)
@@ -116,7 +117,7 @@ void OnScreenDisplayRender(void)
     
     ImGuiIO& io = ImGui::GetIO();
 
-    ImGui::SetNextWindowBgAlpha(0.3f);
+    ImGui::SetNextWindowBgAlpha(l_MessageOpacity);
 
     // right bottom = ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x - 20.0f, io.DisplaySize.y - 20.0f), ImGuiCond_Always, ImVec2(1.0f, 1.0f));
     // right top    = ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x - 20.0f, 20.0f), ImGuiCond_Always, ImVec2(1.0f, 0));

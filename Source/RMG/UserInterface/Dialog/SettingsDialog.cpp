@@ -410,6 +410,7 @@ void SettingsDialog::loadInterfaceOSDSettings(void)
     this->osdLocationComboBox->setCurrentIndex(CoreSettingsGetIntValue(SettingsID::GUI_OnScreenDisplayLocation));
     this->osdVerticalPaddingSpinBox->setValue(CoreSettingsGetIntValue(SettingsID::GUI_OnScreenDisplayPaddingY));
     this->osdHorizontalPaddingSpinBox->setValue(CoreSettingsGetIntValue(SettingsID::GUI_OnScreenDisplayPaddingX));
+    this->osdOpacitySpinBox->setValue(CoreSettingsGetFloatValue(SettingsID::GUI_OnScreenDisplayOpacity));
 }
 
 void SettingsDialog::loadInterfaceStyleSettings(void)
@@ -555,6 +556,7 @@ void SettingsDialog::loadDefaultInterfaceOSDSettings(void)
     this->osdLocationComboBox->setCurrentIndex(CoreSettingsGetDefaultIntValue(SettingsID::GUI_OnScreenDisplayLocation));
     this->osdVerticalPaddingSpinBox->setValue(CoreSettingsGetDefaultIntValue(SettingsID::GUI_OnScreenDisplayPaddingY));
     this->osdHorizontalPaddingSpinBox->setValue(CoreSettingsGetDefaultIntValue(SettingsID::GUI_OnScreenDisplayPaddingX));
+    this->osdOpacitySpinBox->setValue(CoreSettingsGetDefaultFloatValue(SettingsID::GUI_OnScreenDisplayOpacity));
 }
 
 void SettingsDialog::loadDefaultInterfaceStyleSettings(void)
@@ -762,6 +764,7 @@ void SettingsDialog::saveInterfaceOSDSettings(void)
     CoreSettingsSetValue(SettingsID::GUI_OnScreenDisplayLocation, this->osdLocationComboBox->currentIndex());
     CoreSettingsSetValue(SettingsID::GUI_OnScreenDisplayPaddingY, this->osdVerticalPaddingSpinBox->value());
     CoreSettingsSetValue(SettingsID::GUI_OnScreenDisplayPaddingX, this->osdHorizontalPaddingSpinBox->value());
+    CoreSettingsSetValue(SettingsID::GUI_OnScreenDisplayOpacity, (float)this->osdOpacitySpinBox->value());
 }
 
 void SettingsDialog::saveInterfaceStyleSettings(void)
