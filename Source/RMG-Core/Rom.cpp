@@ -45,7 +45,7 @@ static voidpf zlib_filefunc_open(voidpf opaque, const void* filename, int mode)
     static std::ifstream fileStream;
 
     // attempt to open file
-    fileStream.open(path);
+    fileStream.open(path, std::ios::binary);
     if (!fileStream.is_open())
     {
         return nullptr;
@@ -275,13 +275,13 @@ static bool read_zip_file(std::filesystem::path file, char** buf, int* size)
 
 static bool read_raw_file(std::filesystem::path file, char** buf, int* size)
 {
-    std::string  error;
-    std::fstream fileStream;
-    int          fileStreamLen;
-    char*        fileStreamBuf;
+    std::string   error;
+    std::ifstream fileStream;
+    int           fileStreamLen;
+    char*         fileStreamBuf;
 
     // attempt to open file
-    fileStream.open(file);
+    fileStream.open(file, std::ios::binary);
     if (!fileStream.is_open())
     {
         error = "read_raw_file Failed: ";
