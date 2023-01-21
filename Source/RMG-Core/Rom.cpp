@@ -37,6 +37,20 @@ static bool l_HasDisk    = false;
 // Local Functions
 //
 
+static std::string to_lower_str(std::string str)
+{
+    std::string resultString = str;
+
+    std::transform(resultString.begin(), resultString.end(), resultString.begin(), 
+        [](unsigned char c)
+        { 
+            return std::tolower(c); 
+        }
+    );
+
+    return resultString;
+}
+
 static voidpf zlib_filefunc_open(voidpf opaque, const void* filename, int mode)
 {
     std::filesystem::path path = *(std::filesystem::path*)filename;
@@ -51,7 +65,7 @@ static voidpf zlib_filefunc_open(voidpf opaque, const void* filename, int mode)
         return nullptr;
     }
 
-    return (void*)&fileStream;
+    return (voidpf)&fileStream;
 }
 
 static uLong zlib_filefunc_read(voidpf opaque, voidpf stream, void* buf, uLong size)
@@ -103,20 +117,6 @@ static int zlib_filefunc_testerror(voidpf opaque, voidpf stream)
     return errno;
 }
 
-static std::string to_lower_str(std::string str)
-{
-    std::string resultString = str;
-
-    std::transform(resultString.begin(), resultString.end(), resultString.begin(), 
-        [](unsigned char c)
-        { 
-            return std::tolower(c); 
-        }
-    );
-
-    return resultString;
-}
-
 static bool read_zip_file(std::filesystem::path file, char** buf, int* size)
 {
     std::string  error;
@@ -140,7 +140,19 @@ static bool read_zip_file(std::filesystem::path file, char** buf, int* size)
     zipFile = unzOpen2_64((const void*)&file, &filefuncs);
     if (zipFile == nullptr)
     {
-        error = "read_zip_file: unzOpen Failed!";
+        if (errno == 0)
+        {
+            error = "read_zip_file: unzOpen Failed!";
+        }
+        else
+        {
+            error = "read_zip_file: unzOpen Failed: ";
+            error += "failed to open file: ";
+            error += strerror(errno);
+            error += " (";
+            error += std::to_string(errno);
+            error += ")";
+        }
         CoreSetError(error);
         return false;
     }
