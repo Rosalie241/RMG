@@ -140,9 +140,6 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::GUI_SettingsDialogHeight:
         setting = {SETTING_SECTION_GUI, "SettingsDialogHeight", 0};
         break;
-    case SettingsID::GUI_AllowManualResizing:
-        setting = {SETTING_SECTION_GUI, "AllowManualResizing", true};
-        break;
     case SettingsID::GUI_HideCursorInEmulation:
         setting = {SETTING_SECTION_GUI, "HideCursorInEmulation", false};
         break;
