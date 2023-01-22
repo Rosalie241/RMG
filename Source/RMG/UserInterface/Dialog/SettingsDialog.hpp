@@ -56,7 +56,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     int currentIndex(void);
 
     void restoreDefaults(int);
-    void reloadSettings(int);
+    void loadSettings(int);
     void saveSettings(int);
 
     void loadCoreSettings(void);

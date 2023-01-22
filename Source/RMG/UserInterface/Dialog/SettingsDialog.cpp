@@ -50,7 +50,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 
     for (int i = 0; i < 14; i++)
     {
-        this->reloadSettings(i);
+        this->loadSettings(i);
     }
 
     // connect hotkey settings to slot
@@ -62,13 +62,6 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 
 #ifndef DISCORD_RPC
     this->discordRpcCheckBox->setHidden(true);
-
-    // if both DISCORD_RPC & UPDATER
-    // aren't defined, hide the tab
-    // with the settings for those
-#ifndef UPDATER
-    this->innerInterfaceTabWidget->removeTab(5);
-#endif // !UPDATER
 #endif // !DISCORD_RPC
 
     int width = CoreSettingsGetIntValue(SettingsID::GUI_SettingsDialogWidth);
@@ -168,7 +161,7 @@ void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
     }
 }
 
-void SettingsDialog::reloadSettings(int stackedWidgetIndex)
+void SettingsDialog::loadSettings(int stackedWidgetIndex)
 {
     switch (stackedWidgetIndex)
     {
@@ -187,35 +180,30 @@ void SettingsDialog::reloadSettings(int stackedWidgetIndex)
         this->loadInterfaceOSDSettings();
         break;
     case 4:
-#ifdef _WIN32
-        this->loadInterfaceStyleSettings();
-        break;
-#endif // _WIN32
-    case 5:
         this->loadInterfaceMiscSettings();
         break;
-    case 6:
+    case 5:
         this->loadHotkeySettings();
         break;
-    case 7:
+    case 6:
         this->loadCoreSettings();
         break;
-    case 8:
+    case 7:
         this->loadGameSettings();
         break;
-    case 9:
+    case 8:
         this->loadGameCoreSettings();
         break;
-    case 10:
+    case 9:
         this->loadGamePluginSettings();
         break;
-    case 11:
+    case 10:
         this->loadPluginSettings();
         break;
-    case 12:
+    case 11:
         this->loadDirectorySettings();
         break;
-    case 13:
+    case 12:
         this->load64DDSettings();
         break;
     }
