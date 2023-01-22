@@ -185,11 +185,8 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::GUI_StatusBar:
         setting = {SETTING_SECTION_GUI, "StatusBar", true};
         break;
-    case SettingsID::GUI_Style:
-        setting = {SETTING_SECTION_GUI, "Style", ""};
-        break;
-    case SettingsID::GUI_IconTheme:
-        setting = {SETTING_SECTION_GUI, "IconTheme", "black"};
+    case SettingsID::GUI_Theme:
+        setting = {SETTING_SECTION_GUI, "Theme", "Native"};
         break;
     case SettingsID::GUI_CheckForUpdates:
         setting = {SETTING_SECTION_GUI, "CheckForUpdates", true};
