@@ -316,9 +316,6 @@ void MainWindow::loadGeometry(void)
         return;
     }
 
-    this->setMinimumSize(0, 0);
-    this->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
-
     if (this->ui_Geometry_Maximized)
     {
         this->showMaximized();
@@ -409,7 +406,6 @@ void MainWindow::launchEmulationThread(QString cartRom, QString diskRom)
         return;
     }
 
-    this->ui_AllowManualResizing = CoreSettingsGetBoolValue(SettingsID::GUI_AllowManualResizing);
     this->ui_HideCursorInEmulation = CoreSettingsGetBoolValue(SettingsID::GUI_HideCursorInEmulation);
     this->ui_HideCursorInFullscreenEmulation = CoreSettingsGetBoolValue(SettingsID::GUI_HideCursorInFullscreenEmulation);
     this->ui_ShowToolbar = CoreSettingsGetBoolValue(SettingsID::GUI_Toolbar);
@@ -1597,14 +1593,7 @@ void MainWindow::on_VidExt_ResizeWindow(int width, int height)
         this->showNormal();
     }
 
-    if (this->ui_AllowManualResizing)
-    {
-        this->resize(width, height);
-    }
-    else
-    {
-        this->setFixedSize(width, height);
-    }
+    this->resize(width, height);
 
     // we've force set the size once,
     // we can safely disable it now

@@ -65,7 +65,6 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     bool ui_Geometry_Maximized = false;
     bool ui_Geometry_Saved = false;
 
-    bool ui_AllowManualResizing   = false;
     bool ui_HideCursorInEmulation = false;
     bool ui_HideCursorInFullscreenEmulation = false;
     bool ui_NoSwitchToRomBrowser = false;

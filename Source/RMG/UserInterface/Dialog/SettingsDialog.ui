@@ -1931,13 +1931,6 @@
                 </widget>
                </item>
                <item>
-                <widget class="QCheckBox" name="manualResizingCheckBox">
-                 <property name="text">
-                  <string>Allow Manual Window Resizing</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
                 <widget class="QCheckBox" name="pauseEmulationOnFocusCheckbox">
                  <property name="text">
                   <string>Pause Emulation On Focus Loss</string>
