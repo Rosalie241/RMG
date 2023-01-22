@@ -71,10 +71,6 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 #endif // !UPDATER
 #endif // !DISCORD_RPC
 
-#ifndef _WIN32
-    this->innerInterfaceTabWidget->removeTab(4);
-#endif
-
     int width = CoreSettingsGetIntValue(SettingsID::GUI_SettingsDialogWidth);
     int height = CoreSettingsGetIntValue(SettingsID::GUI_SettingsDialogHeight);
 
@@ -109,7 +105,7 @@ int SettingsDialog::currentIndex(void)
     }
     else if (currentIndex > 0)
     { // above interface tab
-        index += this->innerInterfaceTabWidget->count() - 0;
+        index += this->innerInterfaceTabWidget->count() - 1;
     }
 
     if (currentIndex == 3)
@@ -124,10 +120,8 @@ int SettingsDialog::currentIndex(void)
     return index;
 }
 
-#include <iostream>
 void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
 {
-    std::cout << "restoreDefaults: " << stackedWidgetIndex << std::endl;
     switch (stackedWidgetIndex)
     {
     default:
@@ -145,35 +139,30 @@ void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
         this->loadDefaultInterfaceOSDSettings();
         break;
     case 4:
-#ifdef _WIN32
-        this->loadDefaultInterfaceStyleSettings();
-        break;
-#endif // _WIN32
-    case 5:
         this->loadDefaultInterfaceMiscSettings();
         break;
-    case 6:
+    case 5:
         this->loadDefaultHotkeySettings();
         break;
-    case 7:
+    case 6:
         this->loadDefaultCoreSettings();
         break;
-    case 8:
+    case 7:
         this->loadDefaultGameSettings();
         break;
-    case 9:
+    case 8:
         this->loadDefaultGameCoreSettings();
         break;
-    case 10:
+    case 9:
         this->loadDefaultGamePluginSettings();
         break;
-    case 11:
+    case 10:
         this->loadDefaultPluginSettings();
         break;
-    case 12:
+    case 11:
         this->loadDefaultDirectorySettings();
         break;
-    case 13:
+    case 12:
         this->loadDefault64DDSettings();
         break;
     }
@@ -426,13 +415,9 @@ void SettingsDialog::loadInterfaceOSDSettings(void)
     this->osdDurationSpinBox->setValue(CoreSettingsGetIntValue(SettingsID::GUI_OnScreenDisplayDuration));
 }
 
-void SettingsDialog::loadInterfaceStyleSettings(void)
-{
-    this->commonInterfaceStyleSettings(SettingsDialogAction::LoadSettings);
-}
-
 void SettingsDialog::loadInterfaceMiscSettings(void)
 {
+    this->themeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_Theme)));
 #ifdef UPDATER
     this->checkForUpdatesCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_CheckForUpdates));
 #endif // UPDATER
@@ -572,13 +557,9 @@ void SettingsDialog::loadDefaultInterfaceOSDSettings(void)
     this->osdDurationSpinBox->setValue(CoreSettingsGetDefaultIntValue(SettingsID::GUI_OnScreenDisplayDuration));
 }
 
-void SettingsDialog::loadDefaultInterfaceStyleSettings(void)
-{
-    this->commonInterfaceStyleSettings(SettingsDialogAction::LoadDefaultSettings);
-}
-
 void SettingsDialog::loadDefaultInterfaceMiscSettings(void)
 {
+    this->themeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::GUI_Theme)));
 #ifdef UPDATER
     this->checkForUpdatesCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_CheckForUpdates));
 #endif // UPDATER
@@ -606,7 +587,6 @@ void SettingsDialog::saveSettings(void)
     this->saveInterfaceRomBrowserSettings();
     this->saveInterfaceLogSettings();
     this->saveInterfaceOSDSettings();
-    this->saveInterfaceStyleSettings();
     this->saveInterfaceMiscSettings();
 }
 
@@ -780,16 +760,9 @@ void SettingsDialog::saveInterfaceOSDSettings(void)
     CoreSettingsSetValue(SettingsID::GUI_OnScreenDisplayDuration, this->osdDurationSpinBox->value());
 }
 
-void SettingsDialog::saveInterfaceStyleSettings(void)
-{
-#ifdef _WIN32
-    CoreSettingsSetValue(SettingsID::GUI_Style, this->styleComboBox->currentData().toString().toStdString());
-    CoreSettingsSetValue(SettingsID::GUI_IconTheme, this->iconThemeComboBox->currentText().toStdString());
-#endif // _WIN32
-}
-
 void SettingsDialog::saveInterfaceMiscSettings(void)
 {
+    CoreSettingsSetValue(SettingsID::GUI_Theme, this->themeComboBox->currentText().toStdString());
 #ifdef UPDATER
     CoreSettingsSetValue(SettingsID::GUI_CheckForUpdates, this->checkForUpdatesCheckBox->isChecked());
 #endif // UPDATER
@@ -963,63 +936,12 @@ void SettingsDialog::commonPluginSettings(SettingsDialogAction action)
     }
 }
 
-void SettingsDialog::commonInterfaceStyleSettings(SettingsDialogAction action)
-{
-#ifdef _WIN32
-    this->styleComboBox->clear();
-    this->styleComboBox->addItem("None", "");
-
-    QString currentStyle = action == SettingsDialogAction::LoadSettings ?
-        QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_Style)) :
-        QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::GUI_Style));
-
-    QString directory;
-    directory = QString::fromStdString(CoreGetSharedDataDirectory().string());
-    directory += "\\Styles\\";
-
-    QStringList filter;
-    filter << "*.qss";
-
-    bool styleFound = false;
-    QDirIterator stylesDirectoryIter(directory, filter, QDir::Files, QDirIterator::NoIteratorFlags);
-    while (stylesDirectoryIter.hasNext())
-    {
-        QString filePath = stylesDirectoryIter.next();
-        QFileInfo fileInfo(filePath);
-
-        this->styleComboBox->addItem(fileInfo.baseName(), filePath);
-        if (filePath == currentStyle)
-        {
-            styleFound = true;
-            this->styleComboBox->setCurrentText(fileInfo.baseName());
-        }
-    }
-
-    if (currentStyle.isEmpty())
-    {
-        this->styleComboBox->setCurrentText("None");
-        styleFound = true;
-    }
-
-    if (!styleFound)
-    {
-        this->styleComboBox->addItem("", "");
-        this->styleComboBox->setCurrentText("");
-    }
-
-    QString currentIconTheme = action == SettingsDialogAction::LoadSettings ?
-                QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_IconTheme)) :
-                QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::GUI_IconTheme));
-    this->iconThemeComboBox->setCurrentText(currentIconTheme);
-#endif // _WIN32
-}
-
 void SettingsDialog::setIconsForEmulationInfoText(void)
 {
     QLabel* labels[] = {
         this->infoIconLabel_0, this->infoIconLabel_1, this->infoIconLabel_2,
         this->infoIconLabel_3, this->infoIconLabel_4, this->infoIconLabel_5,
-        this->infoIconLabel_6, this->infoIconLabel_7
+        this->infoIconLabel_7
     };
 
     QIcon infoIcon = QIcon::fromTheme("information-line");

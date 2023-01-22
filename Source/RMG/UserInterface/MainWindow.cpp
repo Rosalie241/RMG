@@ -25,6 +25,7 @@
 
 #include <QCoreApplication>
 #include <QDesktopServices>
+#include <QStyleFactory>
 #include <QFileDialog>
 #include <QMenuBar>
 #include <QMessageBox>
@@ -211,9 +212,56 @@ void MainWindow::configureTheme(QApplication* app)
 {
     // set theme style
     QString fallbackStyleSheet = "QTableView { border: none; color: #0096d3; selection-color: #FFFFFF; selection-background-color: #0096d3; }";
-
-#ifndef _WIN32
     this->setStyleSheet(fallbackStyleSheet);
+
+    // set application theme
+    QString theme = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_Theme));
+    if (theme == "Fusion")
+    {
+        app->setPalette(QApplication::style()->standardPalette());
+        app->setStyleSheet(QString());
+        app->setStyle(QStyleFactory::create("Fusion"));
+    }
+    else if (theme == "Fusion Dark")
+    {
+        // adapted from https://gist.github.com/QuantumCD/6245215
+        app->setStyle(QStyleFactory::create("Fusion"));
+
+        const QColor lighterGray(75, 75, 75);
+        const QColor darkGray(53, 53, 53);
+        const QColor gray(128, 128, 128);
+        const QColor black(25, 25, 25);
+        const QColor blue(198, 238, 255);
+
+        QPalette darkPalette;
+        darkPalette.setColor(QPalette::Window, darkGray);
+        darkPalette.setColor(QPalette::WindowText, Qt::white);
+        darkPalette.setColor(QPalette::Base, black);
+        darkPalette.setColor(QPalette::AlternateBase, darkGray);
+        darkPalette.setColor(QPalette::ToolTipBase, darkGray);
+        darkPalette.setColor(QPalette::ToolTipText, Qt::white);
+        darkPalette.setColor(QPalette::Text, Qt::white);
+        darkPalette.setColor(QPalette::Button, darkGray);
+        darkPalette.setColor(QPalette::ButtonText, Qt::white);
+        darkPalette.setColor(QPalette::Link, blue);
+        darkPalette.setColor(QPalette::Highlight, lighterGray);
+        darkPalette.setColor(QPalette::HighlightedText, Qt::white);
+        darkPalette.setColor(QPalette::PlaceholderText, QColor(Qt::white).darker());
+
+        darkPalette.setColor(QPalette::Active, QPalette::Button, darkGray);
+        darkPalette.setColor(QPalette::Disabled, QPalette::ButtonText, gray);
+        darkPalette.setColor(QPalette::Disabled, QPalette::WindowText, gray);
+        darkPalette.setColor(QPalette::Disabled, QPalette::Text, gray);
+        darkPalette.setColor(QPalette::Disabled, QPalette::Light, darkGray);
+
+        app->setPalette(darkPalette);
+
+        app->setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
+    }
+    else if (theme == "Native")
+    {
+        // do nothing
+    }
 
     // set icon theme
     QString fallbackThemeName = QIcon::themeName();
@@ -223,28 +271,6 @@ void MainWindow::configureTheme(QApplication* app)
 
     // fallback for icons we don't provide (i.e standard system icons)
     QIcon::setFallbackThemeName(fallbackThemeName);
-#else // _WIN32
-    
-    // set icon theme
-    QIcon::setThemeName(QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_IconTheme)));
-
-    QString styleFilePath = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_Style));
-    QFile styleFile(styleFilePath);
-
-    if (styleFilePath.isEmpty() || !styleFile.exists())
-    {
-        this->setStyleSheet(fallbackStyleSheet);
-        return;
-    }
-
-    if (!styleFile.open(QIODevice::ReadOnly))
-    {
-        this->setStyleSheet(fallbackStyleSheet);
-        return;
-    }
-
-    app->setStyleSheet(styleFile.readAll());
-#endif // _WIN32
 }
 
 void MainWindow::showErrorMessage(QString text, QString details = "")
