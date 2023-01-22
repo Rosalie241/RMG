@@ -169,8 +169,15 @@ void MainWindow::configureUI(QApplication* app)
     this->setCentralWidget(this->ui_Widgets);
 
     QString geometry;
+    bool maximized;
+
     geometry = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::RomBrowser_Geometry));
-    if (!geometry.isEmpty())
+    maximized = CoreSettingsGetBoolValue(SettingsID::RomBrowser_Maximized);
+    if (maximized)
+    {
+        this->showMaximized();
+    }
+    else if (!geometry.isEmpty())
     {
         this->restoreGeometry(QByteArray::fromBase64(geometry.toLocal8Bit()));
     }
@@ -294,10 +301,12 @@ void MainWindow::storeGeometry(void)
     }
 
     this->ui_Geometry = this->saveGeometry();
+    this->ui_Geometry_Maximized = this->isMaximized();
     this->ui_Geometry_Saved = true;
 
     std::string geometryStr = this->ui_Geometry.toBase64().toStdString();
     CoreSettingsSetValue(SettingsID::RomBrowser_Geometry, geometryStr);
+    CoreSettingsSetValue(SettingsID::RomBrowser_Maximized, this->ui_Geometry_Maximized);
 }
 
 void MainWindow::loadGeometry(void)
@@ -309,7 +318,15 @@ void MainWindow::loadGeometry(void)
 
     this->setMinimumSize(0, 0);
     this->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
-    this->restoreGeometry(this->ui_Geometry);
+
+    if (this->ui_Geometry_Maximized)
+    {
+        this->showMaximized();
+    }
+    else
+    {
+        this->restoreGeometry(this->ui_Geometry);
+    }
 
     if (this->isFullScreen())
     {

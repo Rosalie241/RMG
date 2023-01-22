@@ -62,6 +62,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     QLabel *ui_StatusBar_Label;
 
     QByteArray ui_Geometry;
+    bool ui_Geometry_Maximized = false;
     bool ui_Geometry_Saved = false;
 
     bool ui_AllowManualResizing   = false;
