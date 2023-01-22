@@ -483,6 +483,9 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::RomBrowser_Geometry:
         setting = {SETTING_SECTION_ROMBROWSER, "Geometry", ""};
         break;
+    case SettingsID::RomBrowser_Maximized:
+        setting = {SETTING_SECTION_ROMBROWSER, "Maximized", false};
+        break;
     case SettingsID::RomBrowser_Recursive:
         setting = {SETTING_SECTION_ROMBROWSER, "Recursive", true};
         break;

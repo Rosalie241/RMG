@@ -132,6 +132,7 @@ enum class SettingsID
     // RomBrowser Settings
     RomBrowser_Directory,
     RomBrowser_Geometry,
+    RomBrowser_Maximized,
     RomBrowser_Recursive,
     RomBrowser_MaxItems,
     RomBrowser_Columns,
