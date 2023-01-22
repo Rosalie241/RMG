@@ -35,7 +35,7 @@ do
 	copyForOBJ "$file"
 done
 
-windeployqt-qt6 "$exe"
+windeployqt-qt6 --no-translations "$exe"
 
 # needed by Qt at runtime
 cp "$path/libcrypto-3-x64.dll" "$bin_dir/"
