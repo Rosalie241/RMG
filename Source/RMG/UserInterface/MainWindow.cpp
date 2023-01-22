@@ -36,6 +36,7 @@
 #include <QUrl>
 #include <QActionGroup> 
 #include <QTimer>
+#include <cmath>
 
 using namespace UserInterface;
 
@@ -1587,9 +1588,11 @@ void MainWindow::on_VidExt_SetFullscreenMode(int width, int height, int bps, int
 void MainWindow::on_VidExt_ResizeWindow(int width, int height)
 {
     // account for HiDPI scaling
-    // see https://github.com/Rosalie241/RMG/issues/2
-    height /= this->devicePixelRatioF();
-    width /= this->devicePixelRatioF();
+    if (this->devicePixelRatio() != 1)
+    {
+        width  = (int)std::ceil((double)((double)width  / this->devicePixelRatio()));
+        height = (int)std::ceil((double)((double)height / this->devicePixelRatio()));
+    }
 
     if (!this->menuBar()->isHidden())
     {
