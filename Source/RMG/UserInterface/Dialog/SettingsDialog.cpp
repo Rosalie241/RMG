@@ -43,7 +43,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
     else
     {
         this->hideEmulationInfoText();
-        this->tabWidget->setTabEnabled(1, false);
+        this->tabWidget->setTabEnabled(3, false);
     }
 
     pluginList = CoreGetAllPlugins();
@@ -95,76 +95,86 @@ SettingsDialog::~SettingsDialog(void)
 
 void SettingsDialog::ShowGameTab(void)
 {
-    this->tabWidget->setCurrentIndex(1);
+    this->tabWidget->setCurrentIndex(3);
 }
 
 int SettingsDialog::currentIndex(void)
 {
     int currentIndex = this->tabWidget->currentIndex();
+    int index = currentIndex;
 
-    if (currentIndex == 1)
-    { // game tab
-        currentIndex += this->innerGameTabWidget->currentIndex();
-    }
-    else if (currentIndex > 1)
-    { // above game tab
-        currentIndex += this->innerGameTabWidget->count() - 1;
-    }
-
-    if (currentIndex == 8)
+    if (currentIndex == 0)
     { // interface tab
-        currentIndex += this->innerInterfaceTabWidget->currentIndex();
+        index += this->innerInterfaceTabWidget->currentIndex();
+    }
+    else if (currentIndex > 0)
+    { // above interface tab
+        index += this->innerInterfaceTabWidget->count() - 0;
     }
 
-    return currentIndex;
+    if (currentIndex == 3)
+    { // game tab
+        index += this->innerGameTabWidget->currentIndex();
+    }
+    else if (currentIndex > 3)
+    { // above game tab
+        index += this->innerGameTabWidget->count() - 1;
+    }
+
+    return index;
 }
 
+#include <iostream>
 void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
 {
+    std::cout << "restoreDefaults: " << stackedWidgetIndex << std::endl;
     switch (stackedWidgetIndex)
     {
     default:
+        break;
     case 0:
-        this->loadDefaultCoreSettings();
-        break;
-    case 1:
-        this->loadDefaultGameSettings();
-        break;
-    case 2:
-        this->loadDefaultGameCoreSettings();
-        break;
-    case 3:
-        this->loadDefaultGamePluginSettings();
-        break;
-    case 4:
-        this->loadDefaultPluginSettings();
-        break;
-    case 5:
-        this->loadDefaultDirectorySettings();
-        break;
-    case 6:
-        this->loadDefault64DDSettings();
-        break;
-    case 7:
-        this->loadDefaultHotkeySettings();
-        break;
-    case 8:
         this->loadDefaultInterfaceEmulationSettings();
         break;
-    case 9:
+    case 1:
         this->loadDefaultInterfaceRomBrowserSettings();
         break;
-    case 10:
-        this->loadDefaultInterfaceLogWindowSettings();
+    case 2:
+        this->loadDefaultInterfaceLogSettings();
         break;
-    case 11:
+    case 3:
         this->loadDefaultInterfaceOSDSettings();
         break;
-    case 12:
+    case 4:
+#ifdef _WIN32
         this->loadDefaultInterfaceStyleSettings();
         break;
-    case 13:
+#endif // _WIN32
+    case 5:
         this->loadDefaultInterfaceMiscSettings();
+        break;
+    case 6:
+        this->loadDefaultHotkeySettings();
+        break;
+    case 7:
+        this->loadDefaultCoreSettings();
+        break;
+    case 8:
+        this->loadDefaultGameSettings();
+        break;
+    case 9:
+        this->loadDefaultGameCoreSettings();
+        break;
+    case 10:
+        this->loadDefaultGamePluginSettings();
+        break;
+    case 11:
+        this->loadDefaultPluginSettings();
+        break;
+    case 12:
+        this->loadDefaultDirectorySettings();
+        break;
+    case 13:
+        this->loadDefault64DDSettings();
         break;
     }
 }
@@ -174,47 +184,50 @@ void SettingsDialog::reloadSettings(int stackedWidgetIndex)
     switch (stackedWidgetIndex)
     {
     default:
+        break;
     case 0:
-        this->loadCoreSettings();
-        break;
-    case 1:
-        this->loadGameSettings();
-        break;
-    case 2:
-        this->loadGameCoreSettings();
-        break;
-    case 3:
-        this->loadGamePluginSettings();
-        break;
-    case 4:
-        this->loadPluginSettings();
-        break;
-    case 5:
-        this->loadDirectorySettings();
-        break;
-    case 6:
-        this->load64DDSettings();
-        break;
-    case 7:
-        this->loadHotkeySettings();
-        break;
-    case 8:
         this->loadInterfaceEmulationSettings();
         break;
-    case 9:
+    case 1:
         this->loadInterfaceRomBrowserSettings();
         break;
-    case 10:
-        this->loadInterfaceLogWindowSettings();
+    case 2:
+        this->loadInterfaceLogSettings();
         break;
-    case 11:
+    case 3:
         this->loadInterfaceOSDSettings();
         break;
-    case 12:
+    case 4:
+#ifdef _WIN32
         this->loadInterfaceStyleSettings();
         break;
-    case 13:
+#endif // _WIN32
+    case 5:
         this->loadInterfaceMiscSettings();
+        break;
+    case 6:
+        this->loadHotkeySettings();
+        break;
+    case 7:
+        this->loadCoreSettings();
+        break;
+    case 8:
+        this->loadGameSettings();
+        break;
+    case 9:
+        this->loadGameCoreSettings();
+        break;
+    case 10:
+        this->loadGamePluginSettings();
+        break;
+    case 11:
+        this->loadPluginSettings();
+        break;
+    case 12:
+        this->loadDirectorySettings();
+        break;
+    case 13:
+        this->load64DDSettings();
         break;
     }
 }
@@ -398,7 +411,7 @@ void SettingsDialog::loadInterfaceRomBrowserSettings(void)
     this->romSearchLimitSpinBox->setValue(CoreSettingsGetIntValue(SettingsID::RomBrowser_MaxItems));
 }
 
-void SettingsDialog::loadInterfaceLogWindowSettings(void)
+void SettingsDialog::loadInterfaceLogSettings(void)
 {
     this->showVerboseLogMessagesCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_ShowVerboseLogMessages));
 }
@@ -544,7 +557,7 @@ void SettingsDialog::loadDefaultInterfaceRomBrowserSettings(void)
     this->romSearchLimitSpinBox->setValue(CoreSettingsGetDefaultIntValue(SettingsID::RomBrowser_MaxItems));
 }
 
-void SettingsDialog::loadDefaultInterfaceLogWindowSettings(void)
+void SettingsDialog::loadDefaultInterfaceLogSettings(void)
 {
     this->showVerboseLogMessagesCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_ShowVerboseLogMessages));
 }
@@ -591,7 +604,7 @@ void SettingsDialog::saveSettings(void)
     this->saveHotkeySettings();
     this->saveInterfaceEmulationSettings();
     this->saveInterfaceRomBrowserSettings();
-    this->saveInterfaceLogWindowSettings();
+    this->saveInterfaceLogSettings();
     this->saveInterfaceOSDSettings();
     this->saveInterfaceStyleSettings();
     this->saveInterfaceMiscSettings();
@@ -752,7 +765,7 @@ void SettingsDialog::saveInterfaceRomBrowserSettings(void)
     CoreSettingsSetValue(SettingsID::RomBrowser_MaxItems, this->romSearchLimitSpinBox->value());
 }
 
-void SettingsDialog::saveInterfaceLogWindowSettings(void)
+void SettingsDialog::saveInterfaceLogSettings(void)
 {
     CoreSettingsSetValue(SettingsID::GUI_ShowVerboseLogMessages, this->showVerboseLogMessagesCheckBox->isChecked());
 }
