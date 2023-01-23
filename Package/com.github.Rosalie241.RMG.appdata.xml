@@ -33,6 +33,31 @@
   </screenshots>
   <description/>
   <releases>
+    <release version="v0.3.0" date="2023-01-23" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix GLideN64 not being able to load texture packs from relative paths</li>
+          <li>Fix "Save State Slot" keybindings not working in fullscreen</li>
+          <li>Fix deadzone percentage being incorrect when set to 0% in RMG-Input</li>
+          <li>Fix low deadzone value not working in RMG-Input (thank you porcino)</li>
+          <li>Fix toolbar being hidden when ending emulation while in fullscreen</li>
+          <li>Fix zip files with japanese characters in the file name not being able to be opened on windows</li>
+          <li>Fix ROM Browser not returning to a maximized state when ending emulation</li>
+          <li>Fix ROM Browser not opening maximized when closing RMG with it maximized</li>
+          <li>Fix window not being able to be maximized during emulation when scaling is enabled</li>
+          <li>Fix read-only ROM files not being able to be opened on linux</li>
+          <li>Remove "Allow Manual Window Resizing" setting due to it being always enabled</li>
+          <li>Remove Styles tab from settings dialog on windows</li>
+          <li>Add "Play Game with Cartridge" to context menu when a 64DD disk is selected in the ROM Browser</li>
+          <li>Add "Open ROM Directory" to context menu in the ROM Browser</li>
+          <li>Add an On-Screen Display (see the OSD tab in the settings dialog for settings)</li>
+          <li>Add Theme setting to settings dialog (see Interface -> Miscellaneous, this is a replacement for the previous Styles settings)</li>
+          <li>Improve error message when opening a zip file fails</li>
+          <li>Improve tab order and naming in settings dialog</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.2.9" date="2023-01-03" type="stable">
       <description>
         <p>Changes:</p>
