@@ -157,6 +157,9 @@
    <addaction name="action_View_Fullscreen"/>
    <addaction name="separator"/>
    <addaction name="action_Settings_Settings"/>
+   <addaction name="separator"/>
+   <addaction name="action_Settings_Graphics"/>
+   <addaction name="action_Settings_Input"/>
   </widget>
   <action name="action_System_StartRom">
    <property name="icon">
