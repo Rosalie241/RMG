@@ -64,6 +64,8 @@ void OnScreenDisplayShutdown(void)
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui::DestroyContext();
+
+    l_Message         = "";
     l_Initialized     = false;
     l_RenderingPaused = false;
 }
@@ -109,7 +111,7 @@ void OnScreenDisplayRender(void)
         return;
     }
 
-    const auto currentTime = std::chrono::high_resolution_clock::now();
+    const auto currentTime  = std::chrono::high_resolution_clock::now();
     const int secondsPassed = std::chrono::duration_cast<std::chrono::seconds>(currentTime - l_MessageTime).count();
     if (secondsPassed >= l_MessageDuration)
     {
