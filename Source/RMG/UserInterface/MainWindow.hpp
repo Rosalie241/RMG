@@ -123,6 +123,8 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     int ui_LeftMouseButtonState  = 0;
     int ui_RightMouseButtonState = 0;
 
+    QApplication* qApplication = nullptr;
+
     QString ui_WindowTitle;
 
     Dialog::LogDialog logDialog;

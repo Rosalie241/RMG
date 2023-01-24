@@ -213,6 +213,8 @@ void MainWindow::initializeUI(bool launchROM)
 
 void MainWindow::configureUI(QApplication* app, bool showUI)
 {
+    this->qApplication = app;
+
     this->setCentralWidget(this->ui_Widgets);
 
     QString geometry;
@@ -1258,6 +1260,23 @@ void MainWindow::on_EventFilter_KeyReleased(QKeyEvent *event)
 
     int key = Utilities::QtKeyToSdl2Key(event->key());
     int mod = Utilities::QtModKeyToSdl2ModKey(event->modifiers());
+
+    if (event->key() == Qt::Key_ScrollLock)
+    {
+        QApplication::setOverrideCursor(Qt::BlankCursor);
+        QPoint center = this->mapToGlobal(QPoint(this->width() / 2, this->height() / 2));
+        QCursor::setPos(center);
+        this->ui_Widget_OpenGL->GetWidget()->grabMouse();
+        this->qApplication->installEventFilter(this->ui_EventFilter);
+        return;
+    }
+    else if (event->key() == Qt::Key_Escape)
+    {
+        QApplication::restoreOverrideCursor();
+        this->ui_Widget_OpenGL->GetWidget()->releaseMouse();
+        this->qApplication->removeEventFilter(this->ui_EventFilter);
+        return;
+    }
 
     CoreSetKeyUp(key, mod);
 }
