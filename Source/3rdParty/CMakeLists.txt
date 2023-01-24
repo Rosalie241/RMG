@@ -265,13 +265,13 @@ set(IMGUI_SOURCES_IN
     ${IMGUI_DIR}/backends/imgui_impl_opengl3_loader.h 
 )
 set(IMGUI_SOURCES_OUT
-    ${IMGUI_DIR}/build/imgui_draw.cpp
-    ${IMGUI_DIR}/build/imgui_tables.cpp
-    ${IMGUI_DIR}/build/imgui_widgets.cpp
-    ${IMGUI_DIR}/build/imgui.cpp
-    ${IMGUI_DIR}/build/imgui_impl_opengl3.cpp
-    ${IMGUI_DIR}/build/imgui_impl_opengl3.h 
-    ${IMGUI_DIR}/build/imgui_impl_opengl3_loader.h 
+    ${IMGUI_BUILD_DIR}/imgui_draw.cpp
+    ${IMGUI_BUILD_DIR}/imgui_tables.cpp
+    ${IMGUI_BUILD_DIR}/imgui_widgets.cpp
+    ${IMGUI_BUILD_DIR}/imgui.cpp
+    ${IMGUI_BUILD_DIR}/imgui_impl_opengl3.cpp
+    ${IMGUI_BUILD_DIR}/imgui_impl_opengl3.h 
+    ${IMGUI_BUILD_DIR}/imgui_impl_opengl3_loader.h 
 )
 ExternalProject_Add(imgui
     SOURCE_DIR imgui
