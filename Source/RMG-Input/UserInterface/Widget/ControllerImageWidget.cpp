@@ -10,8 +10,8 @@
 #include "ControllerImageWidget.hpp"
 
 #include <QSvgRenderer>
+#include <algorithm>
 #include <cmath>
-#include <iostream>
 #include <QPainter>
 #include <QResizeEvent>
 
@@ -58,6 +58,15 @@ void ControllerImageWidget::SetDeadzone(int value)
     if (this->deadzoneValue != value)
     {
         this->deadzoneValue = value;
+        this->needImageUpdate = true;
+    }
+}
+
+void ControllerImageWidget::SetSensitivity(int value)
+{
+    if (this->sensitivityValue != value)
+    {
+        this->sensitivityValue = value;
         this->needImageUpdate = true;
     }
 }
@@ -153,27 +162,35 @@ void ControllerImageWidget::paintEvent(QPaintEvent *event)
     renderer.setAspectRatioMode(Qt::AspectRatioMode::KeepAspectRatio);
 
     QRectF rectF = renderer.viewBoxF();
-    double offsetx = 0, offsety = 0;
     const int width = rectF.width();
     const int height = rectF.height();
     // we'll move the analog stick by a percentage
     // of the total width/height from the image
-    const double maxOffsety = ((double)(height * 0.12265f) / 2);
-    const double maxOffsetx = maxOffsety;
-    const double dist = sqrt(pow(this->xAxisState, 2) + pow(this->yAxisState, 2));
+    const double absoluteMaxOffset = ((double)(height * 0.12265f) / 2);
+    // slope as in line gradient
+    const double offsetSlope = absoluteMaxOffset / 100;
+    // take sensitivity into account
+    const double sensitivityFactor = this->sensitivityValue / 100.0;
+    const double sensitivityAdjustedMaxOffset = absoluteMaxOffset * std::min(sensitivityFactor, 1.0);
+    double offsetDeadzone = this->deadzoneValue * sensitivityFactor * offsetSlope;
+    int offsetx = this->xAxisState * sensitivityFactor * offsetSlope;
+    int offsety = this->yAxisState * sensitivityFactor * offsetSlope;
+    const double offsetDist = sqrt(pow(offsetx, 2) + pow(offsety, 2));
 
     // take deadzone into account
-    if (dist > this->deadzoneValue)
+    // deadzone grows with sensitivity such that the deadzone
+    // is always a percentage of the real stick range
+    if (offsetDist <= offsetDeadzone)
     {
-        offsetx = (maxOffsetx / 100 * this->xAxisState);
-        offsety = (maxOffsety / 100 * this->yAxisState);
+        offsetx = 0;
+        offsety = 0;
     }
 
     // take circle range into account
-    if (dist > 100)
+    if (offsetDist > sensitivityAdjustedMaxOffset)
     {
-        offsetx = (maxOffsetx / 100 * (this->xAxisState / dist * 100));
-        offsety = (maxOffsety / 100 * (this->yAxisState / dist * 100));
+        offsetx = (offsetx / offsetDist) * sensitivityAdjustedMaxOffset;
+        offsety = (offsety / offsetDist) * sensitivityAdjustedMaxOffset;
     }
 
     // adjust rect with offset

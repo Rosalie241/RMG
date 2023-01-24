@@ -517,6 +517,7 @@ void ControllerWidget::on_analogStickSensitivitySlider_valueChanged(int value)
     title += "%";
 
     this->analogStickSensitivityGroupBox->setTitle(title);
+    this->controllerImageWidget->SetSensitivity(value);
 }
 
 void ControllerWidget::on_profileComboBox_currentIndexChanged(int value)
