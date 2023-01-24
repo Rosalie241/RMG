@@ -139,6 +139,7 @@ typedef struct {
 /*** Controller types ****/
 #define CONT_TYPE_STANDARD          0
 #define CONT_TYPE_VRU               1
+#define CONT_TYPE_MOUSE             2
 
 typedef struct {
     int Present;
@@ -264,6 +265,8 @@ typedef void (*ptr_InitiateControllers)(CONTROL_INFO ControlInfo);
 typedef void (*ptr_ReadController)(int Control, unsigned char *Command);
 typedef void (*ptr_SDL_KeyDown)(int keymod, int keysym);
 typedef void (*ptr_SDL_KeyUp)(int keymod, int keysym);
+typedef void (*ptr_MouseMove)(int x, int y);
+typedef void (*ptr_MouseButton)(int left, int right);
 typedef void (*ptr_RenderCallback)(void);
 typedef void (*ptr_SendVRUWord)(uint16_t length, uint16_t *word, uint8_t lang);
 typedef void (*ptr_SetMicState)(int state);
@@ -277,6 +280,8 @@ EXPORT void CALL InitiateControllers(CONTROL_INFO ControlInfo);
 EXPORT void CALL ReadController(int Control, unsigned char *Command);
 EXPORT void CALL SDL_KeyDown(int keymod, int keysym);
 EXPORT void CALL SDL_KeyUp(int keymod, int keysym);
+EXPORT void CALL MouseMove(int x, int y);
+EXPORT void CALL MouseButton(int left, int right);
 EXPORT void CALL RenderCallback(void);
 EXPORT void CALL SendVRUWord(uint16_t length, uint16_t *word, uint8_t lang);
 EXPORT void CALL SetMicState(int state);

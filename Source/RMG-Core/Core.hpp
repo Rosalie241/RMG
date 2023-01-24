@@ -28,6 +28,7 @@
 #include "Volume.hpp"
 #include "Error.hpp"
 #include "Unzip.hpp"
+#include "Mouse.hpp"
 #include "Video.hpp"
 #include "Key.hpp"
 #include "Rom.hpp"

@@ -50,6 +50,7 @@ set(RMG_CORE_SOURCES
     VidExt.cpp
     Video.cpp
     Error.cpp
+    Mouse.cpp
     Unzip.cpp
     Core.cpp
     Key.cpp

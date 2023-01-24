@@ -17,7 +17,7 @@
 // Exported Functions
 //
 
-bool CoreSetKeyUp(int key, int mod)
+bool CoreSetMouseMove(int x, int y)
 {
     std::string error;
     m64p_error ret;
@@ -27,10 +27,10 @@ bool CoreSetKeyUp(int key, int mod)
         return false;
     }
 
-    ret = m64p::Core.DoCommand(M64CMD_SEND_SDL_KEYUP, (mod << 16) + key, nullptr);
+    ret = m64p::Core.DoCommand(M64CMD_SET_MOUSE_MOVE, (y << 16) + x, nullptr);
     if (ret != M64ERR_SUCCESS)
     {
-        error = "CoreSetKeyUp M64P::Core.DoCommand(M64CMD_SEND_SDL_KEYUP) Failed: ";
+        error = "CoreSetMouseMove M64P::Core.DoCommand(M64CMD_SET_MOUSE_MOVE) Failed: ";
         error += m64p::Core.ErrorMessage(ret);
         CoreSetError(error);
     }
@@ -38,7 +38,7 @@ bool CoreSetKeyUp(int key, int mod)
     return ret == M64ERR_SUCCESS;
 }
 
-bool CoreSetKeyDown(int key, int mod)
+bool CoreSetMouseButton(int left, int right)
 {
     std::string error;
     m64p_error ret;
@@ -48,10 +48,10 @@ bool CoreSetKeyDown(int key, int mod)
         return false;
     }
 
-    ret = m64p::Core.DoCommand(M64CMD_SEND_SDL_KEYDOWN, (mod << 16) + key, NULL);
+    ret = m64p::Core.DoCommand(M64CMD_SET_MOUSE_BUTTON, (right << 16) + left, nullptr);
     if (ret != M64ERR_SUCCESS)
     {
-        error = "CoreSetKeyDown M64P::Core.DoCommand(M64CMD_SEND_SDL_KEYDOWN) Failed: ";
+        error = "CoreSetMouseMove M64P::Core.DoCommand(M64CMD_SET_MOUSE_MOVE) Failed: ";
         error += m64p::Core.ErrorMessage(ret);
         CoreSetError(error);
     }
