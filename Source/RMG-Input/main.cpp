@@ -60,6 +60,7 @@ struct InputProfile
 {
     bool PluggedIn    = false;
     int DeadzoneValue = 0;
+    int SensitivityValue = 100;
 
     N64ControllerPak ControllerPak = N64ControllerPak::None;
 
@@ -217,6 +218,7 @@ static void load_settings(void)
 
         profile->PluggedIn = CoreSettingsGetBoolValue(SettingsID::Input_PluggedIn, section);
         profile->DeadzoneValue = CoreSettingsGetIntValue(SettingsID::Input_Deadzone, section);
+        profile->SensitivityValue = CoreSettingsGetIntValue(SettingsID::Input_Sensitivity, section);
         profile->ControllerPak = (N64ControllerPak)CoreSettingsGetIntValue(SettingsID::Input_Pak, section);
         profile->DeviceName = CoreSettingsGetStringValue(SettingsID::Input_DeviceName, section);
         profile->DeviceNum = CoreSettingsGetIntValue(SettingsID::Input_DeviceNum, section);
@@ -880,7 +882,7 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
         inputX, // inputX
         inputY, // inputY
         profile->DeadzoneValue / 100.0, // deadzoneFactor
-        1.0, // sensitivityFactor
+        profile->SensitivityValue / 100.0, // sensitivityFactor
         octagonX, // outputX
         octagonY  // outputY
     );
