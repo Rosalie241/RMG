@@ -67,9 +67,10 @@ static m64p_error VidExt_Init(void)
 
 static m64p_error VidExt_Quit(void)
 {
+    OnScreenDisplayShutdown();
+
     l_OGLWidget->MoveContextToThread(QApplication::instance()->thread());
     l_EmuThread->on_VidExt_Quit();
-    OnScreenDisplayShutdown();
 
     l_VidExtInitialized = false;
     l_OsdInitialized    = false;
