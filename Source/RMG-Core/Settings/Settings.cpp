@@ -615,6 +615,9 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::Input_PluggedIn:
         setting = {"", "PluggedIn"};
         break;
+    case SettingsID::Input_InputType:
+        setting = {"", "InputType"};
+        break;
     case SettingsID::Input_DeviceType:
         setting = {"", "DeviceType"};
         break;

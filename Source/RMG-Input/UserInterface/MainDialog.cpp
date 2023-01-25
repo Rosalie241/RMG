@@ -36,6 +36,11 @@ MainDialog::MainDialog(QWidget* parent, Thread::SDLThread* sdlThread, bool romCo
             &MainDialog::on_EventFilter_KeyPressed);
     connect(this->eventFilter, &EventFilter::on_EventFilter_KeyReleased, this,
             &MainDialog::on_EventFilter_KeyReleased);
+    connect(this->eventFilter, &EventFilter::on_EventFilter_MouseButtonPressed, this,
+            &MainDialog::on_EventFilter_MouseButtonPressed);
+    connect(this->eventFilter, &EventFilter::on_EventFilter_MouseButtonReleased, this,
+            &MainDialog::on_EventFilter_MouseButtonReleased);
+
 
     // each tab needs its own ControllerWidget
     for (int i = 0; i < this->tabWidget->count(); i++)
@@ -381,6 +386,47 @@ void MainDialog::on_EventFilter_KeyReleased(QKeyEvent *event)
     SDL_Event sdlEvent;
     sdlEvent.key = keyboardEvent;
     sdlEvent.type = SDL_KEYUP;
+
+    SDL_PeepEvents(&sdlEvent, 1, SDL_ADDEVENT, 0, 0);
+}
+
+void MainDialog::on_EventFilter_MouseButtonPressed(QMouseEvent *event)
+{
+    if (event->button() != Qt::MouseButton::LeftButton &&
+        event->button() != Qt::MouseButton::RightButton)
+    {
+        return;
+    }
+
+    SDL_MouseButtonEvent mouseButtonEvent;
+    mouseButtonEvent.button = (event->button() == Qt::MouseButton::LeftButton) ? SDL_BUTTON_LEFT : SDL_BUTTON_RIGHT;
+    mouseButtonEvent.state  = SDL_PRESSED;
+    mouseButtonEvent.clicks = 1;
+
+    SDL_Event sdlEvent;
+    sdlEvent.button = mouseButtonEvent;
+    sdlEvent.type   = SDL_MOUSEBUTTONDOWN;
+
+    SDL_PeepEvents(&sdlEvent, 1, SDL_ADDEVENT, 0, 0);
+
+}
+
+void MainDialog::on_EventFilter_MouseButtonReleased(QMouseEvent *event)
+{
+    if (event->button() != Qt::MouseButton::LeftButton &&
+        event->button() != Qt::MouseButton::RightButton)
+    {
+        return;
+    }
+
+    SDL_MouseButtonEvent mouseButtonEvent;
+    mouseButtonEvent.button = (event->button() == Qt::MouseButton::LeftButton) ? SDL_BUTTON_LEFT : SDL_BUTTON_RIGHT;
+    mouseButtonEvent.state  = SDL_RELEASED;
+    mouseButtonEvent.clicks = 1;
+
+    SDL_Event sdlEvent;
+    sdlEvent.button = mouseButtonEvent;
+    sdlEvent.type   = SDL_MOUSEBUTTONUP;
 
     SDL_PeepEvents(&sdlEvent, 1, SDL_ADDEVENT, 0, 0);
 }

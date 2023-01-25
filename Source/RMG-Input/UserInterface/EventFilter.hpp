@@ -31,6 +31,9 @@ class EventFilter : public QObject
   signals:
     void on_EventFilter_KeyPressed(QKeyEvent *);
     void on_EventFilter_KeyReleased(QKeyEvent *);
+
+    void on_EventFilter_MouseButtonPressed(QMouseEvent *);
+    void on_EventFilter_MouseButtonReleased(QMouseEvent *);
 };
 } // namespace UserInterface
 

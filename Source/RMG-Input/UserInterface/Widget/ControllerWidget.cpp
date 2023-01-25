@@ -683,6 +683,41 @@ void ControllerWidget::on_profileComboBox_currentIndexChanged(int value)
     this->CheckInputDeviceSettings();
 }
 
+void ControllerWidget::on_inputTypeComboBox_currentIndexChanged(int value)
+{
+    this->controllerImageWidget->SetMouseMode((value == 1));
+    // force a re-load
+    this->controllerImageWidget->UpdateImage();
+
+    // TODO
+    return;
+
+    QWidget* widgets[] = 
+    {
+        groupBox_4,
+        deadZoneGroupBox,
+        groupBox,
+        groupBox_2,
+        groupBox_3,
+        groupBox_6,
+    };
+
+    if (value == 1)
+    { // mouse mode
+        for (const auto& widget : widgets)
+        {
+            widget->setEnabled(false);
+        }
+    }
+    else
+    { // controller mode
+        for (const auto& widget : widgets)
+        {
+            widget->setEnabled(true);
+        }
+    }
+}
+
 void ControllerWidget::on_inputDeviceComboBox_currentIndexChanged(int value)
 {
     // do nothing when value is invalid
@@ -1029,7 +1064,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             {
                 if (button.buttonWidget->HasInputData(inputType, sdlButton))
                 {
-                    this->controllerImageWidget->SetButtonState(button.button, sdlButtonPressed);
+                    this->controllerImageWidget->SetControllerButtonState(button.button, sdlButtonPressed);
                 }
             }
 
@@ -1290,7 +1325,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             {
                 if (button.buttonWidget->HasInputData(inputType, sdlAxis, sdlAxisDirection))
                 {
-                    this->controllerImageWidget->SetButtonState(button.button, sdlAxisButtonPressed);
+                    this->controllerImageWidget->SetControllerButtonState(button.button, sdlAxisButtonPressed);
                 }
             }
 
@@ -1367,7 +1402,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             {
                 if (button.buttonWidget->HasInputData(InputType::Keyboard, sdlButton))
                 {
-                    this->controllerImageWidget->SetButtonState(button.button, sdlButtonPressed);
+                    this->controllerImageWidget->SetControllerButtonState(button.button, sdlButtonPressed);
                 }
             }
 
@@ -1408,6 +1443,21 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
 
             break;
         }
+
+        case SDL_MOUSEBUTTONDOWN:
+        case SDL_MOUSEBUTTONUP:
+        { // mouse button press
+            if (this->inputTypeComboBox->currentIndex() != 1)
+            { // no mouse
+                return;
+            }
+
+            const bool sdlMouseButtonPressed = (event->type == SDL_MOUSEBUTTONDOWN);
+            const N64MouseButton mouseButton = (event->button.button == SDL_BUTTON_LEFT ? N64MouseButton::Left : N64MouseButton::Right);
+
+            // update mouse button state
+            this->controllerImageWidget->SetMouseButtonState(mouseButton, sdlMouseButtonPressed); 
+        } break;
 
         default:
             break;
@@ -1597,6 +1647,7 @@ void ControllerWidget::LoadSettings(QString sectionQString, bool loadUserProfile
     }
 
     this->deadZoneSlider->setValue(CoreSettingsGetIntValue(SettingsID::Input_Deadzone, section));
+    this->inputTypeComboBox->setCurrentIndex(CoreSettingsGetIntValue(SettingsID::Input_InputType, section));
     this->optionsDialogSettings.RemoveDuplicateMappings = CoreSettingsGetBoolValue(SettingsID::Input_RemoveDuplicateMappings, section);
     this->optionsDialogSettings.ControllerPak = CoreSettingsGetIntValue(SettingsID::Input_Pak, section);
     this->optionsDialogSettings.GameboyRom = CoreSettingsGetStringValue(SettingsID::Input_GameboyRom, section);
@@ -1652,6 +1703,9 @@ void ControllerWidget::LoadSettings(QString sectionQString, bool loadUserProfile
 
     // force refresh some UI elements
     this->CheckInputDeviceSettings(sectionQString);
+
+    // TODO: is this correct?
+    this->on_inputTypeComboBox_currentIndexChanged(this->inputTypeComboBox->currentIndex());
     this->on_deadZoneSlider_valueChanged(this->deadZoneSlider->value());
     this->setPluggedIn(this->IsPluggedIn());
 }
@@ -1792,15 +1846,16 @@ void ControllerWidget::SaveSettings(QString section)
 
     this->GetCurrentInputDevice(deviceName, deviceNum, true);
 
-    CoreSettingsSetValue(SettingsID::Input_PluggedIn, sectionStr, this->IsPluggedIn());
-    CoreSettingsSetValue(SettingsID::Input_DeviceName, sectionStr, deviceName.toStdString());
-    CoreSettingsSetValue(SettingsID::Input_DeviceNum, sectionStr, deviceNum);
-    CoreSettingsSetValue(SettingsID::Input_Deadzone, sectionStr, this->deadZoneSlider->value());
-    CoreSettingsSetValue(SettingsID::Input_Sensitivity, sectionStr, this->analogStickSensitivitySlider->value());
-    CoreSettingsSetValue(SettingsID::Input_Pak, sectionStr, this->optionsDialogSettings.ControllerPak);
-    CoreSettingsSetValue(SettingsID::Input_GameboyRom, sectionStr, this->optionsDialogSettings.GameboyRom);
-    CoreSettingsSetValue(SettingsID::Input_GameboySave, sectionStr, this->optionsDialogSettings.GameboySave);
-    CoreSettingsSetValue(SettingsID::Input_RemoveDuplicateMappings, sectionStr, this->optionsDialogSettings.RemoveDuplicateMappings);
+    CoreSettingsSetValue(SettingsID::Input_PluggedIn, section, this->IsPluggedIn());
+    CoreSettingsSetValue(SettingsID::Input_InputType, section, this->inputTypeComboBox->currentIndex());
+    CoreSettingsSetValue(SettingsID::Input_DeviceName, section, deviceName.toStdString());
+    CoreSettingsSetValue(SettingsID::Input_DeviceNum, section, deviceNum);
+    CoreSettingsSetValue(SettingsID::Input_Deadzone, section, this->deadZoneSlider->value());
+    CoreSettingsSetValue(SettingsID::Input_Pak, section, this->optionsDialogSettings.ControllerPak);
+    CoreSettingsSetValue(SettingsID::Input_GameboyRom, section, this->optionsDialogSettings.GameboyRom);
+    CoreSettingsSetValue(SettingsID::Input_GameboySave, section, this->optionsDialogSettings.GameboySave);
+    CoreSettingsSetValue(SettingsID::Input_RemoveDuplicateMappings, section, this->optionsDialogSettings.RemoveDuplicateMappings);
+    CoreSettingsSetValue(SettingsID::Input_InvertAxis, section, this->optionsDialogSettings.InvertAxis);
     CoreSettingsSetValue(SettingsID::Input_FilterEventsForButtons, sectionStr, this->optionsDialogSettings.FilterEventsForButtons);
     CoreSettingsSetValue(SettingsID::Input_FilterEventsForAxis, sectionStr, this->optionsDialogSettings.FilterEventsForAxis);
 

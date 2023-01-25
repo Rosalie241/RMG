@@ -26,11 +26,20 @@ ControllerImageWidget::~ControllerImageWidget()
 
 }
 
-void ControllerImageWidget::SetButtonState(enum N64ControllerButton button, bool state)
+void ControllerImageWidget::SetControllerButtonState(enum N64ControllerButton button, bool state)
 {
-    if (this->buttonState[(int)button] != state)
+    if (this->controllerButtonState[(int)button] != state)
     {
-        this->buttonState[(int)button] = state;
+        this->controllerButtonState[(int)button] = state;
+        this->needImageUpdate = true;
+    }
+}
+
+void ControllerImageWidget::SetMouseButtonState(enum N64MouseButton button, bool state)
+{
+    if (this->mouseButtonState[(int)button] != state)
+    {
+        this->mouseButtonState[(int)button] = state;
         this->needImageUpdate = true;
     }
 }
@@ -71,14 +80,32 @@ void ControllerImageWidget::SetSensitivity(int value)
     }
 }
 
+void ControllerImageWidget::SetMouseMode(bool value)
+{
+    if (this->isMouseMode != value)
+    {
+        this->isMouseMode = value;
+    }
+}
+
 void ControllerImageWidget::ClearControllerState()
 {
-    // reset button state
+    // reset controller button state
     for (int i = 0; i < (int)N64ControllerButton::Invalid; i++)
     {
-        if (this->buttonState[i])
+        if (this->controllerButtonState[i])
         {
-            this->buttonState[i] = false;
+            this->controllerButtonState[i] = false;
+            this->needImageUpdate = true;
+        }
+    }
+
+    // reset mouse button state
+    for (int i = 0; i < (int)N64MouseButton::Invalid; i++)
+    {
+        if (this->mouseButtonState[i])
+        {
+            this->mouseButtonState[i] = false;
             this->needImageUpdate = true;
         }
     }
@@ -119,7 +146,7 @@ void ControllerImageWidget::paintEvent(QPaintEvent *event)
     {
         enum N64ControllerButton button;
         QString imageUri;
-    } buttons[] =
+    } controllerButtons[] =
     {
         { N64ControllerButton::A, ":Resource/Controller_Pressed_A.svg" },
         { N64ControllerButton::B, ":Resource/Controller_Pressed_B.svg" },
@@ -137,23 +164,57 @@ void ControllerImageWidget::paintEvent(QPaintEvent *event)
         { N64ControllerButton::ZTrigger, ":Resource/Controller_Pressed_ZTrigger.svg" }
     };
 
-    static const QString baseImageUri = ":Resource/Controller_NoAnalogStick.svg";
+    static const struct
+    {
+        enum N64MouseButton button;
+        QString imageUri;
+    } mouseButtons[] =
+    {
+        { N64MouseButton::Left, ":Resource/Mouse_Pressed_Left.svg" },
+        { N64MouseButton::Right, ":Resource/Mouse_Pressed_Right.svg" },
+    };
+
+    static const QString baseControllerImageUri = ":Resource/Controller_NoAnalogStick.svg";
+    static const QString baseMouseImageUri = ":Resource/Mouse.svg";
     static const QString analogStickImageUri = ":Resource/Controller_AnalogStick.svg";
 
     // render base image first
-    renderer.load(baseImageUri);
+    if (this->isMouseMode)
+    {
+        renderer.load(baseMouseImageUri);
+    }
+    else
+    {
+        renderer.load(baseControllerImageUri);
+    }
     renderer.setAspectRatioMode(Qt::AspectRatioMode::KeepAspectRatio);
     renderer.render(&painter);
 
     // render button images on top
     // when the button is pressed
-    for (auto& button : buttons)
+    if (this->isMouseMode)
     {
-        if (this->buttonState[(int)button.button])
+        for (auto& button : mouseButtons)
         {
-            renderer.load(button.imageUri);
-            renderer.setAspectRatioMode(Qt::AspectRatioMode::KeepAspectRatio);
-            renderer.render(&painter);
+            if (this->mouseButtonState[(int)button.button])
+            {
+                renderer.load(button.imageUri);
+                renderer.setAspectRatioMode(Qt::AspectRatioMode::KeepAspectRatio);
+                renderer.render(&painter);
+            }
+        }
+        return;
+    }
+    else
+    {
+        for (auto& button : controllerButtons)
+        {
+            if (this->controllerButtonState[(int)button.button])
+            {
+                renderer.load(button.imageUri);
+                renderer.setAspectRatioMode(Qt::AspectRatioMode::KeepAspectRatio);
+                renderer.render(&painter);
+            }
         }
     }
 

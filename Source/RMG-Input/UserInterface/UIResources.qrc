@@ -16,6 +16,9 @@
   <file>Resource/Controller_Pressed_LeftTrigger.svg</file>
   <file>Resource/Controller_Pressed_RightTrigger.svg</file>
   <file>Resource/Controller_Pressed_ZTrigger.svg</file>
+  <file>Resource/Mouse.svg</file>
+  <file>Resource/Mouse_Pressed_Left.svg</file>
+  <file>Resource/Mouse_Pressed_Right.svg</file>
   <file>Resource/RMG.png</file>
 </qresource>
 </RCC>

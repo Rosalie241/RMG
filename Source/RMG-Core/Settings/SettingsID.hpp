@@ -201,6 +201,7 @@ enum class SettingsID
     Input_UseProfile,
     Input_UseGameProfile,
     Input_PluggedIn,
+    Input_InputType,
     Input_DeviceType,
     Input_DeviceName,
     Input_DeviceNum,

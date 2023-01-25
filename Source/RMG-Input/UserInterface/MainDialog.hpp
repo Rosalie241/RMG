@@ -80,6 +80,9 @@ private slots:
     void on_EventFilter_KeyPressed(QKeyEvent *);
     void on_EventFilter_KeyReleased(QKeyEvent *);
 
+    void on_EventFilter_MouseButtonPressed(QMouseEvent *);
+    void on_EventFilter_MouseButtonReleased(QMouseEvent *);
+
     void accept(void) Q_DECL_OVERRIDE;
     void reject(void) Q_DECL_OVERRIDE;
 };
