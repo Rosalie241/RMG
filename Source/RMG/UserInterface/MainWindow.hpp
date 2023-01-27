@@ -250,6 +250,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 
     void on_Core_DebugCallback(QList<CoreCallbackMessage> messages);
     void on_Core_StateCallback(CoreStateCallbackType type, int value);
+    void on_Core_ResetMousPositionCallback(void);
 };
 } // namespace UserInterface
 

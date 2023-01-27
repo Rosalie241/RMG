@@ -106,6 +106,11 @@ bool MainWindow::Init(QApplication* app, bool showUI, bool launchROM)
         this->addActions();
     }
 
+    connect(coreCallBacks, &CoreCallbacks::OnCoreDebugCallback, this, &MainWindow::on_Core_DebugCallback);
+    connect(coreCallBacks, &CoreCallbacks::OnCoreDebugCallback, &this->logDialog, &Dialog::LogDialog::AddLogLine);
+    connect(coreCallBacks, &CoreCallbacks::OnResetMousePositionCallback, this, &MainWindow::on_Core_ResetMousPositionCallback, Qt::BlockingQueuedConnection);
+    connect(app, &QGuiApplication::applicationStateChanged, this, &MainWindow::on_QGuiApplication_applicationStateChanged);
+
     return true;
 }
 
@@ -1261,23 +1266,6 @@ void MainWindow::on_EventFilter_KeyReleased(QKeyEvent *event)
     int key = Utilities::QtKeyToSdl2Key(event->key());
     int mod = Utilities::QtModKeyToSdl2ModKey(event->modifiers());
 
-    if (event->key() == Qt::Key_ScrollLock)
-    {
-        QApplication::setOverrideCursor(Qt::BlankCursor);
-        QPoint center = this->mapToGlobal(QPoint(this->width() / 2, this->height() / 2));
-        QCursor::setPos(center);
-        this->ui_Widget_OpenGL->GetWidget()->grabMouse();
-        this->qApplication->installEventFilter(this->ui_EventFilter);
-        return;
-    }
-    else if (event->key() == Qt::Key_Escape)
-    {
-        QApplication::restoreOverrideCursor();
-        this->ui_Widget_OpenGL->GetWidget()->releaseMouse();
-        this->qApplication->removeEventFilter(this->ui_EventFilter);
-        return;
-    }
-
     CoreSetKeyUp(key, mod);
 }
 
@@ -1338,6 +1326,7 @@ void MainWindow::on_EventFilter_MouseMoved(QMouseEvent *event)
     int y = event->globalPosition().y();
 
     CoreSetMouseMove(x, y);
+
 }
 
 void MainWindow::on_EventFilter_MouseButtonPressed(QMouseEvent *event)
@@ -2659,4 +2648,17 @@ void MainWindow::on_VidExt_Quit(void)
     }
 
     this->ui_VidExtRenderMode = VidExtRenderMode::Invalid;
+}
+
+void MainWindow::on_Core_ResetMousPositionCallback()
+{
+    // reset cursor to center of opengl widget
+    QPoint center = this->ui_Widget_OpenGL->GetWidget()->mapToGlobal(
+        QPoint(
+            this->ui_Widget_OpenGL->GetWidget()->width() / 2, 
+            this->ui_Widget_OpenGL->GetWidget()->height() / 2
+        )
+    );
+
+    QCursor::setPos(center);
 }
