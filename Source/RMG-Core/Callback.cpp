@@ -33,7 +33,7 @@ static std::function<void(enum CoreDebugMessageType, std::string, std::string)> 
 static std::function<void(enum CoreStateCallbackType, int)> l_StateCallbackFunc;
 static bool l_PrintCallbacks = false;
 static std::vector<l_DebugCallbackMessage> l_PendingCallbacks;
-
+static std::function<void(void)> l_ResetMousePositionCallbackFunc;
 
 //
 // Internal Functions
@@ -76,6 +76,16 @@ void CoreStateCallback(void* context, m64p_core_param param, int value)
     }
 
     l_StateCallbackFunc((CoreStateCallbackType)param, value);
+}
+
+void ResetMousePositionCallback(void)
+{
+    if (!l_SetupCallbacks)
+    {
+        return;
+    }
+
+    l_ResetMousePositionCallbackFunc();
 }
 
 //

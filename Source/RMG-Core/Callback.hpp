@@ -21,6 +21,8 @@
 void CoreDebugCallback(void* context, int level, const char* message);
 void CoreStateCallback(void* context, m64p_core_param param, int value);
 
+void ResetMousePositionCallback(void);
+
 #endif // CORE_INTERNAL
 
 enum class CoreDebugMessageType
