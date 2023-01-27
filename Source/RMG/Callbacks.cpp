@@ -48,7 +48,7 @@ bool CoreCallbacks::Init(void)
     this->LoadSettings();
 
     l_CoreCallbacks = this;
-    
+
     if (!CoreSetupCallbacks(this->coreDebugCallback, this->coreStateCallback))
     {
         return false;
@@ -111,4 +111,14 @@ void CoreCallbacks::coreStateCallback(CoreStateCallbackType type, int value)
     }
 
     emit l_CoreCallbacks->OnCoreStateCallback(type, value);
+}
+
+void CoreCallbacks::resetMousePositionCallback(void)
+{
+    if (l_CoreCallbacks == nullptr)
+    {
+        return;
+    }
+
+    emit l_CoreCallbacks->OnResetMousePositionCallback();
 }
