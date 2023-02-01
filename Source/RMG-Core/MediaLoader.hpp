@@ -15,7 +15,10 @@
 // sets up the medialoader
 bool CoreSetupMediaLoader(void);
 
+// resets media loader state
+void CoreResetMediaLoader(void);
+
 // sets the media loader disk file
-void CoreMediaLoaderSetDiskFile(std::filesystem::path ddRom);
+void CoreMediaLoaderSetDiskFile(std::filesystem::path disk);
 
 #endif // CORE_MEDIALOADER_HPP

@@ -139,7 +139,12 @@ bool CoreSetupMediaLoader(void)
     return ret == M64ERR_SUCCESS;
 }
 
-void CoreMediaLoaderSetDiskFile(std::filesystem::path ddRom)
+void CoreResetMediaLoader(void)
 {
-    l_DdDiskFile = ddRom;
+    l_DdRomFile = "";
+}
+
+void CoreMediaLoaderSetDiskFile(std::filesystem::path disk)
+{
+    l_DdDiskFile = disk;
 }

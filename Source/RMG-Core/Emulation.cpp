@@ -157,6 +157,9 @@ bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64d
     // restore plugin settings
     CoreApplyPluginSettings();
 
+    // reset media loader state
+    CoreResetMediaLoader();
+
 #ifdef DISCORD_RPC
     CoreDiscordRpcUpdate(false);
 #endif // DISCORD_RPC
