@@ -101,6 +101,13 @@ void MainWindow::OpenROM(QString file, QString disk, bool fullscreen, bool quitA
 {
     this->ui_LaunchInFullscreen = fullscreen;
     this->ui_QuitAfterEmulation = quitAfterEmulation;
+
+    // ensure we don't switch to the ROM browser
+    // because it can cause a slight flicker,
+    // if we just ensure the UI is in an emulation
+    // state, then the transition will be smoother
+    this->updateUI(true, false);
+    
     this->launchEmulationThread(file, disk);
 }
 
