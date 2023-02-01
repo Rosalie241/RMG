@@ -1330,7 +1330,6 @@ void MainWindow::on_Emulation_Finished(bool ret)
 {
     if (!ret)
     {
-        this->showErrorMessage("EmulationThread::run Failed", this->emulationThread->GetLastError());
         // whatever we do on failure,
         // always return to the rombrowser
         this->ui_NoSwitchToRomBrowser = false;
@@ -1356,6 +1355,13 @@ void MainWindow::on_Emulation_Finished(bool ret)
 
     // always refresh UI
     this->updateUI(false, false);
+
+    // show error message to the user
+    // after switching back to the ROM browser
+    if (!ret)
+    {
+        this->showErrorMessage("EmulationThread::run Failed", this->emulationThread->GetLastError());
+    }
 }
 
 void MainWindow::on_RomBrowser_PlayGame(QString file)
