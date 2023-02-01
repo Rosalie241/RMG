@@ -1288,12 +1288,6 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
     if (profile->DeviceType == InputDeviceType::Mouse)
     { // n64 mouse
         l_MouseMutex.lock();
-        
-        // request front-end to reset mouse position
-        if (l_ResetMousPositionCallback != nullptr)
-        {
-            l_ResetMousPositionCallback();
-        }
 
         // set left & right button state
         Keys->A_BUTTON = l_MouseButtonState[0];
@@ -1313,6 +1307,13 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
         }
 
         l_MouseMutex.unlock();
+
+        // request front-end to reset mouse position
+        if (l_ResetMousPositionCallback != nullptr)
+        {
+            l_ResetMousPositionCallback();
+        }
+
         return;
     }
 
@@ -1415,21 +1416,17 @@ EXPORT void CALL SDL_KeyUp(int keymod, int keysym)
 
 EXPORT void CALL MouseMove(int x, int y)
 {
-    if (l_MouseMutex.try_lock())
-    {
-        l_MouseMovements.push_back({x, y});
-        l_MouseMutex.unlock();
-    }
+    l_MouseMutex.lock();
+    l_MouseMovements.push_back({x, y});
+    l_MouseMutex.unlock();
 }
 
 EXPORT void CALL MouseButton(int left, int right)
 {
-    if (l_MouseMutex.try_lock())
-    {
-        l_MouseButtonState[0] = left;
-        l_MouseButtonState[1] = right;
-        l_MouseMutex.unlock();
-    }    
+    l_MouseMutex.lock();
+    l_MouseButtonState[0] = left;
+    l_MouseButtonState[1] = right;
+    l_MouseMutex.unlock();    
 }
 
 EXPORT void CALL SetResetMousePositionCallback(ptr_ResetMousePositionCallback callback)
