@@ -8,11 +8,13 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "Rom.hpp"
+#include "Directories.hpp"
 #include "Error.hpp"
 #include "MediaLoader.hpp"
 #include "m64p/Api.hpp"
 #include "RomSettings.hpp"
 #include "Cheats.hpp"
+#include "osal/osal_files.hpp"
 
 #include <unzip.h>
 #include <fstream>
@@ -30,8 +32,10 @@
 // Local Variables
 //
 
-static bool l_HasRomOpen = false;
-static bool l_HasDisk    = false;
+static bool l_HasRomOpen       = false;
+static bool l_HasDisk          = false;
+static bool l_HasExtractedDisk = false;
+static std::filesystem::path l_ExtractedDiskPath;
 
 //
 // Local Functions
@@ -117,7 +121,7 @@ static int zlib_filefunc_testerror(voidpf opaque, voidpf stream)
     return errno;
 }
 
-static bool read_zip_file(std::filesystem::path file, char** buf, int* size)
+static bool read_zip_file(std::filesystem::path file, std::filesystem::path* extractedFileName, bool* isDisk, char** buf, int* size)
 {
     std::string  error;
     std::fstream fileStream;
@@ -183,7 +187,9 @@ static bool read_zip_file(std::filesystem::path file, char** buf, int* size)
         fileExtension = to_lower_str(fileExtension);
         if (fileExtension == ".z64" ||
             fileExtension == ".v64" ||
-            fileExtension == ".n64")
+            fileExtension == ".n64" ||
+            fileExtension == ".ndd" ||
+            fileExtension == ".d64")
         {
             char* buffer;
             char* outBuffer;
@@ -255,8 +261,10 @@ static bool read_zip_file(std::filesystem::path file, char** buf, int* size)
                 }
             } while (bytes_read > 0);
 
-            *size = total_bytes_read;
-            *buf = outBuffer;
+            *size              = total_bytes_read;
+            *buf               = outBuffer;
+            *extractedFileName = fileNamePath;
+            *isDisk            = (fileExtension == ".ndd" || fileExtension == ".d64");
             unzCloseCurrentFile(zipFile);
             unzClose(zipFile);
             free(buffer);
@@ -333,6 +341,32 @@ static bool read_raw_file(std::filesystem::path file, char** buf, int* size)
     return true;
 }
 
+static bool write_file(std::filesystem::path file, char* buf, int size)
+{
+    std::string   error;
+    std::ofstream fileStream;
+
+    // attempt to open file
+    fileStream.open(file, std::ios::binary);
+    if (!fileStream.is_open())
+    {
+        error = "write_file Failed: ";
+        error += "failed to open file: ";
+        error += strerror(errno);
+        error += " (";
+        error += std::to_string(errno);
+        error += ")";
+        CoreSetError(error);
+        return false;
+    }
+
+    // write buffer to file
+    fileStream.write(buf, size);
+    
+    fileStream.close();
+    return true;
+}
+
 //
 // Exported Functions
 //
@@ -363,18 +397,64 @@ bool CoreOpenRom(std::filesystem::path file)
 
     if (file_extension == ".zip")
     {
-        if (!read_zip_file(file, &buf, &buf_size))
+        std::filesystem::path extracted_file;
+        bool                  is_disk = false;
+
+        if (!read_zip_file(file, &extracted_file, &is_disk, &buf, &buf_size))
         {
             return false;
         }
 
-        l_HasDisk = false;
+        if (is_disk)
+        {
+            std::filesystem::path disk_file;
+            disk_file = CoreGetUserCacheDirectory();
+            disk_file += OSAL_FILES_DIR_SEPERATOR_STR;
+            disk_file += "extracted_disks";
+            disk_file += OSAL_FILES_DIR_SEPERATOR_STR;
+            disk_file += extracted_file;
+
+            // attempt to create extraction directory
+            try
+            {
+                if (!std::filesystem::exists(disk_file.parent_path()))
+                {
+                    if (!std::filesystem::create_directory(disk_file.parent_path()))
+                    {
+                        throw std::exception();
+                    }
+                }
+            }
+            catch (...)
+            {
+                error = "CoreOpenRom Failed: ";
+                error += "Failed to create \"";
+                error += disk_file.parent_path().string();
+                error += "\"!";
+                CoreSetError(error);
+                return false;
+            }
+
+            // attempt to write temporary file
+            if (!write_file(disk_file, buf, buf_size))
+            {
+                return false;
+            }
+
+            CoreMediaLoaderSetDiskFile(disk_file);
+
+            l_ExtractedDiskPath = disk_file;
+        }
+
+        l_HasDisk          = is_disk;
+        l_HasExtractedDisk = is_disk;
     }
     else if (file_extension == ".d64" || 
              file_extension == ".ndd")
     {
         CoreMediaLoaderSetDiskFile(file);
-        l_HasDisk = true;
+        l_HasDisk          = true;
+        l_HasExtractedDisk = false;
     }
     else
     {
@@ -383,7 +463,8 @@ bool CoreOpenRom(std::filesystem::path file)
             return false;
         }
 
-        l_HasDisk = false;
+        l_HasDisk          = false;
+        l_HasExtractedDisk = false;
     }
 
     if (l_HasDisk)
@@ -471,6 +552,32 @@ bool CoreCloseRom(void)
     // clear default ROM settings
     CoreClearCurrentDefaultRomSettings();
 
+    // if removing the temporary extracted disk file
+    // fails, then we shouldn't break the state of
+    // whether we currently have an open ROM/disk,
+    // so we can safely say the ROM/disk isn't open
+    // anymore here
     l_HasRomOpen = false;
+
+    // attempt to clean temporary extracted disk file
+    if (l_HasExtractedDisk)
+    {
+        try
+        {
+            if (!std::filesystem::remove(l_ExtractedDiskPath))
+            {
+                throw std::exception();
+            }
+        }
+        catch (...)
+        {
+            error = "CoreCloseRom: Failed to remove \"";
+            error += l_ExtractedDiskPath.string();
+            error += "\"!";
+            CoreSetError(error);
+            return false;
+        }
+    }
+
     return true;
 }
