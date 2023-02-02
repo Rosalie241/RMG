@@ -55,7 +55,6 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     int             keybindButtonTimerId  = -1;
     int             keybindButtonTimeLeft = 5;
     KeybindButton*  currentKeybindButton  = nullptr;
-    QMutex          keybindButtonMutex;
 
     std::vector<CorePlugin> pluginList;
 
