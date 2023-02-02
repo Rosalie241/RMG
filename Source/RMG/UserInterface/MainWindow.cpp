@@ -218,6 +218,10 @@ void MainWindow::configureUI(QApplication* app)
 
 void MainWindow::configureTheme(QApplication* app)
 {
+    // we have to retrieve the fallback icon theme
+    // before applying the app theme
+    QString fallbackThemeName = QIcon::themeName();
+
     // set theme style
     QString fallbackStyleSheet = "QTableView { border: none; color: #0096d3; selection-color: #FFFFFF; selection-background-color: #0096d3; }";
     this->setStyleSheet(fallbackStyleSheet);
@@ -272,7 +276,6 @@ void MainWindow::configureTheme(QApplication* app)
     }
 
     // set icon theme
-    QString fallbackThemeName = QIcon::themeName();
     QPalette palette = app->palette();
     bool dark = palette.windowText().color().value() > palette.window().color().value();
     QIcon::setThemeName(dark ? "white" : "black");
