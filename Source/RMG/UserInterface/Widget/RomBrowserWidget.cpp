@@ -362,7 +362,10 @@ QIcon RomBrowserWidget::getCurrentCover(QString file, CoreRomHeader header, Core
     // until the end of the string
     QString baseName         = QFileInfo(file).fileName();
     qsizetype lastIndexOfDot = baseName.lastIndexOf(".");
-    baseName.remove(lastIndexOfDot, baseName.size() - lastIndexOfDot);
+    if (lastIndexOfDot != -1)
+    { // only remove when index was found
+        baseName.remove(lastIndexOfDot, baseName.size() - lastIndexOfDot);
+    }
 
     // try to load cover using
     // 1) basename of file
