@@ -356,6 +356,14 @@ QIcon RomBrowserWidget::getCurrentCover(QString file, CoreRomHeader header, Core
 {
     QPixmap pixmap;
 
+    // construct basename of file,
+    // by retrieving the last index of '.'
+    // and removing all characters from that index
+    // until the end of the string
+    QString baseName         = QFileInfo(file).fileName();
+    qsizetype lastIndexOfDot = baseName.lastIndexOf(".");
+    baseName.remove(lastIndexOfDot, baseName.size() - lastIndexOfDot);
+
     // try to load cover using
     // 1) basename of file
     // 2) MD5
@@ -363,7 +371,7 @@ QIcon RomBrowserWidget::getCurrentCover(QString file, CoreRomHeader header, Core
     // 4) internal name
     bool foundCover = false;
     for (QString name : { 
-        QFileInfo(file).baseName(),
+        baseName,
         QString::fromStdString(settings.MD5), 
         QString::fromStdString(settings.GoodName), 
         QString::fromStdString(header.Name) })
