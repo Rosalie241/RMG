@@ -26,20 +26,28 @@ class KeybindButton : public QPushButton
 private:
     QKeySequence keySequence;
     QString currentText;
+    bool listenForInput = false;
 
   public:
     KeybindButton(QWidget* parent);
     ~KeybindButton(void);
 
+    void Reset(void);
     void Clear(void);
+
+    void SetText(QString text);
+    void SetSecondsLeft(int seconds);
+
+    QString GetCurrentText(void);
+
   signals:
     void on_KeybindButton_KeybindingChanged(KeybindButton* button);
+    void on_KeybindButton_Clicked(KeybindButton* button);
 
   protected:
     void keyPressEvent(QKeyEvent *);
     void keyReleaseEvent(QKeyEvent *);
     void mousePressEvent(QMouseEvent *);
-    void focusInEvent(QFocusEvent *event);
     void focusOutEvent(QFocusEvent *event);
 };
 } // namespace Widget

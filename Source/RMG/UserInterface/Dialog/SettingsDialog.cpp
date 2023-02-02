@@ -864,14 +864,15 @@ void SettingsDialog::commonHotkeySettings(SettingsDialogAction action)
         default:
         case SettingsDialogAction::ConnectSignals:
             connect(keybinding.button, &KeybindButton::on_KeybindButton_KeybindingChanged, this, &SettingsDialog::on_KeybindButton_KeybindingChanged);
+            connect(keybinding.button, &KeybindButton::on_KeybindButton_Clicked, this, &SettingsDialog::on_KeybindButton_Clicked);
         case SettingsDialogAction::LoadSettings:
-            keybinding.button->setText(QString::fromStdString(CoreSettingsGetStringValue(keybinding.settingId)));
+            keybinding.button->SetText(QString::fromStdString(CoreSettingsGetStringValue(keybinding.settingId)));
             break;
         case SettingsDialogAction::LoadDefaultSettings:
-            keybinding.button->setText(QString::fromStdString(CoreSettingsGetDefaultStringValue(keybinding.settingId)));
+            keybinding.button->SetText(QString::fromStdString(CoreSettingsGetDefaultStringValue(keybinding.settingId)));
             break;
         case SettingsDialogAction::SaveSettings:
-            CoreSettingsSetValue(keybinding.settingId, keybinding.button->text().toStdString());
+            CoreSettingsSetValue(keybinding.settingId, keybinding.button->GetCurrentText().toStdString());
             break;
         }
     }
@@ -1017,6 +1018,23 @@ void SettingsDialog::closeEvent(QCloseEvent* event)
     }
 }
 
+void SettingsDialog::timerEvent(QTimerEvent* event)
+{
+    this->keybindButtonTimeLeft--;
+
+    if (this->currentKeybindButton != nullptr)
+    {
+        this->currentKeybindButton->SetSecondsLeft(this->keybindButtonTimeLeft);
+    }
+
+    if (this->keybindButtonTimeLeft == 0)
+    {
+        this->killTimer(this->keybindButtonTimerId);
+        this->keybindButtonTimerId = -1;
+        this->currentKeybindButton = nullptr;
+    }
+}
+
 void SettingsDialog::on_buttonBox_clicked(QAbstractButton *button)
 {
     QPushButton *pushButton = (QPushButton *)button;
@@ -1097,12 +1115,24 @@ void SettingsDialog::on_changeDevelopmentIPLRomPathButton_clicked(void)
 
 void SettingsDialog::on_KeybindButton_KeybindingChanged(KeybindButton* button)
 {
+    if (this->keybindButtonTimerId != -1)
+    {
+        this->killTimer(this->keybindButtonTimerId);
+        this->keybindButtonTimerId = -1;
+    }
+
+    if (this->currentKeybindButton != nullptr)
+    {
+        this->currentKeybindButton->Reset();
+        this->currentKeybindButton = nullptr;
+    }
+   
     if (!this->removeDuplicateHotkeysCheckBox->isChecked())
     {
         return;
     }
 
-    QString text = button->text();
+    QString text = button->GetCurrentText();
     if (text.isEmpty())
     {
         return;
@@ -1144,10 +1174,37 @@ void SettingsDialog::on_KeybindButton_KeybindingChanged(KeybindButton* button)
     {
         if (keybindButton != button)
         {
-            if (keybindButton->text() == text)
+            if (keybindButton->GetCurrentText() == text)
             {
                 keybindButton->Clear();
             }
         }
     }
+}
+
+void SettingsDialog::on_KeybindButton_Clicked(KeybindButton* button)
+{
+    if (this->currentKeybindButton == button)
+    {
+        return;
+    }
+
+    if (this->currentKeybindButton != nullptr)
+    {
+        this->currentKeybindButton->Reset();
+        this->currentKeybindButton = nullptr;
+    }
+
+    if (this->keybindButtonTimerId != -1)
+    {
+        this->killTimer(this->keybindButtonTimerId);
+        this->keybindButtonTimerId = -1;
+    }
+
+    this->currentKeybindButton  = button;
+    this->keybindButtonTimeLeft = 5;
+    this->keybindButtonTimerId  = this->startTimer(1000);
+
+    // notify button
+    this->currentKeybindButton->SetSecondsLeft(5);
 }

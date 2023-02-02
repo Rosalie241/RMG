@@ -19,14 +19,51 @@ KeybindButton::~KeybindButton(void)
 {
 }
 
+void KeybindButton::Reset(void)
+{
+    this->setText(this->GetCurrentText());
+}
+
 void KeybindButton::Clear(void)
 {
-    this->setText("");
-    emit this->on_KeybindButton_KeybindingChanged(this);
+    this->SetText("");
+}
+
+void KeybindButton::SetText(QString text)
+{
+    this->currentText = text;
+    this->setText(text);
+}
+
+void KeybindButton::SetSecondsLeft(int seconds)
+{
+    if (seconds == 0)
+    {
+        this->listenForInput = false;
+        this->Reset();
+    }
+    else
+    {
+        QString text;
+        text = "Press key... [";
+        text += QString::number(seconds);
+        text += "]";
+        this->setText(text);
+    }
+}
+
+QString KeybindButton::GetCurrentText(void)
+{
+    return this->currentText;
 }
 
 void KeybindButton::keyPressEvent(QKeyEvent * event)
 {   
+    if (!this->listenForInput)
+    {
+        return;
+    }
+
     // filter keys
     switch (event->key())
     {
@@ -71,26 +108,42 @@ void KeybindButton::keyPressEvent(QKeyEvent * event)
 
 void KeybindButton::keyReleaseEvent(QKeyEvent *event)
 {
+    if (!this->listenForInput)
+    {
+        return;
+    }
+
     this->currentText = this->keySequence.toString();
     this->clearFocus();
 }
 
 void KeybindButton::mousePressEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::RightButton)
+    if (this->listenForInput)
+    {
+        return;
+    }
+
+    if (event->button() == Qt::LeftButton)
+    {
+        this->currentText = this->text();
+        this->listenForInput = true;
+        emit this->on_KeybindButton_Clicked(this);
+    }
+    else if (event->button() == Qt::RightButton)
     {
         this->Clear();
     }
 }
 
-void KeybindButton::focusInEvent(QFocusEvent *event)
-{
-    currentText = this->text();
-    this->setText("...");
-}
-
 void KeybindButton::focusOutEvent(QFocusEvent *event)
 {
+    if (!this->listenForInput)
+    {
+        return;
+    }
+
     this->setText(this->currentText);
     emit this->on_KeybindButton_KeybindingChanged(this);
+    this->listenForInput = false;
 }

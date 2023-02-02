@@ -18,6 +18,7 @@
 #include <QStandardItemModel>
 #include <QTreeWidget>
 #include <QWidget>
+#include <QMutex>
 
 #include <RMG-Core/Core.hpp>
 
@@ -50,6 +51,11 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     CoreRomSettings currentGameSettings;
     CoreRomSettings defaultGameSettings;
     std::string     gameSection;
+
+    int             keybindButtonTimerId  = -1;
+    int             keybindButtonTimeLeft = 5;
+    KeybindButton*  currentKeybindButton  = nullptr;
+    QMutex          keybindButtonMutex;
 
     std::vector<CorePlugin> pluginList;
 
@@ -118,6 +124,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
 
   protected:
     void closeEvent(QCloseEvent* event) Q_DECL_OVERRIDE;
+    void timerEvent(QTimerEvent* event) Q_DECL_OVERRIDE;
 
   private slots:
     void on_buttonBox_clicked(QAbstractButton *);
@@ -133,6 +140,8 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void on_changeDevelopmentIPLRomPathButton_clicked(void);
 
     void on_KeybindButton_KeybindingChanged(KeybindButton* button);
+    void on_KeybindButton_Clicked(KeybindButton* button);
+
   public:
     SettingsDialog(QWidget *parent);
     ~SettingsDialog(void);
