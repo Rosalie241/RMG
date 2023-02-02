@@ -90,7 +90,7 @@ class RomBrowserWidget : public QStackedWidget
 
     QString getCurrentRom(void);
 
-    QIcon getCurrentCover(CoreRomHeader header, CoreRomSettings settings, QString& coverFileName);
+    QIcon getCurrentCover(QString file, CoreRomHeader header, CoreRomSettings settings, QString& coverFileName);
 
   protected:
     void timerEvent(QTimerEvent *event) Q_DECL_OVERRIDE;

@@ -352,16 +352,18 @@ QString RomBrowserWidget::getCurrentRom(void)
     return data.file;
 }
 
-QIcon RomBrowserWidget::getCurrentCover(CoreRomHeader header, CoreRomSettings settings, QString& coverFileName)
+QIcon RomBrowserWidget::getCurrentCover(QString file, CoreRomHeader header, CoreRomSettings settings, QString& coverFileName)
 {
     QPixmap pixmap;
 
     // try to load cover using
-    // 1) MD5
-    // 2) good name
-    // 3) internal name
+    // 1) basename of file
+    // 2) MD5
+    // 3) good name
+    // 4) internal name
     bool foundCover = false;
     for (QString name : { 
+        QFileInfo(file).baseName(),
         QString::fromStdString(settings.MD5), 
         QString::fromStdString(settings.GoodName), 
         QString::fromStdString(header.Name) })
@@ -539,7 +541,7 @@ void RomBrowserWidget::on_RomBrowserThread_RomFound(QString file, CoreRomType ty
     }
 
     // retrieve cover image
-    coverIcon = this->getCurrentCover(header, settings, coverFile);
+    coverIcon = this->getCurrentCover(file, header, settings, coverFile);
     modelData.coverFile = coverFile;
 
     // create item data
@@ -729,7 +731,7 @@ void RomBrowserWidget::on_Action_SetCoverImage(void)
     QFile::copy(sourceFile, newFileName);
 
     // update item
-    item->setIcon(this->getCurrentCover(data.header, data.settings, coverFile));
+    item->setIcon(this->getCurrentCover(data.file, data.header, data.settings, coverFile));
     data.coverFile = coverFile;
     item->setData(QVariant::fromValue<RomBrowserModelData>(data));
 }
@@ -754,7 +756,7 @@ void RomBrowserWidget::on_Action_RemoveCoverImage(void)
     }
 
     // update item
-    item->setIcon(this->getCurrentCover(data.header, data.settings, coverFile));
+    item->setIcon(this->getCurrentCover(data.file, data.header, data.settings, coverFile));
     data.coverFile = coverFile;
     item->setData(QVariant::fromValue<RomBrowserModelData>(data));
 }
