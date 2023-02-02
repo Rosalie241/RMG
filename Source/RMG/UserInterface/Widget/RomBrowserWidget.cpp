@@ -381,6 +381,15 @@ QIcon RomBrowserWidget::getCurrentCover(QString file, CoreRomHeader header, Core
             fixedName.replace(c, "_");
         }
 
+        // skip empty names,
+        // this can i.e happen
+        // when ROMs don't have 
+        // an internal ROM name
+        if (fixedName.isEmpty())
+        {
+            continue;
+        }
+
         // we support jpg & png as file extensions
         for (QString ext : { ".png", ".jpg", ".jpeg" })
         {
