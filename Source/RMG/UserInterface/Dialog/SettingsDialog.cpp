@@ -1139,16 +1139,22 @@ void SettingsDialog::on_KeybindButton_KeybindingChanged(KeybindButton* button)
         return;
     }
 
-    KeybindButton* keybindButtons[] = 
+    QList<KeybindButton*> rombrowserKeybindButtons =
     {
         this->startRomKeyButton,
         this->startComboKeyButton,
         this->shutdownKeyButton,
-        this->refreshRomListKeyButton,
         this->exitKeyButton,
+        this->settingsKeyButton,
+        this->refreshRomListKeyButton,
+    };
+
+    QList<KeybindButton*> emulationKeybindButtons =
+    {
+        this->shutdownKeyButton,
         this->softResetKeyButton,
         this->hardResetKeyButton,
-        this->pauseKeyButton, 
+        this->pauseKeyButton,
         this->generateBitmapKeyButton,
         this->limitFPSKeyButton,
         this->saveStateKeyButton,
@@ -1167,10 +1173,22 @@ void SettingsDialog::on_KeybindButton_KeybindingChanged(KeybindButton* button)
         this->saveState7KeyButton,
         this->saveState8KeyButton,
         this->saveState9KeyButton,
+        this->exitKeyButton,
         this->settingsKeyButton,
         this->fullscreenKeyButton,
     };
-    
+
+    QList<KeybindButton*> keybindButtons;
+
+    if (rombrowserKeybindButtons.contains(button))
+    {
+        keybindButtons.append(rombrowserKeybindButtons);
+    }
+    if (emulationKeybindButtons.contains(button))
+    {
+        keybindButtons.append(emulationKeybindButtons);
+    }
+
     for (KeybindButton* keybindButton : keybindButtons)
     {
         if (keybindButton != button)
