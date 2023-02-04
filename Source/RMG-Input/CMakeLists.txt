@@ -17,7 +17,9 @@ set(RMG_INPUT_SOURCES
     UserInterface/Widget/ControllerWidget.ui
     UserInterface/Widget/ControllerWidget.cpp
     UserInterface/Widget/ControllerImageWidget.cpp
-    UserInterface/Widget/CustomButton.cpp
+    UserInterface/Widget/MappingButton.cpp
+    UserInterface/Widget/AddMappingButton.cpp
+    UserInterface/Widget/RemoveMappingButton.cpp
     UserInterface/EventFilter.cpp
     UserInterface/OptionsDialog.ui
     UserInterface/OptionsDialog.cpp

@@ -49,9 +49,10 @@
 
 struct InputMapping
 {
-    InputType Type = InputType::Invalid;
-    int Data       = 0;
-    int ExtraData  = 0;
+    std::vector<int> Type;
+    std::vector<int> Data;
+    std::vector<int> ExtraData;
+    int              Count = 0;
 };
 
 struct InputProfile
@@ -122,9 +123,18 @@ static bool l_KeyboardState[SDL_NUM_SCANCODES];
 static void load_inputmapping_settings(InputMapping* mapping, std::string section,
     SettingsID inputTypeSettingsId, SettingsID dataSettingsId, SettingsID extraDataSettingsId)
 {
-    mapping->Type = (InputType)CoreSettingsGetIntValue(inputTypeSettingsId, section);
-    mapping->Data = CoreSettingsGetIntValue(dataSettingsId, section);
-    mapping->ExtraData = CoreSettingsGetIntValue(extraDataSettingsId, section);
+    mapping->Type = CoreSettingsGetIntListValue(inputTypeSettingsId, section);
+    mapping->Data = CoreSettingsGetIntListValue(dataSettingsId, section);
+    mapping->ExtraData = CoreSettingsGetIntListValue(extraDataSettingsId, section);
+    mapping->Count = std::min(mapping->Type.size(), std::min(mapping->Data.size(), mapping->ExtraData.size()));
+
+    if (mapping->Count == 0)
+    { // try to load old profile type
+        mapping->Type.push_back(CoreSettingsGetIntValue(inputTypeSettingsId, section));
+        mapping->Data.push_back(CoreSettingsGetIntValue(dataSettingsId, section));
+        mapping->ExtraData.push_back(CoreSettingsGetIntValue(extraDataSettingsId, section));
+        mapping->Count = 1;
+    }
 }
 
 static void load_settings(void)
@@ -286,81 +296,97 @@ static void close_controllers(void)
 
 static int get_button_state(InputProfile* profile, InputMapping* inputMapping)
 {
-    switch (inputMapping->Type)
+    int state = 0;
+
+    for (int i = 0; i < inputMapping->Count; i++)
     {
-        case InputType::GamepadButton:
+        const int data = inputMapping->Data.at(i);
+        const int extraData = inputMapping->ExtraData.at(i);
+
+        switch ((InputType)inputMapping->Type[i])
         {
-            return SDL_GameControllerGetButton(profile->InputDevice.GetGameControllerHandle(), (SDL_GameControllerButton)inputMapping->Data);
-        };
-        case InputType::GamepadAxis:
-        {
-            int axis_value = SDL_GameControllerGetAxis(profile->InputDevice.GetGameControllerHandle(), (SDL_GameControllerAxis)inputMapping->Data);
-            return (abs(axis_value) >= (SDL_AXIS_PEAK / 2) && (inputMapping->ExtraData ? axis_value > 0 : axis_value < 0)) ? 1 : 0;
-        };
-        case InputType::JoystickButton:
-        {
-            return SDL_JoystickGetButton(profile->InputDevice.GetJoystickHandle(), inputMapping->Data);
-        };
-        case InputType::JoystickAxis:
-        {
-            int axis_value = SDL_JoystickGetAxis(profile->InputDevice.GetJoystickHandle(), inputMapping->Data);
-            return (abs(axis_value) >= (SDL_AXIS_PEAK / 2) && (inputMapping->ExtraData ? axis_value > 0 : axis_value < 0)) ? 1 : 0;
+            case InputType::GamepadButton:
+            {
+                state |= SDL_GameControllerGetButton(profile->InputDevice.GetGameControllerHandle(), (SDL_GameControllerButton)data);
+            } break;
+            case InputType::GamepadAxis:
+            {
+                int axis_value = SDL_GameControllerGetAxis(profile->InputDevice.GetGameControllerHandle(), (SDL_GameControllerAxis)data);
+                state |= (abs(axis_value) >= (SDL_AXIS_PEAK / 2) && (extraData ? axis_value > 0 : axis_value < 0)) ? 1 : 0;
+            } break;
+            case InputType::JoystickButton:
+            {
+                state |= SDL_JoystickGetButton(profile->InputDevice.GetJoystickHandle(), data);
+            } break;
+            case InputType::JoystickAxis:
+            {
+                int axis_value = SDL_JoystickGetAxis(profile->InputDevice.GetJoystickHandle(), data);
+                state |= (abs(axis_value) >= (SDL_AXIS_PEAK / 2) && (extraData ? axis_value > 0 : axis_value < 0)) ? 1 : 0;
+            } break;
+            case InputType::Keyboard:
+            {
+                state |= l_KeyboardState[data] ? 1 : 0;
+            } break;
+            default:
+                break;
         }
-        case InputType::Keyboard:
-        {
-            return l_KeyboardState[inputMapping->Data] ? 1 : 0;
-        };
-        default:
-            break;
     }
 
-    return 0;
+    return state;
 }
 
 // returns axis input scaled to the range [-1, 1]
 static double get_axis_state(InputProfile* profile, InputMapping* inputMapping, int direction, double value)
 {
-    switch (inputMapping->Type)
-    {
-        case InputType::GamepadButton:
-        {
-            int buttonState = SDL_GameControllerGetButton(profile->InputDevice.GetGameControllerHandle(), (SDL_GameControllerButton)inputMapping->Data);
-            return buttonState ? direction : value;
-        } break;
-        case InputType::GamepadAxis:
-        {
-            double axis_value = SDL_GameControllerGetAxis(profile->InputDevice.GetGameControllerHandle(), (SDL_GameControllerAxis)inputMapping->Data);
-            if (inputMapping->ExtraData ? axis_value > 0 : axis_value < 0)
-            {
-                axis_value = (axis_value / SDL_AXIS_PEAK);
-                axis_value = abs(axis_value) * direction;
-                return axis_value;
-            }
-        } break;
-        case InputType::JoystickButton:
-        {
-            int buttonState =  SDL_JoystickGetButton(profile->InputDevice.GetJoystickHandle(), inputMapping->Data);
-            return buttonState ? direction : value;
-        } break;
-        case InputType::JoystickAxis:
-        {
-            double axis_value = SDL_JoystickGetAxis(profile->InputDevice.GetJoystickHandle(), inputMapping->Data);
-            if (inputMapping->ExtraData ? axis_value > 0 : axis_value < 0)
-            {
-                axis_value = (axis_value / SDL_AXIS_PEAK);
-                axis_value = abs(axis_value) * direction;
-                return axis_value;
-            }
-        } break;
-        case InputType::Keyboard:
-        {
-            return l_KeyboardState[inputMapping->Data] ? direction : value;
-        } break;
-        default:
-            break;
-    }
+    int state = 0;
 
-    return value;
+    for (int i = 0; i < inputMapping->Count; i++)
+    {
+        const int data = inputMapping->Data.at(i);
+        const int extraData = inputMapping->ExtraData.at(i);
+
+        switch ((InputType)inputMapping->Type[i])
+        {
+            case InputType::GamepadButton:
+            {
+                int buttonState = SDL_GameControllerGetButton(profile->InputDevice.GetGameControllerHandle(), (SDL_GameControllerButton)data);
+                state |= buttonState;
+            } break;
+            case InputType::GamepadAxis:
+            {
+                double axis_value = SDL_GameControllerGetAxis(profile->InputDevice.GetGameControllerHandle(), (SDL_GameControllerAxis)data);
+                if (extraData ? axis_value > 0 : axis_value < 0)
+                {
+                    axis_value = (axis_value / SDL_AXIS_PEAK);
+                    axis_value = abs(axis_value) * direction;
+                    return axis_value;
+                }
+            } break;
+            case InputType::JoystickButton:
+            {
+                int buttonState =  SDL_JoystickGetButton(profile->InputDevice.GetJoystickHandle(), data);
+                state |= buttonState;
+            } break;
+            case InputType::JoystickAxis:
+            {
+                double axis_value = SDL_JoystickGetAxis(profile->InputDevice.GetJoystickHandle(), data);
+                if (extraData ? axis_value > 0 : axis_value < 0)
+                {
+                    axis_value = (axis_value / SDL_AXIS_PEAK);
+                    axis_value = abs(axis_value) * direction;
+                    return axis_value;
+                }
+            } break;
+            case InputType::Keyboard:
+            {
+                state |= l_KeyboardState[data];
+            } break;
+            default:
+                break;
+            }
+        }
+
+    return state ? direction : value;
 }
 
 static double simulate_deadzone(double n64InputAxis, double maxAxis, int deadzone, double axisRange)

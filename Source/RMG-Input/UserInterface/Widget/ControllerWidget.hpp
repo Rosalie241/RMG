@@ -10,7 +10,7 @@
 #ifndef CONTROLLERWIDGET_H
 #define CONTROLLERWIDGET_H
 
-#include "CustomButton.hpp"
+#include "MappingButton.hpp"
 #include "ControllerImageWidget.hpp"
 
 #include "UserInterface/EventFilter.hpp"
@@ -39,23 +39,24 @@ private:
     OptionsDialogSettings optionsDialogSettings;
 
     QList<QString> inputDeviceNameList;
-    CustomButton* currentButton = nullptr;
-
+    MappingButton* currentButton = nullptr;
+    bool addMappingToButton      = false;
+    
     struct buttonWidgetMapping
     {
         enum N64ControllerButton button;
-        CustomButton* buttonWidget;
+        MappingButton* buttonWidget;
     };
 
     struct axisWidgetMapping
     {
         enum InputAxisDirection direction;
-        CustomButton* buttonWidget;
+        MappingButton* buttonWidget;
     };
 
     struct buttonSettingMapping
     {
-        CustomButton* button;
+        MappingButton* button;
         SettingsID inputTypeSettingsId;
         SettingsID nameSettingsId;
         SettingsID dataSettingsId;
@@ -65,9 +66,7 @@ private:
     QList<buttonWidgetMapping> buttonWidgetMappings;
     QList<axisWidgetMapping> joystickWidgetMappings;
     QList<buttonSettingMapping> buttonSettingMappings;
-    QList<CustomButton*> setupButtonWidgets;
-    int currentSetupButtonWidgetIndex = 0;
-    bool currentInSetup = false;
+    QList<MappingButton*> setupButtonWidgets;
 
     void initializeButtons();
 
@@ -77,7 +76,7 @@ private:
     void disableAllChildren();
     void enableAllChildren();
 
-    void removeDuplicates(CustomButton* button);
+    void removeDuplicates(MappingButton* button);
 
     QString getCurrentSettingsSection();
 
@@ -117,15 +116,18 @@ private slots:
     void on_controllerPluggedCheckBox_toggled(bool value);
 
     void on_removeProfileButton_clicked();
-    void on_setupButton_clicked();
+
     void on_resetButton_clicked();
     void on_optionsButton_clicked();
 
 public slots:
-    void on_CustomButton_released(CustomButton* button);
-    void on_CustomButton_TimerFinished(CustomButton* button);
-    void on_CustomButton_DataSet(CustomButton* button);
+    void on_MappingButton_Released(MappingButton* button);
+    void on_MappingButton_TimerFinished(MappingButton* button);
+    void on_MappingButton_DataSet(MappingButton* button);
     
+    void on_AddMappingButton_Released(MappingButton* button);
+    void on_RemoveMappingButton_Released(MappingButton* button);
+
     void on_MainDialog_SdlEvent(SDL_Event* event);
     void on_MainDialog_SdlEventPollFinished();
 signals:

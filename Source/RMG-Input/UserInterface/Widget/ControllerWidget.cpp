@@ -91,7 +91,7 @@ ControllerWidget::ControllerWidget(QWidget* parent, EventFilter* eventFilter) : 
         { this->analogStickRightButton, SettingsID::Input_AnalogStickRight_InputType, SettingsID::Input_AnalogStickRight_Name, SettingsID::Input_AnalogStickRight_Data, SettingsID::Input_AnalogStickRight_ExtraData },
     });
 
-    CustomButton* buttonList[] =
+    MappingButton* buttonList[] =
     {
         // dpad
         this->dpadUpButton,
@@ -133,37 +133,50 @@ ControllerWidget::~ControllerWidget()
 
 void ControllerWidget::initializeButtons()
 {
-    CustomButton* buttonList[] =
+    struct
+    {
+        MappingButton* mappingButton;
+        AddMappingButton* addMappingButton;
+        RemoveMappingButton* removeMappingButton;
+    } mappingList[] =
     {
         // dpad
-        this->dpadUpButton,
-        this->dpadDownButton,
-        this->dpadLeftButton,
-        this->dpadRightButton,
+        { this->dpadUpButton, this->dpadUpAddButton, this->dpadUpRemoveButton },
+        { this->dpadDownButton, this->dpadDownAddButton, this->dpadDownRemoveButton },
+        { this->dpadLeftButton, this->dpadLeftAddButton, this->dpadLeftRemoveButton },
+        { this->dpadRightButton, this->dpadRightAddButton, this->dpadRightRemoveButton },
         // analog stick
-        this->analogStickUpButton,
-        this->analogStickDownButton,
-        this->analogStickLeftButton,
-        this->analogStickRightButton,
+        { this->analogStickUpButton, this->analogStickUpAddButton, this->analogStickUpRemoveButton },
+        { this->analogStickDownButton, this->analogStickDownAddButton, this->analogStickDownRemoveButton },
+        { this->analogStickLeftButton, this->analogStickLeftAddButton, this->analogStickLeftRemoveButton },
+        { this->analogStickRightButton, this->analogStickRightAddButton, this->analogStickRightRemoveButton },
         // cbuttons
-        this->cbuttonUpButton,
-        this->cbuttonDownButton,
-        this->cbuttonLeftButton,
-        this->cbuttonRightButton,
+        { this->cbuttonUpButton, this->cbuttonUpAddButton, this->cbuttonUpRemoveButton },
+        { this->cbuttonDownButton, this->cbuttonDownAddButton, this->cbuttonDownRemoveButton },
+        { this->cbuttonLeftButton, this->cbuttonLeftAddButton, this->cbuttonLeftRemoveButton },
+        { this->cbuttonRightButton, this->cbuttonRightAddButton, this->cbuttonRightRemoveButton },
         // triggers
-        this->leftTriggerButton,
-        this->rightTriggerButton,
-        this->zTriggerButton,
+        { this->leftTriggerButton, this->leftTriggerAddButton, this->leftTriggerRemoveButton },
+        { this->rightTriggerButton, this->rightTriggerAddButton, this->rightTriggerRemoveButton },
+        { this->zTriggerButton, this->zTriggerAddButton, this->zTriggerRemoveButton },
         // buttons
-        this->aButton,
-        this->bButton,
-        this->startButton,
+        { this->aButton, this->aAddButton, this->aRemoveButton },
+        { this->bButton, this->bAddButton, this->bRemoveButton },
+        { this->startButton, this->startAddButton, this->startRemoveButton },
     };
 
-    for (auto& button : buttonList)
+    for (auto& mapping : mappingList)
     {
-        button->Initialize(this);
-        button->setText(" ");
+        // initialize buttons
+        mapping.mappingButton->Initialize(this);
+        mapping.addMappingButton->Initialize(this, mapping.mappingButton);
+        mapping.removeMappingButton->Initialize(this, mapping.mappingButton);
+
+        // clear text & set icon
+        mapping.addMappingButton->setText("");
+        mapping.removeMappingButton->setText("");
+        mapping.addMappingButton->setIcon(QIcon::fromTheme("add-line"));
+        mapping.removeMappingButton->setIcon(QIcon::fromTheme("delete-back-line"));
     }
 }
 
@@ -212,7 +225,7 @@ void ControllerWidget::enableAllChildren()
     }
 }
 
-void ControllerWidget::removeDuplicates(CustomButton* button)
+void ControllerWidget::removeDuplicates(MappingButton* button)
 {
     std::string section = this->getCurrentSettingsSection().toStdString();
 
@@ -229,11 +242,20 @@ void ControllerWidget::removeDuplicates(CustomButton* button)
             continue;
         }
 
-        if ((buttonWidget->GetInputType() == button->GetInputType()) &&
-            (buttonWidget->GetInputData() == button->GetInputData()) &&
-            (buttonWidget->GetExtraInputData() == button->GetExtraInputData()))
+        std::vector<int> inputType;
+        std::vector<int> inputData;
+        std::vector<int> extraInputData;
+
+        inputType = button->GetInputType();
+        inputData = button->GetInputData();
+        extraInputData = button->GetExtraInputData();
+
+        for (int i = 0; i < inputType.size(); i++)
         {
-            buttonWidget->Clear();
+            if (buttonWidget->HasInputData((InputType)inputType.at(i), inputData.at(i), extraInputData.at(i)))
+            {
+                buttonWidget->RemoveInputData((InputType)inputType.at(i), inputData.at(i), extraInputData.at(i));
+            }
         }
     }
 }
@@ -406,34 +428,37 @@ void ControllerWidget::on_controllerPluggedCheckBox_toggled(bool value)
     QWidget* widgetList[] =
     {
         // dpad
-        this->dpadUpButton,
-        this->dpadDownButton,
-        this->dpadLeftButton,
-        this->dpadRightButton,
+        this->groupBox,
+        this->dpadUpButton, this->dpadUpAddButton, this->dpadUpRemoveButton,
+        this->dpadDownButton, this->dpadDownAddButton, this->dpadDownRemoveButton,
+        this->dpadLeftButton, this->dpadLeftAddButton, this->dpadLeftRemoveButton,
+        this->dpadRightButton, this->dpadRightAddButton, this->dpadRightRemoveButton,
         // analog stick
-        this->analogStickUpButton,
-        this->analogStickDownButton,
-        this->analogStickLeftButton,
-        this->analogStickRightButton,
+        this->groupBox_2,
+        this->analogStickUpButton, this->analogStickUpAddButton, this->analogStickUpRemoveButton,
+        this->analogStickDownButton, this->analogStickDownAddButton, this->analogStickDownRemoveButton,
+        this->analogStickLeftButton, this->analogStickLeftAddButton, this->analogStickLeftRemoveButton,
+        this->analogStickRightButton, this->analogStickRightAddButton, this->analogStickRightRemoveButton,
         // cbuttons
-        this->cbuttonUpButton,
-        this->cbuttonDownButton,
-        this->cbuttonLeftButton,
-        this->cbuttonRightButton,
+        this->groupBox_3,
+        this->cbuttonUpButton, this->cbuttonUpAddButton, this->cbuttonUpRemoveButton,
+        this->cbuttonDownButton, this->cbuttonDownAddButton, this->cbuttonDownRemoveButton,
+        this->cbuttonLeftButton, this->cbuttonLeftAddButton, this->cbuttonLeftRemoveButton,
+        this->cbuttonRightButton, this->cbuttonRightAddButton, this->cbuttonRightRemoveButton,
         // triggers
-        this->leftTriggerButton,
-        this->rightTriggerButton,
-        this->zTriggerButton,
+        this->leftTriggerButton, this->leftTriggerAddButton, this->leftTriggerRemoveButton,
+        this->rightTriggerButton, this->rightTriggerAddButton, this->rightTriggerRemoveButton,
+        this->zTriggerButton, this->zTriggerAddButton, this->zTriggerRemoveButton,
         // buttons
-        this->aButton,
-        this->bButton,
-        this->startButton,
+        this->groupBox_6,
+        this->aButton, this->aAddButton, this->aRemoveButton,
+        this->bButton, this->bAddButton, this->bRemoveButton,
+        this->startButton, this->startAddButton, this->startRemoveButton,
         // misc UI elements
         this->deadZoneSlider,
         this->optionsButton,
         this->profileComboBox,
         this->removeProfileButton,
-        //this->setupButton,
         this->resetButton,
         this->inputDeviceComboBox,
         this->inputDeviceRefreshButton
@@ -483,15 +508,6 @@ void ControllerWidget::on_removeProfileButton_clicked()
     this->profileComboBox->setCurrentIndex(0);
 }
 
-void ControllerWidget::on_setupButton_clicked()
-{
-    this->currentInSetup = true;
-    this->currentSetupButtonWidgetIndex = 0;
-
-    this->setupButtonWidgets.at(0)->setFocus(Qt::OtherFocusReason);
-    this->setupButtonWidgets.at(0)->click();
-}
-
 void ControllerWidget::on_resetButton_clicked()
 {
     this->LoadSettings();
@@ -509,7 +525,7 @@ void ControllerWidget::on_optionsButton_clicked()
     }
 }
 
-void ControllerWidget::on_CustomButton_released(CustomButton* button)
+void ControllerWidget::on_MappingButton_Released(MappingButton* button)
 {
     if (this->currentButton != nullptr)
     {
@@ -524,11 +540,23 @@ void ControllerWidget::on_CustomButton_released(CustomButton* button)
     this->disableAllChildren();
 }
 
-void ControllerWidget::on_CustomButton_TimerFinished(CustomButton* button)
+void ControllerWidget::on_AddMappingButton_Released(MappingButton* button)
+{
+    this->addMappingToButton = true;
+    button->click();
+}
+
+void ControllerWidget::on_RemoveMappingButton_Released(MappingButton* button)
+{
+    button->RemoveLastInputData();
+}
+
+void ControllerWidget::on_MappingButton_TimerFinished(MappingButton* button)
 {
     if (this->currentButton == button)
     {
-        this->currentButton = nullptr;
+        this->currentButton      = nullptr;
+        this->addMappingToButton = false;
     }
 
     button->RestoreState();
@@ -536,11 +564,12 @@ void ControllerWidget::on_CustomButton_TimerFinished(CustomButton* button)
     this->enableAllChildren();
 }
 
-void ControllerWidget::on_CustomButton_DataSet(CustomButton* button)
+void ControllerWidget::on_MappingButton_DataSet(MappingButton* button)
 {
     this->enableAllChildren();
     this->removeDuplicates(button);
-    this->currentButton = nullptr;
+    this->currentButton      = nullptr;
+    this->addMappingToButton = false;
 }
 
 void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
@@ -587,12 +616,24 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             {
                 if (sdlButtonPressed)
                 {
-                    this->currentButton->SetInputData(
-                        inputType, 
-                        sdlButton,
-                        0,
-                        sdlButtonName
-                    );
+                    if (this->addMappingToButton)
+                    {
+                        this->currentButton->AddInputData(
+                            inputType, 
+                            sdlButton,
+                            0,
+                            sdlButtonName
+                        );
+                    }
+                    else
+                    {
+                        this->currentButton->SetInputData(
+                            inputType, 
+                            sdlButton,
+                            0,
+                            sdlButtonName
+                        );
+                    }
                 }
                 break;
             }
@@ -600,8 +641,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             // update controller button state
             for (auto& button : this->buttonWidgetMappings)
             {
-                if (button.buttonWidget->GetInputType() == inputType &&
-                    button.buttonWidget->GetInputData() == sdlButton)
+                if (button.buttonWidget->HasInputData(inputType, sdlButton))
                 {
                     this->controllerImageWidget->SetButtonState(button.button, sdlButtonPressed);
                 }
@@ -610,8 +650,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             // update controller analog stick state
             for (auto& joystick : this->joystickWidgetMappings)
             {
-                if (joystick.buttonWidget->GetInputType() == inputType &&
-                    joystick.buttonWidget->GetInputData() == sdlButton)
+                if (joystick.buttonWidget->HasInputData(inputType, sdlButton))
                 {
                     switch (joystick.direction)
                     {
@@ -701,12 +740,25 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
                             sdlAxisName += sdlAxisDirection > 0 ? "+" : "-";
                         }
                     }
-                    this->currentButton->SetInputData(
-                        inputType, 
-                        sdlAxis,
-                        sdlAxisDirection,
-                        sdlAxisName
-                    );
+
+                    if (this->addMappingToButton)
+                    {
+                        this->currentButton->AddInputData(
+                            inputType, 
+                            sdlAxis,
+                            sdlAxisDirection,
+                            sdlAxisName
+                        );
+                    }
+                    else
+                    {
+                        this->currentButton->SetInputData(
+                            inputType, 
+                            sdlAxis,
+                            sdlAxisDirection,
+                            sdlAxisName
+                        );
+                    }
                 }
                 break;
             }
@@ -714,9 +766,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             // update controller button state
             for (auto& button : this->buttonWidgetMappings)
             {
-                if (button.buttonWidget->GetInputType() == inputType &&
-                    button.buttonWidget->GetInputData() == sdlAxis &&
-                    button.buttonWidget->GetExtraInputData() == sdlAxisDirection)
+                if (button.buttonWidget->HasInputData(inputType, sdlAxis, sdlAxisDirection))
                 {
                     this->controllerImageWidget->SetButtonState(button.button, sdlAxisButtonPressed);
                 }
@@ -725,9 +775,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             // update controller analog stick state
             for (auto& joystick : this->joystickWidgetMappings)
             {
-                if (joystick.buttonWidget->GetInputType() == inputType &&
-                    joystick.buttonWidget->GetInputData() == sdlAxis &&
-                    joystick.buttonWidget->GetExtraInputData() == sdlAxisDirection)
+                if (joystick.buttonWidget->HasInputData(inputType, sdlAxis, sdlAxisDirection))
                 {
                     const int value = -(double)((double)sdlAxisValue / SDL_AXIS_PEAK * 100);
 
@@ -770,12 +818,24 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             {
                 if (sdlButtonPressed)
                 {
-                    this->currentButton->SetInputData(
-                        InputType::Keyboard, 
-                        sdlButton,
-                        0,
-                        SDL_GetScancodeName(sdlButton)
-                    );
+                    if (this->addMappingToButton)
+                    {
+                        this->currentButton->AddInputData(
+                            InputType::Keyboard, 
+                            sdlButton,
+                            0,
+                            SDL_GetScancodeName(sdlButton)
+                        );
+                    }
+                    else
+                    {
+                        this->currentButton->SetInputData(
+                            InputType::Keyboard, 
+                            sdlButton,
+                            0,
+                            SDL_GetScancodeName(sdlButton)
+                        );
+                    }
                 }
                 break;
             }
@@ -783,8 +843,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             // update controller button state
             for (auto& button : this->buttonWidgetMappings)
             {
-                if (button.buttonWidget->GetInputType() == InputType::Keyboard &&
-                    button.buttonWidget->GetInputData() == sdlButton)
+                if (button.buttonWidget->HasInputData(InputType::Keyboard, sdlButton))
                 {
                     this->controllerImageWidget->SetButtonState(button.button, sdlButtonPressed);
                 }
@@ -793,8 +852,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             // update controller analog stick state
             for (auto& joystick : this->joystickWidgetMappings)
             {
-                if (joystick.buttonWidget->GetInputType() == InputType::Keyboard &&
-                    joystick.buttonWidget->GetInputData() == sdlButton)
+                if (joystick.buttonWidget->HasInputData(InputType::Keyboard, sdlButton))
                 {
                     switch (joystick.direction)
                     {
@@ -916,12 +974,29 @@ void ControllerWidget::LoadSettings(QString sectionQString)
 
     for (auto& buttonSetting : this->buttonSettingMappings)
     {
-        enum InputType type = (InputType)CoreSettingsGetIntValue(buttonSetting.inputTypeSettingsId, section);
-        std::string    name = CoreSettingsGetStringValue(buttonSetting.nameSettingsId, section);
-        int            data = CoreSettingsGetIntValue(buttonSetting.dataSettingsId, section);
-        int            extraData = CoreSettingsGetIntValue(buttonSetting.extraDataSettingsId, section);
+        buttonSetting.button->Clear();
 
-        buttonSetting.button->SetInputData(type, data, extraData, QString::fromStdString(name));
+        std::vector<int> types         = CoreSettingsGetIntListValue(buttonSetting.inputTypeSettingsId, section);
+        std::vector<std::string> names = CoreSettingsGetStringListValue(buttonSetting.nameSettingsId, section);
+        std::vector<int> data          = CoreSettingsGetIntListValue(buttonSetting.dataSettingsId, section);
+        std::vector<int> extraData     = CoreSettingsGetIntListValue(buttonSetting.extraDataSettingsId, section);
+
+        int count = std::min(extraData.size(), std::min(types.size(), std::min(names.size(), data.size())));
+
+        if (count == 0)
+        { // attempt to load old profile type
+            types.push_back(CoreSettingsGetIntValue(buttonSetting.inputTypeSettingsId, section));
+            names.push_back(CoreSettingsGetStringValue(buttonSetting.nameSettingsId, section));
+            data.push_back(CoreSettingsGetIntValue(buttonSetting.dataSettingsId, section));
+            extraData.push_back(CoreSettingsGetIntValue(buttonSetting.extraDataSettingsId, section));
+            count = 1;
+        }
+
+        // add all input data
+        for (int i = 0; i < count; i++)
+        {
+            buttonSetting.button->AddInputData((InputType)types[i], data[i], extraData[i], QString::fromStdString(names.at(i)));
+        }
     }
 
     // force refresh some UI elements
@@ -943,19 +1018,15 @@ void ControllerWidget::SaveDefaultSettings()
     CoreSettingsSetValue(SettingsID::Input_DeviceNum, section, -1);
     CoreSettingsSetValue(SettingsID::Input_Deadzone, section, 9);
     CoreSettingsSetValue(SettingsID::Input_Pak, section, 0);
-#ifdef _WIN32
     CoreSettingsSetValue(SettingsID::Input_RemoveDuplicateMappings, section, true);
-#else
-    CoreSettingsSetValue(SettingsID::Input_RemoveDuplicateMappings, section, false);
-#endif // _WIN32
     CoreSettingsSetValue(SettingsID::Input_InvertAxis, section, true);
 
     for (auto& buttonSetting : this->buttonSettingMappings)
     {
-        CoreSettingsSetValue(buttonSetting.inputTypeSettingsId, section, (int)InputType::Invalid);
-        CoreSettingsSetValue(buttonSetting.nameSettingsId, section, std::string(" "));
-        CoreSettingsSetValue(buttonSetting.dataSettingsId, section, 0);
-        CoreSettingsSetValue(buttonSetting.extraDataSettingsId, section, 0);
+        CoreSettingsSetValue(buttonSetting.inputTypeSettingsId, section, std::vector<int>({ (int)InputType::Invalid }));
+        CoreSettingsSetValue(buttonSetting.nameSettingsId, section, std::vector<std::string>({ std::string() }));
+        CoreSettingsSetValue(buttonSetting.dataSettingsId, section, std::vector<int>({ 0 }));
+        CoreSettingsSetValue(buttonSetting.extraDataSettingsId, section, std::vector<int>({ 0 }));
     }
 
     CoreSettingsSave();
@@ -986,8 +1057,8 @@ void ControllerWidget::SaveSettings()
 
     for (auto& buttonSetting : this->buttonSettingMappings)
     {
-        CoreSettingsSetValue(buttonSetting.inputTypeSettingsId, section, (int)buttonSetting.button->GetInputType());
-        CoreSettingsSetValue(buttonSetting.nameSettingsId, section, buttonSetting.button->text().toStdString());
+        CoreSettingsSetValue(buttonSetting.inputTypeSettingsId, section, buttonSetting.button->GetInputType());
+        CoreSettingsSetValue(buttonSetting.nameSettingsId, section, buttonSetting.button->GetInputText());
         CoreSettingsSetValue(buttonSetting.dataSettingsId, section, buttonSetting.button->GetInputData());
         CoreSettingsSetValue(buttonSetting.extraDataSettingsId, section, buttonSetting.button->GetExtraInputData());
     }

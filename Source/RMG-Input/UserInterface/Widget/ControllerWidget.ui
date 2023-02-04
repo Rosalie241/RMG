@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>811</width>
-    <height>554</height>
+    <width>1239</width>
+    <height>562</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -144,7 +144,7 @@
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_7">
        <item>
-        <spacer name="verticalSpacer_5">
+        <spacer name="verticalSpacer_3">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -173,9 +173,9 @@
          <property name="checkable">
           <bool>false</bool>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout">
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_19">
+           <layout class="QVBoxLayout" name="verticalLayout_6">
             <item>
              <widget class="QLabel" name="label_19">
               <property name="sizePolicy">
@@ -190,23 +190,6 @@
              </widget>
             </item>
             <item>
-             <widget class="CustomButton" name="dpadUpButton">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_20">
-            <item>
              <widget class="QLabel" name="label_20">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -217,25 +200,14 @@
               <property name="text">
                <string>Down:</string>
               </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="CustomButton" name="dpadDownButton">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
+              <property name="scaledContents">
+               <bool>false</bool>
               </property>
-              <property name="text">
-               <string/>
+              <property name="wordWrap">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_21">
             <item>
              <widget class="QLabel" name="label_21">
               <property name="sizePolicy">
@@ -250,23 +222,6 @@
              </widget>
             </item>
             <item>
-             <widget class="CustomButton" name="dpadLeftButton">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_22">
-            <item>
              <widget class="QLabel" name="label_22">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -279,18 +234,133 @@
               </property>
              </widget>
             </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_4">
             <item>
-             <widget class="CustomButton" name="dpadRightButton">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
+             <layout class="QHBoxLayout" name="horizontalLayout_19">
+              <item>
+               <widget class="MappingButton" name="dpadUpButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="AddMappingButton" name="dpadUpAddButton">
+                <property name="text">
+                 <string>+</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="RemoveMappingButton" name="dpadUpRemoveButton">
+                <property name="text">
+                 <string>-</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_20">
+              <item>
+               <widget class="MappingButton" name="dpadDownButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="AddMappingButton" name="dpadDownAddButton">
+                <property name="text">
+                 <string>+</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="RemoveMappingButton" name="dpadDownRemoveButton">
+                <property name="text">
+                 <string>-</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_21">
+              <item>
+               <widget class="MappingButton" name="dpadLeftButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="AddMappingButton" name="dpadLeftAddButton">
+                <property name="text">
+                 <string>+</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="RemoveMappingButton" name="dpadLeftRemoveButton">
+                <property name="text">
+                 <string>-</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_22">
+              <item>
+               <widget class="MappingButton" name="dpadRightButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="AddMappingButton" name="dpadRightAddButton">
+                <property name="text">
+                 <string>+</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="RemoveMappingButton" name="dpadRightRemoveButton">
+                <property name="text">
+                 <string>-</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </item>
@@ -314,9 +384,9 @@
          <property name="checkable">
           <bool>false</bool>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_2">
+         <layout class="QHBoxLayout" name="horizontalLayout_12">
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_23">
+           <layout class="QVBoxLayout" name="verticalLayout_12">
             <item>
              <widget class="QLabel" name="label_23">
               <property name="sizePolicy">
@@ -331,17 +401,6 @@
              </widget>
             </item>
             <item>
-             <widget class="CustomButton" name="analogStickUpButton">
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_24">
-            <item>
              <widget class="QLabel" name="label_24">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -354,17 +413,6 @@
               </property>
              </widget>
             </item>
-            <item>
-             <widget class="CustomButton" name="analogStickDownButton">
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_25">
             <item>
              <widget class="QLabel" name="label_25">
               <property name="sizePolicy">
@@ -379,17 +427,6 @@
              </widget>
             </item>
             <item>
-             <widget class="CustomButton" name="analogStickLeftButton">
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_26">
-            <item>
              <widget class="QLabel" name="label_26">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -402,12 +439,115 @@
               </property>
              </widget>
             </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_2">
             <item>
-             <widget class="CustomButton" name="analogStickRightButton">
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
+             <layout class="QHBoxLayout" name="horizontalLayout_23">
+              <item>
+               <widget class="MappingButton" name="analogStickUpButton">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="AddMappingButton" name="analogStickUpAddButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>+</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="RemoveMappingButton" name="analogStickUpRemoveButton">
+                <property name="text">
+                 <string>-</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_24">
+              <item>
+               <widget class="MappingButton" name="analogStickDownButton">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="AddMappingButton" name="analogStickDownAddButton">
+                <property name="text">
+                 <string>+</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="RemoveMappingButton" name="analogStickDownRemoveButton">
+                <property name="text">
+                 <string>-</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_25">
+              <item>
+               <widget class="MappingButton" name="analogStickLeftButton">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="AddMappingButton" name="analogStickLeftAddButton">
+                <property name="text">
+                 <string>+</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="RemoveMappingButton" name="analogStickLeftRemoveButton">
+                <property name="text">
+                 <string>-</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_26">
+              <item>
+               <widget class="MappingButton" name="analogStickRightButton">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="AddMappingButton" name="analogStickRightAddButton">
+                <property name="text">
+                 <string>+</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="RemoveMappingButton" name="analogStickRightRemoveButton">
+                <property name="text">
+                 <string>-</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </item>
@@ -459,9 +599,23 @@
             </widget>
            </item>
            <item>
-            <widget class="CustomButton" name="leftTriggerButton">
+            <widget class="MappingButton" name="leftTriggerButton">
              <property name="text">
               <string/>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="AddMappingButton" name="leftTriggerAddButton">
+             <property name="text">
+              <string>+</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="RemoveMappingButton" name="leftTriggerRemoveButton">
+             <property name="text">
+              <string>-</string>
              </property>
             </widget>
            </item>
@@ -490,9 +644,23 @@
             </widget>
            </item>
            <item>
-            <widget class="CustomButton" name="rightTriggerButton">
+            <widget class="MappingButton" name="rightTriggerButton">
              <property name="text">
               <string/>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="AddMappingButton" name="rightTriggerAddButton">
+             <property name="text">
+              <string>+</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="RemoveMappingButton" name="rightTriggerRemoveButton">
+             <property name="text">
+              <string>-</string>
              </property>
             </widget>
            </item>
@@ -532,20 +700,23 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
+          <spacer name="horizontalSpacer_10">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
           <layout class="QHBoxLayout" name="horizontalLayout_2">
-           <item>
-            <spacer name="horizontalSpacer_2">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
+           <property name="spacing">
+            <number>0</number>
+           </property>
            <item>
             <widget class="QLabel" name="label">
              <property name="text">
@@ -554,60 +725,88 @@
             </widget>
            </item>
            <item>
-            <widget class="CustomButton" name="startButton">
+            <widget class="MappingButton" name="startButton">
              <property name="text">
               <string/>
              </property>
             </widget>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_6">
-             <property name="spacing">
-              <number>0</number>
+            <widget class="AddMappingButton" name="startAddButton">
+             <property name="text">
+              <string>+</string>
              </property>
-             <item>
-              <spacer name="horizontalSpacer_8">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_2">
-               <property name="text">
-                <string>Z-Trigger: </string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="CustomButton" name="zTriggerButton">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-            </layout>
+            </widget>
            </item>
            <item>
-            <spacer name="horizontalSpacer_4">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+            <widget class="RemoveMappingButton" name="startRemoveButton">
+             <property name="text">
+              <string>-</string>
              </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
+            </widget>
            </item>
           </layout>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_6">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>Z-Trigger: </string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="MappingButton" name="zTriggerButton">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="AddMappingButton" name="zTriggerAddButton">
+             <property name="text">
+              <string>+</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="RemoveMappingButton" name="zTriggerRemoveButton">
+             <property name="text">
+              <string>-</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_11">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
          </item>
         </layout>
        </item>
@@ -616,7 +815,7 @@
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_8">
        <item>
-        <spacer name="verticalSpacer_6">
+        <spacer name="verticalSpacer_4">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>
@@ -645,9 +844,9 @@
          <property name="checkable">
           <bool>false</bool>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_3">
+         <layout class="QHBoxLayout" name="horizontalLayout_13">
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_28">
+           <layout class="QVBoxLayout" name="verticalLayout_13">
             <item>
              <widget class="QLabel" name="label_28">
               <property name="sizePolicy">
@@ -662,23 +861,6 @@
              </widget>
             </item>
             <item>
-             <widget class="CustomButton" name="cbuttonUpButton">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_27">
-            <item>
              <widget class="QLabel" name="label_27">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -691,23 +873,6 @@
               </property>
              </widget>
             </item>
-            <item>
-             <widget class="CustomButton" name="cbuttonDownButton">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_29">
             <item>
              <widget class="QLabel" name="label_29">
               <property name="sizePolicy">
@@ -722,23 +887,6 @@
              </widget>
             </item>
             <item>
-             <widget class="CustomButton" name="cbuttonLeftButton">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_30">
-            <item>
              <widget class="QLabel" name="label_30">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -751,18 +899,133 @@
               </property>
              </widget>
             </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_3">
             <item>
-             <widget class="CustomButton" name="cbuttonRightButton">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
+             <layout class="QHBoxLayout" name="horizontalLayout_28">
+              <item>
+               <widget class="MappingButton" name="cbuttonUpButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="AddMappingButton" name="cbuttonUpAddButton">
+                <property name="text">
+                 <string>+</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="RemoveMappingButton" name="cbuttonUpRemoveButton">
+                <property name="text">
+                 <string>-</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_27">
+              <item>
+               <widget class="MappingButton" name="cbuttonDownButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="AddMappingButton" name="cbuttonDownAddButton">
+                <property name="text">
+                 <string>+</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="RemoveMappingButton" name="cbuttonDownRemoveButton">
+                <property name="text">
+                 <string>-</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_29">
+              <item>
+               <widget class="MappingButton" name="cbuttonLeftButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="AddMappingButton" name="cbuttonLeftAddButton">
+                <property name="text">
+                 <string>+</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="RemoveMappingButton" name="cbuttonLeftRemoveButton">
+                <property name="text">
+                 <string>-</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_30">
+              <item>
+               <widget class="MappingButton" name="cbuttonRightButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="AddMappingButton" name="cbuttonRightAddButton">
+                <property name="text">
+                 <string>+</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="RemoveMappingButton" name="cbuttonRightRemoveButton">
+                <property name="text">
+                 <string>-</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </item>
@@ -780,9 +1043,9 @@
          <property name="title">
           <string/>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_11">
+         <layout class="QHBoxLayout" name="horizontalLayout_14">
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_16">
+           <layout class="QVBoxLayout" name="verticalLayout_14">
             <item>
              <widget class="QLabel" name="label_16">
               <property name="sizePolicy">
@@ -797,23 +1060,6 @@
              </widget>
             </item>
             <item>
-             <widget class="CustomButton" name="bButton">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_17">
-            <item>
              <widget class="QLabel" name="label_17">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -826,18 +1072,71 @@
               </property>
              </widget>
             </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_11">
             <item>
-             <widget class="CustomButton" name="aButton">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
+             <layout class="QHBoxLayout" name="horizontalLayout_16">
+              <item>
+               <widget class="MappingButton" name="bButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="AddMappingButton" name="bAddButton">
+                <property name="text">
+                 <string>+</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="RemoveMappingButton" name="bRemoveButton">
+                <property name="text">
+                 <string>-</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_17">
+              <item>
+               <widget class="MappingButton" name="aButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="AddMappingButton" name="aAddButton">
+                <property name="text">
+                 <string>+</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="RemoveMappingButton" name="aRemoveButton">
+                <property name="text">
+                 <string>-</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </item>
@@ -892,15 +1191,25 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>CustomButton</class>
+   <class>MappingButton</class>
    <extends>QPushButton</extends>
-   <header>UserInterface/Widget/CustomButton.hpp</header>
+   <header>UserInterface/Widget/MappingButton.hpp</header>
   </customwidget>
   <customwidget>
    <class>ControllerImageWidget</class>
    <extends>QWidget</extends>
    <header>UserInterface/Widget/ControllerImageWidget.hpp</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>AddMappingButton</class>
+   <extends>QPushButton</extends>
+   <header>UserInterface/Widget/AddMappingButton.hpp</header>
+  </customwidget>
+  <customwidget>
+   <class>RemoveMappingButton</class>
+   <extends>QPushButton</extends>
+   <header>UserInterface/Widget/RemoveMappingButton.hpp</header>
   </customwidget>
  </customwidgets>
  <resources/>
