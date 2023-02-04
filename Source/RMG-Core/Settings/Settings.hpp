@@ -43,6 +43,8 @@ bool CoreSettingsSetValue(SettingsID settingId, float value);
 bool CoreSettingsSetValue(SettingsID settingId, std::string value);
 // sets setting as int list value
 bool CoreSettingsSetValue(SettingsID settingId, std::vector<int> value);
+// sets setting as string list value
+bool CoreSettingsSetValue(SettingsID settingId, std::vector<std::string> value);
 
 // sets setting in section as int value
 bool CoreSettingsSetValue(SettingsID settingId, std::string section, int value);
@@ -54,6 +56,8 @@ bool CoreSettingsSetValue(SettingsID settingId, std::string section, float value
 bool CoreSettingsSetValue(SettingsID settingId, std::string section, std::string value);
 // sets setting in section as int list value
 bool CoreSettingsSetValue(SettingsID settingId, std::string section, std::vector<int> value);
+// sets setting as section as string list value
+bool CoreSettingsSetValue(SettingsID settingId, std::string section, std::vector<std::string> value);
 
 #ifdef CORE_INTERNAL
 // sets key in section as int value
@@ -66,6 +70,8 @@ bool CoreSettingsSetValue(std::string section, std::string key, float value);
 bool CoreSettingsSetValue(std::string section, std::string key, std::string value);
 // sets key in section as int list value
 bool CoreSettingsSetValue(std::string section, std::string key, std::vector<int> value);
+// sets key in section as string list value
+bool CoreSettingsSetValue(std::string section, std::string key, std::vector<std::string> value);
 #endif // CORE_INTERNAL
 
 // retrieves default setting as int
@@ -78,6 +84,8 @@ float CoreSettingsGetDefaultFloatValue(SettingsID settingId);
 std::string CoreSettingsGetDefaultStringValue(SettingsID settingId);
 // retrieves default setting as int list
 std::vector<int> CoreSettingsGetDefaultIntListValue(SettingsID settingId);
+// retrieves default setting as string list
+std::vector<std::string> CoreSettingsGetDefaultStringListValue(SettingsID settingId);
 
 // retrieves setting as int
 int CoreSettingsGetIntValue(SettingsID settingId);
@@ -89,6 +97,8 @@ float CoreSettingsGetFloatValue(SettingsID settingId);
 std::string CoreSettingsGetStringValue(SettingsID settingId);
 // retrieves setting as int list
 std::vector<int> CoreSettingsGetIntListValue(SettingsID settingId);
+// retrieves setting as string list
+std::vector<std::string> CoreSettingsGetStringListValue(SettingsID settingId);
 
 // retrieves setting in section as int
 int CoreSettingsGetIntValue(SettingsID settingId, std::string section);
@@ -100,6 +110,8 @@ float CoreSettingsGetFloatValue(SettingsID settingId, std::string section);
 std::string CoreSettingsGetStringValue(SettingsID settingId, std::string section);
 // retrieves setting in section as int list
 std::vector<int> CoreSettingsGetIntListValue(SettingsID settingId, std::string section);
+// retrieves setting in section as string list
+std::vector<std::string> CoreSettingsGetStringListValue(SettingsID settingId, std::string section);
 
 #ifdef CORE_INTERNAL
 // retrieves key in section as int
@@ -112,6 +124,8 @@ float CoreSettingsGetFloatValue(std::string section, std::string key, float defa
 std::string CoreSettingsGetStringValue(std::string section, std::string key);
 // retrieves key in section as int list
 std::vector<int> CoreSettingsGetIntListValue(std::string section, std::string key);
+// retrieves key in section as string list
+std::vector<std::string> CoreSettingsGetStringListValue(std::string section, std::string key);
 #endif // CORE_INTERNAL
 
 #endif // CORE_SETTINGS_HPP

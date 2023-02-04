@@ -995,6 +995,79 @@ static bool config_option_default_set(std::string section, std::string key, m64p
     return ret == M64ERR_SUCCESS;
 }
 
+static bool int_list_to_string(std::vector<int> intList, std::string& string)
+{
+    for (const int& num : intList)
+    {
+        string += std::to_string(num);
+        string += ";";
+    }
+    return true;
+}
+
+static bool string_to_int_list(std::string string, std::vector<int>& intList)
+{
+    std::string error;
+
+    // split string by ';'
+    // and append list with each item
+    std::stringstream value_str_stream(string);
+    std::string tmp_str;
+    while (std::getline(value_str_stream, tmp_str, ';'))
+    {
+        try
+        {
+            intList.emplace_back(std::stoi(tmp_str));
+        }
+        catch (...)
+        {
+            error = "string_to_int_list: std::stroi threw an exception!";
+            CoreSetError(error);
+            return false;
+        }
+    }
+
+    return true;
+}
+
+static bool string_list_to_string(std::vector<std::string> stringList, std::string& string)
+{
+    std::string error;
+
+    for (const std::string str : stringList)
+    {
+        // ensure the string doesn't contain
+        // the seperator character
+        if (str.find(";") != std::string::npos)
+        {
+            error = "string_list_to_string: string cannot contain ';'!";
+            CoreSetError(error);
+            return false;
+        }
+
+        string += str;
+        string += ";";
+    }
+
+    return true;
+}
+
+static bool string_to_string_list(std::string string, std::vector<std::string> stringList)
+{
+    std::string error;
+
+    // split string by ';'
+    // and append list with each item
+    std::stringstream value_str_stream(string);
+    std::string tmp_str;
+    while (std::getline(value_str_stream, tmp_str, ';'))
+    {
+        stringList.emplace_back(tmp_str);
+    }
+
+    return true;
+}
+
 //
 // Exported Functions
 //
@@ -1193,10 +1266,19 @@ bool CoreSettingsSetValue(SettingsID settingId, std::string value)
 bool CoreSettingsSetValue(SettingsID settingId, std::vector<int> value)
 {
     std::string value_str;
-    for (const int& num : value)
+    if (!int_list_to_string(value, value_str))
     {
-        value_str += std::to_string(num);
-        value_str += ";";
+        return false;
+    }
+    return CoreSettingsSetValue(settingId, value_str);
+}
+
+bool CoreSettingsSetValue(SettingsID settingId, std::vector<std::string> value)
+{
+    std::string value_str;
+    if (!string_list_to_string(value, value_str))
+    {
+        return false;
     }
     return CoreSettingsSetValue(settingId, value_str);
 }
@@ -1229,10 +1311,19 @@ bool CoreSettingsSetValue(SettingsID settingId, std::string section, std::string
 bool CoreSettingsSetValue(SettingsID settingId, std::string section, std::vector<int> value)
 {
     std::string value_str;
-    for (const int& num : value)
+    if (!int_list_to_string(value, value_str))
     {
-        value_str += std::to_string(num);
-        value_str += ";";
+        return false;
+    }
+    return CoreSettingsSetValue(settingId, section, value_str);
+}
+
+bool CoreSettingsSetValue(SettingsID settingId, std::string section, std::vector<std::string> value)
+{
+    std::string value_str;
+    if (!string_list_to_string(value, value_str))
+    {
+        return false;
     }
     return CoreSettingsSetValue(settingId, section, value_str);
 }
@@ -1261,10 +1352,19 @@ bool CoreSettingsSetValue(std::string section, std::string key, std::string valu
 bool CoreSettingsSetValue(std::string section, std::string key, std::vector<int> value)
 {
     std::string value_str;
-    for (const int& num : value)
+    if (!int_list_to_string(value, value_str))
     {
-        value_str += std::to_string(num);
-        value_str += ";";
+        return false;
+    }
+    return CoreSettingsSetValue(section, key, value_str);
+}
+
+bool CoreSettingsSetValue(std::string section, std::string key, std::vector<std::string> value)
+{
+    std::string value_str;
+    if (!string_list_to_string(value, value_str))
+    {
+        return false;
     }
     return CoreSettingsSetValue(section, key, value_str);
 }
@@ -1337,6 +1437,12 @@ std::vector<int> CoreSettingsGetIntListValue(SettingsID settingId)
     return CoreSettingsGetIntListValue(settingId, setting.Section);
 }
 
+std::vector<std::string> CoreSettingsGetStringListValue(SettingsID settingId)
+{
+    l_Setting setting = get_setting(settingId);
+    return CoreSettingsGetStringListValue(settingId, setting.Section);
+}
+
 int CoreSettingsGetIntValue(SettingsID settingId, std::string section)
 {
     l_Setting setting = get_setting(settingId);
@@ -1377,24 +1483,30 @@ std::vector<int> CoreSettingsGetIntListValue(SettingsID settingId, std::string s
     std::string value_str;
     value_str = CoreSettingsGetStringValue(settingId, section);
 
-    // split string by ';'
-    // and append list with each item
-    std::stringstream value_str_stream(value_str);
-    std::string tmp_str;
-    while (std::getline(value_str_stream, tmp_str, ';'))
+    if (!string_to_int_list(value_str, value))
     {
-        try
-        {
-            value.emplace_back(std::stoi(tmp_str));
-        }
-        catch (...)
-        { // ignore exception
-            continue;
-        }
+        return std::vector<int>();
     }
 
     return value;
 }
+
+std::vector<std::string> CoreSettingsGetStringListValue(SettingsID settingId, std::string section)
+{
+    l_Setting setting = get_setting(settingId);
+    std::vector<std::string> value;
+
+    std::string value_str;
+    value_str = CoreSettingsGetStringValue(settingId, section);
+
+    if (!string_to_string_list(value_str, value))
+    {
+        return std::vector<std::string>();
+    }
+
+    return value;
+}
+
 
 int CoreSettingsGetIntValue(std::string section, std::string key, int defaultValue)
 {
@@ -1424,27 +1536,31 @@ std::string CoreSettingsGetStringValue(std::string section, std::string key)
     return std::string(value);
 }
 
-std::vector<int> CoreSettingsGetIntListValue(std::string section, std::string key, std::vector<int> defaultValue)
+std::vector<int> CoreSettingsGetIntListValue(std::string section, std::string key)
 {
     std::vector<int> value;
 
     std::string value_str;
     value_str = CoreSettingsGetStringValue(section, key);
 
-    // split string by ';'
-    // and append list with each item
-    std::stringstream value_str_stream(value_str);
-    std::string tmp_str;
-    while (std::getline(value_str_stream, tmp_str, ';'))
+    if (!string_to_int_list(value_str, value))
     {
-        try
-        {
-            value.emplace_back(std::stoi(tmp_str));
-        }
-        catch (...)
-        { // ignore exception
-            continue;
-        }
+        return std::vector<int>();
+    }
+
+    return value;
+}
+
+std::vector<std::string> CoreSettingsGetStringListValue(std::string section, std::string key)
+{
+    std::vector<std::string> value;
+
+    std::string value_str;
+    value_str = CoreSettingsGetStringValue(section, key);
+
+    if (!string_to_string_list(value_str, value))
+    {
+        return std::vector<std::string>();
     }
 
     return value;
