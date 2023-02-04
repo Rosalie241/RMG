@@ -410,7 +410,7 @@ bool CoreOpenRom(std::filesystem::path file)
             std::filesystem::path disk_file;
             disk_file = CoreGetUserCacheDirectory();
             disk_file += "/extracted_disks/";
-            disk_file += extracted_file;
+            disk_file += extracted_file.filename();
 
             // attempt to create extraction directory
             try
