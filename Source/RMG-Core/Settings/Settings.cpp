@@ -997,10 +997,17 @@ static bool config_option_default_set(std::string section, std::string key, m64p
 
 static bool int_list_to_string(std::vector<int> intList, std::string& string)
 {
-    for (const int& num : intList)
+    for (int i = 0; i < intList.size(); i++)
     {
+        int num = intList.at(i);
         string += std::to_string(num);
-        string += ";";
+
+        // don't add seperator at end
+        // of the list
+        if (i < (intList.size() - 1))
+        {
+            string += ";";
+        }
     }
     return true;
 }
@@ -1034,10 +1041,12 @@ static bool string_list_to_string(std::vector<std::string> stringList, std::stri
 {
     std::string error;
 
-    for (const std::string str : stringList)
+    for (int i = 0; i < stringList.size(); i++)
     {
+        std::string str = stringList.at(i);
+
         // ensure the string doesn't contain
-        // the seperator character
+        // the separator character
         if (str.find(";") != std::string::npos)
         {
             error = "string_list_to_string: string cannot contain ';'!";
@@ -1046,13 +1055,19 @@ static bool string_list_to_string(std::vector<std::string> stringList, std::stri
         }
 
         string += str;
-        string += ";";
+
+        // don't add separator at end
+        // of the list
+        if (i < (stringList.size() - 1))
+        {
+            string += ";";
+        }
     }
 
     return true;
 }
 
-static bool string_to_string_list(std::string string, std::vector<std::string> stringList)
+static bool string_to_string_list(std::string string, std::vector<std::string>& stringList)
 {
     std::string error;
 
