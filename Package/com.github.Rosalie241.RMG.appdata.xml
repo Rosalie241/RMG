@@ -33,6 +33,26 @@
   </screenshots>
   <description/>
   <releases>
+    <release version="v0.3.1" date="2023-02-04" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix taking a screenshot not working in some cases</li>
+          <li>Fix some games being unable to save due to having an illegal character in the save filename</li>
+          <li>Fix OSD tab crash in GLideN64</li>
+          <li>Fix an issue where the graphics plugin would show the 64DD IPL as ROM name in the settings even after booting a cartridge</li>
+          <li>Fix "Refresh ROM List" in Hotkeys tab in settings dialog not reverting back to defaults when clicking on 'restore defaults'</li>
+          <li>Fix "Remove Duplicate Keybindings" in settings dialog not behaving correctly in some cases</li>
+          <li>Fix fallback application icons not respecting system icon theme on linux</li>
+          <li>Add support for ndd/d64 files in zip files</li>
+          <li>Add support for using the basename of the ROM filename for covers</li>
+          <li>Add support for binding multiple inputs in RMG-Input</li>
+          <li>Improve behavior of window when launching RMG with a ROM using the commandline</li>
+          <li>Improve behavior of error message when emulation fails</li>
+          <li>Improve behavior of hotkey buttons in settings dialog</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.3.0" date="2023-01-23" type="stable">
       <description>
         <p>Changes:</p>
