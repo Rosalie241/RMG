@@ -570,9 +570,6 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::Input_RemoveDuplicateMappings:
         setting = {"", "RemoveDuplicateMappings"};
         break;
-    case SettingsID::Input_InvertAxis:
-        setting = {"", "InvertAxis"};
-        break;
     case SettingsID::Input_A_InputType:
         setting = {"", "A_InputType"};
         break;

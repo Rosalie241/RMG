@@ -166,7 +166,6 @@ enum class SettingsID
     Input_GameboyRom,
     Input_GameboySave,
     Input_RemoveDuplicateMappings,
-    Input_InvertAxis,
     Input_A_InputType,
     Input_A_Name,
     Input_A_Data,
