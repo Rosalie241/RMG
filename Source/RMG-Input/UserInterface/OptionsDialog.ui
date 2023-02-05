@@ -203,13 +203,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QCheckBox" name="invertAxisCheckBox">
-         <property name="text">
-          <string>Invert Axes Mapped To LRZ</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <spacer name="verticalSpacer_2">
          <property name="orientation">
           <enum>Qt::Vertical</enum>

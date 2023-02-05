@@ -24,7 +24,6 @@ struct OptionsDialogSettings
 
     // UI settings
     bool RemoveDuplicateMappings = false;
-    bool InvertAxis = false;
 };
 
 namespace UserInterface

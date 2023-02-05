@@ -748,19 +748,6 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             {
                 if (sdlAxisButtonPressed)
                 {
-                    // invert axis for left, right & z trigger mappings
-                    if (this->optionsDialogSettings.InvertAxis)
-                    {
-                        if (this->currentButton == this->leftTriggerButton ||
-                            this->currentButton == this->rightTriggerButton ||
-                            this->currentButton == this->zTriggerButton)
-                        {
-                            sdlAxisDirection = (sdlAxisDirection == 1 ? 0 : 1);
-                            sdlAxisName = "axis " + QString::number(sdlAxis);
-                            sdlAxisName += sdlAxisDirection > 0 ? "+" : "-";
-                        }
-                    }
-
                     if (this->addMappingToButton)
                     {
                         this->currentButton->AddInputData(
@@ -987,7 +974,6 @@ void ControllerWidget::LoadSettings(QString sectionQString)
     this->controllerPluggedCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::Input_PluggedIn, section));
     this->deadZoneSlider->setValue(CoreSettingsGetIntValue(SettingsID::Input_Deadzone, section));
     this->optionsDialogSettings.RemoveDuplicateMappings = CoreSettingsGetBoolValue(SettingsID::Input_RemoveDuplicateMappings, section);
-    this->optionsDialogSettings.InvertAxis = CoreSettingsGetBoolValue(SettingsID::Input_InvertAxis, section);
     this->optionsDialogSettings.ControllerPak = CoreSettingsGetIntValue(SettingsID::Input_Pak, section);
     this->optionsDialogSettings.GameboyRom = CoreSettingsGetStringValue(SettingsID::Input_GameboyRom, section);
     this->optionsDialogSettings.GameboySave = CoreSettingsGetStringValue(SettingsID::Input_GameboySave, section);
@@ -1039,7 +1025,6 @@ void ControllerWidget::SaveDefaultSettings()
     CoreSettingsSetValue(SettingsID::Input_Deadzone, section, 9);
     CoreSettingsSetValue(SettingsID::Input_Pak, section, 0);
     CoreSettingsSetValue(SettingsID::Input_RemoveDuplicateMappings, section, true);
-    CoreSettingsSetValue(SettingsID::Input_InvertAxis, section, true);
 
     for (auto& buttonSetting : this->buttonSettingMappings)
     {
@@ -1073,7 +1058,6 @@ void ControllerWidget::SaveSettings()
     CoreSettingsSetValue(SettingsID::Input_GameboyRom, section, this->optionsDialogSettings.GameboyRom);
     CoreSettingsSetValue(SettingsID::Input_GameboySave, section, this->optionsDialogSettings.GameboySave);
     CoreSettingsSetValue(SettingsID::Input_RemoveDuplicateMappings, section, this->optionsDialogSettings.RemoveDuplicateMappings);
-    CoreSettingsSetValue(SettingsID::Input_InvertAxis, section, this->optionsDialogSettings.InvertAxis);
 
     for (auto& buttonSetting : this->buttonSettingMappings)
     {
