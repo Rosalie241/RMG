@@ -385,6 +385,7 @@ void SettingsDialog::loadInterfaceEmulationSettings(void)
 void SettingsDialog::loadInterfaceRomBrowserSettings(void)
 {
     this->searchSubDirectoriesCheckbox->setChecked(CoreSettingsGetBoolValue(SettingsID::RomBrowser_Recursive));
+    this->sortRomBrowserResultsCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::RomBrowser_SortAfterSearch));
     this->romSearchLimitSpinBox->setValue(CoreSettingsGetIntValue(SettingsID::RomBrowser_MaxItems));
 }
 
@@ -527,6 +528,7 @@ void SettingsDialog::loadDefaultInterfaceEmulationSettings(void)
 void SettingsDialog::loadDefaultInterfaceRomBrowserSettings(void)
 {
     this->searchSubDirectoriesCheckbox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::RomBrowser_Recursive));
+    this->sortRomBrowserResultsCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::RomBrowser_SortAfterSearch));
     this->romSearchLimitSpinBox->setValue(CoreSettingsGetDefaultIntValue(SettingsID::RomBrowser_MaxItems));
 }
 
@@ -730,6 +732,7 @@ void SettingsDialog::saveInterfaceEmulationSettings(void)
 void SettingsDialog::saveInterfaceRomBrowserSettings(void)
 {
     CoreSettingsSetValue(SettingsID::RomBrowser_Recursive, this->searchSubDirectoriesCheckbox->isChecked());
+    CoreSettingsSetValue(SettingsID::RomBrowser_SortAfterSearch, this->sortRomBrowserResultsCheckBox->isChecked());
     CoreSettingsSetValue(SettingsID::RomBrowser_MaxItems, this->romSearchLimitSpinBox->value());
 }
 
