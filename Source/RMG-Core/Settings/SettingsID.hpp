@@ -135,6 +135,7 @@ enum class SettingsID
     RomBrowser_MaxItems,
     RomBrowser_Columns,
     RomBrowser_ColumnSizes,
+    RomBrowser_SortAfterSearch,
     RomBrowser_ViewMode,
     RomBrowser_ListViewSortSection,
     RomBrowser_ListViewSortOrder,

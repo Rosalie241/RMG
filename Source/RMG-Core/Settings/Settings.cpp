@@ -492,6 +492,9 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::RomBrowser_ColumnSizes:
         setting = {SETTING_SECTION_ROMBROWSER, "ColumnSizes", std::vector<int>({-1, -1, -1})};
         break;
+    case SettingsID::RomBrowser_SortAfterSearch:
+        setting = {SETTING_SECTION_ROMBROWSER, "SortAfterSearch", true};
+        break;
     case SettingsID::RomBrowser_ViewMode:
         setting = {SETTING_SECTION_ROMBROWSER, "ViewMode", 0};
         break;
