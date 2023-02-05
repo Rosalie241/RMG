@@ -80,7 +80,8 @@ private:
 
     QString getCurrentSettingsSection();
 
-    SDL_JoystickID currentJoystickId = -1;
+    SDL_JoystickID currentJoystickId     = -1;
+    bool isCurrentJoystickGameController = false;
 
 public:
     ControllerWidget(QWidget* parent, EventFilter* eventFilter);
@@ -104,6 +105,7 @@ public:
     void SaveSettings();
 
     void SetCurrentJoystickID(SDL_JoystickID joystickId);
+    void SetIsCurrentJoystickGameController(bool isGameController);
 
 private slots:
     void on_deadZoneSlider_valueChanged(int value);

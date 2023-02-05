@@ -111,9 +111,11 @@ void MainDialog::openInputDevice(QString deviceName, int deviceNum)
         currentJoystick = SDL_JoystickOpen(deviceNum);
         currentController = nullptr;
     }
+
     currentDeviceNum = deviceNum;
     joystickId = SDL_JoystickGetDeviceInstanceID(deviceNum);
     controllerWidget->SetCurrentJoystickID(joystickId);
+    controllerWidget->SetIsCurrentJoystickGameController(currentController != nullptr);
 }
 
 void MainDialog::closeInputDevice()

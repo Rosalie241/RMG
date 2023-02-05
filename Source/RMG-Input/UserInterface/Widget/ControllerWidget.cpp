@@ -590,6 +590,11 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             if ((event->type == SDL_CONTROLLERBUTTONDOWN) ||
                 (event->type == SDL_CONTROLLERBUTTONUP))
             { // gamepad button
+                if (!this->isCurrentJoystickGameController)
+                {
+                    return;
+                }
+
                 joystickId = event->cbutton.which;
                 inputType = InputType::GamepadButton;
                 sdlButton = event->cbutton.button;
@@ -598,6 +603,11 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             }
             else
             { // joystick button
+                if (this->isCurrentJoystickGameController)
+                {
+                    return;
+                }
+
                 joystickId = event->jbutton.which;
                 inputType = InputType::JoystickButton;
                 sdlButton = event->jbutton.button;
@@ -694,6 +704,11 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
 
             if (event->type == SDL_CONTROLLERAXISMOTION)
             { // gamepad axis
+                if (!this->isCurrentJoystickGameController)
+                {
+                    return;
+                }
+
                 joystickId = event->caxis.which;
                 inputType = InputType::GamepadAxis;
                 sdlAxis = event->caxis.axis;
@@ -703,6 +718,11 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             }
             else
             { // joystick axis
+                if (this->isCurrentJoystickGameController)
+                {
+                    return;
+                }
+
                 joystickId = event->jaxis.which;
                 inputType = InputType::JoystickAxis;
                 sdlAxis = event->jaxis.axis;
@@ -1069,5 +1089,10 @@ void ControllerWidget::SaveSettings()
 void ControllerWidget::SetCurrentJoystickID(SDL_JoystickID joystickId)
 {
     this->currentJoystickId = joystickId;
+}
+
+void ControllerWidget::SetIsCurrentJoystickGameController(bool isGameController)
+{
+    this->isCurrentJoystickGameController = isGameController;
 }
 
