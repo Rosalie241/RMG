@@ -43,7 +43,7 @@ private:
     bool updatingDeviceList = false;
 
     QList<Widget::ControllerWidget*> controllerWidgets;
-    SDL_Joystick* currentJoystick = nullptr;
+    SDL_Joystick* currentJoystick         = nullptr;
     SDL_GameController* currentController = nullptr;
     QString currentDeviceName;
     int currentDeviceNum = 0;

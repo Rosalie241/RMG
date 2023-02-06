@@ -54,7 +54,8 @@ MainDialog::MainDialog(QWidget* parent, Thread::SDLThread* sdlThread) : QDialog(
     // always add keyboard device
     for (auto& controllerWidget : this->controllerWidgets)
     {
-        controllerWidget->AddInputDevice("Keyboard", -1);
+        controllerWidget->AddInputDevice("Automatic", -2);
+        controllerWidget->AddInputDevice("Keyboard",  -1);
     }
 
     // fill device list at least once
@@ -90,29 +91,45 @@ void MainDialog::openInputDevice(QString deviceName, int deviceNum)
 {
     SDL_JoystickID joystickId;
     Widget::ControllerWidget* controllerWidget;
-    controllerWidget = controllerWidgets.at(this->tabWidget->currentIndex());
+    controllerWidget = this->controllerWidgets.at(this->tabWidget->currentIndex());
 
     // we don't need to open a keyboard
     if (deviceNum == -1)
     {
-        currentDeviceName = "";
-        currentDeviceNum = -1;
+        this->currentDeviceName = "";
+        this->currentDeviceNum  = -1;
         controllerWidget->SetCurrentJoystickID(-1);
         return;
     }
 
+    // handle automatic mode
+    if (deviceNum == -2)
+    {
+        int currentIndex = this->tabWidget->currentIndex();
+        if (currentIndex < this->inputDeviceList.size())
+        { // use device when there's one
+            deviceNum = this->inputDeviceList.at(currentIndex).deviceNum;
+        }
+        else
+        { // no device found, fallback to keyboard
+            this->currentDeviceName = "";
+            this->currentDeviceNum  = -1;
+            return;
+        }
+    }
+
     if (SDL_IsGameController(deviceNum) == SDL_TRUE)
     {
-        currentJoystick = nullptr;
-        currentController = SDL_GameControllerOpen(deviceNum);
+        this->currentJoystick = nullptr;
+        this->currentController = SDL_GameControllerOpen(deviceNum);
     }
     else
     {
-        currentJoystick = SDL_JoystickOpen(deviceNum);
-        currentController = nullptr;
+        this->currentJoystick = SDL_JoystickOpen(deviceNum);
+        this->currentController = nullptr;
     }
 
-    currentDeviceNum = deviceNum;
+    this->currentDeviceNum = deviceNum;
     joystickId = SDL_JoystickGetDeviceInstanceID(deviceNum);
     controllerWidget->SetCurrentJoystickID(joystickId);
     controllerWidget->SetIsCurrentJoystickGameController(currentController != nullptr);

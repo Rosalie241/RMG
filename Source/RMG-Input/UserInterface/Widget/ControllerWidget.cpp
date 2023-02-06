@@ -269,7 +269,7 @@ void ControllerWidget::AddInputDevice(QString deviceName, int deviceNum)
 {
     QString name = deviceName;
 
-    if (deviceNum != -1)
+    if (deviceNum >= 0)
     {
         name += " (";
         name += QString::number(deviceNum);
@@ -337,6 +337,10 @@ void ControllerWidget::CheckInputDeviceSettings()
         (this->inputDeviceComboBox->itemText(deviceNumIndex).startsWith(QString::fromStdString(deviceName))))
     { // full match
         this->inputDeviceComboBox->setCurrentIndex(deviceNumIndex);
+        if (deviceNum == -2)
+        { // need to force-refresh when set to automatic
+            this->on_inputDeviceComboBox_currentIndexChanged(0);
+        }
     }
     else if (deviceNameIndex != -1)
     { // name only match
@@ -1020,8 +1024,8 @@ void ControllerWidget::SaveDefaultSettings()
     std::string section = this->settingsSection.toStdString();
 
     CoreSettingsSetValue(SettingsID::Input_PluggedIn, section, false);
-    CoreSettingsSetValue(SettingsID::Input_DeviceName, section, std::string("Keyboard"));
-    CoreSettingsSetValue(SettingsID::Input_DeviceNum, section, -1);
+    CoreSettingsSetValue(SettingsID::Input_DeviceName, section, std::string("Automatic"));
+    CoreSettingsSetValue(SettingsID::Input_DeviceNum, section, -2);
     CoreSettingsSetValue(SettingsID::Input_Deadzone, section, 9);
     CoreSettingsSetValue(SettingsID::Input_Pak, section, 0);
     CoreSettingsSetValue(SettingsID::Input_RemoveDuplicateMappings, section, true);

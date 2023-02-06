@@ -269,15 +269,76 @@ static void apply_gameboy_settings(void)
     CoreSettingsSave();
 }
 
+static void open_controller_automatic(int num, InputProfile* profile)
+{
+    static int previousSdlDeviceNum = -1;
+
+    // reset variable when needed
+    if (num == 0)
+    {
+        previousSdlDeviceNum = -1;
+    }
+
+    bool foundSdlDevice                   = false;
+    SDL_GameController* sdlGameController = nullptr;
+    SDL_Joystick* sdlJoystick             = nullptr;
+    std::string sdlDeviceName;
+
+    for (int i = (previousSdlDeviceNum + 1); i < SDL_NumJoysticks(); i++)
+    {
+        if (SDL_IsGameController(i))
+        {
+            sdlGameController = SDL_GameControllerOpen(i);
+            if (sdlGameController != nullptr)
+            {
+                sdlDeviceName = SDL_GameControllerName(sdlGameController);
+                SDL_GameControllerClose(sdlGameController);
+                profile->DeviceNum   = i;
+                profile->DeviceName  = sdlDeviceName;
+                previousSdlDeviceNum = i;
+                foundSdlDevice       = true; 
+                break;
+            }
+        }
+        else
+        {
+            sdlJoystick = SDL_JoystickOpen(i);
+            if (sdlJoystick != nullptr)
+            {
+                sdlDeviceName = SDL_JoystickName(sdlJoystick);
+                SDL_JoystickClose(sdlJoystick);
+                profile->DeviceNum   = i;
+                profile->DeviceName  = sdlDeviceName;
+                previousSdlDeviceNum = i;
+                foundSdlDevice       = true; 
+                break;
+            }
+        }
+    }
+
+    if (!foundSdlDevice)
+    { // fallback to keyboard
+        profile->DeviceNum = -1;
+    }
+}
+
 static void open_controllers(void)
 {
+    // force SDL to re-load joysticks
+    SDL_PumpEvents();
+
     for (int i = 0; i < NUM_CONTROLLERS; i++)
     {
         InputProfile* profile = &l_InputProfiles[i];
 
         profile->InputDevice.CloseDevice();
 
-        if (profile->DeviceNum != -1)
+        // handle automatic mode
+        if (profile->DeviceNum == -2)
+        {
+            open_controller_automatic(i, profile);
+        }
+        else if (profile->DeviceNum != -1)
         {
             profile->InputDevice.OpenDevice(profile->DeviceName, profile->DeviceNum);
         }
@@ -710,7 +771,6 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
             if (!profile->InputDevice.HasOpenDevice() || !profile->InputDevice.IsAttached())
             {
                 profile->InputDevice.OpenDevice(profile->DeviceName, profile->DeviceNum);
-                return;
             }
         }
     }
@@ -756,7 +816,7 @@ EXPORT void CALL InitiateControllers(CONTROL_INFO ControlInfo)
         l_KeyboardState[i] = 0;
     }
 
-    l_ControlInfo = ControlInfo;
+    l_ControlInfo    = ControlInfo;
     l_HasControlInfo = true;
 
     // load settings
