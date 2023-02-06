@@ -476,6 +476,8 @@ static unsigned char data_crc(unsigned char *data, int length)
 
 void sdl_init()
 {
+    std::filesystem::path gameControllerDbPath;
+
     for (int subsystem : {SDL_INIT_GAMECONTROLLER, SDL_INIT_VIDEO, SDL_INIT_HAPTIC})
     {
         if (!SDL_WasInit(subsystem))
@@ -483,6 +485,12 @@ void sdl_init()
             SDL_InitSubSystem(subsystem);
         }
     }
+
+    gameControllerDbPath = CoreGetSharedDataDirectory();
+    gameControllerDbPath += "/gamecontrollerdb.txt";
+
+    // load mappings from file
+    SDL_GameControllerAddMappingsFromFile(gameControllerDbPath.string().c_str());
 }
 
 void sdl_quit()
