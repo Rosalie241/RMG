@@ -83,7 +83,7 @@ void InputDevice::OpenDevice(std::string name, int num)
     // wait until SDLThread is done first
     while (this->sdlThread->GetCurrentAction() != SDLThreadAction::None)
     {
-        QThread::msleep(50);
+        QThread::msleep(5);
     }
 
     this->foundDevicesWithNameMatch.clear();

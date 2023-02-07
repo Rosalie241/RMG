@@ -269,7 +269,7 @@ static void apply_gameboy_settings(void)
     CoreSettingsSave();
 }
 
-static void open_controller_automatic(int num, InputProfile* profile)
+static void setup_device_automatic(int num, InputProfile* profile)
 {
     static int previousSdlDeviceNum = -1;
 
@@ -318,7 +318,21 @@ static void open_controller_automatic(int num, InputProfile* profile)
 
     if (!foundSdlDevice)
     { // fallback to keyboard
-        profile->DeviceNum = -1;
+        if (num == 0)
+        {
+            profile->DeviceNum = (int)InputDeviceType::Keyboard;
+        }
+        else
+        {
+            profile->PluggedIn                  = false;
+
+            // only override present in core
+            // when we have the control info
+            if (l_HasControlInfo)
+            {
+                l_ControlInfo.Controls[num].Present = 0;
+            }
+        }
     }
 }
 
@@ -333,12 +347,12 @@ static void open_controllers(void)
 
         profile->InputDevice.CloseDevice();
 
-        // handle automatic mode
-        if (profile->DeviceNum == -2)
+        if (profile->DeviceNum == (int)InputDeviceType::Automatic)
         {
-            open_controller_automatic(i, profile);
+            setup_device_automatic(i, profile);
         }
-        else if (profile->DeviceNum != -1)
+
+        if (profile->DeviceNum != (int)InputDeviceType::Keyboard)
         {
             profile->InputDevice.OpenDevice(profile->DeviceName, profile->DeviceNum);
         }
@@ -761,7 +775,7 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
     {
         profile->LastDeviceCheckTime = currentTime;
 
-        if (profile->DeviceNum != -1)
+        if (profile->DeviceNum != (int)InputDeviceType::Keyboard)
         {
             if (profile->InputDevice.IsOpeningDevice())
             {

@@ -31,6 +31,13 @@ enum class N64ControllerButton
     Invalid
 };
 
+enum class InputDeviceType
+{
+    None      = -3,
+    Automatic = -2,
+    Keyboard  = -1
+};
+
 enum class InputType
 {
     Keyboard = -1,

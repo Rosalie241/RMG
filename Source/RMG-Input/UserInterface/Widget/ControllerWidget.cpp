@@ -182,7 +182,10 @@ void ControllerWidget::initializeButtons()
 
 bool ControllerWidget::isCurrentDeviceKeyboard()
 {
-    return this->inputDeviceComboBox->currentIndex() == 0;
+    int deviceNum = this->inputDeviceComboBox->currentData().toInt();
+
+    return deviceNum == (int)InputDeviceType::Automatic ||
+            deviceNum == (int)InputDeviceType::Keyboard;
 }
 
 bool ControllerWidget::isCurrentDeviceNotFound()
@@ -312,14 +315,22 @@ void ControllerWidget::CheckInputDeviceSettings()
         section = this->settingsSection.toStdString();
     }
 
+    bool isPluggedIn       = CoreSettingsGetBoolValue(SettingsID::Input_PluggedIn, section);
     std::string deviceName = CoreSettingsGetStringValue(SettingsID::Input_DeviceName, section);
-    int deviceNum = CoreSettingsGetIntValue(SettingsID::Input_DeviceNum, section);
+    int deviceNum          = CoreSettingsGetIntValue(SettingsID::Input_DeviceNum, section);
 
     // do nothing when input device combobox
     // is empty
     if (this->inputDeviceComboBox->count() == 0)
     {
         return;
+    }
+
+    // account for old setting
+    if (!isPluggedIn && deviceNum != (int)InputDeviceType::None)
+    {
+        deviceName = "None";
+        deviceNum  = (int)InputDeviceType::None;
     }
 
     // clear (not found) devices first
@@ -331,16 +342,12 @@ void ControllerWidget::CheckInputDeviceSettings()
     }
 
     int deviceNameIndex = this->inputDeviceComboBox->findText(QString::fromStdString(deviceName), Qt::MatchFlag::MatchStartsWith);
-    int deviceNumIndex = this->inputDeviceComboBox->findData(deviceNum);
+    int deviceNumIndex  = this->inputDeviceComboBox->findData(deviceNum);
 
     if ((deviceNumIndex != -1) &&
         (this->inputDeviceComboBox->itemText(deviceNumIndex).startsWith(QString::fromStdString(deviceName))))
     { // full match
         this->inputDeviceComboBox->setCurrentIndex(deviceNumIndex);
-        if (deviceNum == -2)
-        { // need to force-refresh when set to automatic
-            this->on_inputDeviceComboBox_currentIndexChanged(0);
-        }
     }
     else if (deviceNameIndex != -1)
     { // name only match
@@ -373,12 +380,12 @@ void ControllerWidget::GetCurrentInputDevice(QString& deviceName, int& deviceNum
     if (this->isCurrentDeviceNotFound() && !ignoreDeviceNotFound)
     {
         deviceName = "";
-        deviceNum = -1;
+        deviceNum  = -1;
     }
     else
     {
         deviceName = this->inputDeviceNameList.at(currentIndex);
-        deviceNum = this->inputDeviceComboBox->itemData(currentIndex).toInt();
+        deviceNum  = this->inputDeviceComboBox->itemData(currentIndex).toInt();
     }
 }
 
@@ -409,15 +416,18 @@ void ControllerWidget::on_inputDeviceComboBox_currentIndexChanged(int value)
     }
 
     QString deviceName = this->inputDeviceNameList.at(value);
-    int deviceNum = this->inputDeviceComboBox->itemData(value).toInt();
+    int deviceNum      = this->inputDeviceComboBox->itemData(value).toInt();
 
     this->ClearControllerImage();
 
     if (this->isCurrentDeviceNotFound())
     {
         deviceName = "";
-        deviceNum = -1;
+        deviceNum  = -1;
     }
+
+    // TODO
+    this->on_controllerPluggedCheckBox_toggled(deviceNum != (int)InputDeviceType::None);
 
     emit this->CurrentInputDeviceChanged(this, deviceName, deviceNum);
 }
@@ -461,11 +471,7 @@ void ControllerWidget::on_controllerPluggedCheckBox_toggled(bool value)
         // misc UI elements
         this->deadZoneSlider,
         this->optionsButton,
-        this->profileComboBox,
-        this->removeProfileButton,
-        this->resetButton,
-        this->inputDeviceComboBox,
-        this->inputDeviceRefreshButton
+        this->resetButton
     };
 
     for (auto& widget : widgetList)
@@ -910,7 +916,7 @@ void ControllerWidget::on_MainDialog_SdlEventPollFinished()
 
 bool ControllerWidget::IsPluggedIn()
 {
-    return this->controllerPluggedCheckBox->isChecked();
+    return this->inputDeviceComboBox->currentData().toInt() != (int)InputDeviceType::None;
 }
 
 void ControllerWidget::SetSettingsSection(QString section)
@@ -975,7 +981,6 @@ void ControllerWidget::LoadSettings(QString sectionQString)
         return;
     }
 
-    this->controllerPluggedCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::Input_PluggedIn, section));
     this->deadZoneSlider->setValue(CoreSettingsGetIntValue(SettingsID::Input_Deadzone, section));
     this->optionsDialogSettings.RemoveDuplicateMappings = CoreSettingsGetBoolValue(SettingsID::Input_RemoveDuplicateMappings, section);
     this->optionsDialogSettings.ControllerPak = CoreSettingsGetIntValue(SettingsID::Input_Pak, section);
@@ -1024,8 +1029,8 @@ void ControllerWidget::SaveDefaultSettings()
     std::string section = this->settingsSection.toStdString();
 
     CoreSettingsSetValue(SettingsID::Input_PluggedIn, section, false);
-    CoreSettingsSetValue(SettingsID::Input_DeviceName, section, std::string("Automatic"));
-    CoreSettingsSetValue(SettingsID::Input_DeviceNum, section, -2);
+    CoreSettingsSetValue(SettingsID::Input_DeviceName, section, std::string("None"));
+    CoreSettingsSetValue(SettingsID::Input_DeviceNum, section, (int)InputDeviceType::None);
     CoreSettingsSetValue(SettingsID::Input_Deadzone, section, 9);
     CoreSettingsSetValue(SettingsID::Input_Pak, section, 0);
     CoreSettingsSetValue(SettingsID::Input_RemoveDuplicateMappings, section, true);

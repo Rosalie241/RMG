@@ -54,8 +54,9 @@ MainDialog::MainDialog(QWidget* parent, Thread::SDLThread* sdlThread) : QDialog(
     // always add keyboard device
     for (auto& controllerWidget : this->controllerWidgets)
     {
-        controllerWidget->AddInputDevice("Automatic", -2);
-        controllerWidget->AddInputDevice("Keyboard",  -1);
+        controllerWidget->AddInputDevice("None",      (int)InputDeviceType::None);
+        controllerWidget->AddInputDevice("Automatic", (int)InputDeviceType::Automatic);
+        controllerWidget->AddInputDevice("Keyboard",  (int)InputDeviceType::Keyboard);
     }
 
     // fill device list at least once
@@ -94,16 +95,17 @@ void MainDialog::openInputDevice(QString deviceName, int deviceNum)
     controllerWidget = this->controllerWidgets.at(this->tabWidget->currentIndex());
 
     // we don't need to open a keyboard
-    if (deviceNum == -1)
+    if (deviceNum == (int)InputDeviceType::None ||
+        deviceNum == (int)InputDeviceType::Keyboard)
     {
         this->currentDeviceName = "";
-        this->currentDeviceNum  = -1;
-        controllerWidget->SetCurrentJoystickID(-1);
+        this->currentDeviceNum  = deviceNum;
+        controllerWidget->SetCurrentJoystickID(this->currentDeviceNum);
         return;
     }
 
     // handle automatic mode
-    if (deviceNum == -2)
+    if (deviceNum == (int)InputDeviceType::Automatic)
     {
         int currentIndex = this->tabWidget->currentIndex();
         if (currentIndex < this->inputDeviceList.size())
@@ -113,7 +115,8 @@ void MainDialog::openInputDevice(QString deviceName, int deviceNum)
         else
         { // no device found, fallback to keyboard
             this->currentDeviceName = "";
-            this->currentDeviceNum  = -1;
+            this->currentDeviceNum  = (int)InputDeviceType::Keyboard;
+            controllerWidget->SetCurrentJoystickID(this->currentDeviceNum);
             return;
         }
     }
@@ -212,8 +215,9 @@ void MainDialog::on_ControllerWidget_CurrentInputDeviceChanged(ControllerWidget*
     this->closeInputDevice();
 
     // only open device,
-    // when it's not a keyboard
-    if (deviceNum != -1)
+    // when needed
+    if (deviceNum != (int)InputDeviceType::None &&
+        deviceNum != (int)InputDeviceType::Keyboard)
     {
         this->openInputDevice(deviceName, deviceNum);
     }
@@ -244,8 +248,9 @@ void MainDialog::on_tabWidget_currentChanged(int index)
     controllerWidget->GetCurrentInputDevice(deviceName, deviceNum);
 
     // only open device,
-    // when it's not a keyboard
-    if (deviceNum != -1)
+    // when needed
+    if (deviceNum != (int)InputDeviceType::None &&
+        deviceNum != (int)InputDeviceType::Keyboard)
     {
         this->openInputDevice(deviceName, deviceNum);
     }
