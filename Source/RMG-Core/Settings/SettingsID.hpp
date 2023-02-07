@@ -158,6 +158,8 @@ enum class SettingsID
     Audio_Synchronize,
 
     // Input Plugin Settings
+    Input_Profiles,
+    Input_UseProfile,
     Input_PluggedIn,
     Input_DeviceType,
     Input_DeviceName,

@@ -122,6 +122,7 @@ static std::vector<std::string> l_keyList;
 #define SETTING_SECTION_GB          SETTING_SECTION_CORE " Gameboy"
 #define SETTING_SECTION_M64P        "Core"
 #define SETTING_SECTION_AUDIO       SETTING_SECTION_GUI  " - Audio Plugin"
+#define SETTING_SECTION_INPUT       SETTING_SECTION_GUI  " - Input Plugin"
 
 // retrieves l_Setting from settingId
 static l_Setting get_setting(SettingsID settingId)
@@ -546,6 +547,12 @@ static l_Setting get_setting(SettingsID settingId)
         setting = {SETTING_SECTION_AUDIO, "Synchronize", false};
         break;
 
+    case SettingsID::Input_Profiles:
+        setting = {SETTING_SECTION_INPUT, "Profiles", ""};
+        break;
+    case SettingsID::Input_UseProfile:
+        setting = {"", "UseProfile"};
+        break;
     case SettingsID::Input_PluggedIn:
         setting = {"", "PluggedIn"};
         break;
