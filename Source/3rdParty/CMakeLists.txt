@@ -36,8 +36,8 @@ else(USE_CCACHE)
 endif(USE_CCACHE)
 
 if(NOT NO_GIT_CLONE)
-    set(MUPEN64PLUSCORE_URL           "https://github.com/Rosalie241/mupen64plus-core")
-    set(MUPEN64PLUSCORE_TAG           "022e7de28067ac633ca23d405e9f0c4ed5cc368b")
+    set(MUPEN64PLUSCORE_URL           "https://github.com/mupen64plus/mupen64plus-core")
+    set(MUPEN64PLUSCORE_TAG           "7ee312cb282a7794c62d5d284bf93151c585dd1f")
     
     set(MUPEN64PLUS_RSP_CXD4_URL      "https://github.com/mupen64plus/mupen64plus-rsp-cxd4")
     set(MUPEN64PLUS_RSP_CXD4_TAG      "39f79201baa15890c4cbae92f2215a634cc3ee6d")
