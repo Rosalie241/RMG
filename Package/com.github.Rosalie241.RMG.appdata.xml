@@ -33,6 +33,19 @@
   </screenshots>
   <description/>
   <releases>
+    <release version="v0.3.3" date="2023-02-09" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Remove "Controller Is Plugged In" checkbox in RMG-Input</li>
+          <li>Remove text from 'Remove' button in RMG-Input</li>
+          <li>Add "None" input device to RMG-Input (replacing the "Controller Is Plugged In" checkbox)</li>
+          <li>Add "Automatic" input device to RMG-Input</li>
+          <li>Add support for creating profiles in RMG-Input</li>
+          <li>Add icons to 'Remove', 'Refresh', 'Reset' and 'Options' buttons in RMG-Input</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.3.2" date="2023-02-06" type="stable">
       <description>
         <p>Changes:</p>
