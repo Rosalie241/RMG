@@ -41,7 +41,7 @@ MainDialog::MainDialog(QWidget* parent, Thread::SDLThread* sdlThread) : QDialog(
     for (int i = 0; i < this->tabWidget->count(); i++)
     {
         Widget::ControllerWidget* widget = new Widget::ControllerWidget(this, this->eventFilter);
-        widget->SetSettingsSection("Rosalie's Mupen GUI - Input Plugin Profile " + QString::number(i));
+        widget->SetSettingsSection("Player " + QString::number(i + 1), "Rosalie's Mupen GUI - Input Plugin Profile " + QString::number(i));
         widget->LoadSettings();
         this->tabWidget->widget(i)->layout()->addWidget(widget);
         controllerWidgets.push_back(widget);
@@ -49,6 +49,10 @@ MainDialog::MainDialog(QWidget* parent, Thread::SDLThread* sdlThread) : QDialog(
             &MainDialog::on_ControllerWidget_CurrentInputDeviceChanged);
         connect(widget, &Widget::ControllerWidget::RefreshInputDevicesButtonClicked, this,
             &MainDialog::on_ControllerWidget_RefreshInputDevicesButtonClicked);
+        connect(widget, &Widget::ControllerWidget::UserProfileAdded, this,
+            &MainDialog::on_ControllerWidget_UserProfileAdded);
+        connect(widget, &Widget::ControllerWidget::UserProfileRemoved, this,
+            &MainDialog::on_ControllerWidget_UserProfileRemoved);
     }
 
     // always add keyboard device
@@ -57,6 +61,7 @@ MainDialog::MainDialog(QWidget* parent, Thread::SDLThread* sdlThread) : QDialog(
         controllerWidget->AddInputDevice("None",      (int)InputDeviceType::None);
         controllerWidget->AddInputDevice("Automatic", (int)InputDeviceType::Automatic);
         controllerWidget->AddInputDevice("Keyboard",  (int)InputDeviceType::Keyboard);
+        controllerWidget->SetInitialized(true);
     }
 
     // fill device list at least once
@@ -235,20 +240,52 @@ void MainDialog::on_ControllerWidget_RefreshInputDevicesButtonClicked()
     this->sdlThread->SetAction(SDLThreadAction::GetInputDevices);
 }
 
+void MainDialog::on_ControllerWidget_UserProfileAdded(QString name, QString section)
+{
+    for (auto& controllerWidget : this->controllerWidgets)
+    {
+        controllerWidget->AddUserProfile(name, section);
+    }
+}
+
+void MainDialog::on_ControllerWidget_UserProfileRemoved(QString name, QString section)
+{
+    for (auto& controllerWidget : this->controllerWidgets)
+    {
+        controllerWidget->RemoveUserProfile(name, section);
+    }
+}
+
 void MainDialog::on_tabWidget_currentChanged(int index)
 {
     QString deviceName;
-    int deviceNum;
+    int     deviceNum;
+    Widget::ControllerWidget* controllerWidget;
 
-    Widget::ControllerWidget* controllerWidget = controllerWidgets.at(index);
+    // save previous tab's user profile
+    if (previousTabWidgetIndex != -1 &&
+        previousTabWidgetIndex != index)
+    {
+        controllerWidget = controllerWidgets.at(previousTabWidgetIndex);
+        controllerWidget->SaveUserProfileSettings();
+    }
+
+    // update previous index
+    previousTabWidgetIndex = index;
+
+    // prepare switched tab
+    controllerWidget = controllerWidgets.at(index);
     controllerWidget->ClearControllerImage();
 
     this->closeInputDevice();
 
+    // re-load user profile settings
+    controllerWidget->LoadUserProfileSettings();
+
+    // retrieve current input device
     controllerWidget->GetCurrentInputDevice(deviceName, deviceNum);
 
-    // only open device,
-    // when needed
+    // only open device when needed
     if (deviceNum != (int)InputDeviceType::None &&
         deviceNum != (int)InputDeviceType::Keyboard)
     {

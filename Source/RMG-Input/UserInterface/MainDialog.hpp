@@ -48,6 +48,8 @@ private:
     QString currentDeviceName;
     int currentDeviceNum = 0;
 
+    int previousTabWidgetIndex = 0;
+
     EventFilter* eventFilter;
 
     void addInputDevice(QString, int);
@@ -65,7 +67,10 @@ public slots:
 
     void on_ControllerWidget_CurrentInputDeviceChanged(ControllerWidget*, QString, int);
     void on_ControllerWidget_RefreshInputDevicesButtonClicked();
-   
+
+    void on_ControllerWidget_UserProfileAdded(QString, QString);
+    void on_ControllerWidget_UserProfileRemoved(QString, QString);
+
     void on_tabWidget_currentChanged(int);
 
     void on_SDLThread_DeviceFound(QString, int);

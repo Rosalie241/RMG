@@ -19,6 +19,7 @@
 #include <QResizeEvent>
 #include <QSvgRenderer>
 #include <QMessageBox>
+#include <QInputDialog>
 #include <SDL.h>
 #include <iostream>
 
@@ -122,8 +123,10 @@ ControllerWidget::ControllerWidget(QWidget* parent, EventFilter* eventFilter) : 
         this->setupButtonWidgets.append(button);
     }
 
-    this->on_controllerPluggedCheckBox_toggled(false);
-    this->initializeButtons();
+    this->setPluggedIn(false);
+    this->initializeMappingButtons();
+    this->initializeProfileButtons();
+    this->initializeMiscButtons();
 }
 
 ControllerWidget::~ControllerWidget()
@@ -131,7 +134,7 @@ ControllerWidget::~ControllerWidget()
 
 }
 
-void ControllerWidget::initializeButtons()
+void ControllerWidget::initializeMappingButtons()
 {
     struct
     {
@@ -178,6 +181,21 @@ void ControllerWidget::initializeButtons()
         mapping.addMappingButton->setIcon(QIcon::fromTheme("add-line"));
         mapping.removeMappingButton->setIcon(QIcon::fromTheme("delete-back-line"));
     }
+}
+
+void ControllerWidget::initializeProfileButtons()
+{
+    this->addProfileButton->setText("");
+    this->addProfileButton->setIcon(QIcon::fromTheme("add-line"));
+    this->removeProfileButton->setText("");
+    this->removeProfileButton->setIcon(QIcon::fromTheme("delete-bin-line"));
+}
+
+void ControllerWidget::initializeMiscButtons()
+{
+    this->inputDeviceRefreshButton->setIcon(QIcon::fromTheme("refresh-line"));
+    this->resetButton->setIcon(QIcon::fromTheme("restart-line"));
+    this->optionsButton->setIcon(QIcon::fromTheme("settings-3-line"));
 }
 
 bool ControllerWidget::isCurrentDeviceKeyboard()
@@ -268,6 +286,80 @@ QString ControllerWidget::getCurrentSettingsSection()
     return this->profileComboBox->currentData().toString();
 }
 
+QString ControllerWidget::getUserProfileSectionName(QString profile)
+{
+    QString profileSection;
+
+    profileSection = "Rosalie's Mupen GUI - Input Plugin User Profile \"";
+    profileSection += profile;
+    profileSection += "\"";
+
+    return profileSection;
+}
+
+bool ControllerWidget::isSectionUserProfile(QString section)
+{
+    return section.contains("User Profile");
+}
+
+void ControllerWidget::setPluggedIn(bool value)
+{
+    QWidget* widgetList[] =
+    {
+        // dpad
+        this->dpadGroupBox,
+        this->dpadUpButton, this->dpadUpAddButton, this->dpadUpRemoveButton,
+        this->dpadDownButton, this->dpadDownAddButton, this->dpadDownRemoveButton,
+        this->dpadLeftButton, this->dpadLeftAddButton, this->dpadLeftRemoveButton,
+        this->dpadRightButton, this->dpadRightAddButton, this->dpadRightRemoveButton,
+        // analog stick
+        this->analogStickGroupBox,
+        this->analogStickUpButton, this->analogStickUpAddButton, this->analogStickUpRemoveButton,
+        this->analogStickDownButton, this->analogStickDownAddButton, this->analogStickDownRemoveButton,
+        this->analogStickLeftButton, this->analogStickLeftAddButton, this->analogStickLeftRemoveButton,
+        this->analogStickRightButton, this->analogStickRightAddButton, this->analogStickRightRemoveButton,
+        // cbuttons
+        this->cButtonsGroupBox,
+        this->cbuttonUpButton, this->cbuttonUpAddButton, this->cbuttonUpRemoveButton,
+        this->cbuttonDownButton, this->cbuttonDownAddButton, this->cbuttonDownRemoveButton,
+        this->cbuttonLeftButton, this->cbuttonLeftAddButton, this->cbuttonLeftRemoveButton,
+        this->cbuttonRightButton, this->cbuttonRightAddButton, this->cbuttonRightRemoveButton,
+        // triggers
+        this->analogStickGroupBox,
+        this->leftTriggerButton, this->leftTriggerAddButton, this->leftTriggerRemoveButton,
+        this->rightTriggerButton, this->rightTriggerAddButton, this->rightTriggerRemoveButton,
+        this->zTriggerButton, this->zTriggerAddButton, this->zTriggerRemoveButton,
+        // buttons
+        this->buttonsGroupBox,
+        this->aButton, this->aAddButton, this->aRemoveButton,
+        this->bButton, this->bAddButton, this->bRemoveButton,
+        this->startButton, this->startAddButton, this->startRemoveButton,
+        // misc UI elements
+        this->deadZoneGroupBox,
+        this->deadZoneSlider,
+        this->optionsButton,
+        this->resetButton
+    };
+
+    for (auto& widget : widgetList)
+    {
+        widget->setEnabled(value);
+    }
+
+    this->ClearControllerImage();
+}
+
+void ControllerWidget::showErrorMessage(QString text, QString details)
+{
+    QMessageBox msgBox(this);
+    msgBox.setIcon(QMessageBox::Icon::Critical);
+    msgBox.setWindowTitle("Error");
+    msgBox.setText(text);
+    msgBox.setDetailedText(details);
+    msgBox.addButton(QMessageBox::Ok);
+    msgBox.exec();
+}
+
 void ControllerWidget::AddInputDevice(QString deviceName, int deviceNum)
 {
     QString name = deviceName;
@@ -304,9 +396,15 @@ void ControllerWidget::CheckInputDeviceSettings()
 {
     std::string section = this->getCurrentSettingsSection().toStdString();
 
-    // fallback to main section
+    // fallback to main section unless
+    // it's a user profile
     if (!CoreSettingsSectionExists(section))
     {
+        if (this->isSectionUserProfile(this->getCurrentSettingsSection()))
+        {
+            return;
+        }
+
         if (!CoreSettingsSectionExists(this->settingsSection.toStdString()))
         {
             return;
@@ -391,7 +489,8 @@ void ControllerWidget::GetCurrentInputDevice(QString& deviceName, int& deviceNum
 
 void ControllerWidget::on_deadZoneSlider_valueChanged(int value)
 {
-    QString title = tr("Deadzone: ");
+    QString title;
+    title = "Deadzone: ";
     title += QString::number(value);
     title += "%";
 
@@ -401,6 +500,24 @@ void ControllerWidget::on_deadZoneSlider_valueChanged(int value)
 
 void ControllerWidget::on_profileComboBox_currentIndexChanged(int value)
 {
+    // save profile when switching profile
+    if (this->initialized && this->previousProfileComboBoxIndex != -1)
+    {
+        // ensure the previous index doesn't go out of bounds
+        if (this->previousProfileComboBoxIndex < this->profileComboBox->count())
+        {
+            QString section = this->profileComboBox->itemData(this->previousProfileComboBoxIndex).toString();
+            // TODO: how to handle game specific profiles here?
+            if (!section.startsWith(this->settingsSection + " Game"))
+            {
+                this->SaveSettings(section);
+            }
+        }
+    }
+
+    // update previous index
+    this->previousProfileComboBoxIndex = value;
+
     // reload settings from section
     this->LoadSettings(this->getCurrentSettingsSection());
     // reload input device settings
@@ -426,8 +543,8 @@ void ControllerWidget::on_inputDeviceComboBox_currentIndexChanged(int value)
         deviceNum  = -1;
     }
 
-    // TODO
-    this->on_controllerPluggedCheckBox_toggled(deviceNum != (int)InputDeviceType::None);
+    // set plugged in state
+    this->setPluggedIn(deviceNum != (int)InputDeviceType::None);
 
     emit this->CurrentInputDeviceChanged(this, deviceName, deviceNum);
 }
@@ -437,49 +554,52 @@ void ControllerWidget::on_inputDeviceRefreshButton_clicked()
     emit this->RefreshInputDevicesButtonClicked();
 }
 
-void ControllerWidget::on_controllerPluggedCheckBox_toggled(bool value)
+void ControllerWidget::on_addProfileButton_clicked()
 {
-    QWidget* widgetList[] =
-    {
-        // dpad
-        this->groupBox,
-        this->dpadUpButton, this->dpadUpAddButton, this->dpadUpRemoveButton,
-        this->dpadDownButton, this->dpadDownAddButton, this->dpadDownRemoveButton,
-        this->dpadLeftButton, this->dpadLeftAddButton, this->dpadLeftRemoveButton,
-        this->dpadRightButton, this->dpadRightAddButton, this->dpadRightRemoveButton,
-        // analog stick
-        this->groupBox_2,
-        this->analogStickUpButton, this->analogStickUpAddButton, this->analogStickUpRemoveButton,
-        this->analogStickDownButton, this->analogStickDownAddButton, this->analogStickDownRemoveButton,
-        this->analogStickLeftButton, this->analogStickLeftAddButton, this->analogStickLeftRemoveButton,
-        this->analogStickRightButton, this->analogStickRightAddButton, this->analogStickRightRemoveButton,
-        // cbuttons
-        this->groupBox_3,
-        this->cbuttonUpButton, this->cbuttonUpAddButton, this->cbuttonUpRemoveButton,
-        this->cbuttonDownButton, this->cbuttonDownAddButton, this->cbuttonDownRemoveButton,
-        this->cbuttonLeftButton, this->cbuttonLeftAddButton, this->cbuttonLeftRemoveButton,
-        this->cbuttonRightButton, this->cbuttonRightAddButton, this->cbuttonRightRemoveButton,
-        // triggers
-        this->leftTriggerButton, this->leftTriggerAddButton, this->leftTriggerRemoveButton,
-        this->rightTriggerButton, this->rightTriggerAddButton, this->rightTriggerRemoveButton,
-        this->zTriggerButton, this->zTriggerAddButton, this->zTriggerRemoveButton,
-        // buttons
-        this->groupBox_6,
-        this->aButton, this->aAddButton, this->aRemoveButton,
-        this->bButton, this->bAddButton, this->bRemoveButton,
-        this->startButton, this->startAddButton, this->startRemoveButton,
-        // misc UI elements
-        this->deadZoneSlider,
-        this->optionsButton,
-        this->resetButton
-    };
+    std::vector<std::string> profiles;
+    std::vector<std::string>::iterator profilesIter;
 
-    for (auto& widget : widgetList)
-    {
-        widget->setEnabled(value);
+    // retrieve profiles from settings
+    profiles = CoreSettingsGetStringListValue(SettingsID::Input_Profiles);
+
+    // ask user for a new profile name
+    QString newProfile = QInputDialog::getText(this,
+            "Create New Profile", "New profile name:", 
+            QLineEdit::Normal, "", 
+            nullptr,
+            Qt::WindowCloseButtonHint | Qt::WindowTitleHint);
+    if (newProfile.isEmpty())
+    { // do nothing when user has canceled
+        return;
     }
 
-    this->ClearControllerImage();
+    // ensure profile doesn't contain ';' or '[]'
+    if (newProfile.contains(';') ||
+        newProfile.contains('[') ||
+        newProfile.contains(']'))
+    {
+        this->showErrorMessage("Profile name cannot contain ';','[' or ']'!");
+        return;
+    }
+
+    // ensure the name is unique
+    profilesIter = std::find(profiles.begin(), profiles.end(), newProfile.toStdString());
+    if (profilesIter != profiles.end())
+    {
+        this->showErrorMessage("Profile with the same name already exists!");
+        return;
+    }
+
+    // add profile to UI
+    this->profileComboBox->addItem(newProfile, this->getUserProfileSectionName(newProfile));
+    this->profileComboBox->setCurrentText(newProfile);
+
+    // add profile to settings
+    profiles.push_back(newProfile.toStdString());
+    CoreSettingsSetValue(SettingsID::Input_Profiles, profiles);
+
+    // emit signal
+    emit this->UserProfileAdded(newProfile, this->getUserProfileSectionName(newProfile));
 }
 
 void ControllerWidget::on_removeProfileButton_clicked()
@@ -501,26 +621,45 @@ void ControllerWidget::on_removeProfileButton_clicked()
         return;
     }
 
-    // try to remove game settings section
-    ret = CoreSettingsDeleteSection(this->getCurrentSettingsSection().toStdString());
-    if (!ret)
+    QString currentSection = this->getCurrentSettingsSection();
+
+    // try to remove profile settings section when it exists
+    if (CoreSettingsSectionExists(currentSection.toStdString()) &&
+        !CoreSettingsDeleteSection(currentSection.toStdString()))
     { // show error when failed
-        QMessageBox messageBox(this);
-        messageBox.setIcon(QMessageBox::Icon::Critical);
-        messageBox.setWindowTitle("Error");
-        messageBox.setText("CoreSettingsDeleteSection() Failed!");
-        messageBox.setDetailedText(QString::fromStdString(CoreGetError()));
-        messageBox.addButton(QMessageBox::Ok);
-        messageBox.exec();
+        this->showErrorMessage("CoreSettingsDeleteSection() Failed!", QString::fromStdString(CoreGetError()));
     }
 
-    // change profile back to main
+    // if section is a user profile,
+    // also remove it from the profiles list
+    if (this->isSectionUserProfile(currentSection))
+    {
+        std::string userProfile = this->profileComboBox->currentText().toStdString();
+        std::vector<std::string> userProfiles = CoreSettingsGetStringListValue(SettingsID::Input_Profiles);
+        std::vector<std::string>::iterator userProfilesIter;
+
+        userProfilesIter = std::find(userProfiles.begin(), userProfiles.end(), userProfile);
+        if (userProfilesIter != userProfiles.end())
+        {
+            userProfiles.erase(userProfilesIter);
+        }
+
+        CoreSettingsSetValue(SettingsID::Input_Profiles, userProfiles);
+
+        // remove item from UI
+        this->profileComboBox->removeItem(this->profileComboBox->currentIndex());
+
+        // emit signal
+        emit this->UserProfileRemoved(this->profileComboBox->currentText(), currentSection);
+    }
+
+    // change current index
     this->profileComboBox->setCurrentIndex(0);
 }
 
 void ControllerWidget::on_resetButton_clicked()
 {
-    this->LoadSettings();
+    this->LoadSettings(this->getCurrentSettingsSection());
 }
 
 void ControllerWidget::on_optionsButton_clicked()
@@ -919,10 +1058,15 @@ bool ControllerWidget::IsPluggedIn()
     return this->inputDeviceComboBox->currentData().toInt() != (int)InputDeviceType::None;
 }
 
-void ControllerWidget::SetSettingsSection(QString section)
+void ControllerWidget::SetSettingsSection(QString profile, QString section)
 {
     this->settingsSection = section;
-    this->profileComboBox->addItem("Main", section);
+    this->profileComboBox->addItem(profile, section);
+}
+
+void ControllerWidget::SetInitialized(bool value)
+{
+    this->initialized = value;
 }
 
 void ControllerWidget::LoadSettings()
@@ -934,6 +1078,7 @@ void ControllerWidget::LoadSettings()
 
     QString section = this->settingsSection;
     QString gameSection;
+    std::vector<std::string> userProfiles;
 
     // if the main profile section doesn't exist,
     // save default settings
@@ -955,8 +1100,13 @@ void ControllerWidget::LoadSettings()
         // use internal rom name
         QString internalName = QString::fromStdString(romHeader.Name);
 
-        // add game specific profile
-        this->profileComboBox->addItem(internalName, gameSection);
+        // add game specific profile when 
+        // it doesn't exist yet
+        int index = this->profileComboBox->findData(gameSection);
+        if (index == -1)
+        {
+            this->profileComboBox->addItem(internalName, gameSection);
+        }
 
         // if a game specific section exists,
         // select it in the profile combobox
@@ -968,17 +1118,54 @@ void ControllerWidget::LoadSettings()
         }
     }
 
-    this->LoadSettings(section);
+    // try to add all the user's profiles
+    userProfiles = CoreSettingsGetStringListValue(SettingsID::Input_Profiles);
+    for (const std::string& profile : userProfiles)
+    {
+        QString profileSection = this->getUserProfileSectionName(QString::fromStdString(profile));
+
+        // ensure the profile section exists,
+        // if it does, add it when it doesn't
+        // exist yet
+        if (CoreSettingsSectionExists(profileSection.toStdString()))
+        {
+            int index = this->profileComboBox->findData(profileSection);
+            if (index == -1)
+            {
+                this->profileComboBox->addItem(QString::fromStdString(profile), profileSection);
+            }
+        }
+    }
+
+    this->LoadSettings(section, true);
 }
 
-void ControllerWidget::LoadSettings(QString sectionQString)
+void ControllerWidget::LoadSettings(QString sectionQString, bool loadUserProfile)
 {
     std::string section = sectionQString.toStdString();
+    std::string useProfile;
 
     // do nothing if the section doesn't exist
     if (!CoreSettingsSectionExists(section))
     {
         return;
+    }
+
+    // see if the profile contains the UseProfile setting,
+    // if it does, see if that profile exists, then load
+    // that instead
+    useProfile = CoreSettingsGetStringValue(SettingsID::Input_UseProfile, section);
+    if (loadUserProfile && !useProfile.empty())
+    {
+        QString profileSection = this->getUserProfileSectionName(QString::fromStdString(useProfile));
+
+        int index = this->profileComboBox->findData(profileSection);
+        if (index != -1)
+        {
+            this->profileComboBox->setCurrentIndex(index);
+            this->LoadSettings(profileSection);
+            return;
+        }
     }
 
     this->deadZoneSlider->setValue(CoreSettingsGetIntValue(SettingsID::Input_Deadzone, section));
@@ -1015,8 +1202,21 @@ void ControllerWidget::LoadSettings(QString sectionQString)
     }
 
     // force refresh some UI elements
+    this->CheckInputDeviceSettings();
     this->on_deadZoneSlider_valueChanged(this->deadZoneSlider->value());
-    this->on_controllerPluggedCheckBox_toggled(this->IsPluggedIn());
+    this->setPluggedIn(this->IsPluggedIn());
+}
+
+void ControllerWidget::LoadUserProfileSettings()
+{
+    QString section = this->getCurrentSettingsSection();
+
+    if (!this->isSectionUserProfile(section))
+    {
+        return;
+    }
+
+    this->LoadSettings(section);
 }
 
 void ControllerWidget::SaveDefaultSettings()
@@ -1053,27 +1253,59 @@ void ControllerWidget::SaveSettings()
         return;
     }
     
+    this->SaveSettings(this->getCurrentSettingsSection());
+}
+
+void ControllerWidget::SaveUserProfileSettings()
+{
+    QString section = this->getCurrentSettingsSection();
+
+    // only save when we're a user profile
+    if (!this->isSectionUserProfile(section))
+    {
+        return;
+    }
+
+    this->SaveSettings(section);
+}
+
+void ControllerWidget::SaveSettings(QString section)
+{
     QString deviceName;
-    int deviceNum;
-    std::string section = this->getCurrentSettingsSection().toStdString();
+    int     deviceNum;
+
+    std::string mainSettingsSection = this->settingsSection.toStdString();
+    std::string sectionStr          = section.toStdString();
+
+    // when the section is a user profile,
+    // make sure we inform the profile to use
+    // that user profile instead
+    if (this->isSectionUserProfile(section))
+    {
+        CoreSettingsSetValue(SettingsID::Input_UseProfile, mainSettingsSection, this->profileComboBox->currentText().toStdString());
+    }
+    else
+    {
+        CoreSettingsSetValue(SettingsID::Input_UseProfile, mainSettingsSection, std::string(""));
+    }
 
     this->GetCurrentInputDevice(deviceName, deviceNum, true);
 
-    CoreSettingsSetValue(SettingsID::Input_PluggedIn, section, this->IsPluggedIn());
-    CoreSettingsSetValue(SettingsID::Input_DeviceName, section, deviceName.toStdString());
-    CoreSettingsSetValue(SettingsID::Input_DeviceNum, section, deviceNum);
-    CoreSettingsSetValue(SettingsID::Input_Deadzone, section, this->deadZoneSlider->value());
-    CoreSettingsSetValue(SettingsID::Input_Pak, section, this->optionsDialogSettings.ControllerPak);
-    CoreSettingsSetValue(SettingsID::Input_GameboyRom, section, this->optionsDialogSettings.GameboyRom);
-    CoreSettingsSetValue(SettingsID::Input_GameboySave, section, this->optionsDialogSettings.GameboySave);
-    CoreSettingsSetValue(SettingsID::Input_RemoveDuplicateMappings, section, this->optionsDialogSettings.RemoveDuplicateMappings);
+    CoreSettingsSetValue(SettingsID::Input_PluggedIn, sectionStr, this->IsPluggedIn());
+    CoreSettingsSetValue(SettingsID::Input_DeviceName, sectionStr, deviceName.toStdString());
+    CoreSettingsSetValue(SettingsID::Input_DeviceNum, sectionStr, deviceNum);
+    CoreSettingsSetValue(SettingsID::Input_Deadzone, sectionStr, this->deadZoneSlider->value());
+    CoreSettingsSetValue(SettingsID::Input_Pak, sectionStr, this->optionsDialogSettings.ControllerPak);
+    CoreSettingsSetValue(SettingsID::Input_GameboyRom, sectionStr, this->optionsDialogSettings.GameboyRom);
+    CoreSettingsSetValue(SettingsID::Input_GameboySave, sectionStr, this->optionsDialogSettings.GameboySave);
+    CoreSettingsSetValue(SettingsID::Input_RemoveDuplicateMappings, sectionStr, this->optionsDialogSettings.RemoveDuplicateMappings);
 
     for (auto& buttonSetting : this->buttonSettingMappings)
     {
-        CoreSettingsSetValue(buttonSetting.inputTypeSettingsId, section, buttonSetting.button->GetInputType());
-        CoreSettingsSetValue(buttonSetting.nameSettingsId, section, buttonSetting.button->GetInputText());
-        CoreSettingsSetValue(buttonSetting.dataSettingsId, section, buttonSetting.button->GetInputData());
-        CoreSettingsSetValue(buttonSetting.extraDataSettingsId, section, buttonSetting.button->GetExtraInputData());
+        CoreSettingsSetValue(buttonSetting.inputTypeSettingsId, sectionStr, buttonSetting.button->GetInputType());
+        CoreSettingsSetValue(buttonSetting.nameSettingsId, sectionStr, buttonSetting.button->GetInputText());
+        CoreSettingsSetValue(buttonSetting.dataSettingsId, sectionStr, buttonSetting.button->GetInputData());
+        CoreSettingsSetValue(buttonSetting.extraDataSettingsId, sectionStr, buttonSetting.button->GetExtraInputData());
     }
 
     CoreSettingsSave();
@@ -1087,5 +1319,23 @@ void ControllerWidget::SetCurrentJoystickID(SDL_JoystickID joystickId)
 void ControllerWidget::SetIsCurrentJoystickGameController(bool isGameController)
 {
     this->isCurrentJoystickGameController = isGameController;
+}
+
+void ControllerWidget::AddUserProfile(QString name, QString section)
+{
+    int index = this->profileComboBox->findData(section);
+    if (index == -1)
+    {
+        this->profileComboBox->addItem(name, section);
+    }
+}
+
+void ControllerWidget::RemoveUserProfile(QString name, QString section)
+{
+    int index = this->profileComboBox->findData(section);
+    if (index != -1)
+    {
+        this->profileComboBox->removeItem(index);
+    }
 }
 

@@ -142,17 +142,45 @@ static void load_settings(void)
     std::string gameId;
     CoreRomSettings romSettings;
 
+    std::string userProfileSectionBase = "Rosalie's Mupen GUI - Input Plugin User Profile";
+    std::vector<std::string> userProfiles;
+    std::vector<std::string>::iterator userProfilesIter;
+
     // try to retrieve current ROM settings
     if (CoreGetCurrentRomSettings(romSettings))
     {
         gameId = romSettings.MD5;
     }
 
+    // retrieve all user profiles
+    userProfiles = CoreSettingsGetStringListValue(SettingsID::Input_Profiles);
+
     for (int i = 0; i < NUM_CONTROLLERS; i++)
     {
         InputProfile* profile = &l_InputProfiles[i];
-        std::string section = "Rosalie's Mupen GUI - Input Plugin Profile " + std::to_string(i);
+        std::string section     = "Rosalie's Mupen GUI - Input Plugin Profile " + std::to_string(i);
         std::string gameSection = section + " Game " + gameId;
+        std::string userProfileSection;
+        std::string userProfileName;
+
+        // when a user profile has been specified,
+        // ensure it exists in the profile list and
+        // in the settings, if it does,
+        // use that user profile
+        userProfileName = CoreSettingsGetStringValue(SettingsID::Input_UseProfile, section);
+        if (!userProfileName.empty())
+        {
+            userProfilesIter = std::find(userProfiles.begin(), userProfiles.end(), userProfileName);
+            if (userProfilesIter != userProfiles.end())
+            {
+                userProfileSection = userProfileSectionBase;
+                userProfileSection += " \"" + userProfileName + "\"";
+                if (CoreSettingsSectionExists(userProfileSection))
+                {
+                    section = userProfileSection;
+                }
+            }
+        }
 
         // if game ID was retrieved,
         // check if game section exists, if it does
@@ -324,7 +352,7 @@ static void setup_device_automatic(int num, InputProfile* profile)
         }
         else
         {
-            profile->PluggedIn                  = false;
+            profile->PluggedIn = false;
 
             // only override present in core
             // when we have the control info
@@ -338,8 +366,8 @@ static void setup_device_automatic(int num, InputProfile* profile)
 
 static void open_controllers(void)
 {
-    // force SDL to re-load joysticks
-    SDL_PumpEvents();
+    // force re-fresh joystick list
+    SDL_JoystickUpdate();
 
     for (int i = 0; i < NUM_CONTROLLERS; i++)
     {
@@ -679,6 +707,13 @@ EXPORT m64p_error CALL PluginConfig()
     dialog.exec();
 
     l_SDLThread->SetAction(SDLThreadAction::None);
+
+    // wait until it's done pumping events
+    while (l_SDLThread->GetCurrentAction() == SDLThreadAction::SDLPumpEvents)
+    {
+        QThread::msleep(5);
+    }
+
     
     // reload settings
     load_settings();
@@ -854,6 +889,7 @@ EXPORT int CALL RomOpen(void)
 
 EXPORT void CALL RomClosed(void)
 {
+    l_HasControlInfo = false;
     close_controllers();
 }
 

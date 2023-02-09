@@ -34,6 +34,7 @@ class ControllerWidget : public QWidget, Ui::ControllerWidget
     Q_OBJECT
 
 private:
+    bool initialized = false;
     QString settingsSection;
     
     OptionsDialogSettings optionsDialogSettings;
@@ -68,7 +69,9 @@ private:
     QList<buttonSettingMapping> buttonSettingMappings;
     QList<MappingButton*> setupButtonWidgets;
 
-    void initializeButtons();
+    void initializeMappingButtons();
+    void initializeProfileButtons();
+    void initializeMiscButtons();
 
     bool isCurrentDeviceKeyboard();
     bool isCurrentDeviceNotFound();
@@ -79,9 +82,18 @@ private:
     void removeDuplicates(MappingButton* button);
 
     QString getCurrentSettingsSection();
+    
+    QString getUserProfileSectionName(QString profile);
+    bool isSectionUserProfile(QString section);
+
+    void setPluggedIn(bool value);
+
+    void showErrorMessage(QString text, QString details = "");
 
     SDL_JoystickID currentJoystickId     = -1;
     bool isCurrentJoystickGameController = false;
+
+    int previousProfileComboBoxIndex = -1;
 
 public:
     ControllerWidget(QWidget* parent, EventFilter* eventFilter);
@@ -97,15 +109,23 @@ public:
     void GetCurrentInputDevice(QString& deviceName, int& deviceNum, bool ignoreDeviceNotFound = false);
     bool IsPluggedIn();
 
-    void SetSettingsSection(QString section);
+    void SetSettingsSection(QString profile, QString section);
+    void SetInitialized(bool value);
 
     void LoadSettings();
-    void LoadSettings(QString section);
+    void LoadSettings(QString section, bool loadUserProfile = false);
+    void LoadUserProfileSettings();
+    
     void SaveDefaultSettings();
     void SaveSettings();
+    void SaveUserProfileSettings();
+    void SaveSettings(QString section);
 
     void SetCurrentJoystickID(SDL_JoystickID joystickId);
     void SetIsCurrentJoystickGameController(bool isGameController);
+
+    void AddUserProfile(QString name, QString section);
+    void RemoveUserProfile(QString name, QString section);
 
 private slots:
     void on_deadZoneSlider_valueChanged(int value);
@@ -114,9 +134,8 @@ private slots:
 
     void on_inputDeviceComboBox_currentIndexChanged(int value);
     void on_inputDeviceRefreshButton_clicked();
-    
-    void on_controllerPluggedCheckBox_toggled(bool value);
 
+    void on_addProfileButton_clicked();
     void on_removeProfileButton_clicked();
 
     void on_resetButton_clicked();
@@ -132,9 +151,13 @@ public slots:
 
     void on_MainDialog_SdlEvent(SDL_Event* event);
     void on_MainDialog_SdlEventPollFinished();
+
 signals:
     void CurrentInputDeviceChanged(ControllerWidget* widget, QString deviceName, int deviceNum);
     void RefreshInputDevicesButtonClicked();
+
+    void UserProfileAdded(QString name, QString section);
+    void UserProfileRemoved(QString name, QString section);
 };
 }
 }
