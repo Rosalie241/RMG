@@ -397,7 +397,7 @@ static void close_controllers(void)
     }
 }
 
-static int get_button_state(InputProfile* profile, InputMapping* inputMapping)
+static int get_button_state(InputProfile* profile, const InputMapping* inputMapping)
 {
     int state = 0;
 
@@ -439,10 +439,10 @@ static int get_button_state(InputProfile* profile, InputMapping* inputMapping)
 }
 
 // returns axis input scaled to the range [-1, 1]
-static double get_axis_state(InputProfile* profile, InputMapping* inputMapping, int direction, double value, bool& useButtonMapping)
+static double get_axis_state(InputProfile* profile, const InputMapping* inputMapping, const int direction, const double value, bool& useButtonMapping)
 {
     double axis_state   = value;
-    int    button_state = 0;
+    bool   button_state = false;
 
     for (int i = 0; i < inputMapping->Count; i++)
     {
@@ -453,8 +453,7 @@ static double get_axis_state(InputProfile* profile, InputMapping* inputMapping, 
         {
             case InputType::GamepadButton:
             {
-                int buttonState = SDL_GameControllerGetButton(profile->InputDevice.GetGameControllerHandle(), (SDL_GameControllerButton)data);
-                button_state |= buttonState;
+                button_state |= SDL_GameControllerGetButton(profile->InputDevice.GetGameControllerHandle(), (SDL_GameControllerButton)data);;
             } break;
             case InputType::GamepadAxis:
             {
@@ -468,8 +467,7 @@ static double get_axis_state(InputProfile* profile, InputMapping* inputMapping, 
             } break;
             case InputType::JoystickButton:
             {
-                int buttonState =  SDL_JoystickGetButton(profile->InputDevice.GetJoystickHandle(), data);
-                button_state |= buttonState;
+                button_state |= SDL_JoystickGetButton(profile->InputDevice.GetJoystickHandle(), data);;
             } break;
             case InputType::JoystickAxis:
             {
@@ -508,7 +506,7 @@ static double get_axis_state(InputProfile* profile, InputMapping* inputMapping, 
     }
 }
 
-static double simulate_deadzone(double n64InputAxis, double maxAxis, int deadzone, double axisRange)
+static double simulate_deadzone(const double n64InputAxis, const double maxAxis, const int deadzone, const double axisRange)
 {
     double axisAbsolute = std::abs(n64InputAxis);
 
@@ -526,12 +524,12 @@ static double simulate_deadzone(double n64InputAxis, double maxAxis, int deadzon
 }
 
 // Credit: MerryMage
-static void simulate_octagon(double inputX, double inputY, double deadzoneFactor, int& outputX, int& outputY)
+static void simulate_octagon(const double inputX, const double inputY, const double deadzoneFactor, int& outputX, int& outputY)
 {
-    double maxAxis     = N64_AXIS_PEAK;
-    double maxDiagonal = MAX_DIAGONAL_VALUE;
-    int deadzone       = static_cast<int>(deadzoneFactor * N64_AXIS_PEAK);
-    double axisRange   = maxAxis - deadzone;
+    const double maxAxis     = N64_AXIS_PEAK;
+    const double maxDiagonal = MAX_DIAGONAL_VALUE;
+    const int    deadzone    = (int)(deadzoneFactor * N64_AXIS_PEAK);
+    const double axisRange   = maxAxis - deadzone;
     // scale to [-maxAxis, maxAxis]
     double ax = inputX * maxAxis;
     double ay = inputY * maxAxis;
@@ -555,18 +553,18 @@ static void simulate_octagon(double inputX, double inputY, double deadzoneFactor
     // bound diagonals to an octagonal range [-69, 69]
     if (ax != 0.0 && ay != 0.0)
     {
-        double slope = ay / ax;
-        double edgex = copysign(maxAxis / (std::abs(slope) + (maxAxis - maxDiagonal) / maxDiagonal), ax);
-        double edgey = copysign(std::min(std::abs(edgex * slope), maxAxis / (1.0 / std::abs(slope) + (maxAxis - maxDiagonal) / maxDiagonal)), ay);
+        const double slope = ay / ax;
+        double edgex = std::copysign(maxAxis / (std::abs(slope) + (maxAxis - maxDiagonal) / maxDiagonal), ax);
+        const double edgey = std::copysign(std::min(std::abs(edgex * slope), maxAxis / (1.0 / std::abs(slope) + (maxAxis - maxDiagonal) / maxDiagonal)), ay);
         edgex = edgey / slope;
 
-        double scale = std::sqrt(edgex*edgex + edgey*edgey) / maxAxis;
+        const double scale = std::sqrt(edgex*edgex + edgey*edgey) / maxAxis;
         ax *= scale;
         ay *= scale;
     }
 
-    outputX = static_cast<int>(ax);
-    outputY = static_cast<int>(ay);
+    outputX = (int)ax;
+    outputY = (int)ay;
 }
 
 static unsigned char data_crc(unsigned char *data, int length)
@@ -597,7 +595,7 @@ void sdl_init()
 {
     std::filesystem::path gameControllerDbPath;
 
-    for (int subsystem : {SDL_INIT_GAMECONTROLLER, SDL_INIT_VIDEO, SDL_INIT_HAPTIC})
+    for (const int subsystem : {SDL_INIT_GAMECONTROLLER, SDL_INIT_VIDEO, SDL_INIT_HAPTIC})
     {
         if (!SDL_WasInit(subsystem))
         {
@@ -614,7 +612,7 @@ void sdl_init()
 
 void sdl_quit()
 {
-    for (int subsystem : {SDL_INIT_GAMECONTROLLER, SDL_INIT_HAPTIC})
+    for (const int subsystem : {SDL_INIT_GAMECONTROLLER, SDL_INIT_HAPTIC})
     {
         if (SDL_WasInit(subsystem))
         {
@@ -820,7 +818,7 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
     // check if device has been disconnected,
     // if it has, try to open it again,
     // only do this every 2 seconds to prevent lag
-    const auto currentTime = std::chrono::high_resolution_clock::now();
+    const auto currentTime  = std::chrono::high_resolution_clock::now();
     const int secondsPassed = std::chrono::duration_cast<std::chrono::seconds>(currentTime - profile->LastDeviceCheckTime).count();
     if (secondsPassed >= 2)
     {
