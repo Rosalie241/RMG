@@ -36,6 +36,7 @@ struct MappingButtonInputDataType
 class MappingButton : public QPushButton
 {
 private:
+	QSize initialSize;
 	QTimer* countDownTimer = nullptr;
 	ControllerWidget* controllerWidget = nullptr;
 	int currentCountDownNum = 0;

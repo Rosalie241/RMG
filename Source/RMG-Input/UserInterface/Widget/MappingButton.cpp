@@ -14,8 +14,10 @@ using namespace UserInterface::Widget;
 
 MappingButton::MappingButton(QWidget* parent) : QPushButton(parent)
 {
-	this->countDownTimer = new QTimer(this);	
+	this->countDownTimer = new QTimer(this);
     connect(this->countDownTimer, &QTimer::timeout, this, &MappingButton::on_countDownTimer_triggered);
+
+    this->initialSize = this->size();
 }
 
 MappingButton::~MappingButton()
@@ -223,7 +225,7 @@ void MappingButton::reloadText()
         }
     }
 
-    QString elidedText = fontMetrics.elidedText(text, Qt::ElideRight, this->width());
+    QString elidedText = fontMetrics.elidedText(text, Qt::ElideRight, this->initialSize.width());
 
     // needed for spacing
     if (elidedText.isEmpty())
