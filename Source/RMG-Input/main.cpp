@@ -439,9 +439,10 @@ static int get_button_state(InputProfile* profile, InputMapping* inputMapping)
 }
 
 // returns axis input scaled to the range [-1, 1]
-static double get_axis_state(InputProfile* profile, InputMapping* inputMapping, int direction, double value)
+static double get_axis_state(InputProfile* profile, InputMapping* inputMapping, int direction, double value, bool& useButtonMapping)
 {
-    int state = 0;
+    double axis_state   = value;
+    int    button_state = 0;
 
     for (int i = 0; i < inputMapping->Count; i++)
     {
@@ -453,7 +454,7 @@ static double get_axis_state(InputProfile* profile, InputMapping* inputMapping, 
             case InputType::GamepadButton:
             {
                 int buttonState = SDL_GameControllerGetButton(profile->InputDevice.GetGameControllerHandle(), (SDL_GameControllerButton)data);
-                state |= buttonState;
+                button_state |= buttonState;
             } break;
             case InputType::GamepadAxis:
             {
@@ -462,13 +463,13 @@ static double get_axis_state(InputProfile* profile, InputMapping* inputMapping, 
                 {
                     axis_value = (axis_value / SDL_AXIS_PEAK);
                     axis_value = abs(axis_value) * direction;
-                    return axis_value;
+                    axis_state = axis_value;
                 }
             } break;
             case InputType::JoystickButton:
             {
                 int buttonState =  SDL_JoystickGetButton(profile->InputDevice.GetJoystickHandle(), data);
-                state |= buttonState;
+                button_state |= buttonState;
             } break;
             case InputType::JoystickAxis:
             {
@@ -477,19 +478,34 @@ static double get_axis_state(InputProfile* profile, InputMapping* inputMapping, 
                 {
                     axis_value = (axis_value / SDL_AXIS_PEAK);
                     axis_value = abs(axis_value) * direction;
-                    return axis_value;
+                    axis_state = axis_value;
                 }
             } break;
             case InputType::Keyboard:
             {
-                state |= l_KeyboardState[data];
+                button_state |= l_KeyboardState[data];
             } break;
             default:
                 break;
-            }
         }
+    }
 
-    return state ? direction : value;
+    // when a button has been mapped
+    // to an axis, we should prioritize 
+    // the button when it's been pressed
+    if (button_state)
+    {
+        useButtonMapping = true;
+        return direction;
+    }
+    else if (!useButtonMapping)
+    {
+        return axis_state;
+    } 
+    else
+    {
+        return value;
+    }
 }
 
 static double simulate_deadzone(double n64InputAxis, double maxAxis, int deadzone, double axisRange)
@@ -840,10 +856,11 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
     Keys->Z_TRIG       = get_button_state(profile, &profile->Button_ZTrigger);
 
     double inputX = 0, inputY = 0;
-    inputY = get_axis_state(profile, &profile->AnalogStick_Up,    1, inputY);
-    inputY = get_axis_state(profile, &profile->AnalogStick_Down, -1, inputY);
-    inputX = get_axis_state(profile, &profile->AnalogStick_Left, -1, inputX);
-    inputX = get_axis_state(profile, &profile->AnalogStick_Right, 1, inputX);
+    bool useButtonMapping = false;
+    inputY = get_axis_state(profile, &profile->AnalogStick_Up,    1, inputY, useButtonMapping);
+    inputY = get_axis_state(profile, &profile->AnalogStick_Down, -1, inputY, useButtonMapping);
+    inputX = get_axis_state(profile, &profile->AnalogStick_Left, -1, inputX, useButtonMapping);
+    inputX = get_axis_state(profile, &profile->AnalogStick_Right, 1, inputX, useButtonMapping);
 
     int octagonX = 0, octagonY = 0;
     simulate_octagon(
