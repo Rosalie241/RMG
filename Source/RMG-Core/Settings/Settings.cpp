@@ -583,6 +583,12 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::Input_RemoveDuplicateMappings:
         setting = {"", "RemoveDuplicateMappings"};
         break;
+    case SettingsID::Input_FilterEventsForButtons:
+        setting = {"", "FilterEventsForButtons"};
+        break;
+    case SettingsID::Input_FilterEventsForAxis:
+        setting = {"", "FilterEventsForAxis"};
+        break;
     case SettingsID::Input_A_InputType:
         setting = {"", "A_InputType"};
         break;
