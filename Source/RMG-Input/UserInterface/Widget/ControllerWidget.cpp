@@ -565,6 +565,7 @@ void ControllerWidget::on_addProfileButton_clicked()
 {
     std::vector<std::string> profiles;
     std::vector<std::string>::iterator profilesIter;
+    QString section;
 
     // retrieve profiles from settings
     profiles = CoreSettingsGetStringListValue(SettingsID::Input_Profiles);
@@ -597,19 +598,24 @@ void ControllerWidget::on_addProfileButton_clicked()
         return;
     }
 
+    section = this->getUserProfileSectionName(newProfile);
+
     // add profile to UI
-    this->profileComboBox->addItem(newProfile, this->getUserProfileSectionName(newProfile));
+    this->profileComboBox->addItem(newProfile, section);
     this->profileComboBox->setCurrentText(newProfile);
 
     // add profile to settings
     profiles.push_back(newProfile.toStdString());
     CoreSettingsSetValue(SettingsID::Input_Profiles, profiles);
 
-    // update removed profiles
-    this->removedProfiles.removeAll(this->getUserProfileSectionName(newProfile));
+    // update added profiles
+    if (!this->addedProfiles.contains(section))
+    {
+        this->addedProfiles.push_back(section);
+    }
 
     // emit signal
-    emit this->UserProfileAdded(newProfile, this->getUserProfileSectionName(newProfile));
+    emit this->UserProfileAdded(newProfile, section);
 }
 
 void ControllerWidget::on_removeProfileButton_clicked()
@@ -634,7 +640,11 @@ void ControllerWidget::on_removeProfileButton_clicked()
     QString currentSection = this->getCurrentSettingsSection();
 
     // add to removed profiles list (will be deleted later)
-    this->removedProfiles.push_back(currentSection);
+    if (!this->removedProfiles.contains(currentSection))
+    {
+        this->removedProfiles.push_back(currentSection);
+    }
+    this->addedProfiles.removeAll(currentSection);
 
     // if section is a user profile,
     // also remove it from the profiles list
@@ -1166,7 +1176,8 @@ void ControllerWidget::LoadSettings(QString sectionQString, bool loadUserProfile
 
     // if the removed profiles contain
     // the section, don't load it
-    if (this->removedProfiles.contains(sectionQString))
+    if (this->removedProfiles.contains(sectionQString) &&
+        !this->addedProfiles.contains(sectionQString))
     {
         return;
     }
@@ -1291,7 +1302,10 @@ void ControllerWidget::SaveSettings()
     // delete all removed profile sections
     for (QString section : this->removedProfiles)
     {
-        CoreSettingsDeleteSection(section.toStdString());
+        if (!this->addedProfiles.contains(section))
+        {
+            CoreSettingsDeleteSection(section.toStdString());
+        }
     }
 }
 
@@ -1377,7 +1391,8 @@ void ControllerWidget::RevertSettings()
     for (QString section : this->removedProfiles)
     {
         // ensure it's unique
-        if (!sections.contains(section))
+        if (!this->addedProfiles.contains(section) &&
+            !sections.contains(section))
         {
             sections.push_back(section);
         }
@@ -1387,6 +1402,16 @@ void ControllerWidget::RevertSettings()
     for (QString section : sections)
     {
         CoreSettingsRevertSection(section.toStdString());
+    }
+
+    // delete all sections for added profiles,
+    // which weren't deleted
+    for (QString section : this->addedProfiles)
+    {
+        if (!this->removedProfiles.contains(section))
+        {
+            CoreSettingsDeleteSection(section.toStdString());
+        }
     }
 }
 

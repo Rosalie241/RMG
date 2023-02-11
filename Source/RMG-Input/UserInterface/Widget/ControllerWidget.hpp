@@ -43,8 +43,9 @@ private:
     QList<QString> inputDeviceNameList;
     MappingButton* currentButton = nullptr;
     bool addMappingToButton      = false;
-    
+
     QList<QString> removedProfiles;
+    QList<QString> addedProfiles;
 
     struct buttonWidgetMapping
     {
