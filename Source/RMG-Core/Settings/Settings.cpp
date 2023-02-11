@@ -553,6 +553,9 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::Input_UseProfile:
         setting = {"", "UseProfile"};
         break;
+    case SettingsID::Input_UseGameProfile:
+        setting = {"", "UseGameProfile"};
+        break;
     case SettingsID::Input_PluggedIn:
         setting = {"", "PluggedIn"};
         break;

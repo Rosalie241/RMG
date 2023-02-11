@@ -25,7 +25,7 @@ enum class SettingsID
     GUI_CheckForUpdates,
     GUI_DiscordRpc,
     GUI_Version,
-    
+
     // Core Plugin Settings
     Core_GFX_Plugin,
     Core_AUDIO_Plugin,
@@ -160,6 +160,7 @@ enum class SettingsID
     // Input Plugin Settings
     Input_Profiles,
     Input_UseProfile,
+    Input_UseGameProfile,
     Input_PluggedIn,
     Input_DeviceType,
     Input_DeviceName,
