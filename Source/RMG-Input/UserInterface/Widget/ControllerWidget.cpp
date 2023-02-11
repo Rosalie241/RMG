@@ -446,6 +446,12 @@ void ControllerWidget::CheckInputDeviceSettings()
         (this->inputDeviceComboBox->itemText(deviceNumIndex).startsWith(QString::fromStdString(deviceName))))
     { // full match
         this->inputDeviceComboBox->setCurrentIndex(deviceNumIndex);
+
+        // force-refresh automatic input device
+        if (deviceNum == (int)InputDeviceType::Automatic)
+        {
+            this->on_inputDeviceComboBox_currentIndexChanged(deviceNumIndex);
+        }
     }
     else if (deviceNameIndex != -1)
     { // name only match
