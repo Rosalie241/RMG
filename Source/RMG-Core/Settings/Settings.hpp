@@ -27,6 +27,9 @@ bool CoreSettingsSetupDefaults(void);
 // returns whether a section exists
 bool CoreSettingsSectionExists(std::string section);
 
+// reverts section to the one from the settings
+bool CoreSettingsRevertSection(std::string section);
+
 // deletes given section
 bool CoreSettingsDeleteSection(std::string section);
 

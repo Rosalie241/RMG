@@ -1230,6 +1230,27 @@ bool CoreSettingsSectionExists(std::string section)
     return config_section_exists(section);
 }
 
+bool CoreSettingsRevertSection(std::string section)
+{
+    std::string error;
+    m64p_error ret;
+
+    if (!m64p::Config.IsHooked())
+    {
+        return false;
+    }
+
+    ret = m64p::Config.RevertChanges(section.c_str());
+    if (ret != M64ERR_SUCCESS)
+    {
+        error = "CoreSettingsRevertSection m64p::Config.RevertChanges() Failed: ";
+        error = m64p::Core.ErrorMessage(ret);
+        CoreSetError(error);
+    }
+
+    return ret == M64ERR_SUCCESS;
+}
+
 bool CoreSettingsDeleteSection(std::string section)
 {
     std::string error;
