@@ -203,6 +203,20 @@
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="filterEventsForButtonsCheckBox">
+         <property name="text">
+          <string>Filter Events Based On Joystick Type For Buttons</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="filterEventsForAxisCheckBox">
+         <property name="text">
+          <string>Filter Events Based On Joystick Type For Axis</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="verticalSpacer_2">
          <property name="orientation">
           <enum>Qt::Vertical</enum>

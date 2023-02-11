@@ -762,7 +762,8 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             if ((event->type == SDL_CONTROLLERBUTTONDOWN) ||
                 (event->type == SDL_CONTROLLERBUTTONUP))
             { // gamepad button
-                if (!this->isCurrentJoystickGameController)
+                if (!this->isCurrentJoystickGameController &&
+                    this->optionsDialogSettings.FilterEventsForButtons)
                 {
                     return;
                 }
@@ -775,7 +776,8 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             }
             else
             { // joystick button
-                if (this->isCurrentJoystickGameController)
+                if (this->isCurrentJoystickGameController &&
+                    this->optionsDialogSettings.FilterEventsForButtons)
                 {
                     return;
                 }
@@ -876,7 +878,8 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
 
             if (event->type == SDL_CONTROLLERAXISMOTION)
             { // gamepad axis
-                if (!this->isCurrentJoystickGameController)
+                if (!this->isCurrentJoystickGameController &&
+                    this->optionsDialogSettings.FilterEventsForAxis)
                 {
                     return;
                 }
@@ -890,7 +893,8 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             }
             else
             { // joystick axis
-                if (this->isCurrentJoystickGameController)
+                if (this->isCurrentJoystickGameController &&
+                    this->optionsDialogSettings.FilterEventsForAxis)
                 {
                     return;
                 }
@@ -1220,6 +1224,19 @@ void ControllerWidget::LoadSettings(QString sectionQString, bool loadUserProfile
     this->optionsDialogSettings.GameboyRom = CoreSettingsGetStringValue(SettingsID::Input_GameboyRom, section);
     this->optionsDialogSettings.GameboySave = CoreSettingsGetStringValue(SettingsID::Input_GameboySave, section);
 
+    // keep backwards compatibility with old profiles
+    if (CoreSettingsKeyExists(section, "FilterEventsForButtons") &&
+        CoreSettingsKeyExists(section, "FilterEventsForAxis"))
+    {
+        this->optionsDialogSettings.FilterEventsForButtons = CoreSettingsGetBoolValue(SettingsID::Input_FilterEventsForButtons, section);
+        this->optionsDialogSettings.FilterEventsForAxis = CoreSettingsGetBoolValue(SettingsID::Input_FilterEventsForAxis, section);
+    }
+    else
+    {
+        this->optionsDialogSettings.FilterEventsForButtons = true;
+        this->optionsDialogSettings.FilterEventsForAxis = true;
+    }
+
     for (auto& buttonSetting : this->buttonSettingMappings)
     {
         buttonSetting.button->Clear();
@@ -1280,6 +1297,8 @@ void ControllerWidget::SaveDefaultSettings()
     CoreSettingsSetValue(SettingsID::Input_Deadzone, section, 9);
     CoreSettingsSetValue(SettingsID::Input_Pak, section, 0);
     CoreSettingsSetValue(SettingsID::Input_RemoveDuplicateMappings, section, true);
+    CoreSettingsSetValue(SettingsID::Input_FilterEventsForButtons, section, true);
+    CoreSettingsSetValue(SettingsID::Input_FilterEventsForAxis, section, true);
 
     for (auto& buttonSetting : this->buttonSettingMappings)
     {
@@ -1364,6 +1383,8 @@ void ControllerWidget::SaveSettings(QString section)
     CoreSettingsSetValue(SettingsID::Input_GameboyRom, sectionStr, this->optionsDialogSettings.GameboyRom);
     CoreSettingsSetValue(SettingsID::Input_GameboySave, sectionStr, this->optionsDialogSettings.GameboySave);
     CoreSettingsSetValue(SettingsID::Input_RemoveDuplicateMappings, sectionStr, this->optionsDialogSettings.RemoveDuplicateMappings);
+    CoreSettingsSetValue(SettingsID::Input_FilterEventsForButtons, sectionStr, this->optionsDialogSettings.FilterEventsForButtons);
+    CoreSettingsSetValue(SettingsID::Input_FilterEventsForAxis, sectionStr, this->optionsDialogSettings.FilterEventsForAxis);
 
     for (auto& buttonSetting : this->buttonSettingMappings)
     {

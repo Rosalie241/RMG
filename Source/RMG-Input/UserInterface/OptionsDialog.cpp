@@ -24,6 +24,8 @@ OptionsDialog::OptionsDialog(QWidget* parent, OptionsDialogSettings settings) : 
     this->gameboyRomLineEdit->setText(QString::fromStdString(settings.GameboyRom));
     this->gameboySaveLineEdit->setText(QString::fromStdString(settings.GameboySave));
     this->removeDuplicateMappingsCheckbox->setChecked(settings.RemoveDuplicateMappings);
+    this->filterEventsForButtonsCheckBox->setChecked(settings.FilterEventsForButtons);
+    this->filterEventsForAxisCheckBox->setChecked(settings.FilterEventsForAxis);
 
     if (!CoreIsEmulationRunning() && !CoreIsEmulationPaused())
     {
@@ -83,6 +85,8 @@ void OptionsDialog::on_buttonBox_clicked(QAbstractButton *button)
         this->settings.GameboyRom = this->gameboyRomLineEdit->text().toStdString();
         this->settings.GameboySave = this->gameboySaveLineEdit->text().toStdString();
         this->settings.RemoveDuplicateMappings = this->removeDuplicateMappingsCheckbox->isChecked();
+        this->settings.FilterEventsForButtons = this->filterEventsForButtonsCheckBox->isChecked();
+        this->settings.FilterEventsForAxis = this->filterEventsForAxisCheckBox->isChecked();
     }
     
     this->accept();
