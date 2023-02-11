@@ -33,6 +33,24 @@
   </screenshots>
   <description/>
   <releases>
+    <release version="v0.3.4" date="2023-02-11" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix mapping button size increasing when reloading settings in RMG-Input</li>
+          <li>Fix analog stick mapping in-game when having buttons and axis bound in RMG-Input</li>
+          <li>Fix height mismatch of "Profile" and "Input Device" UI elements in RMG-Input</li>
+          <li>Fix updater script not using the correct path seperators on Windows</li>
+          <li>Fix GLideN64's per game settings being overwritten by the updater on windows (or not being updated on linux)</li>
+          <li>Fix "Automatic" input device not opening controller device when clicking on 'Refresh' in RMG-Input</li>
+          <li>Fix game specific profile having unexpected UI behavior in RMG-Input</li>
+          <li>Fix cancel and close button not working correctly in RMG-Input</li>
+          <li>Fix profile saving not working correctly when having the same profile selected for multiple players in RMG-Input</li>
+          <li>Add "Filter Events Based On Joystick Type For Buttons" setting to RMG-Input</li>
+          <li>Add "Filter Events Based On Joystick Type For Axis" setting to RMG-Input</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.3.3" date="2023-02-09" type="stable">
       <description>
         <p>Changes:</p>
