@@ -36,6 +36,7 @@ class ControllerWidget : public QWidget, Ui::ControllerWidget
 private:
     bool initialized = false;
     QString settingsSection;
+    QString gameSection;
     
     OptionsDialogSettings optionsDialogSettings;
 
@@ -82,9 +83,11 @@ private:
     void removeDuplicates(MappingButton* button);
 
     QString getCurrentSettingsSection();
-    
+
     QString getUserProfileSectionName(QString profile);
+
     bool isSectionUserProfile(QString section);
+    bool isSectionGameProfile(QString section);
 
     void setPluggedIn(bool value);
 

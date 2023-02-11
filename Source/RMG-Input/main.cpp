@@ -183,13 +183,19 @@ static void load_settings(void)
         }
 
         // if game ID was retrieved,
-        // check if game section exists, if it does
-        // use that section instead of the main section
+        // check if game section exists,
+        // if it does, check if the 'UseGameProfile' key exists,
+        // if it doesn't then use the profile, else
+        // check if the value is true
         if (!gameId.empty())
         {
             if (CoreSettingsSectionExists(gameSection))
             {
-                section = gameSection;
+                if (!CoreSettingsKeyExists(gameSection, "UseGameProfile") ||
+                    CoreSettingsGetBoolValue(SettingsID::Input_UseGameProfile, gameSection))
+                {
+                    section = gameSection;
+                }
             }
         }
 

@@ -302,6 +302,11 @@ bool ControllerWidget::isSectionUserProfile(QString section)
     return section.contains("User Profile");
 }
 
+bool ControllerWidget::isSectionGameProfile(QString section)
+{
+    return !this->isSectionUserProfile(section) && section.contains("Game");
+}
+
 void ControllerWidget::setPluggedIn(bool value)
 {
     QWidget* widgetList[] =
@@ -513,11 +518,7 @@ void ControllerWidget::on_profileComboBox_currentIndexChanged(int value)
         if (this->previousProfileComboBoxIndex < this->profileComboBox->count())
         {
             QString section = this->profileComboBox->itemData(this->previousProfileComboBoxIndex).toString();
-            // TODO: how to handle game specific profiles here?
-            if (!section.startsWith(this->settingsSection + " Game"))
-            {
-                this->SaveSettings(section);
-            }
+            this->SaveSettings(section);
         }
     }
 
@@ -659,8 +660,15 @@ void ControllerWidget::on_removeProfileButton_clicked()
         emit this->UserProfileRemoved(this->profileComboBox->currentText(), currentSection);
     }
 
-    // change current index
-    this->profileComboBox->setCurrentIndex(0);
+    // switch back to main profile when deleting
+    // a per game profile
+    if (this->isSectionGameProfile(currentSection))
+    {
+        // ensure we don't save the game specific profile
+        // upon switching to the main profile
+        this->previousProfileComboBoxIndex = -1;
+        this->profileComboBox->setCurrentIndex(0);
+    }
 }
 
 void ControllerWidget::on_resetButton_clicked()
@@ -1083,7 +1091,6 @@ void ControllerWidget::LoadSettings()
     }
 
     QString section = this->settingsSection;
-    QString gameSection;
     std::vector<std::string> userProfiles;
 
     // if the main profile section doesn't exist,
@@ -1101,26 +1108,33 @@ void ControllerWidget::LoadSettings()
     if (CoreGetCurrentRomSettings(romSettings) &&
         CoreGetCurrentRomHeader(romHeader))
     {
-        gameSection = section + " Game " + QString::fromStdString(romSettings.MD5);
+        this->gameSection = section + " Game " + QString::fromStdString(romSettings.MD5);
 
         // use internal rom name
         QString internalName = QString::fromStdString(romHeader.Name);
 
         // add game specific profile when 
         // it doesn't exist yet
-        int index = this->profileComboBox->findData(gameSection);
+        int index = this->profileComboBox->findData(this->gameSection);
         if (index == -1)
         {
-            this->profileComboBox->addItem(internalName, gameSection);
+            this->profileComboBox->addItem(internalName, this->gameSection);
         }
 
         // if a game specific section exists,
         // select it in the profile combobox
         // and use it to load the settings
-        if (CoreSettingsSectionExists(gameSection.toStdString()))
+        if (CoreSettingsSectionExists(this->gameSection.toStdString()))
         {
-            this->profileComboBox->setCurrentText(internalName);
-            section = gameSection;
+            // check if the key 'UseGameProfile' exists,
+            // if it doesn't then use the profile,
+            // else check if it's true and use it
+            if (!CoreSettingsKeyExists(this->gameSection.toStdString(), "UseGameProfile") ||
+                CoreSettingsGetBoolValue(SettingsID::Input_UseGameProfile, this->gameSection.toStdString()))
+            {
+                this->profileComboBox->setCurrentText(internalName);
+                section = this->gameSection;
+            }
         }
     }
 
@@ -1154,7 +1168,16 @@ void ControllerWidget::LoadSettings(QString sectionQString, bool loadUserProfile
     // do nothing if the section doesn't exist
     if (!CoreSettingsSectionExists(section))
     {
-        return;
+        // fallback to main section for per game profiles
+        if (this->isSectionGameProfile(sectionQString))
+        {
+            sectionQString = this->settingsSection;
+            section        = this->settingsSection.toStdString();
+        }
+        else
+        {
+            return;
+        }
     }
 
     // see if the profile contains the UseProfile setting,
@@ -1258,7 +1281,7 @@ void ControllerWidget::SaveSettings()
     {
         return;
     }
-    
+
     this->SaveSettings(this->getCurrentSettingsSection());
 }
 
@@ -1293,6 +1316,18 @@ void ControllerWidget::SaveSettings(QString section)
     else
     {
         CoreSettingsSetValue(SettingsID::Input_UseProfile, mainSettingsSection, std::string(""));
+    }
+
+    // when section is a game specific profile,
+    // make sure we tell it whether or not to use it
+    if (this->isSectionGameProfile(section))
+    {
+        CoreSettingsSetValue(SettingsID::Input_UseGameProfile, sectionStr, true);
+    }
+    else if (!this->gameSection.isEmpty() &&
+        CoreSettingsSectionExists(this->gameSection.toStdString()))
+    {
+        CoreSettingsSetValue(SettingsID::Input_UseGameProfile, this->gameSection.toStdString(), false);
     }
 
     this->GetCurrentInputDevice(deviceName, deviceNum, true);
