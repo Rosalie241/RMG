@@ -37,13 +37,15 @@ private:
     bool initialized = false;
     QString settingsSection;
     QString gameSection;
-    
+
     OptionsDialogSettings optionsDialogSettings;
 
     QList<QString> inputDeviceNameList;
     MappingButton* currentButton = nullptr;
     bool addMappingToButton      = false;
     
+    QList<QString> removedProfiles;
+
     struct buttonWidgetMapping
     {
         enum N64ControllerButton button;
@@ -118,11 +120,13 @@ public:
     void LoadSettings();
     void LoadSettings(QString section, bool loadUserProfile = false);
     void LoadUserProfileSettings();
-    
+
     void SaveDefaultSettings();
     void SaveSettings();
     void SaveUserProfileSettings();
     void SaveSettings(QString section);
+
+    void RevertSettings();
 
     void SetCurrentJoystickID(SDL_JoystickID joystickId);
     void SetIsCurrentJoystickGameController(bool isGameController);

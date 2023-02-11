@@ -605,6 +605,9 @@ void ControllerWidget::on_addProfileButton_clicked()
     profiles.push_back(newProfile.toStdString());
     CoreSettingsSetValue(SettingsID::Input_Profiles, profiles);
 
+    // update removed profiles
+    this->removedProfiles.removeAll(this->getUserProfileSectionName(newProfile));
+
     // emit signal
     emit this->UserProfileAdded(newProfile, this->getUserProfileSectionName(newProfile));
 }
@@ -630,12 +633,8 @@ void ControllerWidget::on_removeProfileButton_clicked()
 
     QString currentSection = this->getCurrentSettingsSection();
 
-    // try to remove profile settings section when it exists
-    if (CoreSettingsSectionExists(currentSection.toStdString()) &&
-        !CoreSettingsDeleteSection(currentSection.toStdString()))
-    { // show error when failed
-        this->showErrorMessage("CoreSettingsDeleteSection() Failed!", QString::fromStdString(CoreGetError()));
-    }
+    // add to removed profiles list (will be deleted later)
+    this->removedProfiles.push_back(currentSection);
 
     // if section is a user profile,
     // also remove it from the profiles list
@@ -1165,6 +1164,13 @@ void ControllerWidget::LoadSettings(QString sectionQString, bool loadUserProfile
     std::string section = sectionQString.toStdString();
     std::string useProfile;
 
+    // if the removed profiles contain
+    // the section, don't load it
+    if (this->removedProfiles.contains(sectionQString))
+    {
+        return;
+    }
+
     // do nothing if the section doesn't exist
     if (!CoreSettingsSectionExists(section))
     {
@@ -1271,8 +1277,6 @@ void ControllerWidget::SaveDefaultSettings()
         CoreSettingsSetValue(buttonSetting.dataSettingsId, section, std::vector<int>({ 0 }));
         CoreSettingsSetValue(buttonSetting.extraDataSettingsId, section, std::vector<int>({ 0 }));
     }
-
-    CoreSettingsSave();
 }
 
 void ControllerWidget::SaveSettings()
@@ -1283,6 +1287,12 @@ void ControllerWidget::SaveSettings()
     }
 
     this->SaveSettings(this->getCurrentSettingsSection());
+
+    // delete all removed profile sections
+    for (QString section : this->removedProfiles)
+    {
+        CoreSettingsDeleteSection(section.toStdString());
+    }
 }
 
 void ControllerWidget::SaveUserProfileSettings()
@@ -1348,8 +1358,36 @@ void ControllerWidget::SaveSettings(QString section)
         CoreSettingsSetValue(buttonSetting.dataSettingsId, sectionStr, buttonSetting.button->GetInputData());
         CoreSettingsSetValue(buttonSetting.extraDataSettingsId, sectionStr, buttonSetting.button->GetExtraInputData());
     }
+}
 
-    CoreSettingsSave();
+void ControllerWidget::RevertSettings()
+{
+    QList<QString> sections;
+
+    // add all sections from profile combobox
+    for (int i = 0; i < this->profileComboBox->count(); i++)
+    {
+        sections.push_back(this->profileComboBox->itemData(i).toString());
+    }
+
+    // add section with profiles list
+    sections.push_back("Rosalie's Mupen GUI - Input Plugin");
+
+    // add removed profile sections
+    for (QString section : this->removedProfiles)
+    {
+        // ensure it's unique
+        if (!sections.contains(section))
+        {
+            sections.push_back(section);
+        }
+    }
+
+    // revert each section
+    for (QString section : sections)
+    {
+        CoreSettingsRevertSection(section.toStdString());
+    }
 }
 
 void ControllerWidget::SetCurrentJoystickID(SDL_JoystickID joystickId)

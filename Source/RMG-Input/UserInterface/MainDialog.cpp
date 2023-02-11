@@ -370,19 +370,37 @@ void MainDialog::on_EventFilter_KeyReleased(QKeyEvent *event)
     SDL_PeepEvents(&sdlEvent, 1, SDL_ADDEVENT, 0, 0);
 }
 
-void MainDialog::on_buttonBox_clicked(QAbstractButton *button)
+void MainDialog::accept(void)
 {
-    QPushButton *pushButton = (QPushButton *)button;
-    QPushButton *okButton = this->buttonBox->button(QDialogButtonBox::Ok);
+    Widget::ControllerWidget* controllerWidget;
+    int currentIndex = this->tabWidget->currentIndex();
 
-    if (pushButton == okButton)
+    for (int i = 0; i < this->controllerWidgets.count(); i++)
     {
-        for (auto& controllerWidget : this->controllerWidgets)
+        if (i != currentIndex)
         {
+            controllerWidget = this->controllerWidgets.at(currentIndex);
             controllerWidget->SaveSettings();
         }
-
-        CoreSettingsSave();
     }
+
+    // the widget which has focus should be saved last
+    controllerWidget = this->controllerWidgets.at(currentIndex);
+    controllerWidget->SaveSettings();
+
+    CoreSettingsSave();
+
+    QDialog::accept();
 }
 
+void MainDialog::reject(void)
+{
+    for (auto& controllerWidget : this->controllerWidgets)
+    {
+        controllerWidget->RevertSettings();
+    }
+
+    CoreSettingsSave();
+
+    QDialog::reject();
+}
