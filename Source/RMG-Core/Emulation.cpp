@@ -90,7 +90,8 @@ static void apply_game_coresettings_overlay(void)
 bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64ddrom)
 {
     std::string error;
-    m64p_error ret;
+    m64p_error  ret;
+    CoreRomType type;
 
     if (!CoreOpenRom(n64rom))
     {
@@ -126,8 +127,17 @@ bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64d
         return false;
     }
 
+    if (!CoreGetRomType(type))
+    {
+        CoreClearCheats();
+        CoreDetachPlugins();
+        CoreApplyPluginSettings();
+        CoreCloseRom();
+        return false;
+    }
+
     // set disk file in media loader when ROM is a cartridge
-    if (CoreGetRomType() == CoreRomType::Cartridge)
+    if (type == CoreRomType::Cartridge)
     {
         CoreMediaLoaderSetDiskFile(n64ddrom);
     }

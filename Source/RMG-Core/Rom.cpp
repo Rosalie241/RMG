@@ -501,9 +501,20 @@ bool CoreHasRomOpen(void)
     return l_HasRomOpen;
 }
 
-CoreRomType CoreGetRomType(void)
+bool CoreGetRomType(CoreRomType& type)
 {
-    return l_HasDisk ? CoreRomType::Disk : CoreRomType::Cartridge;
+    std::string error;
+
+    if (!l_HasRomOpen)
+    {
+        error = "CoreGetRomType Failed: ";
+        error += "cannot retrieve ROM type when no ROM has been opened!";
+        CoreSetError(error);
+        return false;
+    }
+
+    type = l_HasDisk ? CoreRomType::Disk : CoreRomType::Cartridge;
+    return true;
 }
 
 bool CoreCloseRom(void)
