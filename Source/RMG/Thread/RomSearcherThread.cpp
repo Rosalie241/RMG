@@ -95,14 +95,11 @@ void RomSearcherThread::searchDirectory(QString directory)
         }
         else
         { // no cache entry
-            // open rom, retrieve rom settings & header 
+            // open rom, retrieve rom settings, header & type
             ret = CoreOpenRom(file.toStdU32String()) &&
                 CoreGetCurrentRomSettings(settings) && 
-                CoreGetCurrentRomHeader(header);
-            if (ret)
-            {
-                type = CoreGetRomType();
-            }
+                CoreGetCurrentRomHeader(header) &&
+                CoreGetRomType(type);
             // always close the ROM,
             // even when retrieving rom info failed
             ret = CoreCloseRom() && ret;
@@ -111,7 +108,7 @@ void RomSearcherThread::searchDirectory(QString directory)
                 CoreAddCachedRomHeaderAndSettings(file.toStdU32String(), type, header, settings);
             }
         }
-        
+
         if (ret)
         {
             if (count++ >= this->maxItems)
