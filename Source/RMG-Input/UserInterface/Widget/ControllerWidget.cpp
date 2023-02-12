@@ -682,7 +682,15 @@ void ControllerWidget::on_removeProfileButton_clicked()
 
 void ControllerWidget::on_resetButton_clicked()
 {
-    this->LoadSettings(this->getCurrentSettingsSection());
+    QString section = this->getCurrentSettingsSection();
+
+    // revert settings in current section when it exists
+    if (CoreSettingsSectionExists(section.toStdString()))
+    {
+        CoreSettingsRevertSection(section.toStdString());
+    }
+
+    this->LoadSettings(section);
 }
 
 void ControllerWidget::on_optionsButton_clicked()
