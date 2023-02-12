@@ -32,9 +32,9 @@ class EmulationThread : public QThread
     QString GetLastError(void);
 
   private:
-    QString rom_File;
-    QString disk_File;
-    QString error_Message;
+    QString rom;
+    QString disk;
+    QString errorMessage;
 
   signals:
     void on_Emulation_Started(void);

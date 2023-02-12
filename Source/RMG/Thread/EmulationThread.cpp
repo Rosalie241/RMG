@@ -22,25 +22,22 @@ EmulationThread::~EmulationThread(void)
 
 void EmulationThread::SetRomFile(QString file)
 {
-    this->rom_File = file;
+    this->rom = file;
 }
 
 void EmulationThread::SetDiskFile(QString file)
 {
-    this->disk_File = file;
+    this->disk = file;
 }
 
 void EmulationThread::run(void)
 {
     emit this->on_Emulation_Started();
 
-    bool ret;
-
-    ret = CoreStartEmulation(this->rom_File.toStdU32String(), this->disk_File.toStdU32String());
-
+    bool ret = CoreStartEmulation(this->rom.toStdU32String(), this->disk.toStdU32String());
     if (!ret)
     {
-        this->error_Message = QString::fromStdString(CoreGetError());
+        this->errorMessage = QString::fromStdString(CoreGetError());
     }
 
     emit this->on_Emulation_Finished(ret);
@@ -48,5 +45,5 @@ void EmulationThread::run(void)
 
 QString EmulationThread::GetLastError(void)
 {
-    return this->error_Message;
+    return this->errorMessage;
 }
