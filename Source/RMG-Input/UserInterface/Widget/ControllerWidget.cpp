@@ -1159,6 +1159,9 @@ void ControllerWidget::LoadSettings()
         }
     }
 
+    // clear profiles list
+    profiles.clear();
+
     // try to add all the user's profiles
     userProfiles = CoreSettingsGetStringListValue(SettingsID::Input_Profiles);
     for (const std::string& profile : userProfiles)
@@ -1170,6 +1173,9 @@ void ControllerWidget::LoadSettings()
         // exist yet
         if (CoreSettingsSectionExists(profileSection.toStdString()))
         {
+            // add to profiles list
+            this->profiles.push_back(profileSection);
+
             int index = this->profileComboBox->findData(profileSection);
             if (index == -1)
             {
@@ -1407,25 +1413,11 @@ void ControllerWidget::RevertSettings()
 {
     QList<QString> sections;
 
-    // add all sections from profile combobox
-    for (int i = 0; i < this->profileComboBox->count(); i++)
-    {
-        sections.push_back(this->profileComboBox->itemData(i).toString());
-    }
+    // add all sections from profiles
+    sections.append(this->profiles);
 
     // add section with profiles list
-    sections.push_back("Rosalie's Mupen GUI - Input Plugin");
-
-    // add removed profile sections
-    for (QString section : this->removedProfiles)
-    {
-        // ensure it's unique
-        if (!this->addedProfiles.contains(section) &&
-            !sections.contains(section))
-        {
-            sections.push_back(section);
-        }
-    }
+    sections.append("Rosalie's Mupen GUI - Input Plugin");
 
     // revert each section
     for (QString section : sections)
@@ -1433,11 +1425,15 @@ void ControllerWidget::RevertSettings()
         CoreSettingsRevertSection(section.toStdString());
     }
 
-    // delete all sections for added profiles,
-    // which weren't deleted
-    for (QString section : this->addedProfiles)
+    // delete all sections for added & removed profiles,
+    // which aren't in the base profile section list
+    sections.clear();
+    sections.append(this->addedProfiles);
+    sections.append(this->removedProfiles);
+    for (QString section : sections)
     {
-        if (!this->removedProfiles.contains(section))
+        if (!this->profiles.contains(section) &&
+            CoreSettingsSectionExists(section.toStdString()))
         {
             CoreSettingsDeleteSection(section.toStdString());
         }

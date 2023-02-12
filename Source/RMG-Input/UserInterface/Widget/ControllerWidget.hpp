@@ -44,6 +44,7 @@ private:
     MappingButton* currentButton = nullptr;
     bool addMappingToButton      = false;
 
+    QList<QString> profiles;
     QList<QString> removedProfiles;
     QList<QString> addedProfiles;
 
