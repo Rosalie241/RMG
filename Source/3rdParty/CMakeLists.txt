@@ -38,19 +38,19 @@ endif(USE_CCACHE)
 if(NOT NO_GIT_CLONE)
     set(MUPEN64PLUSCORE_URL           "https://github.com/mupen64plus/mupen64plus-core")
     set(MUPEN64PLUSCORE_TAG           "7ee312cb282a7794c62d5d284bf93151c585dd1f")
-    
+
     set(MUPEN64PLUS_RSP_CXD4_URL      "https://github.com/mupen64plus/mupen64plus-rsp-cxd4")
     set(MUPEN64PLUS_RSP_CXD4_TAG      "39f79201baa15890c4cbae92f2215a634cc3ee6d")
-    
+
     set(MUPEN64PLUS_RSP_HLE_URL       "https://github.com/mupen64plus/mupen64plus-rsp-hle")
     set(MUPEN64PLUS_RSP_HLE_TAG       "88093cb43499eff53d343653cddcae2132af17ef")
-    
+
     set(MUPEN64PLUS_RSP_PARALLEL_URL  "https://github.com/Rosalie241/parallel-rsp")
     set(MUPEN64PLUS_RSP_PARALLEL_TAG  "cfeea3a0f89ba5bc4265acb75778e1267ed1e424")
-    
+
     set(MUPEN64PLUS_INPUT_RAPHNET_URL "https://github.com/raphnet/mupen64plus-input-raphnetraw")
     set(MUPEN64PLUS_INPUT_RAPHNET_TAG "86112413e98a8648edb11d199673cc24d5799af8")
-	
+
     set(MUPEN64PLUS_INPUT_GCA_URL     "https://github.com/amatho/mupen64plus-input-gca")
     set(MUPEN64PLUS_INPUT_GCA_TAG     "21639fb13dfa797a7c0949ffd9bbda9a3456fc69")
 
@@ -61,7 +61,7 @@ if(NOT NO_GIT_CLONE)
     set(MUPEN64PLUS_GFX_GLIDEN64_TAG  "698f5580249e2edf86fb89cd75d921535171074c")
 
     set(MUPEN64PLUS_GFX_PARALLEL_URL  "https://github.com/Rosalie241/parallel-rdp-standalone")
-    set(MUPEN64PLUS_GFX_PARALLEL_TAG  "abb81f3cf04e20e7c3adfedad583c1258416a6e4")
+    set(MUPEN64PLUS_GFX_PARALLEL_TAG  "bdb60f10c19df6670fef3f94254910e88b4619ab")
 
     set(DISCORD_RPC_URL               "https://github.com/discord/discord-rpc")
     set(DISCORD_RPC_TAG               "963aa9f3e5ce81a4682c6ca3d136cddda614db33")
