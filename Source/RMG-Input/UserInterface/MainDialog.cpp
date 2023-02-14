@@ -379,7 +379,7 @@ void MainDialog::accept(void)
     {
         if (i != currentIndex)
         {
-            controllerWidget = this->controllerWidgets.at(currentIndex);
+            controllerWidget = this->controllerWidgets.at(i);
             controllerWidget->SaveSettings();
         }
     }
