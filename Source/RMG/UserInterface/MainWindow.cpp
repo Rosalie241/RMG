@@ -543,6 +543,26 @@ void MainWindow::updateActions(bool inEmulation, bool isPaused)
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_Exit));
     this->action_System_Exit->setShortcut(QKeySequence(keyBinding));
 
+    // configure keybindings for speed factor
+    QAction* speedActions[] =
+    {
+        this->actionSpeed25, this->actionSpeed50, this->actionSpeed75,
+        this->actionSpeed100, this->actionSpeed125, this->actionSpeed150,
+        this->actionSpeed175, this->actionSpeed200,
+    };
+    SettingsID speedKeybindSettingsId[] =
+    {
+        SettingsID::KeyBinding_SpeedFactor25, SettingsID::KeyBinding_SpeedFactor50,
+        SettingsID::KeyBinding_SpeedFactor75, SettingsID::KeyBinding_SpeedFactor100,
+        SettingsID::KeyBinding_SpeedFactor125, SettingsID::KeyBinding_SpeedFactor150,
+        SettingsID::KeyBinding_SpeedFactor175, SettingsID::KeyBinding_SpeedFactor200
+    };
+    for (int i = 0; i < 8; i++)
+    {
+        keyBinding = QString::fromStdString(CoreSettingsGetStringValue(speedKeybindSettingsId[i]));
+        speedActions[i]->setShortcut(QKeySequence(keyBinding));
+    }
+
     // configure keybindings for save slots
     QAction* slotActions[] =
     {

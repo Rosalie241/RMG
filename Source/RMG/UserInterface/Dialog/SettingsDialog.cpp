@@ -811,6 +811,18 @@ void SettingsDialog::commonHotkeySettings(SettingsDialogAction action)
         { this->gsButtonKeyButton, SettingsID::KeyBinding_GSButton },
     };
 
+    std::vector<keybinding> keybindings_SpeedFactor =
+    {
+        { this->speedFactor25KeyButton, SettingsID::KeyBinding_SpeedFactor25 },
+        { this->speedFactor50KeyButton, SettingsID::KeyBinding_SpeedFactor50 },
+        { this->speedFactor75KeyButton, SettingsID::KeyBinding_SpeedFactor75 },
+        { this->speedFactor100KeyButton, SettingsID::KeyBinding_SpeedFactor100 },
+        { this->speedFactor125KeyButton, SettingsID::KeyBinding_SpeedFactor125 },
+        { this->speedFactor150KeyButton, SettingsID::KeyBinding_SpeedFactor150 },
+        { this->speedFactor175KeyButton, SettingsID::KeyBinding_SpeedFactor175 },
+        { this->speedFactor200KeyButton, SettingsID::KeyBinding_SpeedFactor200 },
+    };
+
     std::vector<keybinding> keybindings_CurrentSaveState =
     {
         { this->saveState0KeyButton, SettingsID::KeyBinding_SaveStateSlot0 },
@@ -847,12 +859,15 @@ void SettingsDialog::commonHotkeySettings(SettingsDialogAction action)
             keybindings.insert(keybindings.end(), keybindings_System.begin(), keybindings_System.end());
             break;
         case 1:
-            keybindings.insert(keybindings.end(), keybindings_CurrentSaveState.begin(), keybindings_CurrentSaveState.end());
+            keybindings.insert(keybindings.end(), keybindings_SpeedFactor.begin(), keybindings_SpeedFactor.end());
             break;
         case 2:
-            keybindings.insert(keybindings.end(), keybindings_Settings.begin(), keybindings_Settings.end());
+            keybindings.insert(keybindings.end(), keybindings_CurrentSaveState.begin(), keybindings_CurrentSaveState.end());
             break;
         case 3:
+            keybindings.insert(keybindings.end(), keybindings_Settings.begin(), keybindings_Settings.end());
+            break;
+        case 4:
             keybindings.insert(keybindings.end(), keybindings_View.begin(), keybindings_View.end());
             break;
         }
@@ -860,6 +875,7 @@ void SettingsDialog::commonHotkeySettings(SettingsDialogAction action)
     else
     {
         keybindings.insert(keybindings.end(), keybindings_System.begin(), keybindings_System.end());
+        keybindings.insert(keybindings.end(), keybindings_SpeedFactor.begin(), keybindings_SpeedFactor.end());
         keybindings.insert(keybindings.end(), keybindings_CurrentSaveState.begin(), keybindings_CurrentSaveState.end());
         keybindings.insert(keybindings.end(), keybindings_Settings.begin(), keybindings_Settings.end());
         keybindings.insert(keybindings.end(), keybindings_View.begin(), keybindings_View.end());
@@ -1179,6 +1195,14 @@ void SettingsDialog::on_KeybindButton_KeybindingChanged(KeybindButton* button)
         this->pauseKeyButton,
         this->generateBitmapKeyButton,
         this->limitFPSKeyButton,
+        this->speedFactor25KeyButton,
+        this->speedFactor50KeyButton,
+        this->speedFactor75KeyButton,
+        this->speedFactor100KeyButton,
+        this->speedFactor125KeyButton,
+        this->speedFactor150KeyButton,
+        this->speedFactor175KeyButton,
+        this->speedFactor200KeyButton,
         this->saveStateKeyButton,
         this->saveAsKeyButton, 
         this->loadStateKeyButton,
