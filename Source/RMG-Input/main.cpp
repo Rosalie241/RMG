@@ -49,10 +49,11 @@
 
 struct InputMapping
 {
-    std::vector<int> Type;
-    std::vector<int> Data;
-    std::vector<int> ExtraData;
-    int              Count = 0;
+    std::vector<std::string> Name;
+    std::vector<int>         Type;
+    std::vector<int>         Data;
+    std::vector<int>         ExtraData;
+    int                      Count = 0;
 };
 
 struct InputProfile
@@ -121,15 +122,22 @@ static bool l_KeyboardState[SDL_NUM_SCANCODES];
 //
 
 static void load_inputmapping_settings(InputMapping* mapping, std::string section,
-    SettingsID inputTypeSettingsId, SettingsID dataSettingsId, SettingsID extraDataSettingsId)
+    SettingsID inputNameSettingsId, SettingsID inputTypeSettingsId, 
+    SettingsID dataSettingsId, SettingsID extraDataSettingsId)
 {
+    mapping->Name = CoreSettingsGetStringListValue(inputNameSettingsId, section);
     mapping->Type = CoreSettingsGetIntListValue(inputTypeSettingsId, section);
     mapping->Data = CoreSettingsGetIntListValue(dataSettingsId, section);
     mapping->ExtraData = CoreSettingsGetIntListValue(extraDataSettingsId, section);
     mapping->Count = std::min(mapping->Type.size(), std::min(mapping->Data.size(), mapping->ExtraData.size()));
 
-    if (mapping->Count == 0)
-    { // try to load old profile type
+    // check if mapping is old profile type,
+    // it should be true when the minimum of the lengths
+    // of all int lists is 0, and the name isn't empty or whitespace
+    if (mapping->Count == 0 &&
+        !mapping->Name.empty() && !mapping->Name.at(0).empty() &&
+        mapping->Name.at(0).find_first_not_of(' ') != std::string::npos)
+    {
         mapping->Type.push_back(CoreSettingsGetIntValue(inputTypeSettingsId, section));
         mapping->Data.push_back(CoreSettingsGetIntValue(dataSettingsId, section));
         mapping->ExtraData.push_back(CoreSettingsGetIntValue(extraDataSettingsId, section));
@@ -216,24 +224,24 @@ static void load_settings(void)
         profile->GameboySave = CoreSettingsGetStringValue(SettingsID::Input_GameboySave, section);
 
         // load inputmapping settings
-        load_inputmapping_settings(&profile->Button_A, section, SettingsID::Input_A_InputType, SettingsID::Input_A_Data, SettingsID::Input_A_ExtraData);
-        load_inputmapping_settings(&profile->Button_B, section, SettingsID::Input_B_InputType, SettingsID::Input_B_Data, SettingsID::Input_B_ExtraData);
-        load_inputmapping_settings(&profile->Button_Start, section, SettingsID::Input_Start_InputType, SettingsID::Input_Start_Data, SettingsID::Input_Start_ExtraData);
-        load_inputmapping_settings(&profile->Button_DpadUp, section, SettingsID::Input_DpadUp_InputType, SettingsID::Input_DpadUp_Data, SettingsID::Input_DpadUp_ExtraData);
-        load_inputmapping_settings(&profile->Button_DpadDown, section, SettingsID::Input_DpadDown_InputType, SettingsID::Input_DpadDown_Data, SettingsID::Input_DpadDown_ExtraData);
-        load_inputmapping_settings(&profile->Button_DpadLeft, section, SettingsID::Input_DpadLeft_InputType, SettingsID::Input_DpadLeft_Data, SettingsID::Input_DpadLeft_ExtraData);
-        load_inputmapping_settings(&profile->Button_DpadRight, section, SettingsID::Input_DpadRight_InputType, SettingsID::Input_DpadRight_Data, SettingsID::Input_DpadRight_ExtraData);
-        load_inputmapping_settings(&profile->Button_CButtonUp, section, SettingsID::Input_CButtonUp_InputType, SettingsID::Input_CButtonUp_Data, SettingsID::Input_CButtonUp_ExtraData);
-        load_inputmapping_settings(&profile->Button_CButtonDown, section, SettingsID::Input_CButtonDown_InputType, SettingsID::Input_CButtonDown_Data, SettingsID::Input_CButtonDown_ExtraData);
-        load_inputmapping_settings(&profile->Button_CButtonLeft, section, SettingsID::Input_CButtonLeft_InputType, SettingsID::Input_CButtonLeft_Data, SettingsID::Input_CButtonLeft_ExtraData);
-        load_inputmapping_settings(&profile->Button_CButtonRight, section, SettingsID::Input_CButtonRight_InputType, SettingsID::Input_CButtonRight_Data, SettingsID::Input_CButtonRight_ExtraData);
-        load_inputmapping_settings(&profile->Button_LeftTrigger, section, SettingsID::Input_LeftTrigger_InputType, SettingsID::Input_LeftTrigger_Data, SettingsID::Input_LeftTrigger_ExtraData);
-        load_inputmapping_settings(&profile->Button_RightTrigger, section, SettingsID::Input_RightTrigger_InputType, SettingsID::Input_RightTrigger_Data, SettingsID::Input_RightTrigger_ExtraData);
-        load_inputmapping_settings(&profile->Button_ZTrigger, section, SettingsID::Input_ZTrigger_InputType, SettingsID::Input_ZTrigger_Data, SettingsID::Input_ZTrigger_ExtraData);
-        load_inputmapping_settings(&profile->AnalogStick_Up, section, SettingsID::Input_AnalogStickUp_InputType, SettingsID::Input_AnalogStickUp_Data, SettingsID::Input_AnalogStickUp_ExtraData);
-        load_inputmapping_settings(&profile->AnalogStick_Down, section, SettingsID::Input_AnalogStickDown_InputType, SettingsID::Input_AnalogStickDown_Data, SettingsID::Input_AnalogStickDown_ExtraData);
-        load_inputmapping_settings(&profile->AnalogStick_Left, section, SettingsID::Input_AnalogStickLeft_InputType, SettingsID::Input_AnalogStickLeft_Data, SettingsID::Input_AnalogStickLeft_ExtraData);
-        load_inputmapping_settings(&profile->AnalogStick_Right, section, SettingsID::Input_AnalogStickRight_InputType, SettingsID::Input_AnalogStickRight_Data, SettingsID::Input_AnalogStickRight_ExtraData);
+        load_inputmapping_settings(&profile->Button_A, section, SettingsID::Input_A_Name, SettingsID::Input_A_InputType, SettingsID::Input_A_Data, SettingsID::Input_A_ExtraData);
+        load_inputmapping_settings(&profile->Button_B, section, SettingsID::Input_B_Name, SettingsID::Input_B_InputType, SettingsID::Input_B_Data, SettingsID::Input_B_ExtraData);
+        load_inputmapping_settings(&profile->Button_Start, section, SettingsID::Input_Start_Name, SettingsID::Input_Start_InputType, SettingsID::Input_Start_Data, SettingsID::Input_Start_ExtraData);
+        load_inputmapping_settings(&profile->Button_DpadUp, section, SettingsID::Input_DpadUp_Name, SettingsID::Input_DpadUp_InputType, SettingsID::Input_DpadUp_Data, SettingsID::Input_DpadUp_ExtraData);
+        load_inputmapping_settings(&profile->Button_DpadDown, section, SettingsID::Input_DpadDown_Name, SettingsID::Input_DpadDown_InputType, SettingsID::Input_DpadDown_Data, SettingsID::Input_DpadDown_ExtraData);
+        load_inputmapping_settings(&profile->Button_DpadLeft, section, SettingsID::Input_DpadLeft_Name, SettingsID::Input_DpadLeft_InputType, SettingsID::Input_DpadLeft_Data, SettingsID::Input_DpadLeft_ExtraData);
+        load_inputmapping_settings(&profile->Button_DpadRight, section, SettingsID::Input_DpadRight_Name, SettingsID::Input_DpadRight_InputType, SettingsID::Input_DpadRight_Data, SettingsID::Input_DpadRight_ExtraData);
+        load_inputmapping_settings(&profile->Button_CButtonUp, section, SettingsID::Input_CButtonUp_Name, SettingsID::Input_CButtonUp_InputType, SettingsID::Input_CButtonUp_Data, SettingsID::Input_CButtonUp_ExtraData);
+        load_inputmapping_settings(&profile->Button_CButtonDown, section, SettingsID::Input_CButtonDown_Name, SettingsID::Input_CButtonDown_InputType, SettingsID::Input_CButtonDown_Data, SettingsID::Input_CButtonDown_ExtraData);
+        load_inputmapping_settings(&profile->Button_CButtonLeft, section, SettingsID::Input_CButtonLeft_Name, SettingsID::Input_CButtonLeft_InputType, SettingsID::Input_CButtonLeft_Data, SettingsID::Input_CButtonLeft_ExtraData);
+        load_inputmapping_settings(&profile->Button_CButtonRight, section, SettingsID::Input_CButtonRight_Name, SettingsID::Input_CButtonRight_InputType, SettingsID::Input_CButtonRight_Data, SettingsID::Input_CButtonRight_ExtraData);
+        load_inputmapping_settings(&profile->Button_LeftTrigger, section, SettingsID::Input_LeftTrigger_Name, SettingsID::Input_LeftTrigger_InputType, SettingsID::Input_LeftTrigger_Data, SettingsID::Input_LeftTrigger_ExtraData);
+        load_inputmapping_settings(&profile->Button_RightTrigger, section, SettingsID::Input_RightTrigger_Name, SettingsID::Input_RightTrigger_InputType, SettingsID::Input_RightTrigger_Data, SettingsID::Input_RightTrigger_ExtraData);
+        load_inputmapping_settings(&profile->Button_ZTrigger, section, SettingsID::Input_ZTrigger_Name, SettingsID::Input_ZTrigger_InputType, SettingsID::Input_ZTrigger_Data, SettingsID::Input_ZTrigger_ExtraData);
+        load_inputmapping_settings(&profile->AnalogStick_Up, section, SettingsID::Input_AnalogStickUp_Name, SettingsID::Input_AnalogStickUp_InputType, SettingsID::Input_AnalogStickUp_Data, SettingsID::Input_AnalogStickUp_ExtraData);
+        load_inputmapping_settings(&profile->AnalogStick_Down, section, SettingsID::Input_AnalogStickDown_Name, SettingsID::Input_AnalogStickDown_InputType, SettingsID::Input_AnalogStickDown_Data, SettingsID::Input_AnalogStickDown_ExtraData);
+        load_inputmapping_settings(&profile->AnalogStick_Left, section, SettingsID::Input_AnalogStickLeft_Name, SettingsID::Input_AnalogStickLeft_InputType, SettingsID::Input_AnalogStickLeft_Data, SettingsID::Input_AnalogStickLeft_ExtraData);
+        load_inputmapping_settings(&profile->AnalogStick_Right, section, SettingsID::Input_AnalogStickRight_Name, SettingsID::Input_AnalogStickRight_InputType, SettingsID::Input_AnalogStickRight_Data, SettingsID::Input_AnalogStickRight_ExtraData);
     }
 }
 
