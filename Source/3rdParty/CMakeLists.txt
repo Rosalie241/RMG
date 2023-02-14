@@ -61,7 +61,7 @@ if(NOT NO_GIT_CLONE)
     set(MUPEN64PLUS_GFX_GLIDEN64_TAG  "71dcb55a398a5c4d2bdbfa9fc15b90f301f77a6b")
 
     set(MUPEN64PLUS_GFX_PARALLEL_URL  "https://github.com/Rosalie241/parallel-rdp-standalone")
-    set(MUPEN64PLUS_GFX_PARALLEL_TAG  "5d334c1f1e8b0cbb36af030cef3752e34b5b5861")
+    set(MUPEN64PLUS_GFX_PARALLEL_TAG  "2c2226517c4c8929e08ec944654867e26efe0cf5")
 
     set(DISCORD_RPC_URL               "https://github.com/discord/discord-rpc")
     set(DISCORD_RPC_TAG               "963aa9f3e5ce81a4682c6ca3d136cddda614db33")
