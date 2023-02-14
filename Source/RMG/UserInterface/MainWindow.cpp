@@ -707,11 +707,7 @@ void MainWindow::configureActions(void)
             if (checked)
             {
                 int factor = speedAction->text().split("%").first().toInt();
-
-                if (!CoreSetSpeedFactor(factor))
-                {
-                    this->showErrorMessage("CoreSetSpeedFactor() Failed!", QString::fromStdString(CoreGetError()));
-                }
+                this->on_Action_System_SpeedFactor(factor);
             }
         });
     }
@@ -1152,6 +1148,18 @@ void MainWindow::on_Action_System_LimitFPS(void)
     if (!ret)
     {
         this->showErrorMessage("CoreSetSpeedLimiterState() Failed!", QString::fromStdString(CoreGetError()));
+    }
+}
+
+void MainWindow::on_Action_System_SpeedFactor(int factor)
+{
+    if (!CoreSetSpeedFactor(factor))
+    {
+        this->showErrorMessage("CoreSetSpeedFactor() Failed!", QString::fromStdString(CoreGetError()));
+    }
+    else
+    {
+        OnScreenDisplaySetMessage("Playback speed: " + std::to_string(CoreGetSpeedFactor()) + "%");
     }
 }
 
