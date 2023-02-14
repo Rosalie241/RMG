@@ -406,7 +406,24 @@ void SettingsDialog::loadInterfaceOSDSettings(void)
 
 void SettingsDialog::loadInterfaceMiscSettings(void)
 {
+    // find stylesheets and add them to the UI
+    QString directory;
+    directory = QString::fromStdString(CoreGetSharedDataDirectory().string());
+    directory += "/Styles/";
+
+    QStringList filter;
+    filter << "*.qss";
+
+    QDirIterator stylesDirectoryIter(directory, filter, QDir::Files, QDirIterator::NoIteratorFlags);
+    while (stylesDirectoryIter.hasNext())
+    {
+        QFileInfo fileInfo(stylesDirectoryIter.next());
+        this->themeComboBox->addItem(fileInfo.fileName());
+    }
+
+    // select currently chosen theme in UI
     this->themeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_Theme)));
+    this->iconThemeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_IconTheme)));
 #ifdef UPDATER
     this->checkForUpdatesCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_CheckForUpdates));
 #endif // UPDATER
@@ -550,6 +567,7 @@ void SettingsDialog::loadDefaultInterfaceOSDSettings(void)
 void SettingsDialog::loadDefaultInterfaceMiscSettings(void)
 {
     this->themeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::GUI_Theme)));
+    this->iconThemeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::GUI_IconTheme)));
 #ifdef UPDATER
     this->checkForUpdatesCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_CheckForUpdates));
 #endif // UPDATER
@@ -754,6 +772,7 @@ void SettingsDialog::saveInterfaceOSDSettings(void)
 void SettingsDialog::saveInterfaceMiscSettings(void)
 {
     CoreSettingsSetValue(SettingsID::GUI_Theme, this->themeComboBox->currentText().toStdString());
+    CoreSettingsSetValue(SettingsID::GUI_IconTheme, this->iconThemeComboBox->currentText().toStdString());
 #ifdef UPDATER
     CoreSettingsSetValue(SettingsID::GUI_CheckForUpdates, this->checkForUpdatesCheckBox->isChecked());
 #endif // UPDATER

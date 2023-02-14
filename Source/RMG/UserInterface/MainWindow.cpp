@@ -228,7 +228,11 @@ void MainWindow::configureTheme(QApplication* app)
 
     // set application theme
     QString theme = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_Theme));
-    if (theme == "Fusion")
+    if (theme == "Native")
+    {
+        // do nothing
+    }
+    else if (theme == "Fusion")
     {
         app->setPalette(QApplication::style()->standardPalette());
         app->setStyleSheet(QString());
@@ -270,15 +274,40 @@ void MainWindow::configureTheme(QApplication* app)
 
         app->setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
     }
-    else if (theme == "Native")
+    else if (theme.endsWith(".qss"))
     {
-        // do nothing
+        QString themePath;
+        themePath = QString::fromStdString(CoreGetSharedDataDirectory().string());
+        themePath += "/Styles/";
+        themePath += theme;
+
+        // use Fusion as a base for the stylesheet
+        app->setPalette(QApplication::style()->standardPalette());
+        app->setStyleSheet(QString());
+        app->setStyle(QStyleFactory::create("Fusion"));
+
+        // set the stylesheet theme,
+        // if the file exists and can be opened
+        QFile themeFile(themePath);
+        if (themeFile.exists() && 
+            themeFile.open(QIODevice::ReadOnly))
+        {
+            app->setStyleSheet(themeFile.readAll());
+        }
     }
 
-    // set icon theme
-    QPalette palette = app->palette();
-    bool dark = palette.windowText().color().value() > palette.window().color().value();
-    QIcon::setThemeName(dark ? "white" : "black");
+    // set application icon theme
+    QString iconTheme = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_IconTheme));
+    if (iconTheme == "Automatic")
+    {
+        QPalette palette = app->palette();
+        bool dark = palette.windowText().color().value() > palette.window().color().value();
+        QIcon::setThemeName(dark ? "white" : "black");
+    }
+    else if (iconTheme == "White" || iconTheme == "Black")
+    {
+        QIcon::setThemeName(iconTheme.toLower());
+    }
 
     // fallback for icons we don't provide (i.e standard system icons)
     QIcon::setFallbackThemeName(fallbackThemeName);
