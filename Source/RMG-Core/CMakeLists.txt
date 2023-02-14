@@ -24,6 +24,7 @@ set(RMG_CORE_SOURCES
     ConvertStringEncoding.cpp
     Settings/Settings.cpp
     SpeedLimiter.cpp
+    SpeedFactor.cpp
     RomSettings.cpp
     Directories.cpp
     MediaLoader.cpp

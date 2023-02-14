@@ -13,6 +13,7 @@
 #include "CachedRomHeaderAndSettings.hpp"
 #include "Settings/Settings.hpp"
 #include "SpeedLimiter.hpp"
+#include "SpeedFactor.hpp"
 #include "RomSettings.hpp"
 #include "Directories.hpp"
 #include "MediaLoader.hpp"
