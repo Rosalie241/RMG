@@ -33,6 +33,20 @@
   </screenshots>
   <description/>
   <releases>
+    <release version="v0.3.5" date="2023-02-14" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix reset button not working properly in RMG-Input</li>
+          <li>Fix profiles not being deleted properly when clicking on cancel/close in some cases in RMG-Input</li>
+          <li>Fix paraLLEl not logging to the log window</li>
+          <li>Fix paraLLEl's odd window behavior by not saving the window size when emulation ends</li>
+          <li>Fix GLideN64 initializing a noise texture being slow</li>
+          <li>Fix issue where an unbound mapping in RMG-Input would respond to an A controller button press in-game</li>
+          <li>Fix issue where RMG-Input wouldn't save anything but the currently opened profile</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.3.4" date="2023-02-11" type="stable">
       <description>
         <p>Changes:</p>
