@@ -22,6 +22,7 @@ enum class SettingsID
     GUI_Toolbar,
     GUI_StatusBar,
     GUI_Theme,
+    GUI_IconTheme,
     GUI_CheckForUpdates,
     GUI_DiscordRpc,
     GUI_Version,
