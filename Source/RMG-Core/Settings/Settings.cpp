@@ -420,6 +420,30 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::KeyBinding_LimitFPS:
         setting = {SETTING_SECTION_KEYBIND, "LimitFPS", "F4"};
         break;
+    case SettingsID::KeyBinding_SpeedFactor25:
+        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor25", "Alt+0"};
+        break;
+    case SettingsID::KeyBinding_SpeedFactor50:
+        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor50", "Alt+1"};
+        break;
+    case SettingsID::KeyBinding_SpeedFactor75:
+        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor75", "Alt+2"};
+        break;
+    case SettingsID::KeyBinding_SpeedFactor100:
+        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor100", "Alt+3"};
+        break;
+    case SettingsID::KeyBinding_SpeedFactor125:
+        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor125", "Alt+4"};
+        break;
+    case SettingsID::KeyBinding_SpeedFactor150:
+        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor150", "Alt+5"};
+        break;
+    case SettingsID::KeyBinding_SpeedFactor175:
+        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor175", "Alt+6"};
+        break;
+    case SettingsID::KeyBinding_SpeedFactor200:
+        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor200", "Alt+7"};
+        break;
     case SettingsID::KeyBinding_SaveState:
         setting = {SETTING_SECTION_KEYBIND, "SaveState", "F5"};
         break;
