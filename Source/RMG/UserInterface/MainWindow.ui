@@ -63,6 +63,26 @@
      <addaction name="actionSlot_8"/>
      <addaction name="actionSlot_9"/>
     </widget>
+    <widget class="QMenu" name="menuSpeedFactor">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="title">
+      <string>Speed Factor</string>
+     </property>
+     <property name="icon">
+      <iconset theme="speed-line">
+       <normaloff>.</normaloff>.</iconset>
+     </property>
+     <addaction name="actionSpeed25"/>
+     <addaction name="actionSpeed50"/>
+     <addaction name="actionSpeed75"/>
+     <addaction name="actionSpeed100"/>
+     <addaction name="actionSpeed125"/>
+     <addaction name="actionSpeed150"/>
+     <addaction name="actionSpeed175"/>
+     <addaction name="actionSpeed200"/>
+    </widget>
     <addaction name="action_System_StartRom"/>
     <addaction name="action_System_OpenCombo"/>
     <addaction name="separator"/>
@@ -73,6 +93,7 @@
     <addaction name="action_System_Screenshot"/>
     <addaction name="separator"/>
     <addaction name="action_System_LimitFPS"/>
+    <addaction name="menuSpeedFactor"/>
     <addaction name="separator"/>
     <addaction name="action_System_SaveState"/>
     <addaction name="action_System_SaveAs"/>
@@ -530,6 +551,49 @@
    </property>
    <property name="text">
     <string>Uniform Size (Grid View)</string>
+   </property>
+  </action>
+  <action name="actionSpeed25">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>25%</string>
+   </property>
+  </action>
+  <action name="actionSpeed50">
+   <property name="text">
+    <string>50%</string>
+   </property>
+  </action>
+  <action name="actionSpeed100">
+   <property name="text">
+    <string>100%</string>
+   </property>
+  </action>
+  <action name="actionSpeed125">
+   <property name="text">
+    <string>125%</string>
+   </property>
+  </action>
+  <action name="actionSpeed150">
+   <property name="text">
+    <string>150%</string>
+   </property>
+  </action>
+  <action name="actionSpeed200">
+   <property name="text">
+    <string>200%</string>
+   </property>
+  </action>
+  <action name="actionSpeed75">
+   <property name="text">
+    <string>75%</string>
+   </property>
+  </action>
+  <action name="actionSpeed175">
+   <property name="text">
+    <string>175%</string>
    </property>
   </action>
  </widget>

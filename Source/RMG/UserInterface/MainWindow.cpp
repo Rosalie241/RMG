@@ -520,6 +520,7 @@ void MainWindow::updateActions(bool inEmulation, bool isPaused)
     this->action_System_LimitFPS->setEnabled(inEmulation);
     this->action_System_LimitFPS->setShortcut(QKeySequence(keyBinding));
     this->action_System_LimitFPS->setChecked(CoreIsSpeedLimiterEnabled());
+    this->menuSpeedFactor->setEnabled(inEmulation);
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_SaveState));
     this->action_System_SaveState->setEnabled(inEmulation);
     this->action_System_SaveState->setShortcut(QKeySequence(keyBinding));
@@ -657,6 +658,44 @@ void MainWindow::removeFullscreenActions(void)
 
 void MainWindow::configureActions(void)
 {
+    // configure emulation speed actions
+    QActionGroup* speedActionGroup = new QActionGroup(this);
+    QAction* speedActions[] =
+    {
+        this->actionSpeed25, this->actionSpeed50, this->actionSpeed75,
+        this->actionSpeed100, this->actionSpeed125, this->actionSpeed150,
+        this->actionSpeed175, this->actionSpeed200,
+    };
+    int speedActionNumbers[] =
+    {
+        25, 50, 75, 100, 
+        125, 150, 175, 200
+    };
+    int currentSpeedFactor = CoreGetSpeedFactor();
+    for (int i = 0; i < 8; i++)
+    {
+        QAction* speedAction = speedActions[i];
+
+        speedAction->setCheckable(true);
+        speedAction->setChecked(currentSpeedFactor == speedActionNumbers[i]);
+        speedAction->setActionGroup(speedActionGroup);
+
+        // connect emulation speed action here because we need to do
+        // something special for them
+        connect(speedAction, &QAction::triggered, [=](bool checked)
+        {
+            if (checked)
+            {
+                int factor = speedAction->text().split("%").first().toInt();
+
+                if (!CoreSetSpeedFactor(factor))
+                {
+                    this->showErrorMessage("CoreSetSpeedFactor() Failed!", QString::fromStdString(CoreGetError()));
+                }
+            }
+        });
+    }
+
     // configure save slot actions
     QActionGroup* slotActionGroup = new QActionGroup(this);
     QAction* slotActions[] =
