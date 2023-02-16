@@ -89,9 +89,10 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->listViewWidget->setVerticalScrollMode(QAbstractItemView::ScrollMode::ScrollPerPixel);
     this->listViewWidget->verticalHeader()->hide();
     this->listViewWidget->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    this->listViewWidget->horizontalHeader()->setSectionsMovable(true);
+    this->listViewWidget->horizontalHeader()->setFirstSectionMovable(true);
     this->listViewWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
     this->listViewWidget->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
-    this->listViewWidget->horizontalHeader()->setStretchLastSection(true);
     this->listViewWidget->horizontalHeader()->setSortIndicatorShown(false);
     this->listViewWidget->horizontalHeader()->setHighlightSections(false);
     this->listViewWidget->horizontalHeader()->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);
@@ -100,6 +101,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     connect(this->listViewWidget, &QTableView::customContextMenuRequested, this, &RomBrowserListViewWidget::customContextMenuRequested);
     connect(this->listViewWidget->horizontalHeader(), &QHeaderView::sortIndicatorChanged, this, &RomBrowserWidget::on_listViewWidget_sortIndicatorChanged);
     connect(this->listViewWidget->horizontalHeader(), &QHeaderView::sectionResized, this, &RomBrowserWidget::on_listViewWidget_sectionResized);
+    connect(this->listViewWidget->horizontalHeader(), &QHeaderView::sectionMoved, this, &RomBrowserWidget::on_listViewWidget_sectionMoved);
     connect(this->listViewWidget, &Widget::RomBrowserListViewWidget::ZoomIn, this, &RomBrowserWidget::on_ZoomIn);
     connect(this->listViewWidget, &Widget::RomBrowserListViewWidget::ZoomOut, this, &RomBrowserWidget::on_ZoomOut);
 
@@ -514,6 +516,18 @@ void RomBrowserWidget::on_listViewWidget_sectionResized(int logicalIndex, int ol
     CoreSettingsSetValue(SettingsID::RomBrowser_ColumnSizes, columnSizes);
 }
 
+void RomBrowserWidget::on_listViewWidget_sectionMoved(int logicalIndex, int oldVisualIndex, int newVisualIndex)
+{
+    std::vector<int> columnOrder = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnOrder);
+
+    for (int i = 0; i < columnOrder.size(); i++)
+    {
+        columnOrder.at(i) = this->listViewWidget->horizontalHeader()->visualIndex(i);
+    }
+
+    CoreSettingsSetValue(SettingsID::RomBrowser_ColumnOrder, columnOrder);
+}
+
 void RomBrowserWidget::on_gridViewWidget_iconSizeChanged(const QSize& size)
 {
     CoreSettingsSetValue(SettingsID::RomBrowser_GridViewIconWidth, size.width());
@@ -616,10 +630,17 @@ void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
     else
     {
         // use settings' width
-        for (int i = 0; i < (columnSizes.size() - 1); i++)
+        for (int i = 0; i < columnSizes.size(); i++)
         {
             this->listViewWidget->setColumnWidth(i, columnSizes.at(i));
         }
+    }
+
+    // update column order
+    std::vector<int> columnOrder = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnOrder);
+    for (int i = 0; i < columnOrder.size(); i++)
+    {
+        this->listViewWidget->horizontalHeader()->moveSection(this->listViewWidget->horizontalHeader()->visualIndex(i), columnOrder.at(i));
     }
 
     if (!canceled)
