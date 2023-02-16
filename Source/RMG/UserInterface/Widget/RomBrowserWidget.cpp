@@ -504,13 +504,29 @@ void RomBrowserWidget::on_listViewWidget_sectionResized(int logicalIndex, int ol
 {
     std::vector<int> columnSizes = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnSizes);
 
+    for (int i = 0; i < columnSizes.size(); i++)
+    {
+        if (columnSizes.at(i) == -1)
+        {
+            this->listViewWidget->resizeColumnToContents(i);
+            columnSizes.at(i) = this->listViewWidget->columnWidth(i);
+        }
+    }
+
     if (columnSizes.size() <= logicalIndex)
     {
         columnSizes.push_back(newWidth);
     }
     else
     {
-        columnSizes.at(logicalIndex) = newWidth;
+        if (this->listViewWidget->horizontalHeader()->visualIndex(logicalIndex) == (columnSizes.size() - 1))
+        {
+            this->listViewWidget->horizontalHeader()->resizeSection(logicalIndex, columnSizes.at(logicalIndex));
+        }
+        else
+        {
+            columnSizes.at(logicalIndex) = newWidth;
+        }
     }
 
     CoreSettingsSetValue(SettingsID::RomBrowser_ColumnSizes, columnSizes);
@@ -618,8 +634,7 @@ void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
 
     // resize list view's columns
     std::vector<int> columnSizes = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnSizes);
-    if (columnSizes.size() != this->listViewModel->columnCount() ||
-        columnSizes.at(0) == -1)
+    if (columnSizes.size() != this->listViewModel->columnCount())
     {
         // reset column sizes setting
         columnSizes.clear();
@@ -635,6 +650,9 @@ void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
             this->listViewWidget->setColumnWidth(i, columnSizes.at(i));
         }
     }
+
+    // stretch last column in list view
+    this->listViewWidget->horizontalHeader()->setStretchLastSection(true);
 
     // update column order
     std::vector<int> columnOrder = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnOrder);
