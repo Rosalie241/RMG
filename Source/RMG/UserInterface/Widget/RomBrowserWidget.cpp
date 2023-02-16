@@ -504,15 +504,6 @@ void RomBrowserWidget::on_listViewWidget_sectionResized(int logicalIndex, int ol
 {
     std::vector<int> columnSizes = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnSizes);
 
-    for (int i = 0; i < columnSizes.size(); i++)
-    {
-        if (columnSizes.at(i) == -1)
-        {
-            this->listViewWidget->resizeColumnToContents(i);
-            columnSizes.at(i) = this->listViewWidget->columnWidth(i);
-        }
-    }
-
     if (columnSizes.size() <= logicalIndex)
     {
         columnSizes.push_back(newWidth);
@@ -632,6 +623,9 @@ void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
         this->gridViewModel->sort(0, Qt::SortOrder::AscendingOrder);
     }
 
+    // temporarily disable stretching last column in list view
+    this->listViewWidget->horizontalHeader()->setStretchLastSection(false);
+
     // resize list view's columns
     std::vector<int> columnSizes = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnSizes);
     if (columnSizes.size() != this->listViewModel->columnCount())
@@ -644,14 +638,22 @@ void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
     }
     else
     {
-        // use settings' width
+        // use settings' width (or resize to content if not already set)
         for (int i = 0; i < columnSizes.size(); i++)
         {
-            this->listViewWidget->setColumnWidth(i, columnSizes.at(i));
+            if (columnSizes.at(i) == -1)
+            {
+                this->listViewWidget->resizeColumnToContents(i);
+                columnSizes.at(i) = this->listViewWidget->columnWidth(i);
+            }
+            else
+            {
+                this->listViewWidget->setColumnWidth(i, columnSizes.at(i));
+            }
         }
     }
 
-    // stretch last column in list view
+    // enable stretching last column in list view
     this->listViewWidget->horizontalHeader()->setStretchLastSection(true);
 
     // update column order
