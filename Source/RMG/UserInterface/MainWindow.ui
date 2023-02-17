@@ -82,6 +82,10 @@
      <addaction name="actionSpeed150"/>
      <addaction name="actionSpeed175"/>
      <addaction name="actionSpeed200"/>
+     <addaction name="actionSpeed225"/>
+     <addaction name="actionSpeed250"/>
+     <addaction name="actionSpeed275"/>
+     <addaction name="actionSpeed300"/>
     </widget>
     <addaction name="action_System_StartRom"/>
     <addaction name="action_System_OpenCombo"/>
@@ -594,6 +598,26 @@
   <action name="actionSpeed175">
    <property name="text">
     <string>175%</string>
+   </property>
+  </action>
+  <action name="actionSpeed225">
+   <property name="text">
+    <string>225%</string>
+   </property>
+  </action>
+  <action name="actionSpeed250">
+   <property name="text">
+    <string>250%</string>
+   </property>
+  </action>
+  <action name="actionSpeed275">
+   <property name="text">
+    <string>275%</string>
+   </property>
+  </action>
+  <action name="actionSpeed300">
+   <property name="text">
+    <string>300%</string>
    </property>
   </action>
  </widget>

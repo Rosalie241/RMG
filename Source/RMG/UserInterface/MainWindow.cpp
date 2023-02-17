@@ -548,16 +548,19 @@ void MainWindow::updateActions(bool inEmulation, bool isPaused)
     {
         this->actionSpeed25, this->actionSpeed50, this->actionSpeed75,
         this->actionSpeed100, this->actionSpeed125, this->actionSpeed150,
-        this->actionSpeed175, this->actionSpeed200,
+        this->actionSpeed175, this->actionSpeed200, this->actionSpeed225,
+        this->actionSpeed250, this->actionSpeed275, this->actionSpeed300
     };
     SettingsID speedKeybindSettingsId[] =
     {
         SettingsID::KeyBinding_SpeedFactor25, SettingsID::KeyBinding_SpeedFactor50,
         SettingsID::KeyBinding_SpeedFactor75, SettingsID::KeyBinding_SpeedFactor100,
         SettingsID::KeyBinding_SpeedFactor125, SettingsID::KeyBinding_SpeedFactor150,
-        SettingsID::KeyBinding_SpeedFactor175, SettingsID::KeyBinding_SpeedFactor200
+        SettingsID::KeyBinding_SpeedFactor175, SettingsID::KeyBinding_SpeedFactor200,
+        SettingsID::KeyBinding_SpeedFactor225, SettingsID::KeyBinding_SpeedFactor250,
+        SettingsID::KeyBinding_SpeedFactor275, SettingsID::KeyBinding_SpeedFactor300
     };
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < 12; i++)
     {
         keyBinding = QString::fromStdString(CoreSettingsGetStringValue(speedKeybindSettingsId[i]));
         speedActions[i]->setShortcut(QKeySequence(keyBinding));
@@ -620,6 +623,10 @@ void MainWindow::addFullscreenActions(void)
     this->addAction(this->actionSpeed150);
     this->addAction(this->actionSpeed175);
     this->addAction(this->actionSpeed200);
+    this->addAction(this->actionSpeed225);
+    this->addAction(this->actionSpeed250);
+    this->addAction(this->actionSpeed275);
+    this->addAction(this->actionSpeed300);
     this->addAction(this->action_System_SaveState);
     this->addAction(this->action_System_SaveAs);
     this->addAction(this->action_System_LoadState);
@@ -665,6 +672,10 @@ void MainWindow::removeFullscreenActions(void)
     this->removeAction(this->actionSpeed150);
     this->removeAction(this->actionSpeed175);
     this->removeAction(this->actionSpeed200);
+    this->removeAction(this->actionSpeed225);
+    this->removeAction(this->actionSpeed250);
+    this->removeAction(this->actionSpeed275);
+    this->removeAction(this->actionSpeed300);
     this->removeAction(this->action_System_SaveState);
     this->removeAction(this->action_System_SaveAs);
     this->removeAction(this->action_System_LoadState);
@@ -700,15 +711,17 @@ void MainWindow::configureActions(void)
     {
         this->actionSpeed25, this->actionSpeed50, this->actionSpeed75,
         this->actionSpeed100, this->actionSpeed125, this->actionSpeed150,
-        this->actionSpeed175, this->actionSpeed200,
+        this->actionSpeed175, this->actionSpeed200, this->actionSpeed225,
+        this->actionSpeed250, this->actionSpeed275, this->actionSpeed300
     };
     int speedActionNumbers[] =
     {
         25, 50, 75, 100, 
-        125, 150, 175, 200
+        125, 150, 175, 200,
+        225, 250, 275, 300
     };
     int currentSpeedFactor = CoreGetSpeedFactor();
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < 12; i++)
     {
         QAction* speedAction = speedActions[i];
 
