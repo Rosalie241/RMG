@@ -66,5 +66,15 @@ void CoreCallbacks::coreDebugCallback(CoreDebugMessageType type, std::string con
         return;
     }
 
+    // skip non-fatal interpreter errors
+    if (type == CoreDebugMessageType::Error)
+    {
+        if (message == "DIV_S by 0" ||
+            message == "DIV_D by 0")
+        {
+            return;
+        }
+    }
+
     emit l_CoreCallbacks->OnCoreDebugCallback(type, QString::fromStdString(context), QString::fromStdString(message));
 }
