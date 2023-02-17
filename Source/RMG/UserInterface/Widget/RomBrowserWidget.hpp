@@ -103,6 +103,7 @@ class RomBrowserWidget : public QStackedWidget
 
     void on_listViewWidget_sortIndicatorChanged(int logicalIndex, Qt::SortOrder sortOrder);
     void on_listViewWidget_sectionResized(int logicalIndex, int oldWidth, int newWidth);
+    void on_listViewWidget_sectionMoved(int logicalIndex, int oldVisualIndex, int newVisualIndex);
     
     void on_gridViewWidget_iconSizeChanged(const QSize& size);
 
