@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -e
+
+cur_dir="$(readlink -f "$(dirname "$0")")"
+
+exec "$cur_dir/usr/bin/RMG" \
+            --core-path="$cur_dir/usr/lib/RMG/Core" \
+            --plugin-path="$cur_dir/usr/lib/RMG/Plugin" \
+            --shared-data-path="$cur_dir/usr/share/RMG" \
+            "$@"
