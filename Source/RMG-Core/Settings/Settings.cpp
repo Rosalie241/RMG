@@ -444,6 +444,18 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::KeyBinding_SpeedFactor200:
         setting = {SETTING_SECTION_KEYBIND, "SpeedFactor200", "Alt+7"};
         break;
+    case SettingsID::KeyBinding_SpeedFactor225:
+        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor225", "Alt+8"};
+        break;
+    case SettingsID::KeyBinding_SpeedFactor250:
+        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor250", "Alt+9"};
+        break;
+    case SettingsID::KeyBinding_SpeedFactor275:
+        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor275", "Alt+["};
+        break;
+    case SettingsID::KeyBinding_SpeedFactor300:
+        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor300", "Alt+]"};
+        break;
     case SettingsID::KeyBinding_SaveState:
         setting = {SETTING_SECTION_KEYBIND, "SaveState", "F5"};
         break;
