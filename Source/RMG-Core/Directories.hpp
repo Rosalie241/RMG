@@ -73,4 +73,13 @@ std::filesystem::path CoreGetSaveStateDirectory(void);
 // screenshots should be located
 std::filesystem::path CoreGetScreenshotDirectory(void);
 
+// changes the core path to the given path
+void CoreSetCorePathOverride(std::filesystem::path path);
+
+// changes the plugin path to the given path
+void CoreSetPluginPathOverride(std::filesystem::path path);
+
+// changes the shared data path to the given path
+void CoreSetSharedDataPathOverride(std::filesystem::path path);
+
 #endif // DIRECTORIES_HPP

@@ -19,6 +19,14 @@
 #include <filesystem>
 
 //
+// Local Variables
+//
+
+static std::filesystem::path l_CorePathOverride;
+static std::filesystem::path l_PluginPathOverride;
+static std::filesystem::path l_SharedDataPathOverride;
+
+//
 // Local Functions
 //
 
@@ -123,8 +131,15 @@ std::filesystem::path CoreGetCoreDirectory(void)
 #ifdef PORTABLE_INSTALL
     directory = "Core";
 #else // Not Portable
-    directory = CORE_INSTALL_PREFIX;
-    directory += "/lib/RMG/Core";
+    if (!l_CorePathOverride.empty())
+    {
+        directory = l_CorePathOverride;
+    }
+    else
+    {
+        directory = CORE_INSTALL_PREFIX;
+        directory += "/lib/RMG/Core";
+    }
 #endif // PORTABLE_INSTALL
     return directory;
 }
@@ -135,8 +150,15 @@ std::filesystem::path CoreGetPluginDirectory(void)
 #ifdef PORTABLE_INSTALL
     directory = "Plugin";
 #else // Not Portable
-    directory = CORE_INSTALL_PREFIX;
-    directory += "/lib/RMG/Plugin";
+    if (!l_PluginPathOverride.empty())
+    {
+        directory = l_PluginPathOverride;
+    }
+    else
+    {
+        directory = CORE_INSTALL_PREFIX;
+        directory += "/lib/RMG/Plugin";
+    }
 #endif // PORTABLE_INSTALL
     return directory;
 }
@@ -233,8 +255,15 @@ std::filesystem::path CoreGetSharedDataDirectory(void)
 #ifdef PORTABLE_INSTALL
     directory = "Data";
 #else // Not Portable
-    directory = CORE_INSTALL_PREFIX;
-    directory += "/share/RMG";
+    if (!l_SharedDataPathOverride.empty())
+    {
+        directory = l_SharedDataPathOverride;
+    }
+    else
+    {
+        directory = CORE_INSTALL_PREFIX;
+        directory += "/share/RMG";
+    }
 #endif // PORTABLE_INSTALL
     return directory;
 }
@@ -253,3 +282,20 @@ std::filesystem::path CoreGetScreenshotDirectory(void)
 {
     return CoreSettingsGetStringValue(SettingsID::Core_ScreenshotPath);
 }
+
+#ifndef PORTABLE_INSTALL
+void CoreSetCorePathOverride(std::filesystem::path path)
+{
+    l_CorePathOverride = path;
+}
+
+void CoreSetPluginPathOverride(std::filesystem::path path)
+{
+    l_PluginPathOverride = path;
+}
+
+void CoreSetSharedDataPathOverride(std::filesystem::path path)
+{
+    l_SharedDataPathOverride = path;
+}
+#endif // PORTABLE_INSTALL
