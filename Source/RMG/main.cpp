@@ -16,6 +16,7 @@
 
 #include <RMG-Core/Core.hpp>
 #include <iostream>
+#include <cstdlib>
 
 //
 // Local Functions
@@ -73,6 +74,10 @@ int main(int argc, char **argv)
 {
     // install message handler
     qInstallMessageHandler(message_handler);
+
+#ifdef FORCE_XCB
+    setenv("QT_QPA_PLATFORM", "xcb", 1);
+#endif // FORCE_XCB
 
     QApplication app(argc, argv);
 
