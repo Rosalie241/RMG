@@ -8,7 +8,7 @@ option(NO_GIT_CLONE     "Disables git clone usage for 3rdParty dependencies" OFF
 option(UPDATER          "Enables updater" ${PORTABLE_INSTALL})
 option(DISCORD_RPC      "Enables Discord Rich Presence" ON)
 option(USE_CCACHE       "Enables usage of ccache when ccache has been found" ON)
-option(FORCE_XCB        "Forces Qt to use the xcb platform on linux" LINUX)
+option(FORCE_XCB        "Forces Qt to use the xcb platform on linux" ${LINUX})
 
 project(RMG)
 
