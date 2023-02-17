@@ -20,14 +20,23 @@ jobs:
       - name: Prepare Environment
         run: |
           echo "GIT_REVISION=$(git describe --tags --always)" >> $GITHUB_ENV
-      - name: Build RMG (Portable)
-        run: ./Source/Script/Build.sh Release
+      - name: Build RMG (AppImage)
+        run: |
+          mkdir Build Build/AppImage Bin/ -p
+          export src_dir="$(pwd)"
+          export build_dir="$(pwd)/build"
+          export bin_dir="$(pwd)/Bin/AppImage"
+          cmake -S "$src_dir" -B "$build_dir" -DCMAKE_BUILD_TYPE="Release" -DPORTABLE_INSTALL="OFF" -DCMAKE_INSTALL_PREFIX="/usr" -G "Ninja"
+          cmake --build "$build_dir"
+          cmake --install "$build_dir" --prefix="$bin_dir/usr"
+          pushd "$bin_dir/../"
+          "$src_dir"/Package/AppImage/Create.sh
         shell: bash
       - name: Upload RMG (Portable)
         uses: actions/upload-artifact@v3
         with:
           name: RMG-Portable-Linux64-${{ env.GIT_REVISION }}
-          path: Bin/Release/*
+          path: Bin/*.AppImage
 
   Windows:
     runs-on: windows-2019
