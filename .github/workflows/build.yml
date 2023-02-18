@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   Linux:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
         with:
@@ -14,6 +14,8 @@ jobs:
           key: Linux
       - name: Install Packages
         run: |
+          sudo apt-get purge grub\* --yes --allow-remove-essential
+          sudo add-apt-repository ppa:okirby/qt6-backports --yes
           sudo apt-get -qq update
           sudo apt-get upgrade
           sudo apt-get -y install cmake ninja-build libhidapi-dev libsamplerate0-dev libspeex-dev libminizip-dev libsdl2-dev libfreetype6-dev libgl1-mesa-dev libglu1-mesa-dev pkg-config zlib1g-dev binutils-dev libspeexdsp-dev qt6-base-dev libqt6svg6-dev build-essential nasm git zip
@@ -29,10 +31,12 @@ jobs:
           cmake -S "$src_dir" -B "$build_dir" -DCMAKE_BUILD_TYPE="Release" -DPORTABLE_INSTALL="OFF" -DCMAKE_INSTALL_PREFIX="/usr" -G "Ninja"
           cmake --build "$build_dir"
           cmake --install "$build_dir" --prefix="$bin_dir/usr"
-          pushd "$bin_dir/../"
-          "$src_dir"/Package/AppImage/Create.sh
         shell: bash
-      - name: Upload RMG (Portable)
+      - name: Create AppImage
+        run: |
+          ./Package/AppImage/Create.sh
+        shell: bash
+      - name: Upload RMG (AppImage)
         uses: actions/upload-artifact@v3
         with:
           name: RMG-Portable-Linux64-${{ env.GIT_REVISION }}
