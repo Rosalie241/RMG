@@ -4,6 +4,17 @@ Rosalie's Mupen GUI is a free and open-source mupen64plus GUI written in C++.
 
 It offers a simple-to-use user interface.
 
+## Download
+
+#### Windows
+You can download Rosalie's Mupen GUI on ![Github Releases](https://github.com/Rosalie241/RMG/releases)
+
+#### Linux
+You can download Rosalie's Mupen GUI on 
+* [Github Releases (AppImage)](https://github.com/Rosalie241/RMG/releases)
+* [Flathub (Flatpak)](https://flathub.org/apps/details/com.github.Rosalie241.RMG)
+* [Arch User Repository](https://aur.archlinux.org/packages/rmg)
+
 ## Support
 
 Join the [Rosalie's Mupen GUI Discord Server](https://discord.gg/k9GuyJ2PpF) for support
