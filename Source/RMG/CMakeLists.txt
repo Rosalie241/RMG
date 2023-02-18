@@ -16,6 +16,10 @@ if (UPDATER)
     add_definitions(-DUPDATER)
 endif(UPDATER)
 
+if (APPIMAGE_UPDATER)
+    add_definitions(-DAPPIMAGE_UPDATER)
+endif(APPIMAGE_UPDATER)
+
 if (DISCORD_RPC)
     add_definitions(-DDISCORD_RPC)
 endif(DISCORD_RPC)
