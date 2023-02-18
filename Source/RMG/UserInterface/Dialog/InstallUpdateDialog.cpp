@@ -41,7 +41,6 @@ void InstallUpdateDialog::install(void)
     QString appPid  = QString::number(QCoreApplication::applicationPid());
     QString logPath = appPath + "/Cache/updater.log";
 
-#ifdef _WIN32
     // convert paths to use the right path seperator
     this->temporaryDirectory = QDir::toNativeSeparators(this->temporaryDirectory);
     fullFilePath             = QDir::toNativeSeparators(fullFilePath);
@@ -79,7 +78,6 @@ void InstallUpdateDialog::install(void)
         this->accept();
         return;
     }
-#endif // _WIN32
 
     this->label->setText("Extracting " + this->filename + "...");
     this->progressBar->setValue(50);
@@ -106,7 +104,6 @@ void InstallUpdateDialog::install(void)
     this->label->setText("Executing update script...");
     this->progressBar->setValue(100);
 
-#ifdef _WIN32
     extractDirectory = QDir::toNativeSeparators(extractDirectory);
 
     QStringList scriptLines = 
@@ -129,31 +126,13 @@ void InstallUpdateDialog::install(void)
         "rmdir /S /Q \"" + this->temporaryDirectory + "\"",
     };
     this->writeAndRunScript(scriptLines);
-#else // Linux
-    QStringList scriptLines = 
-    {
-        "#!/usr/bin/env bash",
-        "set -e",
-        "rm -rf \""   + fullFilePath + "\"",
-        "kill -1 "    + appPid,
-        "cp -R \""    + extractDirectory + "/\"* \"" + appPath + "/\"",
-        "chmod +x \"" + appPath + "/RMG\"",
-        "\"" + appPath + "/RMG\"&",
-        "rm -rf \""   + this->temporaryDirectory + "\"" ,
-    };
-    this->writeAndRunScript(scriptLines);
-#endif // _WIN32
 }
 
 void InstallUpdateDialog::writeAndRunScript(QStringList stringList)
 {
     QString scriptPath;
     scriptPath = this->temporaryDirectory;
-#ifdef _WIN32
     scriptPath += "/update.bat";
-#else
-    scriptPath += "/update.sh";
-#endif // _WIN32
 
     QFile scriptFile(scriptPath);
     if (!scriptFile.open(QIODevice::WriteOnly | QIODevice::Text))

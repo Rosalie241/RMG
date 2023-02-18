@@ -997,12 +997,16 @@ void MainWindow::on_networkAccessManager_Finished(QNetworkReply* reply)
         return;
     }
 
+#ifdef APPIMAGE_UPDATER
+    this->on_Action_System_Exit();
+#else // normal updater
     Dialog::InstallUpdateDialog installUpdateDialog(this, QCoreApplication::applicationDirPath(), downloadUpdateDialog.GetTempDirectory(), downloadUpdateDialog.GetFileName());
     ret = installUpdateDialog.exec();
     if (ret != QDialog::Accepted)
     {
         return;
     }
+#endif // APPIMAGE_UPDATER
 }
 #endif // UPDATER
 

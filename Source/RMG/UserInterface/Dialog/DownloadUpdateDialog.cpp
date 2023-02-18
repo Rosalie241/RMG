@@ -18,6 +18,7 @@
 #include <QNetworkReply>
 #include <QTemporaryDir>
 #include <QFile>
+#include <QProcess>
 
 using namespace UserInterface::Dialog;
 
@@ -79,6 +80,9 @@ void DownloadUpdateDialog::on_reply_finished(void)
         return;
     }
 
+    QString filePath;
+
+#ifndef APPIMAGE_UPDATER
     QTemporaryDir temporaryDir;
     temporaryDir.setAutoRemove(false);
     if (!temporaryDir.isValid())
@@ -90,11 +94,51 @@ void DownloadUpdateDialog::on_reply_finished(void)
     }
 
     this->temporaryDirectory = temporaryDir.path();
+    filePath = temporaryDir.filePath(this->filename);
+#else
+    const char* appImageEnv = std::getenv("APPIMAGE");
+    if (appImageEnv == nullptr ||
+        !QFile(appImageEnv).exists()) 
+    {
+        this->showErrorMessage("APPIMAGE variable is empty or invalid!", "");
+        this->reply->deleteLater();
+        this->reject();
+        return;
+    }
 
-    QFile file(temporaryDir.filePath(this->filename));
-    file.open(QIODevice::WriteOnly);
+    filePath = appImageEnv;
+    filePath += ".update";
+#endif // APPIMAGE_UPDATER
+
+    QFile file(filePath);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate))
+    {
+        this->showErrorMessage("QFile::open() Failed!", "");
+        this->reply->deleteLater();
+        this->reject();
+        return;
+    }
+
     file.write(this->reply->readAll());
+#ifdef APPIMAGE_UPDATER
+    file.setPermissions(QFileDevice::ReadOwner | QFileDevice::WriteOwner | QFileDevice::ExeOwner);
+#endif // APPIMAGE_UPDATER
     file.close();
+
+#ifdef APPIMAGE_UPDATER
+    int ret = std::rename(filePath.toStdString().c_str(), appImageEnv);
+    if (ret != 0)
+    {
+        this->showErrorMessage("std::rename() Failed!", QString(strerror(errno)));
+        this->reply->deleteLater();
+        this->reject();
+        return;
+    }
+
+    QProcess process;
+    process.setProgram(appImageEnv);
+    process.startDetached();
+#endif // APPIMAGE_UPDATER
 
     this->reply->deleteLater();
     this->accept();
