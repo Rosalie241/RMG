@@ -18,6 +18,7 @@
 
 #include "m64p/PluginApi.hpp"
 #include "osal/osal_dynlib.hpp"
+#include "osal/osal_files.hpp"
 
 #include "m64p/PluginApi.cpp"
 #include "m64p/Api.hpp"
@@ -131,6 +132,54 @@ std::string get_plugin_context_name(CorePluginType type)
     return name;
 }
 
+std::string get_plugin_path(CorePluginType type, std::string settingsValue)
+{
+    std::string pluginPath;
+    std::string path;
+    std::string typeName;
+
+    // return an empty string when the value is empty
+    if (settingsValue.empty())
+    {
+        return std::string();
+    }
+
+    pluginPath = CoreGetPluginDirectory().string();
+
+    // if the full plugin path is in the settings value,
+    // we know it's the old type
+    if (settingsValue.find(pluginPath) != std::string::npos)
+    {
+        return settingsValue;
+    }
+
+    switch (type)
+    {
+    case CorePluginType::Rsp:
+        typeName = "RSP";
+        break;
+    case CorePluginType::Gfx:
+        typeName = "GFX";
+        break;
+    case CorePluginType::Audio:
+        typeName = "Audio";
+        break;
+    case CorePluginType::Input:
+        typeName = "Input";
+        break;
+    default:
+        return path;
+    }
+
+    path = pluginPath;
+    path += OSAL_FILES_DIR_SEPERATOR_STR;
+    path += typeName;
+    path += OSAL_FILES_DIR_SEPERATOR_STR;
+    path += settingsValue;
+
+    return path;
+}
+
 bool apply_plugin_settings(std::string pluginSettings[4])
 {
     std::string            error;
@@ -142,14 +191,13 @@ bool apply_plugin_settings(std::string pluginSettings[4])
 
     for (int i = 0; i < 4; i++)
     {
-        settingValue = pluginSettings[i];
+        pluginType = (CorePluginType)(i + 1);
+        settingValue = get_plugin_path(pluginType, pluginSettings[i]);
         if (settingValue.empty() ||
             !std::filesystem::is_regular_file(settingValue))
         { // skip invalid setting value
             continue;
         }
-
-        pluginType = (CorePluginType)(i + 1);
 
         // copy context string to a c string using strcpy
         std::strcpy(l_PluginContext[(int)pluginType], get_plugin_context_name(pluginType).c_str());
@@ -252,6 +300,7 @@ std::vector<CorePlugin> CoreGetAllPlugins(void)
     for (const auto& entry : std::filesystem::recursive_directory_iterator(CoreGetPluginDirectory()))
     {
         std::string path = entry.path().string();
+        std::string file = entry.path().filename().string();
         if (!entry.is_directory() &&
             path.ends_with(OSAL_DYNLIB_LIB_EXT_STR))
         {
@@ -272,7 +321,7 @@ std::vector<CorePlugin> CoreGetAllPlugins(void)
                 continue;
             }
 
-            CorePlugin corePlugin = {path, plugin_name, plugin_type};
+            CorePlugin corePlugin = {file, plugin_name, plugin_type};
             plugins.emplace_back(corePlugin);
         }
     }

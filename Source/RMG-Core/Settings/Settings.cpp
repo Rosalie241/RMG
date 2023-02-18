@@ -205,36 +205,36 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::Core_GFX_Plugin:
         setting = {SETTING_SECTION_CORE, "GFX_Plugin", 
 #ifdef _WIN32
-                    CoreGetPluginDirectory().string() + "\\GFX\\mupen64plus-video-GLideN64.dll",
+                    "mupen64plus-video-GLideN64.dll",
 #else
-                    CoreGetPluginDirectory().string() + "/GFX/mupen64plus-video-GLideN64.so", 
+                    "mupen64plus-video-GLideN64.so",
 #endif // _WIN32
                   };
         break;
     case SettingsID::Core_AUDIO_Plugin:
         setting = {SETTING_SECTION_CORE, "AUDIO_Plugin", 
 #ifdef _WIN32
-                    CoreGetPluginDirectory().string() + "\\Audio\\RMG-Audio.dll",
+                    "RMG-Audio.dll",
 #else
-                    CoreGetPluginDirectory().string() + "/Audio/RMG-Audio.so",
+                    "RMG-Audio.so",
 #endif // _WIN32
                   };
         break;
     case SettingsID::Core_INPUT_Plugin:
         setting = {SETTING_SECTION_CORE, "INPUT_Plugin", 
 #ifdef _WIN32
-                    CoreGetPluginDirectory().string() + "\\Input\\RMG-Input.dll",
+                    "RMG-Input.dll",
 #else
-                    CoreGetPluginDirectory().string() + "/Input/RMG-Input.so",
+                    "RMG-Input.so",
 #endif // _WIN32
                   };
         break;
     case SettingsID::Core_RSP_Plugin:
         setting = {SETTING_SECTION_CORE, "RSP_Plugin", 
 #ifdef _WIN32
-                    CoreGetPluginDirectory().string() + "\\RSP\\mupen64plus-rsp-hle.dll",
+                    "mupen64plus-rsp-hle.dll",
 #else
-                    CoreGetPluginDirectory().string() + "/RSP/mupen64plus-rsp-hle.so",
+                    "mupen64plus-rsp-hle.so",
 #endif // _WIN32
                   };
         break;
