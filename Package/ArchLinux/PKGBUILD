@@ -5,13 +5,10 @@ pkgrel=1
 pkgdesc="Rosalie's Mupen GUI"
 arch=('x86_64')
 url="https://github.com/Rosalie241/$pkgname"
-license=('GPLv3')
-
-provides=("$pkgname")
-conflicts=("$pkgname")
+license=('GPL3')
 
 depends=("hidapi" "libsamplerate" "minizip" "sdl2" "zlib" "freetype2" "qt6-base" "qt6-svg" "xdg-user-dirs")
-makedepends=("git" "pkg-config" "nasm" "cmake" "cargo" "ninja")
+makedepends=("git" "nasm" "cmake" "cargo" "ninja")
 
 source=("git+https://github.com/Rosalie241/$pkgname.git#tag=v$pkgver")
 sha256sums=('SKIP')
