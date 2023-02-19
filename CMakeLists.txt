@@ -46,6 +46,11 @@ if (APPIMAGE_UPDATER AND (WIN32 OR MSYS))
     set(APPIMAGE_UPDATER OFF)
 endif()
 
+if (UPDATER AND NOT (WIN32 OR MSYS) AND NOT APPIMAGE_UPDATER)
+    message(WARNING "Only AppImage updater is supported on linux, disabling UPDATER!")
+    set(UPDATER OFF)
+endif()
+
 if (FORCE_XCB AND (WIN32 OR MSYS))
     message(WARNING "XCB Qt platform not supported on windows, disabling FORCE_XCB!")
     set(FORCE_XCB OFF)
