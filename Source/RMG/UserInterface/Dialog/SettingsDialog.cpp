@@ -930,7 +930,7 @@ void SettingsDialog::commonPluginSettings(SettingsDialogAction action)
     bool pluginFound[] = {false, false, false, false};
 
     QComboBox *comboBox;
-    std::string pluginFileName;
+    QString pluginFileName;
     int index = 0;
 
     // clear combobox items
@@ -945,12 +945,15 @@ void SettingsDialog::commonPluginSettings(SettingsDialogAction action)
         comboBox = comboBoxArray[index];
 
         pluginFileName = action == SettingsDialogAction::LoadSettings ? 
-                            CoreSettingsGetStringValue(settingsIdArray[index]) :
-                            CoreSettingsGetDefaultStringValue(settingsIdArray[index]);
+                            QString::fromStdString(CoreSettingsGetStringValue(settingsIdArray[index])) :
+                            QString::fromStdString(CoreSettingsGetDefaultStringValue(settingsIdArray[index]));
+
+        // account for full path (<v0.3.5 we used the full path)
+        pluginFileName = QFileInfo(pluginFileName).fileName();
 
         comboBox->addItem(QString::fromStdString(p.Name), QString::fromStdString(p.File));
 
-        if (pluginFileName == p.File)
+        if (pluginFileName == QString::fromStdString(p.File))
         {
             comboBox->setCurrentText(QString::fromStdString(p.Name));
             pluginFound[index] = true;
