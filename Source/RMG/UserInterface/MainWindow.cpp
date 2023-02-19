@@ -468,6 +468,10 @@ void MainWindow::launchEmulationThread(QString cartRom, QString diskRom)
 
     if (!CoreArePluginsReady())
     {
+        // always go back to ROM Browser
+        this->ui_NoSwitchToRomBrowser = false;
+        this->updateUI(false, false);
+
         this->showErrorMessage("CoreArePluginsReady() Failed", QString::fromStdString(CoreGetError()));
         return;
     }
