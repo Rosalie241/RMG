@@ -121,7 +121,7 @@ void DownloadUpdateDialog::on_reply_finished(void)
 
     file.write(this->reply->readAll());
 #ifdef APPIMAGE_UPDATER
-    file.setPermissions(QFileDevice::ReadOwner | QFileDevice::WriteOwner | QFileDevice::ExeOwner);
+    file.setPermissions(QFile(appImageEnv).permissions());
 #endif // APPIMAGE_UPDATER
     file.close();
 
