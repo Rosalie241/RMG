@@ -96,9 +96,20 @@ int main(int argc, char **argv)
     parser.addHelpOption();
     parser.addVersionOption();
     // custom options
+#ifndef PORTABLE_INSTALL
+    QCommandLineOption corePathOption("core-path", "Changes the path where the core library is stored", "path");
+    QCommandLineOption pluginPathOption("plugin-path", "Changes the path where the plugins are stored", "path");
+    QCommandLineOption sharedDataPathOption("shared-data-path", "Changes the path where the shared data is stored", "path");
+#endif // PORTABLE_INSTALL
     QCommandLineOption fullscreenOption({"f", "fullscreen"}, "Launches ROM in fullscreen mode");
     QCommandLineOption quitAfterEmulation({"q", "quit-after-emulation"}, "Quits RMG when emulation has finished");
     QCommandLineOption diskOption("disk", "64DD Disk to open ROM in combination with", "64DD Disk");
+
+#ifndef PORTABLE_INSTALL
+    parser.addOption(corePathOption);
+    parser.addOption(pluginPathOption);
+    parser.addOption(sharedDataPathOption);
+#endif // PORTABLE_INSTALL
     parser.addOption(fullscreenOption);
     parser.addOption(quitAfterEmulation);
     parser.addOption(diskOption);
@@ -106,6 +117,25 @@ int main(int argc, char **argv)
 
     // parse arguments
     parser.process(app);
+
+#ifndef PORTABLE_INSTALL
+    // set path overrides before initializing
+    QString corePathOveride        = parser.value(corePathOption);
+    QString pluginPathOverride     = parser.value(pluginPathOption);
+    QString sharedDataPathOverride = parser.value(sharedDataPathOption);
+    if (!corePathOveride.isEmpty())
+    {
+        CoreSetCorePathOverride(corePathOveride.toStdString());
+    }
+    if (!pluginPathOverride.isEmpty())
+    {
+        CoreSetPluginPathOverride(pluginPathOverride.toStdString());
+    }
+    if (!sharedDataPathOverride.isEmpty())
+    {
+        CoreSetSharedDataPathOverride(sharedDataPathOverride.toStdString());
+    }
+#endif // PORTABLE_INSTALL
 
     // initialize window
     if (!window.Init(&app))
