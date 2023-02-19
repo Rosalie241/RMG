@@ -32,6 +32,21 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.3.6" date="2023-02-19" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix RMG not using xwayland when using wayland (wayland has lots of issues, can be disabled by building with the `-DFORCE_XCB=OFF` option)</li>
+          <li>Fix some non-fatal mupen64plus errors showing a pop-up</li>
+          <li>Fix window not returning to ROM browser when launching a game through the commandline and the plugins aren't ready</li>
+          <li>Add support for Qt stylesheets (place them in the 'user data directory/Styles' directory with the '.qss' extension, they'll show up in "Themes")</li>
+          <li>Add "Icon Theme" setting</li>
+          <li>Add "Speed Factor" to System menu bar</li>
+          <li>Add support for re-ordering columns in the list view of the ROM browser (thank you RetraCarteR)</li>
+          <li>Add AppImage to github releases (this replaces the old portable linux builds on github releases)</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.3.5" date="2023-02-14" type="stable">
       <description>
         <p>Changes:</p>
