@@ -298,15 +298,15 @@ void MainWindow::configureTheme(QApplication* app)
 
     // set application icon theme
     QString iconTheme = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_IconTheme));
-    if (iconTheme == "Automatic")
+    if (iconTheme == "White" || iconTheme == "Black")
     {
+        QIcon::setThemeName(iconTheme.toLower());
+    }
+    else
+    { // fallback to automatic
         QPalette palette = app->palette();
         bool dark = palette.windowText().color().value() > palette.window().color().value();
         QIcon::setThemeName(dark ? "white" : "black");
-    }
-    else if (iconTheme == "White" || iconTheme == "Black")
-    {
-        QIcon::setThemeName(iconTheme.toLower());
     }
 
     // fallback for icons we don't provide (i.e standard system icons)
