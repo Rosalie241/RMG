@@ -708,10 +708,10 @@ void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
     if (columnOrder.size() != this->listViewModel->columnCount())
     {
         columnOrder.clear();
-		for (int i = 0; i < this->listViewModel->columnCount(); i++)
-		{
-			columnOrder.push_back(i);
-		}
+        for (int i = 0; i < this->listViewModel->columnCount(); i++)
+        {
+            columnOrder.push_back(i);
+        }
         CoreSettingsSetValue(SettingsID::RomBrowser_ColumnOrder, columnOrder);
     }
 
