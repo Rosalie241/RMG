@@ -328,7 +328,7 @@ void MainWindow::configureTheme(QApplication* app)
     QIcon::setFallbackThemeName(fallbackThemeName);
 }
 
-void MainWindow::showErrorMessage(QString text, QString details = "")
+void MainWindow::showErrorMessage(QString text, QString details)
 {
     QMessageBox msgBox(this);
     msgBox.setIcon(QMessageBox::Icon::Critical);
@@ -519,11 +519,6 @@ void MainWindow::launchEmulationThread(QString cartRom, QString diskRom)
     this->emulationThread->start();
 }
 
-void MainWindow::launchEmulationThread(QString file)
-{
-    this->launchEmulationThread(file, "");
-}
-
 void MainWindow::updateActions(bool inEmulation, bool isPaused)
 {
     QString keyBinding;
@@ -655,51 +650,10 @@ void MainWindow::addActions(void)
         return;
     }
 
-    this->addAction(this->action_System_StartRom);
-    this->addAction(this->action_System_OpenCombo);
-    this->addAction(this->action_System_Shutdown);
-    this->addAction(this->action_System_SoftReset);
-    this->addAction(this->action_System_HardReset);
-    this->addAction(this->action_System_Pause);
-    this->addAction(this->action_System_Screenshot);
-    this->addAction(this->action_System_LimitFPS);
-    this->addAction(this->actionSpeed25);
-    this->addAction(this->actionSpeed50);
-    this->addAction(this->actionSpeed75);
-    this->addAction(this->actionSpeed100);
-    this->addAction(this->actionSpeed125);
-    this->addAction(this->actionSpeed150);
-    this->addAction(this->actionSpeed175);
-    this->addAction(this->actionSpeed200);
-    this->addAction(this->actionSpeed225);
-    this->addAction(this->actionSpeed250);
-    this->addAction(this->actionSpeed275);
-    this->addAction(this->actionSpeed300);
-    this->addAction(this->action_System_SaveState);
-    this->addAction(this->action_System_SaveAs);
-    this->addAction(this->action_System_LoadState);
-    this->addAction(this->action_System_Load);
-    this->addAction(this->actionSlot_0);
-    this->addAction(this->actionSlot_1);
-    this->addAction(this->actionSlot_2);
-    this->addAction(this->actionSlot_3);
-    this->addAction(this->actionSlot_4);
-    this->addAction(this->actionSlot_5);
-    this->addAction(this->actionSlot_6);
-    this->addAction(this->actionSlot_7);
-    this->addAction(this->actionSlot_8);
-    this->addAction(this->actionSlot_9);
-    this->addAction(this->action_System_Cheats);
-    this->addAction(this->action_System_GSButton);
-    this->addAction(this->action_System_Exit);
-    this->addAction(this->action_Settings_Graphics);
-    this->addAction(this->action_Settings_Audio);
-    this->addAction(this->action_Settings_Rsp);
-    this->addAction(this->action_Settings_Input);
-    this->addAction(this->action_Settings_Settings);
-    this->addAction(this->action_View_Fullscreen);
-    this->addAction(this->action_Help_Github);
-    this->addAction(this->action_Help_About);
+    for (QAction* action : this->ui_Actions)
+    {
+        this->addAction(action);
+    }
 
     this->ui_AddedActions = true;
 }
@@ -711,57 +665,45 @@ void MainWindow::removeActions(void)
         return;
     }
 
-    this->removeAction(this->action_System_StartRom);
-    this->removeAction(this->action_System_OpenCombo);
-    this->removeAction(this->action_System_Shutdown);
-    this->removeAction(this->action_System_SoftReset);
-    this->removeAction(this->action_System_HardReset);
-    this->removeAction(this->action_System_Pause);
-    this->removeAction(this->action_System_Screenshot);
-    this->removeAction(this->action_System_LimitFPS);
-    this->removeAction(this->actionSpeed25);
-    this->removeAction(this->actionSpeed50);
-    this->removeAction(this->actionSpeed75);
-    this->removeAction(this->actionSpeed100);
-    this->removeAction(this->actionSpeed125);
-    this->removeAction(this->actionSpeed150);
-    this->removeAction(this->actionSpeed175);
-    this->removeAction(this->actionSpeed200);
-    this->removeAction(this->actionSpeed225);
-    this->removeAction(this->actionSpeed250);
-    this->removeAction(this->actionSpeed275);
-    this->removeAction(this->actionSpeed300);
-    this->removeAction(this->action_System_SaveState);
-    this->removeAction(this->action_System_SaveAs);
-    this->removeAction(this->action_System_LoadState);
-    this->removeAction(this->action_System_Load);
-    this->removeAction(this->actionSlot_0);
-    this->removeAction(this->actionSlot_1);
-    this->removeAction(this->actionSlot_2);
-    this->removeAction(this->actionSlot_3);
-    this->removeAction(this->actionSlot_4);
-    this->removeAction(this->actionSlot_5);
-    this->removeAction(this->actionSlot_6);
-    this->removeAction(this->actionSlot_7);
-    this->removeAction(this->actionSlot_8);
-    this->removeAction(this->actionSlot_9);
-    this->removeAction(this->action_System_Cheats);
-    this->removeAction(this->action_System_GSButton);
-    this->removeAction(this->action_System_Exit);
-    this->removeAction(this->action_Settings_Graphics);
-    this->removeAction(this->action_Settings_Audio);
-    this->removeAction(this->action_Settings_Rsp);
-    this->removeAction(this->action_Settings_Input);
-    this->removeAction(this->action_Settings_Settings);
-    this->removeAction(this->action_View_Fullscreen);
-    this->removeAction(this->action_Help_Github);
-    this->removeAction(this->action_Help_About);
+    for (QAction* action : this->ui_Actions)
+    {
+        this->removeAction(action);
+    }
 
     this->ui_AddedActions = false;
 }
 
 void MainWindow::configureActions(void)
 {
+    // configure actions list
+    this->ui_Actions.append(
+    {
+        // System actions
+        this->action_System_StartRom, this->action_System_OpenCombo,
+        this->action_System_Shutdown, this->action_System_SoftReset,
+        this->action_System_HardReset, this->action_System_Pause,
+        this->action_System_Screenshot, this->action_System_LimitFPS,
+        this->actionSpeed25, this->actionSpeed50, this->actionSpeed75,
+        this->actionSpeed100, this->actionSpeed125, this->actionSpeed150,
+        this->actionSpeed175, this->actionSpeed200, this->actionSpeed225,
+        this->actionSpeed250, this->actionSpeed275, this->actionSpeed300,
+        this->action_System_SaveState, this->action_System_SaveAs,
+        this->action_System_LoadState, this->action_System_Load,
+        this->actionSlot_0, this->actionSlot_1, this->actionSlot_2,
+        this->actionSlot_3, this->actionSlot_4, this->actionSlot_5,
+        this->actionSlot_6, this->actionSlot_7, this->actionSlot_8,
+        this->actionSlot_9, this->action_System_Cheats,
+        this->action_System_GSButton, this->action_System_Exit,
+        // Settings actions
+        this->action_Settings_Graphics, this->action_Settings_Audio,
+        this->action_Settings_Rsp, this->action_Settings_Input,
+        this->action_Settings_Settings,
+        // View actions
+        this->action_View_Fullscreen, this->action_Help_Github,
+        // Help actions
+        this->action_Help_About,
+    });
+
     // configure emulation speed actions
     QActionGroup* speedActionGroup = new QActionGroup(this);
     QAction* speedActions[] =
