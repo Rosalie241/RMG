@@ -65,9 +65,11 @@ void OGLWidget::resizeEvent(QResizeEvent *event)
 
 void OGLWidget::timerEvent(QTimerEvent *event)
 {
-    CoreSetVideoSize(this->width, this->height);
-
-    // remove current timer
-    this->killTimer(this->timerId);
-    this->timerId = 0;
+    // only remove current timer
+    // when setting the video size succeeds
+    if (CoreSetVideoSize(this->width, this->height))
+    {
+        this->killTimer(this->timerId);
+        this->timerId = 0;
+    }
 }
