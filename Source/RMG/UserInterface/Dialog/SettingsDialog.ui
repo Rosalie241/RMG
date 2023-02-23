@@ -2030,7 +2030,7 @@
               <attribute name="title">
                <string>Plugins</string>
               </attribute>
-              <layout class="QVBoxLayout" name="verticalLayout_24">
+              <layout class="QVBoxLayout" name="verticalLayout_16">
                <item>
                 <widget class="QGroupBox" name="groupBox_19">
                  <property name="enabled">
@@ -2162,6 +2162,51 @@
                  </property>
                 </spacer>
                </item>
+               <item>
+                <layout class="QHBoxLayout" name="emulationInfoLayout_6">
+                 <item>
+                  <widget class="QLabel" name="infoIconLabel_8">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="pixmap">
+                    <pixmap>:/newPrefix/Resource/Info.ico</pixmap>
+                   </property>
+                   <property name="wordWrap">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_68">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="midLineWidth">
+                    <number>1</number>
+                   </property>
+                   <property name="text">
+                    <string>Make sure to use a LLE RSP plugin (i.e paraLLEl RSP) when using a LLE Video plugin (i.e paraLLEl)</string>
+                   </property>
+                   <property name="textFormat">
+                    <enum>Qt::PlainText</enum>
+                   </property>
+                   <property name="wordWrap">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
               </layout>
              </widget>
             </widget>
@@ -2214,7 +2259,7 @@
           <attribute name="title">
            <string>Plugins</string>
           </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_25">
+          <layout class="QVBoxLayout" name="verticalLayout_15">
            <item>
             <widget class="QGroupBox" name="groupBox_25">
              <property name="title">
@@ -2312,6 +2357,51 @@
               </size>
              </property>
             </spacer>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="emulationInfoLayout_4">
+             <item>
+              <widget class="QLabel" name="infoIconLabel_6">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="pixmap">
+                <pixmap>:/newPrefix/Resource/Info.ico</pixmap>
+               </property>
+               <property name="wordWrap">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_64">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="midLineWidth">
+                <number>1</number>
+               </property>
+               <property name="text">
+                <string>Make sure to use a LLE RSP plugin (i.e paraLLEl RSP) when using a LLE Video plugin (i.e paraLLEl)</string>
+               </property>
+               <property name="textFormat">
+                <enum>Qt::PlainText</enum>
+               </property>
+               <property name="wordWrap">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
            <item>
             <layout class="QHBoxLayout" name="emulationInfoLayout_1">
