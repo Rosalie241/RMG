@@ -539,18 +539,18 @@ void RomBrowserWidget::on_listViewWidget_sectionResized(int logicalIndex, int ol
     for (int i = 0; i < this->listViewModel->columnCount(); i++)
     {
         int column = this->listViewWidget->horizontalHeader()->logicalIndex(i);
-        if (this->listViewWidget->horizontalHeader()->isSectionHidden(column) == false)
+        if (!this->listViewWidget->horizontalHeader()->isSectionHidden(column))
         {
             lastVisibleColumn = column;
         }
     }
 
-    if (this->listViewWidget->horizontalHeader()->isSectionHidden(logicalIndex) == false)
+    if (!this->listViewWidget->horizontalHeader()->isSectionHidden(logicalIndex))
     {
         columnVisibility.at(logicalIndex) = 1;
         CoreSettingsSetValue(SettingsID::RomBrowser_Columns, columnVisibility);
 
-        if (this->listViewWidget->horizontalHeader()->stretchLastSection() == false || logicalIndex != lastVisibleColumn)
+        if (!this->listViewWidget->horizontalHeader()->stretchLastSection() || logicalIndex != lastVisibleColumn)
         {
             columnSizes.at(logicalIndex) = newWidth;
             CoreSettingsSetValue(SettingsID::RomBrowser_ColumnSizes, columnSizes);
