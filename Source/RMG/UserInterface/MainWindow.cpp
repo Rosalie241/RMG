@@ -48,7 +48,7 @@ MainWindow::~MainWindow()
 {
 }
 
-bool MainWindow::Init(QApplication* app)
+bool MainWindow::Init(QApplication* app, bool showUI)
 {
     if (!CoreInit())
     {
@@ -64,14 +64,16 @@ bool MainWindow::Init(QApplication* app)
     this->configureTheme(app);
 
     this->initializeUI();
-    this->configureUI(app);
+    this->configureUI(app, showUI);
 
     this->connectActionSignals();
     this->configureActions();
     this->updateActions(false, false);
 
 #ifdef UPDATER
-    this->checkForUpdates();
+    this->checkForUpdates(true, false);
+#else
+    this->action_Help_Update->setVisible(false);
 #endif // UPDATER
 
     this->initializeEmulationThread();
@@ -173,7 +175,7 @@ void MainWindow::initializeUI(void)
             &MainWindow::on_EventFilter_KeyReleased);
 }
 
-void MainWindow::configureUI(QApplication* app)
+void MainWindow::configureUI(QApplication* app, bool showUI)
 {
     this->setCentralWidget(this->ui_Widgets);
 
@@ -191,9 +193,22 @@ void MainWindow::configureUI(QApplication* app)
         this->restoreGeometry(QByteArray::fromBase64(geometry.toLocal8Bit()));
     }
 
-    this->ui_ShowToolbar = CoreSettingsGetBoolValue(SettingsID::GUI_Toolbar);
-    this->ui_ShowStatusbar = CoreSettingsGetBoolValue(SettingsID::GUI_StatusBar);
+    this->ui_ShowUI = showUI;
 
+    if (this->ui_ShowUI)
+    {
+        this->ui_ShowMenubar = true;
+        this->ui_ShowToolbar = CoreSettingsGetBoolValue(SettingsID::GUI_Toolbar);
+        this->ui_ShowStatusbar = CoreSettingsGetBoolValue(SettingsID::GUI_StatusBar);
+    }
+    else
+    {
+        this->ui_ShowMenubar = false;
+        this->ui_ShowToolbar = false;
+        this->ui_ShowStatusbar = false;
+    }
+
+    this->menuBar()->setVisible(this->ui_ShowMenubar);
     this->toolBar->setVisible(this->ui_ShowToolbar);
     this->statusBar()->setVisible(this->ui_ShowStatusbar);
     this->statusBar()->addPermanentWidget(this->ui_StatusBar_Label, 1);
@@ -396,19 +411,31 @@ void MainWindow::loadGeometry(void)
         this->showNormal();
     }
 
-    if (this->menuBar()->isHidden())
+    if (this->ui_ShowMenubar && this->menuBar()->isHidden())
     {
         this->menuBar()->show();
+    }
+    else if (!this->ui_ShowMenubar && !this->menuBar()->isHidden())
+    {
+        this->menuBar()->hide();
     }
 
     if (this->ui_ShowToolbar && this->toolBar->isHidden())
     {
         this->toolBar->show();
     }
+    else if (!this->ui_ShowToolbar && !this->toolBar->isHidden())
+    {
+        this->toolBar->hide();
+    }
 
     if (this->ui_ShowStatusbar && this->statusBar()->isHidden())
     {
         this->statusBar()->show();
+    }
+    else if (!this->ui_ShowStatusbar && !this->statusBar()->isHidden())
+    {
+        this->statusBar()->hide();
     }
 
     this->ui_Geometry_Saved = false;
@@ -478,8 +505,12 @@ void MainWindow::launchEmulationThread(QString cartRom, QString diskRom)
 
     this->ui_HideCursorInEmulation = CoreSettingsGetBoolValue(SettingsID::GUI_HideCursorInEmulation);
     this->ui_HideCursorInFullscreenEmulation = CoreSettingsGetBoolValue(SettingsID::GUI_HideCursorInFullscreenEmulation);
-    this->ui_ShowToolbar = CoreSettingsGetBoolValue(SettingsID::GUI_Toolbar);
-    this->ui_ShowStatusbar = CoreSettingsGetBoolValue(SettingsID::GUI_StatusBar);
+
+    if (this->ui_ShowUI)
+    {
+        this->ui_ShowToolbar = CoreSettingsGetBoolValue(SettingsID::GUI_Toolbar);
+        this->ui_ShowStatusbar = CoreSettingsGetBoolValue(SettingsID::GUI_StatusBar);
+    }
 
     this->ui_Widget_OpenGL->SetHideCursor(this->ui_HideCursorInEmulation);
 
@@ -592,10 +623,18 @@ void MainWindow::updateActions(bool inEmulation, bool isPaused)
         slotActions[i]->setShortcut(QKeySequence(keyBinding));
     }
 
+    keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_GraphicsSettings));
     this->action_Settings_Graphics->setEnabled(CorePluginsHasConfig(CorePluginType::Gfx));
+    this->action_Settings_Graphics->setShortcut(QKeySequence(keyBinding));
+    keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_AudioSettings));
     this->action_Settings_Audio->setEnabled(CorePluginsHasConfig(CorePluginType::Audio));
+    this->action_Settings_Audio->setShortcut(QKeySequence(keyBinding));
+    keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_RspSettings));
     this->action_Settings_Rsp->setEnabled(CorePluginsHasConfig(CorePluginType::Rsp));
+    this->action_Settings_Rsp->setShortcut(QKeySequence(keyBinding));
+    keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_InputSettings));
     this->action_Settings_Input->setEnabled(CorePluginsHasConfig(CorePluginType::Input));
+    this->action_Settings_Input->setShortcut(QKeySequence(keyBinding));
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_Settings));
     this->action_Settings_Settings->setShortcut(QKeySequence(keyBinding));
 
@@ -609,8 +648,13 @@ void MainWindow::updateActions(bool inEmulation, bool isPaused)
     this->action_View_ClearRomCache->setEnabled(!inEmulation);
 }
 
-void MainWindow::addFullscreenActions(void)
+void MainWindow::addActions(void)
 {
+    if (this->ui_AddedActions)
+    {
+        return;
+    }
+
     this->addAction(this->action_System_StartRom);
     this->addAction(this->action_System_OpenCombo);
     this->addAction(this->action_System_Shutdown);
@@ -656,10 +700,17 @@ void MainWindow::addFullscreenActions(void)
     this->addAction(this->action_View_Fullscreen);
     this->addAction(this->action_Help_Github);
     this->addAction(this->action_Help_About);
+
+    this->ui_AddedActions = true;
 }
 
-void MainWindow::removeFullscreenActions(void)
+void MainWindow::removeActions(void)
 {
+    if (!this->ui_AddedActions)
+    {
+        return;
+    }
+
     this->removeAction(this->action_System_StartRom);
     this->removeAction(this->action_System_OpenCombo);
     this->removeAction(this->action_System_Shutdown);
@@ -705,6 +756,8 @@ void MainWindow::removeFullscreenActions(void)
     this->removeAction(this->action_View_Fullscreen);
     this->removeAction(this->action_Help_Github);
     this->removeAction(this->action_Help_About);
+
+    this->ui_AddedActions = false;
 }
 
 void MainWindow::configureActions(void)
@@ -839,16 +892,44 @@ void MainWindow::connectActionSignals(void)
 
     connect(this->action_Help_Github, &QAction::triggered, this, &MainWindow::on_Action_Help_Github);
     connect(this->action_Help_About, &QAction::triggered, this, &MainWindow::on_Action_Help_About);
+    connect(this->action_Help_Update, &QAction::triggered, this, &MainWindow::on_Action_Help_Update);
 }
 
 #ifdef UPDATER
-void MainWindow::checkForUpdates(void)
+void MainWindow::checkForUpdates(bool silent, bool force)
 {
-    if (!CoreSettingsGetBoolValue(SettingsID::GUI_CheckForUpdates))
+    if (!force && !CoreSettingsGetBoolValue(SettingsID::GUI_CheckForUpdates))
     {
         return;
     }
 
+    // only check for updates on the stable versions unless forced
+    QString currentVersion = QString::fromStdString(CoreGetVersion());
+    if (!force && currentVersion.size() != 6)
+    {
+        return;
+    }
+
+    QString dateTimeFormat = "dd-MM-yyyy_hh:mm";
+    QString lastUpdateCheckDateTimeString = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_LastUpdateCheck));
+    QDateTime lastUpdateCheckDateTime = QDateTime::fromString(lastUpdateCheckDateTimeString, dateTimeFormat);
+    QDateTime currentDateTime = QDateTime::currentDateTime();
+
+    // only check for updates once every hour unless forced
+    if (!force &&
+        lastUpdateCheckDateTime.isValid() &&
+        lastUpdateCheckDateTime.addSecs(3600) > currentDateTime)
+    {
+        return;
+    }
+
+    // update last update check date & time
+    CoreSettingsSetValue(SettingsID::GUI_LastUpdateCheck, currentDateTime.toString(dateTimeFormat).toStdString());
+
+    // whether or not the update check is silent
+    this->ui_SilentUpdateCheck = silent;
+
+    // execute update check
     QNetworkAccessManager* networkAccessManager = new QNetworkAccessManager(this);
     connect(networkAccessManager, &QNetworkAccessManager::finished, this, &MainWindow::on_networkAccessManager_Finished);
     networkAccessManager->get(QNetworkRequest(QUrl("https://api.github.com/repos/Rosalie241/RMG/releases/latest")));
@@ -960,6 +1041,10 @@ void MainWindow::on_networkAccessManager_Finished(QNetworkReply* reply)
 {
     if (reply->error())
     {
+        if (!this->ui_SilentUpdateCheck)
+        {
+            this->showErrorMessage("Failed to check for updates!", reply->errorString());
+        }
         reply->deleteLater();
         return;
     }
@@ -972,16 +1057,13 @@ void MainWindow::on_networkAccessManager_Finished(QNetworkReply* reply)
 
     reply->deleteLater();
 
-    // make sure the current version is valid
-    // and not a dev version
-    if (currentVersion.size() != 6)
-    {
-        return;
-    }
-
     // do nothing when versions match
     if (currentVersion == latestVersion)
     {
+        if (!this->ui_SilentUpdateCheck)
+        {
+            this->showErrorMessage("You're already on the latest version!");
+        }
         return;
     }
 
@@ -1381,6 +1463,11 @@ void MainWindow::on_Action_Settings_Settings(void)
 
 void MainWindow::on_Action_View_Toolbar(bool checked)
 {
+    if (!this->ui_ShowUI)
+    {
+        return;
+    }
+
     CoreSettingsSetValue(SettingsID::GUI_Toolbar, checked);
     this->toolBar->setVisible(checked);
     this->ui_ShowToolbar = checked;
@@ -1388,6 +1475,11 @@ void MainWindow::on_Action_View_Toolbar(bool checked)
 
 void MainWindow::on_Action_View_StatusBar(bool checked)
 {
+    if (!this->ui_ShowUI)
+    {
+        return;
+    }
+
     CoreSettingsSetValue(SettingsID::GUI_StatusBar, checked);
     this->statusBar()->setVisible(checked);
     this->ui_ShowStatusbar = checked;
@@ -1455,6 +1547,13 @@ void MainWindow::on_Action_Help_About(void)
 {
     Dialog::AboutDialog dialog(this);
     dialog.exec();
+}
+
+void MainWindow::on_Action_Help_Update(void)
+{
+#ifdef UPDATER
+    this->checkForUpdates(false, true);
+#endif // UPDATER
 }
 
 void MainWindow::on_Emulation_Started(void)
@@ -1674,7 +1773,7 @@ void MainWindow::on_VidExt_SetWindowedMode(int width, int height, int bps, int f
         this->showNormal();
     }
 
-    if (this->menuBar()->isHidden())
+    if (this->ui_ShowMenubar && this->menuBar()->isHidden())
     {
         this->menuBar()->show();
     }
@@ -1694,7 +1793,10 @@ void MainWindow::on_VidExt_SetWindowedMode(int width, int height, int bps, int f
         this->ui_Widget_OpenGL->SetHideCursor(false);
     }
 
-    this->removeFullscreenActions();
+    if (this->ui_ShowUI)
+    {
+        this->removeActions();
+    }
 
     // only resize window when we're
     // not returning from fullscreen
@@ -1731,7 +1833,10 @@ void MainWindow::on_VidExt_SetFullscreenMode(int width, int height, int bps, int
         this->ui_Widget_OpenGL->SetHideCursor(true);
     }
 
-    this->addFullscreenActions();
+    if (this->ui_ShowUI)
+    {
+        this->addActions();
+    }
 }
 
 void MainWindow::on_VidExt_ResizeWindow(int width, int height)
@@ -1771,6 +1876,11 @@ void MainWindow::on_VidExt_ResizeWindow(int width, int height)
         this->showNormal();
     }
 
+    if (!this->ui_ShowUI)
+    {
+        this->addActions();
+    }
+
     this->resize(width, height);
 
     // we've force set the size once,
@@ -1787,7 +1897,7 @@ void MainWindow::on_VidExt_ToggleFS(bool fullscreen)
             this->showFullScreen();
         }
 
-        if (!this->menuBar()->isHidden())
+        if (this->ui_ShowMenubar && !this->menuBar()->isHidden())
         {
             this->menuBar()->hide();
         }
@@ -1807,7 +1917,10 @@ void MainWindow::on_VidExt_ToggleFS(bool fullscreen)
             this->ui_Widget_OpenGL->SetHideCursor(true);
         }
 
-        this->addFullscreenActions();
+        if (this->ui_ShowUI)
+        {
+            this->addActions();
+        }
     }
     else
     {
@@ -1816,11 +1929,11 @@ void MainWindow::on_VidExt_ToggleFS(bool fullscreen)
             this->showNormal();
         }
 
-        if (this->menuBar()->isHidden())
+        if (this->ui_ShowMenubar && this->menuBar()->isHidden())
         {
             this->menuBar()->show();
         }
-        
+
         if (this->ui_ShowToolbar && this->toolBar->isHidden())
         {
             this->toolBar->show();
@@ -1836,7 +1949,10 @@ void MainWindow::on_VidExt_ToggleFS(bool fullscreen)
             this->ui_Widget_OpenGL->SetHideCursor(false);
         }
 
-        this->removeFullscreenActions();
+        if (this->ui_ShowUI)
+        {
+            this->removeActions();
+        }
     }
 }
 

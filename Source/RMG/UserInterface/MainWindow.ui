@@ -147,6 +147,8 @@
     </property>
     <addaction name="action_Help_Github"/>
     <addaction name="separator"/>
+    <addaction name="action_Help_Update"/>
+    <addaction name="separator"/>
     <addaction name="action_Help_About"/>
    </widget>
    <addaction name="menuSystem"/>
@@ -618,6 +620,15 @@
   <action name="actionSpeed300">
    <property name="text">
     <string>300%</string>
+   </property>
+  </action>
+  <action name="action_Help_Update">
+   <property name="icon">
+    <iconset theme="download-line">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Check For Updates</string>
    </property>
   </action>
  </widget>

@@ -24,6 +24,7 @@ enum class SettingsID
     GUI_Theme,
     GUI_IconTheme,
     GUI_CheckForUpdates,
+    GUI_LastUpdateCheck,
     GUI_DiscordRpc,
     GUI_Version,
 
@@ -138,6 +139,10 @@ enum class SettingsID
     KeyBinding_SaveStateSlot8,
     KeyBinding_SaveStateSlot9,
     KeyBinding_Fullscreen,
+    KeyBinding_GraphicsSettings,
+    KeyBinding_AudioSettings,
+    KeyBinding_RspSettings,
+    KeyBinding_InputSettings,
     KeyBinding_Settings,
 
     // RomBrowser Settings

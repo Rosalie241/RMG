@@ -47,7 +47,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     MainWindow(void);
     ~MainWindow(void);
 
-    bool Init(QApplication*);
+    bool Init(QApplication*, bool);
     void OpenROM(QString, QString, bool, bool);
 
   private:
@@ -73,10 +73,16 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     bool ui_QuitAfterEmulation   = false;
     bool ui_RefreshRomListAfterEmulation = false;
 
+    bool ui_ShowUI        = false;
+    bool ui_ShowMenubar   = false;
     bool ui_ShowToolbar   = false;
     bool ui_ShowStatusbar = false;
 
     bool ui_ManuallyPaused = true;
+
+    bool ui_AddedActions = false;
+
+    bool ui_SilentUpdateCheck = false;
 
     int ui_TimerId      = 0;
     int ui_TimerTimeout = 0;
@@ -92,7 +98,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 
     void initializeUI();
     
-    void configureUI(QApplication*);
+    void configureUI(QApplication*, bool);
     void configureTheme(QApplication*);
 
     void showErrorMessage(QString, QString);
@@ -111,11 +117,11 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     void connectActionSignals(void);
     void updateActions(bool, bool);
 
-    void addFullscreenActions(void);
-    void removeFullscreenActions(void);
+    void addActions(void);
+    void removeActions(void);
 
 #ifdef UPDATER
-    void checkForUpdates(void);
+    void checkForUpdates(bool, bool);
 #endif // UPDATER
   protected:
     void timerEvent(QTimerEvent *) Q_DECL_OVERRIDE;
@@ -166,6 +172,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 
     void on_Action_Help_Github(void);
     void on_Action_Help_About(void);
+    void on_Action_Help_Update(void);
 
     void on_Emulation_Started(void);
     void on_Emulation_Finished(bool);

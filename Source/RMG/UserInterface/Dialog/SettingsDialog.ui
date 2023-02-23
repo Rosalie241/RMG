@@ -1301,7 +1301,79 @@
                   <attribute name="title">
                    <string>Settings</string>
                   </attribute>
-                  <layout class="QVBoxLayout" name="verticalLayout_37">
+                  <layout class="QVBoxLayout" name="verticalLayout_14">
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_92">
+                     <item>
+                      <widget class="QLabel" name="label_85">
+                       <property name="text">
+                        <string>Graphics</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="graphicsSettingsKeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_93">
+                     <item>
+                      <widget class="QLabel" name="label_87">
+                       <property name="text">
+                        <string>Audio</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="audioSettingsKeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_94">
+                     <item>
+                      <widget class="QLabel" name="label_89">
+                       <property name="text">
+                        <string>RSP</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="rspSettingsKeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_117">
+                     <item>
+                      <widget class="QLabel" name="label_90">
+                       <property name="text">
+                        <string>Input</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="inputSettingsKeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
                    <item>
                     <layout class="QHBoxLayout" name="horizontalLayout_87">
                      <item>

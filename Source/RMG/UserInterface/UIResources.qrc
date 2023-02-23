@@ -11,6 +11,7 @@
   <file alias="icons/black/svg/delete-back-line.svg">Resource/icons/black/svg/delete-back-line.svg</file>
   <file alias="icons/black/svg/delete-bin-line.svg">Resource/icons/black/svg/delete-bin-line.svg</file>
   <file alias="icons/black/svg/door-open-line.svg">Resource/icons/black/svg/door-open-line.svg</file>
+  <file alias="icons/black/svg/download-line.svg">Resource/icons/black/svg/download-line.svg</file>
   <file alias="icons/black/svg/file-line.svg">Resource/icons/black/svg/file-line.svg</file>
   <file alias="icons/black/svg/file-list-line.svg">Resource/icons/black/svg/file-list-line.svg</file>
   <file alias="icons/black/svg/folder-open-line.svg">Resource/icons/black/svg/folder-open-line.svg</file>
@@ -40,6 +41,7 @@
   <file alias="icons/white/svg/delete-back-line.svg">Resource/icons/white/svg/delete-back-line.svg</file>
   <file alias="icons/white/svg/delete-bin-line.svg">Resource/icons/white/svg/delete-bin-line.svg</file>
   <file alias="icons/white/svg/door-open-line.svg">Resource/icons/white/svg/door-open-line.svg</file>
+  <file alias="icons/white/svg/download-line.svg">Resource/icons/white/svg/download-line.svg</file>
   <file alias="icons/white/svg/file-line.svg">Resource/icons/white/svg/file-line.svg</file>
   <file alias="icons/white/svg/file-list-line.svg">Resource/icons/white/svg/file-list-line.svg</file>
   <file alias="icons/white/svg/folder-open-line.svg">Resource/icons/white/svg/folder-open-line.svg</file>

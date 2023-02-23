@@ -195,6 +195,9 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::GUI_CheckForUpdates:
         setting = {SETTING_SECTION_GUI, "CheckForUpdates", true};
         break;
+    case SettingsID::GUI_LastUpdateCheck:
+        setting = {SETTING_SECTION_GUI, "LastUpdateCheck", ""};
+        break;
     case SettingsID::GUI_DiscordRpc:
         setting = {SETTING_SECTION_GUI, "DiscordRpc", true};
         break;
@@ -506,6 +509,18 @@ static l_Setting get_setting(SettingsID settingId)
         break;
     case SettingsID::KeyBinding_Fullscreen:
         setting = {SETTING_SECTION_KEYBIND, "Fullscreen", "Alt+Return"};
+        break;
+    case SettingsID::KeyBinding_GraphicsSettings:
+        setting = {SETTING_SECTION_KEYBIND, "GraphicsSettings", "Ctrl+G"};
+        break;
+    case SettingsID::KeyBinding_AudioSettings:
+        setting = {SETTING_SECTION_KEYBIND, "AudioSettings", "Ctrl+A"};
+        break;
+    case SettingsID::KeyBinding_RspSettings:
+        setting = {SETTING_SECTION_KEYBIND, "RspSettings", "Ctrl+R"};
+        break;
+    case SettingsID::KeyBinding_InputSettings:
+        setting = {SETTING_SECTION_KEYBIND, "InputSettings", "Ctrl+I"};
         break;
     case SettingsID::KeyBinding_Settings:
         setting = {SETTING_SECTION_KEYBIND, "Settings", "Ctrl+T"};
