@@ -71,7 +71,9 @@ bool MainWindow::Init(QApplication* app, bool showUI)
     this->updateActions(false, false);
 
 #ifdef UPDATER
-    this->checkForUpdates();
+    this->checkForUpdates(true, false);
+#else
+    this->action_Help_Update->setVisible(false);
 #endif // UPDATER
 
     this->initializeEmulationThread();
@@ -890,16 +892,44 @@ void MainWindow::connectActionSignals(void)
 
     connect(this->action_Help_Github, &QAction::triggered, this, &MainWindow::on_Action_Help_Github);
     connect(this->action_Help_About, &QAction::triggered, this, &MainWindow::on_Action_Help_About);
+    connect(this->action_Help_Update, &QAction::triggered, this, &MainWindow::on_Action_Help_Update);
 }
 
 #ifdef UPDATER
-void MainWindow::checkForUpdates(void)
+void MainWindow::checkForUpdates(bool silent, bool force)
 {
-    if (!CoreSettingsGetBoolValue(SettingsID::GUI_CheckForUpdates))
+    if (!force && !CoreSettingsGetBoolValue(SettingsID::GUI_CheckForUpdates))
     {
         return;
     }
 
+    // only check for updates on the stable versions unless forced
+    QString currentVersion = QString::fromStdString(CoreGetVersion());
+    if (!force && currentVersion.size() != 6)
+    {
+        return;
+    }
+
+    QString dateTimeFormat = "dd-MM-yyyy_hh:mm";
+    QString lastUpdateCheckDateTimeString = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_LastUpdateCheck));
+    QDateTime lastUpdateCheckDateTime = QDateTime::fromString(lastUpdateCheckDateTimeString, dateTimeFormat);
+    QDateTime currentDateTime = QDateTime::currentDateTime();
+
+    // only check for updates once every hour unless forced
+    if (!force &&
+        lastUpdateCheckDateTime.isValid() &&
+        lastUpdateCheckDateTime.addSecs(3600) > currentDateTime)
+    {
+        return;
+    }
+
+    // update last update check date & time
+    CoreSettingsSetValue(SettingsID::GUI_LastUpdateCheck, currentDateTime.toString(dateTimeFormat).toStdString());
+
+    // whether or not the update check is silent
+    this->ui_SilentUpdateCheck = silent;
+
+    // execute update check
     QNetworkAccessManager* networkAccessManager = new QNetworkAccessManager(this);
     connect(networkAccessManager, &QNetworkAccessManager::finished, this, &MainWindow::on_networkAccessManager_Finished);
     networkAccessManager->get(QNetworkRequest(QUrl("https://api.github.com/repos/Rosalie241/RMG/releases/latest")));
@@ -1011,6 +1041,10 @@ void MainWindow::on_networkAccessManager_Finished(QNetworkReply* reply)
 {
     if (reply->error())
     {
+        if (!this->ui_SilentUpdateCheck)
+        {
+            this->showErrorMessage("Failed to check for updates!", reply->errorString());
+        }
         reply->deleteLater();
         return;
     }
@@ -1023,16 +1057,13 @@ void MainWindow::on_networkAccessManager_Finished(QNetworkReply* reply)
 
     reply->deleteLater();
 
-    // make sure the current version is valid
-    // and not a dev version
-    if (currentVersion.size() != 6)
-    {
-        return;
-    }
-
     // do nothing when versions match
     if (currentVersion == latestVersion)
     {
+        if (!this->ui_SilentUpdateCheck)
+        {
+            this->showErrorMessage("You're already on the latest version!");
+        }
         return;
     }
 
@@ -1516,6 +1547,13 @@ void MainWindow::on_Action_Help_About(void)
 {
     Dialog::AboutDialog dialog(this);
     dialog.exec();
+}
+
+void MainWindow::on_Action_Help_Update(void)
+{
+#ifdef UPDATER
+    this->checkForUpdates(false, true);
+#endif // UPDATER
 }
 
 void MainWindow::on_Emulation_Started(void)

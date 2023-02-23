@@ -82,6 +82,8 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 
     bool ui_AddedActions = false;
 
+    bool ui_SilentUpdateCheck = false;
+
     int ui_TimerId      = 0;
     int ui_TimerTimeout = 0;
 
@@ -119,7 +121,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     void removeActions(void);
 
 #ifdef UPDATER
-    void checkForUpdates(void);
+    void checkForUpdates(bool, bool);
 #endif // UPDATER
   protected:
     void timerEvent(QTimerEvent *) Q_DECL_OVERRIDE;
@@ -170,6 +172,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 
     void on_Action_Help_Github(void);
     void on_Action_Help_About(void);
+    void on_Action_Help_Update(void);
 
     void on_Emulation_Started(void);
     void on_Emulation_Finished(bool);
