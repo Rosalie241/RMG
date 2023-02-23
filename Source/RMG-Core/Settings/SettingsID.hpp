@@ -138,6 +138,10 @@ enum class SettingsID
     KeyBinding_SaveStateSlot8,
     KeyBinding_SaveStateSlot9,
     KeyBinding_Fullscreen,
+    KeyBinding_GraphicsSettings,
+    KeyBinding_AudioSettings,
+    KeyBinding_RspSettings,
+    KeyBinding_InputSettings,
     KeyBinding_Settings,
 
     // RomBrowser Settings
