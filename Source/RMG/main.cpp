@@ -18,6 +18,10 @@
 #include <iostream>
 #include <cstdlib>
 
+#ifndef _WIN32
+#include <signal.h>
+#endif
+
 //
 // Local Functions
 //
@@ -66,6 +70,11 @@ void message_handler(QtMsgType type, const QMessageLogContext &context, const QS
     std::cerr << typeString << localMsg.constData() << std::endl;
 }
 
+void signal_handler(int sig)
+{
+    QGuiApplication::quit();
+}
+
 //
 // Exported Functions
 //
@@ -74,6 +83,12 @@ int main(int argc, char **argv)
 {
     // install message handler
     qInstallMessageHandler(message_handler);
+
+#ifndef _WIN32
+    // install signal handler
+    signal(SIGINT, signal_handler);
+    signal(SIGTERM, signal_handler);
+#endif
 
 #ifdef FORCE_XCB
     setenv("QT_QPA_PLATFORM", "xcb", 1);
