@@ -515,15 +515,12 @@ void RomBrowserWidget::generateColumnsMenu(void)
         int column = this->listViewWidget->horizontalHeader()->logicalIndex(i);
 
         this->action_ColumnsMenuEntry = menu_Columns->addAction(this->listViewModel->horizontalHeaderItem(column)->text());
-        if (column != 0)
+        this->action_ColumnsMenuEntry->setCheckable(true);
+        this->action_ColumnsMenuEntry->setChecked(!this->listViewWidget->horizontalHeader()->isSectionHidden(column));
+        connect(this->action_ColumnsMenuEntry, &QAction::toggled, [this, column](bool checked)
         {
-            this->action_ColumnsMenuEntry->setCheckable(true);
-            this->action_ColumnsMenuEntry->setChecked(!this->listViewWidget->horizontalHeader()->isSectionHidden(column));
-            connect(this->action_ColumnsMenuEntry, &QAction::toggled, [this, column](bool checked)
-            {
-                this->listViewWidget->horizontalHeader()->setSectionHidden(column, !checked);
-            });
-        }
+            this->listViewWidget->horizontalHeader()->setSectionHidden(column, !checked);
+        });
     }
 }
 
