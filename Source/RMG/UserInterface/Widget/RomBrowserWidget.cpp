@@ -390,14 +390,8 @@ QIcon RomBrowserWidget::getCurrentCover(QString file, CoreRomHeader header, Core
     {
         // fixup file name
         QString fixedName = name;
-        for (const char c : ":<>\"/\\|?*")
+        for (const QChar c : QString(":<>\"/\\|?*"))
         {
-            // skip empty characters
-            if (c == '\0')
-            {
-                continue;
-            }
-
             fixedName.replace(c, "_");
         }
 
