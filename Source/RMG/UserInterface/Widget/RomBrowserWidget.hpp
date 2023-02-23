@@ -72,10 +72,7 @@ class RomBrowserWidget : public QStackedWidget
     int listViewSortSection = 0;
     int listViewSortOrder = 0;
 
-    QMenu*   mainContextMenu;
-    QMenu*   headerContextMenu;
-    QMenu*   columnsSubmenu;
-
+    QMenu*   contextMenu;
     QAction* action_PlayGame;
     QAction* action_PlayGameWith;
     QAction* action_RefreshRomList;
@@ -86,7 +83,9 @@ class RomBrowserWidget : public QStackedWidget
     QAction* action_EditCheats;
     QAction* action_SetCoverImage;
     QAction* action_RemoveCoverImage;
-    QAction* action_ColumnVisibility;
+
+    QMenu*   menu_Columns;
+    QAction* action_ColumnsMenuEntry;
 
     QString coversDirectory;
 
@@ -103,13 +102,13 @@ class RomBrowserWidget : public QStackedWidget
 
   private slots:
     void on_DoubleClicked(const QModelIndex& index);
-    void mainContextMenuRequested(QPoint position);
+    void customContextMenuRequested(QPoint position);
+    void generateColumnsMenu(void);
 
     void on_listViewWidget_sortIndicatorChanged(int logicalIndex, Qt::SortOrder sortOrder);
     void on_listViewWidget_sectionResized(int logicalIndex, int oldWidth, int newWidth);
     void on_listViewWidget_sectionMoved(int logicalIndex, int oldVisualIndex, int newVisualIndex);
     void on_listViewWidget_headerContextMenuRequested(QPoint position);
-    void on_listViewWidget_columnVisibilityMenuRequested(QMenu* currentMenu);
     
     void on_gridViewWidget_iconSizeChanged(const QSize& size);
 
