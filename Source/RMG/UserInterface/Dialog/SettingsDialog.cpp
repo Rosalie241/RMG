@@ -843,6 +843,10 @@ void SettingsDialog::commonHotkeySettings(SettingsDialogAction action)
 
     std::vector<keybinding> keybindings_Settings =
     {
+        { this->graphicsSettingsKeyButton, SettingsID::KeyBinding_GraphicsSettings },
+        { this->audioSettingsKeyButton, SettingsID::KeyBinding_AudioSettings },
+        { this->rspSettingsKeyButton, SettingsID::KeyBinding_RspSettings },
+        { this->inputSettingsKeyButton, SettingsID::KeyBinding_InputSettings },
         { this->settingsKeyButton, SettingsID::KeyBinding_Settings },
     };
 
@@ -1190,6 +1194,10 @@ void SettingsDialog::on_KeybindButton_KeybindingChanged(KeybindButton* button)
         this->startComboKeyButton,
         this->shutdownKeyButton,
         this->exitKeyButton,
+        this->graphicsSettingsKeyButton,
+        this->audioSettingsKeyButton,
+        this->rspSettingsKeyButton,
+        this->inputSettingsKeyButton,
         this->settingsKeyButton,
         this->refreshRomListKeyButton,
     };
@@ -1231,6 +1239,10 @@ void SettingsDialog::on_KeybindButton_KeybindingChanged(KeybindButton* button)
         this->saveState8KeyButton,
         this->saveState9KeyButton,
         this->exitKeyButton,
+        this->graphicsSettingsKeyButton,
+        this->audioSettingsKeyButton,
+        this->rspSettingsKeyButton,
+        this->inputSettingsKeyButton,
         this->settingsKeyButton,
         this->fullscreenKeyButton,
     };

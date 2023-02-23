@@ -621,10 +621,18 @@ void MainWindow::updateActions(bool inEmulation, bool isPaused)
         slotActions[i]->setShortcut(QKeySequence(keyBinding));
     }
 
+    keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_GraphicsSettings));
     this->action_Settings_Graphics->setEnabled(CorePluginsHasConfig(CorePluginType::Gfx));
+    this->action_Settings_Graphics->setShortcut(QKeySequence(keyBinding));
+    keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_AudioSettings));
     this->action_Settings_Audio->setEnabled(CorePluginsHasConfig(CorePluginType::Audio));
+    this->action_Settings_Audio->setShortcut(QKeySequence(keyBinding));
+    keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_RspSettings));
     this->action_Settings_Rsp->setEnabled(CorePluginsHasConfig(CorePluginType::Rsp));
+    this->action_Settings_Rsp->setShortcut(QKeySequence(keyBinding));
+    keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_InputSettings));
     this->action_Settings_Input->setEnabled(CorePluginsHasConfig(CorePluginType::Input));
+    this->action_Settings_Input->setShortcut(QKeySequence(keyBinding));
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_Settings));
     this->action_Settings_Settings->setShortcut(QKeySequence(keyBinding));
 
