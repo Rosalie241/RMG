@@ -95,11 +95,13 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->listViewWidget->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);
     this->listViewWidget->horizontalHeader()->setSortIndicatorShown(false);
     this->listViewWidget->horizontalHeader()->setHighlightSections(false);
+    this->listViewWidget->horizontalHeader()->setContextMenuPolicy(Qt::CustomContextMenu);
     this->addWidget(this->listViewWidget);
     connect(this->listViewWidget, &QTableView::doubleClicked, this, &RomBrowserWidget::on_DoubleClicked);
     connect(this->listViewWidget->horizontalHeader(), &QHeaderView::sortIndicatorChanged, this, &RomBrowserWidget::on_listViewWidget_sortIndicatorChanged);
     connect(this->listViewWidget->horizontalHeader(), &QHeaderView::sectionResized, this, &RomBrowserWidget::on_listViewWidget_sectionResized);
     connect(this->listViewWidget->horizontalHeader(), &QHeaderView::sectionMoved, this, &RomBrowserWidget::on_listViewWidget_sectionMoved);
+    connect(this->listViewWidget->horizontalHeader(), &QHeaderView::customContextMenuRequested, this, &RomBrowserWidget::on_listViewWidget_headerContextMenuRequested);
     connect(this->listViewWidget, &Widget::RomBrowserListViewWidget::ZoomIn, this, &RomBrowserWidget::on_ZoomIn);
     connect(this->listViewWidget, &Widget::RomBrowserListViewWidget::ZoomOut, this, &RomBrowserWidget::on_ZoomOut);
 
@@ -138,12 +140,14 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
 
     // configure context menu policy
     this->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(this, &QStackedWidget::customContextMenuRequested, this, &RomBrowserWidget::customContextMenuRequested);
+    connect(this, &QStackedWidget::customContextMenuRequested, this, &RomBrowserWidget::mainContextMenuRequested);
 
-    // define context menu
-    this->contextMenu = new QMenu(this);
+    // define context menus
+    this->mainContextMenu = new QMenu(this);
+    this->headerContextMenu = new QMenu(this);
+    this->categorySubmenu = new QMenu(this);
 
-    // configure context menu actions
+    // define context menu actions
     this->action_PlayGame = new QAction(this);
     this->action_PlayGameWith = new QAction(this);
     this->action_RefreshRomList = new QAction(this);
@@ -152,9 +156,11 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->action_RomInformation = new QAction(this);
     this->action_EditGameSettings = new QAction(this);
     this->action_EditCheats = new QAction(this);
-    this->action_ColumnVisibility = new QAction(this);
     this->action_SetCoverImage = new QAction(this);
     this->action_RemoveCoverImage = new QAction(this);
+    this->action_ColumnVisibility = new QAction(this);
+
+    // configure main context menu actions
     this->action_PlayGame->setText("Play Game");
     this->action_PlayGameWith->setText("Play Game with Disk");
     this->action_RefreshRomList->setText("Refresh ROM List");
@@ -428,7 +434,7 @@ void RomBrowserWidget::on_DoubleClicked(const QModelIndex& index)
     emit this->PlayGame(this->getCurrentRom());
 }
 
-void RomBrowserWidget::customContextMenuRequested(QPoint position)
+void RomBrowserWidget::mainContextMenuRequested(QPoint position)
 {
     QStandardItemModel* model = this->getCurrentModel();
     QAbstractItemView*  view = this->getCurrentModelView();
@@ -437,45 +443,26 @@ void RomBrowserWidget::customContextMenuRequested(QPoint position)
         return;
     }
 
-    this->contextMenu->clear();
-
-    if (view == this->listViewWidget)
-    { // list view
-        for (int i = 0; i < this->listViewModel->columnCount(); i++)
-        {
-            int column = this->listViewWidget->horizontalHeader()->logicalIndex(i);
-
-            this->action_ColumnVisibility = this->contextMenu->addAction(this->listViewModel->horizontalHeaderItem(column)->text());
-            if (column != 0)
-            {
-                this->action_ColumnVisibility->setCheckable(true);
-                this->action_ColumnVisibility->setChecked(!this->listViewWidget->horizontalHeader()->isSectionHidden(column));
-                connect(this->action_ColumnVisibility, &QAction::toggled, [this, column](bool checked)
-                {
-                    this->listViewWidget->horizontalHeader()->setSectionHidden(column, !checked);
-                });
-            }
-        }
-        this->contextMenu->addSeparator();
-    }
-
-    this->contextMenu->addAction(this->action_PlayGame);
-    this->contextMenu->addAction(this->action_PlayGameWith);
-    this->contextMenu->addSeparator();
-    this->contextMenu->addAction(this->action_RefreshRomList);
-    this->contextMenu->addSeparator();
-    this->contextMenu->addAction(this->action_OpenRomDirectory);
-    this->contextMenu->addAction(this->action_ChangeRomDirectory);
-    this->contextMenu->addSeparator();
-    this->contextMenu->addAction(this->action_RomInformation);
-    this->contextMenu->addSeparator();
-    this->contextMenu->addAction(this->action_EditGameSettings);
-    this->contextMenu->addAction(this->action_EditCheats);
-
     RomBrowserModelData data;
     bool hasSelection = view->selectionModel()->hasSelection();
 
     this->getCurrentData(data);
+
+    this->mainContextMenu->clear();
+
+    this->mainContextMenu->addAction(this->action_PlayGame);
+    this->mainContextMenu->addAction(this->action_PlayGameWith);
+    this->mainContextMenu->addSeparator();
+    this->mainContextMenu->addAction(this->action_RefreshRomList);
+    this->mainContextMenu->addSeparator();
+    this->mainContextMenu->addAction(this->action_OpenRomDirectory);
+    this->mainContextMenu->addAction(this->action_ChangeRomDirectory);
+    this->mainContextMenu->addSeparator();
+    this->mainContextMenu->addAction(this->action_RomInformation);
+    this->mainContextMenu->addSeparator();
+    this->mainContextMenu->addAction(this->action_EditGameSettings);
+    this->mainContextMenu->addAction(this->action_EditCheats);
+    this->mainContextMenu->addSeparator();
 
     this->action_PlayGame->setEnabled(hasSelection);
     this->action_PlayGameWith->setEnabled(hasSelection);
@@ -492,13 +479,17 @@ void RomBrowserWidget::customContextMenuRequested(QPoint position)
         this->action_PlayGameWith->setText("Play Game with Disk");
     }
 
+    if (view == this->listViewWidget)
+    { // list view
+        this->categorySubmenu = this->mainContextMenu->addMenu(tr("&Show/Hide Categories"));
+        RomBrowserWidget::on_listViewWidget_columnVisibilityMenuRequested(categorySubmenu);
+    }
+
     if (view == this->gridViewWidget)
     { // grid view
-        this->contextMenu->addSeparator();
-        this->contextMenu->addAction(this->action_SetCoverImage);
-        this->contextMenu->addAction(this->action_RemoveCoverImage);
-
+        this->mainContextMenu->addAction(this->action_SetCoverImage);
         this->action_SetCoverImage->setEnabled(hasSelection);
+        this->mainContextMenu->addAction(this->action_RemoveCoverImage);
         this->action_RemoveCoverImage->setEnabled(hasSelection && !data.coverFile.isEmpty());
 
         if (data.coverFile.isEmpty())
@@ -511,7 +502,7 @@ void RomBrowserWidget::customContextMenuRequested(QPoint position)
         }
     }
 
-    this->contextMenu->popup(this->mapToGlobal(position));
+    this->mainContextMenu->popup(this->mapToGlobal(position));
 }
 
 void RomBrowserWidget::on_listViewWidget_sortIndicatorChanged(int logicalIndex, Qt::SortOrder sortOrder)
@@ -563,6 +554,32 @@ void RomBrowserWidget::on_listViewWidget_sectionMoved(int logicalIndex, int oldV
     }
 
     CoreSettingsSetValue(SettingsID::RomBrowser_ColumnOrder, columnOrder);
+}
+
+void RomBrowserWidget::on_listViewWidget_headerContextMenuRequested(QPoint position)
+{
+    this->headerContextMenu->clear();
+    RomBrowserWidget::on_listViewWidget_columnVisibilityMenuRequested(headerContextMenu);
+    this->headerContextMenu->popup(this->mapToGlobal(position));
+}
+
+void RomBrowserWidget::on_listViewWidget_columnVisibilityMenuRequested(QMenu* currentMenu)
+{
+    for (int i = 0; i < this->listViewModel->columnCount(); i++)
+    {
+        int column = this->listViewWidget->horizontalHeader()->logicalIndex(i);
+
+        this->action_ColumnVisibility = currentMenu->addAction(this->listViewModel->horizontalHeaderItem(column)->text());
+        if (column != 0)
+        {
+            this->action_ColumnVisibility->setCheckable(true);
+            this->action_ColumnVisibility->setChecked(!this->listViewWidget->horizontalHeader()->isSectionHidden(column));
+            connect(this->action_ColumnVisibility, &QAction::toggled, [this, column](bool checked)
+            {
+                this->listViewWidget->horizontalHeader()->setSectionHidden(column, !checked);
+            });
+        }
+    }
 }
 
 void RomBrowserWidget::on_gridViewWidget_iconSizeChanged(const QSize& size)
