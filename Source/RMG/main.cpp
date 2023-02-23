@@ -100,6 +100,9 @@ int main(int argc, char **argv)
     QCommandLineOption corePathOption("core-path", "Changes the path where the core library is stored", "path");
     QCommandLineOption pluginPathOption("plugin-path", "Changes the path where the plugins are stored", "path");
     QCommandLineOption sharedDataPathOption("shared-data-path", "Changes the path where the shared data is stored", "path");
+    corePathOption.setFlags(QCommandLineOption::HiddenFromHelp);
+    pluginPathOption.setFlags(QCommandLineOption::HiddenFromHelp);
+    sharedDataPathOption.setFlags(QCommandLineOption::HiddenFromHelp);
 #endif // PORTABLE_INSTALL
     QCommandLineOption fullscreenOption({"f", "fullscreen"}, "Launches ROM in fullscreen mode");
     QCommandLineOption quitAfterEmulation({"q", "quit-after-emulation"}, "Quits RMG when emulation has finished");
