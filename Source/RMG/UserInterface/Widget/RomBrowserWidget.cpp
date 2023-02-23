@@ -481,7 +481,7 @@ void RomBrowserWidget::mainContextMenuRequested(QPoint position)
 
     if (view == this->listViewWidget)
     { // list view
-        this->categorySubmenu = this->mainContextMenu->addMenu(tr("&Show/Hide Categories"));
+        this->categorySubmenu = this->mainContextMenu->addMenu(tr("&Show/Hide Columns"));
         RomBrowserWidget::on_listViewWidget_columnVisibilityMenuRequested(categorySubmenu);
     }
 
