@@ -195,6 +195,9 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::GUI_CheckForUpdates:
         setting = {SETTING_SECTION_GUI, "CheckForUpdates", true};
         break;
+    case SettingsID::GUI_LastUpdateCheck:
+        setting = {SETTING_SECTION_GUI, "LastUpdateCheck", ""};
+        break;
     case SettingsID::GUI_DiscordRpc:
         setting = {SETTING_SECTION_GUI, "DiscordRpc", true};
         break;
