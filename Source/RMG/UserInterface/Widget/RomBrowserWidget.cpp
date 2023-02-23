@@ -145,7 +145,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     // define context menus
     this->mainContextMenu = new QMenu(this);
     this->headerContextMenu = new QMenu(this);
-    this->categorySubmenu = new QMenu(this);
+    this->columnsSubmenu = new QMenu(this);
 
     // define context menu actions
     this->action_PlayGame = new QAction(this);
@@ -481,8 +481,8 @@ void RomBrowserWidget::mainContextMenuRequested(QPoint position)
 
     if (view == this->listViewWidget)
     { // list view
-        this->categorySubmenu = this->mainContextMenu->addMenu(tr("&Show/Hide Columns"));
-        RomBrowserWidget::on_listViewWidget_columnVisibilityMenuRequested(categorySubmenu);
+        this->columnsSubmenu = this->mainContextMenu->addMenu(tr("&Show/Hide Columns"));
+        RomBrowserWidget::on_listViewWidget_columnVisibilityMenuRequested(columnsSubmenu);
     }
 
     if (view == this->gridViewWidget)

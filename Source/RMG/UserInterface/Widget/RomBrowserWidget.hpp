@@ -74,7 +74,7 @@ class RomBrowserWidget : public QStackedWidget
 
     QMenu*   mainContextMenu;
     QMenu*   headerContextMenu;
-    QMenu*   categorySubmenu;
+    QMenu*   columnsSubmenu;
 
     QAction* action_PlayGame;
     QAction* action_PlayGameWith;
