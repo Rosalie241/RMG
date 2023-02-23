@@ -105,7 +105,8 @@ int main(int argc, char **argv)
     sharedDataPathOption.setFlags(QCommandLineOption::HiddenFromHelp);
 #endif // PORTABLE_INSTALL
     QCommandLineOption fullscreenOption({"f", "fullscreen"}, "Launches ROM in fullscreen mode");
-    QCommandLineOption quitAfterEmulation({"q", "quit-after-emulation"}, "Quits RMG when emulation has finished");
+    QCommandLineOption noGuiOption({"n", "nogui"}, "Removes GUI elements");
+    QCommandLineOption quitAfterEmulationOption({"q", "quit-after-emulation"}, "Quits RMG when emulation has finished");
     QCommandLineOption diskOption("disk", "64DD Disk to open ROM in combination with", "64DD Disk");
 
 #ifndef PORTABLE_INSTALL
@@ -114,7 +115,8 @@ int main(int argc, char **argv)
     parser.addOption(sharedDataPathOption);
 #endif // PORTABLE_INSTALL
     parser.addOption(fullscreenOption);
-    parser.addOption(quitAfterEmulation);
+    parser.addOption(noGuiOption);
+    parser.addOption(quitAfterEmulationOption);
     parser.addOption(diskOption);
     parser.addPositionalArgument("ROM", "ROM to open");
 
@@ -141,7 +143,7 @@ int main(int argc, char **argv)
 #endif // PORTABLE_INSTALL
 
     // initialize window
-    if (!window.Init(&app))
+    if (!window.Init(&app, !parser.isSet(noGuiOption)))
     {
         return 1;
     }
@@ -150,7 +152,7 @@ int main(int argc, char **argv)
     QStringList args = parser.positionalArguments();
     if (!args.empty())
     {
-        window.OpenROM(args.at(0), parser.value(diskOption), parser.isSet(fullscreenOption), parser.isSet(quitAfterEmulation));
+        window.OpenROM(args.at(0), parser.value(diskOption), parser.isSet(fullscreenOption), parser.isSet(quitAfterEmulationOption));
     }
 
     return app.exec();
