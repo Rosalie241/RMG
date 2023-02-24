@@ -604,13 +604,6 @@ void MainWindow::updateActions(bool inEmulation, bool isPaused)
     }
 
     // configure keybindings for save slots
-    QAction* slotActions[] =
-    {
-        this->actionSlot_0, this->actionSlot_1, this->actionSlot_2,
-        this->actionSlot_3, this->actionSlot_4, this->actionSlot_5,
-        this->actionSlot_6, this->actionSlot_7, this->actionSlot_8,
-        this->actionSlot_9
-    };
     SettingsID slotKeybindSettingsId[] =
     {
         SettingsID::KeyBinding_SaveStateSlot0, SettingsID::KeyBinding_SaveStateSlot1,
@@ -623,8 +616,8 @@ void MainWindow::updateActions(bool inEmulation, bool isPaused)
     for (int i = 0; i < 10; i++)
     {
         keyBinding = QString::fromStdString(CoreSettingsGetStringValue(slotKeybindSettingsId[i]));
-        slotActions[i]->setShortcut(QKeySequence(keyBinding));
-        slotActions[i]->setChecked(i == currentSlot);
+        this->ui_SlotActions[i]->setShortcut(QKeySequence(keyBinding));
+        this->ui_SlotActions[i]->setChecked(i == currentSlot);
     }
 
     // configure text and filename data for save slots
@@ -667,25 +660,18 @@ void MainWindow::updateSaveStateSlotActions(bool inEmulation, bool isPaused)
         return;
     }
 
-    QAction* slotActions[] =
-    {
-        this->actionSlot_0, this->actionSlot_1, this->actionSlot_2,
-        this->actionSlot_3, this->actionSlot_4, this->actionSlot_5,
-        this->actionSlot_6, this->actionSlot_7, this->actionSlot_8,
-        this->actionSlot_9
-    };
     for (int i = 0; i < 10; i++)
     {
         if (inEmulation &&
             CoreGetSaveStatePath(i, saveStatePath))
         {
-            slotActions[i]->setData(QString::fromStdString(saveStatePath.string()));
-            slotActions[i]->setText(this->getSaveStateSlotText(slotActions[i], i));
+            this->ui_SlotActions[i]->setData(QString::fromStdString(saveStatePath.string()));
+            this->ui_SlotActions[i]->setText(this->getSaveStateSlotText(this->ui_SlotActions[i], i));
         }
         else
         {
-            slotActions[i]->setData("");
-            slotActions[i]->setText(this->getSaveStateSlotText(slotActions[i], i));
+            this->ui_SlotActions[i]->setData("");
+            this->ui_SlotActions[i]->setText(this->getSaveStateSlotText(this->ui_SlotActions[i], i));
         }
     }
 }
@@ -720,13 +706,10 @@ void MainWindow::removeActions(void)
     this->ui_AddedActions = false;
 }
 
-QString MainWindow::getSaveStateSlotText(QAction* action, int slot)
+QString MainWindow::getSaveStateSlotDateTimeText(QAction* action)
 {
     QString saveStateSlotText;
     QString filePath;
-
-    // base text
-    saveStateSlotText = "Slot " + QString::number(slot);
 
     // retrieve file name
     filePath = action->data().toString();
@@ -736,8 +719,27 @@ QString MainWindow::getSaveStateSlotText(QAction* action, int slot)
     QFileInfo saveStateFileInfo(filePath);
     if (!filePath.isEmpty() && saveStateFileInfo.exists())
     {
+        saveStateSlotText = saveStateFileInfo.lastModified().toString("dd/MM/yyyy hh:mm");
+    }
+
+    return saveStateSlotText;
+}
+
+QString MainWindow::getSaveStateSlotText(QAction* action, int slot)
+{
+    QString saveStateSlotText;
+    QString dateTimeText;
+    QString filePath;
+
+    // base text
+    saveStateSlotText = "Slot " + QString::number(slot);
+
+    // add date and time text when it isnt empty
+    dateTimeText = this->getSaveStateSlotDateTimeText(action);
+    if (!dateTimeText.isEmpty())
+    {
         saveStateSlotText += " - ";
-        saveStateSlotText += saveStateFileInfo.lastModified().toString("dd/MM/yyyy hh:mm");
+        saveStateSlotText += dateTimeText;
     }
 
     return saveStateSlotText;
@@ -773,6 +775,15 @@ void MainWindow::configureActions(void)
         this->action_View_Log,
         // Help actions
         this->action_Help_Github, this->action_Help_About,
+    });
+
+    // configure save slot actions
+    this->ui_SlotActions.append(
+    {
+        this->actionSlot_0, this->actionSlot_1, this->actionSlot_2,
+        this->actionSlot_3, this->actionSlot_4, this->actionSlot_5,
+        this->actionSlot_6, this->actionSlot_7, this->actionSlot_8,
+        this->actionSlot_9
     });
 
     // configure emulation speed actions
@@ -813,16 +824,9 @@ void MainWindow::configureActions(void)
 
     // configure save slot actions
     QActionGroup* slotActionGroup = new QActionGroup(this);
-    QAction* slotActions[] =
-    {
-        this->actionSlot_0, this->actionSlot_1, this->actionSlot_2,
-        this->actionSlot_3, this->actionSlot_4, this->actionSlot_5,
-        this->actionSlot_6, this->actionSlot_7, this->actionSlot_8,
-        this->actionSlot_9
-    };
     for (int i = 0; i < 10; i++)
     {
-        QAction* slotAction = slotActions[i];
+        QAction* slotAction = this->ui_SlotActions[i];
 
         slotAction->setCheckable(true);
         slotAction->setChecked(i == 0);
@@ -1397,13 +1401,36 @@ void MainWindow::on_Action_System_Load(void)
 
 void MainWindow::on_Action_System_CurrentSaveState(int slot)
 {
+    QAction* slotAction;
+    QString dateTimeText;
+    std::string message;
+
     if (!CoreSetSaveStateSlot(slot))
     {
         this->showErrorMessage("CoreSetSaveStateSlot() Failed", QString::fromStdString(CoreGetError()));
     }
     else
     {
-        OnScreenDisplaySetMessage("Selected save slot: " + std::to_string(slot));
+        slotAction = this->ui_SlotActions[slot];
+        dateTimeText = this->getSaveStateSlotDateTimeText(slotAction);
+
+        // construct OSD message
+        message = "Selected save slot: " + std::to_string(slot);
+
+        // add date and time when available
+        if (!dateTimeText.isEmpty())
+        {
+            message += " [";
+            message += dateTimeText.toStdString();
+            message += "]";
+        }
+        else
+        {
+            message += " [N/A]";
+        }
+
+        // display message
+        OnScreenDisplaySetMessage(message);
     }
 }
 

@@ -83,6 +83,8 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     QList<QAction*> ui_Actions;
     bool ui_AddedActions = false;
 
+    QList<QAction*> ui_SlotActions;
+
     bool ui_SilentUpdateCheck = false;
 
     int ui_TimerId      = 0;
@@ -114,6 +116,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     void connectEmulationThreadSignals(void);
     void launchEmulationThread(QString cartRom, QString diskRom = "");
 
+    QString getSaveStateSlotDateTimeText(QAction* action);
     QString getSaveStateSlotText(QAction* action, int slot);
 
     void configureActions(void);
