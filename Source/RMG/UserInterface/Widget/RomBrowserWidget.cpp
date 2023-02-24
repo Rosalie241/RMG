@@ -539,7 +539,7 @@ void RomBrowserWidget::on_listViewWidget_sectionResized(int logicalIndex, int ol
         columnVisibility.at(logicalIndex) = 1;
         CoreSettingsSetValue(SettingsID::RomBrowser_Columns, columnVisibility);
 
-        int lastVisibleColumn;
+        int lastVisibleColumn = -1;
         for (int i = 0; i < this->listViewModel->columnCount(); i++)
         {
             int column = this->listViewWidget->horizontalHeader()->logicalIndex(i);
@@ -663,7 +663,7 @@ void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
         this->gridViewModel->sort(0, Qt::SortOrder::AscendingOrder);
     }
 
-    // get column settings data from config file
+    // retrieve column settings
     std::vector<int> columnVisibility = CoreSettingsGetIntListValue(SettingsID::RomBrowser_Columns);
     std::vector<int> columnOrder = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnOrder);
     std::vector<int> columnSizes = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnSizes);
@@ -672,7 +672,8 @@ void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
     this->listViewWidget->horizontalHeader()->setStretchLastSection(false);
 
     // reset column visibility setting in config file if number of values is incorrect
-    if (columnVisibility.size() != this->listViewModel->columnCount())
+    if (!columnVisibility.empty() &&
+        columnVisibility.size() != this->listViewModel->columnCount())
     {
         columnVisibility.clear();
         columnVisibility.resize(this->listViewModel->columnCount(), 1);
@@ -680,7 +681,8 @@ void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
     }
 
     // reset column order setting in config file if number of values is incorrect
-    if (columnOrder.size() != this->listViewModel->columnCount())
+    if (!columnOrder.empty() &&
+        columnOrder.size() != this->listViewModel->columnCount())
     {
         columnOrder.clear();
         for (int i = 0; i < this->listViewModel->columnCount(); i++)
@@ -691,7 +693,8 @@ void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
     }
 
     // reset column sizes setting in config file if number of values is incorrect
-    if (!canceled && columnSizes.size() != this->listViewModel->columnCount())
+    if (!columnSizes.empty() && 
+        columnSizes.size() != this->listViewModel->columnCount())
     {
         columnSizes.clear();
         columnSizes.resize(this->listViewModel->columnCount(), -1);
@@ -714,7 +717,7 @@ void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
     }
 
     // update list view's column sizes
-	for (int i = 0; i < columnSizes.size(); i++)
+    for (int i = 0; i < columnSizes.size(); i++)
     {
         // set column widths to values specified in config file (or resize to content if not already specified)
         if (columnSizes.at(i) == -1)
