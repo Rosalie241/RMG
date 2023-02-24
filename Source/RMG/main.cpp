@@ -119,8 +119,9 @@ int main(int argc, char **argv)
     pluginPathOption.setFlags(QCommandLineOption::HiddenFromHelp);
     sharedDataPathOption.setFlags(QCommandLineOption::HiddenFromHelp);
 #endif // PORTABLE_INSTALL
+    QCommandLineOption debugMessagesOption({"d", "debug-messages"}, "Prints debug callback messages to stdout");
     QCommandLineOption fullscreenOption({"f", "fullscreen"}, "Launches ROM in fullscreen mode");
-    QCommandLineOption noGuiOption({"n", "nogui"}, "Removes GUI elements");
+    QCommandLineOption noGuiOption({"n", "nogui"}, "Hides GUI elements (menubar, toolbar, statusbar)");
     QCommandLineOption quitAfterEmulationOption({"q", "quit-after-emulation"}, "Quits RMG when emulation has finished");
     QCommandLineOption diskOption("disk", "64DD Disk to open ROM in combination with", "64DD Disk");
 
@@ -129,6 +130,7 @@ int main(int argc, char **argv)
     parser.addOption(pluginPathOption);
     parser.addOption(sharedDataPathOption);
 #endif // PORTABLE_INSTALL
+    parser.addOption(debugMessagesOption);
     parser.addOption(fullscreenOption);
     parser.addOption(noGuiOption);
     parser.addOption(quitAfterEmulationOption);
@@ -156,6 +158,9 @@ int main(int argc, char **argv)
         CoreSetSharedDataPathOverride(sharedDataPathOverride.toStdString());
     }
 #endif // PORTABLE_INSTALL
+
+    // print debug callbacks to stdout if needed
+    CoreSetPrintDebugCallback(parser.isSet(debugMessagesOption));
 
     // initialize window
     if (!window.Init(&app, !parser.isSet(noGuiOption)))
