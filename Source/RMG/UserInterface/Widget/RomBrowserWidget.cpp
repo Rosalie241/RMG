@@ -526,18 +526,18 @@ void RomBrowserWidget::on_listViewWidget_sortIndicatorChanged(int logicalIndex, 
 
 void RomBrowserWidget::on_listViewWidget_sectionResized(int logicalIndex, int oldWidth, int newWidth)
 {
-    std::vector<int> columnVisibility = CoreSettingsGetIntListValue(SettingsID::RomBrowser_Columns);
+    std::vector<int> columnVisibility = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnVisibility);
     std::vector<int> columnSizes = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnSizes);
 
     if (newWidth == 0)
     {
         columnVisibility.at(logicalIndex) = 0;
-        CoreSettingsSetValue(SettingsID::RomBrowser_Columns, columnVisibility);
+        CoreSettingsSetValue(SettingsID::RomBrowser_ColumnVisibility, columnVisibility);
     }
     else
     {
         columnVisibility.at(logicalIndex) = 1;
-        CoreSettingsSetValue(SettingsID::RomBrowser_Columns, columnVisibility);
+        CoreSettingsSetValue(SettingsID::RomBrowser_ColumnVisibility, columnVisibility);
 
         int lastVisibleColumn = -1;
         for (int i = 0; i < this->listViewModel->columnCount(); i++)
@@ -664,7 +664,7 @@ void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
     }
 
     // retrieve column settings
-    std::vector<int> columnVisibility = CoreSettingsGetIntListValue(SettingsID::RomBrowser_Columns);
+    std::vector<int> columnVisibility = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnVisibility);
     std::vector<int> columnOrder = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnOrder);
     std::vector<int> columnSizes = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnSizes);
 
@@ -677,7 +677,7 @@ void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
     {
         columnVisibility.clear();
         columnVisibility.resize(this->listViewModel->columnCount(), 1);
-        CoreSettingsSetValue(SettingsID::RomBrowser_Columns, columnVisibility);
+        CoreSettingsSetValue(SettingsID::RomBrowser_ColumnVisibility, columnVisibility);
     }
 
     // reset column order setting in config file if number of values is incorrect
