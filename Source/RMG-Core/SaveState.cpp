@@ -146,7 +146,7 @@ bool CoreGetSaveStatePath(int slot, std::filesystem::path& path)
     saveStatePath += saveStateExtension;
 
     // retrieve filename from path
-    saveStateFileName = saveStatePath.filename();
+    saveStateFileName = saveStatePath.filename().string();
 
     // sanitize filename
     str_replace_chars(saveStateFileName, ":<>\"/\\|?*", '_');
