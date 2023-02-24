@@ -32,6 +32,10 @@ enum class CoreDebugMessageType
     Verbose = 5
 };
 
+// attempts to setup callbacks with the provided functions
 bool CoreSetupCallbacks(std::function<void(enum CoreDebugMessageType, std::string, std::string)> debugCallbackFunc);
+
+// sets whether the debug callbacks will be printed to stdout
+void CoreSetPrintDebugCallback(bool enabled);
 
 #endif // CORE_CALLBACK_HPP

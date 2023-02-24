@@ -11,12 +11,15 @@
 #include "Core.hpp"
 #include "ConvertStringEncoding.hpp"
 
+#include <iostream>
+
 //
 // Local Variables
 //
 
 static bool l_SetupCallbacks = false;
 static std::function<void(enum CoreDebugMessageType, std::string, std::string)> l_DebugCallbackFunc;
+static bool l_PrintCallbacks = false;
 
 //
 // Internal Functions
@@ -42,6 +45,11 @@ void CoreDebugCallback(void* context, int level, const char* message)
         messageString = CoreConvertStringEncoding(message, CoreStringEncoding::Shift_JIS);
     }
 
+    if (l_PrintCallbacks)
+    {
+        std::cout << contextString << messageString << std::endl;
+    }
+
     l_DebugCallbackFunc((CoreDebugMessageType)level, contextString, messageString);
 }
 
@@ -59,4 +67,9 @@ bool CoreSetupCallbacks(std::function<void(enum CoreDebugMessageType, std::strin
     l_DebugCallbackFunc = debugCallbackFunc;
     l_SetupCallbacks = true;
     return true;
+}
+
+void CoreSetPrintDebugCallback(bool enabled)
+{
+    l_PrintCallbacks = enabled;
 }
