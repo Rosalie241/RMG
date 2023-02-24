@@ -612,11 +612,16 @@ void MainWindow::updateActions(bool inEmulation, bool isPaused)
         SettingsID::KeyBinding_SaveStateSlot6, SettingsID::KeyBinding_SaveStateSlot7,
         SettingsID::KeyBinding_SaveStateSlot8, SettingsID::KeyBinding_SaveStateSlot9
     };
+    int currentSlot = CoreGetSaveStateSlot();
     for (int i = 0; i < 10; i++)
     {
         keyBinding = QString::fromStdString(CoreSettingsGetStringValue(slotKeybindSettingsId[i]));
         slotActions[i]->setShortcut(QKeySequence(keyBinding));
+        slotActions[i]->setChecked(i == currentSlot);
     }
+
+    // configure text and filename data for save slots
+    this->updateSaveStateSlotActions(inEmulation, isPaused);
 
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_GraphicsSettings));
     this->action_Settings_Graphics->setEnabled(CorePluginsHasConfig(CorePluginType::Gfx));
@@ -641,6 +646,39 @@ void MainWindow::updateActions(bool inEmulation, bool isPaused)
     this->action_View_RefreshRoms->setEnabled(!inEmulation);
     this->action_View_RefreshRoms->setShortcut(QKeySequence(keyBinding));
     this->action_View_ClearRomCache->setEnabled(!inEmulation);
+}
+
+void MainWindow::updateSaveStateSlotActions(bool inEmulation, bool isPaused)
+{
+    std::filesystem::path saveStatePath;
+
+    // do nothing when paused
+    if (isPaused)
+    {
+        return;
+    }
+
+    QAction* slotActions[] =
+    {
+        this->actionSlot_0, this->actionSlot_1, this->actionSlot_2,
+        this->actionSlot_3, this->actionSlot_4, this->actionSlot_5,
+        this->actionSlot_6, this->actionSlot_7, this->actionSlot_8,
+        this->actionSlot_9
+    };
+    for (int i = 0; i < 10; i++)
+    {
+        if (inEmulation &&
+            CoreGetSaveStatePath(i, saveStatePath))
+        {
+            slotActions[i]->setData(QString::fromStdString(saveStatePath.string()));
+            slotActions[i]->setText(this->getSaveStateSlotText(slotActions[i], i));
+        }
+        else
+        {
+            slotActions[i]->setData("");
+            slotActions[i]->setText(this->getSaveStateSlotText(slotActions[i], i));
+        }
+    }
 }
 
 void MainWindow::addActions(void)
@@ -671,6 +709,29 @@ void MainWindow::removeActions(void)
     }
 
     this->ui_AddedActions = false;
+}
+
+QString MainWindow::getSaveStateSlotText(QAction* action, int slot)
+{
+    QString saveStateSlotText;
+    QString filePath;
+
+    // base text
+    saveStateSlotText = "Slot " + QString::number(slot);
+
+    // retrieve file name
+    filePath = action->data().toString();
+
+    // check if file exists, if it does,
+    // return a string with the datetime
+    QFileInfo saveStateFileInfo(filePath);
+    if (!filePath.isEmpty() && saveStateFileInfo.exists())
+    {
+        saveStateSlotText += " - ";
+        saveStateSlotText += saveStateFileInfo.lastModified().toString("dd/MM/yyyy hh:mm");
+    }
+
+    return saveStateSlotText;
 }
 
 void MainWindow::configureActions(void)
@@ -749,13 +810,12 @@ void MainWindow::configureActions(void)
         this->actionSlot_6, this->actionSlot_7, this->actionSlot_8,
         this->actionSlot_9
     };
-    int currentSlot = CoreGetSaveStateSlot();
     for (int i = 0; i < 10; i++)
     {
         QAction* slotAction = slotActions[i];
 
         slotAction->setCheckable(true);
-        slotAction->setChecked(i == currentSlot);
+        slotAction->setChecked(i == 0);
         slotAction->setActionGroup(slotActionGroup);
 
         // connect slot action here because we need to do
@@ -764,7 +824,7 @@ void MainWindow::configureActions(void)
         {
             if (checked)
             {
-                int slot = slotAction->text().split(" ").last().toInt();
+                int slot = slotAction->text().split(" ").at(1).toInt();
                 this->on_Action_System_CurrentSaveState(slot);
             }
         });
@@ -916,6 +976,13 @@ void MainWindow::timerEvent(QTimerEvent *event)
             this->ui_GamesharkButtonTimerId = 0;
         }
     }
+    else if (timerId == this->ui_UpdateSaveStateSlotTimerId)
+    {
+        this->updateSaveStateSlotActions(CoreIsEmulationRunning(), false);
+        this->killTimer(timerId);
+        this->ui_UpdateSaveStateSlotTimerId = 0;
+    }
+
 }
 
 void MainWindow::on_EventFilter_KeyPressed(QKeyEvent *event)
@@ -1233,6 +1300,15 @@ void MainWindow::on_Action_System_SaveState(void)
     else
     {
         OnScreenDisplaySetMessage("Saved state to slot: " + std::to_string(CoreGetSaveStateSlot()));
+
+        // refresh savestate slot times in 1 second,
+        // kill any existing timers
+        if (this->ui_UpdateSaveStateSlotTimerId != 0)
+        {
+            this->killTimer(this->ui_UpdateSaveStateSlotTimerId);
+            this->ui_UpdateSaveStateSlotTimerId = 0;
+        }
+        this->ui_UpdateSaveStateSlotTimerId = this->startTimer(1000);
     }
 }
 

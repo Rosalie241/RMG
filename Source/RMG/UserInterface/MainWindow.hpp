@@ -90,6 +90,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 
     int ui_FullscreenTimerId = 0;
     int ui_GamesharkButtonTimerId = 0;
+    int ui_UpdateSaveStateSlotTimerId = 0;
 
     QString ui_WindowTitle;
 
@@ -113,9 +114,12 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     void connectEmulationThreadSignals(void);
     void launchEmulationThread(QString cartRom, QString diskRom = "");
 
+    QString getSaveStateSlotText(QAction* action, int slot);
+
     void configureActions(void);
     void connectActionSignals(void);
     void updateActions(bool inEmulation, bool isPaused);
+    void updateSaveStateSlotActions(bool inEmulation, bool isPaused);
 
     void addActions(void);
     void removeActions(void);
