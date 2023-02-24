@@ -36,8 +36,8 @@
       <description>
         <p>Changes:</p>
         <ul>
-          <li>Fix icons not showing up in some cases when migrating from a version before v0.3.5</li>
-          <li>Fix plugin settings not being loaded properly in the settings dialog when migrating from a version before v0.3.5</li>
+          <li>Fix icons not showing up in some cases when migrating from a version before v0.3.6</li>
+          <li>Fix plugin settings not being loaded properly in the settings dialog when migrating from a version before v0.3.6</li>
         </ul>
       </description>
     </release>
@@ -45,7 +45,7 @@
       <description>
         <p>Changes:</p>
         <ul>
-          <li>Fix RMG not using xwayland when using wayland (wayland has lots of issues, can be disabled by building with the `-DFORCE_XCB=OFF` option)</li>
+          <li>Fix RMG not using xwayland when using wayland (wayland has lots of issues, can be disabled by building with the "-DFORCE_XCB=OFF" option)</li>
           <li>Fix some non-fatal mupen64plus errors showing a pop-up</li>
           <li>Fix window not returning to ROM browser when launching a game through the commandline and the plugins aren't ready</li>
           <li>Add support for Qt stylesheets (place them in the 'user data directory/Styles' directory with the '.qss' extension, they'll show up in "Themes")</li>
