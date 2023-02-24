@@ -19,6 +19,10 @@ bool CoreSetSaveStateSlot(int slot);
 // returns -1 on error
 int  CoreGetSaveStateSlot(void);
 
+// retrieves the file path for
+// the save state in the given slot
+bool CoreGetSaveStatePath(int slot, std::filesystem::path& path);
+
 // saves state
 bool CoreSaveState(void);
 

@@ -8,9 +8,31 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "SaveState.hpp"
+#include "Directories.hpp"
+#include "RomSettings.hpp"
+#include "RomHeader.hpp"
 #include "Error.hpp"
 
 #include "m64p/Api.hpp"
+
+#include <algorithm>
+
+//
+// Local Functions
+//
+
+// replaces all occurences of any chars in replace with c inside str
+static void str_replace_chars(std::string& str, const std::string replace, const char c)
+{
+    for (int i = 0; i < str.size(); i++)
+    {
+        char str_char = str.at(i);
+        if (replace.find(str_char) != std::string::npos)
+        {
+            str.at(i) = c;
+        }
+    }
+}
 
 //
 // Exported Functions
@@ -57,6 +79,83 @@ int CoreGetSaveStateSlot(void)
     }
 
     return slot;
+}
+
+bool CoreGetSaveStatePath(int slot, std::filesystem::path& path)
+{
+    // TODO: this should probably be an API function
+    // in mupen64plus-core instead
+
+    std::filesystem::path saveStatePath;
+    std::filesystem::path oldSaveStatePath;
+    std::string saveStateFileName;
+    std::filesystem::path saveStateExtension;
+    CoreRomHeader romHeader;
+    CoreRomSettings romSettings;
+
+    // attempt to retrieve the current
+    // rom header and settings
+    if (!CoreGetCurrentRomHeader(romHeader) ||
+        !CoreGetCurrentRomSettings(romSettings))
+    {
+        return false;
+    }
+
+    // retrieve save state directory
+    saveStatePath = CoreGetSaveStateDirectory();
+    saveStatePath += "/";
+
+    // construct extension
+    saveStateExtension = ".st";
+    saveStateExtension += std::to_string(slot);
+
+    // construct old save state path
+    oldSaveStatePath = saveStatePath;
+    oldSaveStatePath += romSettings.GoodName;
+    oldSaveStatePath += saveStateExtension;
+
+    // use old filename if it exists
+    if (std::filesystem::is_regular_file(oldSaveStatePath))
+    {
+        path = oldSaveStatePath;
+        return true;
+    }
+
+    // else use new filename
+    if (romSettings.GoodName.find("(unknown rom)") == std::string::npos)
+    {
+        if (romSettings.GoodName.size() < 32)
+        {
+            saveStatePath += romSettings.GoodName;
+        }
+        else
+        {
+            saveStatePath += romSettings.GoodName.substr(0, 32);
+        }
+    }
+    else if (!romHeader.Name.empty())
+    {
+        saveStatePath += romHeader.Name;
+    }
+    else
+    {
+        saveStatePath += "unknown";
+    }
+    saveStatePath += "-";
+    saveStatePath += romSettings.MD5.substr(0, 8);
+    saveStatePath += saveStateExtension;
+
+    // retrieve filename from path
+    saveStateFileName = saveStatePath.filename();
+
+    // sanitize filename
+    str_replace_chars(saveStateFileName, ":<>\"/\\|?*", '_');
+
+    // replace filename in path
+    saveStatePath.replace_filename(saveStateFileName);
+
+    path = saveStatePath;
+    return true;
 }
 
 bool CoreSaveState(void)
