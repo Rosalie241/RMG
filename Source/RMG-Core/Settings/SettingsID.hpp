@@ -139,6 +139,7 @@ enum class SettingsID
     KeyBinding_SaveStateSlot8,
     KeyBinding_SaveStateSlot9,
     KeyBinding_Fullscreen,
+    Keybinding_ViewLog,
     KeyBinding_GraphicsSettings,
     KeyBinding_AudioSettings,
     KeyBinding_RspSettings,

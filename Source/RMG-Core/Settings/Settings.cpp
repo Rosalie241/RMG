@@ -510,6 +510,9 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::KeyBinding_Fullscreen:
         setting = {SETTING_SECTION_KEYBIND, "Fullscreen", "Alt+Return"};
         break;
+    case SettingsID::Keybinding_ViewLog:
+        setting = {SETTING_SECTION_KEYBIND, "ViewLog", "Ctrl+L"};
+        break;
     case SettingsID::KeyBinding_GraphicsSettings:
         setting = {SETTING_SECTION_KEYBIND, "GraphicsSettings", "Ctrl+G"};
         break;
