@@ -36,11 +36,12 @@ bool CoreCallbacks::Init(void)
 {
     // needed for Qt
     qRegisterMetaType<CoreDebugMessageType>("CoreDebugMessageType");
+    qRegisterMetaType<CoreDebugMessageType>("CoreStateCallbackType");
 
     this->LoadSettings();
 
     l_CoreCallbacks = this;
-    return CoreSetupCallbacks(this->coreDebugCallback);
+    return CoreSetupCallbacks(this->coreDebugCallback, this->coreStateCallback);
 }
 
 void CoreCallbacks::Stop(void)
@@ -77,4 +78,14 @@ void CoreCallbacks::coreDebugCallback(CoreDebugMessageType type, std::string con
     }
 
     emit l_CoreCallbacks->OnCoreDebugCallback(type, QString::fromStdString(context), QString::fromStdString(message));
+}
+
+void CoreCallbacks::coreStateCallback(CoreStateCallbackType type, int value)
+{
+    if (l_CoreCallbacks == nullptr)
+    {
+        return;
+    }
+
+    emit l_CoreCallbacks->OnCoreStateCallback(type, value);
 }

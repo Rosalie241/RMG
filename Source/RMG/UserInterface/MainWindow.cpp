@@ -94,6 +94,7 @@ bool MainWindow::Init(QApplication* app, bool showUI)
 
     connect(coreCallBacks, &CoreCallbacks::OnCoreDebugCallback, this, &MainWindow::on_Core_DebugCallback);
     connect(coreCallBacks, &CoreCallbacks::OnCoreDebugCallback, &this->logDialog, &Dialog::LogDialog::AddLogLine);
+    connect(coreCallBacks, &CoreCallbacks::OnCoreStateCallback, this, &MainWindow::on_Core_StateCallback);
     connect(app, &QGuiApplication::applicationStateChanged, this, &MainWindow::on_QGuiApplication_applicationStateChanged);
 
     return true;
@@ -2018,4 +2019,22 @@ void MainWindow::on_Core_DebugCallback(CoreDebugMessageType type, QString contex
         this->killTimer(this->ui_TimerId);
     }
     this->ui_TimerId = this->startTimer(this->ui_TimerTimeout * 1000);
+}
+
+void MainWindow::on_Core_StateCallback(CoreStateCallbackType type, int value)
+{
+    if (type == CoreStateCallbackType::SaveStateLoaded)
+    {
+        if (value == 0)
+        {
+            OnScreenDisplaySetMessage("Failed to load save state.");
+        }
+    }
+    else if (type == CoreStateCallbackType::SaveStateSaved)
+    {
+        if (value == 0)
+        {
+            OnScreenDisplaySetMessage("Failed to save state.");
+        }
+    }
 }
