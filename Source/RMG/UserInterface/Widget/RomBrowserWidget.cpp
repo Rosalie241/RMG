@@ -526,34 +526,34 @@ void RomBrowserWidget::on_listViewWidget_sortIndicatorChanged(int logicalIndex, 
 
 void RomBrowserWidget::on_listViewWidget_sectionResized(int logicalIndex, int oldWidth, int newWidth)
 {
-    std::vector<int> columnSizes = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnSizes);
     std::vector<int> columnVisibility = CoreSettingsGetIntListValue(SettingsID::RomBrowser_Columns);
+    std::vector<int> columnSizes = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnSizes);
 
-    int lastVisibleColumn;
-    for (int i = 0; i < this->listViewModel->columnCount(); i++)
+    if (newWidth == 0)
     {
-        int column = this->listViewWidget->horizontalHeader()->logicalIndex(i);
-        if (!this->listViewWidget->horizontalHeader()->isSectionHidden(column))
-        {
-            lastVisibleColumn = column;
-        }
+        columnVisibility.at(logicalIndex) = 0;
+        CoreSettingsSetValue(SettingsID::RomBrowser_Columns, columnVisibility);
     }
-
-    if (!this->listViewWidget->horizontalHeader()->isSectionHidden(logicalIndex))
+    else
     {
         columnVisibility.at(logicalIndex) = 1;
         CoreSettingsSetValue(SettingsID::RomBrowser_Columns, columnVisibility);
+
+        int lastVisibleColumn;
+        for (int i = 0; i < this->listViewModel->columnCount(); i++)
+        {
+            int column = this->listViewWidget->horizontalHeader()->logicalIndex(i);
+            if (!this->listViewWidget->horizontalHeader()->isSectionHidden(column))
+            {
+                lastVisibleColumn = column;
+            }
+        }
 
         if (!this->listViewWidget->horizontalHeader()->stretchLastSection() || logicalIndex != lastVisibleColumn)
         {
             columnSizes.at(logicalIndex) = newWidth;
             CoreSettingsSetValue(SettingsID::RomBrowser_ColumnSizes, columnSizes);
         }
-    }
-    else
-    {
-        columnVisibility.at(logicalIndex) = 0;
-        CoreSettingsSetValue(SettingsID::RomBrowser_Columns, columnVisibility);
     }
 }
 
@@ -664,48 +664,20 @@ void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
     }
 
     // get column settings data from config file
-    std::vector<int> columnSizes = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnSizes);
-    std::vector<int> columnOrder = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnOrder);
     std::vector<int> columnVisibility = CoreSettingsGetIntListValue(SettingsID::RomBrowser_Columns);
+    std::vector<int> columnOrder = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnOrder);
+    std::vector<int> columnSizes = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnSizes);
 
     // temporarily disable stretching last column in list view
     this->listViewWidget->horizontalHeader()->setStretchLastSection(false);
 
-    // reset column sizes setting in config file if number of values is incorrect
-    if (columnSizes.size() != this->listViewModel->columnCount())
+    // reset column visibility setting in config file if number of values is incorrect
+    if (columnVisibility.size() != this->listViewModel->columnCount())
     {
-        columnSizes.clear();
-        columnSizes.resize(this->listViewModel->columnCount(), -1);
-        CoreSettingsSetValue(SettingsID::RomBrowser_ColumnSizes, columnSizes);
+        columnVisibility.clear();
+        columnVisibility.resize(this->listViewModel->columnCount(), 1);
+        CoreSettingsSetValue(SettingsID::RomBrowser_Columns, columnVisibility);
     }
-
-    // update list view's column sizes
-	for (int i = 0; i < columnSizes.size(); i++)
-    {
-        // temporarily save column visibility
-        int tempColumnVisibility = columnVisibility.at(i);
-
-        // set column widths to values specified in config file (or resize to content if not already specified)
-        if (columnSizes.at(i) == -1)
-        {
-            this->listViewWidget->resizeColumnToContents(i);
-        }
-        else
-        {
-            this->listViewWidget->setColumnWidth(i, columnSizes.at(i));
-        }
-
-        // if a hidden section does not have a size specified in the config file, the above function sets it as visible in the config file
-        // to correct this, reset column visibility setting in config file using temporary setting saved earlier
-        if (tempColumnVisibility == 0)
-        {
-            columnVisibility.at(i) = 0;
-            CoreSettingsSetValue(SettingsID::RomBrowser_Columns, columnVisibility);
-        }
-    }
-
-    // enable stretching last column in list view
-    this->listViewWidget->horizontalHeader()->setStretchLastSection(true);
 
     // reset column order setting in config file if number of values is incorrect
     if (columnOrder.size() != this->listViewModel->columnCount())
@@ -718,18 +690,12 @@ void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
         CoreSettingsSetValue(SettingsID::RomBrowser_ColumnOrder, columnOrder);
     }
 
-    // update list view's column order
-    for (int i = 0; i < columnOrder.size(); i++)
+    // reset column sizes setting in config file if number of values is incorrect
+    if (!canceled && columnSizes.size() != this->listViewModel->columnCount())
     {
-        this->listViewWidget->horizontalHeader()->moveSection(this->listViewWidget->horizontalHeader()->visualIndex(i), columnOrder.at(i));
-    }
-
-    // reset column visibility setting in config file if number of values is incorrect
-    if (columnVisibility.size() != this->listViewModel->columnCount())
-    {
-        columnVisibility.clear();
-        columnVisibility.resize(this->listViewModel->columnCount(), 1);
-        CoreSettingsSetValue(SettingsID::RomBrowser_Columns, columnVisibility);
+        columnSizes.clear();
+        columnSizes.resize(this->listViewModel->columnCount(), -1);
+        CoreSettingsSetValue(SettingsID::RomBrowser_ColumnSizes, columnSizes);
     }
 
     // update list view's column visibilities
@@ -740,6 +706,29 @@ void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
             this->listViewWidget->horizontalHeader()->setSectionHidden(i, true);
         }
     }
+
+    // update list view's column order
+    for (int i = 0; i < columnOrder.size(); i++)
+    {
+        this->listViewWidget->horizontalHeader()->moveSection(this->listViewWidget->horizontalHeader()->visualIndex(i), columnOrder.at(i));
+    }
+
+    // update list view's column sizes
+	for (int i = 0; i < columnSizes.size(); i++)
+    {
+        // set column widths to values specified in config file (or resize to content if not already specified)
+        if (columnSizes.at(i) == -1)
+        {
+            this->listViewWidget->resizeColumnToContents(i);
+        }
+        else
+        {
+            this->listViewWidget->setColumnWidth(i, columnSizes.at(i));
+        }
+    }
+
+    // enable stretching last column in list view
+    this->listViewWidget->horizontalHeader()->setStretchLastSection(true);
 
     if (!canceled)
     {
