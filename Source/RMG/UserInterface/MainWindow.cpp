@@ -92,6 +92,12 @@ bool MainWindow::Init(QApplication* app, bool showUI)
         return false;
     }
 
+    // add actions when there's no UI
+    if (!showUI)
+    {
+        this->addActions();
+    }
+
     connect(coreCallBacks, &CoreCallbacks::OnCoreDebugCallback, this, &MainWindow::on_Core_DebugCallback);
     connect(coreCallBacks, &CoreCallbacks::OnCoreDebugCallback, &this->logDialog, &Dialog::LogDialog::AddLogLine);
     connect(coreCallBacks, &CoreCallbacks::OnCoreStateCallback, this, &MainWindow::on_Core_StateCallback);
@@ -763,9 +769,10 @@ void MainWindow::configureActions(void)
         this->action_Settings_Rsp, this->action_Settings_Input,
         this->action_Settings_Settings,
         // View actions
-        this->action_View_Fullscreen, this->action_Help_Github,
+        this->action_View_Fullscreen, this->action_View_RefreshRoms,
+        this->action_View_Log,
         // Help actions
-        this->action_Help_About,
+        this->action_Help_Github, this->action_Help_About,
     });
 
     // configure emulation speed actions
@@ -1895,11 +1902,6 @@ void MainWindow::on_VidExt_ResizeWindow(int width, int height)
     if (this->isMaximized() || this->isMinimized())
     {
         this->showNormal();
-    }
-
-    if (!this->ui_ShowUI)
-    {
-        this->addActions();
     }
 
     this->resize(width, height);
