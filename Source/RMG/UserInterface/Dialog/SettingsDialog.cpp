@@ -853,6 +853,7 @@ void SettingsDialog::commonHotkeySettings(SettingsDialogAction action)
     std::vector<keybinding> keybindings_View =
     {
         { this->fullscreenKeyButton, SettingsID::KeyBinding_Fullscreen },
+        { this->logKeyButton, SettingsID::Keybinding_ViewLog },
         { this->refreshRomListKeyButton, SettingsID::KeyBinding_RefreshROMList }
     };
 
@@ -1199,6 +1200,7 @@ void SettingsDialog::on_KeybindButton_KeybindingChanged(KeybindButton* button)
         this->rspSettingsKeyButton,
         this->inputSettingsKeyButton,
         this->settingsKeyButton,
+        this->logKeyButton,
         this->refreshRomListKeyButton,
     };
 
@@ -1244,6 +1246,7 @@ void SettingsDialog::on_KeybindButton_KeybindingChanged(KeybindButton* button)
         this->rspSettingsKeyButton,
         this->inputSettingsKeyButton,
         this->settingsKeyButton,
+        this->logKeyButton,
         this->fullscreenKeyButton,
     };
 

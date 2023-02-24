@@ -1431,6 +1431,24 @@
                     </layout>
                    </item>
                    <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_118">
+                     <item>
+                      <widget class="QLabel" name="label_114">
+                       <property name="text">
+                        <string>Log</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="logKeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
                     <layout class="QHBoxLayout" name="horizontalLayout_73">
                      <item>
                       <widget class="QLabel" name="label_70">
