@@ -32,6 +32,27 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.3.8" date="2023-02-24" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix RMG not having the correct video size in some cases (i.e on a WM where resizing is not allowed to be done by an application)</li>
+          <li>Fix translations not working in GLideN64</li>
+          <li>Add -n/--nogui commandline option</li>
+          <li>Add -d/--debug-messages commandline option</li>
+          <li>Add hotkeys for graphics, audio, RSP and input settings</li>
+          <li>Add hotkey for viewing the log</li>
+          <li>Add SIGINT and SIGTERM handling on linux</li>
+          <li>Add "Check For Updates" to "View" in the toolbar</li>
+          <li>Add information about LLE plugins in the settings dialog</li>
+          <li>Add support for toggling visibility of columns in the ROM browser list view (thank you RetraCarteR)</li>
+          <li>Add date and time to the save state slot items in "Current Save State" menu in the menubar</li>
+          <li>Add date and time to the OSD when selecting a save state slot</li>
+          <li>Add failure messages to the OSD when loading/saving a save state fails</li>
+          <li>Improve updater behavior by checking for an update on startup with at least an hour in-between checks</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.3.7" date="2023-02-19" type="stable">
       <description>
         <p>Changes:</p>
