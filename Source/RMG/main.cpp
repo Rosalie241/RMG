@@ -167,13 +167,15 @@ int main(int argc, char **argv)
     {
         return 1;
     }
-    window.show();
 
     QStringList args = parser.positionalArguments();
     if (!args.empty())
     {
         window.OpenROM(args.at(0), parser.value(diskOption), parser.isSet(fullscreenOption), parser.isSet(quitAfterEmulationOption));
     }
+
+    // show window
+    window.show();
 
     return app.exec();
 }
