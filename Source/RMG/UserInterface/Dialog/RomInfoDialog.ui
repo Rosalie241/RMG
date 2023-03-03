@@ -199,12 +199,36 @@
         <item>
          <widget class="QLabel" name="label_7">
           <property name="text">
-           <string>Country Code</string>
+           <string>Game I.D.</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="countryCodeLineEdit">
+         <widget class="QLineEdit" name="gameIDLineEdit">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_8">
+        <item>
+         <widget class="QLabel" name="label_8">
+          <property name="text">
+           <string>Game Region</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="gameRegionLineEdit">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
             <horstretch>0</horstretch>

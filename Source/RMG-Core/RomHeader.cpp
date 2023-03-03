@@ -49,6 +49,74 @@ bool CoreGetCurrentRomHeader(CoreRomHeader& header)
     header.CRC2        = ntohl(m64p_header.CRC2);
     header.CountryCode = m64p_header.Country_code;
     header.Name        = CoreConvertStringEncoding((char*)m64p_header.Name, CoreStringEncoding::Shift_JIS);
+
+    header.GameID.clear();
+    header.GameID.push_back(char(ntohl(m64p_header.Manufacturer_ID)));
+    header.GameID.push_back(char(m64p_header.Cartridge_ID % 256));
+    header.GameID.push_back(char(m64p_header.Cartridge_ID / 256));
+    header.GameID.push_back(char(header.CountryCode));
+
+    if (header.GameID[0] == '\0')
+    {
+        header.GameID = "????";
+    }
     
+    switch (header.CountryCode)
+    {
+        case 65:
+        // A
+        header.Region = "Japan/North America";
+        break;
+
+        case 68:
+        // D
+        header.Region = "Germany";
+        break;
+
+        case 69:
+        // E
+        header.Region = "North America";
+        break;
+
+        case 70:
+        // F
+        header.Region = "France";
+        break;
+
+        case 73:
+        // I
+        header.Region = "Italy";
+        break;
+
+        case 74:
+        // J
+        header.Region = "Japan";
+        break;
+
+        case 80:
+        // P
+        header.Region = "Europe/Australia";
+        break;
+
+        case 83:
+        // S
+        header.Region = "Spain";
+        break;
+
+        case 85:
+        // U
+        header.Region = "Australia";
+        break;
+
+        case 88:
+        // X
+        header.Region = "U.K./Australia";
+        break;
+
+        default:
+        header.Region = "Unknown";
+        break;
+    }
+
     return true;
 }

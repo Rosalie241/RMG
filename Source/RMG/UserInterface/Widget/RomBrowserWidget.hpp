@@ -72,6 +72,8 @@ class RomBrowserWidget : public QStackedWidget
     int listViewSortSection = 0;
     int listViewSortOrder = 0;
 
+    QStringList columnNames;
+
     QMenu*   contextMenu;
     QAction* action_PlayGame;
     QAction* action_PlayGameWith;
@@ -81,6 +83,7 @@ class RomBrowserWidget : public QStackedWidget
     QAction* action_RomInformation;
     QAction* action_EditGameSettings;
     QAction* action_EditCheats;
+    QAction* action_ResetColumnSizes;
     QAction* action_SetCoverImage;
     QAction* action_RemoveCoverImage;
 
@@ -126,6 +129,7 @@ class RomBrowserWidget : public QStackedWidget
     void on_Action_RomInformation(void);
     void on_Action_EditGameSettings(void);
     void on_Action_EditCheats(void);
+    void on_Action_ResetColumnSizes(void);
     void on_Action_SetCoverImage(void);
     void on_Action_RemoveCoverImage(void);
 

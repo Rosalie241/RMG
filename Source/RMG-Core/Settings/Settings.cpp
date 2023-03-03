@@ -545,13 +545,13 @@ static l_Setting get_setting(SettingsID settingId)
         setting = {SETTING_SECTION_ROMBROWSER, "MaxItems", 250};
         break;
     case SettingsID::RomBrowser_ColumnVisibility:
-        setting = {SETTING_SECTION_ROMBROWSER, "ColumnVisibility", std::vector<int>({1, 1, 1})};
+        setting = {SETTING_SECTION_ROMBROWSER, "ColumnVisibility", std::vector<int>({1, 1, 1, 0, 0, 0, 0, 0, 0})};
         break;
     case SettingsID::RomBrowser_ColumnOrder:
-        setting = {SETTING_SECTION_ROMBROWSER, "ColumnOrder", std::vector<int>({0, 1, 2})};
+        setting = {SETTING_SECTION_ROMBROWSER, "ColumnOrder", std::vector<int>({0, 1, 2, 3, 4, 5, 6, 7, 8})};
         break;
     case SettingsID::RomBrowser_ColumnSizes:
-        setting = {SETTING_SECTION_ROMBROWSER, "ColumnSizes", std::vector<int>({-1, -1, -1})};
+        setting = {SETTING_SECTION_ROMBROWSER, "ColumnSizes", std::vector<int>({-1, -1, -1, -1, -1, -1, -1, -1, -1})};
         break;
     case SettingsID::RomBrowser_SortAfterSearch:
         setting = {SETTING_SECTION_ROMBROWSER, "SortAfterSearch", true};

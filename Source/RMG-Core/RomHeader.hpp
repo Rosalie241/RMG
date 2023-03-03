@@ -19,6 +19,8 @@ struct CoreRomHeader
     uint32_t    CRC2;
     uint32_t    CountryCode;
     std::string Name;
+    std::string GameID;
+    std::string Region;
 };
 
 // retrieves the currently opened ROM header

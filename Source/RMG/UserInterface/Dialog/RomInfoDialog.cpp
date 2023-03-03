@@ -30,7 +30,8 @@ RomInfoDialog::RomInfoDialog(QString file, CoreRomHeader romHeader, CoreRomSetti
     this->locationLineEdit->setCursorPosition(0);
     this->crc1LineEdit->setText(QString::number(romHeader.CRC1, 16).toUpper());
     this->crc2LineEdit->setText(QString::number(romHeader.CRC2, 16).toUpper());
-    this->countryCodeLineEdit->setText(QString((char)romHeader.CountryCode));
+    this->gameIDLineEdit->setText(QString::fromStdString(romHeader.GameID));
+    this->gameRegionLineEdit->setText(QString::fromStdString(romHeader.Region));
 }
 
 RomInfoDialog::~RomInfoDialog(void)
