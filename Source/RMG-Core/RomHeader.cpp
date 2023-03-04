@@ -68,6 +68,16 @@ bool CoreGetCurrentRomHeader(CoreRomHeader& header)
         header.Region = "Japan/North America";
         break;
 
+        case 66:
+        // B
+        header.Region = "Brazil";
+        break;
+
+        case 67:
+        // C
+        header.Region = "China";
+        break;
+
         case 68:
         // D
         header.Region = "Germany";
@@ -83,6 +93,16 @@ bool CoreGetCurrentRomHeader(CoreRomHeader& header)
         header.Region = "France";
         break;
 
+        case 71:
+        // G
+        header.Region = "Gateway 64 (NTSC)";
+        break;
+
+        case 72:
+        // H
+        header.Region = "Netherlands";
+        break;
+
         case 73:
         // I
         header.Region = "Italy";
@@ -91,6 +111,21 @@ bool CoreGetCurrentRomHeader(CoreRomHeader& header)
         case 74:
         // J
         header.Region = "Japan";
+        break;
+
+        case 75:
+        // K
+        header.Region = "Korea";
+        break;
+
+        case 76:
+        // L
+        header.Region = "Gateway 64 (PAL)";
+        break;
+
+        case 78:
+        // N
+        header.Region = "Canada";
         break;
 
         case 80:
@@ -108,9 +143,19 @@ bool CoreGetCurrentRomHeader(CoreRomHeader& header)
         header.Region = "Australia";
         break;
 
+        case 87:
+        // W
+        header.Region = "Scandanavia";
+        break;
+
         case 88:
         // X
-        header.Region = "U.K./Australia";
+        header.Region = "Europe/Australia";
+        break;
+
+        case 89:
+        // Y
+        header.Region = "Europe";
         break;
 
         default:

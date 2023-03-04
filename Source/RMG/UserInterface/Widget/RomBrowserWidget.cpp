@@ -113,7 +113,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     labels << "Format";
     labels << "File Name";
     labels << "File Ext.";
-    labels << "Size";
+    labels << "File Size";
     labels << "I.D.";
     labels << "Region";
     this->listViewModel->setColumnCount(labels.size());
@@ -126,7 +126,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->columnNames << "Game Format";
     this->columnNames << labels.at(4);
     this->columnNames << "File Extension";
-    this->columnNames << "File Size";
+    this->columnNames << labels.at(6);
     this->columnNames << "Game I.D.";
     this->columnNames << "Game Region";
 
@@ -638,7 +638,8 @@ void RomBrowserWidget::on_RomBrowserThread_RomFound(QString file, CoreRomType ty
 {
     QString name;
     QString gameFormat;
-    QString fileSize;
+    float fileSize;
+    QString fileSizeString;
     QString coverFile;
     QIcon   coverIcon;
     QVariant itemData;
@@ -666,10 +667,11 @@ void RomBrowserWidget::on_RomBrowserThread_RomFound(QString file, CoreRomType ty
     }
 
     // generate file size to use in UI
-    fileSize = (QString::number(QFileInfo(file).size()/1048576)).append(" MB");
-    if (fileSize.size() == 4)
+    fileSize = QFileInfo(file).size()/1048576.0;
+    fileSizeString = (QString::number(fileSize, 'f', 2)).append(" MB");
+    if (fileSizeString.size() == 7)
     {
-        fileSize = fileSize.prepend("  ");
+        fileSizeString = fileSizeString.prepend("  ");
     }
 
     // retrieve cover image
@@ -712,7 +714,7 @@ void RomBrowserWidget::on_RomBrowserThread_RomFound(QString file, CoreRomType ty
     listViewRow.append(listViewItem6);
     // file size
     QStandardItem* listViewItem7 = new QStandardItem();
-    listViewItem7->setText(fileSize);
+    listViewItem7->setText(fileSizeString);
     listViewItem7->setData(itemData);
     listViewRow.append(listViewItem7);
     // game i.d.
