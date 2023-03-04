@@ -65,7 +65,7 @@ bool CoreGetCurrentRomHeader(CoreRomHeader& header)
     {
         case 65:
         // A
-        header.Region = "Japan/North America";
+        header.Region = "Region-Free";
         break;
 
         case 66:
@@ -155,6 +155,11 @@ bool CoreGetCurrentRomHeader(CoreRomHeader& header)
 
         case 89:
         // Y
+        header.Region = "Europe";
+        break;
+
+        case 90:
+        // Z
         header.Region = "Europe";
         break;
 

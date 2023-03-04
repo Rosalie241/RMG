@@ -37,7 +37,7 @@
 #define GOODNAME_LEN 256
 #define MD5_LEN 33
 #define GAMEID_LEN 5
-#define REGION_LEN 20
+#define REGION_LEN 18
 
 #ifdef _WIN32
 #define CACHE_FILE_MAGIC "RMGCoreHeaderAndSettingsCacheWindows_06"
