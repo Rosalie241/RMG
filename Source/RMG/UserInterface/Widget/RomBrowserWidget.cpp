@@ -105,13 +105,30 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     connect(this->listViewWidget, &Widget::RomBrowserListViewWidget::ZoomIn, this, &RomBrowserWidget::on_ZoomIn);
     connect(this->listViewWidget, &Widget::RomBrowserListViewWidget::ZoomOut, this, &RomBrowserWidget::on_ZoomOut);
 
-    // TODO
+    // set up list view's columns
     QStringList labels;
     labels << "Name";
     labels << "Internal Name";
     labels << "MD5";
+    labels << "Format";
+    labels << "File Name";
+    labels << "File Ext.";
+    labels << "File Size";
+    labels << "I.D.";
+    labels << "Region";
     this->listViewModel->setColumnCount(labels.size());
     this->listViewModel->setHorizontalHeaderLabels(labels);
+
+    // set full names of list view's columns
+    this->columnNames << labels.at(0);
+    this->columnNames << labels.at(1);
+    this->columnNames << labels.at(2);
+    this->columnNames << "Game Format";
+    this->columnNames << labels.at(4);
+    this->columnNames << "File Extension";
+    this->columnNames << labels.at(6);
+    this->columnNames << "Game I.D.";
+    this->columnNames << "Game Region";
 
     // configure grid view widget
     this->gridViewWidget = new Widget::RomBrowserGridViewWidget(this);
@@ -152,6 +169,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->action_RomInformation = new QAction(this);
     this->action_EditGameSettings = new QAction(this);
     this->action_EditCheats = new QAction(this);
+    this->action_ResetColumnSizes = new QAction(this);
     this->action_SetCoverImage = new QAction(this);
     this->action_RemoveCoverImage = new QAction(this);
 
@@ -168,9 +186,10 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->action_RomInformation->setText("ROM Information");
     this->action_EditGameSettings->setText("Edit Game Settings");
     this->action_EditCheats->setText("Edit Cheats");
+    this->action_ResetColumnSizes->setText("Reset Column Sizes");
+    this->menu_Columns->menuAction()->setText("Show/Hide Columns");
     this->action_SetCoverImage->setText("Set Cover Image...");
     this->action_RemoveCoverImage->setText("Remove Cover Image");
-    this->menu_Columns->menuAction()->setText("Show/Hide Columns");
     connect(this->action_PlayGame, &QAction::triggered, this, &RomBrowserWidget::on_Action_PlayGame);
     connect(this->action_PlayGameWith, &QAction::triggered, this, &RomBrowserWidget::on_Action_PlayGameWith);
     connect(this->action_RefreshRomList, &QAction::triggered, this, &RomBrowserWidget::on_Action_RefreshRomList);
@@ -179,6 +198,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     connect(this->action_RomInformation, &QAction::triggered, this, &RomBrowserWidget::on_Action_RomInformation);
     connect(this->action_EditGameSettings, &QAction::triggered, this, &RomBrowserWidget::on_Action_EditGameSettings);
     connect(this->action_EditCheats, &QAction::triggered, this, &RomBrowserWidget::on_Action_EditCheats);
+    connect(this->action_ResetColumnSizes, &QAction::triggered, this, &RomBrowserWidget::on_Action_ResetColumnSizes);
     connect(this->action_SetCoverImage, &QAction::triggered, this, &RomBrowserWidget::on_Action_SetCoverImage);
     connect(this->action_RemoveCoverImage, &QAction::triggered, this, &RomBrowserWidget::on_Action_RemoveCoverImage);
 
@@ -196,9 +216,10 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->contextMenu->addAction(this->action_EditGameSettings);
     this->contextMenu->addAction(this->action_EditCheats);
     this->contextMenu->addSeparator();
+    this->contextMenu->addAction(this->action_ResetColumnSizes);
+    this->contextMenu->addMenu(this->menu_Columns);
     this->contextMenu->addAction(this->action_SetCoverImage);
     this->contextMenu->addAction(this->action_RemoveCoverImage);
-    this->contextMenu->addMenu(this->menu_Columns);
 
     // configure current view widget
     int currentView = CoreSettingsGetIntValue(SettingsID::RomBrowser_ViewMode);
@@ -465,11 +486,12 @@ void RomBrowserWidget::customContextMenuRequested(QPoint position)
     this->action_RomInformation->setEnabled(hasSelection);
     this->action_EditGameSettings->setEnabled(hasSelection);
     this->action_EditCheats->setEnabled(hasSelection);
+    this->action_ResetColumnSizes->setVisible(view == this->listViewWidget);
+    this->menu_Columns->menuAction()->setVisible(view == this->listViewWidget);
     this->action_SetCoverImage->setEnabled(hasSelection);
     this->action_SetCoverImage->setVisible(view == this->gridViewWidget);
     this->action_RemoveCoverImage->setEnabled(hasSelection && !data.coverFile.isEmpty());
     this->action_RemoveCoverImage->setVisible(view == this->gridViewWidget);
-    this->menu_Columns->menuAction()->setVisible(view == this->listViewWidget);
 
     if (hasSelection && data.type == CoreRomType::Disk)
     { // disk selected
@@ -478,6 +500,11 @@ void RomBrowserWidget::customContextMenuRequested(QPoint position)
     else
     { // cartridge selected
         this->action_PlayGameWith->setText("Play Game with Disk");
+    }
+
+    if (view == this->listViewWidget)
+    { // list view
+        this->generateColumnsMenu();
     }
 
     if (view == this->gridViewWidget)
@@ -492,11 +519,6 @@ void RomBrowserWidget::customContextMenuRequested(QPoint position)
         }
     }
 
-    if (view == this->listViewWidget)
-    { // list view
-        this->generateColumnsMenu();
-    }
-
     this->contextMenu->popup(this->mapToGlobal(position));
 }
 
@@ -508,7 +530,7 @@ void RomBrowserWidget::generateColumnsMenu(void)
     {
         int column = this->listViewWidget->horizontalHeader()->logicalIndex(i);
 
-        this->action_ColumnsMenuEntry = menu_Columns->addAction(this->listViewModel->horizontalHeaderItem(column)->text());
+        this->action_ColumnsMenuEntry = menu_Columns->addAction(this->columnNames.at(column));
         this->action_ColumnsMenuEntry->setCheckable(true);
         this->action_ColumnsMenuEntry->setChecked(!this->listViewWidget->horizontalHeader()->isSectionHidden(column));
         connect(this->action_ColumnsMenuEntry, &QAction::toggled, [this, column](bool checked)
@@ -526,33 +548,42 @@ void RomBrowserWidget::on_listViewWidget_sortIndicatorChanged(int logicalIndex, 
 
 void RomBrowserWidget::on_listViewWidget_sectionResized(int logicalIndex, int oldWidth, int newWidth)
 {
-    std::vector<int> columnVisibility = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnVisibility);
     std::vector<int> columnSizes = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnSizes);
 
-    if (newWidth == 0)
+    if (!this->listViewWidget->horizontalHeader()->stretchLastSection())
     {
-        columnVisibility.at(logicalIndex) = 0;
-        CoreSettingsSetValue(SettingsID::RomBrowser_ColumnVisibility, columnVisibility);
+        columnSizes.at(logicalIndex) = newWidth;
+        CoreSettingsSetValue(SettingsID::RomBrowser_ColumnSizes, columnSizes);
     }
     else
     {
-        columnVisibility.at(logicalIndex) = 1;
-        CoreSettingsSetValue(SettingsID::RomBrowser_ColumnVisibility, columnVisibility);
+        std::vector<int> columnVisibility = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnVisibility);
 
-        int lastVisibleColumn = -1;
-        for (int i = 0; i < this->listViewModel->columnCount(); i++)
+        if (newWidth == 0)
         {
-            int column = this->listViewWidget->horizontalHeader()->logicalIndex(i);
-            if (!this->listViewWidget->horizontalHeader()->isSectionHidden(column))
-            {
-                lastVisibleColumn = column;
-            }
+            columnVisibility.at(logicalIndex) = 0;
+            CoreSettingsSetValue(SettingsID::RomBrowser_ColumnVisibility, columnVisibility);
         }
-
-        if (!this->listViewWidget->horizontalHeader()->stretchLastSection() || logicalIndex != lastVisibleColumn)
+        else
         {
-            columnSizes.at(logicalIndex) = newWidth;
-            CoreSettingsSetValue(SettingsID::RomBrowser_ColumnSizes, columnSizes);
+            columnVisibility.at(logicalIndex) = 1;
+            CoreSettingsSetValue(SettingsID::RomBrowser_ColumnVisibility, columnVisibility);
+
+            int lastVisibleColumn = -1;
+            for (int i = 0; i < this->listViewModel->columnCount(); i++)
+            {
+                int column = this->listViewWidget->horizontalHeader()->logicalIndex(i);
+                if (!this->listViewWidget->horizontalHeader()->isSectionHidden(column))
+                {
+                    lastVisibleColumn = column;
+                }
+            }
+
+            if (logicalIndex != lastVisibleColumn)
+            {
+                columnSizes.at(logicalIndex) = newWidth;
+                CoreSettingsSetValue(SettingsID::RomBrowser_ColumnSizes, columnSizes);
+            }
         }
     }
 }
@@ -606,6 +637,9 @@ void RomBrowserWidget::on_ZoomOut(void)
 void RomBrowserWidget::on_RomBrowserThread_RomFound(QString file, CoreRomType type, CoreRomHeader header, CoreRomSettings settings)
 {
     QString name;
+    QString gameFormat;
+    float fileSize;
+    QString fileSizeString;
     QString coverFile;
     QIcon   coverIcon;
     QVariant itemData;
@@ -620,6 +654,24 @@ void RomBrowserWidget::on_RomBrowserThread_RomFound(QString file, CoreRomType ty
         name.endsWith("(unknown disk)"))
     {
         name = QFileInfo(file).fileName();
+    }
+
+    // generate game format to use in UI
+    if (type == CoreRomType::Disk)
+    {
+        gameFormat = "Disk";
+    }
+    else
+    {
+        gameFormat = "Cartridge";
+    }
+
+    // generate file size to use in UI
+    fileSize = QFileInfo(file).size()/1048576.0;
+    fileSizeString = (QString::number(fileSize, 'f', 2)).append(" MB");
+    if (fileSizeString.size() == 7)
+    {
+        fileSizeString = fileSizeString.prepend("  ");
     }
 
     // retrieve cover image
@@ -645,6 +697,36 @@ void RomBrowserWidget::on_RomBrowserThread_RomFound(QString file, CoreRomType ty
     listViewItem3->setText(QString::fromStdString(settings.MD5));
     listViewItem3->setData(itemData);
     listViewRow.append(listViewItem3);
+    // game format
+    QStandardItem* listViewItem4 = new QStandardItem();
+    listViewItem4->setText(gameFormat);
+    listViewItem4->setData(itemData);
+    listViewRow.append(listViewItem4);
+    // file name
+    QStandardItem* listViewItem5 = new QStandardItem();
+    listViewItem5->setText(QFileInfo(file).completeBaseName());
+    listViewItem5->setData(itemData);
+    listViewRow.append(listViewItem5);
+    // file extension
+    QStandardItem* listViewItem6 = new QStandardItem();
+    listViewItem6->setText(((QFileInfo(file).suffix()).prepend(".")).toUpper());
+    listViewItem6->setData(itemData);
+    listViewRow.append(listViewItem6);
+    // file size
+    QStandardItem* listViewItem7 = new QStandardItem();
+    listViewItem7->setText(fileSizeString);
+    listViewItem7->setData(itemData);
+    listViewRow.append(listViewItem7);
+    // game i.d.
+    QStandardItem* listViewItem8 = new QStandardItem();
+    listViewItem8->setText(QString::fromStdString(header.GameID));
+    listViewItem8->setData(itemData);
+    listViewRow.append(listViewItem8);
+    // region
+    QStandardItem* listViewItem9 = new QStandardItem();
+    listViewItem9->setText(QString::fromStdString(header.Region));
+    listViewItem9->setData(itemData);
+    listViewRow.append(listViewItem9);
     this->listViewModel->appendRow(listViewRow);
 
     QStandardItem* gridViewItem = new QStandardItem();
@@ -664,33 +746,12 @@ void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
     }
 
     // retrieve column settings
-    std::vector<int> columnVisibility = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnVisibility);
-    std::vector<int> columnOrder = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnOrder);
     std::vector<int> columnSizes = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnSizes);
+    std::vector<int> columnOrder = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnOrder);
+    std::vector<int> columnVisibility = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnVisibility);
 
     // temporarily disable stretching last column in list view
     this->listViewWidget->horizontalHeader()->setStretchLastSection(false);
-
-    // reset column visibility setting in config file if number of values is incorrect
-    if (!columnVisibility.empty() &&
-        columnVisibility.size() != this->listViewModel->columnCount())
-    {
-        columnVisibility.clear();
-        columnVisibility.resize(this->listViewModel->columnCount(), 1);
-        CoreSettingsSetValue(SettingsID::RomBrowser_ColumnVisibility, columnVisibility);
-    }
-
-    // reset column order setting in config file if number of values is incorrect
-    if (!columnOrder.empty() &&
-        columnOrder.size() != this->listViewModel->columnCount())
-    {
-        columnOrder.clear();
-        for (int i = 0; i < this->listViewModel->columnCount(); i++)
-        {
-            columnOrder.push_back(i);
-        }
-        CoreSettingsSetValue(SettingsID::RomBrowser_ColumnOrder, columnOrder);
-    }
 
     // reset column sizes setting in config file if number of values is incorrect
     if (!columnSizes.empty() && 
@@ -699,21 +760,6 @@ void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
         columnSizes.clear();
         columnSizes.resize(this->listViewModel->columnCount(), -1);
         CoreSettingsSetValue(SettingsID::RomBrowser_ColumnSizes, columnSizes);
-    }
-
-    // update list view's column visibilities
-    for (int i = 0; i < columnVisibility.size(); i++)
-    {
-        if (columnVisibility.at(i) == 0)
-        {
-            this->listViewWidget->horizontalHeader()->setSectionHidden(i, true);
-        }
-    }
-
-    // update list view's column order
-    for (int i = 0; i < columnOrder.size(); i++)
-    {
-        this->listViewWidget->horizontalHeader()->moveSection(this->listViewWidget->horizontalHeader()->visualIndex(i), columnOrder.at(i));
     }
 
     // update list view's column sizes
@@ -732,6 +778,46 @@ void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
 
     // enable stretching last column in list view
     this->listViewWidget->horizontalHeader()->setStretchLastSection(true);
+
+    // reset column order setting in config file if number of values is incorrect
+    if (!columnOrder.empty() &&
+        columnOrder.size() != this->listViewModel->columnCount())
+    {
+        columnOrder.clear();
+        for (int i = 0; i < this->listViewModel->columnCount(); i++)
+        {
+            columnOrder.push_back(i);
+        }
+        CoreSettingsSetValue(SettingsID::RomBrowser_ColumnOrder, columnOrder);
+    }
+
+    // update list view's column order
+    for (int i = 0; i < columnOrder.size(); i++)
+    {
+        this->listViewWidget->horizontalHeader()->moveSection(this->listViewWidget->horizontalHeader()->visualIndex(i), columnOrder.at(i));
+    }
+
+    // reset column visibility setting in config file if number of values is incorrect
+    if (!columnVisibility.empty() &&
+        columnVisibility.size() != this->listViewModel->columnCount())
+    {
+        columnVisibility.clear();
+        columnVisibility.resize(this->listViewModel->columnCount(), 0);
+        for (int i = 0; i < 3; i++)
+        {
+            columnVisibility.at(i) = 1;
+        }
+        CoreSettingsSetValue(SettingsID::RomBrowser_ColumnVisibility, columnVisibility);
+    }
+
+    // update list view's column visibilities
+    for (int i = 0; i < columnVisibility.size(); i++)
+    {
+        if (columnVisibility.at(i) == 0)
+        {
+            this->listViewWidget->horizontalHeader()->setSectionHidden(i, true);
+        }
+    }
 
     if (!canceled)
     {
@@ -806,6 +892,28 @@ void RomBrowserWidget::on_Action_EditGameSettings(void)
 void RomBrowserWidget::on_Action_EditCheats(void)
 {
     emit this->Cheats(this->getCurrentRom());
+}
+
+void RomBrowserWidget::on_Action_ResetColumnSizes(void)
+{
+    std::vector<int> columnVisibility = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnVisibility);
+    this->listViewWidget->horizontalHeader()->setStretchLastSection(false);
+
+    for (int i = 0; i < this->listViewModel->columnCount(); i++)
+    {
+        this->listViewWidget->horizontalHeader()->setSectionHidden(i, false);
+    }
+
+    this->listViewWidget->resizeColumnsToContents();
+    this->listViewWidget->horizontalHeader()->setStretchLastSection(true);
+
+    for (int i = 0; i < columnVisibility.size(); i++)
+    {
+        if (columnVisibility.at(i) == 0)
+        {
+            this->listViewWidget->horizontalHeader()->setSectionHidden(i, true);
+        }
+    }
 }
 
 void RomBrowserWidget::on_Action_SetCoverImage(void)

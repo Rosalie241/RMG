@@ -36,11 +36,13 @@
 #define ROMHEADER_NAME_LEN 256
 #define GOODNAME_LEN 256
 #define MD5_LEN 33
+#define GAMEID_LEN 5
+#define REGION_LEN 18
 
 #ifdef _WIN32
-#define CACHE_FILE_MAGIC "RMGCoreHeaderAndSettingsCacheWindows_05"
+#define CACHE_FILE_MAGIC "RMGCoreHeaderAndSettingsCacheWindows_06"
 #else // Linux
-#define CACHE_FILE_MAGIC "RMGCoreHeaderAndSettingsCacheLinux_05"
+#define CACHE_FILE_MAGIC "RMGCoreHeaderAndSettingsCacheLinux_06"
 #endif // _WIN32
 #define CACHE_FILE_ITEMS_MAX 10000
 
@@ -103,6 +105,8 @@ void CoreReadRomHeaderAndSettingsCache(void)
     char magicBuf[sizeof(CACHE_FILE_MAGIC)];
     wchar_t fileNameBuf[MAX_FILENAME_LEN];
     char headerNameBuf[ROMHEADER_NAME_LEN];
+    char gameIDBuf[GAMEID_LEN];
+    char regionBuf[REGION_LEN];
     char goodNameBuf[GOODNAME_LEN];
     char md5Buf[MD5_LEN];
     uint32_t size;
@@ -131,6 +135,8 @@ void CoreReadRomHeaderAndSettingsCache(void)
         size = 0;
         memset(fileNameBuf, 0, sizeof(fileNameBuf));
         memset(headerNameBuf, 0, sizeof(headerNameBuf));
+        memset(gameIDBuf, 0, sizeof(gameIDBuf));
+        memset(regionBuf, 0, sizeof(regionBuf));
         memset(goodNameBuf, 0, sizeof(goodNameBuf));
         memset(md5Buf, 0, sizeof(md5Buf));
 
@@ -144,7 +150,13 @@ void CoreReadRomHeaderAndSettingsCache(void)
         // header
         FREAD(size);
         FREAD_STR(headerNameBuf, size);
+        FREAD(size);
+        FREAD_STR(gameIDBuf, size);
+        FREAD(size);
+        FREAD_STR(regionBuf, size);
         cacheEntry.header.Name = std::string(headerNameBuf);
+        cacheEntry.header.GameID = std::string(gameIDBuf);
+        cacheEntry.header.Region = std::string(regionBuf);
         FREAD(cacheEntry.header.CRC1);
         FREAD(cacheEntry.header.CRC2);
         // (partial) settings
@@ -169,6 +181,8 @@ bool CoreSaveRomHeaderAndSettingsCache(void)
     std::ofstream outputStream;
     wchar_t fileNameBuf[MAX_FILENAME_LEN];
     char headerNameBuf[ROMHEADER_NAME_LEN];
+    char gameIDBuf[GAMEID_LEN];
+    char regionBuf[REGION_LEN];
     char goodNameBuf[GOODNAME_LEN];
     char md5Buf[MD5_LEN];
     uint32_t size;
@@ -200,12 +214,16 @@ bool CoreSaveRomHeaderAndSettingsCache(void)
         size = 0;
         memset(fileNameBuf, 0, sizeof(fileNameBuf));
         memset(headerNameBuf, 0, sizeof(headerNameBuf));
+        memset(gameIDBuf, 0, sizeof(gameIDBuf));
+        memset(regionBuf, 0, sizeof(regionBuf));
         memset(goodNameBuf, 0, sizeof(goodNameBuf));
         memset(md5Buf, 0, sizeof(md5Buf));
 
         // copy strings into buffers
         wcsncpy(fileNameBuf, cacheEntry.fileName.wstring().c_str(), MAX_FILENAME_LEN);
         strncpy(headerNameBuf, cacheEntry.header.Name.c_str(), sizeof(headerNameBuf));
+        strncpy(gameIDBuf, cacheEntry.header.GameID.c_str(), sizeof(gameIDBuf));
+        strncpy(regionBuf, cacheEntry.header.Region.c_str(), sizeof(regionBuf));
         strncpy(goodNameBuf, cacheEntry.settings.GoodName.c_str(), sizeof(goodNameBuf));
         strncpy(md5Buf, cacheEntry.settings.MD5.c_str(), sizeof(md5Buf));
 
@@ -220,6 +238,12 @@ bool CoreSaveRomHeaderAndSettingsCache(void)
         size = cacheEntry.header.Name.size();
         FWRITE(size);
         FWRITE_STR(headerNameBuf, size);
+        size = cacheEntry.header.GameID.size();
+        FWRITE(size);
+        FWRITE_STR(gameIDBuf, size);
+        size = cacheEntry.header.Region.size();
+        FWRITE(size);
+        FWRITE_STR(regionBuf, size);
         FWRITE(cacheEntry.header.CRC1);
         FWRITE(cacheEntry.header.CRC2);
         // (partial) settings
