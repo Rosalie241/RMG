@@ -25,7 +25,7 @@
 // Local Functions
 //
 
-static std::string generateGameID(m64p_rom_header header)
+static std::string generate_game_id(m64p_rom_header header)
 {
     std::string gameID;
 
@@ -42,7 +42,7 @@ static std::string generateGameID(m64p_rom_header header)
     return gameID;
 }
 
-static std::string generateRegionString(char countryCode)
+static std::string generate_region_string(char countryCode)
 {
     std::string region;
 
@@ -140,8 +140,8 @@ bool CoreGetCurrentRomHeader(CoreRomHeader& header)
     header.CRC2        = ntohl(m64p_header.CRC2);
     header.CountryCode = m64p_header.Country_code;
     header.Name        = CoreConvertStringEncoding((char*)m64p_header.Name, CoreStringEncoding::Shift_JIS);
-    header.GameID      = generateGameID(m64p_header);
-    header.Region      = generateRegionString((char)header.CountryCode);
+    header.GameID      = generate_game_id(m64p_header);
+    header.Region      = generate_region_string((char)header.CountryCode);
 
     return true;
 }
