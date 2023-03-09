@@ -13,6 +13,7 @@
 #include "RomHeader.hpp"
 #include "Error.hpp"
 
+#include "Settings/Settings.hpp"
 #include "m64p/Api.hpp"
 
 #include <algorithm>
@@ -122,28 +123,37 @@ bool CoreGetSaveStatePath(int slot, std::filesystem::path& path)
     }
 
     // else use new filename
-    if (romSettings.GoodName.find("(unknown rom)") == std::string::npos)
-    {
-        if (romSettings.GoodName.size() < 32)
-        {
-            saveStatePath += romSettings.GoodName;
-        }
-        else
-        {
-            saveStatePath += romSettings.GoodName.substr(0, 32);
-        }
-    }
-    else if (!romHeader.Name.empty())
+    int format = CoreSettingsGetIntValue(SettingsID::Core_SaveFileNameFormat);
+    if (format == 0)
     {
         saveStatePath += romHeader.Name;
+        saveStatePath += saveStateExtension;
     }
     else
     {
-        saveStatePath += "unknown";
+        if (romSettings.GoodName.find("(unknown rom)") == std::string::npos)
+        {
+            if (romSettings.GoodName.size() < 32)
+            {
+                saveStatePath += romSettings.GoodName;
+            }
+            else
+            {
+                saveStatePath += romSettings.GoodName.substr(0, 32);
+            }
+        }
+        else if (!romHeader.Name.empty())
+        {
+            saveStatePath += romHeader.Name;
+        }
+        else
+        {
+            saveStatePath += "unknown";
+        }
+        saveStatePath += "-";
+        saveStatePath += romSettings.MD5.substr(0, 8);
+        saveStatePath += saveStateExtension;
     }
-    saveStatePath += "-";
-    saveStatePath += romSettings.MD5.substr(0, 8);
-    saveStatePath += saveStateExtension;
 
     // retrieve filename from path
     saveStateFileName = saveStatePath.filename().string();
