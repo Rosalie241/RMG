@@ -277,6 +277,9 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::Core_SiDmaDuration:
         setting = {SETTING_SECTION_M64P, "SiDmaDuration", -1};
         break;
+    case SettingsID::Core_SaveFileNameFormat:
+        setting = {SETTING_SECTION_M64P, "SaveFilenameFormat", 1};
+        break;
 
     case SettingsID::CoreOverlay_RandomizeInterrupt:
         setting = {SETTING_SECTION_OVERLAY, "RandomizeInterrupt", true};
@@ -298,6 +301,9 @@ static l_Setting get_setting(SettingsID settingId)
         break;
     case SettingsID::CoreOverlay_SiDmaDuration:
         setting = {SETTING_SECTION_OVERLAY, "SiDmaDuration", -1};
+        break;
+    case SettingsID::CoreOverLay_SaveFileNameFormat:
+        setting = {SETTING_SECTION_OVERLAY, "SaveFilenameFormat", 1};
         break;
 
     case SettingsID::Core_ScreenshotPath:

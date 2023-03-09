@@ -64,6 +64,7 @@ enum class SettingsID
     Core_CountPerOp,
     Core_CountPerOpDenomPot,
     Core_SiDmaDuration,
+    Core_SaveFileNameFormat,
 
     // (mupen64plus) Overlay Core Settings
     CoreOverlay_RandomizeInterrupt,
@@ -73,6 +74,7 @@ enum class SettingsID
     CoreOverlay_CountPerOp,
     CoreOverlay_CountPerOpDenomPot,
     CoreOverlay_SiDmaDuration,
+    CoreOverLay_SaveFileNameFormat,
 
     // (mupen64plus) Core Directory Settings
     Core_ScreenshotPath,
