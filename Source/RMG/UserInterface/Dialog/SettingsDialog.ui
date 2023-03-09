@@ -1500,7 +1500,7 @@
           <attribute name="title">
            <string>Core</string>
           </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_19">
+          <layout class="QVBoxLayout" name="verticalLayout_17">
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_43">
              <item>
@@ -1525,6 +1525,31 @@
                <item>
                 <property name="text">
                  <string>Dynamic Recompiler</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_46">
+             <item>
+              <widget class="QLabel" name="label_25">
+               <property name="text">
+                <string>Save Filename Format</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="coreSaveFilenameFormatComboBox">
+               <item>
+                <property name="text">
+                 <string>Internal ROM Name</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Automatic</string>
                 </property>
                </item>
               </widget>

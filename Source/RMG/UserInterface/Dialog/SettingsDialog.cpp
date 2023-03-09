@@ -214,6 +214,7 @@ void SettingsDialog::loadCoreSettings(void)
     bool disableExtraMem = false;
     int counterFactor = 0;
     int cpuEmulator = 0;
+    int saveFilenameFormat = 0;
     int siDmaDuration = -1;
     bool randomizeInterrupt = true;
     bool debugger = false;
@@ -222,12 +223,14 @@ void SettingsDialog::loadCoreSettings(void)
     disableExtraMem = CoreSettingsGetBoolValue(SettingsID::CoreOverlay_DisableExtraMem);
     counterFactor = CoreSettingsGetIntValue(SettingsID::CoreOverlay_CountPerOp);
     cpuEmulator = CoreSettingsGetIntValue(SettingsID::CoreOverlay_CPU_Emulator);
+    saveFilenameFormat = CoreSettingsGetIntValue(SettingsID::CoreOverLay_SaveFileNameFormat);
     siDmaDuration = CoreSettingsGetIntValue(SettingsID::CoreOverlay_SiDmaDuration);
     randomizeInterrupt = CoreSettingsGetBoolValue(SettingsID::CoreOverlay_RandomizeInterrupt);
     debugger = CoreSettingsGetBoolValue(SettingsID::CoreOverlay_EnableDebugger);
     overrideGameSettings = CoreSettingsGetBoolValue(SettingsID::Core_OverrideGameSpecificSettings);
 
     this->coreCpuEmulatorComboBox->setCurrentIndex(cpuEmulator);
+    this->coreSaveFilenameFormatComboBox->setCurrentIndex(saveFilenameFormat);
     this->coreRandomizeTimingCheckBox->setChecked(randomizeInterrupt);
     //this->coreDebuggerCheckBox->setChecked(debugger);
 
@@ -437,6 +440,7 @@ void SettingsDialog::loadDefaultCoreSettings(void)
     bool disableExtraMem = false;
     int counterFactor = 0;
     int cpuEmulator = 0;
+    int saveFilenameFormat = 0;
     int siDmaDuration = -1;
     bool randomizeInterrupt = true;
     bool debugger = false;
@@ -446,11 +450,13 @@ void SettingsDialog::loadDefaultCoreSettings(void)
     counterFactor = CoreSettingsGetDefaultIntValue(SettingsID::CoreOverlay_CountPerOp);
     cpuEmulator = CoreSettingsGetDefaultIntValue(SettingsID::CoreOverlay_CPU_Emulator);
     siDmaDuration = CoreSettingsGetDefaultIntValue(SettingsID::CoreOverlay_SiDmaDuration);
+    saveFilenameFormat = CoreSettingsGetDefaultIntValue(SettingsID::CoreOverLay_SaveFileNameFormat);
     randomizeInterrupt = CoreSettingsGetDefaultBoolValue(SettingsID::CoreOverlay_RandomizeInterrupt);
     debugger = CoreSettingsGetDefaultBoolValue(SettingsID::CoreOverlay_EnableDebugger);
     overrideGameSettings = CoreSettingsGetDefaultBoolValue(SettingsID::Core_OverrideGameSpecificSettings);
 
     this->coreCpuEmulatorComboBox->setCurrentIndex(cpuEmulator);
+    this->coreSaveFilenameFormatComboBox->setCurrentIndex(saveFilenameFormat);
     this->coreRandomizeTimingCheckBox->setChecked(randomizeInterrupt);
     //this->coreDebuggerCheckBox->setChecked(debugger);
 
@@ -603,12 +609,14 @@ void SettingsDialog::saveCoreSettings(void)
     bool disableExtraMem = (this->coreMemorySizeComboBox->currentIndex() == 0);
     int counterFactor = this->coreCounterFactorComboBox->currentIndex() + 1;
     int cpuEmulator = this->coreCpuEmulatorComboBox->currentIndex();
+    int saveFilenameFormat = this->coreSaveFilenameFormatComboBox->currentIndex();
     int siDmaDuration = this->coreSiDmaDurationSpinBox->value();
     bool randomizeInterrupt = this->coreRandomizeTimingCheckBox->isChecked();
     //bool debugger = this->coreDebuggerCheckBox->isChecked();
     bool overrideGameSettings = this->coreOverrideGameSettingsGroup->isChecked();
 
     CoreSettingsSetValue(SettingsID::CoreOverlay_CPU_Emulator, cpuEmulator);
+    CoreSettingsSetValue(SettingsID::CoreOverLay_SaveFileNameFormat, saveFilenameFormat);
     CoreSettingsSetValue(SettingsID::CoreOverlay_RandomizeInterrupt, randomizeInterrupt);
     //CoreSettingsSetValue(SettingsID::CoreOverlay_EnableDebugger, debugger);
     CoreSettingsSetValue(SettingsID::Core_OverrideGameSpecificSettings, overrideGameSettings);
