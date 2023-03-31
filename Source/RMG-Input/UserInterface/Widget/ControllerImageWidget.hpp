@@ -31,6 +31,8 @@ private:
     int yAxisState = 0;
     // deadzone value, 0-100
     int deadzoneValue = 0;
+    // sensitivity value, 25-175
+    int sensitivityValue = 100;
 
     bool needImageUpdate = false;
 public:
@@ -41,6 +43,7 @@ public:
     void SetXAxisState(int xAxis);
     void SetYAxisState(int yAxis);
     void SetDeadzone(int value);
+    void SetSensitivity(int value);
 
     void ClearControllerState();
     void UpdateImage();

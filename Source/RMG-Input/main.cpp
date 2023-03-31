@@ -21,7 +21,7 @@
 #include <QApplication>
 #include <SDL.h>
 
-#include <iostream>
+#include <algorithm>
 #include <chrono>
 
 //
@@ -60,6 +60,7 @@ struct InputProfile
 {
     bool PluggedIn    = false;
     int DeadzoneValue = 0;
+    int SensitivityValue = 100;
 
     N64ControllerPak ControllerPak = N64ControllerPak::None;
 
@@ -217,6 +218,7 @@ static void load_settings(void)
 
         profile->PluggedIn = CoreSettingsGetBoolValue(SettingsID::Input_PluggedIn, section);
         profile->DeadzoneValue = CoreSettingsGetIntValue(SettingsID::Input_Deadzone, section);
+        profile->SensitivityValue = CoreSettingsGetIntValue(SettingsID::Input_Sensitivity, section);
         profile->ControllerPak = (N64ControllerPak)CoreSettingsGetIntValue(SettingsID::Input_Pak, section);
         profile->DeviceName = CoreSettingsGetStringValue(SettingsID::Input_DeviceName, section);
         profile->DeviceNum = CoreSettingsGetIntValue(SettingsID::Input_DeviceNum, section);
@@ -537,16 +539,17 @@ static double simulate_deadzone(const double n64InputAxis, const double maxAxis,
     return axisAbsolute;
 }
 
-// Credit: MerryMage
-static void simulate_octagon(const double inputX, const double inputY, const double deadzoneFactor, int& outputX, int& outputY)
+// Credit: MerryMage & fzurita
+static void simulate_octagon(const double inputX, const double inputY, const double deadzoneFactor, const double sensitivityFactor, int& outputX, int& outputY)
 {
-    const double maxAxis     = N64_AXIS_PEAK;
-    const double maxDiagonal = MAX_DIAGONAL_VALUE;
-    const int    deadzone    = (int)(deadzoneFactor * N64_AXIS_PEAK);
+    // don't increase emulated range at higher than 100% sensitivity
+    const double maxAxis     = N64_AXIS_PEAK * std::min(sensitivityFactor, 1.0);
+    const double maxDiagonal = MAX_DIAGONAL_VALUE * std::min(sensitivityFactor, 1.0);
+    const int    deadzone    = (int)(deadzoneFactor * N64_AXIS_PEAK * sensitivityFactor);
     const double axisRange   = maxAxis - deadzone;
     // scale to [-maxAxis, maxAxis]
-    double ax = inputX * maxAxis;
-    double ay = inputY * maxAxis;
+    double ax = std::min(inputX * sensitivityFactor, 1.0) * maxAxis;
+    double ay = std::min(inputY * sensitivityFactor, 1.0) * maxAxis;
 
     // check whether (ax, ay) is within the circle of radius MAX_AXIS
     double len = std::sqrt(ax*ax + ay*ay);
@@ -879,6 +882,7 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
         inputX, // inputX
         inputY, // inputY
         profile->DeadzoneValue / 100.0, // deadzoneFactor
+        profile->SensitivityValue / 100.0, // sensitivityFactor
         octagonX, // outputX
         octagonY  // outputY
     );

@@ -323,6 +323,7 @@ void ControllerWidget::setPluggedIn(bool value)
         this->analogStickDownButton, this->analogStickDownAddButton, this->analogStickDownRemoveButton,
         this->analogStickLeftButton, this->analogStickLeftAddButton, this->analogStickLeftRemoveButton,
         this->analogStickRightButton, this->analogStickRightAddButton, this->analogStickRightRemoveButton,
+        this->analogStickSensitivitySlider,
         // cbuttons
         this->cButtonsGroupBox,
         this->cbuttonUpButton, this->cbuttonUpAddButton, this->cbuttonUpRemoveButton,
@@ -507,6 +508,16 @@ void ControllerWidget::on_deadZoneSlider_valueChanged(int value)
 
     this->deadZoneGroupBox->setTitle(title);
     this->controllerImageWidget->SetDeadzone(value);
+}
+
+void ControllerWidget::on_analogStickSensitivitySlider_valueChanged(int value)
+{
+    QString title = tr("Analog Stick Sensitivity: ");
+    title += QString::number(value);
+    title += "%";
+
+    this->analogStickSensitivityGroupBox->setTitle(title);
+    this->controllerImageWidget->SetSensitivity(value);
 }
 
 void ControllerWidget::on_profileComboBox_currentIndexChanged(int value)
@@ -1232,6 +1243,7 @@ void ControllerWidget::LoadSettings(QString sectionQString, bool loadUserProfile
         }
     }
 
+    this->analogStickSensitivitySlider->setValue(CoreSettingsGetIntValue(SettingsID::Input_Sensitivity, section));
     this->deadZoneSlider->setValue(CoreSettingsGetIntValue(SettingsID::Input_Deadzone, section));
     this->optionsDialogSettings.RemoveDuplicateMappings = CoreSettingsGetBoolValue(SettingsID::Input_RemoveDuplicateMappings, section);
     this->optionsDialogSettings.ControllerPak = CoreSettingsGetIntValue(SettingsID::Input_Pak, section);
@@ -1309,6 +1321,7 @@ void ControllerWidget::SaveDefaultSettings()
     CoreSettingsSetValue(SettingsID::Input_DeviceName, section, std::string("None"));
     CoreSettingsSetValue(SettingsID::Input_DeviceNum, section, (int)InputDeviceType::None);
     CoreSettingsSetValue(SettingsID::Input_Deadzone, section, 9);
+    CoreSettingsSetValue(SettingsID::Input_Sensitivity, section, 100);
     CoreSettingsSetValue(SettingsID::Input_Pak, section, 0);
     CoreSettingsSetValue(SettingsID::Input_RemoveDuplicateMappings, section, true);
     CoreSettingsSetValue(SettingsID::Input_FilterEventsForButtons, section, true);
@@ -1393,6 +1406,7 @@ void ControllerWidget::SaveSettings(QString section)
     CoreSettingsSetValue(SettingsID::Input_DeviceName, sectionStr, deviceName.toStdString());
     CoreSettingsSetValue(SettingsID::Input_DeviceNum, sectionStr, deviceNum);
     CoreSettingsSetValue(SettingsID::Input_Deadzone, sectionStr, this->deadZoneSlider->value());
+    CoreSettingsSetValue(SettingsID::Input_Sensitivity, sectionStr, this->analogStickSensitivitySlider->value());
     CoreSettingsSetValue(SettingsID::Input_Pak, sectionStr, this->optionsDialogSettings.ControllerPak);
     CoreSettingsSetValue(SettingsID::Input_GameboyRom, sectionStr, this->optionsDialogSettings.GameboyRom);
     CoreSettingsSetValue(SettingsID::Input_GameboySave, sectionStr, this->optionsDialogSettings.GameboySave);

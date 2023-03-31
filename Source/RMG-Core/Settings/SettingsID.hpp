@@ -188,6 +188,7 @@ enum class SettingsID
     Input_DeviceName,
     Input_DeviceNum,
     Input_Deadzone,
+    Input_Sensitivity,
     Input_Pak,
     Input_GameboyRom,
     Input_GameboySave,
