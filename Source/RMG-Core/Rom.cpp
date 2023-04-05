@@ -447,7 +447,7 @@ static bool read_7zip_file(std::filesystem::path file, std::filesystem::path* ex
     ISzAlloc_Free(&allocImp, lookStream.buf);
     File_Close(&archiveStream.file);
 
-    error = "read_7zip_file Failed: no valid ROMs found in zip!";
+    error = "read_7zip_file Failed: no valid ROMs found in 7zip!";
     CoreSetError(error);
     return false;
 }
