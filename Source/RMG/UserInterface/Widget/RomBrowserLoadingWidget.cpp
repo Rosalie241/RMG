@@ -11,6 +11,7 @@
 
 #include <QLabel>
 #include <QHBoxLayout>
+#include <QTimerEvent>
 
 using namespace UserInterface::Widget;
 
@@ -36,6 +37,12 @@ void RomBrowserLoadingWidget::SetWidgetIndex(int index)
     this->widgetIndex = index;
 }
 
+void RomBrowserLoadingWidget::SetCurrentRomIndex(int index, int count)
+{
+    this->romIndex = index;
+    this->romCount = count;
+}
+
 void RomBrowserLoadingWidget::on_RomBrowserWidget_currentChanged(int index)
 {
     // start timer when it isnt running
@@ -45,6 +52,12 @@ void RomBrowserLoadingWidget::on_RomBrowserWidget_currentChanged(int index)
     {
         if (this->loadingLabelTimerId == -1)
         {
+            this->dotCount = 0;
+            this->romIndex = 0;
+            this->romCount = 0;
+            this->elapsedTimeSinceLoading.start();
+            // reset loading text
+            this->updateLoadingText();
             this->loadingLabelTimerId = this->startTimer(1000);
         }
     }
@@ -52,20 +65,52 @@ void RomBrowserLoadingWidget::on_RomBrowserWidget_currentChanged(int index)
     {
         if (this->loadingLabelTimerId != -1)
         {
+            this->elapsedTimeSinceLoading.invalidate();
             this->killTimer(this->loadingLabelTimerId);
             this->loadingLabelTimerId = -1;
         }
     }
 }
 
-void RomBrowserLoadingWidget::timerEvent(QTimerEvent *event)
+void RomBrowserLoadingWidget::updateLoadingText()
 {
-    if (this->loadingLabel->text().size() >= 10)
+    QString loadingText = "Loading";
+
+    if (this->elapsedTimeSinceLoading.isValid() &&
+        this->elapsedTimeSinceLoading.elapsed() >= 5000)
     {
-        this->loadingLabel->setText("Loading");
+        QString romCountString = QString::number(this->romCount);
+
+        loadingText += " [";
+        loadingText += QString::number(this->romIndex).rightJustified(romCountString.size(), '0', false);
+        loadingText += "/";
+        loadingText += romCountString;
+        loadingText += "]";
+    }
+
+    if (dotCount <= 3)
+    {
+        for (int i = 0; i < dotCount; i++)
+        {
+            loadingText += ".";
+        }
+
+        dotCount++;
     }
     else
     {
-        this->loadingLabel->setText(this->loadingLabel->text() + ".");
+        dotCount = 1;
     }
+
+    this->loadingLabel->setText(loadingText);
+}
+
+void RomBrowserLoadingWidget::timerEvent(QTimerEvent *event)
+{
+    if (event->timerId() != this->loadingLabelTimerId)
+    {
+        return;
+    }
+
+   this->updateLoadingText();
 }

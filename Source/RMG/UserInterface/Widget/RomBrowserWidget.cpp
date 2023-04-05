@@ -634,7 +634,7 @@ void RomBrowserWidget::on_ZoomOut(void)
     view->setIconSize(view->iconSize() - QSize(10, 10));
 }
 
-void RomBrowserWidget::on_RomBrowserThread_RomFound(QString file, CoreRomType type, CoreRomHeader header, CoreRomSettings settings)
+void RomBrowserWidget::on_RomBrowserThread_RomFound(QString file, CoreRomType type, CoreRomHeader header, CoreRomSettings settings, int index, int count)
 {
     QString name;
     QString gameFormat;
@@ -734,6 +734,9 @@ void RomBrowserWidget::on_RomBrowserThread_RomFound(QString file, CoreRomType ty
     gridViewItem->setText(name);
     gridViewItem->setData(itemData);
     this->gridViewModel->appendRow(gridViewItem);
+
+    // update loading widget
+    this->loadingWidget->SetCurrentRomIndex(index, count);
 }
 
 void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)

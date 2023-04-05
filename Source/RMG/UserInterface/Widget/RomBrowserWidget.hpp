@@ -118,7 +118,7 @@ class RomBrowserWidget : public QStackedWidget
     void on_ZoomIn(void);
     void on_ZoomOut(void);
 
-    void on_RomBrowserThread_RomFound(QString file, CoreRomType type, CoreRomHeader header, CoreRomSettings settings);
+    void on_RomBrowserThread_RomFound(QString file, CoreRomType type, CoreRomHeader header, CoreRomSettings settings, int index, int count);
     void on_RomBrowserThread_Finished(bool canceled);
 
     void on_Action_PlayGame(void);

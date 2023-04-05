@@ -12,6 +12,7 @@
 
 #include <QWidget>
 #include <QLabel>
+#include <QElapsedTimer>
 
 namespace UserInterface
 {
@@ -26,6 +27,8 @@ public:
 
     void SetWidgetIndex(int index);
 
+    void SetCurrentRomIndex(int index, int count);
+
 public slots:
     void on_RomBrowserWidget_currentChanged(int index);
 
@@ -33,6 +36,13 @@ private:
     QLabel* loadingLabel;
     int loadingLabelTimerId = -1;
     int widgetIndex = -1;
+    int romIndex = 0;
+    int romCount = 0;
+    int dotCount = 0;
+
+    QElapsedTimer elapsedTimeSinceLoading; 
+
+    void updateLoadingText();
 
 protected:
     void timerEvent(QTimerEvent *event) Q_DECL_OVERRIDE;
