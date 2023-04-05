@@ -36,7 +36,7 @@ class UpdateDialog : public QDialog, private Ui::UpdateDialog
 #endif // _WIN32
 
   public:
-    UpdateDialog(QWidget *parent, QJsonObject jsonObject);
+    UpdateDialog(QWidget *parent, QJsonObject jsonObject, bool forced);
     ~UpdateDialog(void);
 
     QString GetFileName(void);

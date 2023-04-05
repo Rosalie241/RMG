@@ -1092,7 +1092,7 @@ void MainWindow::on_networkAccessManager_Finished(QNetworkReply* reply)
 
     int ret = 0;
 
-    Dialog::UpdateDialog updateDialog(this, jsonObject);
+    Dialog::UpdateDialog updateDialog(this, jsonObject, !this->ui_SilentUpdateCheck);
     ret = updateDialog.exec();
     if (ret != QDialog::Accepted)
     {

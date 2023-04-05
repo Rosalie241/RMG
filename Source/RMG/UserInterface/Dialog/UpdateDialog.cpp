@@ -23,7 +23,7 @@
 
 using namespace UserInterface::Dialog;
 
-UpdateDialog::UpdateDialog(QWidget *parent, QJsonObject jsonObject) : QDialog(parent)
+UpdateDialog::UpdateDialog(QWidget *parent, QJsonObject jsonObject, bool forced) : QDialog(parent)
 {
     this->setupUi(this);
 
@@ -35,6 +35,10 @@ UpdateDialog::UpdateDialog(QWidget *parent, QJsonObject jsonObject) : QDialog(pa
     // change ok button text to 'Update'
     QPushButton* button = this->buttonBox->button(QDialogButtonBox::Ok);
     button->setText("Update");
+
+    // don't show the 'Don't check for updates again' checkbox,
+    // when the user requested we check for updates
+    this->disableUpdateCheckCheckBox->setHidden(forced);
 }
 
 UpdateDialog::~UpdateDialog(void)
