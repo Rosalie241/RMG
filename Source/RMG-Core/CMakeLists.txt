@@ -80,6 +80,7 @@ endif(WIN32)
 
 target_link_libraries(RMG-Core
     ${MINIZIP_LIBRARIES}
+    7Zip
 )
 
 if (DISCORD_RPC)

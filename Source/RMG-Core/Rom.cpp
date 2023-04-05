@@ -16,6 +16,16 @@
 #include "Cheats.hpp"
 #include "osal/osal_files.hpp"
 
+// 7-Zip includes
+#include "../3rdParty/7-Zip/C/7zTypes.h"
+#include "../3rdParty/7-Zip/C/7z.h"
+#include "../3rdParty/7-Zip/C/7zAlloc.h"
+#include "../3rdParty/7-Zip/C/7zBuf.h"
+#include "../3rdParty/7-Zip/C/7zCrc.h"
+#include "../3rdParty/7-Zip/C/7zFile.h"
+#include "../3rdParty/7-Zip/C/7zVersion.h"
+
+#include <string>
 #include <unzip.h>
 #include <fstream>
 #include <cstdlib>
@@ -140,7 +150,7 @@ static bool read_zip_file(std::filesystem::path file, std::filesystem::path* ext
     filefuncs.zclose_file  = zlib_filefunc_close;
     filefuncs.zerror_file  = zlib_filefunc_testerror;
     filefuncs.opaque       = nullptr;
-    
+
     zipFile = unzOpen2_64((const void*)&file, &filefuncs);
     if (zipFile == nullptr)
     {
@@ -293,6 +303,155 @@ static bool read_zip_file(std::filesystem::path file, std::filesystem::path* ext
     return false;
 }
 
+static bool read_7zip_file(std::filesystem::path file, std::filesystem::path* extractedFileName, bool* isDisk, char** buf, int* size)
+{
+    std::string  error;
+
+    const ISzAlloc alloc = { SzAlloc, SzFree };
+    const size_t bufSize = ((size_t)1 << 18);
+
+    ISzAlloc allocImp;
+    ISzAlloc allocTempImp;
+
+    CFileInStream archiveStream;
+    CLookToRead2 lookStream;
+    CSzArEx db;
+    SRes res;
+
+    // initialize allocator 
+    allocImp     = alloc;
+    allocTempImp = alloc;
+
+    // try to open file
+#ifdef _WIN32
+    WRes wres = InFile_OpenW(&archiveStream.file, file.wstring().c_str());
+#else
+    WRes wres = InFile_Open(&archiveStream.file, file.string().c_str());
+#endif // _WIN32
+    if (wres != 0)
+    {
+        error = "read_7zip_file Failed: InFile_Open Failed: ";
+        error += std::to_string(wres);
+        CoreSetError(error);
+        return false;
+    }
+
+    // create vtables for streams
+    FileInStream_CreateVTable(&archiveStream);
+    archiveStream.wres = 0;
+    LookToRead2_CreateVTable(&lookStream, 0);
+    lookStream.buf = nullptr;
+
+    // allocate memory look reader
+    lookStream.buf = (Byte*)ISzAlloc_Alloc(&allocImp, bufSize);
+    if (lookStream.buf == nullptr)
+    {
+        error = "read_7zip_file Failed: ISzAlloc_Alloc Failed!";
+        CoreSetError(error);
+        return false;
+    }
+
+    // initialize look reader
+    lookStream.bufSize = bufSize;
+    lookStream.realStream = &archiveStream.vt;
+    LookToRead2_Init(&lookStream);
+
+    // initialize CRC table
+    CrcGenerateTable();
+
+    // initialize archive
+    SzArEx_Init(&db);
+
+    // try to open file
+    res = SzArEx_Open(&db, &lookStream.vt, &allocImp, &allocTempImp);
+    if (res != SZ_OK)
+    {
+        error = "read_7zip_file Failed: SzArEx_Open Failed: ";
+        error += std::to_string(res);
+        CoreSetError(error);
+        SzArEx_Free(&db, &allocImp);
+        ISzAlloc_Free(&allocImp, lookStream.buf);
+        return false;
+    }
+
+    for (int i = 0; i < db.NumFiles; i++)
+    {
+        size_t filename_size = 0;
+        uint16_t fileName[PATH_MAX];
+
+        // skip directories
+        if (SzArEx_IsDir(&db, i))
+        {
+            continue;
+        }
+
+        // skip when filename size exceeds our buffer size
+        filename_size = SzArEx_GetFileNameUtf16(&db, i, nullptr);
+        if (filename_size > PATH_MAX)
+        {
+            continue;
+        }
+
+        SzArEx_GetFileNameUtf16(&db, i, fileName);
+
+        std::filesystem::path fileNamePath((char16_t*)fileName);
+        std::string fileExtension = fileNamePath.has_extension() ? fileNamePath.extension().string() : "";
+        fileExtension = to_lower_str(fileExtension);
+        if (fileExtension == ".z64" ||
+            fileExtension == ".v64" ||
+            fileExtension == ".n64" ||
+            fileExtension == ".ndd" ||
+            fileExtension == ".d64")
+        {
+            uint32_t blockIndex = 0xFFFFFFFF;
+            uint8_t* outBuffer  = nullptr;
+            size_t   outBufferSize = 0;
+            size_t   offset = 0;
+            size_t   outSizeProcessed = 0;
+
+            res = SzArEx_Extract(&db, &lookStream.vt, i,
+                                    &blockIndex, &outBuffer, &outBufferSize,
+                                    &offset, &outSizeProcessed,
+                                    &allocImp, &allocTempImp);
+            if (res != SZ_OK)
+            {
+                error = "read_7zip_file Failed: SzArEx_Extract Failed: ";
+                error += std::to_string(res);
+                CoreSetError(error);
+
+                SzArEx_Free(&db, &allocImp);
+                ISzAlloc_Free(&allocImp, lookStream.buf);
+                File_Close(&archiveStream.file);
+                ISzAlloc_Free(&allocImp, outBuffer);
+                return false;
+            }
+
+            *size              = outSizeProcessed;
+            // we have to memcpy it into buf, otherwise
+            // the free() in CoreOpenRom() crashes
+            *buf               = (char*)malloc(outSizeProcessed);
+            memcpy(*buf, (outBuffer + offset), outSizeProcessed);
+            *extractedFileName = fileNamePath;
+            *isDisk            = (fileExtension == ".ndd" || fileExtension == ".d64");
+
+            SzArEx_Free(&db, &allocImp);
+            ISzAlloc_Free(&allocImp, lookStream.buf);
+            File_Close(&archiveStream.file);
+            ISzAlloc_Free(&allocImp, outBuffer);
+            return true;
+        }
+    }
+
+    // cleanup
+    SzArEx_Free(&db, &allocImp);
+    ISzAlloc_Free(&allocImp, lookStream.buf);
+    File_Close(&archiveStream.file);
+
+    error = "read_7zip_file Failed: no valid ROMs found in zip!";
+    CoreSetError(error);
+    return false;
+}
+
 static bool read_raw_file(std::filesystem::path file, char** buf, int* size)
 {
     std::string   error;
@@ -362,7 +521,6 @@ static bool write_file(std::filesystem::path file, char* buf, int size)
 
     // write buffer to file
     fileStream.write(buf, size);
-    
     fileStream.close();
     return true;
 }
@@ -395,14 +553,25 @@ bool CoreOpenRom(std::filesystem::path file)
     file_extension = file.has_extension() ? file.extension().string() : "";
     file_extension = to_lower_str(file_extension);
 
-    if (file_extension == ".zip")
+    if (file_extension == ".zip" || 
+        file_extension == ".7z")
     {
         std::filesystem::path extracted_file;
         bool                  is_disk = false;
 
-        if (!read_zip_file(file, &extracted_file, &is_disk, &buf, &buf_size))
+        if (file_extension == ".zip")
         {
-            return false;
+            if (!read_zip_file(file, &extracted_file, &is_disk, &buf, &buf_size))
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if (!read_7zip_file(file, &extracted_file, &is_disk, &buf, &buf_size))
+            {
+                return false;
+            }
         }
 
         if (is_disk)
