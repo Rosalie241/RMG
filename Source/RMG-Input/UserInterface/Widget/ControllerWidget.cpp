@@ -1243,7 +1243,16 @@ void ControllerWidget::LoadSettings(QString sectionQString, bool loadUserProfile
         }
     }
 
-    this->analogStickSensitivitySlider->setValue(CoreSettingsGetIntValue(SettingsID::Input_Sensitivity, section));
+    // keep backwards compatibility with versions before v0.3.9
+    if (CoreSettingsKeyExists(section, "Sensitivity"))
+    {
+        this->analogStickSensitivitySlider->setValue(CoreSettingsGetIntValue(SettingsID::Input_Sensitivity, section));
+    }
+    else
+    {
+        this->analogStickSensitivitySlider->setValue(100);
+    }
+
     this->deadZoneSlider->setValue(CoreSettingsGetIntValue(SettingsID::Input_Deadzone, section));
     this->optionsDialogSettings.RemoveDuplicateMappings = CoreSettingsGetBoolValue(SettingsID::Input_RemoveDuplicateMappings, section);
     this->optionsDialogSettings.ControllerPak = CoreSettingsGetIntValue(SettingsID::Input_Pak, section);
