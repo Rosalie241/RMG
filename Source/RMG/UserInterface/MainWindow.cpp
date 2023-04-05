@@ -1131,7 +1131,7 @@ void MainWindow::on_Action_System_OpenRom(void)
 
     QString romFile;
 
-    romFile = QFileDialog::getOpenFileName(this, "", "", "N64 ROMs & Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip)");
+    romFile = QFileDialog::getOpenFileName(this, "", "", "N64 ROMs & Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)");
 
     if (romFile.isEmpty())
     {
@@ -1162,7 +1162,7 @@ void MainWindow::on_Action_System_OpenCombo(void)
 
     QString cartRom, diskRom;
 
-    cartRom = QFileDialog::getOpenFileName(this, "", "", "N64 ROMs (*.n64 *.z64 *.v64 *.zip)");
+    cartRom = QFileDialog::getOpenFileName(this, "", "", "N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)");
     
     if (cartRom.isEmpty())
     {
@@ -1671,7 +1671,7 @@ void MainWindow::on_RomBrowser_PlayGameWith(CoreRomType type, QString file)
     }
     else
     { // disk
-        mainRom = QFileDialog::getOpenFileName(this, "", "", "N64 ROMs (*.n64 *.z64 *.v64 *.zip)");
+        mainRom = QFileDialog::getOpenFileName(this, "", "", "N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)");
         otherRom = file;
     }
 

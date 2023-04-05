@@ -70,6 +70,7 @@ void RomSearcherThread::searchDirectory(QString directory)
     filter << "*.NDD";
     filter << "*.D64";
     filter << "*.ZIP";
+    filter << "*.7Z";
 
     QDirIterator::IteratorFlag flag = this->recursive ? 
         QDirIterator::Subdirectories : 
