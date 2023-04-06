@@ -82,6 +82,7 @@ class RomBrowserWidget : public QStackedWidget
     QAction* action_ChangeRomDirectory;
     QAction* action_RomInformation;
     QAction* action_EditGameSettings;
+    QAction* action_EditGameInputSettings;
     QAction* action_EditCheats;
     QAction* action_ResetColumnSizes;
     QAction* action_SetCoverImage;
@@ -128,6 +129,7 @@ class RomBrowserWidget : public QStackedWidget
     void on_Action_ChangeRomDirectory(void);
     void on_Action_RomInformation(void);
     void on_Action_EditGameSettings(void);
+    void on_Action_EditGameInputSettings(void);
     void on_Action_EditCheats(void);
     void on_Action_ResetColumnSizes(void);
     void on_Action_SetCoverImage(void);
@@ -137,6 +139,7 @@ class RomBrowserWidget : public QStackedWidget
     void PlayGame(QString);
     void PlayGameWith(CoreRomType, QString);
     void EditGameSettings(QString);
+    void EditGameInputSettings(QString);
     void Cheats(QString);
     void ChangeRomDirectory(void);
     void RomInformation(QString);

@@ -168,6 +168,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->action_ChangeRomDirectory = new QAction(this);
     this->action_RomInformation = new QAction(this);
     this->action_EditGameSettings = new QAction(this);
+    this->action_EditGameInputSettings = new QAction(this);
     this->action_EditCheats = new QAction(this);
     this->action_ResetColumnSizes = new QAction(this);
     this->action_SetCoverImage = new QAction(this);
@@ -185,6 +186,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->action_ChangeRomDirectory->setText("Change ROM Directory...");
     this->action_RomInformation->setText("ROM Information");
     this->action_EditGameSettings->setText("Edit Game Settings");
+    this->action_EditGameInputSettings->setText("Edit Game Input Settings");
     this->action_EditCheats->setText("Edit Cheats");
     this->action_ResetColumnSizes->setText("Reset Column Sizes");
     this->menu_Columns->menuAction()->setText("Show/Hide Columns");
@@ -197,6 +199,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     connect(this->action_ChangeRomDirectory, &QAction::triggered, this, &RomBrowserWidget::on_Action_ChangeRomDirectory);
     connect(this->action_RomInformation, &QAction::triggered, this, &RomBrowserWidget::on_Action_RomInformation);
     connect(this->action_EditGameSettings, &QAction::triggered, this, &RomBrowserWidget::on_Action_EditGameSettings);
+    connect(this->action_EditGameInputSettings, &QAction::triggered, this, &RomBrowserWidget::on_Action_EditGameInputSettings);
     connect(this->action_EditCheats, &QAction::triggered, this, &RomBrowserWidget::on_Action_EditCheats);
     connect(this->action_ResetColumnSizes, &QAction::triggered, this, &RomBrowserWidget::on_Action_ResetColumnSizes);
     connect(this->action_SetCoverImage, &QAction::triggered, this, &RomBrowserWidget::on_Action_SetCoverImage);
@@ -214,6 +217,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->contextMenu->addAction(this->action_RomInformation);
     this->contextMenu->addSeparator();
     this->contextMenu->addAction(this->action_EditGameSettings);
+    this->contextMenu->addAction(this->action_EditGameInputSettings);
     this->contextMenu->addAction(this->action_EditCheats);
     this->contextMenu->addSeparator();
     this->contextMenu->addAction(this->action_ResetColumnSizes);
@@ -485,6 +489,7 @@ void RomBrowserWidget::customContextMenuRequested(QPoint position)
     this->action_PlayGameWith->setEnabled(hasSelection);
     this->action_RomInformation->setEnabled(hasSelection);
     this->action_EditGameSettings->setEnabled(hasSelection);
+    this->action_EditGameInputSettings->setEnabled(hasSelection && CorePluginsHasROMConfig(CorePluginType::Input));
     this->action_EditCheats->setEnabled(hasSelection);
     this->action_ResetColumnSizes->setVisible(view == this->listViewWidget);
     this->menu_Columns->menuAction()->setVisible(view == this->listViewWidget);
@@ -890,6 +895,11 @@ void RomBrowserWidget::on_Action_RomInformation(void)
 void RomBrowserWidget::on_Action_EditGameSettings(void)
 {
     emit this->EditGameSettings(this->getCurrentRom());
+}
+
+void RomBrowserWidget::on_Action_EditGameInputSettings(void)
+{
+    emit this->EditGameInputSettings(this->getCurrentRom());
 }
 
 void RomBrowserWidget::on_Action_EditCheats(void)

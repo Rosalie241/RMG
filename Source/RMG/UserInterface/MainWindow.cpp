@@ -169,6 +169,8 @@ void MainWindow::initializeUI(void)
             &MainWindow::on_RomBrowser_PlayGameWith);
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::EditGameSettings, this,
             &MainWindow::on_RomBrowser_EditGameSettings);
+    connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::EditGameInputSettings, this,
+            &MainWindow::on_RomBrowser_EditGameInputSettings);
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::Cheats, this,
             &MainWindow::on_RomBrowser_Cheats);
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::ChangeRomDirectory, this,
@@ -1761,6 +1763,34 @@ void MainWindow::on_RomBrowser_EditGameSettings(QString file)
 
     this->updateActions(false, false);
     this->coreCallBacks->LoadSettings();
+
+    if (!CoreCloseRom())
+    {
+        this->showErrorMessage("CoreCloseRom() Failed", QString::fromStdString(CoreGetError()));
+        return;
+    }
+
+    if (isRefreshingRomList)
+    {
+        this->ui_Widget_RomBrowser->RefreshRomList();
+    }
+}
+
+void MainWindow::on_RomBrowser_EditGameInputSettings(QString file)
+{
+    bool isRefreshingRomList = this->ui_Widget_RomBrowser->IsRefreshingRomList();
+    if (isRefreshingRomList)
+    {
+        this->ui_Widget_RomBrowser->StopRefreshRomList();
+    }
+
+    if (!CoreOpenRom(file.toStdU32String()))
+    {
+        this->showErrorMessage("CoreOpenRom() Failed", QString::fromStdString(CoreGetError()));
+        return;
+    }
+
+    CorePluginsOpenROMConfig(CorePluginType::Input);
 
     if (!CoreCloseRom())
     {

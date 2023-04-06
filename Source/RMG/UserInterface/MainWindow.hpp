@@ -189,6 +189,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     void on_RomBrowser_ChangeRomDirectory(void);
     void on_RomBrowser_RomInformation(QString file);
     void on_RomBrowser_EditGameSettings(QString file);
+    void on_RomBrowser_EditGameInputSettings(QString file);
     void on_RomBrowser_Cheats(QString file);
 
   public slots:
