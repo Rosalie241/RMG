@@ -34,6 +34,8 @@ class PluginApi
     ptr_PluginStartup Startup;
     ptr_PluginShutdown Shutdown;
     ptr_PluginConfig Config;
+    ptr_PluginConfig2 Config2;
+    ptr_PluginConfig2HasRomConfig Config2HasRomConfig;
     ptr_PluginGetVersion GetVersion;
 
   private:

@@ -52,6 +52,14 @@ bool CorePluginsHasConfig(CorePluginType type);
 // used plugin of given type
 bool CorePluginsOpenConfig(CorePluginType type);
 
+// returns wether the currently used plugin
+// of the given type has a ROM config GUI
+bool CorePluginsHasROMConfig(CorePluginType type);
+
+// opens the ROM config GUI for the currently
+// used plugin of given type
+bool CorePluginsOpenROMConfig(CorePluginType type);
+
 // attaches all used plugins
 bool CoreAttachPlugins(void);
 
