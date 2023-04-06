@@ -355,6 +355,67 @@ void ControllerWidget::setPluggedIn(bool value)
     this->ClearControllerImage();
 }
 
+bool ControllerWidget::hasAnyGameSettingChanged(void)
+{
+    std::string section = this->getCurrentSettingsSection().toStdString();
+    // fallback to main section
+    if (!CoreSettingsSectionExists(section))
+    {
+        section = this->settingsSection.toStdString();
+    }
+
+    // retrieve data from settings
+    bool settingsIsPluggedIn = CoreSettingsGetBoolValue(SettingsID::Input_PluggedIn, section);
+    int settingsDeadZone     = CoreSettingsGetIntValue(SettingsID::Input_Deadzone, section);
+    int settingsAnalogSensitivity = 100;
+    // account for profiles before v0.3.9
+    if (CoreSettingsKeyExists(section, "Sensitivity"))
+    {
+        settingsAnalogSensitivity = CoreSettingsGetIntValue(SettingsID::Input_Sensitivity, section);
+    }
+
+    // retrieve current data
+    bool currentIsPluggedIn = this->inputDeviceComboBox->currentText() != "None";
+    int currentDeadZone  = this->deadZoneSlider->value();
+    int currentAnalogSensitivity = this->analogStickSensitivitySlider->value();
+
+    // compare data
+    if (settingsIsPluggedIn != currentIsPluggedIn ||
+        settingsDeadZone != currentDeadZone ||
+        settingsAnalogSensitivity != currentAnalogSensitivity)
+    {
+        return true;
+    }
+
+    // compare button mappings with settings
+    for (auto& buttonSetting : this->buttonSettingMappings)
+    {
+        // retrieve data from settings
+        std::vector<int> settingsTypes         = CoreSettingsGetIntListValue(buttonSetting.inputTypeSettingsId, section);
+        std::vector<std::string> settingsNames = CoreSettingsGetStringListValue(buttonSetting.nameSettingsId, section);
+        std::vector<int> settingsData          = CoreSettingsGetIntListValue(buttonSetting.dataSettingsId, section);
+        std::vector<int> settingsExtraData     = CoreSettingsGetIntListValue(buttonSetting.extraDataSettingsId, section);
+
+        // retrieve current data
+        std::vector<int> currentTypes         = buttonSetting.button->GetInputType();
+        std::vector<std::string> currentNames = buttonSetting.button->GetInputText();
+        std::vector<int> currentData          = buttonSetting.button->GetInputData();
+        std::vector<int> currentExtraData     = buttonSetting.button->GetExtraInputData();
+
+        // compare data
+        if (settingsTypes != currentTypes ||
+            settingsNames != currentNames ||
+            settingsData  != currentData  ||
+            settingsExtraData != currentExtraData)
+        {
+            return true;
+        }
+    }
+
+    // no differences found
+    return false;
+}
+
 void ControllerWidget::showErrorMessage(QString text, QString details)
 {
     QMessageBox msgBox(this);
@@ -633,7 +694,7 @@ void ControllerWidget::on_removeProfileButton_clicked()
 {
     bool ret;
 
-    if (this->profileComboBox->currentIndex() == 0)
+    if (this->profileComboBox->currentData().toString() == this->settingsSection)
     {
         QMessageBox messageBox(this);
         messageBox.setIcon(QMessageBox::Icon::Warning);
@@ -688,6 +749,13 @@ void ControllerWidget::on_removeProfileButton_clicked()
         // upon switching to the main profile
         this->previousProfileComboBoxIndex = -1;
         this->profileComboBox->setCurrentIndex(0);
+    }
+
+    // force a re-load when
+    // we're only loading the game profile
+    if (this->onlyLoadGameProfile)
+    {
+        this->LoadSettings(this->settingsSection);
     }
 }
 
@@ -1104,10 +1172,21 @@ bool ControllerWidget::IsPluggedIn()
     return this->inputDeviceComboBox->currentData().toInt() != (int)InputDeviceType::None;
 }
 
+void ControllerWidget::SetOnlyLoadGameProfile(bool value)
+{
+    this->onlyLoadGameProfile = value;
+
+    // update UI element
+    this->addProfileButton->setDisabled(value);
+}
+
 void ControllerWidget::SetSettingsSection(QString profile, QString section)
 {
     this->settingsSection = section;
-    this->profileComboBox->addItem(profile, section);
+    if (!this->onlyLoadGameProfile)
+    {
+        this->profileComboBox->addItem(profile, section);
+    }
 }
 
 void ControllerWidget::SetInitialized(bool value)
@@ -1156,41 +1235,53 @@ void ControllerWidget::LoadSettings()
         // if a game specific section exists,
         // select it in the profile combobox
         // and use it to load the settings
-        if (CoreSettingsSectionExists(this->gameSection.toStdString()))
+        if (CoreSettingsSectionExists(this->gameSection.toStdString()) ||
+            this->onlyLoadGameProfile)
         {
             // check if the key 'UseGameProfile' exists,
             // if it doesn't then use the profile,
-            // else check if it's true and use it
-            if (!CoreSettingsKeyExists(this->gameSection.toStdString(), "UseGameProfile") ||
+            // else check if it's true and use it,
+            // or if we're only loading the game profile
+            if (this->onlyLoadGameProfile ||
+                !CoreSettingsKeyExists(this->gameSection.toStdString(), "UseGameProfile") ||
                 CoreSettingsGetBoolValue(SettingsID::Input_UseGameProfile, this->gameSection.toStdString()))
             {
                 this->profileComboBox->setCurrentText(internalName);
-                section = this->gameSection;
+
+                // only use game section if it exists
+                if (CoreSettingsSectionExists(this->gameSection.toStdString()))
+                {
+                    section = this->gameSection;
+                }
             }
         }
     }
 
-    // clear profiles list
-    profiles.clear();
-
-    // try to add all the user's profiles
-    userProfiles = CoreSettingsGetStringListValue(SettingsID::Input_Profiles);
-    for (const std::string& profile : userProfiles)
+    // try to add all the user's profiles when we're not only loading the
+    // game profile
+    if (!this->onlyLoadGameProfile)
     {
-        QString profileSection = this->getUserProfileSectionName(QString::fromStdString(profile));
+        // clear profiles list
+        profiles.clear();
 
-        // ensure the profile section exists,
-        // if it does, add it when it doesn't
-        // exist yet
-        if (CoreSettingsSectionExists(profileSection.toStdString()))
+        userProfiles = CoreSettingsGetStringListValue(SettingsID::Input_Profiles);
+        for (const std::string& profile : userProfiles)
         {
-            // add to profiles list
-            this->profiles.push_back(profileSection);
+            QString profileSection = this->getUserProfileSectionName(QString::fromStdString(profile));
 
-            int index = this->profileComboBox->findData(profileSection);
-            if (index == -1)
+            // ensure the profile section exists,
+            // if it does, add it when it doesn't
+            // exist yet
+            if (CoreSettingsSectionExists(profileSection.toStdString()))
             {
-                this->profileComboBox->addItem(QString::fromStdString(profile), profileSection);
+                // add to profiles list
+                this->profiles.push_back(profileSection);
+
+                int index = this->profileComboBox->findData(profileSection);
+                if (index == -1)
+                {
+                    this->profileComboBox->addItem(QString::fromStdString(profile), profileSection);
+                }
             }
         }
     }
@@ -1230,7 +1321,7 @@ void ControllerWidget::LoadSettings(QString sectionQString, bool loadUserProfile
     // if it does, see if that profile exists, then load
     // that instead
     useProfile = CoreSettingsGetStringValue(SettingsID::Input_UseProfile, section);
-    if (loadUserProfile && !useProfile.empty())
+    if (!this->onlyLoadGameProfile && loadUserProfile && !useProfile.empty())
     {
         QString profileSection = this->getUserProfileSectionName(QString::fromStdString(useProfile));
 
@@ -1352,6 +1443,14 @@ void ControllerWidget::SaveSettings()
         return;
     }
 
+    // when we're only loading the game profile,
+    // we should only save when anything has changed
+    if (this->onlyLoadGameProfile && 
+        !this->hasAnyGameSettingChanged())
+    {
+        return;
+    }
+
     this->SaveSettings(this->getCurrentSettingsSection());
 
     // delete all removed profile sections
@@ -1446,6 +1545,14 @@ void ControllerWidget::RevertSettings()
     for (QString section : sections)
     {
         CoreSettingsRevertSection(section.toStdString());
+    }
+
+    // don't compare profiles,
+    // when we're only loading 
+    // the game profile
+    if (this->onlyLoadGameProfile)
+    {
+        return;
     }
 
     // delete all sections for added & removed profiles,

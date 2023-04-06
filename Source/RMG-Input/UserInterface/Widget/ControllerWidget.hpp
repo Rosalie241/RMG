@@ -95,12 +95,16 @@ private:
 
     void setPluggedIn(bool value);
 
+    bool hasAnyGameSettingChanged(void);
+
     void showErrorMessage(QString text, QString details = "");
 
     SDL_JoystickID currentJoystickId     = -1;
     bool isCurrentJoystickGameController = false;
 
     int previousProfileComboBoxIndex = -1;
+
+    bool onlyLoadGameProfile = false;
 
 public:
     ControllerWidget(QWidget* parent, EventFilter* eventFilter);
@@ -115,6 +119,8 @@ public:
 
     void GetCurrentInputDevice(QString& deviceName, int& deviceNum, bool ignoreDeviceNotFound = false);
     bool IsPluggedIn();
+
+    void SetOnlyLoadGameProfile(bool value);
 
     void SetSettingsSection(QString profile, QString section);
     void SetInitialized(bool value);

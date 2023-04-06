@@ -59,7 +59,7 @@ private:
     void closeInputDevice();
 
 public:
-    MainDialog(QWidget *parent, Thread::SDLThread*);
+    MainDialog(QWidget *parent, Thread::SDLThread*, bool);
     ~MainDialog(void);
 
 public slots:

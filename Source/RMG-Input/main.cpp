@@ -417,7 +417,7 @@ static void close_controllers(void)
     for (int i = 0; i < NUM_CONTROLLERS; i++)
     {
         InputProfile* profile = &l_InputProfiles[i];
-        
+
         profile->InputDevice.CloseDevice();
     }
 }
@@ -731,7 +731,7 @@ EXPORT m64p_error CALL PluginGetVersion(m64p_plugin_type *pluginType, int *plugi
 // Custom Plugin Functions
 //
 
-EXPORT m64p_error CALL PluginConfig()
+EXPORT m64p_error CALL PluginConfig2(int romConfig)
 {
     if (l_SDLThread == nullptr)
     {
@@ -743,7 +743,7 @@ EXPORT m64p_error CALL PluginConfig()
 
     l_SDLThread->SetAction(SDLThreadAction::SDLPumpEvents);
 
-    UserInterface::MainDialog dialog(nullptr, l_SDLThread);
+    UserInterface::MainDialog dialog(nullptr, l_SDLThread, romConfig);
     dialog.exec();
 
     l_SDLThread->SetAction(SDLThreadAction::None);
@@ -754,7 +754,6 @@ EXPORT m64p_error CALL PluginConfig()
         QThread::msleep(5);
     }
 
-    
     // reload settings
     load_settings();
 
@@ -768,6 +767,11 @@ EXPORT m64p_error CALL PluginConfig()
     open_controllers();
 
     return M64ERR_SUCCESS;
+}
+
+EXPORT int CALL PluginConfig2HasRomConfig(void)
+{
+    return 1;
 }
 
 //
