@@ -218,12 +218,21 @@ static void load_settings(void)
 
         profile->PluggedIn = CoreSettingsGetBoolValue(SettingsID::Input_PluggedIn, section);
         profile->DeadzoneValue = CoreSettingsGetIntValue(SettingsID::Input_Deadzone, section);
-        profile->SensitivityValue = CoreSettingsGetIntValue(SettingsID::Input_Sensitivity, section);
         profile->ControllerPak = (N64ControllerPak)CoreSettingsGetIntValue(SettingsID::Input_Pak, section);
         profile->DeviceName = CoreSettingsGetStringValue(SettingsID::Input_DeviceName, section);
         profile->DeviceNum = CoreSettingsGetIntValue(SettingsID::Input_DeviceNum, section);
         profile->GameboyRom = CoreSettingsGetStringValue(SettingsID::Input_GameboyRom, section);
         profile->GameboySave = CoreSettingsGetStringValue(SettingsID::Input_GameboySave, section);
+
+        // keep compatibility with profiles before version v0.3.9
+        if (CoreSettingsKeyExists(section, "Sensitivity"))
+        {
+            profile->SensitivityValue = CoreSettingsGetIntValue(SettingsID::Input_Sensitivity, section);
+        }
+        else
+        {
+            profile->SensitivityValue = 100;
+        }
 
         // load inputmapping settings
         load_inputmapping_settings(&profile->Button_A, section, SettingsID::Input_A_Name, SettingsID::Input_A_InputType, SettingsID::Input_A_Data, SettingsID::Input_A_ExtraData);
