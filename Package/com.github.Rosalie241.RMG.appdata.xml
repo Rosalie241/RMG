@@ -32,6 +32,21 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.3.9" date="2023-04-06" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix "Don't check for updates again" checkbox appearing when requesting an update check through Help -> Check For Updates</li>
+          <li>Add game format, file name, file extension, file size, game I.D. and game region columns to the list view of the ROM browser which can be toggled in the "Show/Hide Columns" menu of the context menu in the list view of the ROM browser (thank you RetraCarteR)</li>
+          <li>Add "Reset Column Sizes" to context menu of the list view of the ROM browser (thank you RetraCarteR)</li>
+          <li>Add "Analog Stick Sensitivity" setting to RMG-Input (thank you JaxonWasTaken)</li>
+          <li>Add "Save Filename Format" setting to the Core tab of the settings dialog</li>
+          <li>Add "Edit Game Input Settings" to the context menu of the ROM browser</li>
+          <li>Add support for 7z files</li>
+          <li>Add progress status to the loading screen in the ROM browser when loading takes more than 5 seconds</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.3.8" date="2023-02-24" type="stable">
       <description>
         <p>Changes:</p>
