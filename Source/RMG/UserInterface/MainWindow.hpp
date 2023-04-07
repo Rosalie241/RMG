@@ -119,6 +119,9 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     QString getSaveStateSlotDateTimeText(QAction* action);
     QString getSaveStateSlotText(QAction* action, int slot);
 
+    int getToolbarSettingAreaFromArea(Qt::ToolBarArea area);
+    Qt::ToolBarArea getToolbarAreaFromSettingArea(int value);
+
     void configureActions(void);
     void connectActionSignals(void);
     void updateActions(bool inEmulation, bool isPaused);

@@ -128,8 +128,12 @@ void MainWindow::closeEvent(QCloseEvent *event)
     if (!this->ui_QuitAfterEmulation && 
         !this->emulationThread->isRunning())
     {
-        this->storeGeometry();    
+        this->storeGeometry();
     }
+
+    // store toolbar location to settings
+    Qt::ToolBarArea toolbarArea = this->toolBarArea(this->toolBar);
+    CoreSettingsSetValue(SettingsID::GUI_ToolbarArea, this->getToolbarSettingAreaFromArea(toolbarArea));
 
     this->ui_NoSwitchToRomBrowser = true;
     this->on_Action_System_Shutdown();
@@ -221,6 +225,15 @@ void MainWindow::configureUI(QApplication* app, bool showUI)
     this->toolBar->setVisible(this->ui_ShowToolbar);
     this->statusBar()->setVisible(this->ui_ShowStatusbar);
     this->statusBar()->addPermanentWidget(this->ui_StatusBar_Label, 1);
+
+    // set toolbar position according to setting
+    int toolbarAreaSetting = CoreSettingsGetIntValue(SettingsID::GUI_ToolbarArea);
+    Qt::ToolBarArea toolbarArea = this->getToolbarAreaFromSettingArea(toolbarAreaSetting);
+    if (this->toolBarArea(this->toolBar) != toolbarArea)
+    {
+        this->removeToolBar(this->toolBar);
+        this->addToolBar(toolbarArea, this->toolBar);
+    }
 
     this->ui_TimerTimeout = CoreSettingsGetIntValue(SettingsID::GUI_StatusbarMessageDuration);
 
@@ -746,6 +759,41 @@ QString MainWindow::getSaveStateSlotText(QAction* action, int slot)
 
     return saveStateSlotText;
 }
+
+int MainWindow::getToolbarSettingAreaFromArea(Qt::ToolBarArea area)
+{
+    switch (area)
+    {
+    case Qt::ToolBarArea::TopToolBarArea:
+        return 0;
+    case Qt::ToolBarArea::BottomToolBarArea:
+        return 1;
+    case Qt::ToolBarArea::LeftToolBarArea:
+        return 2;
+    case Qt::ToolBarArea::RightToolBarArea:
+        return 3;
+
+    default:
+        return 0;
+    }
+}
+
+Qt::ToolBarArea MainWindow::getToolbarAreaFromSettingArea(int value)
+{
+    switch (value)
+    {
+    default:
+    case 0:
+        return Qt::ToolBarArea::TopToolBarArea;
+    case 1:
+        return Qt::ToolBarArea::BottomToolBarArea;
+    case 2: 
+        return Qt::ToolBarArea::LeftToolBarArea;
+    case 3:
+        return Qt::ToolBarArea::RightToolBarArea;
+    }
+}
+
 
 void MainWindow::configureActions(void)
 {
@@ -1940,7 +1988,24 @@ void MainWindow::on_VidExt_ResizeWindow(int width, int height)
 
     if (!this->toolBar->isHidden())
     {
-        height += this->toolBar->height();
+        Qt::ToolBarArea area = this->toolBarArea(this->toolBar);
+
+        // dont resize when toolbar is floating
+        if (this->toolBar->isFloating())
+        {
+            return;
+        }
+
+        if (area == Qt::ToolBarArea::TopToolBarArea ||
+            area == Qt::ToolBarArea::BottomToolBarArea)
+        {
+            height += this->toolBar->height();
+        }
+        else if (area == Qt::ToolBarArea::LeftToolBarArea ||
+                 area == Qt::ToolBarArea::RightToolBarArea)
+        {
+            width += this->toolBar->width();
+        }
     }
 
     if (!this->statusBar()->isHidden())
