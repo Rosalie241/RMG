@@ -20,6 +20,7 @@ enum class SettingsID
     GUI_OnScreenDisplayOpacity,
     GUI_OnScreenDisplayDuration,
     GUI_Toolbar,
+    GUI_ToolbarArea,
     GUI_StatusBar,
     GUI_Theme,
     GUI_IconTheme,

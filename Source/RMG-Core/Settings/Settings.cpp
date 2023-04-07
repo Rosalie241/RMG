@@ -183,6 +183,9 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::GUI_Toolbar:
         setting = {SETTING_SECTION_GUI, "Toolbar", true};
         break;
+    case SettingsID::GUI_ToolbarArea:
+        setting = {SETTING_SECTION_GUI, "ToolbarArea", 0};
+        break;
     case SettingsID::GUI_StatusBar:
         setting = {SETTING_SECTION_GUI, "StatusBar", true};
         break;
