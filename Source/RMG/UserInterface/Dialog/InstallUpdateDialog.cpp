@@ -66,7 +66,7 @@ void InstallUpdateDialog::install(void)
             "   echo == Attemping to kill PID " + appPid + outputToLogLine,
             "   taskkill /F /PID:"              + appPid + outputToLogLine,
             "   echo == Attemping to start \'" + fullFilePath + "\'"                                    + outputToLogLine,
-            "   \"" + fullFilePath + "\" /CLOSEAPPLICATIONS /NOCANCEL /SILENT /DIR=\"" + appPath + "\"" + outputToLogLine,
+            "   \"" + fullFilePath + "\" /CLOSEAPPLICATIONS /NOCANCEL /MERGETASKS=\"!desktopicon\"  /SILENT /DIR=\"" + appPath + "\"" + outputToLogLine,
             ")",
             "IF NOT ERRORLEVEL 0 (",
             "   start \"\" cmd /c \"echo Rosalie's Mupen GUI failed to update, check the updater.log file in the Cache directory for more information && pause\"",
