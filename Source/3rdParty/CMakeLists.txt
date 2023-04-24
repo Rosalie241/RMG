@@ -48,7 +48,7 @@ if(NOT NO_GIT_CLONE)
     set(MUPEN64PLUS_RSP_HLE_TAG       "88093cb43499eff53d343653cddcae2132af17ef")
 
     set(MUPEN64PLUS_RSP_PARALLEL_URL  "https://github.com/Rosalie241/parallel-rsp")
-    set(MUPEN64PLUS_RSP_PARALLEL_TAG  "cfeea3a0f89ba5bc4265acb75778e1267ed1e424")
+    set(MUPEN64PLUS_RSP_PARALLEL_TAG  "dbecbe3a120e428436c5972fa7b872cfc2c9db3e")
 
     set(MUPEN64PLUS_INPUT_RAPHNET_URL "https://github.com/raphnet/mupen64plus-input-raphnetraw")
     set(MUPEN64PLUS_INPUT_RAPHNET_TAG "86112413e98a8648edb11d199673cc24d5799af8")
