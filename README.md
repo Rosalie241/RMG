@@ -17,7 +17,9 @@ You can download Rosalie's Mupen GUI on
 
 ## Support
 
-Join the [Rosalie's Mupen GUI Discord Server](https://discord.gg/k9GuyJ2PpF) for support
+You can ask for help or report issues on
+* [Github](https://github.com/Rosalie241/RMG/issues/new)
+* [Discord](https://discord.gg/k9GuyJ2PpF)
 
 ## License
 
