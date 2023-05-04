@@ -1,4 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
+<!-- Copyright 2022 Rosalie Wanders -->
 <component type="desktop">
   <!--Created with jdAppdataEdit 2.1-->
   <id>com.github.Rosalie241.RMG</id>
@@ -11,27 +12,40 @@
   <description><p>Rosalie's Mupen GUI is an easy to use yet customizable mupen64plus front-end, allowing you to easily play N64 games.</p></description>
   <screenshots>
     <screenshot type="default">
-      <caption>The Rom Browser</caption>
+      <caption>01 - The Rom Browser</caption>
       <image type="source">https://github.com/Rosalie241/RMG/raw/master/Package/Screenshots/RomBrowser.png</image>
     </screenshot>
     <screenshot type="default">
-      <caption>During A Game</caption>
+      <caption>02 - During A Game</caption>
       <image type="source">https://github.com/Rosalie241/RMG/raw/master/Package/Screenshots/InGame.png</image>
     </screenshot>
     <screenshot type="default">
-      <caption>Cheats</caption>
+      <caption>03 - Cheats</caption>
       <image type="source">https://github.com/Rosalie241/RMG/raw/master/Package/Screenshots/Cheats.png</image>
     </screenshot>
     <screenshot type="default">
-      <caption>Settings</caption>
+      <caption>04 - Settings</caption>
       <image type="source">https://github.com/Rosalie241/RMG/raw/master/Package/Screenshots/Settings.png</image>
     </screenshot>
     <screenshot type="default">
-      <caption>Input Settings</caption>
+      <caption>05 - Input Settings</caption>
       <image type="source">https://github.com/Rosalie241/RMG/raw/master/Package/Screenshots/InputSettings.png</image>
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.4.0" date="2023-05-04" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix updater on windows always installing the desktop icon</li>
+          <li>Fix updater on windows not re-launching RMG after installation</li>
+          <li>Fix the speed limiter toggle and speed factor options not working on linux on some systems</li>
+          <li>Fix the 1080 Snowboarding cheats (thank you Gent)</li>
+          <li>Add support for moving the toolbar (changes to the docked position are persistent across application runs)</li>
+          <li>Update GLideN64 and mupen64plus-input-gca</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.3.9" date="2023-04-06" type="stable">
       <description>
         <p>Changes:</p>
