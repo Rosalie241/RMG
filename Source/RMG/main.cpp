@@ -94,6 +94,15 @@ int main(int argc, char **argv)
     setenv("QT_QPA_PLATFORM", "xcb", 1);
 #endif // FORCE_XCB
 
+#ifndef _WIN32
+    // ensure the default OpenGL format
+    // doesn't have vsync enabled by default,
+    // only needed for linux (for now)
+    QSurfaceFormat format = QSurfaceFormat::defaultFormat();
+    format.setSwapInterval(0);
+    QSurfaceFormat::setDefaultFormat(format);
+#endif
+
     QApplication app(argc, argv);
 
     UserInterface::MainWindow window;
