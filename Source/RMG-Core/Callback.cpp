@@ -28,13 +28,18 @@ static bool l_PrintCallbacks = false;
 
 void CoreDebugCallback(void* context, int level, const char* message)
 {
+    std::string contextString((const char*)context);
+    std::string messageString(message);
+
+    if (l_PrintCallbacks)
+    {
+        std::cout << contextString << messageString << std::endl;
+    }
+
     if (!l_SetupCallbacks)
     {
         return;
     }
-
-    std::string contextString((const char*)context);
-    std::string messageString(message);
 
     // convert string encoding accordingly
     if (messageString.starts_with("IS64:"))
@@ -44,11 +49,6 @@ void CoreDebugCallback(void* context, int level, const char* message)
     else
     {
         messageString = CoreConvertStringEncoding(message, CoreStringEncoding::Shift_JIS);
-    }
-
-    if (l_PrintCallbacks)
-    {
-        std::cout << contextString << messageString << std::endl;
     }
 
     l_DebugCallbackFunc((CoreDebugMessageType)level, contextString, messageString);
