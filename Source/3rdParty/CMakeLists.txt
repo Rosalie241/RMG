@@ -5,24 +5,12 @@ include(ExternalProject)
 
 set(THIRDPARTY_DIR ${CMAKE_BINARY_DIR}/Source/3rdParty)
 
-find_program(RUST_CARGO cargo)
-if(NO_RUST)
-    set(BUILD_INPUT_GCA OFF)
-elseif(${RUST_CARGO} STREQUAL "RUST_CARGO-NOTFOUND")
-    message(WARNING "mupen64plus-input-gca will not be built due to not having cargo installed")
-    set(BUILD_INPUT_GCA OFF)
-else()
-    set(BUILD_INPUT_GCA ON)
-endif()
-
 set(M64P_CORE_DIR ${THIRDPARTY_DIR}/mupen64plus-core)
 if(WIN32)
     set(SO_EXT "dll")
-    set(GCA_LIB "mupen64plus_input_gca.${SO_EXT}")
     set(CORE_FILE "mupen64plus.dll")
 else(WIN32)
     set(SO_EXT "so")
-    set(GCA_LIB "libmupen64plus_input_gca.${SO_EXT}")
     set(CORE_FILE "libmupen64plus.so")
 endif(WIN32)
 
@@ -53,8 +41,8 @@ if(NOT NO_GIT_CLONE)
     set(MUPEN64PLUS_INPUT_RAPHNET_URL "https://github.com/raphnet/mupen64plus-input-raphnetraw")
     set(MUPEN64PLUS_INPUT_RAPHNET_TAG "86112413e98a8648edb11d199673cc24d5799af8")
 
-    set(MUPEN64PLUS_INPUT_GCA_URL     "https://github.com/amatho/mupen64plus-input-gca")
-    set(MUPEN64PLUS_INPUT_GCA_TAG     "a6886b1ae022936a2e542af9bfbab40ea0af5af5")
+    set(MUPEN64PLUS_INPUT_GCN_URL     "https://github.com/Rosalie241/mupen64plus-input-gcn")
+    set(MUPEN64PLUS_INPUT_GCN_TAG     "5a2c2c915832d151196af1625237fb750567114c")
 
     set(MUPEN64PLUS_GFX_ANGRYLION_URL "https://github.com/Rosalie241/angrylion-rdp-plus")
     set(MUPEN64PLUS_GFX_ANGRYLION_TAG "670abbc972bd430fa77291b0967dd73128314317")
@@ -163,23 +151,20 @@ ExternalProject_Add(mupen64plus-input-raphnetraw
     DEPENDS mupen64plus-core
 )
 
-if (BUILD_INPUT_GCA)
-    ExternalProject_Add(mupen64plus-input-gca
-        SOURCE_DIR mupen64plus-input-gca/
+ExternalProject_Add(mupen64plus-input-gcn
+    SOURCE_DIR mupen64plus-input-gcn
 
-        CONFIGURE_COMMAND ""
-        INSTALL_COMMAND ""
+    GIT_REPOSITORY ${MUPEN64PLUS_INPUT_GCN_URL}
+    GIT_TAG ${MUPEN64PLUS_INPUT_GCN_TAG}
 
-        GIT_REPOSITORY ${MUPEN64PLUS_INPUT_GCA_URL}
-        GIT_TAG ${MUPEN64PLUS_INPUT_GCA_TAG}
+    INSTALL_COMMAND ""
 
-        BUILD_COMMAND cargo build --release --features "m64p_compat"
-        BUILD_IN_SOURCE True
+    BUILD_IN_SOURCE True
+    CMAKE_ARGS ${CMAKE_CONFIGURE_ARGS}
 
-        BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-input-gca/target/release/${GCA_LIB}
-        DEPENDS mupen64plus-core
-    )
-endif(BUILD_INPUT_GCA)
+    BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-input-gcn/mupen64plus-input-gcn.${SO_EXT}
+    DEPENDS mupen64plus-core
+)
 
 set(GLIDEN64_DIR "${THIRDPARTY_DIR}/mupen64plus-video-GLideN64")
 set(GLIDEN64_BUILD_DIR "${GLIDEN64_DIR}/projects/cmake")
@@ -328,10 +313,8 @@ set(MUPEN64PLUS_PLUGIN_RSP_PARALLEL ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 ExternalProject_Get_property(mupen64plus-input-raphnetraw BUILD_BYPRODUCTS)
 set(MUPEN64PLUS_PLUGIN_INPUT_RAPHNET ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 
-if (BUILD_INPUT_GCA)
-    ExternalProject_Get_property(mupen64plus-input-gca BUILD_BYPRODUCTS)
-    set(MUPEN64PLUS_PLUGIN_INPUT_GCA ${BUILD_BYPRODUCTS} PARENT_SCOPE)
-endif(BUILD_INPUT_GCA)
+ExternalProject_Get_property(mupen64plus-input-gcn BUILD_BYPRODUCTS)
+set(MUPEN64PLUS_PLUGIN_INPUT_GCN ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 
 ExternalProject_Get_property(mupen64plus-video-angrylion-plus BUILD_BYPRODUCTS)
 set(MUPEN64PLUS_PLUGIN_GFX_ANGRYLION ${BUILD_BYPRODUCTS} PARENT_SCOPE)
