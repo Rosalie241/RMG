@@ -10,7 +10,6 @@ option(APPIMAGE_UPDATER "Enables AppImage updater" OFF)
 option(DISCORD_RPC      "Enables Discord Rich Presence" ON)
 option(USE_CCACHE       "Enables usage of ccache when ccache has been found" ON)
 option(FORCE_XCB        "Forces Qt to use the xcb platform on linux" ${LINUX})
-option(NO_RUST          "Disables the building of rust subprojects" OFF)
 
 project(RMG)
 
@@ -127,7 +126,7 @@ install(FILES ${MUPEN64PLUS_PLUGIN_RSP_PARALLEL}
 install(FILES ${MUPEN64PLUS_PLUGIN_INPUT_RAPHNET}
     DESTINATION ${PLUGIN_INSTALL_PATH}/Input
 )
-install(FILES ${MUPEN64PLUS_PLUGIN_INPUT_GCA}
+install(FILES ${MUPEN64PLUS_PLUGIN_INPUT_GCN}
     DESTINATION ${PLUGIN_INSTALL_PATH}/Input
 )
 install(FILES ${MUPEN64PLUS_PLUGIN_GFX_ANGRYLION}
