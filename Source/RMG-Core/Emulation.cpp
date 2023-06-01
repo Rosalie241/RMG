@@ -158,7 +158,6 @@ bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64d
     {
         error = "CoreStartEmulation m64p::Core.DoCommand(M64CMD_EXECUTE) Failed: ";
         error += m64p::Core.ErrorMessage(ret);
-        CoreSetError(error);
     }
 
     CoreClearCheats();
@@ -174,6 +173,11 @@ bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64d
 #ifdef DISCORD_RPC
     CoreDiscordRpcUpdate(false);
 #endif // DISCORD_RPC
+
+    // we need to set the emulation error last,
+    // to prevent the other functions from
+    // overriding the emulation error
+    CoreSetError(error);
 
     return ret == M64ERR_SUCCESS;
 }
