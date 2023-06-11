@@ -118,9 +118,16 @@ static std::filesystem::path get_shared_cheat_file_path(CoreRomHeader romHeader,
 
 static std::filesystem::path get_user_cheat_file_path(CoreRomHeader romHeader, CoreRomSettings romSettings)
 {
+    std::filesystem::path oldCheatFilePath;
     std::filesystem::path cheatFilePath;
 
-    cheatFilePath = CoreGetUserDataDirectory();
+    oldCheatFilePath = CoreGetUserDataDirectory();
+    oldCheatFilePath += OSAL_FILES_DIR_SEPERATOR_STR;
+    oldCheatFilePath += "Cheats-User";
+    oldCheatFilePath += OSAL_FILES_DIR_SEPERATOR_STR;
+    oldCheatFilePath += get_cheat_file_name(romHeader, romSettings);
+
+    cheatFilePath = CoreGetUserConfigDirectory();
     cheatFilePath += OSAL_FILES_DIR_SEPERATOR_STR;
     cheatFilePath += "Cheats-User";
     cheatFilePath += OSAL_FILES_DIR_SEPERATOR_STR;
@@ -138,6 +145,12 @@ static std::filesystem::path get_user_cheat_file_path(CoreRomHeader romHeader, C
     catch (...)
     {
         // we'll fail later...
+    }
+
+    // keep compatability with <v0.4.1
+    if (std::filesystem::is_regular_file(oldCheatFilePath))
+    {
+        return oldCheatFilePath;
     }
 
     return cheatFilePath;
