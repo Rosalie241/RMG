@@ -72,7 +72,7 @@ if(NOT NO_GIT_CLONE)
     set(IMGUI_TAG                     "d7c8516a4b848c0291e3d75b627c0843f515f591")
 
     set(SDL_GAMECONTROLLERDB_URL      "https://github.com/gabomdq/SDL_GameControllerDB")
-    set(SDL_GAMECONTROLLERDB_TAG      "b7e5701da82fc97beeede64d3818ef0f4d015aba")
+    set(SDL_GAMECONTROLLERDB_TAG      "5e25aeccb84fb166451443c4cd9fff349e8b0360")
 endif(NOT NO_GIT_CLONE)
 
 ExternalProject_Add(mupen64plus-core
