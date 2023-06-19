@@ -38,8 +38,8 @@ else(USE_CCACHE)
 endif(USE_CCACHE)
 
 if(NOT NO_GIT_CLONE)
-    set(MUPEN64PLUSCORE_URL           "https://github.com/mupen64plus/mupen64plus-core")
-    set(MUPEN64PLUSCORE_TAG           "d4f3e12db0609158c7b4e0beef2bb950aad0ccb9")
+    set(MUPEN64PLUSCORE_URL           "https://github.com/Rosalie241/mupen64plus-core")
+    set(MUPEN64PLUSCORE_TAG           "a231cb5e9a741e1893b0d7669c363d57550295a8")
 
     set(MUPEN64PLUS_RSP_CXD4_URL      "https://github.com/mupen64plus/mupen64plus-rsp-cxd4")
     set(MUPEN64PLUS_RSP_CXD4_TAG      "39f79201baa15890c4cbae92f2215a634cc3ee6d")
@@ -84,11 +84,11 @@ ExternalProject_Add(mupen64plus-core
     GIT_REPOSITORY ${MUPEN64PLUSCORE_URL}
     GIT_TAG ${MUPEN64PLUSCORE_TAG}
 
-    BUILD_COMMAND make all OSD=0 NEW_DYNAREC=1 TARGET=${CORE_FILE} DEBUG=$<CONFIG:Debug> KEYBINDINGS=0 CC=${MAKE_CC_COMPILER} CXX=${MAKE_CXX_COMPILER}
+    BUILD_COMMAND make all OSD=0 NEW_DYNAREC=1 KEYBINDINGS=0 ACCURATE_FPU=1 TARGET=${CORE_FILE} DEBUG=$<CONFIG:Debug> CC=${MAKE_CC_COMPILER} CXX=${MAKE_CXX_COMPILER}
     BUILD_IN_SOURCE False
 
     BINARY_DIR ${M64P_CORE_DIR}/projects/unix
-    
+
     BUILD_BYPRODUCTS ${M64P_CORE_DIR}/projects/unix/${CORE_FILE}
 )
 
@@ -107,7 +107,7 @@ ExternalProject_Add(mupen64plus-rsp-cxd4
     BUILD_IN_SOURCE False
 
     BINARY_DIR ${THIRDPARTY_DIR}/mupen64plus-rsp-cxd4/projects/unix
-    
+
     BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-rsp-cxd4/projects/unix/mupen64plus-rsp-cxd4.${SO_EXT}
     DEPENDS mupen64plus-core
 )
@@ -158,7 +158,7 @@ ExternalProject_Add(mupen64plus-input-raphnetraw
     BUILD_IN_SOURCE False
 
     BINARY_DIR ${THIRDPARTY_DIR}/mupen64plus-input-raphnetraw/projects/unix
-    
+
     BUILD_BYPRODUCTS ${THIRDPARTY_DIR}/mupen64plus-input-raphnetraw/projects/unix/mupen64plus-input-raphnetraw.${SO_EXT}
     DEPENDS mupen64plus-core
 )
