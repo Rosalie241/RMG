@@ -1429,7 +1429,7 @@ void MainWindow::on_Action_System_Load(void)
     }
 
     QString fileName =
-        QFileDialog::getOpenFileName(this, tr("Open Save State"), "", tr("Save State (*.dat *.state);;All Files (*)"));
+        QFileDialog::getOpenFileName(this, tr("Open Save State"), "", tr("Save State (*.dat *.state *.st* *.pj*);;All Files (*)"));
 
     if (!fileName.isEmpty())
     {
