@@ -33,6 +33,20 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.4.1" date="2023-06-19" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix debug callbacks not printing before GUI has been started</li>
+          <li>Fix emulation error being incorrect in some cases</li>
+          <li>Fix user cheat file location (new ones will be placed in the user config directory instead of the user data directory)</li>
+          <li>Fix mupen64plus-input-gca crashing in v0.4.0 due to updating to a broken commit</li>
+          <li>Fix Paper Mario crashing when using the hammer on a specific tree in-game by implementing RDRAM address range 0x0800000-0x03EFFFFF</li>
+          <li>Improve accuracy of the pure and cached interpreter</li>
+          <li>Add *.st* and *.pj* to the file filter when loading a save state from a file</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.4.0" date="2023-05-04" type="stable">
       <description>
         <p>Changes:</p>
