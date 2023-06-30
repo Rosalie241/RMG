@@ -8,6 +8,7 @@ option(NO_GIT_CLONE     "Disables git clone usage for 3rdParty dependencies" OFF
 option(UPDATER          "Enables updater" ${PORTABLE_INSTALL})
 option(APPIMAGE_UPDATER "Enables AppImage updater" OFF)
 option(DISCORD_RPC      "Enables Discord Rich Presence" ON)
+option(VRU              "Enables VRU support in RMG-Input" ON)
 option(USE_CCACHE       "Enables usage of ccache when ccache has been found" ON)
 option(FORCE_XCB        "Forces Qt to use the xcb platform on linux" ${LINUX})
 option(NO_RUST          "Disables the building of rust subprojects" OFF)
@@ -62,6 +63,7 @@ if (PORTABLE_INSTALL)
     set(INSTALL_PATH "Bin/${CMAKE_BUILD_TYPE}")
     set(RMG_INSTALL_PATH "${INSTALL_PATH}")
     set(SYSTEM_LIB_INSTALL_PATH "${INSTALL_PATH}")
+    set(LIB_INSTALL_PATH "${INSTALL_PATH}")
     set(CORE_INSTALL_PATH "${INSTALL_PATH}/Core")
     set(PLUGIN_INSTALL_PATH "${INSTALL_PATH}/Plugin")
     set(DATA_INSTALL_PATH "${INSTALL_PATH}/Data")
@@ -69,6 +71,7 @@ if (PORTABLE_INSTALL)
 else()
     set(RMG_INSTALL_PATH "bin")
     set(SYSTEM_LIB_INSTALL_PATH "lib")
+    set(LIB_INSTALL_PATH "lib/RMG")
     set(CORE_INSTALL_PATH "lib/RMG/Core")
     set(PLUGIN_INSTALL_PATH "lib/RMG/Plugin")
     set(DATA_INSTALL_PATH "share/RMG")
@@ -80,6 +83,9 @@ endif()
 
 add_subdirectory(Source/3rdParty)
 add_subdirectory(Source/3rdParty/7-Zip)
+if (VRU)
+    add_subdirectory(Source/3rdParty/vosk-api)
+endif(VRU)
 
 add_subdirectory(Source/RMG-Core)
 add_subdirectory(Source/RMG)
@@ -100,7 +106,7 @@ install(TARGETS RMG-Input
 
 if (WIN32)
     add_subdirectory(Source/Installer)
-    
+
     add_custom_target(bundle_dependencies
         COMMAND bash "${CMAKE_SOURCE_DIR}/Source/Script/BundleDependencies.sh" "${CMAKE_SOURCE_DIR}/Bin/${CMAKE_BUILD_TYPE}/RMG.exe" "${CMAKE_SOURCE_DIR}/Bin/${CMAKE_BUILD_TYPE}" "/mingw64/bin"
 	)
@@ -112,6 +118,14 @@ install(FILES ${MUPEN64PLUSCORE_LIB}
 install(FILES ${MUPEN64PLUSCORE_INI} Data/font.ttf
     DESTINATION ${DATA_INSTALL_PATH}
 )
+if (VRU)
+    install(FILES ${VOSK_API_LIBRARY}
+        DESTINATION ${LIB_INSTALL_PATH}
+    )
+    install(FILES ${VOSK_API_MODEL}
+        DESTINATION ${DATA_INSTALL_PATH}
+    )
+endif(VRU)
 install(FILES ${SDL_GAMECONTROLLERDB}
     DESTINATION ${DATA_INSTALL_PATH}
 )
