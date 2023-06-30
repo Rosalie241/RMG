@@ -121,9 +121,11 @@ int main(int argc, char **argv)
     parser.addVersionOption();
     // custom options
 #ifndef PORTABLE_INSTALL
+    QCommandLineOption libPathOption("lib-path", "Changes the path where the libraries are stored", "path");
     QCommandLineOption corePathOption("core-path", "Changes the path where the core library is stored", "path");
     QCommandLineOption pluginPathOption("plugin-path", "Changes the path where the plugins are stored", "path");
     QCommandLineOption sharedDataPathOption("shared-data-path", "Changes the path where the shared data is stored", "path");
+    libPathOption.setFlags(QCommandLineOption::HiddenFromHelp);
     corePathOption.setFlags(QCommandLineOption::HiddenFromHelp);
     pluginPathOption.setFlags(QCommandLineOption::HiddenFromHelp);
     sharedDataPathOption.setFlags(QCommandLineOption::HiddenFromHelp);
@@ -135,6 +137,7 @@ int main(int argc, char **argv)
     QCommandLineOption diskOption("disk", "64DD Disk to open ROM in combination with", "64DD Disk");
 
 #ifndef PORTABLE_INSTALL
+    parser.addOption(libPathOption);
     parser.addOption(corePathOption);
     parser.addOption(pluginPathOption);
     parser.addOption(sharedDataPathOption);
@@ -151,9 +154,14 @@ int main(int argc, char **argv)
 
 #ifndef PORTABLE_INSTALL
     // set path overrides before initializing
+    QString libPathOverride        = parser.value(libPathOption);
     QString corePathOveride        = parser.value(corePathOption);
     QString pluginPathOverride     = parser.value(pluginPathOption);
     QString sharedDataPathOverride = parser.value(sharedDataPathOption);
+    if (!libPathOverride.isEmpty())
+    {
+        CoreSetLibraryPathOverride(libPathOverride.toStdString());
+    }
     if (!corePathOveride.isEmpty())
     {
         CoreSetCorePathOverride(corePathOveride.toStdString());
