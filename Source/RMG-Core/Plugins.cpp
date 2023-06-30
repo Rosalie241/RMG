@@ -16,11 +16,10 @@
 #include "RomSettings.hpp"
 #include "Settings/Settings.hpp"
 
-#include "m64p/PluginApi.hpp"
 #include "osal/osal_dynlib.hpp"
 #include "osal/osal_files.hpp"
 
-#include "m64p/PluginApi.cpp"
+#include "m64p/PluginApi.hpp"
 #include "m64p/Api.hpp"
 
 #include <filesystem>
