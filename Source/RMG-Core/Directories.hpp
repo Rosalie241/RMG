@@ -21,6 +21,10 @@ bool CoreCreateDirectories(void);
 // located
 std::filesystem::path CoreGetCoreDirectory(void);
 
+// returns the library directory where
+// misc libraries should be located
+std::filesystem::path CoreGetLibraryDirectory(void);
+
 // returns the plugin directory where
 // plugins should be located
 std::filesystem::path CoreGetPluginDirectory(void);
@@ -72,6 +76,9 @@ std::filesystem::path CoreGetSaveStateDirectory(void);
 // returns the screenshot directory where
 // screenshots should be located
 std::filesystem::path CoreGetScreenshotDirectory(void);
+
+// changes the library path to the given path
+void CoreSetLibraryPathOverride(std::filesystem::path path);
 
 // changes the core path to the given path
 void CoreSetCorePathOverride(std::filesystem::path path);

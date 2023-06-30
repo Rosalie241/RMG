@@ -22,6 +22,7 @@
 // Local Variables
 //
 
+static std::filesystem::path l_LibraryPathOverride;
 static std::filesystem::path l_CorePathOverride;
 static std::filesystem::path l_PluginPathOverride;
 static std::filesystem::path l_SharedDataPathOverride;
@@ -123,6 +124,25 @@ bool CoreCreateDirectories(void)
     }
 
     return true;
+}
+
+std::filesystem::path CoreGetLibraryDirectory(void)
+{
+    std::filesystem::path directory;
+#ifdef PORTABLE_INSTALL
+    directory = ".";
+#else // Not Portable
+    if (!l_LibraryPathOverride.empty())
+    {
+        directory = l_LibraryPathOverride;
+    }
+    else
+    {
+        directory = CORE_INSTALL_PREFIX;
+        directory += "/lib/RMG/";
+    }
+#endif // PORTABLE_INSTALL
+    return directory;
 }
 
 std::filesystem::path CoreGetCoreDirectory(void)
@@ -284,6 +304,11 @@ std::filesystem::path CoreGetScreenshotDirectory(void)
 }
 
 #ifndef PORTABLE_INSTALL
+void CoreSetLibraryPathOverride(std::filesystem::path path)
+{
+    l_LibraryPathOverride = path;
+}
+
 void CoreSetCorePathOverride(std::filesystem::path path)
 {
     l_CorePathOverride = path;
