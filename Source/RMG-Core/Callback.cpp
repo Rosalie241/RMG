@@ -22,6 +22,10 @@ static std::function<void(enum CoreDebugMessageType, std::string, std::string)> 
 static std::function<void(enum CoreStateCallbackType, int)> l_StateCallbackFunc;
 static bool l_PrintCallbacks = false;
 
+static bool l_SetupDebugMessageCallback = false;
+static std::function<void(void*, int, const char*)> l_DebugMessageCallbackFunc;
+static void* l_DebugMessageCallbackFuncContext;
+
 //
 // Internal Functions
 //
@@ -80,4 +84,21 @@ bool CoreSetupCallbacks(std::function<void(enum CoreDebugMessageType, std::strin
 void CoreSetPrintDebugCallback(bool enabled)
 {
     l_PrintCallbacks = enabled;
+}
+
+void CoreSetupDebugCallbackMessage(std::function<void(void*, int, const char*)> debugCallbackFunc, void* debugCallbackFuncContext)
+{
+    l_DebugMessageCallbackFunc        = debugCallbackFunc;
+    l_DebugMessageCallbackFuncContext = debugCallbackFuncContext;
+    l_SetupDebugMessageCallback = true;
+}
+
+void CoreDebugCallbackMessage(CoreDebugMessageType type, std::string message)
+{
+    if (!l_SetupDebugMessageCallback)
+    {
+        return;
+    }
+
+    l_DebugMessageCallbackFunc(l_DebugMessageCallbackFuncContext, (int)type, message.c_str());
 }

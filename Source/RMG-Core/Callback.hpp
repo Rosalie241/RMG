@@ -54,4 +54,12 @@ bool CoreSetupCallbacks(std::function<void(enum CoreDebugMessageType, std::strin
 // sets whether the debug callbacks will be printed to stdout
 void CoreSetPrintDebugCallback(bool enabled);
 
+#ifdef CORE_PLUGIN
+// attempts to setup up the debug message debug callback
+void CoreSetupDebugCallbackMessage(std::function<void(void*, int, const char*)> debugCallbackFunc, void* debugCallbackFuncContext);
+
+// sends a debug message to the debug callback (if it exists)
+void CoreDebugCallbackMessage(CoreDebugMessageType type, std::string message);
+#endif // CORE_PLUGIN
+
 #endif // CORE_CALLBACK_HPP
