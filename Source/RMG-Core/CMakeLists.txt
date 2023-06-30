@@ -4,7 +4,6 @@
 project(RMG-Core)
 
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2)
@@ -68,7 +67,7 @@ if (PORTABLE_INSTALL)
     add_definitions(-DPORTABLE_INSTALL)
 endif(PORTABLE_INSTALL)
 
-add_library(RMG-Core STATIC ${RMG_CORE_SOURCES})
+add_library(RMG-Core SHARED ${RMG_CORE_SOURCES})
 
 if(UNIX)
     target_link_libraries(RMG-Core dl)
