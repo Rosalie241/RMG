@@ -174,7 +174,7 @@ bool CoreInit(m64p_dynlib_handle handle)
     std::string error;
     bool ret = false;
 
-    ret = m64p::Core.Hook(handle);
+    ret = m64p::Core.IsHooked() || m64p::Core.Hook(handle);
     if (!ret)
     {
         error = m64p::Core.GetLastError();
@@ -182,7 +182,7 @@ bool CoreInit(m64p_dynlib_handle handle)
         return false;
     }
 
-    ret = m64p::Config.Hook(handle);
+    ret = m64p::Config.IsHooked() || m64p::Config.Hook(handle);
     if (!ret)
     {
         error = m64p::Config.GetLastError();
