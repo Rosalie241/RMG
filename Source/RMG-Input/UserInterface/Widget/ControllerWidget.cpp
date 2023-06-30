@@ -623,7 +623,8 @@ void ControllerWidget::on_inputDeviceComboBox_currentIndexChanged(int value)
     }
 
     // set plugged in state
-    this->setPluggedIn(deviceNum != (int)InputDeviceType::None);
+    this->setPluggedIn(deviceNum != (int)InputDeviceType::None &&
+                       deviceNum != (int)InputDeviceType::EmulateVRU);
 
     emit this->CurrentInputDeviceChanged(this, deviceName, deviceNum);
 }

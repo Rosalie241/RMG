@@ -32,6 +32,14 @@ set(RMG_INPUT_SOURCES
     main.cpp
 )
 
+if (VRU)
+    list(APPEND RMG_INPUT_SOURCES 
+        VRU.cpp
+        VRUwords.cpp
+    )
+    add_definitions(-DVRU)
+endif(VRU)
+
 add_library(RMG-Input SHARED ${RMG_INPUT_SOURCES})
 
 target_link_libraries(RMG-Input RMG-Core ${SDL2_LIBRARIES})

@@ -59,9 +59,12 @@ MainDialog::MainDialog(QWidget* parent, Thread::SDLThread* sdlThread, bool romCo
     // always add keyboard device
     for (auto& controllerWidget : this->controllerWidgets)
     {
-        controllerWidget->AddInputDevice("None",      (int)InputDeviceType::None);
-        controllerWidget->AddInputDevice("Automatic", (int)InputDeviceType::Automatic);
-        controllerWidget->AddInputDevice("Keyboard",  (int)InputDeviceType::Keyboard);
+#ifdef VRU
+        controllerWidget->AddInputDevice("Voice Recognition Unit", (int)InputDeviceType::EmulateVRU);
+#endif // VRU
+        controllerWidget->AddInputDevice("None",        (int)InputDeviceType::None);
+        controllerWidget->AddInputDevice("Automatic",   (int)InputDeviceType::Automatic);
+        controllerWidget->AddInputDevice("Keyboard",    (int)InputDeviceType::Keyboard);
         controllerWidget->SetInitialized(true);
     }
 
