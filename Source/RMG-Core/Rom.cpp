@@ -354,7 +354,7 @@ static bool read_7zip_file(std::filesystem::path file, std::filesystem::path* ex
     // initialize look reader
     lookStream.bufSize = bufSize;
     lookStream.realStream = &archiveStream.vt;
-    LookToRead2_Init(&lookStream);
+    LookToRead2_INIT(&lookStream);
 
     // initialize CRC table
     CrcGenerateTable();
