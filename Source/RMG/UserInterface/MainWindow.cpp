@@ -1349,30 +1349,20 @@ void MainWindow::on_Action_System_SpeedFactor(int factor)
     {
         this->showErrorMessage("CoreSetSpeedFactor() Failed!", QString::fromStdString(CoreGetError()));
     }
-    else
-    {
-        OnScreenDisplaySetMessage("Playback speed: " + std::to_string(CoreGetSpeedFactor()) + "%");
-    }
 }
 
 void MainWindow::on_Action_System_SaveState(void)
 {
+    this->ui_ManuallySavedState = true;
+
     if (!CoreSaveState())
     {
+        this->ui_ManuallySavedState = false;
         this->showErrorMessage("CoreSaveState() Failed", QString::fromStdString(CoreGetError()));
     }
     else
     {
         OnScreenDisplaySetMessage("Saved state to slot: " + std::to_string(CoreGetSaveStateSlot()));
-
-        // refresh savestate slot times in 1 second,
-        // kill any existing timers
-        if (this->ui_UpdateSaveStateSlotTimerId != 0)
-        {
-            this->killTimer(this->ui_UpdateSaveStateSlotTimerId);
-            this->ui_UpdateSaveStateSlotTimerId = 0;
-        }
-        this->ui_UpdateSaveStateSlotTimerId = this->startTimer(1000);
     }
 }
 
@@ -1390,8 +1380,11 @@ void MainWindow::on_Action_System_SaveAs(void)
 
     if (!fileName.isEmpty())
     {
+        this->ui_ManuallySavedState = true;
+
         if (!CoreSaveState(fileName.toStdU32String()))
         {
+            this->ui_ManuallySavedState = false;
             this->showErrorMessage("CoreSaveState() Failed", QString::fromStdString(CoreGetError()));
         }
         else
@@ -1408,8 +1401,11 @@ void MainWindow::on_Action_System_SaveAs(void)
 
 void MainWindow::on_Action_System_LoadState(void)
 {
+    this->ui_ManuallyLoadedState = true;
+
     if (!CoreLoadSaveState())
     {
+        this->ui_ManuallyLoadedState = false;
         this->showErrorMessage("CoreLoadSaveState() Failed", QString::fromStdString(CoreGetError()));
     }
     else
@@ -1433,8 +1429,11 @@ void MainWindow::on_Action_System_Load(void)
 
     if (!fileName.isEmpty())
     {
+        this->ui_ManuallyLoadedState = true;
+
         if (!CoreLoadSaveState(fileName.toStdU32String()))
         {
+            this->ui_ManuallyLoadedState = false;
             this->showErrorMessage("CoreLoadSaveState() Failed", QString::fromStdString(CoreGetError()));
         }
         else
@@ -1458,29 +1457,6 @@ void MainWindow::on_Action_System_CurrentSaveState(int slot)
     if (!CoreSetSaveStateSlot(slot))
     {
         this->showErrorMessage("CoreSetSaveStateSlot() Failed", QString::fromStdString(CoreGetError()));
-    }
-    else
-    {
-        slotAction = this->ui_SlotActions[slot];
-        dateTimeText = this->getSaveStateSlotDateTimeText(slotAction);
-
-        // construct OSD message
-        message = "Selected save slot: " + std::to_string(slot);
-
-        // add date and time when available
-        if (!dateTimeText.isEmpty())
-        {
-            message += " [";
-            message += dateTimeText.toStdString();
-            message += "]";
-        }
-        else
-        {
-            message += " [N/A]";
-        }
-
-        // display message
-        OnScreenDisplaySetMessage(message);
     }
 }
 
@@ -2149,18 +2125,76 @@ void MainWindow::on_Core_DebugCallback(CoreDebugMessageType type, QString contex
 
 void MainWindow::on_Core_StateCallback(CoreStateCallbackType type, int value)
 {
-    if (type == CoreStateCallbackType::SaveStateLoaded)
+    switch (type)
     {
-        if (value == 0)
+        default:
+            break;
+        case CoreStateCallbackType::EmulationState:
         {
-            OnScreenDisplaySetMessage("Failed to load save state.");
-        }
-    }
-    else if (type == CoreStateCallbackType::SaveStateSaved)
-    {
-        if (value == 0)
+            this->action_System_Pause->setChecked(value == (int)CoreEmulationState::Paused);
+        } break;
+        case CoreStateCallbackType::SaveStateSlot:
         {
-            OnScreenDisplaySetMessage("Failed to save state.");
-        }
+            QAction* slotAction  = this->ui_SlotActions[value];
+            QString dateTimeText = this->getSaveStateSlotDateTimeText(slotAction);
+            std::string message  = "Selected save slot: " + std::to_string(value);
+
+            // add date and time when available
+            if (!dateTimeText.isEmpty())
+            {
+                message += " [";
+                message += dateTimeText.toStdString();
+                message += "]";
+            }
+            else
+            {
+                message += " [N/A]";
+            }
+
+            // display message
+            OnScreenDisplaySetMessage(message);
+
+            // update UI
+            this->ui_SlotActions[value]->setChecked(true);
+        } break;
+        case CoreStateCallbackType::SpeedFactor:
+        {
+            OnScreenDisplaySetMessage("Playback speed: " + std::to_string(value) + "%");
+        } break;
+        case CoreStateCallbackType::SaveStateLoaded:
+        {
+            if (value == 0)
+            {
+                OnScreenDisplaySetMessage("Failed to load save state.");
+            }
+            else if (!this->ui_ManuallyLoadedState)
+            {
+                OnScreenDisplaySetMessage("Loaded save state.");
+            }
+
+            this->ui_ManuallyLoadedState = false;
+        } break;
+        case CoreStateCallbackType::SaveStateSaved:
+        {
+            if (value == 0)
+            {
+                OnScreenDisplaySetMessage("Failed to save state.");
+            }
+            else if (!this->ui_ManuallySavedState)
+            {
+                OnScreenDisplaySetMessage("Saved state.");
+            }
+
+            // refresh savestate slot times in 1 second,
+            // kill any existing timers
+            if (this->ui_UpdateSaveStateSlotTimerId != 0)
+            {
+                this->killTimer(this->ui_UpdateSaveStateSlotTimerId);
+                this->ui_UpdateSaveStateSlotTimerId = 0;
+            }
+            this->ui_UpdateSaveStateSlotTimerId = this->startTimer(1000);
+
+            this->ui_ManuallySavedState = false;
+        } break;
     }
 }
