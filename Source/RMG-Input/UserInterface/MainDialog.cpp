@@ -60,7 +60,13 @@ MainDialog::MainDialog(QWidget* parent, Thread::SDLThread* sdlThread, bool romCo
     for (auto& controllerWidget : this->controllerWidgets)
     {
 #ifdef VRU
-        controllerWidget->AddInputDevice("Voice Recognition Unit", (int)InputDeviceType::EmulateVRU);
+        // both games which support the VRU,
+        // require the VRU to be in port #4,
+        // so we only have to expose it there
+        if (controllerWidget == this->controllerWidgets.last())
+        {
+            controllerWidget->AddInputDevice("Voice Recognition Unit", (int)InputDeviceType::EmulateVRU);
+        }
 #endif // VRU
         controllerWidget->AddInputDevice("None",        (int)InputDeviceType::None);
         controllerWidget->AddInputDevice("Automatic",   (int)InputDeviceType::Automatic);
