@@ -12,6 +12,13 @@
 
 #include <filesystem>
 
+enum class CoreEmulationState
+{
+    Stopped = 1,
+    Running,
+    Paused
+};
+
 // starts emulation with given ROM
 bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64ddrom);
 
