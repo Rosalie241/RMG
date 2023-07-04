@@ -128,7 +128,7 @@ static m64p_error VidExt_SetMode(int Width, int Height, int BitsPerPixel, int Sc
 
 static m64p_error VidExt_SetModeWithRate(int Width, int Height, int RefreshRate, int BitsPerPixel, int ScreenMode, int Flags)
 {
-    return VidExt_SetMode(Width, Height, BitsPerPixel, ScreenMode, Flags);
+    return M64ERR_UNSUPPORTED;
 }
 
 static m64p_function VidExt_GLGetProc(const char *Proc)
