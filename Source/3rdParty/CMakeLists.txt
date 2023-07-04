@@ -59,8 +59,8 @@ if(NOT NO_GIT_CLONE)
     set(MUPEN64PLUS_GFX_ANGRYLION_URL "https://github.com/Rosalie241/angrylion-rdp-plus")
     set(MUPEN64PLUS_GFX_ANGRYLION_TAG "670abbc972bd430fa77291b0967dd73128314317")
 
-    set(MUPEN64PLUS_GFX_GLIDEN64_URL  "https://github.com/gonetz/GLideN64")
-    set(MUPEN64PLUS_GFX_GLIDEN64_TAG  "0fee30d010d1feda7d343654871b3dfd05ccab70")
+    set(MUPEN64PLUS_GFX_GLIDEN64_URL  "https://github.com/Rosalie241/GLideN64")
+    set(MUPEN64PLUS_GFX_GLIDEN64_TAG  "34da878ce8dd2fce7135ee27fa4786613320740e")
 
     set(MUPEN64PLUS_GFX_PARALLEL_URL  "https://github.com/Rosalie241/parallel-rdp-standalone")
     set(MUPEN64PLUS_GFX_PARALLEL_TAG  "2c2226517c4c8929e08ec944654867e26efe0cf5")
