@@ -877,6 +877,402 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::Input_AnalogStickRight_ExtraData:
         setting = {"", "AnalogStickRight_ExtraData"};
         break;
+    case SettingsID::Input_Hotkey_Shutdown_InputType:
+        setting = {"", "Hotkey_Shutdown_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_Shutdown_Name:
+        setting = {"", "Hotkey_Shutdown_Name" };
+        break;
+    case SettingsID::Input_Hotkey_Shutdown_Data:
+        setting = {"", "Hotkey_Shutdown_Data" };
+        break;
+    case SettingsID::Input_Hotkey_Shutdown_ExtraData:
+        setting = {"", "Hotkey_Shutdown_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_Exit_InputType:
+        setting = {"", "Hotkey_Exit_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_Exit_Name:
+        setting = {"", "Hotkey_Exit_Name" };
+        break;
+    case SettingsID::Input_Hotkey_Exit_Data:
+        setting = {"", "Hotkey_Exit_Data" };
+        break;
+    case SettingsID::Input_Hotkey_Exit_ExtraData:
+        setting = {"", "Hotkey_Exit_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_SoftReset_InputType:
+        setting = {"", "Hotkey_SoftReset_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_SoftReset_Name:
+        setting = {"", "Hotkey_SoftReset_Name" };
+        break;
+    case SettingsID::Input_Hotkey_SoftReset_Data:
+        setting = {"", "Hotkey_SoftReset_Data" };
+        break;
+    case SettingsID::Input_Hotkey_SoftReset_ExtraData:
+        setting = {"", "Hotkey_SoftReset_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_HardReset_InputType:
+        setting = {"", "Hotkey_HardReset_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_HardReset_Name:
+        setting = {"", "Hotkey_HardReset_Name" };
+        break;
+    case SettingsID::Input_Hotkey_HardReset_Data:
+        setting = {"", "Hotkey_HardReset_Data" };
+        break;
+    case SettingsID::Input_Hotkey_HardReset_ExtraData:
+        setting = {"", "Hotkey_HardReset_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_Resume_InputType:
+        setting = {"", "Hotkey_Resume_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_Resume_Name:
+        setting = {"", "Hotkey_Resume_Name" };
+        break;
+    case SettingsID::Input_Hotkey_Resume_Data:
+        setting = {"", "Hotkey_Resume_Data" };
+        break;
+    case SettingsID::Input_Hotkey_Resume_ExtraData:
+        setting = {"", "Hotkey_Resume_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_Screenshot_InputType:
+        setting = {"", "Hotkey_Screenshot_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_Screenshot_Name:
+        setting = {"", "Hotkey_Screenshot_Name" };
+        break;
+    case SettingsID::Input_Hotkey_Screenshot_Data:
+        setting = {"", "Hotkey_Screenshot_Data" };
+        break;
+    case SettingsID::Input_Hotkey_Screenshot_ExtraData:
+        setting = {"", "Hotkey_Screenshot_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_LimitFPS_InputType:
+        setting = {"", "Hotkey_LimitFPS_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_LimitFPS_Name:
+        setting = {"", "Hotkey_LimitFPS_Name" };
+        break;
+    case SettingsID::Input_Hotkey_LimitFPS_Data:
+        setting = {"", "Hotkey_LimitFPS_Data" };
+        break;
+    case SettingsID::Input_Hotkey_LimitFPS_ExtraData:
+        setting = {"", "Hotkey_LimitFPS_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor25_InputType:
+        setting = {"", "Hotkey_SpeedFactor25_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor25_Name:
+        setting = {"", "Hotkey_SpeedFactor25_Name" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor25_Data:
+        setting = {"", "Hotkey_SpeedFactor25_Data" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor25_ExtraData:
+        setting = {"", "Hotkey_SpeedFactor25_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor50_InputType:
+        setting = {"", "Hotkey_SpeedFactor50_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor50_Name:
+        setting = {"", "Hotkey_SpeedFactor50_Name" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor50_Data:
+        setting = {"", "Hotkey_SpeedFactor50_Data" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor50_ExtraData:
+        setting = {"", "Hotkey_SpeedFactor50_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor75_InputType:
+        setting = {"", "Hotkey_SpeedFactor75_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor75_Name:
+        setting = {"", "Hotkey_SpeedFactor75_Name" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor75_Data:
+        setting = {"", "Hotkey_SpeedFactor75_Data" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor75_ExtraData:
+        setting = {"", "Hotkey_SpeedFactor75_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor100_InputType:
+        setting = {"", "Hotkey_SpeedFactor100_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor100_Name:
+        setting = {"", "Hotkey_SpeedFactor100_Name" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor100_Data:
+        setting = {"", "Hotkey_SpeedFactor100_Data" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor100_ExtraData:
+        setting = {"", "Hotkey_SpeedFactor100_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor125_InputType:
+        setting = {"", "Hotkey_SpeedFactor125_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor125_Name:
+        setting = {"", "Hotkey_SpeedFactor125_Name" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor125_Data:
+        setting = {"", "Hotkey_SpeedFactor125_Data" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor125_ExtraData:
+        setting = {"", "Hotkey_SpeedFactor125_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor150_InputType:
+        setting = {"", "Hotkey_SpeedFactor150_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor150_Name:
+        setting = {"", "Hotkey_SpeedFactor150_Name" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor150_Data:
+        setting = {"", "Hotkey_SpeedFactor150_Data" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor150_ExtraData:
+        setting = {"", "Hotkey_SpeedFactor150_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor175_InputType:
+        setting = {"", "Hotkey_SpeedFactor175_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor175_Name:
+        setting = {"", "Hotkey_SpeedFactor175_Name" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor175_Data:
+        setting = {"", "Hotkey_SpeedFactor175_Data" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor175_ExtraData:
+        setting = {"", "Hotkey_SpeedFactor175_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor200_InputType:
+        setting = {"", "Hotkey_SpeedFactor200_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor200_Name:
+        setting = {"", "Hotkey_SpeedFactor200_Name" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor200_Data:
+        setting = {"", "Hotkey_SpeedFactor200_Data" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor200_ExtraData:
+        setting = {"", "Hotkey_SpeedFactor200_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor225_InputType:
+        setting = {"", "Hotkey_SpeedFactor225_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor225_Name:
+        setting = {"", "Hotkey_SpeedFactor225_Name" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor225_Data:
+        setting = {"", "Hotkey_SpeedFactor225_Data" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor225_ExtraData:
+        setting = {"", "Hotkey_SpeedFactor225_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor250_InputType:
+        setting = {"", "Hotkey_SpeedFactor250_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor250_Name:
+        setting = {"", "Hotkey_SpeedFactor250_Name" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor250_Data:
+        setting = {"", "Hotkey_SpeedFactor250_Data" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor250_ExtraData:
+        setting = {"", "Hotkey_SpeedFactor250_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor275_InputType:
+        setting = {"", "Hotkey_SpeedFactor275_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor275_Name:
+        setting = {"", "Hotkey_SpeedFactor275_Name" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor275_Data:
+        setting = {"", "Hotkey_SpeedFactor275_Data" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor275_ExtraData:
+        setting = {"", "Hotkey_SpeedFactor275_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor300_InputType:
+        setting = {"", "Hotkey_SpeedFactor300_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor300_Name:
+        setting = {"", "Hotkey_SpeedFactor300_Name" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor300_Data:
+        setting = {"", "Hotkey_SpeedFactor300_Data" };
+        break;
+    case SettingsID::Input_Hotkey_SpeedFactor300_ExtraData:
+        setting = {"", "Hotkey_SpeedFactor300_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_SaveState_InputType:
+        setting = {"", "Hotkey_SaveState_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_SaveState_Name:
+        setting = {"", "Hotkey_SaveState_Name" };
+        break;
+    case SettingsID::Input_Hotkey_SaveState_Data:
+        setting = {"", "Hotkey_SaveState_Data" };
+        break;
+    case SettingsID::Input_Hotkey_SaveState_ExtraData:
+        setting = {"", "Hotkey_SaveState_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_LoadState_InputType:
+        setting = {"", "Hotkey_LoadState_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_LoadState_Name:
+        setting = {"", "Hotkey_LoadState_Name" };
+        break;
+    case SettingsID::Input_Hotkey_LoadState_Data:
+        setting = {"", "Hotkey_LoadState_Data" };
+        break;
+    case SettingsID::Input_Hotkey_LoadState_ExtraData:
+        setting = {"", "Hotkey_LoadState_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_GSButton_InputType:
+        setting = {"", "Hotkey_GSButton_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_GSButton_Name:
+        setting = {"", "Hotkey_GSButton_Name" };
+        break;
+    case SettingsID::Input_Hotkey_GSButton_Data:
+        setting = {"", "Hotkey_GSButton_Data" };
+        break;
+    case SettingsID::Input_Hotkey_GSButton_ExtraData:
+        setting = {"", "Hotkey_GSButton_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot0_InputType:
+        setting = {"", "Hotkey_SaveStateSlot0_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot0_Name:
+        setting = {"", "Hotkey_SaveStateSlot0_Name" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot0_Data:
+        setting = {"", "Hotkey_SaveStateSlot0_Data" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot0_ExtraData:
+        setting = {"", "Hotkey_SaveStateSlot0_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot1_InputType:
+        setting = {"", "Hotkey_SaveStateSlot1_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot1_Name:
+        setting = {"", "Hotkey_SaveStateSlot1_Name" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot1_Data:
+        setting = {"", "Hotkey_SaveStateSlot1_Data" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot1_ExtraData:
+        setting = {"", "Hotkey_SaveStateSlot1_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot2_InputType:
+        setting = {"", "Hotkey_SaveStateSlot2_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot2_Name:
+        setting = {"", "Hotkey_SaveStateSlot2_Name" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot2_Data:
+        setting = {"", "Hotkey_SaveStateSlot2_Data" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot2_ExtraData:
+        setting = {"", "Hotkey_SaveStateSlot2_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot3_InputType:
+        setting = {"", "Hotkey_SaveStateSlot3_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot3_Name:
+        setting = {"", "Hotkey_SaveStateSlot3_Name" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot3_Data:
+        setting = {"", "Hotkey_SaveStateSlot3_Data" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot3_ExtraData:
+        setting = {"", "Hotkey_SaveStateSlot3_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot4_InputType:
+        setting = {"", "Hotkey_SaveStateSlot4_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot4_Name:
+        setting = {"", "Hotkey_SaveStateSlot4_Name" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot4_Data:
+        setting = {"", "Hotkey_SaveStateSlot4_Data" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot4_ExtraData:
+        setting = {"", "Hotkey_SaveStateSlot4_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot5_InputType:
+        setting = {"", "Hotkey_SaveStateSlot5_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot5_Name:
+        setting = {"", "Hotkey_SaveStateSlot5_Name" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot5_Data:
+        setting = {"", "Hotkey_SaveStateSlot5_Data" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot5_ExtraData:
+        setting = {"", "Hotkey_SaveStateSlot5_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot6_InputType:
+        setting = {"", "Hotkey_SaveStateSlot6_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot6_Name:
+        setting = {"", "Hotkey_SaveStateSlot6_Name" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot6_Data:
+        setting = {"", "Hotkey_SaveStateSlot6_Data" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot6_ExtraData:
+        setting = {"", "Hotkey_SaveStateSlot6_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot7_InputType:
+        setting = {"", "Hotkey_SaveStateSlot7_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot7_Name:
+        setting = {"", "Hotkey_SaveStateSlot7_Name" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot7_Data:
+        setting = {"", "Hotkey_SaveStateSlot7_Data" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot7_ExtraData:
+        setting = {"", "Hotkey_SaveStateSlot7_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot8_InputType:
+        setting = {"", "Hotkey_SaveStateSlot8_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot8_Name:
+        setting = {"", "Hotkey_SaveStateSlot8_Name" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot8_Data:
+        setting = {"", "Hotkey_SaveStateSlot8_Data" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot8_ExtraData:
+        setting = {"", "Hotkey_SaveStateSlot8_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot9_InputType:
+        setting = {"", "Hotkey_SaveStateSlot9_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot9_Name:
+        setting = {"", "Hotkey_SaveStateSlot9_Name" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot9_Data:
+        setting = {"", "Hotkey_SaveStateSlot9_Data" };
+        break;
+    case SettingsID::Input_Hotkey_SaveStateSlot9_ExtraData:
+        setting = {"", "Hotkey_SaveStateSlot9_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_Fullscreen_InputType:
+        setting = {"", "Hotkey_Fullscreen_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_Fullscreen_Name:
+        setting = {"", "Hotkey_Fullscreen_Name" };
+        break;
+    case SettingsID::Input_Hotkey_Fullscreen_Data:
+        setting = {"", "Hotkey_Fullscreen_Data" };
+        break;
+    case SettingsID::Input_Hotkey_Fullscreen_ExtraData:
+        setting = {"", "Hotkey_Fullscreen_ExtraData" };
+        break;
     }
 
     return setting;
