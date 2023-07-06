@@ -37,18 +37,16 @@ Q_OBJECT
 public:
     OptionsDialog(QWidget *parent, OptionsDialogSettings settings);
 
-    bool HasSaved();
     OptionsDialogSettings GetSettings();
 
+protected:
+    void accept() Q_DECL_OVERRIDE;
+
 private:
-    bool hasSaved = false;
     OptionsDialogSettings settings;
 
     void setIconsForEmulationInfoText(void);
     void hideEmulationInfoText(void);
-
-private slots:
-    void on_buttonBox_clicked(QAbstractButton *);
 
     void on_changeGameboyRomButton_clicked();
     void on_changeGameboySaveButton_clicked();

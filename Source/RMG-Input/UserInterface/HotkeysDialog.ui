@@ -1,0 +1,920 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>HotkeysDialog</class>
+ <widget class="QDialog" name="HotkeysDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>377</width>
+    <height>563</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Hotkeys</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTabWidget" name="keybindingsMenuTabWidget">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="systemMenuTab">
+      <attribute name="title">
+       <string>System</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_72">
+         <item>
+          <widget class="QLabel" name="label_69">
+           <property name="text">
+            <string>Shutdown</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="shutdownKeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_75">
+         <item>
+          <widget class="QLabel" name="label_72">
+           <property name="text">
+            <string>Soft Reset</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="softResetKeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_76">
+         <item>
+          <widget class="QLabel" name="label_73">
+           <property name="text">
+            <string>Hard Reset</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="hardResetKeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_89">
+         <item>
+          <widget class="QLabel" name="label_88">
+           <property name="text">
+            <string>Pause</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="pauseKeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_77">
+         <item>
+          <widget class="QLabel" name="label_74">
+           <property name="text">
+            <string>Capture Screenshot</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="generateBitmapKeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_78">
+         <item>
+          <widget class="QLabel" name="label_75">
+           <property name="text">
+            <string>Limit FPS</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="limitFPSKeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_80">
+         <item>
+          <widget class="QLabel" name="label_77">
+           <property name="text">
+            <string>Save State</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="saveStateKeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_82">
+         <item>
+          <widget class="QLabel" name="label_79">
+           <property name="text">
+            <string>Load State</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="loadStateKeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_85">
+         <item>
+          <widget class="QLabel" name="label_82">
+           <property name="text">
+            <string>GS Button</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="gsButtonKeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_74">
+         <item>
+          <widget class="QLabel" name="label_71">
+           <property name="text">
+            <string>Exit</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="exitKeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_14">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="verticalLayout_0">
+         <item>
+          <widget class="QLabel" name="infoIconLabel">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap>:/newPrefix/Resource/Info.ico</pixmap>
+           </property>
+           <property name="wordWrap">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_86">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="midLineWidth">
+            <number>1</number>
+           </property>
+           <property name="text">
+            <string>These hotkeys are only for controllers</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::PlainText</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="speedFactorTab">
+      <attribute name="title">
+       <string>Speed Factor</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_105">
+         <item>
+          <widget class="QLabel" name="label_102">
+           <property name="text">
+            <string>25%</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="speedFactor25KeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_106">
+         <item>
+          <widget class="QLabel" name="label_103">
+           <property name="text">
+            <string>50%</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="speedFactor50KeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_107">
+         <item>
+          <widget class="QLabel" name="label_104">
+           <property name="text">
+            <string>75%</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="speedFactor75KeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_108">
+         <item>
+          <widget class="QLabel" name="label_105">
+           <property name="text">
+            <string>100%</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="speedFactor100KeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_109">
+         <item>
+          <widget class="QLabel" name="label_106">
+           <property name="text">
+            <string>125%</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="speedFactor125KeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_110">
+         <item>
+          <widget class="QLabel" name="label_107">
+           <property name="text">
+            <string>150%</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="speedFactor150KeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_111">
+         <item>
+          <widget class="QLabel" name="label_108">
+           <property name="text">
+            <string>175%</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="speedFactor175KeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_112">
+         <item>
+          <widget class="QLabel" name="label_109">
+           <property name="text">
+            <string>200%</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="speedFactor200KeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_113">
+         <item>
+          <widget class="QLabel" name="label_110">
+           <property name="text">
+            <string>225%</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="speedFactor225KeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_114">
+         <item>
+          <widget class="QLabel" name="label_111">
+           <property name="text">
+            <string>250%</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="speedFactor250KeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_115">
+         <item>
+          <widget class="QLabel" name="label_112">
+           <property name="text">
+            <string>275%</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="speedFactor275KeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_116">
+         <item>
+          <widget class="QLabel" name="label_113">
+           <property name="text">
+            <string>300%</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="speedFactor300KeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_9">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="verticalLayout_1">
+         <item>
+          <widget class="QLabel" name="infoIconLabel_2">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap>:/newPrefix/Resource/Info.ico</pixmap>
+           </property>
+           <property name="wordWrap">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_87">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="midLineWidth">
+            <number>1</number>
+           </property>
+           <property name="text">
+            <string>These hotkeys are only for controllers</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::PlainText</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="currentSaveStateTab">
+      <attribute name="title">
+       <string>Current Save State</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_95">
+         <item>
+          <widget class="QLabel" name="label_92">
+           <property name="text">
+            <string>Slot 0</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="saveState0KeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_96">
+         <item>
+          <widget class="QLabel" name="label_93">
+           <property name="text">
+            <string>Slot 1</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="saveState1KeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_97">
+         <item>
+          <widget class="QLabel" name="label_94">
+           <property name="text">
+            <string>Slot 2</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="saveState2KeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_98">
+         <item>
+          <widget class="QLabel" name="label_95">
+           <property name="text">
+            <string>Slot 3</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="saveState3KeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_99">
+         <item>
+          <widget class="QLabel" name="label_96">
+           <property name="text">
+            <string>Slot 4</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="saveState4KeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_100">
+         <item>
+          <widget class="QLabel" name="label_97">
+           <property name="text">
+            <string>Slot 5</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="saveState5KeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_101">
+         <item>
+          <widget class="QLabel" name="label_98">
+           <property name="text">
+            <string>Slot 6</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="saveState6KeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_102">
+         <item>
+          <widget class="QLabel" name="label_99">
+           <property name="text">
+            <string>Slot 7</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="saveState7KeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_104">
+         <item>
+          <widget class="QLabel" name="label_101">
+           <property name="text">
+            <string>Slot 8</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="saveState8KeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_103">
+         <item>
+          <widget class="QLabel" name="label_100">
+           <property name="text">
+            <string>Slot 9</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="saveState9KeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_13">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="verticalLayout_4">
+         <item>
+          <widget class="QLabel" name="infoIconLabel_3">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap>:/newPrefix/Resource/Info.ico</pixmap>
+           </property>
+           <property name="wordWrap">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_89">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="midLineWidth">
+            <number>1</number>
+           </property>
+           <property name="text">
+            <string>These hotkeys are only for controllers</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::PlainText</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="viewMenuTab">
+      <attribute name="title">
+       <string>View</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_7">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_86">
+         <item>
+          <widget class="QLabel" name="label_83">
+           <property name="text">
+            <string>Full Screen</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="UserInterface::Widget::HotkeyButton" name="fullscreenKeyButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_16">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>419</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="verticalLayout_6">
+         <item>
+          <widget class="QLabel" name="infoIconLabel_4">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap>:/newPrefix/Resource/Info.ico</pixmap>
+           </property>
+           <property name="wordWrap">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_90">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="midLineWidth">
+            <number>1</number>
+           </property>
+           <property name="text">
+            <string>These hotkeys are only for controllers</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::PlainText</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>UserInterface::Widget::HotkeyButton</class>
+   <extends>QPushButton</extends>
+   <header>UserInterface/Widget/HotkeyButton.hpp</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>HotkeysDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>HotkeysDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

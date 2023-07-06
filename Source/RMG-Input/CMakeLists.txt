@@ -17,18 +17,22 @@ set(RMG_INPUT_SOURCES
     UserInterface/Widget/ControllerWidget.ui
     UserInterface/Widget/ControllerWidget.cpp
     UserInterface/Widget/ControllerImageWidget.cpp
+    UserInterface/Widget/HotkeyButton.cpp
     UserInterface/Widget/MappingButton.cpp
     UserInterface/Widget/AddMappingButton.cpp
     UserInterface/Widget/RemoveMappingButton.cpp
     UserInterface/EventFilter.cpp
     UserInterface/OptionsDialog.ui
     UserInterface/OptionsDialog.cpp
+    UserInterface/HotkeysDialog.ui
+    UserInterface/HotkeysDialog.cpp
     UserInterface/MainDialog.ui
     UserInterface/MainDialog.cpp
     UserInterface/UIResources.qrc
     Utilities/QtKeyToSdl2Key.cpp
     Utilities/InputDevice.cpp
     Thread/SDLThread.cpp
+    Thread/HotkeysThread.cpp
     main.cpp
 )
 

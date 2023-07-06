@@ -33,11 +33,6 @@ OptionsDialog::OptionsDialog(QWidget* parent, OptionsDialogSettings settings) : 
     }
 }
 
-bool OptionsDialog::HasSaved()
-{
-    return this->hasSaved;
-}
-
 OptionsDialogSettings OptionsDialog::GetSettings()
 {
     return this->settings;
@@ -72,24 +67,16 @@ void OptionsDialog::hideEmulationInfoText(void)
     }
 }
 
-void OptionsDialog::on_buttonBox_clicked(QAbstractButton *button)
+void OptionsDialog::accept()
 {
+    this->settings.ControllerPak = this->controllerPakComboBox->currentIndex();
+    this->settings.GameboyRom = this->gameboyRomLineEdit->text().toStdString();
+    this->settings.GameboySave = this->gameboySaveLineEdit->text().toStdString();
+    this->settings.RemoveDuplicateMappings = this->removeDuplicateMappingsCheckbox->isChecked();
+    this->settings.FilterEventsForButtons = this->filterEventsForButtonsCheckBox->isChecked();
+    this->settings.FilterEventsForAxis = this->filterEventsForAxisCheckBox->isChecked();
 
-    QPushButton *pushButton = (QPushButton *)button;
-    QPushButton *okButton = this->buttonBox->button(QDialogButtonBox::Ok);
-
-    if (pushButton == okButton)
-    {
-        this->hasSaved = true;
-        this->settings.ControllerPak = this->controllerPakComboBox->currentIndex();
-        this->settings.GameboyRom = this->gameboyRomLineEdit->text().toStdString();
-        this->settings.GameboySave = this->gameboySaveLineEdit->text().toStdString();
-        this->settings.RemoveDuplicateMappings = this->removeDuplicateMappingsCheckbox->isChecked();
-        this->settings.FilterEventsForButtons = this->filterEventsForButtonsCheckBox->isChecked();
-        this->settings.FilterEventsForAxis = this->filterEventsForAxisCheckBox->isChecked();
-    }
-    
-    this->accept();
+    QDialog::accept();
 }
 
 void OptionsDialog::on_changeGameboyRomButton_clicked()

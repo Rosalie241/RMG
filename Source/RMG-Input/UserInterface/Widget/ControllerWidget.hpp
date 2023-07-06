@@ -15,6 +15,7 @@
 
 #include "UserInterface/EventFilter.hpp"
 #include "UserInterface/OptionsDialog.hpp"
+#include "UserInterface/HotkeysDialog.hpp"
 
 using namespace UserInterface::Widget;
 
@@ -72,6 +73,7 @@ private:
     QList<buttonWidgetMapping> buttonWidgetMappings;
     QList<axisWidgetMapping> joystickWidgetMappings;
     QList<buttonSettingMapping> buttonSettingMappings;
+    QList<HotkeySettingMapping> hotkeySettingMappings;
     QList<MappingButton*> setupButtonWidgets;
 
     void initializeMappingButtons();
@@ -105,6 +107,8 @@ private:
     int previousProfileComboBoxIndex = -1;
 
     bool onlyLoadGameProfile = false;
+
+    HotkeysDialog* currentHotkeysDialog = nullptr;
 
 public:
     ControllerWidget(QWidget* parent, EventFilter* eventFilter);
@@ -156,6 +160,7 @@ private slots:
 
     void on_resetButton_clicked();
     void on_optionsButton_clicked();
+    void on_hotkeysButton_clicked();
 
 public slots:
     void on_MappingButton_Released(MappingButton* button);

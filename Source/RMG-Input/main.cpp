@@ -13,6 +13,7 @@
 
 #include <UserInterface/MainDialog.hpp>
 #include "Thread/SDLThread.hpp"
+#include "Thread/HotkeysThread.hpp"
 #include "Utilities/InputDevice.hpp"
 #include "common.hpp"
 #ifdef VRU
@@ -21,6 +22,7 @@
 
 #include <RMG-Core/Core.hpp>
 
+#include <QGuiApplication>
 #include <QApplication>
 #include <SDL.h>
 
@@ -100,6 +102,54 @@ struct InputProfile
     InputMapping AnalogStick_Down;
     InputMapping AnalogStick_Left;
     InputMapping AnalogStick_Right;
+
+    // hotkeys
+    bool Hotkey_Shutdown_Pressed = false;
+    InputMapping Hotkey_Shutdown;
+    bool Hotkey_Exit_Pressed = false;
+    InputMapping Hotkey_Exit;
+    bool Hotkey_SoftReset_Pressed = false;
+    InputMapping Hotkey_SoftReset;
+    bool Hotkey_HardReset_Pressed = false;
+    InputMapping Hotkey_HardReset;
+    bool Hotkey_Resume_Pressed = false;
+    InputMapping Hotkey_Resume;
+    bool Hotkey_Screenshot_Pressed = false;
+    InputMapping Hotkey_Screenshot;
+    bool Hotkey_LimitFPS_Pressed = false;
+    InputMapping Hotkey_LimitFPS;
+    bool Hotkey_SpeedFactor_Pressed = false;
+    InputMapping Hotkey_SpeedFactor25;
+    InputMapping Hotkey_SpeedFactor50;
+    InputMapping Hotkey_SpeedFactor75;
+    InputMapping Hotkey_SpeedFactor100;
+    InputMapping Hotkey_SpeedFactor125;
+    InputMapping Hotkey_SpeedFactor150;
+    InputMapping Hotkey_SpeedFactor175;
+    InputMapping Hotkey_SpeedFactor200;
+    InputMapping Hotkey_SpeedFactor225;
+    InputMapping Hotkey_SpeedFactor250;
+    InputMapping Hotkey_SpeedFactor275;
+    InputMapping Hotkey_SpeedFactor300;
+    bool Hotkey_SaveState_Pressed = false;
+    InputMapping Hotkey_SaveState;
+    bool Hotkey_LoadState_Pressed = false;
+    InputMapping Hotkey_LoadState;
+    bool Hotkey_GSButton_Pressed = false;
+    InputMapping Hotkey_GSButton;
+    bool Hotkey_SaveStateSlot_Pressed = false;
+    InputMapping Hotkey_SaveStateSlot0;
+    InputMapping Hotkey_SaveStateSlot1;
+    InputMapping Hotkey_SaveStateSlot2;
+    InputMapping Hotkey_SaveStateSlot3;
+    InputMapping Hotkey_SaveStateSlot4;
+    InputMapping Hotkey_SaveStateSlot5;
+    InputMapping Hotkey_SaveStateSlot6;
+    InputMapping Hotkey_SaveStateSlot7;
+    InputMapping Hotkey_SaveStateSlot8;
+    InputMapping Hotkey_SaveStateSlot9;
+    bool Hotkey_Fullscreen_Pressed = false;
+    InputMapping Hotkey_Fullscreen;
 };
 
 //
@@ -108,6 +158,9 @@ struct InputProfile
 
 // SDL thread
 static Thread::SDLThread *l_SDLThread = nullptr;
+
+// Hotkeys thread (for when paused)
+static Thread::HotkeysThread *l_HotkeysThread = nullptr;
 
 // input profiles
 static InputProfile l_InputProfiles[NUM_CONTROLLERS];
@@ -256,6 +309,41 @@ static void load_settings(void)
         load_inputmapping_settings(&profile->AnalogStick_Down, section, SettingsID::Input_AnalogStickDown_Name, SettingsID::Input_AnalogStickDown_InputType, SettingsID::Input_AnalogStickDown_Data, SettingsID::Input_AnalogStickDown_ExtraData);
         load_inputmapping_settings(&profile->AnalogStick_Left, section, SettingsID::Input_AnalogStickLeft_Name, SettingsID::Input_AnalogStickLeft_InputType, SettingsID::Input_AnalogStickLeft_Data, SettingsID::Input_AnalogStickLeft_ExtraData);
         load_inputmapping_settings(&profile->AnalogStick_Right, section, SettingsID::Input_AnalogStickRight_Name, SettingsID::Input_AnalogStickRight_InputType, SettingsID::Input_AnalogStickRight_Data, SettingsID::Input_AnalogStickRight_ExtraData);
+
+        // load hotkeys settings
+        load_inputmapping_settings(&profile->Hotkey_Shutdown, section, SettingsID::Input_Hotkey_Shutdown_Name, SettingsID::Input_Hotkey_Shutdown_InputType, SettingsID::Input_Hotkey_Shutdown_Data, SettingsID::Input_Hotkey_Shutdown_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_Exit, section, SettingsID::Input_Hotkey_Exit_Name, SettingsID::Input_Hotkey_Exit_InputType, SettingsID::Input_Hotkey_Exit_Data, SettingsID::Input_Hotkey_Exit_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_SoftReset, section, SettingsID::Input_Hotkey_SoftReset_Name, SettingsID::Input_Hotkey_SoftReset_InputType, SettingsID::Input_Hotkey_SoftReset_Data, SettingsID::Input_Hotkey_SoftReset_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_HardReset, section, SettingsID::Input_Hotkey_HardReset_Name, SettingsID::Input_Hotkey_HardReset_InputType, SettingsID::Input_Hotkey_HardReset_Data, SettingsID::Input_Hotkey_HardReset_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_Resume, section, SettingsID::Input_Hotkey_Resume_Name, SettingsID::Input_Hotkey_Resume_InputType, SettingsID::Input_Hotkey_Resume_Data, SettingsID::Input_Hotkey_Resume_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_Screenshot, section, SettingsID::Input_Hotkey_Screenshot_Name, SettingsID::Input_Hotkey_Screenshot_InputType, SettingsID::Input_Hotkey_Screenshot_Data, SettingsID::Input_Hotkey_Screenshot_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_LimitFPS, section, SettingsID::Input_Hotkey_LimitFPS_Name, SettingsID::Input_Hotkey_LimitFPS_InputType, SettingsID::Input_Hotkey_LimitFPS_Data, SettingsID::Input_Hotkey_LimitFPS_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_SpeedFactor25, section, SettingsID::Input_Hotkey_SpeedFactor25_Name, SettingsID::Input_Hotkey_SpeedFactor25_InputType, SettingsID::Input_Hotkey_SpeedFactor25_Data, SettingsID::Input_Hotkey_SpeedFactor25_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_SpeedFactor50, section, SettingsID::Input_Hotkey_SpeedFactor50_Name, SettingsID::Input_Hotkey_SpeedFactor50_InputType, SettingsID::Input_Hotkey_SpeedFactor50_Data, SettingsID::Input_Hotkey_SpeedFactor50_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_SpeedFactor75, section, SettingsID::Input_Hotkey_SpeedFactor75_Name, SettingsID::Input_Hotkey_SpeedFactor75_InputType, SettingsID::Input_Hotkey_SpeedFactor75_Data, SettingsID::Input_Hotkey_SpeedFactor75_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_SpeedFactor100, section, SettingsID::Input_Hotkey_SpeedFactor100_Name, SettingsID::Input_Hotkey_SpeedFactor100_InputType, SettingsID::Input_Hotkey_SpeedFactor100_Data, SettingsID::Input_Hotkey_SpeedFactor100_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_SpeedFactor125, section, SettingsID::Input_Hotkey_SpeedFactor125_Name, SettingsID::Input_Hotkey_SpeedFactor125_InputType, SettingsID::Input_Hotkey_SpeedFactor125_Data, SettingsID::Input_Hotkey_SpeedFactor125_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_SpeedFactor150, section, SettingsID::Input_Hotkey_SpeedFactor150_Name, SettingsID::Input_Hotkey_SpeedFactor150_InputType, SettingsID::Input_Hotkey_SpeedFactor150_Data, SettingsID::Input_Hotkey_SpeedFactor150_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_SpeedFactor175, section, SettingsID::Input_Hotkey_SpeedFactor175_Name, SettingsID::Input_Hotkey_SpeedFactor175_InputType, SettingsID::Input_Hotkey_SpeedFactor175_Data, SettingsID::Input_Hotkey_SpeedFactor175_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_SpeedFactor200, section, SettingsID::Input_Hotkey_SpeedFactor200_Name, SettingsID::Input_Hotkey_SpeedFactor200_InputType, SettingsID::Input_Hotkey_SpeedFactor200_Data, SettingsID::Input_Hotkey_SpeedFactor200_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_SpeedFactor225, section, SettingsID::Input_Hotkey_SpeedFactor225_Name, SettingsID::Input_Hotkey_SpeedFactor225_InputType, SettingsID::Input_Hotkey_SpeedFactor225_Data, SettingsID::Input_Hotkey_SpeedFactor225_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_SpeedFactor250, section, SettingsID::Input_Hotkey_SpeedFactor250_Name, SettingsID::Input_Hotkey_SpeedFactor250_InputType, SettingsID::Input_Hotkey_SpeedFactor250_Data, SettingsID::Input_Hotkey_SpeedFactor250_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_SpeedFactor275, section, SettingsID::Input_Hotkey_SpeedFactor275_Name, SettingsID::Input_Hotkey_SpeedFactor275_InputType, SettingsID::Input_Hotkey_SpeedFactor275_Data, SettingsID::Input_Hotkey_SpeedFactor275_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_SpeedFactor300, section, SettingsID::Input_Hotkey_SpeedFactor300_Name, SettingsID::Input_Hotkey_SpeedFactor300_InputType, SettingsID::Input_Hotkey_SpeedFactor300_Data, SettingsID::Input_Hotkey_SpeedFactor300_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_SaveState, section, SettingsID::Input_Hotkey_SaveState_Name, SettingsID::Input_Hotkey_SaveState_InputType, SettingsID::Input_Hotkey_SaveState_Data, SettingsID::Input_Hotkey_SaveState_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_LoadState, section, SettingsID::Input_Hotkey_LoadState_Name, SettingsID::Input_Hotkey_LoadState_InputType, SettingsID::Input_Hotkey_LoadState_Data, SettingsID::Input_Hotkey_LoadState_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_GSButton, section, SettingsID::Input_Hotkey_GSButton_Name, SettingsID::Input_Hotkey_GSButton_InputType, SettingsID::Input_Hotkey_GSButton_Data, SettingsID::Input_Hotkey_GSButton_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_SaveStateSlot0, section, SettingsID::Input_Hotkey_SaveStateSlot0_Name, SettingsID::Input_Hotkey_SaveStateSlot0_InputType, SettingsID::Input_Hotkey_SaveStateSlot0_Data, SettingsID::Input_Hotkey_SaveStateSlot0_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_SaveStateSlot1, section, SettingsID::Input_Hotkey_SaveStateSlot1_Name, SettingsID::Input_Hotkey_SaveStateSlot1_InputType, SettingsID::Input_Hotkey_SaveStateSlot1_Data, SettingsID::Input_Hotkey_SaveStateSlot1_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_SaveStateSlot2, section, SettingsID::Input_Hotkey_SaveStateSlot2_Name, SettingsID::Input_Hotkey_SaveStateSlot2_InputType, SettingsID::Input_Hotkey_SaveStateSlot2_Data, SettingsID::Input_Hotkey_SaveStateSlot2_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_SaveStateSlot3, section, SettingsID::Input_Hotkey_SaveStateSlot3_Name, SettingsID::Input_Hotkey_SaveStateSlot3_InputType, SettingsID::Input_Hotkey_SaveStateSlot3_Data, SettingsID::Input_Hotkey_SaveStateSlot3_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_SaveStateSlot4, section, SettingsID::Input_Hotkey_SaveStateSlot4_Name, SettingsID::Input_Hotkey_SaveStateSlot4_InputType, SettingsID::Input_Hotkey_SaveStateSlot4_Data, SettingsID::Input_Hotkey_SaveStateSlot4_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_SaveStateSlot5, section, SettingsID::Input_Hotkey_SaveStateSlot5_Name, SettingsID::Input_Hotkey_SaveStateSlot5_InputType, SettingsID::Input_Hotkey_SaveStateSlot5_Data, SettingsID::Input_Hotkey_SaveStateSlot5_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_SaveStateSlot6, section, SettingsID::Input_Hotkey_SaveStateSlot6_Name, SettingsID::Input_Hotkey_SaveStateSlot6_InputType, SettingsID::Input_Hotkey_SaveStateSlot6_Data, SettingsID::Input_Hotkey_SaveStateSlot6_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_SaveStateSlot7, section, SettingsID::Input_Hotkey_SaveStateSlot7_Name, SettingsID::Input_Hotkey_SaveStateSlot7_InputType, SettingsID::Input_Hotkey_SaveStateSlot7_Data, SettingsID::Input_Hotkey_SaveStateSlot7_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_SaveStateSlot8, section, SettingsID::Input_Hotkey_SaveStateSlot8_Name, SettingsID::Input_Hotkey_SaveStateSlot8_InputType, SettingsID::Input_Hotkey_SaveStateSlot8_Data, SettingsID::Input_Hotkey_SaveStateSlot8_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_SaveStateSlot9, section, SettingsID::Input_Hotkey_SaveStateSlot9_Name, SettingsID::Input_Hotkey_SaveStateSlot9_InputType, SettingsID::Input_Hotkey_SaveStateSlot9_Data, SettingsID::Input_Hotkey_SaveStateSlot9_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_Fullscreen, section, SettingsID::Input_Hotkey_Fullscreen_Name, SettingsID::Input_Hotkey_Fullscreen_InputType, SettingsID::Input_Hotkey_Fullscreen_Data, SettingsID::Input_Hotkey_Fullscreen_ExtraData);
     }
 }
 
@@ -442,7 +530,7 @@ static void close_controllers(void)
     }
 }
 
-static int get_button_state(InputProfile* profile, const InputMapping* inputMapping)
+static int get_button_state(InputProfile* profile, const InputMapping* inputMapping, const bool allPressed = false)
 {
     int state = 0;
 
@@ -455,28 +543,69 @@ static int get_button_state(InputProfile* profile, const InputMapping* inputMapp
         {
             case InputType::GamepadButton:
             {
-                state |= SDL_GameControllerGetButton(profile->InputDevice.GetGameControllerHandle(), (SDL_GameControllerButton)data);
+                if (allPressed && i > 0)
+                {
+                    state &= SDL_GameControllerGetButton(profile->InputDevice.GetGameControllerHandle(), (SDL_GameControllerButton)data);
+                }
+                else
+                {
+                    state |= SDL_GameControllerGetButton(profile->InputDevice.GetGameControllerHandle(), (SDL_GameControllerButton)data);
+                }
             } break;
             case InputType::GamepadAxis:
             {
                 int axis_value = SDL_GameControllerGetAxis(profile->InputDevice.GetGameControllerHandle(), (SDL_GameControllerAxis)data);
-                state |= (abs(axis_value) >= (SDL_AXIS_PEAK / 2) && (extraData ? axis_value > 0 : axis_value < 0)) ? 1 : 0;
+                if (allPressed && i > 0)
+                {
+                    state &= (abs(axis_value) >= (SDL_AXIS_PEAK / 2) && (extraData ? axis_value > 0 : axis_value < 0)) ? 1 : 0;
+                }
+                else
+                {
+                    state |= (abs(axis_value) >= (SDL_AXIS_PEAK / 2) && (extraData ? axis_value > 0 : axis_value < 0)) ? 1 : 0;
+                }
             } break;
             case InputType::JoystickButton:
             {
-                state |= SDL_JoystickGetButton(profile->InputDevice.GetJoystickHandle(), data);
+                if (allPressed && i > 0)
+                {
+                    state &= SDL_JoystickGetButton(profile->InputDevice.GetJoystickHandle(), data);
+                }
+                else
+                {
+                    state |= SDL_JoystickGetButton(profile->InputDevice.GetJoystickHandle(), data);
+                }
             } break;
             case InputType::JoystickAxis:
             {
                 int axis_value = SDL_JoystickGetAxis(profile->InputDevice.GetJoystickHandle(), data);
-                state |= (abs(axis_value) >= (SDL_AXIS_PEAK / 2) && (extraData ? axis_value > 0 : axis_value < 0)) ? 1 : 0;
+                if (allPressed && i > 0)
+                {
+                    state &= (abs(axis_value) >= (SDL_AXIS_PEAK / 2) && (extraData ? axis_value > 0 : axis_value < 0)) ? 1 : 0;
+                }
+                else
+                {
+                    state |= (abs(axis_value) >= (SDL_AXIS_PEAK / 2) && (extraData ? axis_value > 0 : axis_value < 0)) ? 1 : 0;
+                }
             } break;
             case InputType::Keyboard:
             {
-                state |= l_KeyboardState[data] ? 1 : 0;
+                if (allPressed && i > 0)
+                {
+                    state &= l_KeyboardState[data] ? 1 : 0;
+                }
+                else
+                {
+                    state |= l_KeyboardState[data] ? 1 : 0;
+                }
             } break;
             default:
                 break;
+        }
+
+        // early return when needed
+        if (allPressed && !state)
+        {
+            return state;
         }
     }
 
@@ -637,7 +766,74 @@ static unsigned char data_crc(unsigned char *data, int length)
     return remainder;
 }
 
-void sdl_init()
+static bool check_hotkeys(int Control)
+{
+    InputProfile* profile = &l_InputProfiles[Control];
+
+    int state = 0;
+
+    // we only have to check for hotkeys
+    // when there's a controller opened
+    if (!profile->InputDevice.HasOpenDevice())
+    {
+        return false;
+    }
+
+#define DEFINE_HOTKEY(mapping, pressed, function, function2) \
+    state = get_button_state(profile, &profile->mapping, true); \
+    if (state) \
+    { \
+        if (!profile->pressed) \
+        { \
+            profile->pressed = true; \
+            function; \
+        } \
+        return true; \
+    } \
+    else if (!state && profile->pressed) \
+    { \
+        function2; \
+        profile->pressed = false; \
+    }
+
+    DEFINE_HOTKEY(Hotkey_Shutdown,       Hotkey_Shutdown_Pressed,      CoreStopEmulation(), );
+    DEFINE_HOTKEY(Hotkey_Exit,           Hotkey_Exit_Pressed,          QGuiApplication::quit(), );
+    DEFINE_HOTKEY(Hotkey_SoftReset,      Hotkey_SoftReset_Pressed,     CoreResetEmulation(false), );
+    DEFINE_HOTKEY(Hotkey_Resume,         Hotkey_Resume_Pressed,        CoreIsEmulationPaused() ? CoreResumeEmulation() : CorePauseEmulation(), );
+    DEFINE_HOTKEY(Hotkey_Screenshot,     Hotkey_Screenshot_Pressed,    CoreTakeScreenshot(), );
+    DEFINE_HOTKEY(Hotkey_LimitFPS,       Hotkey_LimitFPS_Pressed,      CoreSetSpeedLimiterState(!CoreIsSpeedLimiterEnabled()), );
+    DEFINE_HOTKEY(Hotkey_SpeedFactor25,  Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(25), );
+    DEFINE_HOTKEY(Hotkey_SpeedFactor50,  Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(50), );
+    DEFINE_HOTKEY(Hotkey_SpeedFactor75,  Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(75), );
+    DEFINE_HOTKEY(Hotkey_SpeedFactor100, Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(100), );
+    DEFINE_HOTKEY(Hotkey_SpeedFactor125, Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(125), );
+    DEFINE_HOTKEY(Hotkey_SpeedFactor150, Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(150), );
+    DEFINE_HOTKEY(Hotkey_SpeedFactor175, Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(175), );
+    DEFINE_HOTKEY(Hotkey_SpeedFactor200, Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(200), );
+    DEFINE_HOTKEY(Hotkey_SpeedFactor225, Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(225), );
+    DEFINE_HOTKEY(Hotkey_SpeedFactor250, Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(250), );
+    DEFINE_HOTKEY(Hotkey_SpeedFactor275, Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(275), );
+    DEFINE_HOTKEY(Hotkey_SpeedFactor300, Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(300), );
+    DEFINE_HOTKEY(Hotkey_SaveState,      Hotkey_SaveState_Pressed,     CoreSaveState(), );
+    DEFINE_HOTKEY(Hotkey_LoadState,      Hotkey_LoadState_Pressed,     CoreLoadSaveState(), );
+    DEFINE_HOTKEY(Hotkey_GSButton,       Hotkey_GSButton_Pressed,      CorePressGamesharkButton(true), CorePressGamesharkButton(false));
+    DEFINE_HOTKEY(Hotkey_SaveStateSlot0, Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(0), );
+    DEFINE_HOTKEY(Hotkey_SaveStateSlot1, Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(1), );
+    DEFINE_HOTKEY(Hotkey_SaveStateSlot2, Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(2), );
+    DEFINE_HOTKEY(Hotkey_SaveStateSlot3, Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(3), );
+    DEFINE_HOTKEY(Hotkey_SaveStateSlot4, Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(4), );
+    DEFINE_HOTKEY(Hotkey_SaveStateSlot5, Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(5), );
+    DEFINE_HOTKEY(Hotkey_SaveStateSlot6, Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(6), );
+    DEFINE_HOTKEY(Hotkey_SaveStateSlot7, Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(7), );
+    DEFINE_HOTKEY(Hotkey_SaveStateSlot8, Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(8), );
+    DEFINE_HOTKEY(Hotkey_SaveStateSlot9, Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(9), );
+    DEFINE_HOTKEY(Hotkey_Fullscreen,     Hotkey_Fullscreen_Pressed,    CoreToggleFullscreen(), );
+
+#undef DEFINE_HOTKEY
+    return false;
+}
+
+static void sdl_init()
 {
     std::filesystem::path gameControllerDbPath;
 
@@ -656,7 +852,7 @@ void sdl_init()
     SDL_GameControllerAddMappingsFromFile(gameControllerDbPath.string().c_str());
 }
 
-void sdl_quit()
+static void sdl_quit()
 {
     for (const int subsystem : {SDL_INIT_GAMECONTROLLER, SDL_INIT_HAPTIC})
     {
@@ -695,6 +891,9 @@ EXPORT m64p_error CALL PluginStartup(m64p_dynlib_handle CoreLibHandle, void *Con
         l_InputProfiles[i].InputDevice.SetSDLThread(l_SDLThread);
     }
 
+    l_HotkeysThread = new Thread::HotkeysThread(check_hotkeys, nullptr);
+    l_HotkeysThread->start();
+
     load_settings();
 
     return M64ERR_SUCCESS;
@@ -712,6 +911,10 @@ EXPORT m64p_error CALL PluginShutdown(void)
     l_SDLThread->StopLoop();
     l_SDLThread->deleteLater();
     l_SDLThread = nullptr;
+
+    l_HotkeysThread->StopLoop();
+    l_HotkeysThread->deleteLater();
+    l_HotkeysThread = nullptr;
 
     sdl_quit();
 
@@ -907,6 +1110,14 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
         }
     }
 
+    // when we've matched a hotkey,
+    // we don't need to check anything
+    // else
+    if(check_hotkeys(Control))
+    {
+        return;
+    }
+
     Keys->A_BUTTON     = get_button_state(profile, &profile->Button_A);
     Keys->B_BUTTON     = get_button_state(profile, &profile->Button_B);
     Keys->START_BUTTON = get_button_state(profile, &profile->Button_Start);
@@ -969,11 +1180,13 @@ EXPORT void CALL ReadController(int Control, unsigned char *Command)
 
 EXPORT int CALL RomOpen(void)
 {
+    l_HotkeysThread->SetState(HotkeysThreadState::RomOpened);
     return 1;
 }
 
 EXPORT void CALL RomClosed(void)
 {
+    l_HotkeysThread->SetState(HotkeysThreadState::RomClosed);
     l_HasControlInfo = false;
     close_controllers();
 #ifdef VRU

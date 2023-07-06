@@ -92,6 +92,43 @@ ControllerWidget::ControllerWidget(QWidget* parent, EventFilter* eventFilter) : 
         { this->analogStickRightButton, SettingsID::Input_AnalogStickRight_InputType, SettingsID::Input_AnalogStickRight_Name, SettingsID::Input_AnalogStickRight_Data, SettingsID::Input_AnalogStickRight_ExtraData },
     });
 
+    this->hotkeySettingMappings.append(
+    {
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_Shutdown_InputType, SettingsID::Input_Hotkey_Shutdown_Name, SettingsID::Input_Hotkey_Shutdown_Data, SettingsID::Input_Hotkey_Shutdown_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_Exit_InputType, SettingsID::Input_Hotkey_Exit_Name, SettingsID::Input_Hotkey_Exit_Data, SettingsID::Input_Hotkey_Exit_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_SoftReset_InputType, SettingsID::Input_Hotkey_SoftReset_Name, SettingsID::Input_Hotkey_SoftReset_Data, SettingsID::Input_Hotkey_SoftReset_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_HardReset_InputType, SettingsID::Input_Hotkey_HardReset_Name, SettingsID::Input_Hotkey_HardReset_Data, SettingsID::Input_Hotkey_HardReset_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_Resume_InputType, SettingsID::Input_Hotkey_Resume_Name, SettingsID::Input_Hotkey_Resume_Data, SettingsID::Input_Hotkey_Resume_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_Screenshot_InputType, SettingsID::Input_Hotkey_Screenshot_Name, SettingsID::Input_Hotkey_Screenshot_Data, SettingsID::Input_Hotkey_Screenshot_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_LimitFPS_InputType, SettingsID::Input_Hotkey_LimitFPS_Name, SettingsID::Input_Hotkey_LimitFPS_Data, SettingsID::Input_Hotkey_LimitFPS_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_SpeedFactor25_InputType, SettingsID::Input_Hotkey_SpeedFactor25_Name, SettingsID::Input_Hotkey_SpeedFactor25_Data, SettingsID::Input_Hotkey_SpeedFactor25_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_SpeedFactor50_InputType, SettingsID::Input_Hotkey_SpeedFactor50_Name, SettingsID::Input_Hotkey_SpeedFactor50_Data, SettingsID::Input_Hotkey_SpeedFactor50_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_SpeedFactor75_InputType, SettingsID::Input_Hotkey_SpeedFactor75_Name, SettingsID::Input_Hotkey_SpeedFactor75_Data, SettingsID::Input_Hotkey_SpeedFactor75_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_SpeedFactor100_InputType, SettingsID::Input_Hotkey_SpeedFactor100_Name, SettingsID::Input_Hotkey_SpeedFactor100_Data, SettingsID::Input_Hotkey_SpeedFactor100_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_SpeedFactor125_InputType, SettingsID::Input_Hotkey_SpeedFactor125_Name, SettingsID::Input_Hotkey_SpeedFactor125_Data, SettingsID::Input_Hotkey_SpeedFactor125_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_SpeedFactor150_InputType, SettingsID::Input_Hotkey_SpeedFactor150_Name, SettingsID::Input_Hotkey_SpeedFactor150_Data, SettingsID::Input_Hotkey_SpeedFactor150_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_SpeedFactor175_InputType, SettingsID::Input_Hotkey_SpeedFactor175_Name, SettingsID::Input_Hotkey_SpeedFactor175_Data, SettingsID::Input_Hotkey_SpeedFactor175_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_SpeedFactor200_InputType, SettingsID::Input_Hotkey_SpeedFactor200_Name, SettingsID::Input_Hotkey_SpeedFactor200_Data, SettingsID::Input_Hotkey_SpeedFactor200_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_SpeedFactor225_InputType, SettingsID::Input_Hotkey_SpeedFactor225_Name, SettingsID::Input_Hotkey_SpeedFactor225_Data, SettingsID::Input_Hotkey_SpeedFactor225_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_SpeedFactor250_InputType, SettingsID::Input_Hotkey_SpeedFactor250_Name, SettingsID::Input_Hotkey_SpeedFactor250_Data, SettingsID::Input_Hotkey_SpeedFactor250_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_SpeedFactor275_InputType, SettingsID::Input_Hotkey_SpeedFactor275_Name, SettingsID::Input_Hotkey_SpeedFactor275_Data, SettingsID::Input_Hotkey_SpeedFactor275_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_SpeedFactor300_InputType, SettingsID::Input_Hotkey_SpeedFactor300_Name, SettingsID::Input_Hotkey_SpeedFactor300_Data, SettingsID::Input_Hotkey_SpeedFactor300_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_SaveState_InputType, SettingsID::Input_Hotkey_SaveState_Name, SettingsID::Input_Hotkey_SaveState_Data, SettingsID::Input_Hotkey_SaveState_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_LoadState_InputType, SettingsID::Input_Hotkey_LoadState_Name, SettingsID::Input_Hotkey_LoadState_Data, SettingsID::Input_Hotkey_LoadState_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_GSButton_InputType, SettingsID::Input_Hotkey_GSButton_Name, SettingsID::Input_Hotkey_GSButton_Data, SettingsID::Input_Hotkey_GSButton_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_SaveStateSlot0_InputType, SettingsID::Input_Hotkey_SaveStateSlot0_Name, SettingsID::Input_Hotkey_SaveStateSlot0_Data, SettingsID::Input_Hotkey_SaveStateSlot0_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_SaveStateSlot1_InputType, SettingsID::Input_Hotkey_SaveStateSlot1_Name, SettingsID::Input_Hotkey_SaveStateSlot1_Data, SettingsID::Input_Hotkey_SaveStateSlot1_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_SaveStateSlot2_InputType, SettingsID::Input_Hotkey_SaveStateSlot2_Name, SettingsID::Input_Hotkey_SaveStateSlot2_Data, SettingsID::Input_Hotkey_SaveStateSlot2_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_SaveStateSlot3_InputType, SettingsID::Input_Hotkey_SaveStateSlot3_Name, SettingsID::Input_Hotkey_SaveStateSlot3_Data, SettingsID::Input_Hotkey_SaveStateSlot3_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_SaveStateSlot4_InputType, SettingsID::Input_Hotkey_SaveStateSlot4_Name, SettingsID::Input_Hotkey_SaveStateSlot4_Data, SettingsID::Input_Hotkey_SaveStateSlot4_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_SaveStateSlot5_InputType, SettingsID::Input_Hotkey_SaveStateSlot5_Name, SettingsID::Input_Hotkey_SaveStateSlot5_Data, SettingsID::Input_Hotkey_SaveStateSlot5_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_SaveStateSlot6_InputType, SettingsID::Input_Hotkey_SaveStateSlot6_Name, SettingsID::Input_Hotkey_SaveStateSlot6_Data, SettingsID::Input_Hotkey_SaveStateSlot6_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_SaveStateSlot7_InputType, SettingsID::Input_Hotkey_SaveStateSlot7_Name, SettingsID::Input_Hotkey_SaveStateSlot7_Data, SettingsID::Input_Hotkey_SaveStateSlot7_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_SaveStateSlot8_InputType, SettingsID::Input_Hotkey_SaveStateSlot8_Name, SettingsID::Input_Hotkey_SaveStateSlot8_Data, SettingsID::Input_Hotkey_SaveStateSlot8_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_SaveStateSlot9_InputType, SettingsID::Input_Hotkey_SaveStateSlot9_Name, SettingsID::Input_Hotkey_SaveStateSlot9_Data, SettingsID::Input_Hotkey_SaveStateSlot9_ExtraData },
+        { std::vector<int>(), std::vector<int>(), std::vector<int>(), std::vector<std::string>(), SettingsID::Input_Hotkey_Fullscreen_InputType, SettingsID::Input_Hotkey_Fullscreen_Name, SettingsID::Input_Hotkey_Fullscreen_Data, SettingsID::Input_Hotkey_Fullscreen_ExtraData },
+    });
+
     MappingButton* buttonList[] =
     {
         // dpad
@@ -196,6 +233,7 @@ void ControllerWidget::initializeMiscButtons()
     this->inputDeviceRefreshButton->setIcon(QIcon::fromTheme("refresh-line"));
     this->resetButton->setIcon(QIcon::fromTheme("restart-line"));
     this->optionsButton->setIcon(QIcon::fromTheme("settings-3-line"));
+    this->hotkeysButton->setIcon(QIcon::fromTheme("gamepad-line"));
 }
 
 bool ControllerWidget::isCurrentDeviceKeyboard()
@@ -255,6 +293,10 @@ void ControllerWidget::removeDuplicates(MappingButton* button)
         return;
     }
 
+    std::vector<int> inputType = button->GetInputType();
+    std::vector<int> inputData = button->GetInputData();
+    std::vector<int> extraInputData = button->GetExtraInputData();
+
     for (auto& buttonWidget : this->setupButtonWidgets)
     {
         // skip ourselfes
@@ -262,14 +304,6 @@ void ControllerWidget::removeDuplicates(MappingButton* button)
         {
             continue;
         }
-
-        std::vector<int> inputType;
-        std::vector<int> inputData;
-        std::vector<int> extraInputData;
-
-        inputType = button->GetInputType();
-        inputData = button->GetInputData();
-        extraInputData = button->GetExtraInputData();
 
         for (int i = 0; i < inputType.size(); i++)
         {
@@ -344,7 +378,8 @@ void ControllerWidget::setPluggedIn(bool value)
         this->deadZoneGroupBox,
         this->deadZoneSlider,
         this->optionsButton,
-        this->resetButton
+        this->resetButton,
+        this->hotkeysButton,
     };
 
     for (auto& widget : widgetList)
@@ -776,12 +811,36 @@ void ControllerWidget::on_resetButton_clicked()
 void ControllerWidget::on_optionsButton_clicked()
 {
     OptionsDialog dialog(this, this->optionsDialogSettings);
-    dialog.exec();
+    int ret = dialog.exec();
 
     // when saved, store settings for later
-    if (dialog.HasSaved())
+    if (ret == QDialog::Accepted)
     {
         this->optionsDialogSettings = dialog.GetSettings();
+    }
+}
+
+void ControllerWidget::on_hotkeysButton_clicked()
+{
+    HotkeysDialog dialog(this, this->hotkeySettingMappings,
+                         this->isCurrentJoystickGameController,
+                         this->currentJoystickId,
+                         this->optionsDialogSettings.FilterEventsForButtons,
+                         this->optionsDialogSettings.RemoveDuplicateMappings);
+
+    // clear our UI state
+    this->controllerImageWidget->ClearControllerState();
+
+    this->currentHotkeysDialog = &dialog;
+
+    int ret = dialog.exec();
+
+    this->currentHotkeysDialog = nullptr;
+
+    // when saved, store settings for later
+    if (ret == QDialog::Accepted)
+    {
+        this->hotkeySettingMappings = dialog.GetSettingMappings();
     }
 }
 
@@ -796,7 +855,7 @@ void ControllerWidget::on_MappingButton_Released(MappingButton* button)
     this->currentButton = button;
     button->SaveState();
     button->StartTimer();
-    
+
     this->disableAllChildren();
 }
 
@@ -834,6 +893,13 @@ void ControllerWidget::on_MappingButton_DataSet(MappingButton* button)
 
 void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
 {
+    // pass to hotkeys dialog when it's active
+    if (this->currentHotkeysDialog != nullptr)
+    {
+        this->currentHotkeysDialog->on_MainDialog_SdlEvent(event);
+        return;
+    }
+
     switch (event->type)
     {
         case SDL_CONTROLLERBUTTONDOWN:
@@ -1391,6 +1457,14 @@ void ControllerWidget::LoadSettings(QString sectionQString, bool loadUserProfile
         }
     }
 
+    for (auto& hotkeySetting : this->hotkeySettingMappings)
+    {
+        hotkeySetting.inputTypes     = CoreSettingsGetIntListValue(hotkeySetting.inputTypeSettingsId, section);
+        hotkeySetting.inputText      = CoreSettingsGetStringListValue(hotkeySetting.nameSettingsId, section);
+        hotkeySetting.inputData      = CoreSettingsGetIntListValue(hotkeySetting.dataSettingsId, section);
+        hotkeySetting.extraInputData = CoreSettingsGetIntListValue(hotkeySetting.extraDataSettingsId, section);
+    }
+
     // force refresh some UI elements
     this->CheckInputDeviceSettings();
     this->on_deadZoneSlider_valueChanged(this->deadZoneSlider->value());
@@ -1529,6 +1603,14 @@ void ControllerWidget::SaveSettings(QString section)
         CoreSettingsSetValue(buttonSetting.nameSettingsId, sectionStr, buttonSetting.button->GetInputText());
         CoreSettingsSetValue(buttonSetting.dataSettingsId, sectionStr, buttonSetting.button->GetInputData());
         CoreSettingsSetValue(buttonSetting.extraDataSettingsId, sectionStr, buttonSetting.button->GetExtraInputData());
+    }
+
+    for (auto& hotkeySetting : this->hotkeySettingMappings)
+    {
+        CoreSettingsSetValue(hotkeySetting.inputTypeSettingsId, sectionStr, hotkeySetting.inputTypes);
+        CoreSettingsSetValue(hotkeySetting.nameSettingsId, sectionStr, hotkeySetting.inputText);
+        CoreSettingsSetValue(hotkeySetting.dataSettingsId, sectionStr, hotkeySetting.inputData);
+        CoreSettingsSetValue(hotkeySetting.extraDataSettingsId, sectionStr, hotkeySetting.extraInputData);
     }
 }
 
