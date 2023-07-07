@@ -33,6 +33,17 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.4.2" date="2023-07-07" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix window behavior issues when saving GLideN64 settings while in-game</li>
+          <li>Add VRU support to RMG-Input</li>
+          <li>Add controller hotkey support to RMG-Input</li>
+          <li>Improve window title by using the ROM filename when the ROM isn't in the database</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.4.1" date="2023-06-19" type="stable">
       <description>
         <p>Changes:</p>
