@@ -46,6 +46,7 @@ static bool l_HasRomOpen       = false;
 static bool l_HasDisk          = false;
 static bool l_HasExtractedDisk = false;
 static std::filesystem::path l_ExtractedDiskPath;
+static std::filesystem::path l_RomPath;
 
 //
 // Local Functions
@@ -656,6 +657,8 @@ bool CoreOpenRom(std::filesystem::path file)
 
     if (l_HasRomOpen)
     {
+        // store ROM path
+        l_RomPath = file;
         // store default ROM settings
         CoreStoreCurrentDefaultRomSettings();
         // apply rom settings overlay
@@ -683,6 +686,22 @@ bool CoreGetRomType(CoreRomType& type)
     }
 
     type = l_HasDisk ? CoreRomType::Disk : CoreRomType::Cartridge;
+    return true;
+}
+
+bool CoreGetRomPath(std::filesystem::path& path)
+{
+    std::string error;
+
+    if (!l_HasRomOpen)
+    {
+        error = "CoreGetRomPath Failed: ";
+        error += "cannot retrieve ROM path when no ROM has been opened!";
+        CoreSetError(error);
+        return false;
+    }
+
+    path = l_RomPath;
     return true;
 }
 

@@ -27,6 +27,9 @@ bool CoreHasRomOpen(void);
 // attempts to retrieve the ROM type
 bool CoreGetRomType(CoreRomType& type);
 
+// attempts to retrieve ROM path
+bool CoreGetRomPath(std::filesystem::path& path);
+
 // closes ROM
 bool CoreCloseRom(void);
 
