@@ -375,7 +375,18 @@ void MainWindow::updateUI(bool inEmulation, bool isPaused)
 
         if (!settings.GoodName.empty())
         {
-            this->setWindowTitle(QString::fromStdString(settings.GoodName) + QString(" - ") + this->ui_WindowTitle);
+            QString goodName = QString::fromStdString(settings.GoodName);
+            if (goodName.endsWith("(unknown rom)") ||
+                goodName.endsWith("(unknown disk)"))
+            {
+                std::filesystem::path romPath;
+                if (CoreGetRomPath(romPath))
+                {
+                    goodName = QString::fromStdString(romPath.filename().string());
+                }
+            }
+
+            this->setWindowTitle(goodName + QString(" - ") + this->ui_WindowTitle);
         }
 
         this->ui_Widgets->setCurrentWidget(this->ui_Widget_OpenGL->GetWidget());
