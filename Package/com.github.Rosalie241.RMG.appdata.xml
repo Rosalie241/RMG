@@ -33,6 +33,19 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.4.3" date="2023-07-11" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix minor corruption issues when using GLideN64 in Wave Race 64 and Space Station Silicon Valley</li>
+          <li>Fix some potential issues with out of bounds RDRAM reads (thank you loganmc10)</li>
+          <li>Fix ROM browser not updating entries when they've changed in the ROM database</li>
+          <li>Fix mupen64plus-rsp-hle not having a fallback configured (fixes Xeno Crisis not booting with mupen64plus-rsp-hle)</li>
+          <li>Fix Xeno Crisis showing an error message</li>
+          <li>Add Xeno Crisis to the ROM database</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.4.2" date="2023-07-07" type="stable">
       <description>
         <p>Changes:</p>
