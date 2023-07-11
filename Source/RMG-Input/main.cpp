@@ -700,18 +700,20 @@ static double simulate_deadzone(const double n64InputAxis, const double maxAxis,
 // Credit: MerryMage & fzurita
 static void simulate_octagon(const double inputX, const double inputY, const double deadzoneFactor, const double sensitivityFactor, int& outputX, int& outputY)
 {
-    // don't increase emulated range at higher than 100% sensitivity
     const double maxAxis     = N64_AXIS_PEAK * std::min(sensitivityFactor, 1.0);
     const double maxDiagonal = MAX_DIAGONAL_VALUE * std::min(sensitivityFactor, 1.0);
     const int    deadzone    = (int)(deadzoneFactor * N64_AXIS_PEAK * sensitivityFactor);
     const double axisRange   = maxAxis - deadzone;
-    // scale to [-maxAxis, maxAxis]
-    double ax = std::min(inputX * sensitivityFactor, 1.0) * maxAxis;
-    double ay = std::min(inputY * sensitivityFactor, 1.0) * maxAxis;
+    // diagonals reach beyond circle of radius maxAxis
+    // calculate maxRadiusOuterDeadzone by solving for it in the linear scaling equation above at point (maxRadiusOuterDeadzone * sqrt(2) / 2, maxDiagonal)
+    const double maxRadiusOuterDeadzone = 2.0 / std::sqrt(2.0) * (maxDiagonal / maxAxis * axisRange + deadzone);
+    // scale to [-maxRadiusOuterDeadzone, maxRadiusOuterDeadzone]
+    double ax = inputX * maxRadiusOuterDeadzone;
+    double ay = inputY * maxRadiusOuterDeadzone;
 
-    // check whether (ax, ay) is within the circle of radius MAX_AXIS
+    // check whether (ax, ay) is within the circle of radius maxRadiusOuterDeadzone
     double len = std::sqrt(ax*ax + ay*ay);
-    if (len <= maxAxis)
+    if (len <= maxRadiusOuterDeadzone)
     {
         // scale inputs
         ax *= simulate_deadzone(ax, maxAxis, deadzone, axisRange);
@@ -720,12 +722,12 @@ static void simulate_octagon(const double inputX, const double inputY, const dou
     else
     {
         // scale ax and ay to stay on the same line, but at the edge of the circle
-        len = maxAxis / len;
+        len = maxRadiusOuterDeadzone / len;
         ax *= len;
         ay *= len;
     }
-
-    // bound diagonals to an octagonal range [-69, 69]
+    
+    // bound diagonals to an octagonal range [-maxDiagonal, maxDiagonal]
     if (ax != 0.0 && ay != 0.0)
     {
         const double slope = ay / ax;
@@ -733,10 +735,18 @@ static void simulate_octagon(const double inputX, const double inputY, const dou
         const double edgey = std::copysign(std::min(std::abs(edgex * slope), maxAxis / (1.0 / std::abs(slope) + (maxAxis - maxDiagonal) / maxDiagonal)), ay);
         edgex = edgey / slope;
 
-        const double scale = std::sqrt(edgex*edgex + edgey*edgey) / maxAxis;
+        const double scale = std::sqrt(edgex*edgex + edgey*edgey) / maxRadiusOuterDeadzone;
         ax *= scale;
         ay *= scale;
     }
+
+    //keep cardinal input within positive and negative bounds of maxAxis
+    if(std::abs(ax) > maxAxis) ax = std::copysign(maxAxis, ax);
+    if(std::abs(ay) > maxAxis) ay = std::copysign(maxAxis, ay);
+    
+    //prevent floating point precision error keeping values lower than they should be prior to truncation
+    ax = std::copysign(std::abs(ax) + 1e-09, ax);
+    ay = std::copysign(std::abs(ay) + 1e-09, ay);
 
     outputX = (int)ax;
     outputY = (int)ay;
@@ -1139,6 +1149,9 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
     inputY = get_axis_state(profile, &profile->AnalogStick_Down, -1, inputY, useButtonMapping);
     inputX = get_axis_state(profile, &profile->AnalogStick_Left, -1, inputX, useButtonMapping);
     inputX = get_axis_state(profile, &profile->AnalogStick_Right, 1, inputX, useButtonMapping);
+    // 32768 / 32767 occurs- clamp to 1
+    if(inputY >  1.0) inputY =  1.0;
+    if(inputX < -1.0) inputX = -1.0;
 
     int octagonX = 0, octagonY = 0;
     simulate_octagon(
