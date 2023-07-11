@@ -97,7 +97,8 @@ struct l_Setting
     std::string Key;
     l_DynamicValue DefaultValue;
     std::string Description = "";
-    bool ForceUseSetOnce = false;
+    bool ForceUseSetOnce    = false;
+    bool ForceUseSetAlways  = false;
 };
 
 //
@@ -123,6 +124,7 @@ static std::vector<std::string> l_keyList;
 #define SETTING_SECTION_M64P        "Core"
 #define SETTING_SECTION_AUDIO       SETTING_SECTION_GUI  " - Audio Plugin"
 #define SETTING_SECTION_INPUT       SETTING_SECTION_GUI  " - Input Plugin"
+#define SETTING_SECTION_RSP         "Rsp-HLE"
 
 // retrieves l_Setting from settingId
 static l_Setting get_setting(SettingsID settingId)
@@ -615,6 +617,18 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::Audio_Synchronize:
         setting = {SETTING_SECTION_AUDIO, "Synchronize", false};
         break;
+
+    case SettingsID::RSP_Fallback:
+        setting = {SETTING_SECTION_RSP, "RspFallback", CoreGetPluginDirectory().string() +
+#ifdef _WIN32
+                    "\\RSP\\mupen64plus-rsp-parallel.dll",
+#else
+                    "/RSP/mupen64plus-rsp-parallel.so",
+#endif // _WIN32
+                    "", false, true
+                  };
+        break;
+
 
     case SettingsID::Input_Profiles:
         setting = {SETTING_SECTION_INPUT, "Profiles", ""};
@@ -1665,11 +1679,12 @@ bool CoreSettingsSetupDefaults(void)
         {
         case M64TYPE_STRING:
         {
-            if (setting.ForceUseSetOnce && !hasForceUsedSetOnce)
+            if (setting.ForceUseSetAlways ||
+                (setting.ForceUseSetOnce && !hasForceUsedSetOnce))
             {
                 ret = config_option_set(setting.Section, setting.Key, M64TYPE_STRING, (void*)setting.DefaultValue.stringValue.c_str());
             }
-            else if (!setting.ForceUseSetOnce)
+            else if (!setting.ForceUseSetOnce && !setting.ForceUseSetAlways)
             {
                 ret = config_option_default_set(setting.Section, setting.Key, M64TYPE_STRING, (void*)setting.DefaultValue.stringValue.c_str(), setting.Description.c_str());
             }

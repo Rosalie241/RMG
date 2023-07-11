@@ -180,6 +180,9 @@ enum class SettingsID
     Audio_Muted,
     Audio_Synchronize,
 
+    // HLE RSP Plugin Settings
+    RSP_Fallback,
+
     // Input Plugin Settings
     Input_Profiles,
     Input_UseProfile,
