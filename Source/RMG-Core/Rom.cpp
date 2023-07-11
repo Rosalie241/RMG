@@ -7,6 +7,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+#define CORE_INTERNAL
 #include "Rom.hpp"
 #include "Directories.hpp"
 #include "Error.hpp"
@@ -15,6 +16,7 @@
 #include "RomSettings.hpp"
 #include "Cheats.hpp"
 #include "osal/osal_files.hpp"
+#include "CachedRomHeaderAndSettings.hpp"
 
 // 7-Zip includes
 #include "../3rdParty/7-Zip/C/7zTypes.h"
@@ -663,6 +665,8 @@ bool CoreOpenRom(std::filesystem::path file)
         CoreStoreCurrentDefaultRomSettings();
         // apply rom settings overlay
         CoreApplyRomSettingsOverlay();
+        // update cached rom header and settings entry
+        CoreUpdateCachedRomHeaderAndSettings(file);
     }
 
     return l_HasRomOpen;

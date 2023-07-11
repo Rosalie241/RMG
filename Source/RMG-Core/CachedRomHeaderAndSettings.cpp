@@ -9,6 +9,8 @@
  */
 #include "CachedRomHeaderAndSettings.hpp"
 #include "Directories.hpp"
+#include "RomSettings.hpp"
+#include "RomHeader.hpp"
 #include "Error.hpp"
 
 #include "osal/osal_files.hpp"
@@ -304,6 +306,53 @@ bool CoreAddCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType t
 
     l_CacheEntries.push_back(cacheEntry);
     l_CacheEntriesChanged = true;
+    return true;
+}
+
+bool CoreUpdateCachedRomHeaderAndSettings(std::filesystem::path file)
+{
+    l_CacheEntry cachedEntry;
+    CoreRomType type;
+    CoreRomHeader header;
+    CoreRomSettings settings;
+
+    // try to find existing entry with same filename,
+    // when not found, do nothing
+    auto iter = get_cache_entry_iter(file, false);
+    if (iter == l_CacheEntries.end())
+    {
+        return true;
+    }
+    cachedEntry = (*iter);
+
+    // attempt to retrieve required information
+    if (!CoreGetRomType(type) ||
+        !CoreGetCurrentRomHeader(header) ||
+        !CoreGetCurrentDefaultRomSettings(settings))
+    {
+        return false;
+    }
+
+    // check if the cached entry needs to be updated,
+    // if it does, then update the entry
+    if (/* rom type */
+        cachedEntry.type != type ||
+        /* header */
+        cachedEntry.header.Name   != header.Name   ||
+        cachedEntry.header.Region != header.Region ||
+        cachedEntry.header.CRC1   != header.CRC1   ||
+        cachedEntry.header.CRC2   != header.CRC2   ||
+        /* settings */
+        cachedEntry.settings.MD5      != settings.MD5 ||
+        cachedEntry.settings.GoodName != settings.GoodName)
+    {
+        (*iter).type              = type;
+        (*iter).header            = header;
+        (*iter).settings.MD5      = settings.MD5;
+        (*iter).settings.GoodName = settings.GoodName;
+        l_CacheEntriesChanged     = true;
+    }
+
     return true;
 }
 
