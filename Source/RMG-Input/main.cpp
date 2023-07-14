@@ -28,6 +28,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cmath>
 
 //
 // Local Defines
@@ -36,7 +37,6 @@
 #define NUM_CONTROLLERS    4
 #define N64_AXIS_PEAK      85
 #define MAX_DIAGONAL_VALUE 69
-#define DEADZONE_VALUE     7
 
 #define RD_GETSTATUS        0x00   // get status
 #define RD_READKEYS         0x01   // read button values
@@ -680,52 +680,51 @@ static double get_axis_state(InputProfile* profile, const InputMapping* inputMap
     }
 }
 
-static double simulate_deadzone(const double n64InputAxis, const double maxAxis, const int deadzone, const double axisRange)
+// maps a value in one range to a value in another
+static double map_range_to_range(const double value, const double fromLower, const double fromUpper, const double toLower, const double toUpper)
 {
-    double axisAbsolute = std::abs(n64InputAxis);
+    const double fromDelta = fromUpper - fromLower;
+    const double toDelta = toUpper - toLower;
+    const double toUnitsPerFromUnit = toDelta / fromDelta;
+    const double fromUnits = value - fromLower;
 
-    if (axisAbsolute <= deadzone)
-    {
-        axisAbsolute = 0; // No input when inside deadzone
-    }
-    else
-    {
-        // Create linear scaling factor from 0 at inner deadzone to MAX_AXIS at outer limit
-        axisAbsolute = (axisAbsolute - deadzone) * maxAxis / axisRange / axisAbsolute;
-    }
-
-    return axisAbsolute;
+    return toLower + fromUnits * toUnitsPerFromUnit;
 }
 
-// Credit: MerryMage & fzurita
-static void simulate_octagon(const double inputX, const double inputY, const double deadzoneFactor, const double sensitivityFactor, int& outputX, int& outputY)
+// applies square deadzone, then scales result such that the edge of the deadzone is 0
+static double apply_deadzone(const double input, const double deadzone)
+{
+    const double inputAbsolute = std::abs(input);
+
+    if (inputAbsolute <= deadzone)
+    {
+        return 0;
+    }
+
+    return std::copysign(map_range_to_range(inputAbsolute, deadzone, 1.0, 0.0, 1.0), input);
+}
+
+// Credit: MerryMage, fzurita & kev4cards
+static void simulate_octagon(const double inputX, const double inputY, const double sensitivityRatio, int& outputX, int& outputY)
 {
     // don't increase emulated range at higher than 100% sensitivity
-    const double maxAxis     = N64_AXIS_PEAK * std::min(sensitivityFactor, 1.0);
-    const double maxDiagonal = MAX_DIAGONAL_VALUE * std::min(sensitivityFactor, 1.0);
-    const int    deadzone    = (int)(deadzoneFactor * N64_AXIS_PEAK * sensitivityFactor);
-    const double axisRange   = maxAxis - deadzone;
+    const double maxAxis     = N64_AXIS_PEAK * std::min(sensitivityRatio, 1.0);
+    const double maxDiagonal = MAX_DIAGONAL_VALUE * std::min(sensitivityRatio, 1.0);
     // scale to [-maxAxis, maxAxis]
-    double ax = std::min(inputX * sensitivityFactor, 1.0) * maxAxis;
-    double ay = std::min(inputY * sensitivityFactor, 1.0) * maxAxis;
+    double ax = std::min(inputX * sensitivityRatio, 1.0) * maxAxis;
+    double ay = std::min(inputY * sensitivityRatio, 1.0) * maxAxis;
 
-    // check whether (ax, ay) is within the circle of radius MAX_AXIS
-    double len = std::sqrt(ax*ax + ay*ay);
-    if (len <= maxAxis)
-    {
-        // scale inputs
-        ax *= simulate_deadzone(ax, maxAxis, deadzone, axisRange);
-        ay *= simulate_deadzone(ay, maxAxis, deadzone, axisRange);
-    }
-    else
+    // check whether (ax, ay) is within the circle of radius maxAxis
+    const double distance = std::sqrt(ax*ax + ay*ay);
+    if (distance > maxAxis)
     {
         // scale ax and ay to stay on the same line, but at the edge of the circle
-        len = maxAxis / len;
-        ax *= len;
-        ay *= len;
+        const double scale = maxAxis / distance;
+        ax *= scale;
+        ay *= scale;
     }
 
-    // bound diagonals to an octagonal range [-69, 69]
+    // bound diagonals to an octagonal range [-maxDiagonal, maxDiagonal]
     if (ax != 0.0 && ay != 0.0)
     {
         const double slope = ay / ax;
@@ -1140,12 +1139,16 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
     inputX = get_axis_state(profile, &profile->AnalogStick_Left, -1, inputX, useButtonMapping);
     inputX = get_axis_state(profile, &profile->AnalogStick_Right, 1, inputX, useButtonMapping);
 
+    // take deadzone into account
+    const double deadzone = profile->DeadzoneValue / 100.0;
+    inputX = apply_deadzone(inputX, deadzone);
+    inputY = apply_deadzone(inputY, deadzone);
+
     int octagonX = 0, octagonY = 0;
     simulate_octagon(
         inputX, // inputX
         inputY, // inputY
-        profile->DeadzoneValue / 100.0, // deadzoneFactor
-        profile->SensitivityValue / 100.0, // sensitivityFactor
+        profile->SensitivityValue / 100.0, // sensitivityRatio
         octagonX, // outputX
         octagonY  // outputY
     );
