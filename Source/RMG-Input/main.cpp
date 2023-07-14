@@ -705,14 +705,14 @@ static double apply_deadzone(const double input, const double deadzone)
 }
 
 // Credit: MerryMage, fzurita & kev4cards
-static void simulate_octagon(const double inputX, const double inputY, const double sensitivityRatio, int& outputX, int& outputY)
+static void simulate_octagon(const double inputX, const double inputY, int& outputX, int& outputY)
 {
     // don't increase emulated range at higher than 100% sensitivity
-    const double maxAxis     = N64_AXIS_PEAK * std::min(sensitivityRatio, 1.0);
-    const double maxDiagonal = MAX_DIAGONAL_VALUE * std::min(sensitivityRatio, 1.0);
+    const double maxAxis     = N64_AXIS_PEAK;
+    const double maxDiagonal = MAX_DIAGONAL_VALUE;
     // scale to [-maxAxis, maxAxis]
-    double ax = std::min(inputX * sensitivityRatio, 1.0) * maxAxis;
-    double ay = std::min(inputY * sensitivityRatio, 1.0) * maxAxis;
+    double ax = inputX * maxAxis;
+    double ay = inputY * maxAxis;
 
     // check whether (ax, ay) is within the circle of radius maxAxis
     const double distance = std::sqrt(ax*ax + ay*ay);
@@ -1144,11 +1144,17 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
     inputX = apply_deadzone(inputX, deadzone);
     inputY = apply_deadzone(inputY, deadzone);
 
+    // take sensitivity into account
+    const double sensitivityRatio = profile->SensitivityValue / 100.0;
+    const double lowerInputLimit = std::max(-1.0, -sensitivityRatio);
+    const double upperInputLimit = std::min(1.0, sensitivityRatio);
+    inputX = std::clamp(inputX * sensitivityRatio, lowerInputLimit, upperInputLimit);
+    inputY = std::clamp(inputY * sensitivityRatio, lowerInputLimit, upperInputLimit);
+
     int octagonX = 0, octagonY = 0;
     simulate_octagon(
         inputX, // inputX
         inputY, // inputY
-        profile->SensitivityValue / 100.0, // sensitivityRatio
         octagonX, // outputX
         octagonY  // outputY
     );
