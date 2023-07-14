@@ -715,7 +715,7 @@ static void simulate_octagon(const double inputX, const double inputY, int& outp
     double ay = inputY * maxAxis;
 
     // check whether (ax, ay) is within the circle of radius maxAxis
-    const double distance = std::sqrt(ax*ax + ay*ay);
+    const double distance = std::hypot(ax, ay);
     if (distance > maxAxis)
     {
         // scale ax and ay to stay on the same line, but at the edge of the circle
@@ -732,7 +732,7 @@ static void simulate_octagon(const double inputX, const double inputY, int& outp
         const double edgey = std::copysign(std::min(std::abs(edgex * slope), maxAxis / (1.0 / std::abs(slope) + (maxAxis - maxDiagonal) / maxDiagonal)), ay);
         edgex = edgey / slope;
 
-        const double scale = std::sqrt(edgex*edgex + edgey*edgey) / maxAxis;
+        const double scale = std::hypot(edgex, edgey) / maxAxis;
         ax *= scale;
         ay *= scale;
     }
