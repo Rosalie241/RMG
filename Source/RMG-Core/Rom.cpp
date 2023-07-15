@@ -587,12 +587,10 @@ bool CoreOpenRom(std::filesystem::path file)
             // attempt to create extraction directory
             try
             {
-                if (!std::filesystem::exists(disk_file.parent_path()))
+                if (!std::filesystem::exists(disk_file.parent_path()) &&
+                    !std::filesystem::create_directory(disk_file.parent_path()))
                 {
-                    if (!std::filesystem::create_directory(disk_file.parent_path()))
-                    {
-                        throw std::exception();
-                    }
+                    throw std::exception();
                 }
             }
             catch (...)
@@ -602,12 +600,14 @@ bool CoreOpenRom(std::filesystem::path file)
                 error += disk_file.parent_path().string();
                 error += "\"!";
                 CoreSetError(error);
+                free(buf);
                 return false;
             }
 
             // attempt to write temporary file
             if (!write_file(disk_file, buf, buf_size))
             {
+                free(buf);
                 return false;
             }
 
@@ -646,6 +646,10 @@ bool CoreOpenRom(std::filesystem::path file)
     {
         ret = m64p::Core.DoCommand(M64CMD_ROM_OPEN, buf_size, buf);
         error = "CoreOpenRom: m64p::Core.DoCommand(M64CMD_ROM_OPEN) Failed: ";
+    }
+
+    if (!l_HasDisk || l_HasExtractedDisk)
+    {
         free(buf);
     }
 
