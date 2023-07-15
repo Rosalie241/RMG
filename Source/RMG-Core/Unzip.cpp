@@ -33,7 +33,7 @@ bool CoreUnzip(std::filesystem::path file, std::filesystem::path path)
     unz_global_info zipInfo;
     std::ofstream   outputStream;
     char* read_buffer = (char*)malloc(UNZIP_READ_SIZE);
-    size_t bytes_read = 0;
+    int bytes_read = 0;
 
     if (read_buffer == nullptr)
     {
@@ -60,7 +60,7 @@ bool CoreUnzip(std::filesystem::path file, std::filesystem::path path)
     }
 
 
-    for (int i = 0; i < zipInfo.number_entry; i++)
+    for (uint64_t i = 0; i < zipInfo.number_entry; i++)
     {
         unz_file_info fileInfo;
         char          fileName[PATH_MAX];

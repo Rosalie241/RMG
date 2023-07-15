@@ -175,7 +175,7 @@ static std::string join_split_string(std::vector<std::string> splitStr, char sep
     std::string joinedString;
     std::string element;
     int skippedElements = 0;
-    for (int i = 0; i < splitStr.size(); i++)
+    for (uint32_t i = 0; i < splitStr.size(); i++)
     {
         // allow for skipping elements
         if (skippedElements++ < skip)
@@ -201,7 +201,7 @@ static bool parse_cheat(std::vector<std::string> lines, int startIndex, CoreChea
 {
     std::string error;
     std::string line;
-    for (int i = startIndex; i < lines.size(); i++)
+    for (uint32_t i = startIndex; i < lines.size(); i++)
     {
         line = lines.at(i);
 
@@ -340,7 +340,7 @@ static bool parse_cheat_file(std::vector<std::string> lines, CoreCheatFile& chea
     bool readHeader = false;
     bool readHeaderName = false;
 
-    for (int index = 0; index < lines.size(); index++)
+    for (uint32_t index = 0; index < lines.size(); index++)
     {
         line = lines.at(index);
 
@@ -911,7 +911,7 @@ bool CoreGetCheatOption(CoreCheat cheat, CoreCheatOption& option)
 
     for (CoreCheatOption& cheatOption : cheat.CheatOptions)
     {
-        if (cheatOption.Value == value)
+        if (cheatOption.Value == (uint32_t)value)
         {
             option = cheatOption;
             return true;

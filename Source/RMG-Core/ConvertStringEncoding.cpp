@@ -27,7 +27,6 @@ std::string CoreConvertStringEncoding(std::string str, CoreStringEncoding encodi
 
     iconv_t cd;
 
-    char inputBuf[256] = {0};
     char outputBuf[256] = {0};
 
     char* inputBufPtr = (char*)str.c_str();
@@ -56,7 +55,7 @@ std::string CoreConvertStringEncoding(std::string str, CoreStringEncoding encodi
     }
 
     size_t ret = iconv(cd, &inputBufPtr, &inputBufSize, &outputBufPtr, &outputBufSize);
-    if (ret == -1)
+    if (ret == (size_t)-1)
     {
         error = "CoreConvertStringEncoding Failed: ";
         error += "iconv Failed: ";

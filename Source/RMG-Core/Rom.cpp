@@ -138,8 +138,6 @@ static bool read_zip_file(std::filesystem::path file, std::filesystem::path* ext
 {
     std::string  error;
     std::fstream fileStream;
-    int          fileStreamLen;
-    char*        fileStreamBuf;
 
     unzFile           zipFile;
     unz_global_info64 zipInfo;
@@ -181,7 +179,7 @@ static bool read_zip_file(std::filesystem::path file, std::filesystem::path* ext
         return false;
     }
 
-    for (int i = 0; i < zipInfo.number_entry; i++)
+    for (uint64_t i = 0; i < zipInfo.number_entry; i++)
     {
         unz_file_info fileInfo;
         char          fileName[PATH_MAX];
@@ -377,7 +375,7 @@ static bool read_7zip_file(std::filesystem::path file, std::filesystem::path* ex
         return false;
     }
 
-    for (int i = 0; i < db.NumFiles; i++)
+    for (uint32_t i = 0; i < db.NumFiles; i++)
     {
         size_t filename_size = 0;
         uint16_t fileName[PATH_MAX];

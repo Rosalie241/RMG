@@ -25,7 +25,7 @@
 // replaces all occurences of any chars in replace with c inside str
 static void str_replace_chars(std::string& str, const std::string replace, const char c)
 {
-    for (int i = 0; i < str.size(); i++)
+    for (uint32_t i = 0; i < str.size(); i++)
     {
         char str_char = str.at(i);
         if (replace.find(str_char) != std::string::npos)
