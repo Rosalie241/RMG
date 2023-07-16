@@ -148,6 +148,16 @@ struct InputProfile
     InputMapping Hotkey_SaveStateSlot7;
     InputMapping Hotkey_SaveStateSlot8;
     InputMapping Hotkey_SaveStateSlot9;
+    bool Hotkey_IncreaseSaveStateSlot_Pressed = false;
+    InputMapping Hotkey_IncreaseSaveStateSlot;
+    bool Hotkey_DecreaseSaveStateSlot_Pressed = false;
+    InputMapping Hotkey_DecreaseSaveStateSlot;
+    bool Hotkey_MemoryPak_Pressed = false;
+    InputMapping Hotkey_MemoryPak;
+    bool Hotkey_RumblePak_Pressed = false;
+    InputMapping Hotkey_RumblePak;
+    bool Hotkey_NoPak_Pressed = false;
+    InputMapping Hotkey_NoPak;
     bool Hotkey_Fullscreen_Pressed = false;
     InputMapping Hotkey_Fullscreen;
 };
@@ -343,6 +353,11 @@ static void load_settings(void)
         load_inputmapping_settings(&profile->Hotkey_SaveStateSlot7, section, SettingsID::Input_Hotkey_SaveStateSlot7_Name, SettingsID::Input_Hotkey_SaveStateSlot7_InputType, SettingsID::Input_Hotkey_SaveStateSlot7_Data, SettingsID::Input_Hotkey_SaveStateSlot7_ExtraData);
         load_inputmapping_settings(&profile->Hotkey_SaveStateSlot8, section, SettingsID::Input_Hotkey_SaveStateSlot8_Name, SettingsID::Input_Hotkey_SaveStateSlot8_InputType, SettingsID::Input_Hotkey_SaveStateSlot8_Data, SettingsID::Input_Hotkey_SaveStateSlot8_ExtraData);
         load_inputmapping_settings(&profile->Hotkey_SaveStateSlot9, section, SettingsID::Input_Hotkey_SaveStateSlot9_Name, SettingsID::Input_Hotkey_SaveStateSlot9_InputType, SettingsID::Input_Hotkey_SaveStateSlot9_Data, SettingsID::Input_Hotkey_SaveStateSlot9_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_IncreaseSaveStateSlot, section, SettingsID::Input_Hotkey_IncreaseSaveStateSlot_Name, SettingsID::Input_Hotkey_IncreaseSaveStateSlot_InputType, SettingsID::Input_Hotkey_IncreaseSaveStateSlot_Data, SettingsID::Input_Hotkey_IncreaseSaveStateSlot_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_DecreaseSaveStateSlot, section, SettingsID::Input_Hotkey_DecreaseSaveStateSlot_Name, SettingsID::Input_Hotkey_DecreaseSaveStateSlot_InputType, SettingsID::Input_Hotkey_DecreaseSaveStateSlot_Data, SettingsID::Input_Hotkey_DecreaseSaveStateSlot_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_MemoryPak, section, SettingsID::Input_Hotkey_MemoryPak_Name, SettingsID::Input_Hotkey_MemoryPak_InputType, SettingsID::Input_Hotkey_MemoryPak_Data, SettingsID::Input_Hotkey_MemoryPak_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_RumblePak, section, SettingsID::Input_Hotkey_RumblePak_Name, SettingsID::Input_Hotkey_RumblePak_InputType, SettingsID::Input_Hotkey_RumblePak_Data, SettingsID::Input_Hotkey_RumblePak_ExtraData);
+        load_inputmapping_settings(&profile->Hotkey_NoPak, section, SettingsID::Input_Hotkey_NoPak_Name, SettingsID::Input_Hotkey_NoPak_InputType, SettingsID::Input_Hotkey_NoPak_Data, SettingsID::Input_Hotkey_NoPak_ExtraData);
         load_inputmapping_settings(&profile->Hotkey_Fullscreen, section, SettingsID::Input_Hotkey_Fullscreen_Name, SettingsID::Input_Hotkey_Fullscreen_InputType, SettingsID::Input_Hotkey_Fullscreen_Data, SettingsID::Input_Hotkey_Fullscreen_ExtraData);
     }
 }
@@ -398,6 +413,27 @@ static void apply_controller_profiles(void)
         l_ControlInfo.Controls[i].Plugin  = emulateVRU ? PLUGIN_NONE : plugin;
         l_ControlInfo.Controls[i].RawData = 0;
         l_ControlInfo.Controls[i].Type    = emulateVRU ? CONT_TYPE_VRU : CONT_TYPE_STANDARD;
+    }
+}
+
+static void switch_controller_pak(InputProfile* profile, const int Control, const int pak)
+{
+    const int currentPak = l_ControlInfo.Controls[Control].Plugin;
+
+    // we don't need to do anything,
+    // when the current pak matches
+    if (currentPak == pak)
+    {
+        return;
+    }
+
+    l_ControlInfo.Controls[Control].Plugin = pak;
+
+    // when switching from rumble pak to a different pak,
+    // ensure that we stop the controller's rumble
+    if (currentPak == PLUGIN_RAW)
+    {
+        profile->InputDevice.StopRumble();
     }
 }
 
@@ -796,38 +832,43 @@ static bool check_hotkeys(int Control)
         profile->pressed = false; \
     }
 
-    DEFINE_HOTKEY(Hotkey_Shutdown,       Hotkey_Shutdown_Pressed,      CoreStopEmulation(), );
-    DEFINE_HOTKEY(Hotkey_Exit,           Hotkey_Exit_Pressed,          QGuiApplication::quit(), );
-    DEFINE_HOTKEY(Hotkey_SoftReset,      Hotkey_SoftReset_Pressed,     CoreResetEmulation(false), );
-    DEFINE_HOTKEY(Hotkey_Resume,         Hotkey_Resume_Pressed,        CoreIsEmulationPaused() ? CoreResumeEmulation() : CorePauseEmulation(), );
-    DEFINE_HOTKEY(Hotkey_Screenshot,     Hotkey_Screenshot_Pressed,    CoreTakeScreenshot(), );
-    DEFINE_HOTKEY(Hotkey_LimitFPS,       Hotkey_LimitFPS_Pressed,      CoreSetSpeedLimiterState(!CoreIsSpeedLimiterEnabled()), );
-    DEFINE_HOTKEY(Hotkey_SpeedFactor25,  Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(25), );
-    DEFINE_HOTKEY(Hotkey_SpeedFactor50,  Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(50), );
-    DEFINE_HOTKEY(Hotkey_SpeedFactor75,  Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(75), );
-    DEFINE_HOTKEY(Hotkey_SpeedFactor100, Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(100), );
-    DEFINE_HOTKEY(Hotkey_SpeedFactor125, Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(125), );
-    DEFINE_HOTKEY(Hotkey_SpeedFactor150, Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(150), );
-    DEFINE_HOTKEY(Hotkey_SpeedFactor175, Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(175), );
-    DEFINE_HOTKEY(Hotkey_SpeedFactor200, Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(200), );
-    DEFINE_HOTKEY(Hotkey_SpeedFactor225, Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(225), );
-    DEFINE_HOTKEY(Hotkey_SpeedFactor250, Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(250), );
-    DEFINE_HOTKEY(Hotkey_SpeedFactor275, Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(275), );
-    DEFINE_HOTKEY(Hotkey_SpeedFactor300, Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(300), );
-    DEFINE_HOTKEY(Hotkey_SaveState,      Hotkey_SaveState_Pressed,     CoreSaveState(), );
-    DEFINE_HOTKEY(Hotkey_LoadState,      Hotkey_LoadState_Pressed,     CoreLoadSaveState(), );
-    DEFINE_HOTKEY(Hotkey_GSButton,       Hotkey_GSButton_Pressed,      CorePressGamesharkButton(true), CorePressGamesharkButton(false));
-    DEFINE_HOTKEY(Hotkey_SaveStateSlot0, Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(0), );
-    DEFINE_HOTKEY(Hotkey_SaveStateSlot1, Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(1), );
-    DEFINE_HOTKEY(Hotkey_SaveStateSlot2, Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(2), );
-    DEFINE_HOTKEY(Hotkey_SaveStateSlot3, Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(3), );
-    DEFINE_HOTKEY(Hotkey_SaveStateSlot4, Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(4), );
-    DEFINE_HOTKEY(Hotkey_SaveStateSlot5, Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(5), );
-    DEFINE_HOTKEY(Hotkey_SaveStateSlot6, Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(6), );
-    DEFINE_HOTKEY(Hotkey_SaveStateSlot7, Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(7), );
-    DEFINE_HOTKEY(Hotkey_SaveStateSlot8, Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(8), );
-    DEFINE_HOTKEY(Hotkey_SaveStateSlot9, Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(9), );
-    DEFINE_HOTKEY(Hotkey_Fullscreen,     Hotkey_Fullscreen_Pressed,    CoreToggleFullscreen(), );
+    DEFINE_HOTKEY(Hotkey_Shutdown,              Hotkey_Shutdown_Pressed,      CoreStopEmulation(), );
+    DEFINE_HOTKEY(Hotkey_Exit,                  Hotkey_Exit_Pressed,          QGuiApplication::quit(), );
+    DEFINE_HOTKEY(Hotkey_SoftReset,             Hotkey_SoftReset_Pressed,     CoreResetEmulation(false), );
+    DEFINE_HOTKEY(Hotkey_Resume,                Hotkey_Resume_Pressed,        CoreIsEmulationPaused() ? CoreResumeEmulation() : CorePauseEmulation(), );
+    DEFINE_HOTKEY(Hotkey_Screenshot,            Hotkey_Screenshot_Pressed,    CoreTakeScreenshot(), );
+    DEFINE_HOTKEY(Hotkey_LimitFPS,              Hotkey_LimitFPS_Pressed,      CoreSetSpeedLimiterState(!CoreIsSpeedLimiterEnabled()), );
+    DEFINE_HOTKEY(Hotkey_SpeedFactor25,         Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(25), );
+    DEFINE_HOTKEY(Hotkey_SpeedFactor50,         Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(50), );
+    DEFINE_HOTKEY(Hotkey_SpeedFactor75,         Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(75), );
+    DEFINE_HOTKEY(Hotkey_SpeedFactor100,        Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(100), );
+    DEFINE_HOTKEY(Hotkey_SpeedFactor125,        Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(125), );
+    DEFINE_HOTKEY(Hotkey_SpeedFactor150,        Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(150), );
+    DEFINE_HOTKEY(Hotkey_SpeedFactor175,        Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(175), );
+    DEFINE_HOTKEY(Hotkey_SpeedFactor200,        Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(200), );
+    DEFINE_HOTKEY(Hotkey_SpeedFactor225,        Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(225), );
+    DEFINE_HOTKEY(Hotkey_SpeedFactor250,        Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(250), );
+    DEFINE_HOTKEY(Hotkey_SpeedFactor275,        Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(275), );
+    DEFINE_HOTKEY(Hotkey_SpeedFactor300,        Hotkey_SpeedFactor_Pressed,   CoreSetSpeedFactor(300), );
+    DEFINE_HOTKEY(Hotkey_SaveState,             Hotkey_SaveState_Pressed,     CoreSaveState(), );
+    DEFINE_HOTKEY(Hotkey_LoadState,             Hotkey_LoadState_Pressed,     CoreLoadSaveState(), );
+    DEFINE_HOTKEY(Hotkey_GSButton,              Hotkey_GSButton_Pressed,      CorePressGamesharkButton(true), CorePressGamesharkButton(false));
+    DEFINE_HOTKEY(Hotkey_SaveStateSlot0,        Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(0), );
+    DEFINE_HOTKEY(Hotkey_SaveStateSlot1,        Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(1), );
+    DEFINE_HOTKEY(Hotkey_SaveStateSlot2,        Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(2), );
+    DEFINE_HOTKEY(Hotkey_SaveStateSlot3,        Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(3), );
+    DEFINE_HOTKEY(Hotkey_SaveStateSlot4,        Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(4), );
+    DEFINE_HOTKEY(Hotkey_SaveStateSlot5,        Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(5), );
+    DEFINE_HOTKEY(Hotkey_SaveStateSlot6,        Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(6), );
+    DEFINE_HOTKEY(Hotkey_SaveStateSlot7,        Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(7), );
+    DEFINE_HOTKEY(Hotkey_SaveStateSlot8,        Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(8), );
+    DEFINE_HOTKEY(Hotkey_SaveStateSlot9,        Hotkey_SaveStateSlot_Pressed, CoreSetSaveStateSlot(9), );
+    DEFINE_HOTKEY(Hotkey_IncreaseSaveStateSlot, Hotkey_IncreaseSaveStateSlot_Pressed, CoreIncreaseSaveStateSlot(), );
+    DEFINE_HOTKEY(Hotkey_DecreaseSaveStateSlot, Hotkey_DecreaseSaveStateSlot_Pressed, CoreDecreaseSaveStateSlot(), );
+    DEFINE_HOTKEY(Hotkey_MemoryPak,             Hotkey_MemoryPak_Pressed,     switch_controller_pak(profile, Control, PLUGIN_MEMPAK), );
+    DEFINE_HOTKEY(Hotkey_RumblePak,             Hotkey_RumblePak_Pressed,     switch_controller_pak(profile, Control, PLUGIN_RAW), );
+    DEFINE_HOTKEY(Hotkey_NoPak,                 Hotkey_NoPak_Pressed,         switch_controller_pak(profile, Control, PLUGIN_NONE), );
+    DEFINE_HOTKEY(Hotkey_Fullscreen,            Hotkey_Fullscreen_Pressed,    CoreToggleFullscreen(), );
 
 #undef DEFINE_HOTKEY
     return false;
@@ -1020,7 +1061,7 @@ EXPORT void CALL ControllerCommand(int Control, unsigned char* Command)
         case RD_READKEYS:
             break;
         case RD_READPAK:
-            if (profile->ControllerPak == N64ControllerPak::RumblePak)
+            if (l_ControlInfo.Controls[Control].Plugin == PLUGIN_RAW)
             {
                 unsigned int dwAddress = (Command[3] << 8) + (Command[4] & 0xE0);
 
@@ -1037,7 +1078,7 @@ EXPORT void CALL ControllerCommand(int Control, unsigned char* Command)
             }
             break;
         case RD_WRITEPAK:
-            if (profile->ControllerPak == N64ControllerPak::RumblePak)
+            if (l_ControlInfo.Controls[Control].Plugin == PLUGIN_RAW)
             {
                 unsigned int dwAddress = (Command[3] << 8) + (Command[4] & 0xE0);
                 if (dwAddress == PAK_IO_RUMBLE) 

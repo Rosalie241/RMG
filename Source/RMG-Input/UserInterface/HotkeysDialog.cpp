@@ -61,6 +61,11 @@ HotkeysDialog::HotkeysDialog(QWidget* parent, QList<HotkeySettingMapping> hotkey
         { this->saveState7KeyButton, SettingsID::Input_Hotkey_SaveStateSlot7_InputType, SettingsID::Input_Hotkey_SaveStateSlot7_Name, SettingsID::Input_Hotkey_SaveStateSlot7_Data, SettingsID::Input_Hotkey_SaveStateSlot7_ExtraData },
         { this->saveState8KeyButton, SettingsID::Input_Hotkey_SaveStateSlot8_InputType, SettingsID::Input_Hotkey_SaveStateSlot8_Name, SettingsID::Input_Hotkey_SaveStateSlot8_Data, SettingsID::Input_Hotkey_SaveStateSlot8_ExtraData },
         { this->saveState9KeyButton, SettingsID::Input_Hotkey_SaveStateSlot9_InputType, SettingsID::Input_Hotkey_SaveStateSlot9_Name, SettingsID::Input_Hotkey_SaveStateSlot9_Data, SettingsID::Input_Hotkey_SaveStateSlot9_ExtraData },
+        { this->increaseSaveSlotKeyButton, SettingsID::Input_Hotkey_IncreaseSaveStateSlot_InputType, SettingsID::Input_Hotkey_IncreaseSaveStateSlot_Name, SettingsID::Input_Hotkey_IncreaseSaveStateSlot_Data, SettingsID::Input_Hotkey_IncreaseSaveStateSlot_ExtraData },
+        { this->decreaseSaveSlotKeyButton, SettingsID::Input_Hotkey_DecreaseSaveStateSlot_InputType, SettingsID::Input_Hotkey_DecreaseSaveStateSlot_Name, SettingsID::Input_Hotkey_DecreaseSaveStateSlot_Data, SettingsID::Input_Hotkey_DecreaseSaveStateSlot_ExtraData },
+        { this->memPakKeyButton, SettingsID::Input_Hotkey_MemoryPak_InputType, SettingsID::Input_Hotkey_MemoryPak_Name, SettingsID::Input_Hotkey_MemoryPak_Data, SettingsID::Input_Hotkey_MemoryPak_ExtraData },
+        { this->rumblePakKeyButton, SettingsID::Input_Hotkey_RumblePak_InputType, SettingsID::Input_Hotkey_RumblePak_Name, SettingsID::Input_Hotkey_RumblePak_Data, SettingsID::Input_Hotkey_RumblePak_ExtraData },
+        { this->noPakKeyButton, SettingsID::Input_Hotkey_NoPak_InputType, SettingsID::Input_Hotkey_NoPak_Name, SettingsID::Input_Hotkey_NoPak_Data, SettingsID::Input_Hotkey_NoPak_ExtraData },
         { this->fullscreenKeyButton, SettingsID::Input_Hotkey_Fullscreen_InputType, SettingsID::Input_Hotkey_Fullscreen_Name, SettingsID::Input_Hotkey_Fullscreen_Data, SettingsID::Input_Hotkey_Fullscreen_ExtraData },
     });
 
@@ -75,6 +80,7 @@ HotkeysDialog::HotkeysDialog(QWidget* parent, QList<HotkeySettingMapping> hotkey
     this->infoIconLabel_2->setPixmap(QIcon::fromTheme("information-line").pixmap(16, 16));
     this->infoIconLabel_3->setPixmap(QIcon::fromTheme("information-line").pixmap(16, 16));
     this->infoIconLabel_4->setPixmap(QIcon::fromTheme("information-line").pixmap(16, 16));
+    this->infoIconLabel_5->setPixmap(QIcon::fromTheme("information-line").pixmap(16, 16));
 
     // load settings from given mappings
     for (int i = 0; i < hotkeySettingMappings.size(); i++)
