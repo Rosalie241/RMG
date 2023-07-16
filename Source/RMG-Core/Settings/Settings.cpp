@@ -618,6 +618,9 @@ static l_Setting get_setting(SettingsID settingId)
         setting = {SETTING_SECTION_AUDIO, "Synchronize", false};
         break;
 
+    case SettingsID::RSP_Version:
+        setting = {SETTING_SECTION_RSP, "Version", 1.0f, "Mupen64Plus RSP HLE Plugin config parameter version number"};
+        break;
     case SettingsID::RSP_Fallback:
         setting = {SETTING_SECTION_RSP, "RspFallback", CoreGetPluginDirectory().string() +
 #ifdef _WIN32
@@ -627,6 +630,12 @@ static l_Setting get_setting(SettingsID settingId)
 #endif // _WIN32
                     "", false, true
                   };
+        break;
+    case SettingsID::RSP_GraphicsHLE:
+        setting = {SETTING_SECTION_RSP, "DisplayListToGraphicsPlugin", true, "Send display lists to the graphics plugin"};
+        break;
+    case SettingsID::RSP_AudioHLE:
+        setting = {SETTING_SECTION_RSP, "AudioListToAudioPlugin", false, "Send audio lists to the audio plugin"};
         break;
 
 

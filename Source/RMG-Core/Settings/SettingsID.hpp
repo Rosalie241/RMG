@@ -181,7 +181,10 @@ enum class SettingsID
     Audio_Synchronize,
 
     // HLE RSP Plugin Settings
+    RSP_Version,
     RSP_Fallback,
+    RSP_GraphicsHLE,
+    RSP_AudioHLE,
 
     // Input Plugin Settings
     Input_Profiles,
