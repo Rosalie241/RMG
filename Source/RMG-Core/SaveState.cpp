@@ -82,6 +82,48 @@ int CoreGetSaveStateSlot(void)
     return slot;
 }
 
+bool CoreIncreaseSaveStateSlot(void)
+{
+    std::string error;
+    int slot;
+
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
+
+    slot = CoreGetSaveStateSlot();
+    if (slot >= 9)
+    {
+        error = "CoreIncreaseSaveStateSlot Failed: cannot increase save state slot!";
+        CoreSetError(error);
+        return false;
+    }
+
+    return CoreSetSaveStateSlot(slot + 1);
+}
+
+bool CoreDecreaseSaveStateSlot(void)
+{
+    std::string error;
+    int slot;
+
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
+
+    slot = CoreGetSaveStateSlot();
+    if (slot <= 0)
+    {
+        error = "CoreDecreaseSaveStateSlot Failed: cannot decrease save state slot!";
+        CoreSetError(error);
+        return false;
+    }
+
+    return CoreSetSaveStateSlot(slot - 1);
+}
+
 bool CoreGetSaveStatePath(int slot, std::filesystem::path& path)
 {
     // TODO: this should probably be an API function
