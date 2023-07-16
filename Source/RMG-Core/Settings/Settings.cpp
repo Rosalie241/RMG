@@ -1284,6 +1284,66 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::Input_Hotkey_SaveStateSlot9_ExtraData:
         setting = {"", "Hotkey_SaveStateSlot9_ExtraData" };
         break;
+    case SettingsID::Input_Hotkey_IncreaseSaveStateSlot_InputType:
+        setting = {"", "Hotkey_IncreaseSaveStateSlot_InputType"};
+        break;
+    case SettingsID::Input_Hotkey_IncreaseSaveStateSlot_Name:
+        setting = {"", "Hotkey_IncreaseSaveStateSlot_Name" };
+        break;
+    case SettingsID::Input_Hotkey_IncreaseSaveStateSlot_Data:
+        setting = {"", "Hotkey_IncreaseSaveStateSlot_Data" };
+        break;
+    case SettingsID::Input_Hotkey_IncreaseSaveStateSlot_ExtraData:
+        setting = {"", "Hotkey_IncreaseSaveStateSlot_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_DecreaseSaveStateSlot_InputType:
+        setting = {"", "Hotkey_DecreaseSaveStateSlot_InputType"};
+        break;
+    case SettingsID::Input_Hotkey_DecreaseSaveStateSlot_Name:
+        setting = {"", "Hotkey_DecreaseSaveStateSlot_Name" };
+        break;
+    case SettingsID::Input_Hotkey_DecreaseSaveStateSlot_Data:
+        setting = {"", "Hotkey_DecreaseSaveStateSlot_Data" };
+        break;
+    case SettingsID::Input_Hotkey_DecreaseSaveStateSlot_ExtraData:
+        setting = {"", "Hotkey_DecreaseSaveStateSlot_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_MemoryPak_InputType:
+        setting = {"", "Hotkey_MemoryPak_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_MemoryPak_Name:
+        setting = {"", "Hotkey_MemoryPak_Name" };
+        break;
+    case SettingsID::Input_Hotkey_MemoryPak_Data:
+        setting = {"", "Hotkey_MemoryPak_Data" };
+        break;
+    case SettingsID::Input_Hotkey_MemoryPak_ExtraData:
+        setting = {"", "Hotkey_MemoryPak_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_RumblePak_InputType:
+        setting = {"", "Hotkey_RumblePak_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_RumblePak_Name:
+        setting = {"", "Hotkey_RumblePak_Name" };
+        break;
+    case SettingsID::Input_Hotkey_RumblePak_Data:
+        setting = {"", "Hotkey_RumblePak_Data" };
+        break;
+    case SettingsID::Input_Hotkey_RumblePak_ExtraData:
+        setting = {"", "Hotkey_RumblePak_ExtraData" };
+        break;
+    case SettingsID::Input_Hotkey_NoPak_InputType:
+        setting = {"", "Hotkey_NoPak_InputType" };
+        break;
+    case SettingsID::Input_Hotkey_NoPak_Name:
+        setting = {"", "Hotkey_NoPak_Name" };
+        break;
+    case SettingsID::Input_Hotkey_NoPak_Data:
+        setting = {"", "Hotkey_NoPak_Data" };
+        break;
+    case SettingsID::Input_Hotkey_NoPak_ExtraData:
+        setting = {"", "Hotkey_NoPak_ExtraData" };
+        break;
     case SettingsID::Input_Hotkey_Fullscreen_InputType:
         setting = {"", "Hotkey_Fullscreen_InputType" };
         break;
