@@ -195,6 +195,84 @@ void HotkeysDialog::on_MainDialog_SdlEvent(SDL_Event* event)
                 this->currentHotkeyButton = nullptr;
             }
         } break;
+
+        case SDL_CONTROLLERAXISMOTION:
+        case SDL_JOYAXISMOTION:
+        { // gamepad & joystick axis
+            SDL_JoystickID joystickId = -1;
+            InputType inputType = InputType::Invalid;
+            int sdlAxis = 0;
+            int sdlAxisValue = 0;
+            QString sdlAxisName;
+
+            if (event->type == SDL_CONTROLLERAXISMOTION)
+            { // gamepad axis
+                if (!this->isCurrentJoystickGameController &&
+                    this->filterEventsForButtons)
+                {
+                    return;
+                }
+
+                joystickId = event->caxis.which;
+                inputType = InputType::GamepadAxis;
+                sdlAxis = event->caxis.axis;
+                sdlAxisValue = event->caxis.value;
+                sdlAxisName = SDL_GameControllerGetStringForAxis((SDL_GameControllerAxis)sdlAxis);
+                sdlAxisName += sdlAxisValue > 0 ? "+" : "-";
+            }
+            else
+            { // joystick axis
+                if (this->isCurrentJoystickGameController &&
+                    this->filterEventsForButtons)
+                {
+                    return;
+                }
+
+                joystickId = event->jaxis.which;
+                inputType = InputType::JoystickAxis;
+                sdlAxis = event->jaxis.axis;
+                sdlAxisValue = event->jaxis.value;
+                sdlAxisName = "axis " + QString::number(sdlAxis);
+                sdlAxisName += sdlAxisValue > 0 ? "+" : "-";
+            }
+
+            // make sure the user presses the axis
+            // more than 50%, otherwise we might detect
+            // an accidental axis movement (due to i.e deadzone)
+            const bool sdlAxisButtonPressed = (abs(sdlAxisValue) >= (SDL_AXIS_PEAK / 2));
+            const int sdlAxisDirection = (sdlAxisValue > 0 ? 1 : 0);
+
+            // make sure we have the right joystick
+            if (joystickId != this->currentJoystickId)
+            {
+                break;
+            }
+
+            if (this->currentHotkeyButton != nullptr)
+            {
+                // when the axis has been pressed for more
+                // than 50%, add it to the hotkey, if it isn't
+                // but if the current hotkey button contains
+                // that axis, then we can stop watching
+                // for input
+                if (sdlAxisButtonPressed)
+                {
+                    this->currentHotkeyButton->AddInputData(
+                        inputType, 
+                        sdlAxis,
+                        sdlAxisDirection,
+                        sdlAxisName
+                    );
+                }
+                else if (this->currentHotkeyButton->HasInputData(inputType, sdlAxis, sdlAxisDirection))
+                {
+                    this->currentHotkeyButton->StopTimer();
+                    this->currentHotkeyButton->FinishState();
+                    this->currentHotkeyButton->clearFocus();
+                    this->currentHotkeyButton = nullptr;
+                }
+            }
+        } break;
     }
 }
 
