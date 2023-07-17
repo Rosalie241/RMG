@@ -1302,19 +1302,11 @@ void MainWindow::on_Action_System_Pause(void)
 
     if (!isPaused)
     {
-        if (isRunning)
-        {
-            OnScreenDisplayPause();
-        }
         ret = CorePauseEmulation();
         error = "CorePauseEmulation() Failed!";
     }
     else
     {
-        if (isPaused)
-        {
-            OnScreenDisplayResume();
-        }
         ret = CoreResumeEmulation();
         error = "CoreResumeEmulation() Failed!";
     }
@@ -2138,7 +2130,17 @@ void MainWindow::on_Core_StateCallback(CoreStateCallbackType type, int value)
             break;
         case CoreStateCallbackType::EmulationState:
         {
+            // update Pause button
             this->action_System_Pause->setChecked(value == (int)CoreEmulationState::Paused);
+            // update OSD state
+            if (value == (int)CoreEmulationState::Paused)
+            {
+                OnScreenDisplayPause();
+            }
+            else if (value == (int)CoreEmulationState::Running)
+            {
+                OnScreenDisplayResume();
+            }
         } break;
         case CoreStateCallbackType::SaveStateSlot:
         {
