@@ -10,13 +10,13 @@ if [ "$1" = "--help" ] ||
     [ "$1" = "-h" ]
 then
     echo "$0 [--no-appimage]"
-    echo "--no-appimage: skip creating a single .AppImage file, "
-    echo "the application can be run from the AppImage folder."
+    echo "--no-appimage: skip creating a compressed .AppImage file, "
+    echo "only the AppImage folder will be created."
     exit
 fi
 if [ "$1" = "--no-appimage" ]
 then
-    output_args = ""
+    output_args=""
 fi
 
 export QMAKE="$(which qmake6)"
@@ -38,6 +38,7 @@ then
         -o "$script_dir/linuxdeploy-plugin-qt-x86_64.AppImage"
     chmod +x "$script_dir/linuxdeploy-plugin-qt-x86_64.AppImage"
 fi
+
 
 "$script_dir/linuxdeploy-plugin-qt-x86_64.AppImage" --appimage-extract
 "$script_dir/linuxdeploy-x86_64.AppImage" --appimage-extract
