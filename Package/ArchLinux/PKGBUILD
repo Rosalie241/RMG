@@ -1,9 +1,9 @@
 # Maintainer: Rosalie Wanders <rosalie@mailbox.org>
 pkgname=rmg
-pkgver=0.4.3
+pkgver=0.4.4
 pkgrel=1
 pkgdesc="Rosalie's Mupen GUI"
-arch=('x86_64')
+arch=('x86_64' 'aarch64')
 url="https://github.com/Rosalie241/$pkgname"
 license=('GPL3')
 

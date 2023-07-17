@@ -33,6 +33,21 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.4.4" date="2023-07-17" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix memory leak when using a 64DD disk in an archive</li>
+          <li>Fix fallback of mupen64plus-rsp-hle not working on first run</li>
+          <li>Fix 'Screenshot Captured' OSD message not appearing when using controller hotkeys</li>
+          <li>Fix dynamic recompiler crashing on ARM64 since v0.4.1</li>
+          <li>Add support for joysticks/triggers for hotkeys in RMG-Input</li>
+          <li>Add hotkeys for increasing and decreasing the save state slot in RMG-Input</li>
+          <li>Add hotkeys for switching controller paks in RMG-Input</li>
+          <li>Improve deadzone and sensitivity code in RMG-Input (thank you JaxonWasTaken)</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.4.3" date="2023-07-11" type="stable">
       <description>
         <p>Changes:</p>
