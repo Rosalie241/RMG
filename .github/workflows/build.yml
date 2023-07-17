@@ -19,6 +19,13 @@ jobs:
           sudo apt-get -qq update
           sudo apt-get upgrade
           sudo apt-get -y install cmake ninja-build libhidapi-dev libsamplerate0-dev libspeex-dev libminizip-dev libsdl2-dev libfreetype6-dev libgl1-mesa-dev libglu1-mesa-dev pkg-config zlib1g-dev binutils-dev libspeexdsp-dev qt6-base-dev libqt6svg6-dev build-essential nasm git zip appstream
+          packaging_tools_dir="$(pwd)/Package/AppImage"
+          curl -L https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage -o "$packaging_tools_dir/linuxdeploy-x86_64.AppImage"
+          chmod +x "$packaging_tools_dir/linuxdeploy-x86_64.AppImage"
+          curl -L https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage -o "$packaging_tools_dir/linuxdeploy-plugin-qt-x86_64.AppImage"
+          chmod +x "$packaging_tools_dir/linuxdeploy-plugin-qt-x86_64.AppImage"
+          "$packaging_tools_dir/linuxdeploy-plugin-qt-x86_64.AppImage" --appimage-extract
+          "$packaging_tools_dir/linuxdeploy-x86_64.AppImage" --appimage-extract
       - name: Prepare Environment
         run: |
           echo "GIT_REVISION=$(git describe --tags --always)" >> $GITHUB_ENV
