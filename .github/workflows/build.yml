@@ -26,7 +26,7 @@ jobs:
         run: |
           mkdir Build Build/AppImage Bin/ -p
           export src_dir="$(pwd)"
-          export build_dir="$(pwd)/build"
+          export build_dir="$(pwd)/Build/AppImage"
           export bin_dir="$(pwd)/Bin/AppImage"
           cmake -S "$src_dir" -B "$build_dir" -DCMAKE_BUILD_TYPE="Release" -DPORTABLE_INSTALL="OFF" -DUPDATER=ON -DAPPIMAGE_UPDATER=ON -DCMAKE_INSTALL_PREFIX="/usr" -G "Ninja"
           cmake --build "$build_dir"
