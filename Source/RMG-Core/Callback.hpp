@@ -45,6 +45,7 @@ enum class CoreStateCallbackType
     GamesharkInput,
     SaveStateLoaded,
     SaveStateSaved,
+    ScreenshotCaptured,
 };
 
 // attempts to setup callbacks with the provided functions
