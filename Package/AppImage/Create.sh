@@ -9,7 +9,7 @@ export QMAKE="$(which qmake6)"
 export EXTRA_QT_PLUGINS="imageformats;iconengines;"
 export VERSION="$(git describe --tags --always)"
 export OUTPUT="$bin_dir/../RMG-Portable-Linux64-$VERSION.AppImage"
-export LD_LIBRARY_PATH="$toplvl_dir/build/Source/RMG-Core" # hack
+export LD_LIBRARY_PATH="$toplvl_dir/Build/AppImage/Source/RMG-Core" # hack
 
 if [ ! -f "$script_dir/linuxdeploy-x86_64.AppImage" ]
 then
