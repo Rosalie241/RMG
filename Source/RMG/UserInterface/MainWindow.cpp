@@ -1334,10 +1334,6 @@ void MainWindow::on_Action_System_Screenshot(void)
     {
         this->showErrorMessage("CoreTakeScreenshot() Failed!", QString::fromStdString(CoreGetError()));
     }
-    else
-    {
-        OnScreenDisplaySetMessage("Captured screenshot.");
-    }
 }
 
 void MainWindow::on_Action_System_LimitFPS(void)
@@ -2206,6 +2202,17 @@ void MainWindow::on_Core_StateCallback(CoreStateCallbackType type, int value)
             this->ui_UpdateSaveStateSlotTimerId = this->startTimer(1000);
 
             this->ui_ManuallySavedState = false;
+        } break;
+        case CoreStateCallbackType::ScreenshotCaptured:
+        {
+            if (value == 0)
+            {
+                OnScreenDisplaySetMessage("Failed to capture screenshot.");
+            }
+            else
+            {
+                OnScreenDisplaySetMessage("Captured screenshot.");
+            }
         } break;
     }
 }
