@@ -10,13 +10,13 @@ if [ "$1" = "--help" ] ||
     [ "$1" = "-h" ]
 then
     echo "$0 [--no-appimage]"
-    echo "--no-appimage: skip creating a compressed .AppImage file, "
-    echo "only the AppImage folder will be created."
+    echo "--no-appimage: skip creating a single .AppImage file, "
+    echo "the application can be run from the AppImage folder."
     exit
 fi
 if [ "$1" = "--no-appimage" ]
 then
-    output_args="--output="
+    output_args = ""
 fi
 
 export QMAKE="$(which qmake6)"
@@ -24,6 +24,27 @@ export EXTRA_QT_PLUGINS="imageformats;iconengines;"
 export VERSION="$(git describe --tags --always)"
 export OUTPUT="$bin_dir/../RMG-Portable-Linux64-$VERSION.AppImage"
 export LD_LIBRARY_PATH="$toplvl_dir/Build/AppImage/Source/RMG-Core" # hack
+
+if [ ! -f "$script_dir/linuxdeploy-x86_64.AppImage" ]
+then
+    curl -L https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage \
+        -o "$script_dir/linuxdeploy-x86_64.AppImage"
+    chmod +x "$script_dir/linuxdeploy-x86_64.AppImage"
+fi
+
+if [ ! -f "$script_dir/linuxdeploy-plugin-qt-x86_64.AppImage" ]
+then
+    curl -L https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage \
+        -o "$script_dir/linuxdeploy-plugin-qt-x86_64.AppImage"
+    chmod +x "$script_dir/linuxdeploy-plugin-qt-x86_64.AppImage"
+fi
+
+"$script_dir/linuxdeploy-plugin-qt-x86_64.AppImage" --appimage-extract
+"$script_dir/linuxdeploy-x86_64.AppImage" --appimage-extract
+
+# delete appimages
+rm "$script_dir/linuxdeploy-x86_64.AppImage" \
+    "$script_dir/linuxdeploy-plugin-qt-x86_64.AppImage"
 
 "$(pwd)/squashfs-root/AppRun" \
     --plugin=qt \
