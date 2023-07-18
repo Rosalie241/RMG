@@ -4,20 +4,6 @@ set -ex
 script_dir="$(dirname "$0")"
 toplvl_dir="$(realpath "$script_dir/../../")"
 bin_dir="$toplvl_dir/Bin/AppImage" # RMG should be installed here
-output_args="--output=appimage"
-
-if [ "$1" = "--help" ] ||
-    [ "$1" = "-h" ]
-then
-    echo "$0 [--no-appimage]"
-    echo "--no-appimage: skip creating a single .AppImage file, "
-    echo "the application can be run from the AppImage folder."
-    exit
-fi
-if [ "$1" = "--no-appimage" ]
-then
-    output_args = ""
-fi
 
 export QMAKE="$(which qmake6)"
 export EXTRA_QT_PLUGINS="imageformats;iconengines;"
@@ -50,5 +36,5 @@ rm "$script_dir/linuxdeploy-x86_64.AppImage" \
     --plugin=qt \
     --appdir="$bin_dir" \
     --custom-apprun="$script_dir/AppRun" \
-    $output_args \
+    --output=appimage \
     --desktop-file="$bin_dir/usr/share/applications/com.github.Rosalie241.RMG.desktop"
