@@ -17,3 +17,4 @@ export LD_LIBRARY_PATH="$toplvl_dir/Build/AppImage/Source/RMG-Core" # hack
     --custom-apprun="$script_dir/AppRun" \
     --output=appimage \
     --desktop-file="$bin_dir/usr/share/applications/com.github.Rosalie241.RMG.desktop"
+
