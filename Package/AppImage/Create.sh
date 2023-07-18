@@ -16,7 +16,7 @@ then
 fi
 if [ "$1" = "--no-appimage" ]
 then
-    output_args="--output="
+    output_args=""
 fi
 
 export QMAKE="$(which qmake6)"
