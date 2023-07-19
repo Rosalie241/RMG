@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:/raphnet/mupen64plus-input-raphnetraw.git
+	branch = master
+	commit = 86112413e98a8648edb11d199673cc24d5799af8
+	parent = 06164d41b10707838444095da63841248d6f28f6
+	method = merge
+	cmdver = 0.4.6
