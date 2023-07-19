@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:/Rosalie241/parallel-rdp-standalone.git
+	branch = RMG
+	commit = 2c2226517c4c8929e08ec944654867e26efe0cf5
+	parent = a4c68da3a3a0de6447b06fadc3cc7437d5f2b050
+	method = merge
+	cmdver = 0.4.6
