@@ -48,6 +48,7 @@ private:
     void setIconsForEmulationInfoText(void);
     void hideEmulationInfoText(void);
 
+private slots:
     void on_changeGameboyRomButton_clicked();
     void on_changeGameboySaveButton_clicked();
 };
