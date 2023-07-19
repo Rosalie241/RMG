@@ -1,0 +1,241 @@
+name: Angrylion-Plus
+
+on:
+  push:
+    paths-ignore:
+      - '**/*.md'
+      - '.{gitattributes,gitignore,travis.yml}'
+      - 'appveyor.yml,README'
+  pull_request:
+    paths-ignore:
+      - '**/*.md'
+      - '.{gitattributes,gitignore,travis.yml}'
+      - 'appveyor.yml,README'
+  workflow_dispatch:
+jobs:
+
+  Linux:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - cc: GCC
+            platform: x64
+          - cc: Clang
+            platform: x64
+          - cc: GCC
+            platform: x86
+          - cc: Clang
+            platform: x86
+    name: Linux / ${{ matrix.cc }} / ${{ matrix.platform }}
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: "0"
+      - name: Get build dependencies and arrange the environment
+        run: |
+          if [[ "${{ matrix.platform }}" == "x86" ]]; then sudo dpkg --add-architecture i386; fi
+          sudo apt-get update
+          sudo apt-get -y install cmake libgl1-mesa-dev libopengl-dev qtbase5-dev
+          if [[ "${{ matrix.platform }}" == "x86" ]]; then
+            sudo apt-get --reinstall -y install gcc-multilib g++-multilib libc6 libc6-dev-i386 libgl1-mesa-glx:i386 libopengl0:i386
+            LINK="sudo ln -s -T"
+            cd /usr/lib/i386-linux-gnu
+            if ! [[ -f libGLX.so ]]; then ${LINK} libGLX.so.0.0.0 libGLX.so; fi
+            if ! [[ -f libOpenGL.so ]]; then ${LINK} libOpenGL.so.0.0.0 libOpenGL.so; fi
+          fi
+          sudo ldconfig
+      - name: Build and related stuff
+        run: |
+          set +e
+          git tag --delete nightly-build
+          set -e
+          unset TARCH
+          if [[ "${{ matrix.platform }}" == "x86" ]]; then TARCH="-DCMAKE_C_FLAGS=\"-m32\" -DCMAKE_CXX_FLAGS=\"-m32\""; fi
+          G_REV=$(git describe --dirty --always --tags)
+          echo "G_REV=${G_REV}" >> "${GITHUB_ENV}"
+          if [[ "${{ matrix.cc }}" == "GCC" ]]; then
+            CC="gcc"
+            CXX="g++"
+          else
+            CC="clang"
+            CXX="clang++"
+          fi
+          ${CC} --version
+          echo ""
+          mkdir -p build
+          cd build
+          cmake ${TARCH} -DCMAKE_BUILD_TYPE=Release ..
+          cmake --build .
+          chmod 644 *.so
+          ls -gG *.so
+          ldd *.so
+          if [[ "${CC}" == "gcc" ]]; then tar cvzf mupen64plus-video-angrylion-plus_${G_REV}_${{ matrix.platform }}.tar.gz *.so; fi
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: mupen64plus-video-angrylion-plus_${{ env.G_REV }}_${{ matrix.platform }}
+          path: build/*.tar.gz
+          if-no-files-found: ignore
+
+  Windows-static:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - toolset: v142
+            platform: x64
+          - toolset: v141_xp
+            platform: x86
+    name: MSVC ${{ matrix.toolset }} static / ${{ matrix.platform }}
+    runs-on: windows-2019
+    defaults:
+      run:
+        shell: cmd
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: "0"
+      - uses: microsoft/setup-msbuild@v1
+    #  with:
+    #    vs-version: 16.11
+      - name: Build and related stuff
+        run: |
+          for /f "tokens=1" %%T in ('git tag -l ^| find "nightly-build"') do set "R_TAG=%%T"
+          if [%R_TAG%] NEQ [] git tag --delete nightly-build
+          for /f "tokens=1" %%R in ('git describe --dirty --always --tags') do set "G_REV=%%R"
+          echo G_REV=%G_REV%>> "%GITHUB_ENV%"
+          echo.
+          msbuild --version
+          echo.
+          msbuild msvc\angrylion-plus.sln /p:Configuration=Release;Platform=${{ matrix.platform }};PlatformToolset=${{ matrix.toolset }} /t:Rebuild
+          echo.
+          dir msvc\build\Release\*.dll
+      - name: Backup binaries...
+        run: |
+          md backup\Project64_${{ matrix.platform }}
+          md backup\Mupen64Plus_${{ matrix.platform }}
+          cd msvc\build\Release\
+          if exist angrylion-plus.dll (copy angrylion-plus.dll ..\..\..\backup\Project64_${{ matrix.platform }}\) else cd.> ..\..\..\backup\Project64_${{ matrix.platform }}\nice_error.txt
+          if exist mupen64plus-video-angrylion-plus.dll (copy mupen64plus-video-angrylion-plus.dll ..\..\..\backup\Mupen64Plus_${{ matrix.platform }}\) else cd.> ..\..\..\backup\Mupen64Plus_${{ matrix.platform }}\nice_error.txt
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: angrylion-plus_${{ env.G_REV }}_${{ matrix.platform }}
+          path: backup/*
+
+  Windows-shared:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - toolset: v142
+            platform: x64
+          - toolset: v141_xp
+            platform: x86
+    name: MSVC ${{ matrix.toolset }} shared / ${{ matrix.platform }}
+    runs-on: windows-2019
+    defaults:
+      run:
+        shell: cmd
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: "0"
+      - uses: microsoft/setup-msbuild@v1
+    #  with:
+    #    vs-version: 16.11
+      - uses: ilammy/msvc-dev-cmd@v1
+      - name: Build and related stuff
+        run: |
+          for /f "tokens=1" %%T in ('git tag -l ^| find "nightly-build"') do set "R_TAG=%%T"
+          if [%R_TAG%] NEQ [] git tag --delete nightly-build
+          for /f "tokens=1" %%R in ('git describe --dirty --always --tags') do set "G_REV=%%R"
+          echo G_REV=%G_REV%>> "%GITHUB_ENV%"
+          set "TARCH=${{ matrix.platform }}"
+          if [%TARCH%] == [x86] set "TARCH=Win32"
+          echo.
+          msbuild --version
+          echo.
+          md build\${{ matrix.platform }}
+          cd build\${{ matrix.platform }}\
+          cmake -T "${{ matrix.toolset }}" -A "%TARCH%" ..\..
+          cmake --build . --config Release
+          echo.
+          dir Release\*.dll
+      - name: Backup binaries...
+        run: |
+          md backup\Project64_${{ matrix.platform }}
+          md backup\Mupen64Plus_${{ matrix.platform }}
+          cd build\${{ matrix.platform }}\Release\
+          if exist angrylion-plus.dll (copy angrylion-plus.dll ..\..\..\backup\Project64_${{ matrix.platform }}\) else cd.> ..\..\..\backup\Project64_${{ matrix.platform }}\nice_error.txt
+          if exist mupen64plus-video-angrylion-plus.dll (copy mupen64plus-video-angrylion-plus.dll ..\..\..\backup\Mupen64Plus_${{ matrix.platform }}\) else cd.> ..\..\..\backup\Mupen64Plus_${{ matrix.platform }}\nice_error.txt
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: angrylion-plus_${{ env.G_REV }}_${{ matrix.platform }}-shared
+          path: backup/*
+
+  Nightly-build:
+    runs-on: ubuntu-latest
+    needs: [Linux, Windows-static, Windows-shared]
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: binaries
+      - name: Get some tools
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install hashdeep
+      - name: Creating new artifacts and update nightly-build
+        run: |
+          mkdir pkg
+          cd binaries
+          for BIN in *
+          do
+            cd "${BIN}"
+            if [[ "${BIN:0:11}" == "mupen64plus" ]]; then
+              echo ":: Recovering ${BIN}.tar.gz"
+              mv *.tar.gz ../../pkg/
+            else
+              echo ":: Creating ${BIN}.zip"
+              zip -r "../../pkg/${BIN}.zip" *
+            fi
+            cd ..
+          done
+          cd ../pkg
+          echo ""
+          for BIN in *
+          do
+            ls -gG ${BIN}
+            tigerdeep -l ${BIN} >> ../tigerdeep.txt
+            sha256sum ${BIN} >> ../sha256sum.txt
+            sha512sum ${BIN} >> ../sha512sum.txt
+          done
+          mv ../tigerdeep.txt .
+          mv ../sha*sum.txt .
+          echo ""
+          echo "TIGER:"
+          cat tigerdeep.txt
+          echo ""
+          echo "SHA256:"
+          cat sha256sum.txt
+          echo ""
+          echo "SHA512:"
+          cat sha512sum.txt
+          echo ""
+          git tag -f nightly-build
+          git push -f origin nightly-build
+      - name: Nightly-build
+        uses: ncipollo/release-action@v1
+        with:
+          prerelease: true
+          allowUpdates: true
+          removeArtifacts: true
+          replacesArtifacts: false
+          tag: nightly-build
+          artifacts: pkg/*

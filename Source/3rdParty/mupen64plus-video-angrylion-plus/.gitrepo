@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:/Rosalie241/angrylion-rdp-plus.git
+	branch = RMG
+	commit = 670abbc972bd430fa77291b0967dd73128314317
+	parent = dd14d99cf14ad6ecea6888bbd3848444f68a1c37
+	method = merge
+	cmdver = 0.4.6

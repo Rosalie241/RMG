@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainDialog</class>
+ <widget class="QDialog" name="MainDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>347</width>
+    <height>432</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Angrylion-Plus</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QTabWidget" name="tabWidget">
+       <widget class="QWidget" name="tab">
+        <attribute name="title">
+         <string>Video</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>Screen size</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="screenSizeComboBox">
+             <item>
+              <property name="text">
+               <string>320 x 240</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>400 x 300</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>480 x 360</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>640 x 480</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>800 x 600</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>960 x 720</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>1024 x 768</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>1152 x 864</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>1280 x 960</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>1280 x 1024</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>1440 x 1080</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>1600 x 1024</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>1600 x 1200</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <item>
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>Compatibility</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="dpCompatComboBox">
+             <item>
+              <property name="text">
+               <string>Fast</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Moderate</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Slow</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>Output Mode</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="viModeComboBox">
+             <item>
+              <property name="text">
+               <string>Filtered</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Unfiltered</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Depth</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Coverage</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <item>
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string>Interpolation</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="viInterpolationComboBox">
+             <item>
+              <property name="text">
+               <string>Nearest-neighbor</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Bilinear</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Hybrid</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_8">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="label_5">
+             <property name="text">
+              <string>Threads (0 = auto)</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="numWorkersSpinBox"/>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_11">
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_7">
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QCheckBox" name="viWidescreenCheckBox">
+               <property name="text">
+                <string>16:9 widescreen</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="busyLoopCheckBox">
+               <property name="text">
+                <string>Enable busyloop</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_6">
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QCheckBox" name="viHideOverscanCheckBox">
+               <property name="text">
+                <string>Hide overscan</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="viIntegerScalingCheckBox">
+               <property name="text">
+                <string>Integer pixel scaling</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QCheckBox" name="parallelCheckBox">
+             <property name="text">
+              <string>Multithreaded rendering</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>MainDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>MainDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
