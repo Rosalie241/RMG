@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:/Rosalie241/GLideN64.git
+	branch = RMG
+	commit = 2f1b358028e700fcae2502a53f4f5e6822ce0367
+	parent = 028316ababb4f76db45f62ada48ba0e274e2ea37
+	method = merge
+	cmdver = 0.4.6
