@@ -4,7 +4,6 @@
 cmake_minimum_required(VERSION 3.15)
 
 option(PORTABLE_INSTALL "Portable Installation" ON)
-option(NO_GIT_CLONE     "Disables git clone usage for 3rdParty dependencies" OFF)
 option(UPDATER          "Enables updater" ${PORTABLE_INSTALL})
 option(APPIMAGE_UPDATER "Enables AppImage updater" OFF)
 option(DISCORD_RPC      "Enables Discord Rich Presence" ON)
