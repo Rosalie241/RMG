@@ -116,11 +116,19 @@ bool DisplayWindowMupen64plus::_start()
 	}
 
 	char caption[128];
+#ifdef PLUGIN_REVISION
 # ifdef _DEBUG
 	sprintf(caption, "%s debug. Revision %s", pluginName, PLUGIN_REVISION);
 # else // _DEBUG
 	sprintf(caption, "%s. Revision %s", pluginName, PLUGIN_REVISION);
 # endif // _DEBUG
+#else // PLUGIN_REVISION
+# ifdef _DEBUG
+	sprintf(caption, "%s debug", pluginName);
+# else // _DEBUG
+	sprintf(caption, "%s", pluginName);
+# endif // _DEBUG
+#endif // PLUGIN_REVISION
 	CoreVideo_SetCaption(caption);
 
 	return true;

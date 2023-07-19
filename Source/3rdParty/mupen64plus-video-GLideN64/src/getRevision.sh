@@ -8,22 +8,27 @@ header="${OUTPUT:-./Revision.h}"
 
 if [ "${1:-}" != --nogit ]
 then
-   rev="\"$(git rev-parse --short HEAD)\"" || rev='""'
+    rev="\"$(git rev-parse --short HEAD)\"" || rev='""'
 else
-   rev='""'
+    rev='""'
 fi
 
 lastrev=''
 if [ -e "$header" ]
 then
-   lastrev="$(head -n 1 "$header" 2> /dev/null | cut -d ' ' -f3)"
+    lastrev="$(head -n 1 "$header" 2> /dev/null | cut -d ' ' -f3)"
 fi
 
 printf '%s\n' "current revision $rev" "last build revision $lastrev"
 
 if [ "$lastrev" != "$rev" ]
 then
-  [ "$header" = "${header##*/}" ] || mkdir -p -- "${header%/*}"
-   printf '%s\n' "#define PLUGIN_REVISION $rev" \
-      "#define PLUGIN_REVISION_W L$rev" > "$header"
+    [ "$header" = "${header##*/}" ] || mkdir -p -- "${header%/*}"
+    if [ "x$rev" != "x\"\"" ]
+    then
+        printf '%s\n' "#define PLUGIN_REVISION $rev" \
+            "#define PLUGIN_REVISION_W L$rev" > "$header"
+    else
+        printf '\n' > "$header"
+    fi
 fi

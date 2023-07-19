@@ -36,11 +36,19 @@ bool getCursorPos(long & _x, long & _y)
 	static HWND hWnd = NULL;
 	if (hWnd == NULL) {
 		wchar_t caption[64];
+#ifdef PLUGIN_REVISION_W
 # ifdef _DEBUG
 		swprintf(caption, 64, L"mupen64plus: %ls debug. Revision %ls", pluginNameW, PLUGIN_REVISION_W);
 # else // _DEBUG
 		swprintf(caption, 64, L"%s. Revision %s", pluginName, PLUGIN_REVISION);
 # endif // _DEBUG
+#else // PLUGIN_REVISION_W
+# ifdef _DEBUG
+		swprintf(caption, 64, L"mupen64plus: %ls debug.", pluginNameW);
+# else // _DEBUG
+		swprintf(caption, 64, L"%s", pluginName);
+# endif // _DEBUG
+#endif // PLUGIN_REVISION_W
 		hWnd = FindWindowExW(NULL, NULL, NULL, caption);
 	}
 	ScreenToClient(hWnd, &pt);
