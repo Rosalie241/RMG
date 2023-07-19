@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:/amatho/mupen64plus-input-gca.git
+	branch = 21639fb13dfa797a7c0949ffd9bbda9a3456fc69
+	commit = 21639fb13dfa797a7c0949ffd9bbda9a3456fc69
+	parent = 6d1da7514cee26f3ce4b0f3132cf8abb62389c38
+	method = merge
+	cmdver = 0.4.6

@@ -1,0 +1,136 @@
+# Inspired by: https://github.com/BurntSushi/ripgrep/blob/df83b8b44426b3f2179abe632eb183e8c8270524/.github/workflows/release.yml
+
+name: release
+on:
+  push:
+    # Enable when testing release infrastructure on a branch.
+    # branches:
+    # - test-ci
+    tags:
+    - "[0-9]+.[0-9]+.[0-9]+"
+jobs:
+  create-release:
+    name: create-release
+    runs-on: ubuntu-latest
+    # env:
+      # Set to force version number, e.g., when no tag exists.
+      # PLUGIN_VERSION: TEST-0.0.0
+    outputs:
+      upload_url: ${{ steps.release.outputs.upload_url }}
+      plugin_version: ${{ env.PLUGIN_VERSION }}
+    steps:
+      - name: Get the release version from the tag
+        shell: bash
+        if: env.PLUGIN_VERSION == ''
+        run: |
+          # Apparently, this is the right way to get a tag name. Really?
+          #
+          # See: https://github.community/t5/GitHub-Actions/How-to-get-just-the-tag-name/m-p/32167/highlight/true#M1027
+          echo "PLUGIN_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          echo "version is: ${{ env.PLUGIN_VERSION }}"
+      - name: Create GitHub release
+        id: release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.PLUGIN_VERSION }}
+          release_name: ${{ env.PLUGIN_VERSION }}
+          draft: true
+
+  build-release:
+    name: build-release
+    needs: ['create-release']
+    runs-on: ${{ matrix.os }}
+    env:
+      FEATURES_FLAG: ""
+      # Emit backtraces on panics.
+      RUST_BACKTRACE: 1
+    strategy:
+      matrix:
+        # TODO: Remove compat builds when not needed anymore
+        build: [linux, linux-m64p-compat, macos, macos-m64p-compat, windows, windows-m64p-compat]
+        include:
+        - build: linux
+          os: ubuntu-18.04
+          target: x86_64-unknown-linux-gnu
+          features: ""
+          file_ext: so
+        - build: linux-m64p-compat
+          os: ubuntu-18.04
+          target: x86_64-unknown-linux-gnu
+          features: m64p_compat
+          file_ext: so
+        - build: macos
+          os: macos-latest
+          target: x86_64-apple-darwin
+          features: ""
+          file_ext: dylib
+        - build: macos-m64p-compat
+          os: macos-latest
+          target: x86_64-apple-darwin
+          features: m64p_compat
+          file_ext: dylib
+        - build: windows
+          os: windows-2019
+          target: x86_64-pc-windows-msvc
+          features: ""
+          file_ext: dll
+        - build: windows-m64p-compat
+          os: windows-2019
+          target: x86_64-pc-windows-msvc
+          features: m64p_compat
+          file_ext: dll
+
+    steps:
+    - name: Set features flag
+      if: matrix.features != ''
+      shell: bash
+      run: |
+        echo "FEATURES_FLAG=--features ${{ matrix.features }}" >> $GITHUB_ENV
+
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: nightly
+        profile: minimal
+        override: true
+        target: ${{ matrix.target }}
+
+    - name: Build release binary
+      run: cargo build --verbose --release ${{ env.FEATURES_FLAG }} --target ${{ matrix.target }}
+
+    - name: Strip release binary (linux and macos)
+      if: matrix.os != 'windows-2019'
+      run: strip -x "target/${{ matrix.target }}/release/libmupen64plus_input_gca.${{ matrix.file_ext }}"
+
+    - name: Build archive
+      shell: bash
+      run: |
+        filename="mupen64plus-input-gca.${{ matrix.file_ext }}"
+        archive="mupen64plus-input-gca-${{ needs.create-release.outputs.plugin_version }}-x86_64-${{ matrix.build }}"
+
+        if [ "${{ matrix.os }}" = "windows-2019" ]; then
+          cp "target/${{ matrix.target }}/release/mupen64plus_input_gca.dll" "$filename"
+          7z a "$archive.zip" "$filename"
+        else
+          cp "target/${{ matrix.target }}/release/libmupen64plus_input_gca.${{ matrix.file_ext }}" "$filename"
+          zip "$archive.zip" "$filename"
+        fi
+
+        echo "ASSET=$archive.zip" >> $GITHUB_ENV
+
+    - name: Upload release archive
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.create-release.outputs.upload_url }}
+        asset_path: ${{ env.ASSET }}
+        asset_name: ${{ env.ASSET }}
+        asset_content_type: application/octet-stream
