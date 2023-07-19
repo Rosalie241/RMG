@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:/Rosalie241/mupen64plus-core.git
+	branch = RMG
+	commit = 9c4e7837b13ace684b6429674d5e89cc81c57e12
+	parent = 3db473f0dfe3ae6601ed20434f7b55733c370a5b
+	method = merge
+	cmdver = 0.4.6
