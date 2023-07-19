@@ -33,6 +33,14 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.4.5" date="2023-07-19" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix "Change" buttons in the transfer pak tab of the options dialog of RMG-Input not working since v0.4.2</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.4.4" date="2023-07-17" type="stable">
       <description>
         <p>Changes:</p>
