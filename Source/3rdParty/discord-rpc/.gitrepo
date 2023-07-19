@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:/discord/discord-rpc.git
+	branch = 963aa9f3e5ce81a4682c6ca3d136cddda614db33
+	commit = 963aa9f3e5ce81a4682c6ca3d136cddda614db33
+	parent = d28c28e9d34337b80c906572e2046a77ab3cb9dd
+	method = merge
+	cmdver = 0.4.6
