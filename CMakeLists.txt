@@ -9,6 +9,7 @@ option(APPIMAGE_UPDATER "Enables AppImage updater" OFF)
 option(DISCORD_RPC      "Enables Discord Rich Presence" ON)
 option(VRU              "Enables VRU support in RMG-Input" ON)
 option(USE_CCACHE       "Enables usage of ccache when ccache has been found" ON)
+option(USE_LTO          "Enables building with LTO/IPO when compiler supports it" ON)
 option(FORCE_XCB        "Forces Qt to use the xcb platform on linux" ${LINUX})
 option(NO_RUST          "Disables the building of rust subprojects" OFF)
 
@@ -31,6 +32,15 @@ if (USE_CCACHE)
         set(USE_CCACHE OFF)
     endif(CCACHE_FOUND)
 endif(USE_CCACHE)
+
+if (USE_LTO)
+    include(CheckIPOSupported)
+    check_ipo_supported(RESULT ENABLE_IPO)
+
+    if(ENABLE_IPO)
+        set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
+    endif(ENABLE_IPO)
+endif(USE_LTO)
 
 if (NOT PORTABLE_INSTALL AND (WIN32 OR MSYS))
     message(WARNING "Not-Portable build not supported on windows, re-enabling PORTABLE_INSTALL!")

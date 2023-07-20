@@ -5,6 +5,12 @@ project(RMG-Core)
 
 set(CMAKE_CXX_STANDARD 20)
 
+# RMG-Core needs LTO disabled for windows
+# else linking fails
+if (WIN32)
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION OFF)
+endif(WIN32)
+
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2)
 pkg_check_modules(MINIZIP REQUIRED minizip)
