@@ -18,7 +18,7 @@ mkdir -p "$build_dir"
 cmake -S "$toplvl_dir" -B "$build_dir" -DCMAKE_BUILD_TYPE="$build_config" -DPORTABLE_INSTALL=ON -G "Ninja"
 
 cmake --build "$build_dir" --parallel "$threads"
-cmake --install "$build_dir" --prefix="$toplvl_dir"
+cmake --install "$build_dir" --strip --prefix="$toplvl_dir"
 
 if [[ $(uname -s) = *MINGW64* ]]
 then
