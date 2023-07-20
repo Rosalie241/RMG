@@ -98,9 +98,11 @@ target_link_libraries(RMG
 )
 
 # needed for dynamically linked RMG-Core
-set_target_properties(RMG PROPERTIES
-    INSTALL_RPATH "$ORIGIN"
-)
+if (PORTABLE_INSTALL)
+    set_target_properties(RMG PROPERTIES
+        INSTALL_RPATH "$ORIGIN"
+    )
+endif(PORTABLE_INSTALL)
 
 target_include_directories(RMG PRIVATE 
     ${CMAKE_CURRENT_BINARY_DIR}
