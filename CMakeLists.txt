@@ -15,14 +15,23 @@ option(NO_RUST          "Disables the building of rust subprojects" OFF)
 
 project(RMG)
 
-find_package(Git REQUIRED)
-execute_process(
-    COMMAND ${GIT_EXECUTABLE} describe --tags --always
-    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-    OUTPUT_VARIABLE GIT_VERSION
-    ERROR_QUIET
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-)
+find_package(Git)
+if (GIT_FOUND)
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} describe --tags --always
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+        RESULT_VARIABLE GIT_RESULT
+        OUTPUT_VARIABLE GIT_VERSION
+        ERROR_QUIET
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+endif(GIT_FOUND)
+if (NOT GIT_FOUND OR NOT ${GIT_RESULT} EQUAL 0)
+    if (NOT ${GIT_RESULT} EQUAL 0)
+        message(WARNING "git failed to retrieve the current revision, falling back to VERSION file!")
+    endif()
+    file(STRINGS "VERSION" GIT_VERSION)
+endif()
 
 if (USE_CCACHE)
     find_program(CCACHE_FOUND ccache)
