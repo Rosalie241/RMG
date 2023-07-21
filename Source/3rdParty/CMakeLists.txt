@@ -105,12 +105,13 @@ ExternalProject_Add(mupen64plus-input-raphnetraw
     CONFIGURE_COMMAND ""
     INSTALL_COMMAND ""
 
-    BUILD_COMMAND make all APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug> CC=${MAKE_CC_COMPILER} CXX=${MAKE_CXX_COMPILER}
+    BUILD_COMMAND make all -f ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-input-raphnetraw/projects/unix/Makefile
+        SRCDIR=${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-input-raphnetraw/src
+        APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug> CC=${MAKE_CC_COMPILER} CXX=${MAKE_CXX_COMPILER}
     BUILD_IN_SOURCE False
+    BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-input-raphnetraw
 
-    BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-input-raphnetraw/projects/unix
-
-    BUILD_BYPRODUCTS ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-input-raphnetraw/projects/unix/mupen64plus-input-raphnetraw.${SO_EXT}
+    BUILD_BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-input-raphnetraw/mupen64plus-input-raphnetraw.${SO_EXT}
     DEPENDS mupen64plus-core
 )
 
