@@ -91,10 +91,14 @@ ifeq ("$(CPU)","OTHER")
   PIC ?= 1
 endif
 
+# directory paths
+SRCDIR = ../../src
+OBJDIR = _obj$(POSTFIX)
+
 # base CFLAGS, LDLIBS, and LDFLAGS
 OPTFLAGS ?= -O3 -flto
 WARNFLAGS ?= -Wall
-CFLAGS += $(OPTFLAGS) $(WARNFLAGS) -ffast-math -fno-strict-aliasing -fvisibility=hidden -I../../src -D_GNU_SOURCE=1
+CFLAGS += $(OPTFLAGS) $(WARNFLAGS) -ffast-math -fno-strict-aliasing -fvisibility=hidden -I$(SRCDIR) -D_GNU_SOURCE=1
 LDFLAGS += $(SHARED)
 LDLIBS += -lm
 
@@ -228,9 +232,6 @@ endif
 ifeq ($(PLUGINDIR),)
   PLUGINDIR := $(LIBDIR)/mupen64plus
 endif
-
-SRCDIR = ../../src
-OBJDIR = _obj$(POSTFIX)
 
 # list of source files to compile
 SOURCE = \
