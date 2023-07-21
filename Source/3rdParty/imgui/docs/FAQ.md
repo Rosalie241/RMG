@@ -1,7 +1,7 @@
 # FAQ (Frequently Asked Questions)
 
 You may link to this document using short form:
-  https://www.dearimgui.org/faq
+  https://www.dearimgui.com/faq
 or its real address:
   https://github.com/ocornut/imgui/blob/master/docs/FAQ.md
 or view this file with any Markdown viewer.
@@ -25,7 +25,8 @@ or view this file with any Markdown viewer.
 | **Q&A: Usage** |
 | **[About the ID Stack system..<br>Why is my widget not reacting when I click on it?<br>How can I have widgets with an empty label?<br>How can I have multiple widgets with the same label?<br>How can I have multiple windows with the same label?](#q-about-the-id-stack-system)** |
 | [How can I display an image? What is ImTextureID, how does it work?](#q-how-can-i-display-an-image-what-is-imtextureid-how-does-it-work)|
-| [How can I use my own math types instead of ImVec2/ImVec4?](#q-how-can-i-use-my-own-math-types-instead-of-imvec2imvec4) |
+| [How can I use maths operators with ImVec2?](#q-how-can-i-use-maths-operators-with-imvec2) |
+| [How can I use my own maths types instead of ImVec2/ImVec4?](#q-how-can-i-use-my-own-maths-types-instead-of-imvec2imvec4) |
 | [How can I interact with standard C++ types (such as std::string and std::vector)?](#q-how-can-i-interact-with-standard-c-types-such-as-stdstring-and-stdvector) |
 | [How can I display custom shapes? (using low-level ImDrawList API)](#q-how-can-i-display-custom-shapes-using-low-level-imdrawlist-api) |
 | **Q&A: Fonts, Text** |
@@ -49,7 +50,8 @@ or view this file with any Markdown viewer.
 
 **This library is poorly documented at the moment and expects the user to be acquainted with C/C++.**
 - The [Wiki](https://github.com/ocornut/imgui/wiki) is a hub to many resources and links.
-- Dozens of standalone example applications using e.g. OpenGL/DirectX are provided in the [examples/](https://github.com/ocornut/imgui/blob/master/examples/) folder to explain how to integrate Dear ImGui with your own engine/application. You can run those applications and explore them.
+- Handy [Getting Started](https://github.com/ocornut/imgui/wiki/Getting-Started) guide to integrate Dear ImGui in an existing application.
+- 20+ standalone example applications using e.g. OpenGL/DirectX are provided in the [examples/](https://github.com/ocornut/imgui/blob/master/examples/) folder to explain how to integrate Dear ImGui with your own engine/application. You can run those applications and explore them.
 - See demo code in [imgui_demo.cpp](https://github.com/ocornut/imgui/blob/master/imgui_demo.cpp) and particularly the `ImGui::ShowDemoWindow()` function. The demo covers most features of Dear ImGui, so you can read the code and see its output.
 - See documentation: [Backends](https://github.com/ocornut/imgui/blob/master/docs/BACKENDS.md), [Examples](https://github.com/ocornut/imgui/blob/master/docs/EXAMPLES.md), [Fonts](https://github.com/ocornut/imgui/blob/master/docs/FONTS.md).
 - See documentation and comments at the top of [imgui.cpp](https://github.com/ocornut/imgui/blob/master/imgui.cpp) + general API comments in [imgui.h](https://github.com/ocornut/imgui/blob/master/imgui.h).
@@ -139,7 +141,7 @@ void MyLowLevelMouseButtonHandler(int button, bool down)
 - The gamepad/keyboard navigation is fairly functional and keeps being improved. The initial focus was to support game controllers, but keyboard is becoming increasingly and decently usable. Gamepad support is particularly useful to use Dear ImGui on a game console (e.g. PS4, Switch, XB1) without a mouse connected!
 - Keyboard: set `io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard` to enable.
 - Gamepad: set `io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad` to enable (with a supporting backend).
-- See [Control Sheets for Gamepads](http://www.dearimgui.org/controls_sheets) (reference PNG/PSD for PS4, XB1, Switch gamepads).
+- See [Control Sheets for Gamepads](http://www.dearimgui.com/controls_sheets) (reference PNG/PSD for PS4, XB1, Switch gamepads).
 - See `USING GAMEPAD/KEYBOARD NAVIGATION CONTROLS` section of [imgui.cpp](https://github.com/ocornut/imgui/blob/master/imgui.cpp) for more details.
 
 ##### [Return to Index](#index)
@@ -178,7 +180,20 @@ Rectangles provided by Dear ImGui are defined as
 `(x1=left,y1=top,x2=right,y2=bottom)`
 and **NOT** as
 `(x1,y1,width,height)`.
-Refer to rendering backends in the [examples/](https://github.com/ocornut/imgui/tree/master/examples) folder for references of how to handle the `ClipRect` field.
+Refer to rendering backends in the [backends/](https://github.com/ocornut/imgui/tree/master/backends) folder for references of how to handle the `ClipRect` field.
+For example, the [DirectX11 backend](https://github.com/ocornut/imgui/blob/master/backends/imgui_impl_dx11.cpp) does this:
+```cpp
+// Project scissor/clipping rectangles into framebuffer space
+ImVec2 clip_off = draw_data->DisplayPos;
+ImVec2 clip_min(pcmd->ClipRect.x - clip_off.x, pcmd->ClipRect.y - clip_off.y);
+ImVec2 clip_max(pcmd->ClipRect.z - clip_off.x, pcmd->ClipRect.w - clip_off.y);
+if (clip_max.x <= clip_min.x || clip_max.y <= clip_min.y)
+    continue;
+
+// Apply scissor/clipping rectangle
+const D3D11_RECT r = { (LONG)clip_min.x, (LONG)clip_min.y, (LONG)clip_max.x, (LONG)clip_max.y };
+ctx->RSSetScissorRects(1, &r);
+```
 
 ##### [Return to Index](#index)
 
@@ -413,10 +428,18 @@ Finally, you may call `ImGui::ShowMetricsWindow()` to explore/visualize/understa
 
 ---
 
-### Q: How can I use my own math types instead of ImVec2/ImVec4?
+### Q: How can I use maths operators with ImVec2?
 
-You can edit [imconfig.h](https://github.com/ocornut/imgui/blob/master/imconfig.h) and setup the `IM_VEC2_CLASS_EXTRA`/`IM_VEC4_CLASS_EXTRA` macros to add implicit type conversions.
-This way you'll be able to use your own types everywhere, e.g. passing `MyVector2` or `glm::vec2` to ImGui functions instead of `ImVec2`.
+We do not export maths operators by default in imgui.h in order to not conflict with the use of your own maths types and maths operators. As a convenience, you may use `#defne IMGUI_DEFINE_MATH_OPERATORS` + `#include "imgui.h"` to access our basic maths operators.
+
+##### [Return to Index](#index)
+
+---
+
+### Q: How can I use my own maths types instead of ImVec2/ImVec4?
+
+You can setup your [imconfig.h](https://github.com/ocornut/imgui/blob/master/imconfig.h) file with `IM_VEC2_CLASS_EXTRA`/`IM_VEC4_CLASS_EXTRA` macros to add implicit type conversions to our own maths types.
+This way you will be able to use your own types everywhere, e.g. passing `MyVector2` or `glm::vec2` to ImGui functions instead of `ImVec2`.
 
 ##### [Return to Index](#index)
 
@@ -458,7 +481,7 @@ ImDrawList* draw_list = ImGui::GetWindowDrawList();
 ImVec2 p = ImGui::GetCursorScreenPos();
 
 // Draw a red circle
-draw_list->AddCircleFilled(ImVec2(p.x + 50, p.y + 50), 30.0f, IM_COL32(255, 0, 0, 255), 16);
+draw_list->AddCircleFilled(ImVec2(p.x + 50, p.y + 50), 30.0f, IM_COL32(255, 0, 0, 255));
 
 // Draw a 3 pixel thick yellow line
 draw_list->AddLine(ImVec2(p.x, p.y), ImVec2(p.x + 100.0f, p.y + 100.0f), IM_COL32(255, 255, 0, 255), 3.0f);
@@ -472,7 +495,7 @@ ImGui::End();
 
 - Refer to "Demo > Examples > Custom Rendering" in the demo window and read the code of `ShowExampleAppCustomRendering()` in `imgui_demo.cpp` from more examples.
 - To generate colors: you can use the macro `IM_COL32(255,255,255,255)` to generate them at compile time, or use `ImGui::GetColorU32(IM_COL32(255,255,255,255))` or `ImGui::GetColorU32(ImVec4(1.0f,1.0f,1.0f,1.0f))` to generate a color that is multiplied by the current value of `style.Alpha`.
-- Math operators: if you have setup `IM_VEC2_CLASS_EXTRA` in `imconfig.h` to bind your own math types, you can use your own math types and their natural operators instead of ImVec2. ImVec2 by default doesn't export any math operators in the public API. You may use `#define IMGUI_DEFINE_MATH_OPERATORS` `#include "imgui_internal.h"` to use the internally defined math operators, but instead prefer using your own math library and set it up in `imconfig.h`.
+- Math operators: if you have setup `IM_VEC2_CLASS_EXTRA` in `imconfig.h` to bind your own math types, you can use your own math types and their natural operators instead of ImVec2. ImVec2 by default doesn't export any math operators in the public API. You may use `#define IMGUI_DEFINE_MATH_OPERATORS` `#include "imgui.h"` to use our math operators, but instead prefer using your own math library and set it up in `imconfig.h`.
 - You can use `ImGui::GetBackgroundDrawList()` or `ImGui::GetForegroundDrawList()` to access draw lists which will be displayed behind and over every other Dear ImGui window (one bg/fg drawlist per viewport). This is very convenient if you need to quickly display something on the screen that is not associated with a Dear ImGui window.
 - You can also create your own empty window and draw inside it. Call Begin() with the NoBackground | NoDecoration | NoSavedSettings | NoInputs flags (The `ImGuiWindowFlags_NoDecoration` flag itself is a shortcut for NoTitleBar | NoResize | NoScrollbar | NoCollapse). Then you can retrieve the ImDrawList* via `GetWindowDrawList()` and draw to it in any way you like.
 - You can create your own ImDrawList instance. You'll need to initialize them with `ImGui::GetDrawListSharedData()`, or create your own instancing `ImDrawListSharedData`, and then call your renderer function with your own ImDrawList or ImDrawData data.
@@ -535,7 +558,7 @@ backslash \ within a string literal, you need to write it double backslash "\\":
 
 ```cpp
 io.Fonts->AddFontFromFileTTF("MyFolder\MyFont.ttf", size);  // WRONG (you are escaping the M here!)
-io.Fonts->AddFontFromFileTTF("MyFolder\\MyFont.ttf", size;  // CORRECT (Windows only)
+io.Fonts->AddFontFromFileTTF("MyFolder\\MyFont.ttf", size); // CORRECT (Windows only)
 io.Fonts->AddFontFromFileTTF("MyFolder/MyFont.ttf", size);  // ALSO CORRECT
 ```
 
@@ -582,7 +605,7 @@ ImFontConfig config;
 config.MergeMode = true;
 io.Fonts->AddFontDefault();
 io.Fonts->AddFontFromFileTTF("fontawesome-webfont.ttf", 16.0f, &config, ranges); // Merge icon font
-io.Fonts->AddFontFromFileTTF("myfontfile.ttf", size_pixels, NULL, &config, io.Fonts->GetGlyphRangesJapanese()); // Merge japanese glyphs
+io.Fonts->AddFontFromFileTTF("myfontfile.ttf", size_pixels, nullptr, &config, io.Fonts->GetGlyphRangesJapanese()); // Merge japanese glyphs
 ```
 
 ##### [Return to Index](#index)
@@ -594,7 +617,7 @@ When loading a font, pass custom Unicode ranges to specify the glyphs to load.
 
 ```cpp
 // Add default Japanese ranges
-io.Fonts->AddFontFromFileTTF("myfontfile.ttf", size_in_pixels, NULL, io.Fonts->GetGlyphRangesJapanese());
+io.Fonts->AddFontFromFileTTF("myfontfile.ttf", size_in_pixels, nullptr, io.Fonts->GetGlyphRangesJapanese());
 
 // Or create your own custom ranges (e.g. for a game you can feed your entire game script and only build the characters the game need)
 ImVector<ImWchar> ranges;
@@ -603,13 +626,14 @@ builder.AddText("Hello world");                        // Add a string (here "He
 builder.AddChar(0x7262);                               // Add a specific character
 builder.AddRanges(io.Fonts->GetGlyphRangesJapanese()); // Add one of the default ranges
 builder.BuildRanges(&ranges);                          // Build the final result (ordered ranges with all the unique characters submitted)
-io.Fonts->AddFontFromFileTTF("myfontfile.ttf", 16.0f, NULL, ranges.Data);
+io.Fonts->AddFontFromFileTTF("myfontfile.ttf", 16.0f, nullptr, ranges.Data);
 ```
 
-All your strings need to use UTF-8 encoding. In C++11 you can encode a string literal in UTF-8
-by using the u8"hello" syntax. Specifying literal in your source code using a local code page
-(such as CP-923 for Japanese or CP-1251 for Cyrillic) will NOT work!
-Otherwise, you can convert yourself to UTF-8 or load text data from a file already saved as UTF-8.
+All your strings need to use UTF-8 encoding.
+You need to tell your compiler to use UTF-8, or in C++11 you can encode a string literal in UTF-8 by using the u8"hello" syntax.
+Specifying literal in your source code using a local code page (such as CP-923 for Japanese or CP-1251 for Cyrillic) will NOT work!
+See [About UTF-8 Encoding](https://github.com/ocornut/imgui/blob/master/docs/FONTS.md#about-utf-8-encoding) section
+of [FONTS.md](https://github.com/ocornut/imgui/blob/master/docs/FONTS.md) for details about UTF-8 Encoding.
 
 Text input: it is up to your application to pass the right character code by calling `io.AddInputCharacter()`.
 The applications in examples/ are doing that.
@@ -631,7 +655,7 @@ You may take a look at:
 - [Quotes](https://github.com/ocornut/imgui/wiki/Quotes)
 - [Software using Dear ImGui](https://github.com/ocornut/imgui/wiki/Software-using-dear-imgui)
 - [Sponsors](https://github.com/ocornut/imgui/wiki/Sponsors)
-- [Gallery](https://github.com/ocornut/imgui/issues/5243)
+- [Gallery](https://github.com/ocornut/imgui/issues/6478)
 
 ##### [Return to Index](#index)
 
@@ -643,7 +667,7 @@ Yes. People have written game editors, data browsers, debuggers, profilers, and 
 
 Dear ImGui is very programmer centric and the immediate-mode GUI paradigm might require you to readjust some habits before you can realize its full potential. Dear ImGui is about making things that are simple, efficient, and powerful.
 
-Dear ImGui is built to be efficient and scalable toward the needs for AAA-quality applications running all day. The IMGUI paradigm offers different opportunities for optimization that the more typical RMGUI paradigm.
+Dear ImGui is built to be efficient and scalable toward the needs for AAA-quality applications running all day. The IMGUI paradigm offers different opportunities for optimization than the more typical RMGUI paradigm.
 
 ##### [Return to Index](#index)
 
@@ -651,7 +675,7 @@ Dear ImGui is built to be efficient and scalable toward the needs for AAA-qualit
 
 ### Q: Can you reskin the look of Dear ImGui?
 
-Somehow. You can alter the look of the interface to some degree: changing colors, sizes, padding, rounding, and fonts. However, as Dear ImGui is designed and optimized to create debug tools, the amount of skinning you can apply is limited. There is only so much you can stray away from the default look and feel of the interface. Dear ImGui is NOT designed to create a user interface for games, although with ingenious use of the low-level API you can do it.
+Somewhat. You can alter the look of the interface to some degree: changing colors, sizes, padding, rounding, and fonts. However, as Dear ImGui is designed and optimized to create debug tools, the amount of skinning you can apply is limited. There is only so much you can stray away from the default look and feel of the interface. Dear ImGui is NOT designed to create a user interface for games, although with ingenious use of the low-level API you can do it.
 
 A reasonably skinned application may look like (screenshot from [#2529](https://github.com/ocornut/imgui/issues/2529#issuecomment-524281119)):
 ![minipars](https://user-images.githubusercontent.com/314805/63589441-d9794f00-c5b1-11e9-8d96-cfc1b93702f7.png)
@@ -677,7 +701,7 @@ There is an auto-generated [c-api for Dear ImGui (cimgui)](https://github.com/ci
 - Individuals: you can support continued maintenance and development via PayPal donations. See [README](https://github.com/ocornut/imgui/blob/master/docs/README.md).
 - If you are experienced with Dear ImGui and C++, look at [GitHub Issues](https://github.com/ocornut/imgui/issues), [GitHub Discussions](https://github.com/ocornut/imgui/discussions), the [Wiki](https://github.com/ocornut/imgui/wiki), read [docs/TODO.txt](https://github.com/ocornut/imgui/blob/master/docs/TODO.txt), and see how you want to help and can help!
 - Disclose your usage of Dear ImGui via a dev blog post, a tweet, a screenshot, a mention somewhere, etc.
-You may post screenshots or links in the [gallery threads](https://github.com/ocornut/imgui/issues/5243). Visuals are ideal as they inspire other programmers. Disclosing your use of Dear ImGui helps the library grow credibility, and helps other teams and programmers with taking decisions.
+You may post screenshots or links in the [gallery threads](https://github.com/ocornut/imgui/issues/6478). Visuals are ideal as they inspire other programmers. Disclosing your use of Dear ImGui helps the library grow credibility, and helps other teams and programmers with taking decisions.
 - If you have issues or if you need to hack into the library, even if you don't expect any support it is useful that you share your issues or sometimes incomplete PR.
 
 ##### [Return to Index](#index)
