@@ -9,13 +9,27 @@
  */
 #include "OGLWidget.hpp"
 
+#include <QGuiApplication>
 #include <RMG-Core/Core.hpp>
 
 using namespace UserInterface::Widget;
 
 OGLWidget::OGLWidget(QWidget *parent)
 {
+    // create window container
     this->widgetContainer = QWidget::createWindowContainer(this, parent);
+
+    // on wayland we have to make sure that the widget
+    // has a black background palette set, else
+    // the window will have the theme as background color
+    if (QGuiApplication::platformName() == "wayland")
+    {
+        QPalette blackPalette;
+        blackPalette.setColor(QPalette::Window, Qt::black);
+        this->widgetContainer->setAutoFillBackground(true); 
+        this->widgetContainer->setPalette(blackPalette);
+    }
+
     this->setSurfaceType(QWindow::OpenGLSurface);
     this->openGLcontext = new QOpenGLContext();
 }

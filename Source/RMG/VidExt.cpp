@@ -34,7 +34,7 @@ static QSurfaceFormat l_SurfaceFormat;
 // VidExt Functions
 //
 
-static void VidExt_OglSetup(void)
+static bool VidExt_OglSetup(void)
 {
     l_EmuThread->on_VidExt_SetupOGL(l_SurfaceFormat, QThread::currentThread());
 
@@ -44,8 +44,13 @@ static void VidExt_OglSetup(void)
         continue;
     }
 
-    l_OGLWidget->GetContext()->makeCurrent(l_OGLWidget);
+    if (!l_OGLWidget->GetContext()->makeCurrent(l_OGLWidget))
+    {
+        return false;
+    }
+
     l_VidExtInitialized = true;
+    return true;
 }
 
 static m64p_error VidExt_Init(void)
@@ -90,9 +95,9 @@ static m64p_error VidExt_ListRates(m64p_2d_size Size, int *NumRates, int *Rates)
 
 static m64p_error VidExt_SetMode(int Width, int Height, int BitsPerPixel, int ScreenMode, int Flags)
 {
-    if (!l_VidExtInitialized)
+    if (!l_VidExtInitialized && !VidExt_OglSetup())
     {
-        VidExt_OglSetup();
+        return M64ERR_SYSTEM_FAIL;
     }
 
     // try to initialize the OSD

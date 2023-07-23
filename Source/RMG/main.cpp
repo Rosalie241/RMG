@@ -98,9 +98,17 @@ int main(int argc, char **argv)
     // ensure the default OpenGL format
     // doesn't have vsync enabled by default,
     // only needed for linux (for now)
+    // and ensure OpenGL 3.3 is specified by default (for wayland)
     QSurfaceFormat format = QSurfaceFormat::defaultFormat();
     format.setSwapInterval(0);
+    format.setMajorVersion(3);
+    format.setMinorVersion(3);
     QSurfaceFormat::setDefaultFormat(format);
+
+    // ensure that the desktop file is correctly
+    // specified, else the window icon will be
+    // the generic wayland icon on wayland
+    QGuiApplication::setDesktopFileName("com.github.Rosalie241.RMG");
 #endif
 
     QApplication app(argc, argv);

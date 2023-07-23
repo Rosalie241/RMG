@@ -25,6 +25,7 @@
 
 #include <QCoreApplication>
 #include <QDesktopServices>
+#include <QGuiApplication>
 #include <QStyleFactory>
 #include <QFileDialog>
 #include <QMenuBar>
@@ -1868,7 +1869,16 @@ void MainWindow::on_VidExt_Init(void)
 void MainWindow::on_VidExt_SetupOGL(QSurfaceFormat format, QThread* thread)
 {
     this->ui_Widget_OpenGL->MoveContextToThread(thread);
-    this->ui_Widget_OpenGL->setFormat(format);
+    // on wayland setting the surface format
+    // fails for some reason, and if we set it anyways
+    // ->makeCurrent() will fail in VidExt.cpp,
+    // so to resolve that I've set OpenGL 3.3 as
+    // default surface format in main.cpp and we
+    // skip it here only on when on wayland
+    if (QGuiApplication::platformName() != "wayland")
+    {
+        this->ui_Widget_OpenGL->setFormat(format);
+    }
 }
 
 void MainWindow::on_VidExt_SetWindowedMode(int width, int height, int bps, int flags)
