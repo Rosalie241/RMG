@@ -24,10 +24,6 @@ if (DISCORD_RPC)
     add_definitions(-DDISCORD_RPC)
 endif(DISCORD_RPC)
 
-if (FORCE_XCB)
-    add_definitions(-DFORCE_XCB)
-endif(FORCE_XCB)
-
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2)
 

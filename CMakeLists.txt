@@ -10,7 +10,6 @@ option(DISCORD_RPC      "Enables Discord Rich Presence" ON)
 option(VRU              "Enables VRU support in RMG-Input" ON)
 option(USE_CCACHE       "Enables usage of ccache when ccache has been found" ON)
 option(USE_LTO          "Enables building with LTO/IPO when compiler supports it" ON)
-option(FORCE_XCB        "Forces Qt to use the xcb platform on linux" ${LINUX})
 option(NO_RUST          "Disables the building of rust subprojects" OFF)
 
 project(RMG)
