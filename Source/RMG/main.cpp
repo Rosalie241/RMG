@@ -90,11 +90,25 @@ int main(int argc, char **argv)
     signal(SIGTERM, signal_handler);
 #endif
 
-#ifdef FORCE_XCB
-    setenv("QT_QPA_PLATFORM", "xcb", 1);
-#endif // FORCE_XCB
-
 #ifndef _WIN32
+    // on Linux, wayland works only on some compositors,
+    // it works on KDE plasma and sway (on 2023-07-26),
+    // but i.e doesn't work on GNOME wayland or labwc, 
+    // so to compromise the situation, we'll force xwayland
+    // unless RMG_WAYLAND is set to 1, which'll force wayland
+    // as qt platform, so users can experiment with the
+    // wayland support themselves
+    const char* wayland = std::getenv("RMG_WAYLAND");
+    if (wayland != nullptr &&
+        std::string(wayland) == "1")
+    {
+        setenv("QT_QPA_PLATFORM", "wayland", 1);
+    }
+    else
+    {
+        setenv("QT_QPA_PLATFORM", "xcb", 1);
+    }
+
     // ensure the default OpenGL format
     // doesn't have vsync enabled by default,
     // only needed for linux (for now)
