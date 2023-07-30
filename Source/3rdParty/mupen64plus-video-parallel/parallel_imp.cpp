@@ -216,7 +216,7 @@ bool vk_init()
 
 	if (!::Vulkan::Context::init_loader(nullptr))
 		return false;
-	if (!context->init_instance_and_device(nullptr, 0, nullptr, 0, ::Vulkan::CONTEXT_CREATION_DISABLE_BINDLESS_BIT))
+	if (!context->init_instance_and_device(nullptr, 0, nullptr, 0, 0))
 		return false;
 
 	uintptr_t aligned_rdram = reinterpret_cast<uintptr_t>(gfx.RDRAM);
