@@ -611,6 +611,17 @@ static int get_button_state(InputProfile* profile, const InputMapping* inputMapp
                     state |= SDL_JoystickGetButton(profile->InputDevice.GetJoystickHandle(), data);
                 }
             } break;
+            case InputType::JoystickHat:
+            {
+                if (allPressed && i > 0)
+                {
+                    state &= SDL_JoystickGetHat(profile->InputDevice.GetJoystickHandle(), data) & extraData;
+                }
+                else
+                {
+                    state |= SDL_JoystickGetHat(profile->InputDevice.GetJoystickHandle(), data) & extraData;
+                }
+            } break;
             case InputType::JoystickAxis:
             {
                 int axis_value = SDL_JoystickGetAxis(profile->InputDevice.GetJoystickHandle(), data);
@@ -678,6 +689,10 @@ static double get_axis_state(InputProfile* profile, const InputMapping* inputMap
             case InputType::JoystickButton:
             {
                 button_state |= SDL_JoystickGetButton(profile->InputDevice.GetJoystickHandle(), data);;
+            } break;
+            case InputType::JoystickHat:
+            {
+                button_state |= SDL_JoystickGetHat(profile->InputDevice.GetJoystickHandle(), data) & extraData;
             } break;
             case InputType::JoystickAxis:
             {

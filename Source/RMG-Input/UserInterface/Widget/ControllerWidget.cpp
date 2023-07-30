@@ -911,10 +911,12 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
         case SDL_CONTROLLERBUTTONUP:
         case SDL_JOYBUTTONDOWN:
         case SDL_JOYBUTTONUP:
-        { // gamepad & joystick button
+        case SDL_JOYHATMOTION:
+        { // gamepad button, joystick button & joystick hat
             SDL_JoystickID joystickId = -1;
             InputType inputType = InputType::Invalid;
             int sdlButton = 0;
+            int sdlButtonValue = 0;
             bool sdlButtonPressed = false;
             QString sdlButtonName;
 
@@ -933,7 +935,8 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
                 sdlButtonPressed = (event->type == SDL_CONTROLLERBUTTONDOWN);
                 sdlButtonName = SDL_GameControllerGetStringForButton((SDL_GameControllerButton)sdlButton);
             }
-            else
+            else if ((event->type == SDL_JOYBUTTONDOWN) ||
+                     (event->type == SDL_JOYBUTTONUP))
             { // joystick button
                 if (this->isCurrentJoystickGameController &&
                     this->optionsDialogSettings.FilterEventsForButtons)
@@ -946,6 +949,21 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
                 sdlButton = event->jbutton.button;
                 sdlButtonPressed = (event->type == SDL_JOYBUTTONDOWN);
                 sdlButtonName = "button " + QString::number(sdlButton);
+            }
+            else if (event->type == SDL_JOYHATMOTION)
+            { // joystick hat
+                if (this->isCurrentJoystickGameController &&
+                    this->optionsDialogSettings.FilterEventsForButtons)
+                {
+                    return;
+                }
+
+                joystickId = event->jhat.which;
+                inputType = InputType::JoystickHat;
+                sdlButton = event->jhat.hat;
+                sdlButtonValue = event->jhat.value;
+                sdlButtonPressed = (sdlButtonValue != SDL_HAT_CENTERED);
+                sdlButtonName = "hat " + QString::number(sdlButton) + ":" + QString::number(sdlButtonValue);
             }
 
             // make sure we have the right joystick
@@ -962,18 +980,18 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
                     if (this->addMappingToButton)
                     {
                         this->currentButton->AddInputData(
-                            inputType, 
+                            inputType,
                             sdlButton,
-                            0,
+                            sdlButtonValue,
                             sdlButtonName
                         );
                     }
                     else
                     {
                         this->currentButton->SetInputData(
-                            inputType, 
+                            inputType,
                             sdlButton,
-                            0,
+                            sdlButtonValue,
                             sdlButtonName
                         );
                     }
@@ -993,7 +1011,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             // update controller analog stick state
             for (auto& joystick : this->joystickWidgetMappings)
             {
-                if (joystick.buttonWidget->HasInputData(inputType, sdlButton))
+                if (joystick.buttonWidget->HasInputData(inputType, sdlButton, sdlButtonValue))
                 {
                     switch (joystick.direction)
                     {
