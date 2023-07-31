@@ -95,7 +95,7 @@ struct l_Setting
 {
     std::string Section;
     std::string Key;
-    l_DynamicValue DefaultValue;
+    l_DynamicValue DefaultValue = 0;
     std::string Description = "";
     bool ForceUseSetOnce    = false;
     bool ForceUseSetAlways  = false;
