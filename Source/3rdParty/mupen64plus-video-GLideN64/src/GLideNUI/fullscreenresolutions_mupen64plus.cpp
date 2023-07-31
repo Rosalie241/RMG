@@ -39,7 +39,10 @@ static void _fillFullscreenRefreshRateList(QStringList &_listRefreshRates, int &
 	ret = CoreVideo_ListFullscreenRates(size, &num_rates, rates);
 
 	if (ret != M64ERR_SUCCESS)
+	{
+		free(resolutions);
 		return;
+	}
 
 	for (int i = 0; i < num_rates; i++)
 	{
