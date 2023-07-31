@@ -1,6 +1,6 @@
 # Rosalie's Mupen GUI
 
-Rosalie's Mupen GUI is a free and open-source mupen64plus GUI written in C++.
+Rosalie's Mupen GUI is a free and open-source mupen64plus front-end written in C++.
 
 It offers a simple-to-use user interface.
 
