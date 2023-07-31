@@ -217,7 +217,6 @@ void SettingsDialog::loadCoreSettings(void)
     int saveFilenameFormat = 0;
     int siDmaDuration = -1;
     bool randomizeInterrupt = true;
-    bool debugger = false;
     bool overrideGameSettings = false;
 
     disableExtraMem = CoreSettingsGetBoolValue(SettingsID::CoreOverlay_DisableExtraMem);
@@ -226,13 +225,11 @@ void SettingsDialog::loadCoreSettings(void)
     saveFilenameFormat = CoreSettingsGetIntValue(SettingsID::CoreOverLay_SaveFileNameFormat);
     siDmaDuration = CoreSettingsGetIntValue(SettingsID::CoreOverlay_SiDmaDuration);
     randomizeInterrupt = CoreSettingsGetBoolValue(SettingsID::CoreOverlay_RandomizeInterrupt);
-    debugger = CoreSettingsGetBoolValue(SettingsID::CoreOverlay_EnableDebugger);
     overrideGameSettings = CoreSettingsGetBoolValue(SettingsID::Core_OverrideGameSpecificSettings);
 
     this->coreCpuEmulatorComboBox->setCurrentIndex(cpuEmulator);
     this->coreSaveFilenameFormatComboBox->setCurrentIndex(saveFilenameFormat);
     this->coreRandomizeTimingCheckBox->setChecked(randomizeInterrupt);
-    //this->coreDebuggerCheckBox->setChecked(debugger);
 
     this->coreOverrideGameSettingsGroup->setChecked(overrideGameSettings);
 
@@ -443,7 +440,6 @@ void SettingsDialog::loadDefaultCoreSettings(void)
     int saveFilenameFormat = 0;
     int siDmaDuration = -1;
     bool randomizeInterrupt = true;
-    bool debugger = false;
     bool overrideGameSettings;
 
     disableExtraMem = CoreSettingsGetDefaultBoolValue(SettingsID::CoreOverlay_DisableExtraMem);
@@ -452,13 +448,11 @@ void SettingsDialog::loadDefaultCoreSettings(void)
     siDmaDuration = CoreSettingsGetDefaultIntValue(SettingsID::CoreOverlay_SiDmaDuration);
     saveFilenameFormat = CoreSettingsGetDefaultIntValue(SettingsID::CoreOverLay_SaveFileNameFormat);
     randomizeInterrupt = CoreSettingsGetDefaultBoolValue(SettingsID::CoreOverlay_RandomizeInterrupt);
-    debugger = CoreSettingsGetDefaultBoolValue(SettingsID::CoreOverlay_EnableDebugger);
     overrideGameSettings = CoreSettingsGetDefaultBoolValue(SettingsID::Core_OverrideGameSpecificSettings);
 
     this->coreCpuEmulatorComboBox->setCurrentIndex(cpuEmulator);
     this->coreSaveFilenameFormatComboBox->setCurrentIndex(saveFilenameFormat);
     this->coreRandomizeTimingCheckBox->setChecked(randomizeInterrupt);
-    //this->coreDebuggerCheckBox->setChecked(debugger);
 
     this->coreOverrideGameSettingsGroup->setChecked(overrideGameSettings);
 
@@ -921,6 +915,7 @@ void SettingsDialog::commonHotkeySettings(SettingsDialogAction action)
         case SettingsDialogAction::ConnectSignals:
             connect(keybinding.button, &KeybindButton::on_KeybindButton_KeybindingChanged, this, &SettingsDialog::on_KeybindButton_KeybindingChanged);
             connect(keybinding.button, &KeybindButton::on_KeybindButton_Clicked, this, &SettingsDialog::on_KeybindButton_Clicked);
+            break;
         case SettingsDialogAction::LoadSettings:
             keybinding.button->SetText(QString::fromStdString(CoreSettingsGetStringValue(keybinding.settingId)));
             break;
