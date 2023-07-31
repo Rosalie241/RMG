@@ -31,6 +31,7 @@ static std::filesystem::path l_SharedDataPathOverride;
 // Local Functions
 //
 
+#ifndef PORTABLE_INSTALL
 static std::filesystem::path get_var_directory(std::string var, std::string append, std::string fallbackVar, std::string fallbackAppend)
 {
     std::filesystem::path directory;
@@ -83,6 +84,7 @@ static std::filesystem::path get_command_output(std::string command)
 
     return output;
 }
+#endif // PORTABLE_INSTALL
 
 //
 // Exported Functions
