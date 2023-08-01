@@ -11,6 +11,8 @@
 
 #include <QApplication>
 #include <QCommandLineParser>
+#include <QLibraryInfo>
+#include <QTranslator>
 #include <QDir>
 #include <QFile>
 
@@ -126,6 +128,16 @@ int main(int argc, char **argv)
 #endif
 
     QApplication app(argc, argv);
+
+    QTranslator appTranslator;
+    if (appTranslator.load(QLocale(), QLatin1String("RMG"), QLatin1String("_"), QLatin1String(":/i18n"))) {
+        QCoreApplication::installTranslator(&appTranslator);
+    }
+
+    QTranslator qtTranslator;
+    if (qtTranslator.load(QLocale(), QLatin1String("qt"), QLatin1String("_"), QLibraryInfo::path(QLibraryInfo::LibraryPath::TranslationsPath))) {
+        QCoreApplication::installTranslator(&qtTranslator);
+    }
 
     UserInterface::MainWindow window;
 
