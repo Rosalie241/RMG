@@ -33,6 +33,23 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.4.6" date="2023-08-04" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix copying a string out-of-bounds in RMG-Core</li>
+          <li>Fix memory leak in GLideN64</li>
+          <li>Add experimental support for wayland on linux (you can enable it by setting RMG_WAYLAND to 1)</li>
+          <li>Add RMG, mupen64plus and n64 keywords to the desktop file (thank you loganmc10)</li>
+          <li>Add joystick hat support to RMG-Input</li>
+          <li>Add native vulkan support (video plugins can now use vulkan natively without having to use OpenGL for presentation)</li>
+          <li>Add current render mode to the status bar (OpenGL or Vulkan)</li>
+          <li>Add information regarding the On-Screen display to the OSD tab of the settings dialog (the OSD will only work with OpenGL video plugins)</li>
+          <li>Improve build process by building with LTO and stripping release binaries</li>
+          <li>Update mupen64plus-video-parallel</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.4.5" date="2023-07-19" type="stable">
       <description>
         <p>Changes:</p>
