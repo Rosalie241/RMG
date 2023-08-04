@@ -916,7 +916,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             SDL_JoystickID joystickId = -1;
             InputType inputType = InputType::Invalid;
             int sdlButton = 0;
-            int sdlButtonValue = 0;
+            int sdlButtonValue = -1;
             bool sdlButtonPressed = false;
             QString sdlButtonName;
 
@@ -1002,7 +1002,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             // update controller button state
             for (auto& button : this->buttonWidgetMappings)
             {
-                if (button.buttonWidget->HasInputData(inputType, sdlButton))
+                if (button.buttonWidget->HasInputData(inputType, sdlButton, sdlButtonValue))
                 {
                     this->controllerImageWidget->SetButtonState(button.button, sdlButtonPressed);
                 }
