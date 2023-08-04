@@ -37,6 +37,7 @@ set(RMG_SOURCES
     UserInterface/Widget/RomBrowserEmptyWidget.cpp
     UserInterface/Widget/RomBrowserEmptyWidget.ui
     UserInterface/Widget/OGLWidget.cpp
+    UserInterface/Widget/VKWidget.cpp
     UserInterface/Widget/KeybindButton.cpp
     UserInterface/Dialog/SettingsDialog.cpp
     UserInterface/Dialog/SettingsDialog.ui

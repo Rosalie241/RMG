@@ -15,6 +15,7 @@
 
 #include <QApplication>
 #include <QOpenGLContext>
+#include <QVulkanInstance>
 #include <QThread>
 #include <QScreen>
 
@@ -22,13 +23,19 @@
 // Local Variables
 //
 
-static Thread::EmulationThread* l_EmuThread          = nullptr;
-static UserInterface::MainWindow* l_MainWindow       = nullptr;
-static UserInterface::Widget::OGLWidget* l_OGLWidget = nullptr;
-static QThread* l_RenderThread                       = nullptr;
-static bool l_VidExtInitialized                      = false;
-static bool l_OsdInitialized                         = false;
+static Thread::EmulationThread* l_EmuThread            = nullptr;
+static UserInterface::MainWindow* l_MainWindow         = nullptr;
+static UserInterface::Widget::OGLWidget* l_OGLWidget   = nullptr;
+static UserInterface::Widget::VKWidget* l_VulkanWidget = nullptr;
+static QThread* l_RenderThread                         = nullptr;
+static bool l_OpenGLInitialized                        = false;
+static bool l_OsdInitialized                           = false;
 static QSurfaceFormat l_SurfaceFormat;
+static m64p_render_mode l_RenderMode;
+
+static QVulkanInstance l_VulkanInstance;
+static QVulkanInfoVector<QVulkanExtension> l_VulkanExtensions;
+static QVector<const char*> l_VulkanExtensionList;
 
 //
 // VidExt Functions
@@ -53,35 +60,58 @@ static bool VidExt_OglSetup(void)
         return false;
     }
 
-    l_VidExtInitialized = true;
+    l_OpenGLInitialized = true;
     return true;
+}
+
+static m64p_error VidExt_InitWithRenderMode(m64p_render_mode RenderMode)
+{
+    l_RenderMode = RenderMode;
+    l_RenderThread = QThread::currentThread();
+
+    if (RenderMode == M64P_RENDER_OPENGL)
+    {
+        l_SurfaceFormat = QSurfaceFormat::defaultFormat();
+        l_SurfaceFormat.setOption(QSurfaceFormat::DeprecatedFunctions, 1);
+        l_SurfaceFormat.setDepthBufferSize(24);
+        l_SurfaceFormat.setProfile(QSurfaceFormat::CompatibilityProfile);
+        l_SurfaceFormat.setMajorVersion(3);
+        l_SurfaceFormat.setMinorVersion(3);
+        l_SurfaceFormat.setSwapInterval(0);
+    }
+
+    l_EmuThread->on_VidExt_Init(RenderMode == M64P_RENDER_OPENGL ? VidExtRenderMode::OpenGL : VidExtRenderMode::Vulkan);
+
+    return M64ERR_SUCCESS;
 }
 
 static m64p_error VidExt_Init(void)
 {
-    l_RenderThread = QThread::currentThread();
-
-    l_SurfaceFormat = QSurfaceFormat::defaultFormat();
-    l_SurfaceFormat.setOption(QSurfaceFormat::DeprecatedFunctions, 1);
-    l_SurfaceFormat.setDepthBufferSize(24);
-    l_SurfaceFormat.setProfile(QSurfaceFormat::CompatibilityProfile);
-    l_SurfaceFormat.setMajorVersion(3);
-    l_SurfaceFormat.setMinorVersion(3);
-    l_SurfaceFormat.setSwapInterval(0);
-
-    l_EmuThread->on_VidExt_Init();
-
-    return M64ERR_SUCCESS;
+    return VidExt_InitWithRenderMode(M64P_RENDER_OPENGL);
 }
 
 static m64p_error VidExt_Quit(void)
 {
     OnScreenDisplayShutdown();
 
-    l_OGLWidget->MoveContextToThread(QApplication::instance()->thread());
+    if (l_RenderMode == M64P_RENDER_OPENGL)
+    {
+        // move OpenGL context back to the GUI thread
+        l_OGLWidget->MoveContextToThread(QApplication::instance()->thread());
+    }
+    else
+    {
+        // remove vulkan instance from widget
+        // and destroy the instance
+        l_VulkanWidget->setVulkanInstance(nullptr);
+        if (l_VulkanInstance.isValid())
+        {
+            l_VulkanInstance.destroy();
+        }
+    }
     l_EmuThread->on_VidExt_Quit();
 
-    l_VidExtInitialized = false;
+    l_OpenGLInitialized = false;
     l_OsdInitialized    = false;
 
     return M64ERR_SUCCESS;
@@ -99,23 +129,28 @@ static m64p_error VidExt_ListRates(m64p_2d_size Size, int *NumRates, int *Rates)
 
 static m64p_error VidExt_SetMode(int Width, int Height, int BitsPerPixel, int ScreenMode, int Flags)
 {
-    if (!l_VidExtInitialized && !VidExt_OglSetup())
+    // initialize OpenGL when render mode
+    // is OpenGL and not Vulkan
+    if (l_RenderMode == M64P_RENDER_OPENGL)
     {
-        return M64ERR_SYSTEM_FAIL;
-    }
-
-    // try to initialize the OSD
-    // when opengl 3 is used
-    if (l_SurfaceFormat.majorVersion() == 3 &&
-        !l_OsdInitialized)
-    {
-        if (!OnScreenDisplayInit())
+        if (!l_OpenGLInitialized && !VidExt_OglSetup())
         {
             return M64ERR_SYSTEM_FAIL;
         }
 
-        OnScreenDisplayLoadSettings();
-        l_OsdInitialized = true;
+        // try to initialize the OSD
+        // when opengl 3 is used
+        if (l_SurfaceFormat.majorVersion() == 3 &&
+            !l_OsdInitialized)
+        {
+            if (!OnScreenDisplayInit())
+            {
+                return M64ERR_SYSTEM_FAIL;
+            }
+
+            OnScreenDisplayLoadSettings();
+            l_OsdInitialized = true;
+        }
     }
 
     switch (ScreenMode)
@@ -142,11 +177,21 @@ static m64p_error VidExt_SetModeWithRate(int Width, int Height, int RefreshRate,
 
 static m64p_function VidExt_GLGetProc(const char *Proc)
 {
+    if (l_RenderMode != M64P_RENDER_OPENGL)
+    {
+        return nullptr;
+    }
+
     return l_OGLWidget->GetContext()->getProcAddress(Proc);
 }
 
 static m64p_error VidExt_GLSetAttr(m64p_GLattr Attr, int Value)
 {
+    if (l_RenderMode != M64P_RENDER_OPENGL)
+    {
+        return M64ERR_INVALID_STATE;
+    }
+
     switch (Attr)
     {
     case M64P_GL_DOUBLEBUFFER:
@@ -208,6 +253,11 @@ static m64p_error VidExt_GLSetAttr(m64p_GLattr Attr, int Value)
 
 static m64p_error VidExt_GLGetAttr(m64p_GLattr Attr, int *pValue)
 {
+    if (l_RenderMode != M64P_RENDER_OPENGL)
+    {
+        return M64ERR_INVALID_STATE;
+    }
+
     QSurfaceFormat::SwapBehavior SB = l_SurfaceFormat.swapBehavior();
     switch (Attr)
     {
@@ -270,6 +320,11 @@ static m64p_error VidExt_GLGetAttr(m64p_GLattr Attr, int *pValue)
 
 static m64p_error VidExt_GLSwapBuf(void)
 {
+    if (l_RenderMode != M64P_RENDER_OPENGL)
+    {
+        return M64ERR_INVALID_STATE;
+    }
+
     if (l_RenderThread != QThread::currentThread())
     {
         return M64ERR_UNSUPPORTED;
@@ -319,23 +374,82 @@ static m64p_error VidExt_ResizeWindow(int Width, int Height)
 
 static uint32_t VidExt_GLGetDefaultFramebuffer(void)
 {
+    if (l_RenderMode != M64P_RENDER_OPENGL)
+    {
+        return 0;
+    }
+
     return l_OGLWidget->GetContext()->defaultFramebufferObject();
+}
+
+EXPORT m64p_error CALL VidExt_VK_GetSurface(void** Surface, void* Instance)
+{
+    if (l_RenderMode != M64P_RENDER_VULKAN)
+    {
+        return M64ERR_INVALID_STATE;
+    }
+
+    // use VkInstance from plugin
+    // when we don't have a VkInstance yet
+    if (!l_VulkanInstance.vkInstance())
+    {
+        l_VulkanInstance.setVkInstance((VkInstance)Instance);
+        if (!l_VulkanInstance.create())
+        {
+            return M64ERR_SYSTEM_FAIL;
+        }
+        l_VulkanWidget->setVulkanInstance(&l_VulkanInstance);
+    }
+
+    // attempt to retrieve vulkan surface for window
+    VkSurfaceKHR vulkanSurface = QVulkanInstance::surfaceForWindow(l_VulkanWidget);
+    if (vulkanSurface == VK_NULL_HANDLE)
+    {
+        return M64ERR_SYSTEM_FAIL;
+    }
+
+    *Surface = (void*)vulkanSurface;
+    return M64ERR_SUCCESS;
+}
+
+EXPORT m64p_error CALL VidExt_VK_GetInstanceExtensions(const char** Extensions[], uint32_t* NumExtensions)
+{
+    if (l_RenderMode != M64P_RENDER_VULKAN)
+    {
+        return M64ERR_INVALID_STATE;
+    }
+
+    l_VulkanExtensions = l_VulkanInstance.supportedExtensions();
+    l_VulkanExtensionList.clear();
+
+    // add every extension to the string list
+    for (int i = 0; i < l_VulkanExtensions.size(); i++)
+    {
+        l_VulkanExtensionList.append(l_VulkanExtensions[i].name.data());
+    }
+
+    *Extensions    = l_VulkanExtensionList.data();
+    *NumExtensions = l_VulkanExtensions.size();
+    return M64ERR_SUCCESS;
 }
 
 //
 // Exported Functions
 //
 
-bool SetupVidExt(Thread::EmulationThread* emuThread, UserInterface::MainWindow* mainWindow, UserInterface::Widget::OGLWidget* oglWidget)
+bool SetupVidExt(Thread::EmulationThread* emuThread, UserInterface::MainWindow* mainWindow, 
+    UserInterface::Widget::OGLWidget* oglWidget, UserInterface::Widget::VKWidget* vulkanWidget)
 {
-    l_EmuThread = emuThread;
-    l_MainWindow = mainWindow;
-    l_OGLWidget = oglWidget;
+    l_EmuThread    = emuThread;
+    l_MainWindow   = mainWindow;
+    l_OGLWidget    = oglWidget;
+    l_VulkanWidget = vulkanWidget;
 
     m64p_video_extension_functions vidext_funcs;
 
-    vidext_funcs.Functions = 14;
+    vidext_funcs.Functions = 17;
     vidext_funcs.VidExtFuncInit = &VidExt_Init;
+    vidext_funcs.VidExtFuncInitWithRenderMode = &VidExt_InitWithRenderMode;
     vidext_funcs.VidExtFuncQuit = &VidExt_Quit;
     vidext_funcs.VidExtFuncListModes = &VidExt_ListModes;
     vidext_funcs.VidExtFuncListRates = &VidExt_ListRates;
@@ -349,6 +463,8 @@ bool SetupVidExt(Thread::EmulationThread* emuThread, UserInterface::MainWindow* 
     vidext_funcs.VidExtFuncToggleFS = &VidExt_ToggleFS;
     vidext_funcs.VidExtFuncResizeWindow = &VidExt_ResizeWindow;
     vidext_funcs.VidExtFuncGLGetDefaultFramebuffer = &VidExt_GLGetDefaultFramebuffer;
+    vidext_funcs.VidExtFuncVKGetSurface = &VidExt_VK_GetSurface;
+    vidext_funcs.VidExtFuncVKGetInstanceExtensions = &VidExt_VK_GetInstanceExtensions;
 
     return CoreSetupVidExt(vidext_funcs);
 }

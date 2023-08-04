@@ -7,28 +7,24 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef OGLWIDGET_HPP
-#define OGLWIDGET_HPP
+#ifndef VKWIDGET_HPP
+#define VKWIDGET_HPP
 
 #include <QThread>
 #include <QResizeEvent>
 #include <QWindow>
 #include <QTimerEvent>
-#include <QOpenGLContext>
 #include <QWidget>
 
 namespace UserInterface
 {
 namespace Widget
 {
-class OGLWidget : public QWindow
+class VKWidget : public QWindow
 {
   public:
-    OGLWidget(QWidget *);
-    ~OGLWidget(void);
-
-    void MoveContextToThread(QThread* thread);
-    QOpenGLContext* GetContext();
+    VKWidget(QWidget *);
+    ~VKWidget(void);
 
     void SetHideCursor(bool hide);
 
@@ -42,7 +38,6 @@ class OGLWidget : public QWindow
 
   private:
     QWidget* widgetContainer      = nullptr;
-    QOpenGLContext* openGLcontext = nullptr;
     int width                     = 0;
     int height                    = 0;
     int timerId                   = 0;
@@ -51,4 +46,4 @@ class OGLWidget : public QWindow
 } // namespace Widget
 } // namespace UserInterface
 
-#endif // OGLWIDGET_HPP
+#endif // VKWIDGET_HPP

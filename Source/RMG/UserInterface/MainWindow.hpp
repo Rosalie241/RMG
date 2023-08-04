@@ -17,6 +17,7 @@
 #include "Dialog/LogDialog.hpp"
 #include "EventFilter.hpp"
 #include "Widget/OGLWidget.hpp"
+#include "Widget/VKWidget.hpp"
 #include "Widget/RomBrowserWidget.hpp"
 #include "Callbacks.hpp"
 
@@ -57,9 +58,11 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 
     QStackedWidget *ui_Widgets                     = nullptr;
     Widget::OGLWidget *ui_Widget_OpenGL            = nullptr;
+    Widget::VKWidget  *ui_Widget_Vulkan            = nullptr;
     Widget::RomBrowserWidget *ui_Widget_RomBrowser = nullptr;
     EventFilter *ui_EventFilter                    = nullptr;
     QLabel *ui_StatusBar_Label                     = nullptr;
+    QLabel *ui_StatusBar_RenderModeLabel           = nullptr;
 
     QByteArray ui_Geometry;
     bool ui_Geometry_Maximized = false;
@@ -72,6 +75,8 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     bool ui_LaunchInFullscreen   = false;
     bool ui_QuitAfterEmulation   = false;
     bool ui_RefreshRomListAfterEmulation = false;
+
+    VidExtRenderMode ui_VidExtRenderMode;
 
     bool ui_ShowUI        = false;
     bool ui_ShowMenubar   = false;
@@ -200,7 +205,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 
   public slots:
 
-    void on_VidExt_Init(void);
+    void on_VidExt_Init(VidExtRenderMode renderMode);
     void on_VidExt_SetupOGL(QSurfaceFormat format, QThread *thread);
     void on_VidExt_SetWindowedMode(int width, int height, int bps, int flags);
     void on_VidExt_SetFullscreenMode(int width, int height, int bps, int flags);

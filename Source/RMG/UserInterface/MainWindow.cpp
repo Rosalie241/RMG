@@ -80,7 +80,7 @@ bool MainWindow::Init(QApplication* app, bool showUI)
     this->initializeEmulationThread();
     this->connectEmulationThreadSignals();
 
-    if (!SetupVidExt(this->emulationThread, this, this->ui_Widget_OpenGL))
+    if (!SetupVidExt(this->emulationThread, this, this->ui_Widget_OpenGL, this->ui_Widget_Vulkan))
     {
         this->showErrorMessage("SetupVidExt() Failed", QString::fromStdString(CoreGetError()));
         return false;
@@ -163,8 +163,10 @@ void MainWindow::initializeUI(void)
     this->ui_Widgets = new QStackedWidget(this);
     this->ui_Widget_RomBrowser = new Widget::RomBrowserWidget(this);
     this->ui_Widget_OpenGL = new Widget::OGLWidget(this);
+    this->ui_Widget_Vulkan = new Widget::VKWidget(this);
     this->ui_EventFilter = new EventFilter(this);
     this->ui_StatusBar_Label = new QLabel(this);
+    this->ui_StatusBar_RenderModeLabel = new QLabel(this);
 
     this->ui_Widget_RomBrowser->RefreshRomList();
 
@@ -225,7 +227,8 @@ void MainWindow::configureUI(QApplication* app, bool showUI)
     this->menuBar()->setVisible(this->ui_ShowMenubar);
     this->toolBar->setVisible(this->ui_ShowToolbar);
     this->statusBar()->setVisible(this->ui_ShowStatusbar);
-    this->statusBar()->addPermanentWidget(this->ui_StatusBar_Label, 1);
+    this->statusBar()->addPermanentWidget(this->ui_StatusBar_Label, 99);
+    this->statusBar()->addPermanentWidget(this->ui_StatusBar_RenderModeLabel, 1);
 
     // set toolbar position according to setting
     int toolbarAreaSetting = CoreSettingsGetIntValue(SettingsID::GUI_ToolbarArea);
@@ -238,14 +241,19 @@ void MainWindow::configureUI(QApplication* app, bool showUI)
 
     this->ui_TimerTimeout = CoreSettingsGetIntValue(SettingsID::GUI_StatusbarMessageDuration);
 
+    this->ui_Widget_OpenGL->SetActive(false);
+    this->ui_Widget_Vulkan->SetActive(false);  
+
     this->ui_Widgets->addWidget(this->ui_Widget_RomBrowser);
     this->ui_Widgets->addWidget(this->ui_Widget_OpenGL->GetWidget());
+    this->ui_Widgets->addWidget(this->ui_Widget_Vulkan->GetWidget());
 
     this->ui_Widgets->setCurrentWidget(this->ui_Widget_RomBrowser);
 
     this->setFocusPolicy(Qt::FocusPolicy::StrongFocus);
     this->installEventFilter(this->ui_EventFilter);
     this->ui_Widget_OpenGL->installEventFilter(this->ui_EventFilter);
+    this->ui_Widget_Vulkan->installEventFilter(this->ui_EventFilter);
 
     this->ui_WindowTitle = "Rosalie's Mupen GUI (";
     this->ui_WindowTitle += QString::fromStdString(CoreGetVersion());
@@ -390,13 +398,29 @@ void MainWindow::updateUI(bool inEmulation, bool isPaused)
             this->setWindowTitle(goodName + QString(" - ") + this->ui_WindowTitle);
         }
 
-        this->ui_Widgets->setCurrentWidget(this->ui_Widget_OpenGL->GetWidget());
+        if (this->ui_VidExtRenderMode == VidExtRenderMode::OpenGL)
+        {
+            this->ui_StatusBar_RenderModeLabel->setText("OpenGL");
+            this->ui_Widgets->setCurrentWidget(this->ui_Widget_OpenGL->GetWidget());
+        }
+        else
+        {
+            this->ui_StatusBar_RenderModeLabel->setText("Vulkan");
+            this->ui_Widgets->setCurrentWidget(this->ui_Widget_Vulkan->GetWidget());
+        }
+
+        this->ui_Widget_OpenGL->SetActive(this->ui_VidExtRenderMode == VidExtRenderMode::OpenGL);
+        this->ui_Widget_Vulkan->SetActive(this->ui_VidExtRenderMode == VidExtRenderMode::Vulkan);
+
         this->storeGeometry();
     }
     else if (!this->ui_NoSwitchToRomBrowser)
     {
         this->setWindowTitle(this->ui_WindowTitle);
         this->ui_Widgets->setCurrentWidget(this->ui_Widget_RomBrowser);
+        this->ui_StatusBar_RenderModeLabel->clear();
+        this->ui_Widget_OpenGL->SetActive(false);
+        this->ui_Widget_Vulkan->SetActive(false);
         this->loadGeometry();
     }
     else
@@ -547,6 +571,7 @@ void MainWindow::launchEmulationThread(QString cartRom, QString diskRom)
     }
 
     this->ui_Widget_OpenGL->SetHideCursor(this->ui_HideCursorInEmulation);
+    this->ui_Widget_Vulkan->SetHideCursor(this->ui_HideCursorInEmulation);
 
     this->emulationThread->SetRomFile(cartRom);
     this->emulationThread->SetDiskFile(diskRom);
@@ -1860,8 +1885,9 @@ void MainWindow::on_RomBrowser_Cheats(QString file)
     }
 }
 
-void MainWindow::on_VidExt_Init(void)
+void MainWindow::on_VidExt_Init(VidExtRenderMode renderMode)
 {
+    this->ui_VidExtRenderMode   = renderMode;
     this->ui_VidExtForceSetMode = true;
     this->updateUI(true, false);
 }

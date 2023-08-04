@@ -14,6 +14,12 @@
 #include <QSurfaceFormat>
 #include <QThread>
 
+enum class VidExtRenderMode
+{
+    OpenGL,
+    Vulkan
+};
+
 namespace Thread
 {
 class EmulationThread : public QThread
@@ -43,7 +49,7 @@ class EmulationThread : public QThread
     void on_VidExt_SetupOGL(QSurfaceFormat, QThread *);
     void on_VidExt_ResizeWindow(int, int);
 
-    void on_VidExt_Init(void);
+    void on_VidExt_Init(VidExtRenderMode);
     void on_VidExt_SetWindowedMode(int, int, int, int);
     void on_VidExt_SetFullscreenMode(int, int, int, int);
     void on_VidExt_SetCaption(QString);

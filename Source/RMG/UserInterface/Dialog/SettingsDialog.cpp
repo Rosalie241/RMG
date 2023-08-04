@@ -984,7 +984,8 @@ void SettingsDialog::setIconsForEmulationInfoText(void)
     QLabel* labels[] = {
         this->infoIconLabel_0, this->infoIconLabel_1, this->infoIconLabel_2,
         this->infoIconLabel_3, this->infoIconLabel_4, this->infoIconLabel_5,
-        this->infoIconLabel_7, this->infoIconLabel_6, this->infoIconLabel_8
+        this->infoIconLabel_7, this->infoIconLabel_6, this->infoIconLabel_8,
+        this->infoIconLabel_9
     };
 
     QIcon infoIcon = QIcon::fromTheme("information-line");
