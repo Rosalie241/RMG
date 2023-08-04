@@ -6,7 +6,7 @@
 [subrepo]
 	remote = git@github.com:/Rosalie241/mupen64plus-core.git
 	branch = RMG
-	commit = 9c4e7837b13ace684b6429674d5e89cc81c57e12
-	parent = 3db473f0dfe3ae6601ed20434f7b55733c370a5b
+	commit = f97ae4ea33827657382ead773fa1a4550c96700e
+	parent = dc8d1a4b05de6a570d41781f494733aba665aaae
 	method = merge
 	cmdver = 0.4.6
