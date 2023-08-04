@@ -3,6 +3,7 @@
 #include "m64p_plugin.h"
 #include "m64p_common.h"
 #include "m64p_config.h"
+#include "m64p_vidext.h"
 
 #ifdef _WIN32
 #define DLSYM(a, b) GetProcAddress(a, b)
