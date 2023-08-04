@@ -137,7 +137,8 @@ typedef enum {
   M64CORE_AUDIO_MUTE,
   M64CORE_INPUT_GAMESHARK,
   M64CORE_STATE_LOADCOMPLETE,
-  M64CORE_STATE_SAVECOMPLETE
+  M64CORE_STATE_SAVECOMPLETE,
+  M64CORE_SCREENSHOT_CAPTURED,
 } m64p_core_param;
 
 typedef enum {
@@ -431,6 +432,11 @@ typedef enum {
   M64P_GL_CONTEXT_PROFILE_ES
 } m64p_GLContextType;
 
+typedef enum {
+  M64P_RENDER_OPENGL = 0,
+  M64P_RENDER_VULKAN
+} m64p_render_mode;
+
 typedef struct {
   unsigned int Functions;
   m64p_error    (*VidExtFuncInit)(void);
@@ -447,6 +453,9 @@ typedef struct {
   m64p_error    (*VidExtFuncToggleFS)(void);
   m64p_error    (*VidExtFuncResizeWindow)(int, int);
   uint32_t      (*VidExtFuncGLGetDefaultFramebuffer)(void);
+  m64p_error    (*VidExtFuncInitWithRenderMode)(m64p_render_mode);
+  m64p_error    (*VidExtFuncVKGetSurface)(void**, void*);
+  m64p_error    (*VidExtFuncVKGetInstanceExtensions)(const char**[], uint32_t*);
 } m64p_video_extension_functions;
 
 #endif /* define M64P_TYPES_H */
