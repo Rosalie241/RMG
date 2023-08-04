@@ -185,7 +185,7 @@ ExternalProject_Add(mupen64plus-video-parallel
 
     BUILD_IN_SOURCE False
     BUILD_ALWAYS True
-    CMAKE_ARGS -DUSE_QT5=OFF ${CMAKE_CONFIGURE_ARGS}
+    CMAKE_ARGS -DCONFIG_GUI=ON ${CMAKE_CONFIGURE_ARGS}
     BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-video-parallel
 
     BUILD_BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-video-parallel/mupen64plus-video-parallel.${SO_EXT}
