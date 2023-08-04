@@ -11,9 +11,9 @@
 
 #include "UserInterface/Dialog/AboutDialog.hpp"
 #ifdef UPDATER
-#include "UserInterface/Dialog/UpdateDialog.hpp"
-#include "UserInterface/Dialog/DownloadUpdateDialog.hpp"
-#include "UserInterface/Dialog/InstallUpdateDialog.hpp"
+#include "UserInterface/Dialog/Update/UpdateDialog.hpp"
+#include "UserInterface/Dialog/Update/DownloadUpdateDialog.hpp"
+#include "UserInterface/Dialog/Update/InstallUpdateDialog.hpp"
 #endif // UPDATER
 #include "UserInterface/EventFilter.hpp"
 #include "Utilities/QtKeyToSdl2Key.hpp"

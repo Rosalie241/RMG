@@ -30,23 +30,23 @@ pkg_check_modules(SDL2 REQUIRED sdl2)
 set(RMG_SOURCES
     UserInterface/MainWindow.cpp
     UserInterface/MainWindow.ui
-    UserInterface/Widget/RomBrowserWidget.cpp
-    UserInterface/Widget/RomBrowserListViewWidget.cpp
-    UserInterface/Widget/RomBrowserGridViewWidget.cpp
-    UserInterface/Widget/RomBrowserLoadingWidget.cpp
-    UserInterface/Widget/RomBrowserEmptyWidget.cpp
-    UserInterface/Widget/RomBrowserEmptyWidget.ui
-    UserInterface/Widget/OGLWidget.cpp
-    UserInterface/Widget/VKWidget.cpp
+    UserInterface/Widget/RomBrowser/RomBrowserWidget.cpp
+    UserInterface/Widget/RomBrowser/RomBrowserListViewWidget.cpp
+    UserInterface/Widget/RomBrowser/RomBrowserGridViewWidget.cpp
+    UserInterface/Widget/RomBrowser/RomBrowserLoadingWidget.cpp
+    UserInterface/Widget/RomBrowser/RomBrowserEmptyWidget.cpp
+    UserInterface/Widget/RomBrowser/RomBrowserEmptyWidget.ui
+    UserInterface/Widget/Render/OGLWidget.cpp
+    UserInterface/Widget/Render/VKWidget.cpp
     UserInterface/Widget/KeybindButton.cpp
     UserInterface/Dialog/SettingsDialog.cpp
     UserInterface/Dialog/SettingsDialog.ui
-    UserInterface/Dialog/CheatsDialog.cpp
-    UserInterface/Dialog/CheatsDialog.ui
-    UserInterface/Dialog/AddCheatDialog.cpp
-    UserInterface/Dialog/AddCheatDialog.ui
-    UserInterface/Dialog/ChooseCheatOptionDialog.cpp
-    UserInterface/Dialog/ChooseCheatOptionDialog.ui
+    UserInterface/Dialog/Cheats/CheatsDialog.cpp
+    UserInterface/Dialog/Cheats/CheatsDialog.ui
+    UserInterface/Dialog/Cheats/AddCheatDialog.cpp
+    UserInterface/Dialog/Cheats/AddCheatDialog.ui
+    UserInterface/Dialog/Cheats/ChooseCheatOptionDialog.cpp
+    UserInterface/Dialog/Cheats/ChooseCheatOptionDialog.ui
     UserInterface/Dialog/RomInfoDialog.cpp
     UserInterface/Dialog/RomInfoDialog.ui
     UserInterface/Dialog/AboutDialog.cpp
@@ -68,12 +68,12 @@ set(RMG_SOURCES
 
 if (UPDATER)
     list(APPEND RMG_SOURCES
-        UserInterface/Dialog/UpdateDialog.cpp
-        UserInterface/Dialog/UpdateDialog.ui
-        UserInterface/Dialog/DownloadUpdateDialog.cpp
-        UserInterface/Dialog/DownloadUpdateDialog.ui
-        UserInterface/Dialog/InstallUpdateDialog.cpp
-        UserInterface/Dialog/InstallUpdateDialog.ui
+        UserInterface/Dialog/Update/UpdateDialog.cpp
+        UserInterface/Dialog/Update/UpdateDialog.ui
+        UserInterface/Dialog/Update/DownloadUpdateDialog.cpp
+        UserInterface/Dialog/Update/DownloadUpdateDialog.ui
+        UserInterface/Dialog/Update/InstallUpdateDialog.cpp
+        UserInterface/Dialog/Update/InstallUpdateDialog.ui
     )
 endif(UPDATER)
 

@@ -10,8 +10,8 @@
 #ifndef RMG_VIDEXT_HPP
 #define RMG_VIDEXT_HPP
 
-#include <UserInterface/Widget/OGLWidget.hpp>
-#include <UserInterface/Widget/VKWidget.hpp>
+#include <UserInterface/Widget/Render/OGLWidget.hpp>
+#include <UserInterface/Widget/Render/VKWidget.hpp>
 #include <UserInterface/MainWindow.hpp>
 #include <Thread/EmulationThread.hpp>
 

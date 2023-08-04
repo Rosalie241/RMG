@@ -12,13 +12,13 @@
 
 #include "Thread/EmulationThread.hpp"
 #include "Dialog/SettingsDialog.hpp"
-#include "Dialog/CheatsDialog.hpp"
+#include "Dialog/Cheats/CheatsDialog.hpp"
 #include "Dialog/RomInfoDialog.hpp"
 #include "Dialog/LogDialog.hpp"
 #include "EventFilter.hpp"
-#include "Widget/OGLWidget.hpp"
-#include "Widget/VKWidget.hpp"
-#include "Widget/RomBrowserWidget.hpp"
+#include "Widget/Render/OGLWidget.hpp"
+#include "Widget/Render/VKWidget.hpp"
+#include "Widget/RomBrowser/RomBrowserWidget.hpp"
 #include "Callbacks.hpp"
 
 #include <QAction>
