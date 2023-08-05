@@ -33,6 +33,18 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.4.7" date="2023-08-05" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix diagonals not working for joystick hats in RMG-Input</li>
+          <li>Fix visualization of joystick hats in the configuration GUI of RMG-Input</li>
+          <li>Fix "Hide Cursor During Fullscreen Emulation" not working when using a Vulkan video plugin</li>
+          <li>Improve VRU initialization code in RMG-Input</li>
+          <li>Update SDL_GameControllerDB</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.4.6" date="2023-08-04" type="stable">
       <description>
         <p>Changes:</p>
