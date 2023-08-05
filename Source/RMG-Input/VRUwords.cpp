@@ -17,6 +17,9 @@ std::vector<VRUWordEntry> GetVRUWordEntries(void)
 {
     std::vector<VRUWordEntry> entries;
 
+    // reserve entries to prevent re-allocating
+    entries.reserve(717);
+
     entries.push_back({"03A50024000303CF00A80003036000EA", "pikachu"});
     entries.push_back({"03A50045000303CF00A80003036000EA", "pikachu" });
     entries.push_back({"03A50024000303C900450003036000EA", "pikachu" });
