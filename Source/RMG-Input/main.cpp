@@ -16,6 +16,7 @@
 #include "Thread/HotkeysThread.hpp"
 #include "Utilities/InputDevice.hpp"
 #include "common.hpp"
+#include "main.hpp"
 #ifdef VRU
 #include "VRU.hpp"
 #endif // VRU
@@ -178,8 +179,12 @@ static InputProfile l_InputProfiles[NUM_CONTROLLERS];
 // whether we have mupen64plus' control info
 static bool l_HasControlInfo = false;
 
-// mupen64plus' control info
+// mupen64plus control info
 static CONTROL_INFO l_ControlInfo;
+
+// mupen64plus debug callback
+static void (*l_DebugCallback)(void *, int, const char *) = nullptr;
+static void *l_DebugCallContext                           = nullptr;
 
 // keyboard state
 static bool l_KeyboardState[SDL_NUM_SCANCODES];
@@ -891,6 +896,8 @@ static bool check_hotkeys(int Control)
 static void sdl_init()
 {
     std::filesystem::path gameControllerDbPath;
+    std::string debugMessage;
+    int ret = -1;
 
     for (const int subsystem : {SDL_INIT_GAMECONTROLLER, SDL_INIT_AUDIO, SDL_INIT_VIDEO, SDL_INIT_HAPTIC})
     {
@@ -903,8 +910,24 @@ static void sdl_init()
     gameControllerDbPath = CoreGetSharedDataDirectory();
     gameControllerDbPath += "/gamecontrollerdb.txt";
 
-    // load mappings from file
-    SDL_GameControllerAddMappingsFromFile(gameControllerDbPath.string().c_str());
+    // try to load SDL_GameControllerDB when the file exists
+    if (std::filesystem::is_regular_file(gameControllerDbPath))
+    {
+        ret = SDL_GameControllerAddMappingsFromFile(gameControllerDbPath.string().c_str());
+        if (ret == -1)
+        {
+            debugMessage = "sdl_init(): SDL_GameControllerAddMappingsFromFile Failed: ";
+            debugMessage += SDL_GetError();
+            PluginDebugMessage(M64MSG_WARNING, debugMessage);
+        }
+    }
+    else
+    {
+        debugMessage = "sdl_init(): Cannot find SDL_GameControllerDB at \"";
+        debugMessage += gameControllerDbPath.string().c_str();
+        debugMessage += "\"!";
+        PluginDebugMessage(M64MSG_WARNING, debugMessage);
+    }
 }
 
 static void sdl_quit()
@@ -934,7 +957,9 @@ EXPORT m64p_error CALL PluginStartup(m64p_dynlib_handle CoreLibHandle, void *Con
         return M64ERR_SYSTEM_FAIL;
     }
 
-    CoreSetupDebugCallbackMessage(DebugCallback, Context);
+    // setup debug callback
+    l_DebugCallback    = DebugCallback;
+    l_DebugCallContext = Context;
 
     sdl_init();
 
@@ -973,6 +998,10 @@ EXPORT m64p_error CALL PluginShutdown(void)
 
     sdl_quit();
 
+    // clear debug callback
+    l_DebugCallback    = nullptr;
+    l_DebugCallContext = nullptr;
+
     return M64ERR_SUCCESS;
 }
 
@@ -1005,6 +1034,20 @@ EXPORT m64p_error CALL PluginGetVersion(m64p_plugin_type *pluginType, int *plugi
     }
 
     return M64ERR_SUCCESS;
+}
+
+//
+// Custom Internal Plugin Functions
+//
+
+void PluginDebugMessage(int level, std::string message)
+{
+    if (l_DebugCallback == nullptr)
+    {
+        return;
+    }
+
+    l_DebugCallback(l_DebugCallContext, level, message.c_str());
 }
 
 //

@@ -7,6 +7,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+#include "main.hpp"
 #define CORE_PLUGIN
 #define M64P_PLUGIN_PROTOTYPES 1
 
@@ -104,7 +105,7 @@ static bool hook_vosk(void)
         debugMessage += voskApiPath.string().c_str();
         debugMessage += "\": ";
         debugMessage += osal_dynlib_strerror();
-        CoreDebugCallbackMessage(CoreDebugMessageType::Error, debugMessage);
+        PluginDebugMessage(M64MSG_ERROR, debugMessage);
         return false;
     }
 
@@ -127,7 +128,7 @@ static bool hook_vosk(void)
         l_vosk_recognizer_set_max_alternatives == nullptr)
     {
         debugMessage = "VRU: Failed to open library: missing functions";
-        CoreDebugCallbackMessage(CoreDebugMessageType::Error, debugMessage);
+        PluginDebugMessage(M64MSG_ERROR, debugMessage);
         return false;
     }
 
@@ -201,7 +202,7 @@ static bool setup_vosk_model(void)
         debugMessage = "VRU: vosk model file \"";
         debugMessage += voskModelPath.string().c_str();
         debugMessage += "\" doesn't exist!";
-        CoreDebugCallbackMessage(CoreDebugMessageType::Error, debugMessage);
+        PluginDebugMessage(M64MSG_ERROR, debugMessage);
         return false;
     }
 
@@ -211,7 +212,7 @@ static bool setup_vosk_model(void)
         debugMessage += voskModelPath.string().c_str();
         debugMessage += "\": ";
         debugMessage += CoreGetError();
-        CoreDebugCallbackMessage(CoreDebugMessageType::Error, debugMessage);
+        PluginDebugMessage(M64MSG_ERROR, debugMessage);
         return false;
     }
 
@@ -229,7 +230,7 @@ static bool init_vosk(void)
     l_VoskModel = l_vosk_model_new(voskModelPath.string().c_str());
     if (l_VoskModel == nullptr)
     {
-        CoreDebugCallbackMessage(CoreDebugMessageType::Error, "VRU: vosk_model_new failed");
+        PluginDebugMessage(M64MSG_ERROR, "VRU: vosk_model_new failed");
         return false;
     }
 
@@ -268,7 +269,7 @@ static bool init_mic(void)
     {
         debugMessage = "VRU: SDL_OpenAudioDevice Failed: ";
         debugMessage += SDL_GetError();
-        CoreDebugCallbackMessage(CoreDebugMessageType::Error, debugMessage);
+        PluginDebugMessage(M64MSG_ERROR, debugMessage);
         return false;
     }
 
@@ -410,7 +411,7 @@ EXPORT void CALL SendVRUWord(uint16_t length, uint16_t* word, uint8_t lang)
         {
             debugMessage = "VRU: unknown word: ";
             debugMessage += encoded_string.toStdString();
-            CoreDebugCallbackMessage(CoreDebugMessageType::Error, debugMessage);
+            PluginDebugMessage(M64MSG_ERROR, debugMessage);
         }
         else
         {
@@ -559,7 +560,7 @@ EXPORT void CALL ReadVRUResults(uint16_t* error_flags, uint16_t* num_results, ui
         debugMessage += std::to_string(i);
         debugMessage += ": ";
         debugMessage += found_words.at(i).toStdString();
-        CoreDebugCallbackMessage(CoreDebugMessageType::Info, debugMessage);
+        PluginDebugMessage(M64MSG_INFO, debugMessage);
     }
 
     if (found_words.size() == 0 && alternative_words.size() > 0)
@@ -569,7 +570,7 @@ EXPORT void CALL ReadVRUResults(uint16_t* error_flags, uint16_t* num_results, ui
         matches[0] = 0;
         found_words.append("0");
         debugMessage = "VRU: heard something but it didn't match anything";
-        CoreDebugCallbackMessage(CoreDebugMessageType::Info, debugMessage);
+        PluginDebugMessage(M64MSG_INFO, debugMessage);
     }
 
     *num_results = found_words.size();
