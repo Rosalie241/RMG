@@ -15,7 +15,7 @@ fi
 
 mkdir -p "$build_dir"
 
-cmake -S "$toplvl_dir" -B "$build_dir" -DCMAKE_BUILD_TYPE="$build_config" -DPORTABLE_INSTALL=ON -G "Ninja"
+cmake -S "$toplvl_dir" -B "$build_dir" -DCMAKE_BUILD_TYPE="$build_config" -DPORTABLE_INSTALL=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -G "Ninja"
 
 cmake --build "$build_dir" --parallel "$threads"
 cmake --install "$build_dir" --strip --prefix="$toplvl_dir"
