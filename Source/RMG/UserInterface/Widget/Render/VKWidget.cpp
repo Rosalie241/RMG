@@ -34,19 +34,9 @@ QWidget* VKWidget::GetWidget(void)
     return this->widgetContainer;
 }
 
- void VKWidget::SetActive(bool value)
- {
-    this->active = value;
-    if (!value && this->timerId != 0)
-    {
-        this->killTimer(this->timerId);
-        this->timerId = 0;
-    }
- }
-
 void VKWidget::resizeEvent(QResizeEvent *event)
 {
-    if (!this->active)
+    if (!this->isVisible())
     {
         return;
     }
@@ -67,8 +57,10 @@ void VKWidget::resizeEvent(QResizeEvent *event)
 
 void VKWidget::timerEvent(QTimerEvent *event)
 {
-    if (!this->active)
+    if (!this->isVisible())
     {
+        this->killTimer(this->timerId);
+        this->timerId = 0;
         return;
     }
 

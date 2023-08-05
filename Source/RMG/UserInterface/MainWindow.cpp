@@ -241,9 +241,6 @@ void MainWindow::configureUI(QApplication* app, bool showUI)
 
     this->ui_TimerTimeout = CoreSettingsGetIntValue(SettingsID::GUI_StatusbarMessageDuration);
 
-    this->ui_Widget_OpenGL->SetActive(false);
-    this->ui_Widget_Vulkan->SetActive(false);  
-
     this->ui_Widgets->addWidget(this->ui_Widget_RomBrowser);
     this->ui_Widgets->addWidget(this->ui_Widget_OpenGL->GetWidget());
     this->ui_Widgets->addWidget(this->ui_Widget_Vulkan->GetWidget());
@@ -409,9 +406,6 @@ void MainWindow::updateUI(bool inEmulation, bool isPaused)
             this->ui_Widgets->setCurrentWidget(this->ui_Widget_Vulkan->GetWidget());
         }
 
-        this->ui_Widget_OpenGL->SetActive(this->ui_VidExtRenderMode == VidExtRenderMode::OpenGL);
-        this->ui_Widget_Vulkan->SetActive(this->ui_VidExtRenderMode == VidExtRenderMode::Vulkan);
-
         this->storeGeometry();
     }
     else if (!this->ui_NoSwitchToRomBrowser)
@@ -419,8 +413,6 @@ void MainWindow::updateUI(bool inEmulation, bool isPaused)
         this->setWindowTitle(this->ui_WindowTitle);
         this->ui_Widgets->setCurrentWidget(this->ui_Widget_RomBrowser);
         this->ui_StatusBar_RenderModeLabel->clear();
-        this->ui_Widget_OpenGL->SetActive(false);
-        this->ui_Widget_Vulkan->SetActive(false);
         this->loadGeometry();
     }
     else

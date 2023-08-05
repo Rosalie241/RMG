@@ -34,8 +34,6 @@ class OGLWidget : public QWindow
 
     QWidget* GetWidget(void);
 
-    void SetActive(bool value);
-
   protected:
     void resizeEvent(QResizeEvent *) Q_DECL_OVERRIDE;
     void timerEvent(QTimerEvent *) Q_DECL_OVERRIDE;
@@ -46,7 +44,6 @@ class OGLWidget : public QWindow
     int width                     = 0;
     int height                    = 0;
     int timerId                   = 0;
-    bool active                   = false;
 };
 } // namespace Widget
 } // namespace UserInterface

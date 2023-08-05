@@ -37,11 +37,10 @@ class VKWidget : public QWindow
     void timerEvent(QTimerEvent *) Q_DECL_OVERRIDE;
 
   private:
-    QWidget* widgetContainer      = nullptr;
-    int width                     = 0;
-    int height                    = 0;
-    int timerId                   = 0;
-    bool active                   = false;
+    QWidget* widgetContainer = nullptr;
+    int width                = 0;
+    int height               = 0;
+    int timerId              = 0;
 };
 } // namespace Widget
 } // namespace UserInterface

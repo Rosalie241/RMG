@@ -61,19 +61,9 @@ QWidget* OGLWidget::GetWidget(void)
     return this->widgetContainer;
 }
 
-void OGLWidget::SetActive(bool value)
-{
-    this->active = value;
-    if (!value && this->timerId != 0)
-    {
-        this->killTimer(this->timerId);
-        this->timerId = 0;
-    }
-}
-
 void OGLWidget::resizeEvent(QResizeEvent *event)
 {
-    if (!this->active)
+    if (!this->isVisible())
     {
         return;
     }
@@ -94,8 +84,10 @@ void OGLWidget::resizeEvent(QResizeEvent *event)
 
 void OGLWidget::timerEvent(QTimerEvent *event)
 {
-    if (!this->active)
+    if (!this->isVisible())
     {
+        this->killTimer(this->timerId);
+        this->timerId = 0;
         return;
     }
 
