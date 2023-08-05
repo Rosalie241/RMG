@@ -1934,7 +1934,14 @@ void MainWindow::on_VidExt_SetWindowedMode(int width, int height, int bps, int f
 
     if (!this->ui_HideCursorInEmulation && this->ui_HideCursorInFullscreenEmulation)
     {
-        this->ui_Widget_OpenGL->SetHideCursor(false);
+        if (this->ui_VidExtRenderMode == VidExtRenderMode::OpenGL)
+        {
+            this->ui_Widget_OpenGL->SetHideCursor(false);
+        }
+        else
+        {
+            this->ui_Widget_Vulkan->SetHideCursor(false);
+        }
     }
 
     if (this->ui_ShowUI)
@@ -1974,7 +1981,14 @@ void MainWindow::on_VidExt_SetFullscreenMode(int width, int height, int bps, int
 
     if (!this->ui_HideCursorInEmulation && this->ui_HideCursorInFullscreenEmulation)
     {
-        this->ui_Widget_OpenGL->SetHideCursor(true);
+        if (this->ui_VidExtRenderMode == VidExtRenderMode::OpenGL)
+        {
+            this->ui_Widget_OpenGL->SetHideCursor(true);
+        }
+        else
+        {
+            this->ui_Widget_Vulkan->SetHideCursor(true);
+        }
     }
 
     if (this->ui_ShowUI)
@@ -2070,7 +2084,14 @@ void MainWindow::on_VidExt_ToggleFS(bool fullscreen)
 
         if (!this->ui_HideCursorInEmulation && this->ui_HideCursorInFullscreenEmulation)
         {
-            this->ui_Widget_OpenGL->SetHideCursor(true);
+            if (this->ui_VidExtRenderMode == VidExtRenderMode::OpenGL)
+            {
+                this->ui_Widget_OpenGL->SetHideCursor(true);
+            }
+            else
+            {
+                this->ui_Widget_Vulkan->SetHideCursor(true);
+            }
         }
 
         if (this->ui_ShowUI)
@@ -2102,7 +2123,14 @@ void MainWindow::on_VidExt_ToggleFS(bool fullscreen)
 
         if (!this->ui_HideCursorInEmulation && this->ui_HideCursorInFullscreenEmulation)
         {
-            this->ui_Widget_OpenGL->SetHideCursor(false);
+            if (this->ui_VidExtRenderMode == VidExtRenderMode::OpenGL)
+            {
+                this->ui_Widget_OpenGL->SetHideCursor(false);
+            }
+            else
+            {
+                this->ui_Widget_Vulkan->SetHideCursor(false);
+            }
         }
 
         if (this->ui_ShowUI)
