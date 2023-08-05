@@ -911,12 +911,10 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
         case SDL_CONTROLLERBUTTONUP:
         case SDL_JOYBUTTONDOWN:
         case SDL_JOYBUTTONUP:
-        case SDL_JOYHATMOTION:
-        { // gamepad button, joystick button & joystick hat
+        { // gamepad & joystick button
             SDL_JoystickID joystickId = -1;
             InputType inputType = InputType::Invalid;
             int sdlButton = 0;
-            int sdlButtonValue = -1;
             bool sdlButtonPressed = false;
             QString sdlButtonName;
 
@@ -950,21 +948,6 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
                 sdlButtonPressed = (event->type == SDL_JOYBUTTONDOWN);
                 sdlButtonName = "button " + QString::number(sdlButton);
             }
-            else if (event->type == SDL_JOYHATMOTION)
-            { // joystick hat
-                if (this->isCurrentJoystickGameController &&
-                    this->optionsDialogSettings.FilterEventsForButtons)
-                {
-                    return;
-                }
-
-                joystickId = event->jhat.which;
-                inputType = InputType::JoystickHat;
-                sdlButton = event->jhat.hat;
-                sdlButtonValue = event->jhat.value;
-                sdlButtonPressed = (sdlButtonValue != SDL_HAT_CENTERED);
-                sdlButtonName = "hat " + QString::number(sdlButton) + ":" + QString::number(sdlButtonValue);
-            }
 
             // make sure we have the right joystick
             if (joystickId != this->currentJoystickId)
@@ -982,7 +965,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
                         this->currentButton->AddInputData(
                             inputType,
                             sdlButton,
-                            sdlButtonValue,
+                            0,
                             sdlButtonName
                         );
                     }
@@ -991,7 +974,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
                         this->currentButton->SetInputData(
                             inputType,
                             sdlButton,
-                            sdlButtonValue,
+                            0,
                             sdlButtonName
                         );
                     }
@@ -1002,7 +985,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             // update controller button state
             for (auto& button : this->buttonWidgetMappings)
             {
-                if (button.buttonWidget->HasInputData(inputType, sdlButton, sdlButtonValue))
+                if (button.buttonWidget->HasInputData(inputType, sdlButton))
                 {
                     this->controllerImageWidget->SetButtonState(button.button, sdlButtonPressed);
                 }
@@ -1011,7 +994,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             // update controller analog stick state
             for (auto& joystick : this->joystickWidgetMappings)
             {
-                if (joystick.buttonWidget->HasInputData(inputType, sdlButton, sdlButtonValue))
+                if (joystick.buttonWidget->HasInputData(inputType, sdlButton))
                 {
                     switch (joystick.direction)
                     {
@@ -1039,6 +1022,143 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
 
                         default:
                             break;
+                    }
+                }
+            }
+        } break;
+
+        case SDL_JOYHATMOTION:
+        { // joystick hat
+            SDL_JoystickID joystickId = event->jhat.which;
+            InputType inputType = InputType::JoystickHat;
+            int sdlHat          = event->jhat.hat;
+            int sdlHatDirection = event->jhat.value;
+            bool sdlHatCentered = (sdlHatDirection == SDL_HAT_CENTERED);
+            QString sdlHatName  = "hat " + QString::number(sdlHat) + ":" + QString::number(sdlHatDirection);
+
+            if (this->isCurrentJoystickGameController &&
+                this->optionsDialogSettings.FilterEventsForButtons)
+            {
+                return;
+            }
+
+            // make sure we have the right joystick
+            if (joystickId != this->currentJoystickId)
+            {
+                break;
+            }
+
+            // handle button widget
+            if (this->currentButton != nullptr)
+            {
+                if (!sdlHatCentered)
+                {
+                    if (this->addMappingToButton)
+                    {
+                        this->currentButton->AddInputData(
+                            inputType,
+                            sdlHat,
+                            sdlHatDirection,
+                            sdlHatName
+                        );
+                    }
+                    else
+                    {
+                        this->currentButton->SetInputData(
+                            inputType,
+                            sdlHat,
+                            sdlHatDirection,
+                            sdlHatName
+                        );
+                    }
+                }
+                break;
+            }
+
+            // when we receive a joystick hat event
+            // that is centered, then we have to iterate
+            // over every button widget which contains the
+            // joystick hat with every possible direction,
+            // and disable the button state, else when the 
+            // joystick hat event isn't centered,
+            // loop over every button widget that doesn't contain
+            // the current direction and disable it.
+            const uint8_t joystickHatDirections[] =
+            {
+                SDL_HAT_UP,    SDL_HAT_RIGHTUP,
+                SDL_HAT_RIGHT, SDL_HAT_RIGHTDOWN,
+                SDL_HAT_DOWN,  SDL_HAT_LEFTUP,
+                SDL_HAT_LEFT,  SDL_HAT_LEFTDOWN,
+            };
+            for (auto& button : this->buttonWidgetMappings)
+            {
+                for (uint8_t direction : joystickHatDirections)
+                {
+                    if (button.buttonWidget->HasInputData(inputType, sdlHat, direction))
+                    {
+                        if (!sdlHatCentered && sdlHatDirection == direction)
+                        {
+                            this->controllerImageWidget->SetButtonState(button.button, true);
+                        }
+                        else
+                        {
+                            this->controllerImageWidget->SetButtonState(button.button, false);
+                        }
+                    }
+                }
+            }
+
+            // we have to do update the analog stick state
+            // the same way as above
+            for (auto& joystick : this->joystickWidgetMappings)
+            {
+                for (uint8_t direction : joystickHatDirections)
+                {
+                    if (joystick.buttonWidget->HasInputData(inputType, sdlHat, direction))
+                    {
+                        switch (joystick.direction)
+                        {
+                            case InputAxisDirection::Up:
+                            case InputAxisDirection::Down:
+                            {
+                                const int value = (
+                                    joystick.direction == InputAxisDirection::Up ?
+                                        100 :
+                                        -100
+                                );
+
+                                if (!sdlHatCentered && sdlHatDirection == direction)
+                                {
+                                    this->controllerImageWidget->SetYAxisState(value);
+                                }
+                                else
+                                {
+                                    this->controllerImageWidget->SetYAxisState(0);
+                                }
+                            } break;
+
+                            case InputAxisDirection::Left:
+                            case InputAxisDirection::Right:
+                            {
+                                const int value = (
+                                    joystick.direction == InputAxisDirection::Left ?
+                                        100 :
+                                        -100
+                                );
+
+                                if (!sdlHatCentered && sdlHatDirection == direction)
+                                {
+                                    this->controllerImageWidget->SetXAxisState(value);
+                                }
+                                else
+                                {
+                                    this->controllerImageWidget->SetXAxisState(0);
+                                }
+                            } break;
+
+                            default:
+                                break;
+                        }
                     }
                 }
             }
