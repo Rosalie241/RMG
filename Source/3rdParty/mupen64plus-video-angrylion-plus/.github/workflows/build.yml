@@ -1,4 +1,4 @@
-name: Angrylion-Plus
+name: Angrylion RDP Plus
 
 on:
   push:
@@ -12,6 +12,7 @@ on:
       - '.{gitattributes,gitignore,travis.yml}'
       - 'appveyor.yml,README'
   workflow_dispatch:
+
 jobs:
 
   Linux:
@@ -21,20 +22,24 @@ jobs:
         include:
           - cc: GCC
             platform: x64
-          - cc: Clang
-            platform: x64
           - cc: GCC
             platform: x86
           - cc: Clang
+            platform: x64
+          - cc: Clang
             platform: x86
     name: Linux / ${{ matrix.cc }} / ${{ matrix.platform }}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
-          fetch-depth: "0"
+          fetch-depth: 0
       - name: Get build dependencies and arrange the environment
         run: |
+          set +e
+          git tag --delete nightly-build
+          set -e
+          echo "G_REV=$(git describe --dirty --always --tags)" >> "${GITHUB_ENV}"
           if [[ "${{ matrix.platform }}" == "x86" ]]; then sudo dpkg --add-architecture i386; fi
           sudo apt-get update
           sudo apt-get -y install cmake libgl1-mesa-dev libopengl-dev qtbase5-dev
@@ -46,145 +51,116 @@ jobs:
             if ! [[ -f libOpenGL.so ]]; then ${LINK} libOpenGL.so.0.0.0 libOpenGL.so; fi
           fi
           sudo ldconfig
-      - name: Build and related stuff
+      - name: Build and related stuff, backup binaries
         run: |
-          set +e
-          git tag --delete nightly-build
-          set -e
-          unset TARCH
-          if [[ "${{ matrix.platform }}" == "x86" ]]; then TARCH="-DCMAKE_C_FLAGS=\"-m32\" -DCMAKE_CXX_FLAGS=\"-m32\""; fi
-          G_REV=$(git describe --dirty --always --tags)
-          echo "G_REV=${G_REV}" >> "${GITHUB_ENV}"
-          if [[ "${{ matrix.cc }}" == "GCC" ]]; then
-            CC="gcc"
-            CXX="g++"
-          else
+          if [[ "${{ matrix.platform }}" == "x86" ]]; then CPU_TUNE="-m32 -msse2 -mtune=pentium4"; else CPU_TUNE="-mtune=core2"; fi
+          CC="gcc"
+          CXX="g++"
+          if [[ "${{ matrix.cc }}" != "GCC" ]]; then
             CC="clang"
             CXX="clang++"
           fi
           ${CC} --version
           echo ""
-          mkdir -p build
+          mkdir -p build pkg/usr/local/lib/mupen64plus
           cd build
-          cmake ${TARCH} -DCMAKE_BUILD_TYPE=Release ..
-          cmake --build .
+          cmake -DCMAKE_C_COMPILER="${CC}" -DCMAKE_CXX_COMPILER="${CXX}" -DCMAKE_C_FLAGS="${CPU_TUNE}" -DCMAKE_CXX_FLAGS="${CPU_TUNE}" -DCMAKE_BUILD_TYPE="Release" ..
+          cmake --build . -j2
+          echo ""
           chmod 644 *.so
-          ls -gG *.so
-          ldd *.so
-          if [[ "${CC}" == "gcc" ]]; then tar cvzf mupen64plus-video-angrylion-plus_${G_REV}_${{ matrix.platform }}.tar.gz *.so; fi
+          cp *.so ../pkg/usr/local/lib/mupen64plus/
+          ls -gG ../pkg/usr/local/lib/mupen64plus/*.so
+          echo ""
+          ldd ../pkg/usr/local/lib/mupen64plus/mupen64plus-video-angrylion-plus.so
+          tar cvzf ../pkg/mupen64plus-video-angrylion-plus-linux-${{ matrix.platform }}-${{ env.G_REV }}.tar.gz -C ../pkg/ "usr"
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        if: matrix.cc == 'GCC'
+        uses: actions/upload-artifact@v3
         with:
-          name: mupen64plus-video-angrylion-plus_${{ env.G_REV }}_${{ matrix.platform }}
-          path: build/*.tar.gz
-          if-no-files-found: ignore
+          name: mupen64plus-video-angrylion-plus-linux-${{ matrix.platform }}-${{ env.G_REV }}
+          path: pkg/*.tar.gz
 
-  Windows-static:
+  Windows:
     strategy:
       fail-fast: false
       matrix:
         include:
-          - toolset: v142
+          - method: static
             platform: x64
-          - toolset: v141_xp
+            wintag: win64
+            toolset: v143
+            vs: 2022
+          - method: static
             platform: x86
-    name: MSVC ${{ matrix.toolset }} static / ${{ matrix.platform }}
-    runs-on: windows-2019
+            wintag: win32
+            toolset: v143
+            vs: 2022
+          - method: shared
+            platform: x64
+            wintag: win64
+            toolset: v143
+            vs: 2022
+          - method: shared
+            platform: x86
+            wintag: win32
+            toolset: v141_xp
+            vs: 2019
+    name: Windows / MSVC with ${{ matrix.toolset }} / ${{ matrix.platform }} / ${{ matrix.method }}
+    runs-on: windows-${{ matrix.vs }}
     defaults:
       run:
         shell: cmd
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
-          fetch-depth: "0"
+          fetch-depth: 0
       - uses: microsoft/setup-msbuild@v1
-    #  with:
-    #    vs-version: 16.11
-      - name: Build and related stuff
+      - name: Pre-build arrangements
         run: |
           for /f "tokens=1" %%T in ('git tag -l ^| find "nightly-build"') do set "R_TAG=%%T"
           if [%R_TAG%] NEQ [] git tag --delete nightly-build
-          for /f "tokens=1" %%R in ('git describe --dirty --always --tags') do set "G_REV=%%R"
-          echo G_REV=%G_REV%>> "%GITHUB_ENV%"
-          echo.
+          for /f "tokens=1" %%R in ('git describe --dirty --always --tags') do echo G_REV=%%R>> "%GITHUB_ENV%"
+      - name: Static build and backup binaries
+        if: matrix.method == 'static'
+        run: |
           msbuild --version
           echo.
           msbuild msvc\angrylion-plus.sln /p:Configuration=Release;Platform=${{ matrix.platform }};PlatformToolset=${{ matrix.toolset }} /t:Rebuild
           echo.
+          md pkg
           dir msvc\build\Release\*.dll
-      - name: Backup binaries...
+          copy msvc\build\Release\*.dll pkg\
+      - name: Pre-build arrangement for CMake/MSVC environment
+        if: matrix.method == 'shared'
+        uses: ilammy/msvc-dev-cmd@v1
+      - name: Shared build and backup binaries
+        if: matrix.method == 'shared'
         run: |
-          md backup\Project64_${{ matrix.platform }}
-          md backup\Mupen64Plus_${{ matrix.platform }}
-          cd msvc\build\Release\
-          if exist angrylion-plus.dll (copy angrylion-plus.dll ..\..\..\backup\Project64_${{ matrix.platform }}\) else cd.> ..\..\..\backup\Project64_${{ matrix.platform }}\nice_error.txt
-          if exist mupen64plus-video-angrylion-plus.dll (copy mupen64plus-video-angrylion-plus.dll ..\..\..\backup\Mupen64Plus_${{ matrix.platform }}\) else cd.> ..\..\..\backup\Mupen64Plus_${{ matrix.platform }}\nice_error.txt
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: angrylion-plus_${{ env.G_REV }}_${{ matrix.platform }}
-          path: backup/*
-
-  Windows-shared:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - toolset: v142
-            platform: x64
-          - toolset: v141_xp
-            platform: x86
-    name: MSVC ${{ matrix.toolset }} shared / ${{ matrix.platform }}
-    runs-on: windows-2019
-    defaults:
-      run:
-        shell: cmd
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: "0"
-      - uses: microsoft/setup-msbuild@v1
-    #  with:
-    #    vs-version: 16.11
-      - uses: ilammy/msvc-dev-cmd@v1
-      - name: Build and related stuff
-        run: |
-          for /f "tokens=1" %%T in ('git tag -l ^| find "nightly-build"') do set "R_TAG=%%T"
-          if [%R_TAG%] NEQ [] git tag --delete nightly-build
-          for /f "tokens=1" %%R in ('git describe --dirty --always --tags') do set "G_REV=%%R"
-          echo G_REV=%G_REV%>> "%GITHUB_ENV%"
           set "TARCH=${{ matrix.platform }}"
           if [%TARCH%] == [x86] set "TARCH=Win32"
-          echo.
           msbuild --version
           echo.
-          md build\${{ matrix.platform }}
-          cd build\${{ matrix.platform }}\
-          cmake -T "${{ matrix.toolset }}" -A "%TARCH%" ..\..
+          md pkg build
+          cd build
+          cmake -DBUILD_PROJECT64=ON -T "${{ matrix.toolset }}" -A "%TARCH%" ..
           cmake --build . --config Release
           echo.
           dir Release\*.dll
-      - name: Backup binaries...
-        run: |
-          md backup\Project64_${{ matrix.platform }}
-          md backup\Mupen64Plus_${{ matrix.platform }}
-          cd build\${{ matrix.platform }}\Release\
-          if exist angrylion-plus.dll (copy angrylion-plus.dll ..\..\..\backup\Project64_${{ matrix.platform }}\) else cd.> ..\..\..\backup\Project64_${{ matrix.platform }}\nice_error.txt
-          if exist mupen64plus-video-angrylion-plus.dll (copy mupen64plus-video-angrylion-plus.dll ..\..\..\backup\Mupen64Plus_${{ matrix.platform }}\) else cd.> ..\..\..\backup\Mupen64Plus_${{ matrix.platform }}\nice_error.txt
+          copy Release\*.dll ..\pkg\
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
-          name: angrylion-plus_${{ env.G_REV }}_${{ matrix.platform }}-shared
-          path: backup/*
+          name: angrylion-rdp-plus-${{ matrix.wintag }}-${{ matrix.method }}-${{ env.G_REV }}
+          path: pkg/*
 
   Nightly-build:
     runs-on: ubuntu-latest
-    needs: [Linux, Windows-static, Windows-shared]
-    if: github.ref == 'refs/heads/master'
+    if: github.ref_name == 'master'
+    needs: [Linux, Windows]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           path: binaries
       - name: Get some tools
@@ -195,38 +171,47 @@ jobs:
         run: |
           mkdir pkg
           cd binaries
-          for BIN in *
-          do
+          for BIN in *; do
             cd "${BIN}"
             if [[ "${BIN:0:11}" == "mupen64plus" ]]; then
               echo ":: Recovering ${BIN}.tar.gz"
               mv *.tar.gz ../../pkg/
+            elif [[ "${BIN:25:6}" == "static" ]]; then
+              if [[ -f "./angrylion-plus.dll" ]]; then
+                echo ":: Creating project64-angrylion-plus-${BIN:19:5}-${BIN:32}.zip"
+                zip -r "../../pkg/project64-angrylion-plus-${BIN:19:5}-${BIN:32}.zip" angrylion-plus.dll
+              fi
+              if [[ -f "./mupen64plus-video-angrylion-plus.dll" ]]; then
+                echo ":: Creating mupen64plus-video-angrylion-plus-${BIN:19:5}-${BIN:32}.zip"
+                zip -r "../../pkg/mupen64plus-video-angrylion-plus-${BIN:19:5}-${BIN:32}.zip" mupen64plus-video-angrylion-plus.dll
+              fi
             else
-              echo ":: Creating ${BIN}.zip"
-              zip -r "../../pkg/${BIN}.zip" *
+              echo ":: Creating project64-angrylion-plus-${BIN:19}.zip"
+              zip -r "../../pkg/project64-angrylion-plus-${BIN:19}.zip" angrylion-plus.dll
+              echo ":: Creating mupen64plus-video-angrylion-plus-${BIN:19}.zip"
+              zip -r "../../pkg/mupen64plus-video-angrylion-plus-${BIN:19}.zip" mupen64plus-video-angrylion-plus.dll
             fi
             cd ..
           done
           cd ../pkg
           echo ""
-          for BIN in *
-          do
+          for BIN in *; do
             ls -gG ${BIN}
-            tigerdeep -l ${BIN} >> ../tigerdeep.txt
-            sha256sum ${BIN} >> ../sha256sum.txt
-            sha512sum ${BIN} >> ../sha512sum.txt
+            tigerdeep -lz ${BIN} >> ../angrylion-rdp-plus.tiger.txt
+            sha256sum ${BIN} >> ../angrylion-rdp-plus.sha256.txt
+            sha512sum ${BIN} >> ../angrylion-rdp-plus.sha512.txt
           done
-          mv ../tigerdeep.txt .
-          mv ../sha*sum.txt .
+          mv ../*.tiger.txt .
+          mv ../*.sha*.txt .
           echo ""
           echo "TIGER:"
-          cat tigerdeep.txt
+          cat *.tiger.txt
           echo ""
           echo "SHA256:"
-          cat sha256sum.txt
+          cat *.sha256.txt
           echo ""
           echo "SHA512:"
-          cat sha512sum.txt
+          cat *.sha512.txt
           echo ""
           git tag -f nightly-build
           git push -f origin nightly-build
