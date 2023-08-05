@@ -679,6 +679,7 @@ static double get_axis_state(InputProfile* profile, const InputMapping* inputMap
             case InputType::GamepadAxis:
             {
                 double axis_value = SDL_GameControllerGetAxis(profile->InputDevice.GetGameControllerHandle(), (SDL_GameControllerAxis)data);
+                if (axis_value < -32767.0) axis_value = -32767.0;
                 if (extraData ? axis_value > 0 : axis_value < 0)
                 {
                     axis_value = (axis_value / SDL_AXIS_PEAK);
@@ -697,6 +698,7 @@ static double get_axis_state(InputProfile* profile, const InputMapping* inputMap
             case InputType::JoystickAxis:
             {
                 double axis_value = SDL_JoystickGetAxis(profile->InputDevice.GetJoystickHandle(), data);
+                if (axis_value < -32767.0) axis_value = -32767.0;
                 if (extraData ? axis_value > 0 : axis_value < 0)
                 {
                     axis_value = (axis_value / SDL_AXIS_PEAK);
@@ -756,21 +758,22 @@ static double apply_deadzone(const double input, const double deadzone)
 }
 
 // Credit: MerryMage, fzurita & kev4cards
-static void simulate_octagon(const double inputX, const double inputY, int& outputX, int& outputY)
+static void simulate_octagon(const double deadzone, const double inputX, const double inputY, int& outputX, int& outputY)
 {
     // don't increase emulated range at higher than 100% sensitivity
     const double maxAxis     = N64_AXIS_PEAK;
     const double maxDiagonal = MAX_DIAGONAL_VALUE;
-    // scale to [-maxAxis, maxAxis]
-    double ax = inputX * maxAxis;
-    double ay = inputY * maxAxis;
+    const double maxInputRadius = sqrt(2) * maxAxis * (maxDiagonal / maxAxis * (1.0 - deadzone) + deadzone);
+    // scale to [-maxInputRadius, maxInputRadius]
+    double ax = inputX * maxInputRadius;
+    double ay = inputY * maxInputRadius;
 
-    // check whether (ax, ay) is within the circle of radius maxAxis
-    const double distance = std::hypot(ax, ay);
-    if (distance > maxAxis)
+    // check whether (ax, ay) is within the circle of radius maxInputRadius
+    double distance = std::hypot(ax, ay);
+    if (distance > maxInputRadius)
     {
         // scale ax and ay to stay on the same line, but at the edge of the circle
-        const double scale = maxAxis / distance;
+        const double scale = maxInputRadius / distance;
         ax *= scale;
         ay *= scale;
     }
@@ -783,10 +786,22 @@ static void simulate_octagon(const double inputX, const double inputY, int& outp
         const double edgey = std::copysign(std::min(std::abs(edgex * slope), maxAxis / (1.0 / std::abs(slope) + (maxAxis - maxDiagonal) / maxDiagonal)), ay);
         edgex = edgey / slope;
 
-        const double scale = std::hypot(edgex, edgey) / maxAxis;
-        ax *= scale;
-        ay *= scale;
+        distance = std::hypot(ax, ay);
+        const double distanceToOctagonalEdge = std::hypot(edgex, edgey);
+        if (distance > distanceToOctagonalEdge)
+        {
+            ax = edgex;
+            ay = edgey;
+        }
     }
+
+    // keep cardinal input within positive and negative bounds of maxAxis
+    if(std::abs(ax) > maxAxis) ax = std::copysign(maxAxis, ax);
+    if(std::abs(ay) > maxAxis) ay = std::copysign(maxAxis, ay);
+
+    // prevent floating point precision error keeping values lower than they should be prior to truncation
+    ax = std::copysign(std::abs(ax) + 1e-09, ax);
+    ay = std::copysign(std::abs(ay) + 1e-09, ay);
 
     outputX = (int)ax;
     outputY = (int)ay;
@@ -1209,6 +1224,7 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
 
     int octagonX = 0, octagonY = 0;
     simulate_octagon(
+        deadzone, // deadzone
         inputX, // inputX
         inputY, // inputY
         octagonX, // outputX
