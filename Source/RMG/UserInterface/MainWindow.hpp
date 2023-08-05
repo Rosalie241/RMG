@@ -76,7 +76,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     bool ui_QuitAfterEmulation   = false;
     bool ui_RefreshRomListAfterEmulation = false;
 
-    VidExtRenderMode ui_VidExtRenderMode;
+    VidExtRenderMode ui_VidExtRenderMode = VidExtRenderMode::OpenGL;
 
     bool ui_ShowUI        = false;
     bool ui_ShowMenubar   = false;
