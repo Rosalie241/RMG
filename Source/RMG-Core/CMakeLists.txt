@@ -41,6 +41,7 @@ set(RMG_CORE_SOURCES
     Plugins.cpp
     Version.cpp
     Cheats.cpp
+    Volume.cpp
     VidExt.cpp
     Video.cpp
     Error.cpp

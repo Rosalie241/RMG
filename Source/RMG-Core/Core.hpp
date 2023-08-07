@@ -25,6 +25,7 @@
 #include "Plugins.hpp"
 #include "Version.hpp"
 #include "Cheats.hpp"
+#include "Volume.hpp"
 #include "Error.hpp"
 #include "Unzip.hpp"
 #include "Video.hpp"
