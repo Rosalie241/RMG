@@ -21,6 +21,7 @@ RomSearcherThread::RomSearcherThread(QObject *parent) : QThread(parent)
     qRegisterMetaType<CoreRomType>("CoreRomType");
     qRegisterMetaType<CoreRomHeader>("CoreRomHeader");
     qRegisterMetaType<CoreRomSettings>("CoreRomSettings");
+    qRegisterMetaType<RomSearcherThreadData>("RomSearcherThreadData");
 }
 
 RomSearcherThread::~RomSearcherThread(void)
@@ -89,13 +90,18 @@ void RomSearcherThread::searchDirectory(QString directory)
         roms.push_back(romDirIt.next());
     }
 
-    int romAmount = std::min(this->maxItems, (int)roms.size());
+    const int romAmount = std::min(this->maxItems, (int)roms.size());
+
+    // our ROM data
+    QList<RomSearcherThreadData> data;
+
+    // keep track of the time
+    QElapsedTimer timer;
+    timer.start();
+
     for (int i = 0; i < romAmount; i++)
     {
         QString file = roms.at(i);
-
-        QElapsedTimer timer;
-        timer.start();
 
         if (CoreHasRomHeaderAndSettingsCached(file.toStdU32String()))
         { // found cache entry
@@ -119,20 +125,37 @@ void RomSearcherThread::searchDirectory(QString directory)
 
         if (ret)
         {
-            emit this->RomFound(file, type, header, settings, (i + 1), romAmount);
+            data.push_back(
+            {
+                file,
+                type,
+                header,
+                settings
+            });
+        }
+
+        // we need to give the UI some breathing room,
+        // so when 10ms have passed,
+        // send our data to the UI and
+        // clear our data
+        if (timer.elapsed() >= 10)
+        {
+            emit this->RomsFound(data, (i + 1), romAmount);
+            data.clear();
         }
 
         if (this->stop)
         {
             break;
         }
+    }
 
-        // ensure the UI thread has some breathing room
-        // instead of being locked up and unable to render anything
-        if (timer.elapsed() < 10)
-        {
-            QThread::msleep(10 - timer.elapsed());
-        }
+    // when we're done and
+    // we still have data left,
+    // send it to the UI before we finish
+    if (!data.isEmpty())
+    {
+        emit this->RomsFound(data, romAmount, romAmount);
     }
 
     emit this->Finished(this->stop);

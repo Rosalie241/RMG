@@ -14,6 +14,14 @@
 #include <QThread>
 #include <RMG-Core/Core.hpp>
 
+struct RomSearcherThreadData
+{
+    QString File;
+    CoreRomType Type;
+    CoreRomHeader Header;
+    CoreRomSettings Settings;
+};
+
 namespace Thread
 {
 class RomSearcherThread : public QThread
@@ -40,7 +48,7 @@ class RomSearcherThread : public QThread
     void searchDirectory(QString);
 
   signals:
-    void RomFound(QString file, CoreRomType type, CoreRomHeader header, CoreRomSettings settings, int index, int count);
+    void RomsFound(QList<RomSearcherThreadData> data, int index, int count);
     void Finished(bool canceled);
 };
 } // namespace Thread

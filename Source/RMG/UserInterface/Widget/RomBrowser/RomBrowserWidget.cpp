@@ -60,7 +60,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
 
     // configure rom searcher thread
     this->romSearcherThread = new Thread::RomSearcherThread(this);
-    connect(this->romSearcherThread, &Thread::RomSearcherThread::RomFound, this, &RomBrowserWidget::on_RomBrowserThread_RomFound);
+    connect(this->romSearcherThread, &Thread::RomSearcherThread::RomsFound, this, &RomBrowserWidget::on_RomBrowserThread_RomsFound);
     connect(this->romSearcherThread, &Thread::RomSearcherThread::Finished, this, &RomBrowserWidget::on_RomBrowserThread_Finished);
 
     // configure empty widget
@@ -386,6 +386,108 @@ QString RomBrowserWidget::getCurrentRom(void)
     return data.file;
 }
 
+void RomBrowserWidget::addRomData(QString file, CoreRomType type, CoreRomHeader header, CoreRomSettings settings)
+{
+    QString name;
+    QString gameFormat;
+    float fileSize;
+    QString fileSizeString;
+    QString coverFile;
+    QIcon   coverIcon;
+    QVariant itemData;
+    RomBrowserModelData modelData;
+
+    // create item data
+    modelData = RomBrowserModelData(file, type, header, settings);
+
+    // generate name to use in UI
+    name = QString::fromStdString(settings.GoodName);
+    if (name.endsWith("(unknown rom)") ||
+        name.endsWith("(unknown disk)"))
+    {
+        name = QFileInfo(file).fileName();
+    }
+
+    // generate game format to use in UI
+    if (type == CoreRomType::Disk)
+    {
+        gameFormat = "Disk";
+    }
+    else
+    {
+        gameFormat = "Cartridge";
+    }
+
+    // generate file size to use in UI
+    fileSize = QFileInfo(file).size()/1048576.0;
+    fileSizeString = (QString::number(fileSize, 'f', 2)).append(" MB");
+    if (fileSizeString.size() == 7)
+    {
+        fileSizeString = fileSizeString.prepend("  ");
+    }
+
+    // retrieve cover image
+    coverIcon = this->getCurrentCover(file, header, settings, coverFile);
+    modelData.coverFile = coverFile;
+
+    // create item data
+    itemData = QVariant::fromValue<RomBrowserModelData>(modelData);
+
+    QList<QStandardItem*> listViewRow;
+    // goodname
+    QStandardItem* listViewItem1 = new QStandardItem();
+    listViewItem1->setText(name);
+    listViewItem1->setData(itemData);
+    listViewRow.append(listViewItem1);
+    // internal name
+    QStandardItem* listViewItem2 = new QStandardItem();
+    listViewItem2->setText(QString::fromStdString(header.Name));
+    listViewItem2->setData(itemData);
+    listViewRow.append(listViewItem2);
+    // MD5
+    QStandardItem* listViewItem3 = new QStandardItem();
+    listViewItem3->setText(QString::fromStdString(settings.MD5));
+    listViewItem3->setData(itemData);
+    listViewRow.append(listViewItem3);
+    // game format
+    QStandardItem* listViewItem4 = new QStandardItem();
+    listViewItem4->setText(gameFormat);
+    listViewItem4->setData(itemData);
+    listViewRow.append(listViewItem4);
+    // file name
+    QStandardItem* listViewItem5 = new QStandardItem();
+    listViewItem5->setText(QFileInfo(file).completeBaseName());
+    listViewItem5->setData(itemData);
+    listViewRow.append(listViewItem5);
+    // file extension
+    QStandardItem* listViewItem6 = new QStandardItem();
+    listViewItem6->setText(((QFileInfo(file).suffix()).prepend(".")).toUpper());
+    listViewItem6->setData(itemData);
+    listViewRow.append(listViewItem6);
+    // file size
+    QStandardItem* listViewItem7 = new QStandardItem();
+    listViewItem7->setText(fileSizeString);
+    listViewItem7->setData(itemData);
+    listViewRow.append(listViewItem7);
+    // game i.d.
+    QStandardItem* listViewItem8 = new QStandardItem();
+    listViewItem8->setText(QString::fromStdString(header.GameID));
+    listViewItem8->setData(itemData);
+    listViewRow.append(listViewItem8);
+    // region
+    QStandardItem* listViewItem9 = new QStandardItem();
+    listViewItem9->setText(QString::fromStdString(header.Region));
+    listViewItem9->setData(itemData);
+    listViewRow.append(listViewItem9);
+    this->listViewModel->appendRow(listViewRow);
+
+    QStandardItem* gridViewItem = new QStandardItem();
+    gridViewItem->setIcon(coverIcon);
+    gridViewItem->setText(name);
+    gridViewItem->setData(itemData);
+    this->gridViewModel->appendRow(gridViewItem);
+}
+
 QIcon RomBrowserWidget::getCurrentCover(QString file, CoreRomHeader header, CoreRomSettings settings, QString& coverFileName)
 {
     QPixmap pixmap;
@@ -639,106 +741,13 @@ void RomBrowserWidget::on_ZoomOut(void)
     view->setIconSize(view->iconSize() - QSize(10, 10));
 }
 
-void RomBrowserWidget::on_RomBrowserThread_RomFound(QString file, CoreRomType type, CoreRomHeader header, CoreRomSettings settings, int index, int count)
+void RomBrowserWidget::on_RomBrowserThread_RomsFound(QList<RomSearcherThreadData> data, int index, int count)
 {
-    QString name;
-    QString gameFormat;
-    float fileSize;
-    QString fileSizeString;
-    QString coverFile;
-    QIcon   coverIcon;
-    QVariant itemData;
-    RomBrowserModelData modelData;
-
-    // create item data
-    modelData = RomBrowserModelData(file, type, header, settings);
-
-    // generate name to use in UI
-    name = QString::fromStdString(settings.GoodName);
-    if (name.endsWith("(unknown rom)") ||
-        name.endsWith("(unknown disk)"))
+    // add every item to our dataset
+    for (int i = 0; i < data.size(); i++)
     {
-        name = QFileInfo(file).fileName();
+        this->addRomData(data[i].File, data[i].Type, data[i].Header, data[i].Settings);
     }
-
-    // generate game format to use in UI
-    if (type == CoreRomType::Disk)
-    {
-        gameFormat = "Disk";
-    }
-    else
-    {
-        gameFormat = "Cartridge";
-    }
-
-    // generate file size to use in UI
-    fileSize = QFileInfo(file).size()/1048576.0;
-    fileSizeString = (QString::number(fileSize, 'f', 2)).append(" MB");
-    if (fileSizeString.size() == 7)
-    {
-        fileSizeString = fileSizeString.prepend("  ");
-    }
-
-    // retrieve cover image
-    coverIcon = this->getCurrentCover(file, header, settings, coverFile);
-    modelData.coverFile = coverFile;
-
-    // create item data
-    itemData = QVariant::fromValue<RomBrowserModelData>(modelData);
-
-    QList<QStandardItem*> listViewRow;
-    // goodname
-    QStandardItem* listViewItem1 = new QStandardItem();
-    listViewItem1->setText(name);
-    listViewItem1->setData(itemData);
-    listViewRow.append(listViewItem1);
-    // internal name
-    QStandardItem* listViewItem2 = new QStandardItem();
-    listViewItem2->setText(QString::fromStdString(header.Name));
-    listViewItem2->setData(itemData);
-    listViewRow.append(listViewItem2);
-    // MD5
-    QStandardItem* listViewItem3 = new QStandardItem();
-    listViewItem3->setText(QString::fromStdString(settings.MD5));
-    listViewItem3->setData(itemData);
-    listViewRow.append(listViewItem3);
-    // game format
-    QStandardItem* listViewItem4 = new QStandardItem();
-    listViewItem4->setText(gameFormat);
-    listViewItem4->setData(itemData);
-    listViewRow.append(listViewItem4);
-    // file name
-    QStandardItem* listViewItem5 = new QStandardItem();
-    listViewItem5->setText(QFileInfo(file).completeBaseName());
-    listViewItem5->setData(itemData);
-    listViewRow.append(listViewItem5);
-    // file extension
-    QStandardItem* listViewItem6 = new QStandardItem();
-    listViewItem6->setText(((QFileInfo(file).suffix()).prepend(".")).toUpper());
-    listViewItem6->setData(itemData);
-    listViewRow.append(listViewItem6);
-    // file size
-    QStandardItem* listViewItem7 = new QStandardItem();
-    listViewItem7->setText(fileSizeString);
-    listViewItem7->setData(itemData);
-    listViewRow.append(listViewItem7);
-    // game i.d.
-    QStandardItem* listViewItem8 = new QStandardItem();
-    listViewItem8->setText(QString::fromStdString(header.GameID));
-    listViewItem8->setData(itemData);
-    listViewRow.append(listViewItem8);
-    // region
-    QStandardItem* listViewItem9 = new QStandardItem();
-    listViewItem9->setText(QString::fromStdString(header.Region));
-    listViewItem9->setData(itemData);
-    listViewRow.append(listViewItem9);
-    this->listViewModel->appendRow(listViewRow);
-
-    QStandardItem* gridViewItem = new QStandardItem();
-    gridViewItem->setIcon(coverIcon);
-    gridViewItem->setText(name);
-    gridViewItem->setData(itemData);
-    this->gridViewModel->appendRow(gridViewItem);
 
     // update loading widget
     this->loadingWidget->SetCurrentRomIndex(index, count);

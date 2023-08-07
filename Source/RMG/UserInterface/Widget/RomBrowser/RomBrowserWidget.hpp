@@ -99,6 +99,8 @@ class RomBrowserWidget : public QStackedWidget
 
     QString getCurrentRom(void);
 
+    void addRomData(QString file, CoreRomType type, CoreRomHeader header, CoreRomSettings settings);
+
     QIcon getCurrentCover(QString file, CoreRomHeader header, CoreRomSettings settings, QString& coverFileName);
 
   protected:
@@ -119,7 +121,7 @@ class RomBrowserWidget : public QStackedWidget
     void on_ZoomIn(void);
     void on_ZoomOut(void);
 
-    void on_RomBrowserThread_RomFound(QString file, CoreRomType type, CoreRomHeader header, CoreRomSettings settings, int index, int count);
+    void on_RomBrowserThread_RomsFound(QList<RomSearcherThreadData> data, int index, int count);
     void on_RomBrowserThread_Finished(bool canceled);
 
     void on_Action_PlayGame(void);
