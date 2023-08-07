@@ -69,11 +69,8 @@ static int VolSDL = SDL_MIX_MAXVOLUME;
 static int VolIsMuted = 0;
 
 /* Helper functions */
-static void LoadVolumeSettings(void)
+static void ApplyVolumeSettings(void)
 {
-    VolIsMuted = CoreSettingsGetBoolValue(SettingsID::Audio_Muted) ? 1 : 0;
-    VolPercent = CoreSettingsGetIntValue(SettingsID::Audio_Volume);
-
     if (VolIsMuted)
     {
         VolSDL = 0;
@@ -82,6 +79,14 @@ static void LoadVolumeSettings(void)
     {
         VolSDL = SDL_MIX_MAXVOLUME * VolPercent / 100;
     }
+}
+
+static void LoadVolumeSettings(void)
+{
+    VolIsMuted = CoreSettingsGetBoolValue(SettingsID::Audio_Muted) ? 1 : 0;
+    VolPercent = CoreSettingsGetIntValue(SettingsID::Audio_Volume);
+
+    ApplyVolumeSettings();
 }
 
 /* Global functions */
@@ -285,23 +290,31 @@ size_t ResampleAndMix(void* resampler, const struct resampler_interface* iresamp
 
 EXPORT void CALL VolumeMute(void)
 {
+    VolIsMuted = !VolIsMuted;
+    ApplyVolumeSettings();
 }
 
 EXPORT void CALL VolumeUp(void)
 {
+    VolPercent += 10;
+    ApplyVolumeSettings();
 }
 
 EXPORT void CALL VolumeDown(void)
 {
+    VolPercent -= 10;
+    ApplyVolumeSettings();
 }
 
 EXPORT int CALL VolumeGetLevel(void)
 {
-    return 0;
+    return VolIsMuted ? 0 : VolPercent;
 }
 
 EXPORT void CALL VolumeSetLevel(int level)
 {
+    VolPercent = level;
+    ApplyVolumeSettings();
 }
 
 EXPORT const char * CALL VolumeGetString(void)
