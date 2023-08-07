@@ -137,11 +137,13 @@ void RomSearcherThread::searchDirectory(QString directory)
         // we need to give the UI some breathing room,
         // so when 10ms have passed,
         // send our data to the UI and
-        // clear our data
+        // clear our data and restart
+        // the timer
         if (timer.elapsed() >= 10)
         {
             emit this->RomsFound(data, (i + 1), romAmount);
             data.clear();
+            timer.start();
         }
 
         if (this->stop)
