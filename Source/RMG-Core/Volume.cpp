@@ -22,6 +22,11 @@ int CoreGetVolume(void)
     m64p_error ret;
     int volume = -1;
 
+    if (!m64p::Core.IsHooked())
+    {
+        return volume;
+    }
+
     ret = m64p::Core.DoCommand(M64CMD_CORE_STATE_QUERY, M64CORE_AUDIO_VOLUME, &volume);
     if (ret != M64ERR_SUCCESS)
     {
@@ -38,6 +43,11 @@ bool CoreSetVolume(int value)
     std::string error;
     m64p_error ret;
     int volume = value;
+
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
 
     ret = m64p::Core.DoCommand(M64CMD_CORE_STATE_SET, M64CORE_AUDIO_VOLUME, &volume);
     if (ret != M64ERR_SUCCESS)
@@ -95,6 +105,11 @@ bool CoreToggleMuteVolume(void)
     std::string error;
     m64p_error ret;
     int muted = 0;
+
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
 
     ret = m64p::Core.DoCommand(M64CMD_CORE_STATE_QUERY, M64CORE_AUDIO_MUTE, &muted);
     if (ret != M64ERR_SUCCESS)
