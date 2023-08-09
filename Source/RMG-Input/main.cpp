@@ -760,10 +760,9 @@ static double apply_deadzone(const double input, const double deadzone)
 // Credit: MerryMage, fzurita & kev4cards
 static void simulate_octagon(const double deadzone, const double inputX, const double inputY, int& outputX, int& outputY)
 {
-    // don't increase emulated range at higher than 100% sensitivity
     const double maxAxis     = N64_AXIS_PEAK;
     const double maxDiagonal = MAX_DIAGONAL_VALUE;
-    const double maxInputRadius = sqrt(2) * maxAxis * (maxDiagonal / maxAxis * (1.0 - deadzone) + deadzone);
+    const double maxInputRadius = sqrt(2) * (maxDiagonal + deadzone * (maxAxis - maxDiagonal));
     // scale to [-maxInputRadius, maxInputRadius]
     double ax = inputX * maxInputRadius;
     double ay = inputY * maxInputRadius;
