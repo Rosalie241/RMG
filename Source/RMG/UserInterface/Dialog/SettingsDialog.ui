@@ -1339,6 +1339,80 @@
                    </item>
                   </layout>
                  </widget>
+                 <widget class="QWidget" name="tab_4">
+                  <attribute name="title">
+                   <string>Audio</string>
+                  </attribute>
+                  <layout class="QVBoxLayout" name="verticalLayout_19">
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_119">
+                     <item>
+                      <widget class="QLabel" name="label_116">
+                       <property name="text">
+                        <string>Increase Volume</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="increaseVolumeKeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_120">
+                     <item>
+                      <widget class="QLabel" name="label_117">
+                       <property name="text">
+                        <string>Decrease Volume</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="decreaseVolumeKeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_121">
+                     <item>
+                      <widget class="QLabel" name="label_118">
+                       <property name="text">
+                        <string>Toggle Mute Volume</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="KeybindButton" name="muteVolumeKeyButton">
+                       <property name="text">
+                        <string/>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <spacer name="verticalSpacer_18">
+                     <property name="orientation">
+                      <enum>Qt::Vertical</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>20</width>
+                       <height>502</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                  </layout>
+                 </widget>
                  <widget class="QWidget" name="settingsMenuTab">
                   <attribute name="title">
                    <string>Settings</string>

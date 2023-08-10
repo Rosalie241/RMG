@@ -93,6 +93,11 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 
     QList<QAction*> ui_SlotActions;
 
+    // Hotkey exclusive QActions
+    QAction* action_Audio_IncreaseVolume   = nullptr;
+    QAction* action_Audio_DecreaseVolume   = nullptr;
+    QAction* action_Audio_ToggleVolumeMute = nullptr;
+
     bool ui_SilentUpdateCheck = false;
 
     int ui_TimerId      = 0;
@@ -130,6 +135,8 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     int getToolbarSettingAreaFromArea(Qt::ToolBarArea area);
     Qt::ToolBarArea getToolbarAreaFromSettingArea(int value);
 
+
+    void initializeActions(void);
     void configureActions(void);
     void connectActionSignals(void);
     void updateActions(bool inEmulation, bool isPaused);
@@ -191,6 +198,10 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     void on_Action_Help_Github(void);
     void on_Action_Help_About(void);
     void on_Action_Help_Update(void);
+
+    void on_Action_Audio_IncreaseVolume(void);
+    void on_Action_Audio_DecreaseVolume(void);
+    void on_Action_Audio_ToggleVolumeMute(void);
 
     void on_Emulation_Started(void);
     void on_Emulation_Finished(bool ret);
