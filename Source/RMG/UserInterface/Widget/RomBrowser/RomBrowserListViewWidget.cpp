@@ -9,14 +9,59 @@
  */
 #include "RomBrowserListViewWidget.hpp"
 
+#include <QDragMoveEvent>
+#include <QDragEnterEvent>
+#include <QMimeData>
+
 using namespace UserInterface::Widget;
 
 RomBrowserListViewWidget::RomBrowserListViewWidget(QWidget* parent) : QTableView(parent)
 {
+#ifdef DRAG_DROP
+    // configure drag & drop
+    this->setDragDropMode(QAbstractItemView::DragDropMode::DropOnly);
+    this->setAcceptDrops(true);
+    this->setDropIndicatorShown(true);
+#endif // DRAG_DROP
 }
 
 RomBrowserListViewWidget::~RomBrowserListViewWidget()
 {
+}
+
+void RomBrowserListViewWidget::dragMoveEvent(QDragMoveEvent* event)
+{
+#ifdef DRAG_DROP
+    const QMimeData* mimeData = event->mimeData();
+
+    if (!mimeData->hasUrls() || !mimeData->urls().first().isLocalFile())
+    {
+        event->ignore();
+        return;
+    }
+
+    event->acceptProposedAction();
+#endif // DRAG_DROP
+}
+
+void RomBrowserListViewWidget::dragEnterEvent(QDragEnterEvent* event)
+{
+#ifdef DRAG_DROP
+    const QMimeData* mimeData = event->mimeData();
+
+    if (!mimeData->hasUrls() || !mimeData->urls().first().isLocalFile())
+    {
+        event->ignore();
+        return;
+    }
+
+    event->acceptProposedAction();
+#endif // DRAG_DROP
+}
+
+void RomBrowserListViewWidget::dropEvent(QDropEvent* event)
+{
+    emit this->FileDropped(event);
 }
 
 void RomBrowserListViewWidget::wheelEvent(QWheelEvent* event)

@@ -185,11 +185,15 @@ void MainWindow::initializeUI(void)
             &MainWindow::on_RomBrowser_ChangeRomDirectory);
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::RomInformation, this,
             &MainWindow::on_RomBrowser_RomInformation);
+    connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::FileDropped, this,
+            &MainWindow::on_EventFilter_FileDropped);
 
     connect(this->ui_EventFilter, &EventFilter::on_EventFilter_KeyPressed, this,
             &MainWindow::on_EventFilter_KeyPressed);
     connect(this->ui_EventFilter, &EventFilter::on_EventFilter_KeyReleased, this,
             &MainWindow::on_EventFilter_KeyReleased);
+    connect(this->ui_EventFilter, &EventFilter::on_EventFilter_FileDropped, this,
+            &MainWindow::on_EventFilter_FileDropped);
 }
 
 void MainWindow::configureUI(QApplication* app, bool showUI)
@@ -1136,6 +1140,40 @@ void MainWindow::on_EventFilter_KeyReleased(QKeyEvent *event)
     int mod = Utilities::QtModKeyToSdl2ModKey(event->modifiers());
 
     CoreSetKeyUp(key, mod);
+}
+
+void MainWindow::on_EventFilter_FileDropped(QDropEvent *event)
+{
+#ifdef DRAG_DROP
+    const QMimeData *mimeData = event->mimeData();
+
+    if (!mimeData->hasUrls() || !mimeData->urls().first().isLocalFile())
+    {
+        return;
+    }
+
+    bool inEmulation     = (this->ui_Widgets->currentIndex() != 0);
+    bool confirmDragDrop = CoreSettingsGetBoolValue(SettingsID::GUI_ConfirmDragDrop);
+    if (inEmulation && confirmDragDrop)
+    {
+        QMessageBox::StandardButton reply = QMessageBox::question(this, "",
+            "Are you sure you want to launch the drag & dropped ROM?",
+            QMessageBox::Yes | QMessageBox::No);
+        if (reply == QMessageBox::No)
+        {
+            return;
+        }
+    }
+
+    QString file = mimeData->urls().first().toLocalFile();
+
+    if (inEmulation)
+    {
+        this->ui_NoSwitchToRomBrowser = true;
+    }
+
+    this->launchEmulationThread(file);
+#endif // DRAG_DROP
 }
 
 void MainWindow::on_QGuiApplication_applicationStateChanged(Qt::ApplicationState state)

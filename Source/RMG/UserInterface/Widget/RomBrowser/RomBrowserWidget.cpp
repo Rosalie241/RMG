@@ -104,6 +104,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     connect(this->listViewWidget->horizontalHeader(), &QHeaderView::customContextMenuRequested, this, &RomBrowserWidget::on_listViewWidget_headerContextMenuRequested);
     connect(this->listViewWidget, &Widget::RomBrowserListViewWidget::ZoomIn, this, &RomBrowserWidget::on_ZoomIn);
     connect(this->listViewWidget, &Widget::RomBrowserListViewWidget::ZoomOut, this, &RomBrowserWidget::on_ZoomOut);
+    connect(this->listViewWidget, &Widget::RomBrowserListViewWidget::FileDropped, this, &RomBrowserWidget::FileDropped);
 
     // set up list view's columns
     QStringList labels;
@@ -136,11 +137,13 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->gridViewWidget->setModel(this->gridViewModel);
     this->gridViewWidget->setFlow(QListView::Flow::LeftToRight);
     this->gridViewWidget->setResizeMode(QListView::Adjust);
+#ifndef DRAG_DROP
     this->gridViewWidget->setMovement(QListView::Static);
+#endif // DRAG_DROP
     this->gridViewWidget->setUniformItemSizes(CoreSettingsGetBoolValue(SettingsID::RomBrowser_GridViewUniformItemSizes));
     this->gridViewWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
     this->gridViewWidget->setViewMode(QListView::ViewMode::IconMode);
-    this->gridViewWidget->setTextElideMode(Qt::TextElideMode::ElideNone);    
+    this->gridViewWidget->setTextElideMode(Qt::TextElideMode::ElideNone);
     this->gridViewWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     this->gridViewWidget->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     this->gridViewWidget->verticalScrollBar()->setSingleStep(15);
@@ -154,6 +157,12 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     connect(this->gridViewWidget, &QListView::iconSizeChanged, this, &RomBrowserWidget::on_gridViewWidget_iconSizeChanged);
     connect(this->gridViewWidget, &Widget::RomBrowserGridViewWidget::ZoomIn, this, &RomBrowserWidget::on_ZoomIn);
     connect(this->gridViewWidget, &Widget::RomBrowserGridViewWidget::ZoomOut, this, &RomBrowserWidget::on_ZoomOut);
+    connect(this->gridViewWidget, &Widget::RomBrowserGridViewWidget::FileDropped, this, &RomBrowserWidget::FileDropped);
+
+#ifdef DRAG_DROP
+    // configure drag & drop
+    this->setAcceptDrops(true);
+#endif // DRAG_DROP
 
     // configure context menu policy
     this->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);

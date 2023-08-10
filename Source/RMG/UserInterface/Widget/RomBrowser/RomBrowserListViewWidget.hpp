@@ -25,11 +25,15 @@ public:
     ~RomBrowserListViewWidget();
 
 protected:
+    void dragMoveEvent(QDragMoveEvent* event) Q_DECL_OVERRIDE;
+    void dragEnterEvent(QDragEnterEvent* event) Q_DECL_OVERRIDE;
+    void dropEvent(QDropEvent* event) Q_DECL_OVERRIDE;
     void wheelEvent(QWheelEvent* event) Q_DECL_OVERRIDE;
 
 signals:
     void ZoomIn(void);
     void ZoomOut(void);
+    void FileDropped(QDropEvent* event);
 };
 } // namespace Widget
 } // namespace UserInterface

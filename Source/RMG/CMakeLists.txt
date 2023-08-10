@@ -24,6 +24,10 @@ if (DISCORD_RPC)
     add_definitions(-DDISCORD_RPC)
 endif(DISCORD_RPC)
 
+if (DRAG_DROP)
+    add_definitions(-DDRAG_DROP)
+endif(DRAG_DROP)
+
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2)
 
