@@ -24,6 +24,7 @@ set(RMG_AUDIO_SOURCES
     Resamplers/resamplers.cpp
     circular_buffer.cpp
     sdl_backend.cpp
+    simple_sdl_backend.cpp
     main.cpp
 )
 

@@ -33,6 +33,7 @@
 
 #include "sdl_backend.hpp"
 #include "Resamplers/resamplers.hpp"
+#include "simple_sdl_backend.hpp"
 
 #define M64P_PLUGIN_PROTOTYPES 1
 #define CORE_PLUGIN
@@ -67,6 +68,8 @@ static int VolDelta = 5;
 static int VolSDL = SDL_MIX_MAXVOLUME;
 // Muted or not
 static int VolIsMuted = 0;
+// Simple or Complex backend
+static bool l_SimpleBackend = true;
 
 /* Helper functions */
 static void ApplyVolumeSettings(void)
@@ -79,6 +82,8 @@ static void ApplyVolumeSettings(void)
     {
         VolSDL = SDL_MIX_MAXVOLUME * VolPercent / 100;
     }
+
+    simple_sdl_set_volume(VolSDL);
 }
 
 static void LoadVolumeSettings(void)
@@ -125,7 +130,21 @@ EXPORT m64p_error CALL PluginStartup(m64p_dynlib_handle CoreLibHandle, void *Con
     /* Init RMG-Core */
     if (!CoreInit(CoreLibHandle))
     {
+        DebugMessage(M64MSG_ERROR, "CoreInit() Failed: %s", CoreGetError().c_str());
         return M64ERR_SYSTEM_FAIL;
+    }
+
+    /* Init SDL */
+    for (int subsystem : {SDL_INIT_AUDIO, SDL_INIT_TIMER})
+    {
+        if (!SDL_WasInit(subsystem))
+        {
+            if (SDL_InitSubSystem(subsystem) < 0)
+            {
+                DebugMessage(M64MSG_ERROR, "SDL_Init() Failed: %s", SDL_GetError());
+                return M64ERR_SYSTEM_FAIL;
+            }
+        }
     }
 
     // apply volume settings
@@ -143,6 +162,15 @@ EXPORT m64p_error CALL PluginShutdown(void)
     /* reset some local variables */
     l_DebugCallback = nullptr;
     l_DebugCallContext = nullptr;
+
+    /* quit SDL */
+    for (int subsystem : {SDL_INIT_AUDIO, SDL_INIT_TIMER})
+    {
+        if (SDL_WasInit(subsystem))
+        {
+            SDL_QuitSubSystem(subsystem);
+        }
+    }
 
     l_PluginInit = 0;
     return M64ERR_SUCCESS;
@@ -217,22 +245,35 @@ static unsigned int dacrate2freq(unsigned int vi_clock, uint32_t dacrate)
 
 EXPORT void CALL AiDacrateChanged(int SystemType)
 {
-    if (!l_PluginInit || l_sdl_backend == nullptr)
+    if (!l_PluginInit)
         return;
 
     unsigned int frequency = dacrate2freq(vi_clock_from_system_type(SystemType), *AudioInfo.AI_DACRATE_REG);
 
-    sdl_set_frequency(l_sdl_backend, frequency);
+    if (l_SimpleBackend)
+    {
+        simple_sdl_set_frequency(frequency);
+    }
+    else
+    {
+        sdl_set_frequency(l_sdl_backend, frequency);
+    }
 }
 
 EXPORT void CALL AiLenChanged(void)
 {
-    if (!l_PluginInit || l_sdl_backend == nullptr)
+    if (!l_PluginInit)
         return;
 
-    sdl_push_samples(l_sdl_backend, AudioInfo.RDRAM + (*AudioInfo.AI_DRAM_ADDR_REG & 0xffffff), *AudioInfo.AI_LEN_REG);
-
-    sdl_synchronize_audio(l_sdl_backend);
+    if (l_SimpleBackend)
+    {
+        simple_sdl_push_samples(AudioInfo.RDRAM + (*AudioInfo.AI_DRAM_ADDR_REG & 0xffffff), *AudioInfo.AI_LEN_REG);
+    }
+    else
+    {
+        sdl_push_samples(l_sdl_backend, AudioInfo.RDRAM + (*AudioInfo.AI_DRAM_ADDR_REG & 0xffffff), *AudioInfo.AI_LEN_REG);
+        sdl_synchronize_audio(l_sdl_backend);
+    }
 }
 
 EXPORT int CALL InitiateAudio(AUDIO_INFO Audio_Info)
@@ -246,10 +287,22 @@ EXPORT int CALL InitiateAudio(AUDIO_INFO Audio_Info)
 
 EXPORT int CALL RomOpen(void)
 {
-    if (!l_PluginInit || l_sdl_backend != nullptr)
+    if (!l_PluginInit)
         return 0;
 
-    l_sdl_backend = init_sdl_backend();
+    // load the simple backend setting
+    l_SimpleBackend = CoreSettingsGetBoolValue(SettingsID::Audio_SimpleBackend);
+    if (l_SimpleBackend)
+    {
+        if (!init_simple_sdl_backend())
+        {
+            return 0;
+        }
+    }
+    else
+    {
+        l_sdl_backend = init_sdl_backend();
+    }
     return 1;
 }
 
@@ -258,6 +311,7 @@ EXPORT void CALL RomClosed(void)
     if (!l_PluginInit)
         return;
 
+    release_simple_sdl_backend();
     release_sdl_backend(l_sdl_backend);
     l_sdl_backend = nullptr;
 }
@@ -268,10 +322,13 @@ EXPORT void CALL ProcessAList(void)
 
 EXPORT void CALL SetSpeedFactor(int percentage)
 {
-    if (!l_PluginInit || l_sdl_backend == nullptr)
+    if (!l_PluginInit)
         return;
 
-    sdl_set_speed_factor(l_sdl_backend, percentage);
+    if (!l_SimpleBackend)
+    {
+        sdl_set_speed_factor(l_sdl_backend, percentage);
+    }
 }
 
 size_t ResampleAndMix(void* resampler, const struct resampler_interface* iresampler,
