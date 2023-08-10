@@ -46,9 +46,12 @@ if (USE_LTO)
     include(CheckIPOSupported)
     check_ipo_supported(RESULT ENABLE_IPO)
 
-    if(ENABLE_IPO)
-        set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
-    endif(ENABLE_IPO)
+    # ensure we don't enable LTO on Debug builds
+    if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+        if(ENABLE_IPO)
+            set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
+        endif(ENABLE_IPO)
+    endif()
 endif(USE_LTO)
 
 if (NOT PORTABLE_INSTALL AND (WIN32 OR MSYS))
