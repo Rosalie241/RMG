@@ -629,6 +629,9 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::Audio_Synchronize:
         setting = {SETTING_SECTION_AUDIO, "Synchronize", false};
         break;
+    case SettingsID::Audio_SimpleBackend:
+        setting = {SETTING_SECTION_AUDIO, "SimpleBackend", false};
+        break;
 
     case SettingsID::RSP_Version:
         setting = {SETTING_SECTION_RSP, "Version", 1.0f, "Mupen64Plus RSP HLE Plugin config parameter version number"};

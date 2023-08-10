@@ -183,6 +183,7 @@ enum class SettingsID
     Audio_Volume,
     Audio_Muted,
     Audio_Synchronize,
+    Audio_SimpleBackend,
 
     // HLE RSP Plugin Settings
     RSP_Version,
