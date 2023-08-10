@@ -68,6 +68,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->addWidget(this->emptyWidget);
     connect(this->emptyWidget, &RomBrowserEmptyWidget::SelectRomDirectory, this, &RomBrowserWidget::on_Action_ChangeRomDirectory);
     connect(this->emptyWidget, &RomBrowserEmptyWidget::Refresh, this, &RomBrowserWidget::on_Action_RefreshRomList);
+    connect(this->emptyWidget, &RomBrowserEmptyWidget::FileDropped, this, &RomBrowserWidget::FileDropped);
 
     // configure loading widget
     this->loadingWidget = new Widget::RomBrowserLoadingWidget(this);

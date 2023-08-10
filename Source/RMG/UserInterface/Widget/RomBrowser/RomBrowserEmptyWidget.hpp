@@ -25,6 +25,11 @@ public:
     RomBrowserEmptyWidget(QWidget* parent);
     ~RomBrowserEmptyWidget();
 
+protected:
+    void dragMoveEvent(QDragMoveEvent* event) Q_DECL_OVERRIDE;
+    void dragEnterEvent(QDragEnterEvent* event) Q_DECL_OVERRIDE;
+    void dropEvent(QDropEvent* event) Q_DECL_OVERRIDE;
+
 private slots:
     void on_selectRomDirectory_clicked(void);
     void on_refreshButton_clicked(void);
@@ -32,6 +37,7 @@ private slots:
 signals:
     void SelectRomDirectory(void);
     void Refresh(void);
+    void FileDropped(QDropEvent* event);
 };
 } // namespace Widget
 } // namespace UserInterface

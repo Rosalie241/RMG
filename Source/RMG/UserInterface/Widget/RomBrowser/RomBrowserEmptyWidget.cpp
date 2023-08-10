@@ -11,16 +11,57 @@
 
 #include <QLabel>
 #include <QHBoxLayout>
+#include <QDragMoveEvent>
+#include <QDragEnterEvent>
+#include <QMimeData>
 
 using namespace UserInterface::Widget;
 
 RomBrowserEmptyWidget::RomBrowserEmptyWidget(QWidget* parent) : QWidget(parent)
 {
     this->setupUi(this);
+#ifdef DRAG_DROP
+    this->setAcceptDrops(true);
+#endif // DRAG_DROP
 }
 
 RomBrowserEmptyWidget::~RomBrowserEmptyWidget()
 {
+}
+
+void RomBrowserEmptyWidget::dragMoveEvent(QDragMoveEvent* event)
+{
+#ifdef DRAG_DROP
+    const QMimeData* mimeData = event->mimeData();
+
+    if (!mimeData->hasUrls() || !mimeData->urls().first().isLocalFile())
+    {
+        event->ignore();
+        return;
+    }
+
+    event->acceptProposedAction();
+#endif // DRAG_DROP
+}
+
+void RomBrowserEmptyWidget::dragEnterEvent(QDragEnterEvent* event)
+{
+#ifdef DRAG_DROP
+    const QMimeData* mimeData = event->mimeData();
+
+    if (!mimeData->hasUrls() || !mimeData->urls().first().isLocalFile())
+    {
+        event->ignore();
+        return;
+    }
+
+    event->acceptProposedAction();
+#endif // DRAG_DROP
+}
+
+void RomBrowserEmptyWidget::dropEvent(QDropEvent* event)
+{
+    emit this->FileDropped(event);
 }
 
 void RomBrowserEmptyWidget::on_selectRomDirectory_clicked(void)
