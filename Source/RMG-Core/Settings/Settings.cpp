@@ -161,6 +161,9 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::GUI_AutomaticFullscreen:
         setting = {SETTING_SECTION_GUI, "AutomaticFullscreen", false};
         break;
+    case SettingsID::GUI_ConfirmDragDrop:
+        setting = {SETTING_SECTION_GUI, "ConfirmDragDrop", true};
+        break;
     case SettingsID::GUI_ShowVerboseLogMessages:
         setting = {SETTING_SECTION_GUI, "ShowVerboseLogMessages", false};
         break;
