@@ -798,10 +798,6 @@ static void simulate_octagon(const double deadzone, const double inputX, const d
     if(std::abs(ax) > maxAxis) ax = std::copysign(maxAxis, ax);
     if(std::abs(ay) > maxAxis) ay = std::copysign(maxAxis, ay);
 
-    // prevent floating point precision error keeping values lower than they should be prior to truncation
-    ax = std::copysign(std::abs(ax) + 1e-09, ax);
-    ay = std::copysign(std::abs(ay) + 1e-09, ay);
-
     outputX = (int)ax;
     outputY = (int)ay;
 }
