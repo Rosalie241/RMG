@@ -148,6 +148,9 @@ enum class SettingsID
     KeyBinding_RspSettings,
     KeyBinding_InputSettings,
     KeyBinding_Settings,
+    KeyBinding_IncreaseVolume,
+    KeyBinding_DecreaseVolume,
+    KeyBinding_ToggleMuteVolume,
 
     // RomBrowser Settings
     RomBrowser_Directory,

@@ -539,6 +539,15 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::KeyBinding_Settings:
         setting = {SETTING_SECTION_KEYBIND, "Settings", "Ctrl+T"};
         break;
+    case SettingsID::KeyBinding_IncreaseVolume:
+        setting = {SETTING_SECTION_KEYBIND, "IncreaseVolume", ""};
+        break;
+    case SettingsID::KeyBinding_DecreaseVolume:
+        setting = {SETTING_SECTION_KEYBIND, "DecreaseVolume", ""};
+        break;
+    case SettingsID::KeyBinding_ToggleMuteVolume:
+        setting = {SETTING_SECTION_KEYBIND, "ToggleMuteVolume", ""};
+        break;
 
     case SettingsID::RomBrowser_Directory:
         setting = {SETTING_SECTION_ROMBROWSER, "Directory", ""};
