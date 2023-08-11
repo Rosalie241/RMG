@@ -21,6 +21,7 @@
 #include <sstream>
 #include <filesystem>
 #include <fstream>
+#include <format>
 #include <iostream>
 
 //
@@ -79,7 +80,6 @@ static bool read_file_lines(std::filesystem::path file, std::vector<std::string>
 static std::filesystem::path get_cheat_file_name(CoreRomHeader romHeader, CoreRomSettings romSettings)
 {
     std::filesystem::path cheatFileName;
-    std::stringstream stringStream;
 
     // fallback to using MD5 as file name when CRC1 & CRC2 & CountryCode are 0
     if (romHeader.CRC1 == 0 && romHeader.CRC2 == 0 && romHeader.CountryCode == 0)
@@ -90,16 +90,13 @@ static std::filesystem::path get_cheat_file_name(CoreRomHeader romHeader, CoreRo
             return std::filesystem::path();
         }
 
-        stringStream << romSettings.MD5 << ".cht";
+        cheatFileName = std::format("{}.cht", romSettings.MD5);
     }
     else
     { // else use CRC1 & CRC2 & CountryCode
-        stringStream << std::uppercase << std::hex << std::setw(8) << std::setfill('0') << romHeader.CRC1 << "-";
-        stringStream << std::uppercase << std::hex << std::setw(8) << std::setfill('0') << romHeader.CRC2 << "-";
-        stringStream << std::uppercase << std::hex << std::setw(2) << (uint32_t)romHeader.CountryCode << ".cht";
+        cheatFileName = std::format("{:08X}-{:08X}-{:02X}.cht", romHeader.CRC1, romHeader.CRC2, romHeader.CountryCode);
     }
 
-    cheatFileName = stringStream.str();
     return cheatFileName;
 }
 
@@ -197,7 +194,7 @@ static std::string join_split_string(std::vector<std::string> splitStr, char sep
     return joinedString;
 }
 
-static bool parse_cheat(std::vector<std::string> lines, int startIndex, CoreCheat& cheat, int& endIndex)
+static bool parse_cheat(std::vector<std::string>& lines, int startIndex, CoreCheat& cheat, int& endIndex)
 {
     std::string error;
     std::string line;
@@ -332,7 +329,7 @@ static bool parse_cheat(std::vector<std::string> lines, int startIndex, CoreChea
     return !cheat.Name.empty() && !cheat.CheatCodes.empty();
 }
 
-static bool parse_cheat_file(std::vector<std::string> lines, CoreCheatFile& cheatFile)
+static bool parse_cheat_file(std::vector<std::string>& lines, CoreCheatFile& cheatFile)
 {
     int endIndex = -1;
     std::string line;
@@ -429,7 +426,7 @@ static bool parse_cheat_file(std::vector<std::string> lines, CoreCheatFile& chea
 
 static bool write_cheat_file(CoreCheatFile cheatFile, std::filesystem::path path)
 {
-    std::stringstream stringStream;
+    std::string lines;
     std::ofstream outputStream(path);
     std::string error;
 
@@ -446,79 +443,65 @@ static bool write_cheat_file(CoreCheatFile cheatFile, std::filesystem::path path
     // fallback to using MD5 when CRC1 & CRC2 & CountryCode are 0
     if (cheatFile.CRC1 == 0 && cheatFile.CRC2 == 0 && cheatFile.CountryCode == 0)
     {
-        stringStream << "[" << cheatFile.MD5 << "]" << std::endl;
+        lines += std::format("[{}]\n", cheatFile.MD5);
     }
     else
     { // else use CRC1 & CRC2 & CountryCode
-        stringStream << "[" << std::uppercase << std::hex << std::setw(8) << std::setfill('0') << cheatFile.CRC1 << "-" 
-                        << std::uppercase << std::hex << std::setw(8) << std::setfill('0') << cheatFile.CRC2 << "-C:" 
-                        << std::uppercase << std::hex << std::setw(2) << std::setfill('0') << cheatFile.CountryCode << "]" << std::endl;
+        lines += std::format("[{:08X}-{:08X}-C:{:02X}]\n", cheatFile.CRC1, cheatFile.CRC2, cheatFile.CountryCode);
     }
 
-    stringStream << "Name=" << cheatFile.Name << std::endl << std::endl;
+    lines += std::format("Name={}\n\n", cheatFile.Name);
 
     for (CoreCheat& cheat : cheatFile.Cheats)
     {
-        stringStream << "$" << cheat.Name << std::endl;
-    
+        lines += std::format("${}\n", cheat.Name);
+
         if (!cheat.Author.empty())
         {
-            stringStream << "Author=" << cheat.Author << std::endl;
+            lines += std::format("Author={}\n", cheat.Author);
         }
-    
+
         if (!cheat.Note.empty())
         {
-            stringStream << "Note=" << cheat.Note << std::endl;
+            lines += std::format("Note={}\n", cheat.Note);
         }
-    
+
         for (CoreCheatCode& code : cheat.CheatCodes)
         {
             if (code.UseOptions)
             {
-                std::stringstream tmpStringStream;
-                std::string str;
-                tmpStringStream << std::uppercase << std::hex << std::setw(4) << std::setfill('0') << code.Value;
-    
-                str = tmpStringStream.str();
-    
-                // create string with required size
-                std::string questionMarkString;
-                for (int i = 0; i < code.OptionSize; i++)
-                    questionMarkString += "?";
-    
-                str.replace(code.OptionIndex, code.OptionSize, questionMarkString);
-    
-                stringStream << std::uppercase << std::hex << std::setw(4) << std::setfill('0') << code.Address << " " << str << std::endl;
-    
+                std::string value = std::format("{:04X}", code.Value);
+
+                // insert question mark string
+                value.replace(code.OptionIndex, code.OptionSize, code.OptionSize, '?');
+
+                lines += std::format("{:04X} {}\n", code.Address, value);
             }
             else
             {
-                stringStream << std::uppercase << std::hex << std::setw(8) << std::setfill('0') << code.Address << " " 
-                             << std::uppercase << std::hex << std::setw(4) << std::setfill('0') << code.Value << std::endl;
+                lines += std::format("{:08X} {:04X}\n", code.Address, code.Value);
             }
         }
-    
+
         if (cheat.HasOptions)
         {
             for (CoreCheatOption& option : cheat.CheatOptions)
             {
-                stringStream << std::uppercase << std::hex << std::setw(option.Size) << std::setfill('0') << option.Value << " " << option.Name << std::endl;
+                lines += std::format("{:0{}X} {}\n", option.Value, option.Size, option.Name);
             }
         }
 
         // extra newline
-        stringStream << std::endl;
+        lines += "\n";
     }
 
-    outputStream << stringStream.str();
+    outputStream << lines;
     outputStream.close();
     return true;
 }
 
 bool combine_cheat_code_and_option(CoreCheatCode code, CoreCheatOption option, int32_t& combinedValue)
 {
-    std::stringstream codeValueStringStream;
-    std::stringstream optionValueStringStream;
     std::string codeValueString;
     std::string optionValueString;
 
@@ -534,11 +517,8 @@ bool combine_cheat_code_and_option(CoreCheatCode code, CoreCheatOption option, i
         return false;
     }
 
-    codeValueStringStream << std::hex << std::setw(4) << std::setfill('0') << code.Value;
-    codeValueString = codeValueStringStream.str();
-
-    optionValueStringStream << std::hex << std::setw(option.Size) << std::setfill('0') << option.Value;
-    optionValueString = optionValueStringStream.str();
+    codeValueString   = std::format("{:04X}", code.Value);
+    optionValueString = std::format("{:0{}X}", option.Value, option.Size);
 
     // insert option
     codeValueString.replace(code.OptionIndex, code.OptionSize, optionValueString);
@@ -642,46 +622,28 @@ bool CoreParseCheat(std::vector<std::string> lines, CoreCheat& cheat)
 
 bool CoreGetCheatLines(CoreCheat cheat, std::vector<std::string>& codeLines, std::vector<std::string>& optionLines)
 {
-    std::stringstream stringStream;
-
     for (CoreCheatCode& code : cheat.CheatCodes)
     {
         if (code.UseOptions)
         {
-            std::stringstream tmpStringStream;
-            std::string str;
-            tmpStringStream << std::uppercase << std::hex << std::setw(4) << std::setfill('0') << code.Value;
+            std::string value = std::format("{:04X}", code.Value);
 
-            str = tmpStringStream.str();
+            // insert question mark string
+            value.replace(code.OptionIndex, code.OptionSize, code.OptionSize, '?');
 
-            // create string with required size
-            std::string questionMarkString;
-            for (int i = 0; i < code.OptionSize; i++)
-                questionMarkString += "?";
-
-            str.replace(code.OptionIndex, code.OptionSize, questionMarkString);
-
-            stringStream << std::uppercase << std::hex << std::setw(4) << std::setfill('0') << code.Address << " " << str;
+            codeLines.push_back(std::format("{:04X} {}", code.Address, value));
         }
         else
         {
-            stringStream << std::uppercase << std::hex << std::setw(8) << std::setfill('0') << code.Address << " " 
-                         << std::uppercase << std::hex << std::setw(4) << std::setfill('0') << code.Value;
+            codeLines.push_back(std::format("{:08X} {:04X}", code.Address, code.Value));
         }
-
-        codeLines.push_back(stringStream.str());
-        // reset stringstream
-        stringStream.str("");
     }
 
     if (cheat.HasOptions)
     {
         for (CoreCheatOption& option : cheat.CheatOptions)
         {
-            stringStream << std::uppercase << std::hex << std::setw(option.Size) << std::setfill('0') << option.Value << " " << option.Name;
-            optionLines.push_back(stringStream.str());
-            // reset stringstream
-            stringStream.str("");
+            optionLines.push_back(std::format("{:0{}X} {}", option.Value, option.Size, option.Name));
         }
     }
 
@@ -867,7 +829,7 @@ bool CoreHasCheatOptionSet(CoreCheat cheat)
 }
 
 bool CoreSetCheatOption(CoreCheat cheat, CoreCheatOption option)
-{   
+{
     CoreRomSettings romSettings;
     std::string settingSection;
     std::string settingKey;
@@ -973,7 +935,7 @@ bool CoreApplyCheats(void)
         return false;
     }
 
-    for (CoreCheat& cheat : cheats)
+    for (const CoreCheat& cheat : cheats)
     {
         skipCheat = false;
 
@@ -982,7 +944,7 @@ bool CoreApplyCheats(void)
             continue;
         }
 
-        for (CoreCheatCode& code : cheat.CheatCodes)
+        for (const CoreCheatCode& code : cheat.CheatCodes)
         {
             if (code.UseOptions)
             {
@@ -1048,7 +1010,7 @@ bool CoreClearCheats(void)
         return false;
     }
 
-    for (l_LoadedCheat& loadedCheat : l_LoadedCheats)
+    for (const l_LoadedCheat& loadedCheat : l_LoadedCheats)
     {
         ret = m64p::Core.CheatEnabled(loadedCheat.cheat.Name.c_str(), 0);
         if (ret != M64ERR_SUCCESS)
