@@ -76,6 +76,9 @@ void AddCheatDialog::setPlainTextEditLines(QPlainTextEdit* plainTextEdit, std::v
     // reset cursor
     plainTextEdit->moveCursor(QTextCursor::Start);
     plainTextEdit->ensureCursorVisible();
+
+    // reset redo & undo stack
+    plainTextEdit->document()->clearUndoRedoStacks();
 }
 
 void AddCheatDialog::showErrorMessage(QString error, QString details)
