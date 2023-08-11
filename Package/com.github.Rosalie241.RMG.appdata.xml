@@ -33,6 +33,20 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.4.8" date="2023-08-11" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix undo and redo stack not being cleared in the edit cheat dialog</li>
+          <li>Add hotkeys to increase, decrease and mute the volume (see the new Audio tab in the Hotkeys tab of the settings dialog)</li>
+          <li>Add support for drag and drop (the flatpak has it disabled due to Qt not supporting drag and drop in the file portal yet)</li>
+          <li>Add an implementation selection in RMG-Audio (see the advanced audio settings, the simple implementation might solve some audio issues for some people)</li>
+          <li>Improve loading time duration of the ROM browser (the ROM browser should load faster when ROM entries are in the ROM browser cache)</li>
+          <li>Improve control stick behavior in RMG-Input (thank you kev4cards)</li>
+          <li>Improve cheats and settings code in RMG-Core</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.4.7" date="2023-08-05" type="stable">
       <description>
         <p>Changes:</p>
