@@ -17,6 +17,7 @@
 
 #include <sstream>
 #include <algorithm>
+#include <variant>
 
 //
 // Local Defines
@@ -28,74 +29,11 @@
 // Local Structures
 //
 
-struct l_DynamicValue
-{
-    int intValue;
-    bool boolValue;
-    float floatValue;
-    std::string stringValue;
-    std::vector<int> intListValue;
-
-    m64p_type valueType;
-
-    l_DynamicValue() {}
-
-    l_DynamicValue(int value)
-    {
-        intValue = value;
-        valueType = M64TYPE_INT;
-    }
-
-    l_DynamicValue(bool value)
-    {
-        boolValue = value;
-        valueType = M64TYPE_BOOL;
-    }
-
-    l_DynamicValue(float value)
-    {
-        floatValue = value;
-        valueType = M64TYPE_FLOAT;
-    }
-
-    l_DynamicValue(const char* value)
-    {
-        stringValue = std::string(value);
-        valueType = M64TYPE_STRING;
-    }
-
-    l_DynamicValue(std::string value)
-    {
-        stringValue = value;
-        valueType = M64TYPE_STRING;
-    }
-
-    l_DynamicValue(std::filesystem::path value)
-    {
-        stringValue = value.string();
-        valueType = M64TYPE_STRING;
-    }
-
-    l_DynamicValue(std::vector<int> value)
-    {
-        intListValue = value;
-        // convert list to string
-        std::string value_str;
-        for (int num : value)
-        {
-            value_str += std::to_string(num);
-            value_str += ";";
-        }
-        stringValue = value_str;
-        valueType = M64TYPE_STRING;
-    }
-};
-
 struct l_Setting
 {
     std::string Section;
     std::string Key;
-    l_DynamicValue DefaultValue = 0;
+    std::variant<std::monostate, int, bool, float, std::string> DefaultValue = std::monostate();
     std::string Description = "";
     bool ForceUseSetOnce    = false;
     bool ForceUseSetAlways  = false;
@@ -254,10 +192,10 @@ static l_Setting get_setting(SettingsID settingId)
         setting = {SETTING_SECTION_CORE, "OverrideUserDirectories", true};
         break;
     case SettingsID::Core_UserDataDirOverride:
-        setting = {SETTING_SECTION_CORE, "UserDataDirectory", CoreGetDefaultUserDataDirectory()};
+        setting = {SETTING_SECTION_CORE, "UserDataDirectory", CoreGetDefaultUserDataDirectory().string()};
         break;
     case SettingsID::Core_UserCacheDirOverride:
-        setting = {SETTING_SECTION_CORE, "UserCacheDirectory", CoreGetDefaultUserCacheDirectory()};
+        setting = {SETTING_SECTION_CORE, "UserCacheDirectory", CoreGetDefaultUserCacheDirectory().string()};
         break;
 
     case SettingsID::Core_OverrideGameSpecificSettings:
@@ -315,13 +253,13 @@ static l_Setting get_setting(SettingsID settingId)
         break;
 
     case SettingsID::Core_ScreenshotPath:
-        setting = {SETTING_SECTION_M64P, "ScreenshotPath", CoreGetDefaultScreenshotDirectory(), "", true};
+        setting = {SETTING_SECTION_M64P, "ScreenshotPath", CoreGetDefaultScreenshotDirectory().string(), "", true};
         break;
     case SettingsID::Core_SaveStatePath:
-        setting = {SETTING_SECTION_M64P, "SaveStatePath", CoreGetDefaultSaveStateDirectory(), "", true};
+        setting = {SETTING_SECTION_M64P, "SaveStatePath", CoreGetDefaultSaveStateDirectory().string(), "", true};
         break;
     case SettingsID::Core_SaveSRAMPath:
-        setting = {SETTING_SECTION_M64P, "SaveSRAMPath", CoreGetDefaultSaveDirectory(), "", true};
+        setting = {SETTING_SECTION_M64P, "SaveSRAMPath", CoreGetDefaultSaveDirectory().string(), "", true};
         break;
 
     case SettingsID::Core_64DD_JapaneseIPL:
@@ -568,13 +506,13 @@ static l_Setting get_setting(SettingsID settingId)
         setting = {SETTING_SECTION_ROMBROWSER, "MaxItems", 250};
         break;
     case SettingsID::RomBrowser_ColumnVisibility:
-        setting = {SETTING_SECTION_ROMBROWSER, "ColumnVisibility", std::vector<int>({1, 1, 1, 0, 0, 0, 0, 0, 0})};
+        setting = {SETTING_SECTION_ROMBROWSER, "ColumnVisibility", std::string("1;1;1;0;0;0;0;0;0;")};
         break;
     case SettingsID::RomBrowser_ColumnOrder:
-        setting = {SETTING_SECTION_ROMBROWSER, "ColumnOrder", std::vector<int>({0, 1, 2, 3, 4, 5, 6, 7, 8})};
+        setting = {SETTING_SECTION_ROMBROWSER, "ColumnOrder", std::string("0;1;2;3;4;5;6;7;8;")};
         break;
     case SettingsID::RomBrowser_ColumnSizes:
-        setting = {SETTING_SECTION_ROMBROWSER, "ColumnSizes", std::vector<int>({-1, -1, -1, -1, -1, -1, -1, -1, -1})};
+        setting = {SETTING_SECTION_ROMBROWSER, "ColumnSizes", std::string("-1;-1;-1;-1;-1;-1;-1;-1;-1;")};
         break;
     case SettingsID::RomBrowser_SortAfterSearch:
         setting = {SETTING_SECTION_ROMBROWSER, "SortAfterSearch", true};
@@ -1746,9 +1684,8 @@ bool CoreSettingsUpgrade(void)
 bool CoreSettingsSetupDefaults(void)
 {
     l_Setting setting;
-    bool ret, hasForceUsedSetOnce;
-
-    hasForceUsedSetOnce = CoreSettingsGetBoolValue(SettingsID::Settings_HasForceUsedSetOnce);
+    bool ret = false;
+    bool hasForceUsedSetOnce = CoreSettingsGetBoolValue(SettingsID::Settings_HasForceUsedSetOnce);
 
     for (int i = 0; i < (int)SettingsID::Invalid; i++)
     {
@@ -1759,29 +1696,40 @@ bool CoreSettingsSetupDefaults(void)
             continue;
         }
 
-        switch (setting.DefaultValue.valueType)
+        switch (setting.DefaultValue.index())
         {
-        case M64TYPE_STRING:
-        {
-            if (setting.ForceUseSetAlways ||
-                (setting.ForceUseSetOnce && !hasForceUsedSetOnce))
+            case 1:
             {
-                ret = config_option_set(setting.Section, setting.Key, M64TYPE_STRING, (void*)setting.DefaultValue.stringValue.c_str());
-            }
-            else if (!setting.ForceUseSetOnce && !setting.ForceUseSetAlways)
+                int value = std::get<int>(setting.DefaultValue);
+                ret = config_option_default_set(setting.Section, setting.Key, M64TYPE_INT, &value, setting.Description.c_str());
+            } break;
+            case 2:
             {
-                ret = config_option_default_set(setting.Section, setting.Key, M64TYPE_STRING, (void*)setting.DefaultValue.stringValue.c_str(), setting.Description.c_str());
-            }
-        } break;
-        case M64TYPE_INT:
-            ret = config_option_default_set(setting.Section, setting.Key, M64TYPE_INT, &setting.DefaultValue.intValue, setting.Description.c_str());
-            break;
-        case M64TYPE_BOOL:
-            ret = config_option_default_set(setting.Section, setting.Key, M64TYPE_BOOL, &setting.DefaultValue.boolValue, setting.Description.c_str());
-            break;
-        case M64TYPE_FLOAT:
-            ret = config_option_default_set(setting.Section, setting.Key, M64TYPE_FLOAT, &setting.DefaultValue.floatValue, setting.Description.c_str());
-            break;
+                bool value = std::get<bool>(setting.DefaultValue);
+                ret = config_option_default_set(setting.Section, setting.Key, M64TYPE_BOOL, &value, setting.Description.c_str());
+            } break;
+            case 3:
+            {
+                float value = std::get<float>(setting.DefaultValue);
+                ret = config_option_default_set(setting.Section, setting.Key, M64TYPE_FLOAT, &value, setting.Description.c_str());
+            } break;
+            case 4:
+            {
+                std::string value = std::get<std::string>(setting.DefaultValue);
+                if (setting.ForceUseSetAlways ||
+                    (setting.ForceUseSetOnce && !hasForceUsedSetOnce))
+                {
+                    ret = config_option_set(setting.Section, setting.Key, M64TYPE_STRING, (void*)value.c_str());
+                }
+                else if (!setting.ForceUseSetOnce && !setting.ForceUseSetAlways)
+                {
+                    ret = config_option_default_set(setting.Section, setting.Key, M64TYPE_STRING, (void*)value.c_str(), setting.Description.c_str());
+                }
+            } break;
+            default:
+            {
+                ret = false;
+            } break;
         }
 
         if (!ret)
@@ -1991,37 +1939,43 @@ bool CoreSettingsSetValue(std::string section, std::string key, std::vector<std:
 int CoreSettingsGetDefaultIntValue(SettingsID settingId)
 {
     l_Setting setting = get_setting(settingId);
-    return setting.DefaultValue.intValue;
+    return std::get<int>(setting.DefaultValue);
 }
 
 bool CoreSettingsGetDefaultBoolValue(SettingsID settingId)
 {
     l_Setting setting = get_setting(settingId);
-    return setting.DefaultValue.boolValue;
+    return std::get<bool>(setting.DefaultValue);
 }
 
 float CoreSettingsGetDefaultFloatValue(SettingsID settingId)
 {
     l_Setting setting = get_setting(settingId);
-    return setting.DefaultValue.floatValue;
+    return std::get<float>(setting.DefaultValue);
 }
 
 std::string CoreSettingsGetDefaultStringValue(SettingsID settingId)
 {
     l_Setting setting = get_setting(settingId);
-    return setting.DefaultValue.stringValue;
+    return std::get<std::string>(setting.DefaultValue);
 }
 
 std::vector<int> CoreSettingsGetDefaultIntListValue(SettingsID settingId)
 {
     l_Setting setting = get_setting(settingId);
-    return setting.DefaultValue.intListValue;
+    std::string string = std::get<std::string>(setting.DefaultValue);
+    std::vector<int> intList;
+    if (!string_to_int_list(string, intList))
+    {
+        return std::vector<int>();
+    }
+    return intList;
 }
 
 int CoreSettingsGetIntValue(SettingsID settingId)
 {
     l_Setting setting = get_setting(settingId);
-    int value = setting.DefaultValue.intValue;
+    int value = setting.DefaultValue.index() == 0 ? 0 : std::get<int>(setting.DefaultValue);
     config_option_get(setting.Section, setting.Key, M64TYPE_INT, &value, sizeof(value));
     return value;
 }
@@ -2029,7 +1983,7 @@ int CoreSettingsGetIntValue(SettingsID settingId)
 bool CoreSettingsGetBoolValue(SettingsID settingId)
 {
     l_Setting setting = get_setting(settingId);
-    int value = setting.DefaultValue.boolValue ? 1 : 0;
+    int value = setting.DefaultValue.index() == 0 ? 0 : (std::get<bool>(setting.DefaultValue) ? 1 : 0);
     config_option_get(setting.Section, setting.Key, M64TYPE_BOOL, &value, sizeof(value));
     return value > 0;
 }
@@ -2037,7 +1991,7 @@ bool CoreSettingsGetBoolValue(SettingsID settingId)
 float CoreSettingsGetFloatValue(SettingsID settingId)
 {
     l_Setting setting = get_setting(settingId);
-    float value = setting.DefaultValue.floatValue;
+    float value = setting.DefaultValue.index() == 0 ? 0.0f : std::get<float>(setting.DefaultValue);
     config_option_get(setting.Section, setting.Key, M64TYPE_FLOAT, &value, sizeof(value));
     return value;
 }
@@ -2065,7 +2019,7 @@ std::vector<std::string> CoreSettingsGetStringListValue(SettingsID settingId)
 int CoreSettingsGetIntValue(SettingsID settingId, std::string section)
 {
     l_Setting setting = get_setting(settingId);
-    int value = setting.DefaultValue.intValue;
+    int value = setting.DefaultValue.index() == 0 ? 0 : std::get<int>(setting.DefaultValue);
     config_option_get(section, setting.Key, M64TYPE_INT, &value, sizeof(value));
     return value;
 }
@@ -2073,7 +2027,7 @@ int CoreSettingsGetIntValue(SettingsID settingId, std::string section)
 bool CoreSettingsGetBoolValue(SettingsID settingId, std::string section)
 {
     l_Setting setting = get_setting(settingId);
-    int value = setting.DefaultValue.boolValue;
+    int value = setting.DefaultValue.index() == 0 ? 0 : (std::get<bool>(setting.DefaultValue) ? 1 : 0);
     config_option_get(section, setting.Key, M64TYPE_BOOL, &value, sizeof(value));
     return value;
 }
@@ -2081,7 +2035,7 @@ bool CoreSettingsGetBoolValue(SettingsID settingId, std::string section)
 float CoreSettingsGetFloatValue(SettingsID settingId, std::string section)
 {
     l_Setting setting = get_setting(settingId);
-    float value = setting.DefaultValue.floatValue;
+    float value = setting.DefaultValue.index() == 0 ? 0.0f : std::get<float>(setting.DefaultValue);
     config_option_get(section, setting.Key, M64TYPE_FLOAT, &value, sizeof(value));
     return value;
 }
