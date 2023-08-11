@@ -1147,7 +1147,8 @@ void MainWindow::on_EventFilter_FileDropped(QDropEvent *event)
 #ifdef DRAG_DROP
     const QMimeData *mimeData = event->mimeData();
 
-    if (!mimeData->hasUrls() || !mimeData->urls().first().isLocalFile())
+    if (!mimeData->hasUrls() || mimeData->urls().empty() ||
+        !mimeData->urls().first().isLocalFile())
     {
         return;
     }
