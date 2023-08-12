@@ -74,6 +74,10 @@ if (PORTABLE_INSTALL)
     add_definitions(-DPORTABLE_INSTALL)
 endif(PORTABLE_INSTALL)
 
+if (USE_LIBFMT)
+    add_definitions(-DUSE_LIBFMT)
+endif(USE_LIBFMT)
+
 add_library(RMG-Core SHARED ${RMG_CORE_SOURCES})
 
 if(UNIX)
@@ -99,5 +103,7 @@ endif(DISCORD_RPC)
 target_include_directories(RMG-Core PRIVATE 
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
+    # TODO: remove this in the future
+    ${CMAKE_CURRENT_SOURCE_DIR}/../3rdParty/fmt/include/
     ${MINIZIP_INCLUDE_DIRS}
 )
