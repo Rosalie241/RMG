@@ -98,11 +98,8 @@ static void my_audio_callback(void* userdata, unsigned char* stream, int len)
     /* mark the time, for synchronization on the input side */
     sdl_backend->last_cb_time = SDL_GetTicks();
 
+    unsigned int newsamplerate = sdl_backend->output_frequency * 100 / sdl_backend->speed_factor;
     unsigned int oldsamplerate = sdl_backend->input_frequency;
-    unsigned int newsamplerate = sdl_backend->output_frequency * 100;
-    if (sdl_backend->speed_factor > 0) // account for when the speed factor is 0
-        newsamplerate /= sdl_backend->speed_factor;
-
     size_t needed = (len * oldsamplerate) / newsamplerate;
     size_t available;
     size_t consumed;
@@ -319,12 +316,6 @@ void sdl_push_samples(struct sdl_backend* sdl_backend, const void* src, size_t s
     /* We need to lock audio before accessing cbuff */
     SDL_LockAudio();
     unsigned char* dst = (unsigned char*)cbuff_head(&sdl_backend->primary_buffer, &available);
-    if (dst == nullptr)
-    {
-        SDL_UnlockAudio();
-        return;
-    }
-
     if (size <= available)
     {
         /* Confusing logic but, for LittleEndian host using memcpy will result in swapped channels,

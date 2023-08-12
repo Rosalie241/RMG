@@ -51,8 +51,7 @@ void release_cbuff(struct circular_buffer* cbuff)
 
 void* cbuff_head(const struct circular_buffer* cbuff, size_t* available)
 {
-    if (cbuff->head > cbuff->size)
-        return nullptr;
+    assert(cbuff->head <= cbuff->size);
 
     *available = cbuff->size - cbuff->head;
     return (unsigned char*)cbuff->data + cbuff->head;
@@ -68,8 +67,7 @@ void* cbuff_tail(const struct circular_buffer* cbuff, size_t* available)
 
 void produce_cbuff_data(struct circular_buffer* cbuff, size_t amount)
 {
-    if (cbuff->head + amount > cbuff->size)
-        return;
+    assert(cbuff->head + amount <= cbuff->size);
 
     cbuff->head += amount;
 }
@@ -77,8 +75,7 @@ void produce_cbuff_data(struct circular_buffer* cbuff, size_t amount)
 
 void consume_cbuff_data(struct circular_buffer* cbuff, size_t amount)
 {
-    if (cbuff->head < amount)
-        return;
+    assert(cbuff->head >= amount);
 
     memmove(cbuff->data, (unsigned char*)cbuff->data + amount, cbuff->head - amount);
     cbuff->head -= amount;
