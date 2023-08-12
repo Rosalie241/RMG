@@ -33,6 +33,15 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.5.0" date="2023-08-12" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix AppImage not working on LTS distributions</li>
+          <li>Fix audio issues by reverting the audio changes from v0.4.8</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.4.9" date="2023-08-12" type="stable">
       <description>
         <p>Changes:</p>
