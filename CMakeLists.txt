@@ -12,6 +12,7 @@ option(VRU              "Enables VRU support in RMG-Input" ON)
 option(USE_CCACHE       "Enables usage of ccache when ccache has been found" ON)
 option(USE_LTO          "Enables building with LTO/IPO when compiler supports it" ON)
 option(NO_RUST          "Disables the building of rust subprojects" OFF)
+option(USE_LIBFMT       "Enables usage of libfmt instead of using std::format" OFF)
 
 project(RMG)
 
