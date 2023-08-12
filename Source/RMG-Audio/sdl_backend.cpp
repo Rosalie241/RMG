@@ -151,6 +151,24 @@ static void sdl_init_audio_device(struct sdl_backend* sdl_backend)
     SDL_AudioSpec desired, obtained;
 
     sdl_backend->error = 0;
+
+    if (SDL_WasInit(SDL_INIT_AUDIO|SDL_INIT_TIMER) == (SDL_INIT_AUDIO|SDL_INIT_TIMER) )
+    {
+        DebugMessage(M64MSG_VERBOSE, "sdl_init_audio_device(): SDL Audio sub-system already initialized.");
+
+        SDL_PauseAudio(1);
+        SDL_CloseAudio();
+    }
+    else
+    {
+        if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_TIMER) < 0)
+        {
+            DebugMessage(M64MSG_ERROR, "Failed to initialize SDL audio subsystem.");
+            sdl_backend->error = 1;
+            return;
+        }
+    }
+
     sdl_backend->paused_for_sync = 1;
 
     /* reload these because they gets re-assigned from SDL data below, and sdl_init_audio_device can be called more than once */
@@ -221,7 +239,15 @@ static void sdl_init_audio_device(struct sdl_backend* sdl_backend)
 
 static void release_audio_device(struct sdl_backend* sdl_backend)
 {
-    SDL_CloseAudio();
+    if (SDL_WasInit(SDL_INIT_AUDIO) != 0) {
+        SDL_PauseAudio(1);
+        SDL_CloseAudio();
+        SDL_QuitSubSystem(SDL_INIT_AUDIO);
+    }
+
+    if (SDL_WasInit(SDL_INIT_TIMER) != 0) {
+        SDL_QuitSubSystem(SDL_INIT_TIMER);
+    }
 }
 
 struct sdl_backend* init_sdl_backend(void)

@@ -295,31 +295,6 @@
         </layout>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_7">
-         <item>
-          <widget class="QLabel" name="label_6">
-           <property name="text">
-            <string>Implementation</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="implementationComboBox">
-           <item>
-            <property name="text">
-             <string>default</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>simple</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
         <widget class="QCheckBox" name="swapChannelsCheckBox">
          <property name="text">
           <string>Swap Left And Right Channel</string>
