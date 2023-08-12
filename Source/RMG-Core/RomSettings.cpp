@@ -165,7 +165,7 @@ bool CoreApplyRomSettingsOverlay(void)
     }
 
     settings.SaveType = CoreSettingsGetIntValue(SettingsID::Game_SaveType, settings.MD5);
-    settings.DisableExtraMem = CoreSettingsGetIntValue(SettingsID::Game_DisableExtraMem, settings.MD5);
+    settings.DisableExtraMem = CoreSettingsGetBoolValue(SettingsID::Game_DisableExtraMem, settings.MD5);
     settings.CountPerOp = CoreSettingsGetIntValue(SettingsID::Game_CountPerOp, settings.MD5);
     settings.SiDMADuration = CoreSettingsGetIntValue(SettingsID::Game_SiDmaDuration, settings.MD5);
 
