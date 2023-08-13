@@ -133,16 +133,16 @@ static l_Setting get_setting(SettingsID settingId)
         setting = {SETTING_SECTION_GUI, "StatusBar", true};
         break;
     case SettingsID::GUI_Theme:
-        setting = {SETTING_SECTION_GUI, "Theme", "Native"};
+        setting = {SETTING_SECTION_GUI, "Theme", std::string("Native")};
         break;
     case SettingsID::GUI_IconTheme:
-        setting = {SETTING_SECTION_GUI, "IconTheme", "Automatic"};
+        setting = {SETTING_SECTION_GUI, "IconTheme", std::string("Automatic")};
         break;
     case SettingsID::GUI_CheckForUpdates:
         setting = {SETTING_SECTION_GUI, "CheckForUpdates", true};
         break;
     case SettingsID::GUI_LastUpdateCheck:
-        setting = {SETTING_SECTION_GUI, "LastUpdateCheck", ""};
+        setting = {SETTING_SECTION_GUI, "LastUpdateCheck", std::string("")};
         break;
     case SettingsID::GUI_DiscordRpc:
         setting = {SETTING_SECTION_GUI, "DiscordRpc", true};
@@ -154,36 +154,36 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::Core_GFX_Plugin:
         setting = {SETTING_SECTION_CORE, "GFX_Plugin", 
 #ifdef _WIN32
-                    "mupen64plus-video-GLideN64.dll",
+                    std::string("mupen64plus-video-GLideN64.dll"),
 #else
-                    "mupen64plus-video-GLideN64.so",
+                    std::string("mupen64plus-video-GLideN64.so"),
 #endif // _WIN32
                   };
         break;
     case SettingsID::Core_AUDIO_Plugin:
         setting = {SETTING_SECTION_CORE, "AUDIO_Plugin", 
 #ifdef _WIN32
-                    "RMG-Audio.dll",
+                    std::string("RMG-Audio.dll"),
 #else
-                    "RMG-Audio.so",
+                    std::string("RMG-Audio.so"),
 #endif // _WIN32
                   };
         break;
     case SettingsID::Core_INPUT_Plugin:
         setting = {SETTING_SECTION_CORE, "INPUT_Plugin", 
 #ifdef _WIN32
-                    "RMG-Input.dll",
+                    std::string("RMG-Input.dll"),
 #else
-                    "RMG-Input.so",
+                    std::string("RMG-Input.so"),
 #endif // _WIN32
                   };
         break;
     case SettingsID::Core_RSP_Plugin:
         setting = {SETTING_SECTION_CORE, "RSP_Plugin", 
 #ifdef _WIN32
-                    "mupen64plus-rsp-hle.dll",
+                    std::string("mupen64plus-rsp-hle.dll"),
 #else
-                    "mupen64plus-rsp-hle.so",
+                    std::string("mupen64plus-rsp-hle.so"),
 #endif // _WIN32
                   };
         break;
@@ -263,41 +263,41 @@ static l_Setting get_setting(SettingsID settingId)
         break;
 
     case SettingsID::Core_64DD_JapaneseIPL:
-        setting = {SETTING_SECTION_64DD, "64DD_JapaneseIPL", ""};
+        setting = {SETTING_SECTION_64DD, "64DD_JapaneseIPL", std::string("")};
         break;
     case SettingsID::Core_64DD_AmericanIPL:
-        setting = {SETTING_SECTION_64DD, "64DD_AmericanIPL", ""};
+        setting = {SETTING_SECTION_64DD, "64DD_AmericanIPL", std::string("")};
         break;
     case SettingsID::Core_64DD_DevelopmentIPL:
-        setting = {SETTING_SECTION_64DD, "64DD_DevelopmentIPL", ""};
+        setting = {SETTING_SECTION_64DD, "64DD_DevelopmentIPL", std::string("")};
         break;
     case SettingsID::Core_64DD_SaveDiskFormat:
         setting = {SETTING_SECTION_M64P, "SaveDiskFormat", 1};
         break;
 
     case SettingsID::Core_Gameboy_P1_Rom:
-        setting = {SETTING_SECTION_GB, "Gameboy_P1_Rom", ""};
+        setting = {SETTING_SECTION_GB, "Gameboy_P1_Rom", std::string("")};
         break;
     case SettingsID::Core_Gameboy_P1_Save:
-        setting = {SETTING_SECTION_GB, "Gameboy_P1_Save", ""};
+        setting = {SETTING_SECTION_GB, "Gameboy_P1_Save", std::string("")};
         break;
     case SettingsID::Core_Gameboy_P2_Rom:
-        setting = {SETTING_SECTION_GB, "Gameboy_P2_Rom", ""};
+        setting = {SETTING_SECTION_GB, "Gameboy_P2_Rom", std::string("")};
         break;
     case SettingsID::Core_Gameboy_P2_Save:
-        setting = {SETTING_SECTION_GB, "Gameboy_P2_Save", ""};
+        setting = {SETTING_SECTION_GB, "Gameboy_P2_Save", std::string("")};
         break;
     case SettingsID::Core_Gameboy_P3_Rom:
-        setting = {SETTING_SECTION_GB, "Gameboy_P3_Rom", ""};
+        setting = {SETTING_SECTION_GB, "Gameboy_P3_Rom", std::string("")};
         break;
     case SettingsID::Core_Gameboy_P3_Save:
-        setting = {SETTING_SECTION_GB, "Gameboy_P3_Save", ""};
+        setting = {SETTING_SECTION_GB, "Gameboy_P3_Save", std::string("")};
         break;
     case SettingsID::Core_Gameboy_P4_Rom:
-        setting = {SETTING_SECTION_GB, "Gameboy_P4_Rom", ""};
+        setting = {SETTING_SECTION_GB, "Gameboy_P4_Rom", std::string("")};
         break;
     case SettingsID::Core_Gameboy_P4_Save:
-        setting = {SETTING_SECTION_GB, "Gameboy_P4_Save", ""};
+        setting = {SETTING_SECTION_GB, "Gameboy_P4_Save", std::string("")};
         break;
 
     case SettingsID::Game_OverrideSettings:
@@ -330,171 +330,171 @@ static l_Setting get_setting(SettingsID settingId)
         break;
 
     case SettingsID::Game_GFX_Plugin:
-        setting = {"", "GFX_Plugin", ""};
+        setting = {"", "GFX_Plugin", std::string("")};
         break;
     case SettingsID::Game_AUDIO_Plugin:
-        setting = {"", "AUDIO_Plugin", ""};
+        setting = {"", "AUDIO_Plugin", std::string("")};
         break;
     case SettingsID::Game_INPUT_Plugin:
-        setting = {"", "INPUT_Plugin", ""};
+        setting = {"", "INPUT_Plugin", std::string("")};
         break;
     case SettingsID::Game_RSP_Plugin:
-        setting = {"", "RSP_Plugin", ""};
+        setting = {"", "RSP_Plugin", std::string("")};
         break;
 
     case SettingsID::KeyBinding_RemoveDuplicates:
         setting = {SETTING_SECTION_KEYBIND, "RemoveDuplicates", true};
         break;
     case SettingsID::KeyBinding_StartROM:
-        setting = {SETTING_SECTION_KEYBIND, "StartROM", "Ctrl+O"};
+        setting = {SETTING_SECTION_KEYBIND, "StartROM", std::string("Ctrl+O")};
         break;
     case SettingsID::KeyBinding_StartCombo:
-        setting = {SETTING_SECTION_KEYBIND, "StartCombo", "Ctrl+Shift+O"};
+        setting = {SETTING_SECTION_KEYBIND, "StartCombo", std::string("Ctrl+Shift+O")};
         break;
     case SettingsID::KeyBinding_Shutdown:
-        setting = {SETTING_SECTION_KEYBIND, "Shutdown", "F12"};
+        setting = {SETTING_SECTION_KEYBIND, "Shutdown", std::string("F12")};
         break;
     case SettingsID::KeyBinding_RefreshROMList:
-        setting = {SETTING_SECTION_KEYBIND, "RefreshROMList", "F5"};
+        setting = {SETTING_SECTION_KEYBIND, "RefreshROMList", std::string("F5")};
         break;
     case SettingsID::KeyBinding_Exit:
-        setting = {SETTING_SECTION_KEYBIND, "Exit", "Alt+F4"};
+        setting = {SETTING_SECTION_KEYBIND, "Exit", std::string("Alt+F4")};
         break;
     case SettingsID::KeyBinding_SoftReset:
-        setting = {SETTING_SECTION_KEYBIND, "SoftReset", "F1"};
+        setting = {SETTING_SECTION_KEYBIND, "SoftReset", std::string("F1")};
         break;
     case SettingsID::KeyBinding_HardReset:
-        setting = {SETTING_SECTION_KEYBIND, "HardReset", "Shift+F1"};
+        setting = {SETTING_SECTION_KEYBIND, "HardReset", std::string("Shift+F1")};
         break;
     case SettingsID::KeyBinding_Resume:
-        setting = {SETTING_SECTION_KEYBIND, "Resume", "F2"};
+        setting = {SETTING_SECTION_KEYBIND, "Resume", std::string("F2")};
         break;
     case SettingsID::KeyBinding_Screenshot:
-        setting = {SETTING_SECTION_KEYBIND, "Screenshot", "F3"};
+        setting = {SETTING_SECTION_KEYBIND, "Screenshot", std::string("F3")};
         break;
     case SettingsID::KeyBinding_LimitFPS:
-        setting = {SETTING_SECTION_KEYBIND, "LimitFPS", "F4"};
+        setting = {SETTING_SECTION_KEYBIND, "LimitFPS", std::string("F4")};
         break;
     case SettingsID::KeyBinding_SpeedFactor25:
-        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor25", "Alt+0"};
+        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor25", std::string("Alt+0")};
         break;
     case SettingsID::KeyBinding_SpeedFactor50:
-        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor50", "Alt+1"};
+        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor50", std::string("Alt+1")};
         break;
     case SettingsID::KeyBinding_SpeedFactor75:
-        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor75", "Alt+2"};
+        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor75", std::string("Alt+2")};
         break;
     case SettingsID::KeyBinding_SpeedFactor100:
-        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor100", "Alt+3"};
+        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor100", std::string("Alt+3")};
         break;
     case SettingsID::KeyBinding_SpeedFactor125:
-        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor125", "Alt+4"};
+        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor125", std::string("Alt+4")};
         break;
     case SettingsID::KeyBinding_SpeedFactor150:
-        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor150", "Alt+5"};
+        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor150", std::string("Alt+5")};
         break;
     case SettingsID::KeyBinding_SpeedFactor175:
-        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor175", "Alt+6"};
+        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor175", std::string("Alt+6")};
         break;
     case SettingsID::KeyBinding_SpeedFactor200:
-        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor200", "Alt+7"};
+        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor200", std::string("Alt+7")};
         break;
     case SettingsID::KeyBinding_SpeedFactor225:
-        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor225", "Alt+8"};
+        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor225", std::string("Alt+8")};
         break;
     case SettingsID::KeyBinding_SpeedFactor250:
-        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor250", "Alt+9"};
+        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor250", std::string("Alt+9")};
         break;
     case SettingsID::KeyBinding_SpeedFactor275:
-        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor275", "Alt+["};
+        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor275", std::string("Alt+[")};
         break;
     case SettingsID::KeyBinding_SpeedFactor300:
-        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor300", "Alt+]"};
+        setting = {SETTING_SECTION_KEYBIND, "SpeedFactor300", std::string("Alt+]")};
         break;
     case SettingsID::KeyBinding_SaveState:
-        setting = {SETTING_SECTION_KEYBIND, "SaveState", "F5"};
+        setting = {SETTING_SECTION_KEYBIND, "SaveState", std::string("F5")};
         break;
     case SettingsID::KeyBinding_SaveAs:
-        setting = {SETTING_SECTION_KEYBIND, "SaveAs", "Ctrl+S"};
+        setting = {SETTING_SECTION_KEYBIND, "SaveAs", std::string("Ctrl+S")};
         break;
     case SettingsID::KeyBinding_LoadState:
-        setting = {SETTING_SECTION_KEYBIND, "LoadState", "F7"};
+        setting = {SETTING_SECTION_KEYBIND, "LoadState", std::string("F7")};
         break;
     case SettingsID::KeyBinding_Load:
-        setting = {SETTING_SECTION_KEYBIND, "Load", "Ctrl+L"};
+        setting = {SETTING_SECTION_KEYBIND, "Load", std::string("Ctrl+L")};
         break;
     case SettingsID::KeyBinding_Cheats:
-        setting = {SETTING_SECTION_KEYBIND, "Cheats", "Ctrl+C"};
+        setting = {SETTING_SECTION_KEYBIND, "Cheats", std::string("Ctrl+C")};
         break;
     case SettingsID::KeyBinding_GSButton:
-        setting = {SETTING_SECTION_KEYBIND, "GSButton", "F9"};
+        setting = {SETTING_SECTION_KEYBIND, "GSButton", std::string("F9")};
         break;
     case SettingsID::KeyBinding_SaveStateSlot0:
-        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot0", "Ctrl+0"};
+        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot0", std::string("Ctrl+0")};
         break;
     case SettingsID::KeyBinding_SaveStateSlot1:
-        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot1", "Ctrl+1"};
+        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot1", std::string("Ctrl+1")};
         break;
     case SettingsID::KeyBinding_SaveStateSlot2:
-        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot2", "Ctrl+2"};
+        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot2", std::string("Ctrl+2")};
         break;
     case SettingsID::KeyBinding_SaveStateSlot3:
-        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot3", "Ctrl+3"};
+        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot3", std::string("Ctrl+3")};
         break;
     case SettingsID::KeyBinding_SaveStateSlot4:
-        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot4", "Ctrl+4"};
+        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot4", std::string("Ctrl+4")};
         break;
     case SettingsID::KeyBinding_SaveStateSlot5:
-        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot5", "Ctrl+5"};
+        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot5", std::string("Ctrl+5")};
         break;
     case SettingsID::KeyBinding_SaveStateSlot6:
-        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot6", "Ctrl+6"};
+        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot6", std::string("Ctrl+6")};
         break;
     case SettingsID::KeyBinding_SaveStateSlot7:
-        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot7", "Ctrl+7"};
+        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot7", std::string("Ctrl+7")};
         break;
     case SettingsID::KeyBinding_SaveStateSlot8:
-        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot8", "Ctrl+8"};
+        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot8", std::string("Ctrl+8")};
         break;
     case SettingsID::KeyBinding_SaveStateSlot9:
-        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot9", "Ctrl+9"};
+        setting = {SETTING_SECTION_KEYBIND, "SaveStateSlot9", std::string("Ctrl+9")};
         break;
     case SettingsID::KeyBinding_Fullscreen:
-        setting = {SETTING_SECTION_KEYBIND, "Fullscreen", "Alt+Return"};
+        setting = {SETTING_SECTION_KEYBIND, "Fullscreen", std::string("Alt+Return")};
         break;
     case SettingsID::Keybinding_ViewLog:
-        setting = {SETTING_SECTION_KEYBIND, "ViewLog", "Ctrl+L"};
+        setting = {SETTING_SECTION_KEYBIND, "ViewLog", std::string("Ctrl+L")};
         break;
     case SettingsID::KeyBinding_GraphicsSettings:
-        setting = {SETTING_SECTION_KEYBIND, "GraphicsSettings", "Ctrl+G"};
+        setting = {SETTING_SECTION_KEYBIND, "GraphicsSettings", std::string("Ctrl+G")};
         break;
     case SettingsID::KeyBinding_AudioSettings:
-        setting = {SETTING_SECTION_KEYBIND, "AudioSettings", "Ctrl+A"};
+        setting = {SETTING_SECTION_KEYBIND, "AudioSettings", std::string("Ctrl+A")};
         break;
     case SettingsID::KeyBinding_RspSettings:
-        setting = {SETTING_SECTION_KEYBIND, "RspSettings", "Ctrl+R"};
+        setting = {SETTING_SECTION_KEYBIND, "RspSettings", std::string("Ctrl+R")};
         break;
     case SettingsID::KeyBinding_InputSettings:
-        setting = {SETTING_SECTION_KEYBIND, "InputSettings", "Ctrl+I"};
+        setting = {SETTING_SECTION_KEYBIND, "InputSettings", std::string("Ctrl+I")};
         break;
     case SettingsID::KeyBinding_Settings:
-        setting = {SETTING_SECTION_KEYBIND, "Settings", "Ctrl+T"};
+        setting = {SETTING_SECTION_KEYBIND, "Settings", std::string("Ctrl+T")};
         break;
     case SettingsID::KeyBinding_IncreaseVolume:
-        setting = {SETTING_SECTION_KEYBIND, "IncreaseVolume", ""};
+        setting = {SETTING_SECTION_KEYBIND, "IncreaseVolume", std::string("")};
         break;
     case SettingsID::KeyBinding_DecreaseVolume:
-        setting = {SETTING_SECTION_KEYBIND, "DecreaseVolume", ""};
+        setting = {SETTING_SECTION_KEYBIND, "DecreaseVolume", std::string("")};
         break;
     case SettingsID::KeyBinding_ToggleMuteVolume:
-        setting = {SETTING_SECTION_KEYBIND, "ToggleMuteVolume", ""};
+        setting = {SETTING_SECTION_KEYBIND, "ToggleMuteVolume", std::string("")};
         break;
 
     case SettingsID::RomBrowser_Directory:
-        setting = {SETTING_SECTION_ROMBROWSER, "Directory", ""};
+        setting = {SETTING_SECTION_ROMBROWSER, "Directory", std::string("")};
         break;
     case SettingsID::RomBrowser_Geometry:
-        setting = {SETTING_SECTION_ROMBROWSER, "Geometry", ""};
+        setting = {SETTING_SECTION_ROMBROWSER, "Geometry", std::string("")};
         break;
     case SettingsID::RomBrowser_Maximized:
         setting = {SETTING_SECTION_ROMBROWSER, "Maximized", false};
@@ -593,7 +593,7 @@ static l_Setting get_setting(SettingsID settingId)
 
 
     case SettingsID::Input_Profiles:
-        setting = {SETTING_SECTION_INPUT, "Profiles", ""};
+        setting = {SETTING_SECTION_INPUT, "Profiles", std::string("")};
         break;
     case SettingsID::Input_UseProfile:
         setting = {"", "UseProfile"};
