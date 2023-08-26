@@ -389,9 +389,16 @@ EXPORT m64p_error CALL VidExt_VK_GetSurface(void** Surface, void* Instance)
         return M64ERR_INVALID_STATE;
     }
 
+    // we don't support receiving a null handle
+    // for the VkInstance
+    if ((VkInstance)Instance == VK_NULL_HANDLE)
+    {
+        return M64ERR_UNSUPPORTED;
+    }
+
     // use VkInstance from plugin
     // when we don't have a VkInstance yet
-    if (!l_VulkanInstance.vkInstance())
+    if (l_VulkanInstance.vkInstance() == VK_NULL_HANDLE)
     {
         l_VulkanInstance.setVkInstance((VkInstance)Instance);
         if (!l_VulkanInstance.create())
