@@ -85,12 +85,12 @@ int main(int argc, char **argv)
     qInstallMessageHandler(message_handler);
 
 #ifndef _WIN32
-    // install signal handler
-    signal(SIGINT, signal_handler);
+    // on Linux we need to install signal handlers,
+    // so we can exit cleanly when the user presses
+    // i.e control+c
+    signal(SIGINT,  signal_handler);
     signal(SIGTERM, signal_handler);
-#endif
 
-#ifndef _WIN32
     // on Linux, wayland works only on some compositors,
     // it works on KDE plasma and sway (on 2023-07-26),
     // but i.e doesn't work on GNOME wayland or labwc, 
@@ -108,6 +108,14 @@ int main(int argc, char **argv)
     {
         setenv("QT_QPA_PLATFORM", "xcb", 1);
     }
+
+    // on Linux, Qt on some distributions
+    // fails to load libvulkan, so to fix that
+    // we'll help out and tell it about libvulkan.so.1,
+    // but we wont overwrite the variable value if it
+    // already contains one, the user might set it
+    // to a custom value themselves
+    setenv("QT_VULKAN_LIB", "libvulkan.so.1", 0);
 
     // ensure the default OpenGL format
     // doesn't have vsync enabled by default,
