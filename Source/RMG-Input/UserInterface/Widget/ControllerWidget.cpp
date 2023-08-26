@@ -535,7 +535,12 @@ void ControllerWidget::RemoveInputDevice(QString deviceName, int deviceNum)
 
 void ControllerWidget::CheckInputDeviceSettings()
 {
-    std::string section = this->getCurrentSettingsSection().toStdString();
+    this->CheckInputDeviceSettings(this->getCurrentSettingsSection());
+}
+
+void ControllerWidget::CheckInputDeviceSettings(QString sectionQString)
+{
+    std::string section = sectionQString.toStdString();
 
     // fallback to main section unless
     // it's a user profile
@@ -1643,7 +1648,7 @@ void ControllerWidget::LoadSettings(QString sectionQString, bool loadUserProfile
     }
 
     // force refresh some UI elements
-    this->CheckInputDeviceSettings();
+    this->CheckInputDeviceSettings(sectionQString);
     this->on_deadZoneSlider_valueChanged(this->deadZoneSlider->value());
     this->setPluggedIn(this->IsPluggedIn());
 }

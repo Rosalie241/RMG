@@ -117,6 +117,7 @@ public:
     void AddInputDevice(QString deviceName, int deviceNum);
     void RemoveInputDevice(QString deviceName, int deviceNum);
     void CheckInputDeviceSettings();
+    void CheckInputDeviceSettings(QString section);
 
     void DrawControllerImage();
     void ClearControllerImage();
