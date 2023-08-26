@@ -405,9 +405,12 @@ bool ControllerWidget::hasAnyGameSettingChanged(void)
     }
 
     // retrieve data from settings
-    bool settingsIsPluggedIn = CoreSettingsGetBoolValue(SettingsID::Input_PluggedIn, section);
-    int settingsDeadZone     = CoreSettingsGetIntValue(SettingsID::Input_Deadzone, section);
-    int settingsAnalogSensitivity = 100;
+    bool settingsIsPluggedIn        = CoreSettingsGetBoolValue(SettingsID::Input_PluggedIn, section);
+    int settingsDeadZone            = CoreSettingsGetIntValue(SettingsID::Input_Deadzone, section);
+    int settingsAnalogSensitivity   = 100;
+    int settingsPak                 = CoreSettingsGetIntValue(SettingsID::Input_Pak, section);
+    std::string settingsGameboyRom  = CoreSettingsGetStringValue(SettingsID::Input_GameboyRom, section);
+    std::string settingsGameboySave = CoreSettingsGetStringValue(SettingsID::Input_GameboySave, section);
     // account for profiles before v0.3.9
     if (CoreSettingsKeyExists(section, "Sensitivity"))
     {
@@ -415,14 +418,20 @@ bool ControllerWidget::hasAnyGameSettingChanged(void)
     }
 
     // retrieve current data
-    bool currentIsPluggedIn = this->inputDeviceComboBox->currentText() != "None";
-    int currentDeadZone  = this->deadZoneSlider->value();
-    int currentAnalogSensitivity = this->analogStickSensitivitySlider->value();
+    bool currentIsPluggedIn        = this->inputDeviceComboBox->currentText() != "None";
+    int currentDeadZone            = this->deadZoneSlider->value();
+    int currentAnalogSensitivity   = this->analogStickSensitivitySlider->value();
+    int currentPak                 = this->optionsDialogSettings.ControllerPak;
+    std::string currentGameboyRom  = this->optionsDialogSettings.GameboyRom;
+    std::string currentGameboySave = this->optionsDialogSettings.GameboySave;
 
-    // compare data
-    if (settingsIsPluggedIn != currentIsPluggedIn ||
-        settingsDeadZone != currentDeadZone ||
-        settingsAnalogSensitivity != currentAnalogSensitivity)
+    // compare settings with current data
+    if (settingsIsPluggedIn       != currentIsPluggedIn ||
+        settingsDeadZone          != currentDeadZone ||
+        settingsAnalogSensitivity != currentAnalogSensitivity ||
+        settingsPak               != currentPak ||
+        settingsGameboyRom        != currentGameboyRom ||
+        settingsGameboySave       != currentGameboySave)
     {
         return true;
     }
@@ -441,6 +450,31 @@ bool ControllerWidget::hasAnyGameSettingChanged(void)
         std::vector<std::string> currentNames = buttonSetting.button->GetInputText();
         std::vector<int> currentData          = buttonSetting.button->GetInputData();
         std::vector<int> currentExtraData     = buttonSetting.button->GetExtraInputData();
+
+        // compare data
+        if (settingsTypes != currentTypes ||
+            settingsNames != currentNames ||
+            settingsData  != currentData  ||
+            settingsExtraData != currentExtraData)
+        {
+            return true;
+        }
+    }
+
+    // compare hotkey mappings with settings
+    for (auto& hotkeySetting : this->hotkeySettingMappings)
+    {
+        // retrieve data from settings
+        std::vector<int> settingsTypes         = CoreSettingsGetIntListValue(hotkeySetting.inputTypeSettingsId);
+        std::vector<std::string> settingsNames = CoreSettingsGetStringListValue(hotkeySetting.nameSettingsId, section);
+        std::vector<int> settingsData          = CoreSettingsGetIntListValue(hotkeySetting.dataSettingsId, section);
+        std::vector<int> settingsExtraData     = CoreSettingsGetIntListValue(hotkeySetting.extraDataSettingsId, section);
+
+        // retrieve current data
+        std::vector<int> currentTypes         = hotkeySetting.inputTypes;
+        std::vector<std::string> currentNames = hotkeySetting.inputText;
+        std::vector<int> currentData          = hotkeySetting.inputData;
+        std::vector<int> currentExtraData     = hotkeySetting.extraInputData;
 
         // compare data
         if (settingsTypes != currentTypes ||
