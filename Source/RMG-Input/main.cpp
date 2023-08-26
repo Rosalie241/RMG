@@ -1079,6 +1079,14 @@ EXPORT m64p_error CALL PluginConfig2(int romConfig)
     UserInterface::MainDialog dialog(nullptr, l_SDLThread, romConfig);
     dialog.exec();
 
+    // when PluginShutdown() is called during PluginConfig2(),
+    // we shouldn't do anything here anymore because
+    // l_SDLThread will be nullptr, causing a crash
+    if (l_SDLThread == nullptr)
+    {
+        return M64ERR_SUCCESS;
+    }
+
     l_SDLThread->SetAction(SDLThreadAction::None);
 
     // wait until it's done pumping events
