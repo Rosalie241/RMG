@@ -97,7 +97,7 @@ private:
 
     void setPluggedIn(bool value);
 
-    bool hasAnyGameSettingChanged(void);
+    bool hasAnySettingChanged(QString section);
 
     void showErrorMessage(QString text, QString details = "");
 

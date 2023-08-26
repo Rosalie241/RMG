@@ -395,9 +395,10 @@ void ControllerWidget::setPluggedIn(bool value)
     this->ClearControllerImage();
 }
 
-bool ControllerWidget::hasAnyGameSettingChanged(void)
+bool ControllerWidget::hasAnySettingChanged(QString sectionQString)
 {
-    std::string section = this->getCurrentSettingsSection().toStdString();
+    std::string section = sectionQString.toStdString();
+
     // fallback to main section
     if (!CoreSettingsSectionExists(section))
     {
@@ -1701,14 +1702,36 @@ void ControllerWidget::SaveSettings()
     }
 
     // when we're only loading the game profile,
+    // and the settings match the settings of the main
+    // profile, see if the user has removed the game profile, 
+    // if so, delete the section and return
+    if (this->onlyLoadGameProfile &&
+        !this->hasAnySettingChanged(this->settingsSection) &&
+        !this->removedProfiles.empty())
+    {
+        std::string section = this->gameSection.toStdString();
+        if (CoreSettingsSectionExists(section))
+        {
+            CoreSettingsDeleteSection(section);
+        }
+        return;
+    }
+
+    // when we're only loading the game profile,
     // we should only save when anything has changed
     if (this->onlyLoadGameProfile && 
-        !this->hasAnyGameSettingChanged())
+        !this->hasAnySettingChanged(this->gameSection))
     {
         return;
     }
 
     this->SaveSettings(this->getCurrentSettingsSection());
+
+    // we handle deletion of the game section above
+    if (this->onlyLoadGameProfile)
+    {
+        return;
+    }
 
     // delete all removed profile sections
     for (QString section : this->removedProfiles)
