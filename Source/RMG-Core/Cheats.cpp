@@ -17,9 +17,6 @@
 #include "Error.hpp"
 #include "Settings/Settings.hpp"
 
-// TODO: remove this in the future
-// flatpak doesn't have GCC 13 yet so we'll have to use libfmt
-// see https://github.com/flathub/com.github.Rosalie241.RMG/pull/45#issuecomment-1675841252
 #ifdef USE_LIBFMT
 #include "../3rdParty/fmt/include/fmt/core.h"
 #include "../3rdParty/fmt/include/fmt/format.h"
@@ -28,8 +25,8 @@
 
 #define fmt_string(...) fmt::format(__VA_ARGS__)
 #else // USE_LIBFMT
-
 #include <format>
+
 #define fmt_string(...) std::format(__VA_ARGS__)
 #endif // USE_LIBFMT
 
