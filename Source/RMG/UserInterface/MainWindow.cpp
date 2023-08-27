@@ -49,7 +49,7 @@ MainWindow::~MainWindow()
 {
 }
 
-bool MainWindow::Init(QApplication* app, bool showUI)
+bool MainWindow::Init(QApplication* app, bool showUI, bool launchROM)
 {
     if (!CoreInit())
     {
@@ -64,7 +64,7 @@ bool MainWindow::Init(QApplication* app, bool showUI)
 
     this->configureTheme(app);
 
-    this->initializeUI();
+    this->initializeUI(launchROM);
     this->initializeActions();
     this->configureUI(app, showUI);
 
@@ -117,8 +117,8 @@ void MainWindow::OpenROM(QString file, QString disk, bool fullscreen, bool quitA
     // if we just ensure the UI is in an emulation
     // state, then the transition will be smoother
     this->updateUI(true, false);
-    
-    this->launchEmulationThread(file, disk);
+
+    this->launchEmulationThread(file, disk, true);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -156,7 +156,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     QMainWindow::closeEvent(event);
 }
 
-void MainWindow::initializeUI(void)
+void MainWindow::initializeUI(bool launchROM)
 {
     this->setupUi(this);
 
@@ -168,7 +168,13 @@ void MainWindow::initializeUI(void)
     this->ui_StatusBar_Label = new QLabel(this);
     this->ui_StatusBar_RenderModeLabel = new QLabel(this);
 
-    this->ui_Widget_RomBrowser->RefreshRomList();
+    // only start refreshing the ROM browser
+    // when RMG isn't launched with a ROM 
+    // specified on the commandline
+    if (!launchROM)
+    {
+        this->ui_Widget_RomBrowser->RefreshRomList();
+    }
 
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::PlayGame, this,
             &MainWindow::on_RomBrowser_PlayGame);
@@ -521,7 +527,7 @@ void MainWindow::connectEmulationThreadSignals(void)
             Qt::BlockingQueuedConnection);
 }
 
-void MainWindow::launchEmulationThread(QString cartRom, QString diskRom)
+void MainWindow::launchEmulationThread(QString cartRom, QString diskRom, bool onStartup)
 {
     CoreSettingsSave();
 
@@ -535,7 +541,7 @@ void MainWindow::launchEmulationThread(QString cartRom, QString diskRom)
         }
     }
 
-    this->ui_RefreshRomListAfterEmulation = this->ui_Widget_RomBrowser->IsRefreshingRomList();
+    this->ui_RefreshRomListAfterEmulation = onStartup || this->ui_Widget_RomBrowser->IsRefreshingRomList();
     if (this->ui_RefreshRomListAfterEmulation)
     {
         this->ui_Widget_RomBrowser->StopRefreshRomList();

@@ -48,7 +48,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     MainWindow(void);
     ~MainWindow(void);
 
-    bool Init(QApplication* app, bool showUI);
+    bool Init(QApplication* app, bool showUI, bool launchROM);
     void OpenROM(QString file, QString disk, bool fullscreen, bool quitAfterEmulation);
 
   private:
@@ -113,7 +113,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 
     void closeEvent(QCloseEvent *) Q_DECL_OVERRIDE;
 
-    void initializeUI();
+    void initializeUI(bool launchROM);
 
     void configureUI(QApplication* app, bool showUI);
     void configureTheme(QApplication* app);
@@ -127,7 +127,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 
     void initializeEmulationThread(void);
     void connectEmulationThreadSignals(void);
-    void launchEmulationThread(QString cartRom, QString diskRom = "");
+    void launchEmulationThread(QString cartRom, QString diskRom = "", bool onStartup = false);
 
     QString getSaveStateSlotDateTimeText(QAction* action);
     QString getSaveStateSlotText(QAction* action, int slot);

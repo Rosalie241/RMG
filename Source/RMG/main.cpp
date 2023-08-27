@@ -209,13 +209,15 @@ int main(int argc, char **argv)
     // print debug callbacks to stdout if needed
     CoreSetPrintDebugCallback(parser.isSet(debugMessagesOption));
 
+    // specified ROM path to launch
+    QStringList args = parser.positionalArguments();
+
     // initialize window
-    if (!window.Init(&app, !parser.isSet(noGuiOption)))
+    if (!window.Init(&app, !parser.isSet(noGuiOption), !args.empty()))
     {
         return 1;
     }
 
-    QStringList args = parser.positionalArguments();
     if (!args.empty())
     {
         window.OpenROM(args.at(0), parser.value(diskOption), parser.isSet(fullscreenOption), parser.isSet(quitAfterEmulationOption));
