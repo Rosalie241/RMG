@@ -101,7 +101,6 @@ bool MainWindow::Init(QApplication* app, bool showUI)
     }
 
     connect(coreCallBacks, &CoreCallbacks::OnCoreDebugCallback, this, &MainWindow::on_Core_DebugCallback);
-    connect(coreCallBacks, &CoreCallbacks::OnCoreDebugCallback, &this->logDialog, &Dialog::LogDialog::AddLogLine);
     connect(coreCallBacks, &CoreCallbacks::OnCoreStateCallback, this, &MainWindow::on_Core_StateCallback);
     connect(app, &QGuiApplication::applicationStateChanged, this, &MainWindow::on_QGuiApplication_applicationStateChanged);
 
@@ -2235,6 +2234,9 @@ void MainWindow::on_VidExt_ToggleFS(bool fullscreen)
 
 void MainWindow::on_Core_DebugCallback(CoreDebugMessageType type, QString context, QString message)
 {
+    // pass callback to the log window
+    this->logDialog.AddLogLine(type, context, message);
+
     // only display in statusbar when emulation is running
     if (!this->emulationThread->isRunning())
     {
