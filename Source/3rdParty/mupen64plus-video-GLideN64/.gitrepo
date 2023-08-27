@@ -4,9 +4,9 @@
 ; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
 ;
 [subrepo]
-	remote = git@github.com:/Rosalie241/GLideN64.git
-	branch = RMG
-	commit = 4dfb530bb6e59a6e30b34355733b4ab99f874018
-	parent = 2283bd1bb2610d00b1ab0ae9093f01b47e299a3c
+	remote = git@github.com:/gonetz/GLideN64.git
+	branch = master
+	commit = 7dc5b9ffcb0df73952208b528f4c20ed28d9c745
+	parent = c3c4dedebb3912c5c893395bd20085e0c6427810
 	method = merge
 	cmdver = 0.4.6

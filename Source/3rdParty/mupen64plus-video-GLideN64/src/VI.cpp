@@ -313,11 +313,23 @@ void VI_UpdateScreen()
 			VI.lastOrigin = *REG.VI_ORIGIN;
 		}
 	} else {
-		if (gDP.changed & CHANGED_COLORBUFFER) {
-			frameBufferList().renderBuffer();
-			gDP.changed &= ~CHANGED_COLORBUFFER;
-			VI.lastOrigin = *REG.VI_ORIGIN;
+		bool bNeedRender = false;
+		switch (config.frameBufferEmulation.bufferSwapMode) {
+		case Config::bsOnVerticalInterrupt:
+			bNeedRender = true;
+			break;
+		case Config::bsOnVIOriginChange:
+			bNeedRender = *REG.VI_ORIGIN != VI.lastOrigin;
+			break;
+		case Config::bsOnColorImageChange:
+			bNeedRender = (gDP.changed & CHANGED_COLORBUFFER) != 0;
+			break;
 		}
+		if (bNeedRender)
+			frameBufferList().renderBuffer();
+
+		gDP.changed &= ~CHANGED_COLORBUFFER;
+		VI.lastOrigin = *REG.VI_ORIGIN;
 	}
 
 	if (VI.lastOrigin == -1) { // Workaround for Mupen64Plus issue with initialization
