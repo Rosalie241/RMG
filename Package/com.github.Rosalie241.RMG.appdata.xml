@@ -33,6 +33,19 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.5.1" date="2023-08-27" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix window title of the windows installer</li>
+          <li>Fix video plugins which use vulkan not working on some Linux distributions</li>
+          <li>Fix 'Edit Game Input Settings' not saving settings when changing certain settings</li>
+          <li>Fix crash when having the RMG-Input configuration GUI open and closing RMG with control+c on Linux</li>
+          <li>Fix 'open_rom(): not a valid ROM image' error showing up sometimes when launching RMG with a ROM specified on the commandline</li>
+          <li>Update mupen64plus-core, GLideN64, paraLLEl and SDL_GameControllerDB</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.5.0" date="2023-08-12" type="stable">
       <description>
         <p>Changes:</p>
