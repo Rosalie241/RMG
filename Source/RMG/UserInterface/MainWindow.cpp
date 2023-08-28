@@ -1160,6 +1160,9 @@ void MainWindow::on_EventFilter_FileDropped(QDropEvent *event)
 
     bool inEmulation     = (this->ui_Widgets->currentIndex() != 0);
     bool confirmDragDrop = CoreSettingsGetBoolValue(SettingsID::GUI_ConfirmDragDrop);
+    bool refreshRomList = false;
+    QString file;
+
     if (inEmulation && confirmDragDrop)
     {
         QMessageBox::StandardButton reply = QMessageBox::question(this, "",
@@ -1171,14 +1174,21 @@ void MainWindow::on_EventFilter_FileDropped(QDropEvent *event)
         }
     }
 
-    QString file = mimeData->urls().first().toLocalFile();
+    file = mimeData->urls().first().toLocalFile();
 
     if (inEmulation)
     {
         this->ui_NoSwitchToRomBrowser = true;
+        // we have to keep the state of this->ui_RefreshRomListAfterEmulation,
+        // because when that's reset on every launch, and because when
+        // RMG is launched with a ROM specified, the ROM browser
+        // hasn't loaded yet, we should pass on the state to ensure
+        // it does refresh when you do the following:
+        // launch RMG with a ROM -> drag & drop -> return to ROM browser
+        refreshRomList = this->ui_RefreshRomListAfterEmulation;
     }
 
-    this->launchEmulationThread(file);
+    this->launchEmulationThread(file, "", refreshRomList);
 #endif // DRAG_DROP
 }
 
