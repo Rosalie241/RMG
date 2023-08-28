@@ -73,6 +73,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     // configure loading widget
     this->loadingWidget = new Widget::RomBrowserLoadingWidget(this);
     connect(this, &QStackedWidget::currentChanged, this->loadingWidget, &RomBrowserLoadingWidget::on_RomBrowserWidget_currentChanged);
+    connect(this->loadingWidget, &RomBrowserLoadingWidget::FileDropped, this, &RomBrowserWidget::FileDropped);
     this->loadingWidget->SetWidgetIndex(this->addWidget(this->loadingWidget));
 
     // configure list view widget

@@ -29,6 +29,14 @@ public:
 
     void SetCurrentRomIndex(int index, int count);
 
+protected:
+    void dragMoveEvent(QDragMoveEvent* event) Q_DECL_OVERRIDE;
+    void dragEnterEvent(QDragEnterEvent* event) Q_DECL_OVERRIDE;
+    void dropEvent(QDropEvent* event) Q_DECL_OVERRIDE;
+
+signals:
+    void FileDropped(QDropEvent* event);
+
 public slots:
     void on_RomBrowserWidget_currentChanged(int index);
 
