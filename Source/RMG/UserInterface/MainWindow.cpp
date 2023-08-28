@@ -527,7 +527,7 @@ void MainWindow::connectEmulationThreadSignals(void)
             Qt::BlockingQueuedConnection);
 }
 
-void MainWindow::launchEmulationThread(QString cartRom, QString diskRom, bool onStartup)
+void MainWindow::launchEmulationThread(QString cartRom, QString diskRom, bool refreshRomListAfterEmulation)
 {
     CoreSettingsSave();
 
@@ -541,7 +541,7 @@ void MainWindow::launchEmulationThread(QString cartRom, QString diskRom, bool on
         }
     }
 
-    this->ui_RefreshRomListAfterEmulation = onStartup || this->ui_Widget_RomBrowser->IsRefreshingRomList();
+    this->ui_RefreshRomListAfterEmulation = refreshRomListAfterEmulation || this->ui_Widget_RomBrowser->IsRefreshingRomList();
     if (this->ui_RefreshRomListAfterEmulation)
     {
         this->ui_Widget_RomBrowser->StopRefreshRomList();
