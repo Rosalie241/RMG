@@ -1774,7 +1774,9 @@ void MainWindow::on_Emulation_Finished(bool ret)
         this->ui_NoSwitchToRomBrowser = false;
     }
 
-    if (this->ui_RefreshRomListAfterEmulation)
+    if (!this->ui_QuitAfterEmulation &&
+        !this->ui_NoSwitchToRomBrowser &&
+        this->ui_RefreshRomListAfterEmulation)
     {
         this->ui_Widget_RomBrowser->RefreshRomList();
         this->ui_RefreshRomListAfterEmulation = false;
