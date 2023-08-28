@@ -298,7 +298,7 @@ void RomBrowserWidget::ShowList(void)
     if (!this->IsRefreshingRomList() &&
         this->currentWidget() != this->emptyWidget)
     {
-        this->setCurrentWidget(this->listViewWidget);        
+        this->setCurrentWidget(this->listViewWidget);
     }
 }
 
@@ -310,7 +310,7 @@ void RomBrowserWidget::ShowGrid(void)
     if (!this->IsRefreshingRomList() &&
         this->currentWidget() != this->emptyWidget)
     {
-        this->setCurrentWidget(this->gridViewWidget);        
+        this->setCurrentWidget(this->gridViewWidget);
     }
 }
 
@@ -847,13 +847,19 @@ void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
         }
     }
 
-    if (!canceled)
+    // when canceled, we shouldn't switch to the grid/list view
+    // because that can cause some flicker, so just return here
+    // and don't do anything because a refresh will be triggered
+    // later on anyways
+    if (canceled)
     {
-        if (this->listViewModel->rowCount() == 0)
-        {
-            this->setCurrentWidget(this->emptyWidget);
-            return;
-        }
+        return;
+    }
+
+    if (this->listViewModel->rowCount() == 0)
+    {
+        this->setCurrentWidget(this->emptyWidget);
+        return;
     }
 
     // prevent flicker by forcing the loading screen
