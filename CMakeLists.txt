@@ -55,6 +55,27 @@ if (USE_LTO)
     endif()
 endif(USE_LTO)
 
+if (NOT USE_LIBFMT)
+    set(CMAKE_CXX_STANDARD 20)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+    include(CheckCXXSourceCompiles)
+
+    check_cxx_source_compiles("
+        #include <format>
+        int main(void)
+        {
+            std::string str = std::format(\"number: {}\", 10);
+            return 0;
+        }" HAVE_STDFORMAT)
+
+    # fallback to libfmt if std::format
+    # isn't supported in the compiler
+    if (NOT HAVE_STDFORMAT)
+        set(USE_LIBFMT ON)
+    endif(NOT HAVE_STDFORMAT)
+endif(NOT USE_LIBFMT)
+
 if (NOT PORTABLE_INSTALL AND (WIN32 OR MSYS))
     message(WARNING "Not-Portable build not supported on windows, re-enabling PORTABLE_INSTALL!")
     set(PORTABLE_INSTALL ON)
