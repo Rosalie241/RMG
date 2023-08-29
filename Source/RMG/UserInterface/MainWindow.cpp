@@ -928,7 +928,7 @@ void MainWindow::configureActions(void)
 
         // connect emulation speed action here because we need to do
         // something special for them
-        connect(speedAction, &QAction::triggered, [=](bool checked)
+        connect(speedAction, &QAction::triggered, [=, this](bool checked)
         {
             if (checked)
             {
@@ -950,7 +950,7 @@ void MainWindow::configureActions(void)
 
         // connect slot action here because we need to do
         // something special for them
-        connect(slotAction, &QAction::triggered, [=](bool checked)
+        connect(slotAction, &QAction::triggered, [=, this](bool checked)
         {
             if (checked)
             {
