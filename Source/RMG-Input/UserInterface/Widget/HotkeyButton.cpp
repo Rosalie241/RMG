@@ -31,7 +31,7 @@ void HotkeyButton::Initialize(HotkeysDialog* dialog)
 {
     this->hotkeysDialog = dialog;
 
-    connect(this, &QPushButton::released, [=]
+    connect(this, &QPushButton::released, [=, this]
     {
         emit this->hotkeysDialog->on_HotkeyButton_Released(this);
     });
