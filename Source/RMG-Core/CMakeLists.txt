@@ -51,17 +51,17 @@ set(RMG_CORE_SOURCES
     Rom.cpp
 )
 
-if (WIN32 OR MSYS)
+if (WIN32)
     list(APPEND RMG_CORE_SOURCES 
         osal/osal_dynlib_win32.cpp
         osal/osal_files_win32.cpp
     )
-else()
+else(WIN32)
     list(APPEND RMG_CORE_SOURCES 
 		osal/osal_dynlib_unix.cpp
         osal/osal_files_unix.cpp
     )
-endif()
+endif(WIN32)
 
 if (DISCORD_RPC)
     list(APPEND RMG_CORE_SOURCES 
