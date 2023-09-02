@@ -26,6 +26,7 @@
 #include <QCloseEvent>
 #include <QMainWindow>
 #include <QSettings>
+#include <QMessageBox>
 #include <QStackedWidget>
 #include <QGuiApplication>
 
@@ -92,6 +93,9 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     bool ui_AddedActions = false;
 
     QList<QAction*> ui_SlotActions;
+
+    QList<QMessageBox*> ui_MessageBoxList;
+    QList<QString> ui_DebugCallbackErrors;
 
     // Hotkey exclusive QActions
     QAction* action_Audio_IncreaseVolume   = nullptr;

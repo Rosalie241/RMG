@@ -368,13 +368,40 @@ void MainWindow::configureTheme(QApplication* app)
 
 void MainWindow::showErrorMessage(QString text, QString details)
 {
-    QMessageBox msgBox(this);
-    msgBox.setIcon(QMessageBox::Icon::Critical);
-    msgBox.setWindowTitle("Error");
-    msgBox.setText(text);
-    msgBox.setDetailedText(details);
-    msgBox.addButton(QMessageBox::Ok);
-    msgBox.exec();
+    // update the message box list and ensure
+    // that we don't already have one open with
+    // the error that we want to display
+    for (const QMessageBox* messageBox : this->ui_MessageBoxList)
+    {
+        if (!messageBox->isVisible())
+        {
+            this->ui_MessageBoxList.removeOne(messageBox);
+            continue;
+        }
+
+        if (messageBox->text() == text &&
+            messageBox->detailedText() == details)
+        {
+            return;
+        }
+    }
+
+    // ensure we only display 10 errors at
+    // the same time, to prevent message dialog spam
+    if (this->ui_MessageBoxList.size() >= 10)
+    {
+        return;
+    }
+
+    QMessageBox* msgBox = new QMessageBox(this);
+    msgBox->setIcon(QMessageBox::Icon::Critical);
+    msgBox->setWindowTitle("Error");
+    msgBox->setText(text);
+    msgBox->setDetailedText(details);
+    msgBox->addButton(QMessageBox::Ok);
+    msgBox->show();
+
+    this->ui_MessageBoxList.append(msgBox);
 }
 
 void MainWindow::updateUI(bool inEmulation, bool isPaused)
@@ -1116,7 +1143,6 @@ void MainWindow::timerEvent(QTimerEvent *event)
         this->killTimer(timerId);
         this->ui_UpdateSaveStateSlotTimerId = 0;
     }
-
 }
 
 void MainWindow::on_EventFilter_KeyPressed(QKeyEvent *event)
@@ -1773,6 +1799,8 @@ void MainWindow::on_Action_Audio_ToggleVolumeMute(void)
 void MainWindow::on_Emulation_Started(void)
 {
     this->logDialog.Clear();
+    this->ui_MessageBoxList.clear();
+    this->ui_DebugCallbackErrors.clear();
 }
 
 void MainWindow::on_Emulation_Finished(bool ret)
@@ -2280,7 +2308,13 @@ void MainWindow::on_Core_DebugCallback(CoreDebugMessageType type, QString contex
 
     if (type == CoreDebugMessageType::Error)
     {
-        this->showErrorMessage("Core Error", message);
+        // when we've reached 50 of the same error in the same
+        // emulation run, we'll stop displaying it
+        if (this->ui_DebugCallbackErrors.count(message) < 50)
+        {
+            this->showErrorMessage("Core Error", message);
+        }
+        this->ui_DebugCallbackErrors.append(message);
         return;
     }
 
