@@ -4,7 +4,7 @@
 cmake_minimum_required(VERSION 3.15)
 
 option(PORTABLE_INSTALL "Portable Installation" ON)
-option(UPDATER          "Enables updater" ${PORTABLE_INSTALL})
+option(UPDATER          "Enables updater" ${WIN32})
 option(APPIMAGE_UPDATER "Enables AppImage updater" OFF)
 option(DISCORD_RPC      "Enables Discord Rich Presence" ON)
 option(DRAG_DROP        "Enables drag and drop" ON)
