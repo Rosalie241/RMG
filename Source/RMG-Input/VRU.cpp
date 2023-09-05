@@ -489,24 +489,17 @@ EXPORT void CALL ReadVRUResults(uint16_t* error_flags, uint16_t* num_results, ui
     // retrieve audio data from device
     SDL_PauseAudioDevice(l_AudioDevice, 1);
 
-    void* audio_buf     = nullptr;
     uint32_t audio_size = SDL_GetQueuedAudioSize(l_AudioDevice);
+    std::vector<char> audio_buf(audio_size);
 
-    audio_buf = malloc(audio_size);
-    if (audio_buf == nullptr)
-    {
-        *error_flags = 0x8000;
-        return;
-    }
-
-    audio_size = SDL_DequeueAudio(l_AudioDevice, audio_buf, audio_size);
+    // read audio
+    audio_size = SDL_DequeueAudio(l_AudioDevice, audio_buf.data(), audio_buf.size());
 
     // hand audio data to vosk and retrieve results
-    int ret = l_vosk_recognizer_accept_waveform(l_VoskRecognizer, (const char*)audio_buf, audio_size);
+    int ret = l_vosk_recognizer_accept_waveform(l_VoskRecognizer, audio_buf.data(), audio_size);
     if (ret == -1)
     {
         *error_flags = 0x8000;
-        free(audio_buf);
         return;
     }
 
@@ -574,8 +567,6 @@ EXPORT void CALL ReadVRUResults(uint16_t* error_flags, uint16_t* num_results, ui
     }
 
     *num_results = found_words.size();
-
-    free(audio_buf);
 }
 
 EXPORT void CALL ClearVRUWords(uint8_t length)
