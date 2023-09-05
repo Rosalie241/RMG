@@ -800,8 +800,8 @@ static void simulate_octagon(const double deadzone, const double inputX, const d
     }
 
     // keep cardinal input within positive and negative bounds of maxAxis
-    if(std::abs(ax) > maxAxis) ax = std::copysign(maxAxis, ax);
-    if(std::abs(ay) > maxAxis) ay = std::copysign(maxAxis, ay);
+    if (std::abs(ax) > maxAxis) ax = std::copysign(maxAxis, ax);
+    if (std::abs(ay) > maxAxis) ay = std::copysign(maxAxis, ay);
 
     outputX = (int)ax;
     outputY = (int)ay;
@@ -1229,7 +1229,7 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
     // when we've matched a hotkey,
     // we don't need to check anything
     // else
-    if(check_hotkeys(Control))
+    if (check_hotkeys(Control))
     {
         return;
     }
