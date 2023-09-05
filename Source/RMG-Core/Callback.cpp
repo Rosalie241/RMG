@@ -46,7 +46,7 @@ void CoreDebugCallback(void* context, int level, const char* message)
     {
         messageString = CoreConvertStringEncoding(message, CoreStringEncoding::EUC_JP);
     }
-    else
+    else if (contextString.starts_with("[CORE]"))
     {
         messageString = CoreConvertStringEncoding(message, CoreStringEncoding::Shift_JIS);
     }
