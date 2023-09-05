@@ -58,6 +58,7 @@ static std::filesystem::path get_exe_directory(void)
     }
     catch (...)
     { // fail silently and fallback to current path
+        std::cerr << "get_exe_directory: std::filesystem::canonical(\"/proc/self/exe\") threw an exception, falling back to current directory!" << std::endl;
         return std::filesystem::current_path();
     }
 #endif // _WIN32
