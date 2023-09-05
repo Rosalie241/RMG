@@ -16,6 +16,10 @@
 // returns false when failed
 bool CoreCreateDirectories(void);
 
+// returns whether we're currently in portable
+// directory mode or not
+bool CoreGetPortableDirectoryMode(void);
+
 // returns the core directory where
 // the mupen64plus library should be
 // located

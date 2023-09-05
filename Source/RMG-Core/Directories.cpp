@@ -63,32 +63,6 @@ static std::filesystem::path get_exe_directory(void)
 #endif // _WIN32
     return path;   
 }
-
-static bool is_portable_mode(void)
-{
-    static bool portable_set = false;
-    static bool is_portable  = false;
-
-    if (portable_set)
-    {
-        return is_portable;
-    }
-
-    std::filesystem::path exeDirectory;
-    std::filesystem::path configFile;
-    std::filesystem::path portableFile;
-
-    exeDirectory      = get_exe_directory();
-    configFile        = exeDirectory;
-    configFile        += "/Config/mupen64plus.cfg";
-    portableFile      = exeDirectory;
-    portableFile      += "/portable.txt";
-
-    is_portable  = std::filesystem::is_regular_file(portableFile) ||
-                    std::filesystem::is_regular_file(configFile);
-    portable_set = true;
-    return is_portable;
-}
 #endif // PORTABLE_INSTALL
 
 #ifdef _WIN32
@@ -216,11 +190,41 @@ bool CoreCreateDirectories(void)
     return true;
 }
 
+bool CoreGetPortableDirectoryMode(void)
+{
+#ifdef PORTABLE_INSTALL
+    static bool portable_set = false;
+    static bool is_portable  = false;
+
+    if (portable_set)
+    {
+        return is_portable;
+    }
+
+    std::filesystem::path exeDirectory;
+    std::filesystem::path configFile;
+    std::filesystem::path portableFile;
+
+    exeDirectory      = get_exe_directory();
+    configFile        = exeDirectory;
+    configFile        += "/Config/mupen64plus.cfg";
+    portableFile      = exeDirectory;
+    portableFile      += "/portable.txt";
+
+    is_portable  = std::filesystem::is_regular_file(portableFile) ||
+                    std::filesystem::is_regular_file(configFile);
+    portable_set = true;
+    return is_portable;
+#else // Linux install
+    return false;
+#endif // PORTABLE_INSTALL
+}
+
 std::filesystem::path CoreGetLibraryDirectory(void)
 {
     std::filesystem::path directory;
 #ifdef PORTABLE_INSTALL
-    if (is_portable_mode())
+    if (CoreGetPortableDirectoryMode())
     {
         directory = ".";
     }
@@ -246,7 +250,7 @@ std::filesystem::path CoreGetCoreDirectory(void)
 {
     std::filesystem::path directory;
 #ifdef PORTABLE_INSTALL
-    if (is_portable_mode())
+    if (CoreGetPortableDirectoryMode())
     {
         directory = "Core";
     }
@@ -273,7 +277,7 @@ std::filesystem::path CoreGetPluginDirectory(void)
 {
     std::filesystem::path directory;
 #ifdef PORTABLE_INSTALL
-    if (is_portable_mode())
+    if (CoreGetPortableDirectoryMode())
     {
         directory = "Plugin";
     }
@@ -300,9 +304,8 @@ std::filesystem::path CoreGetUserConfigDirectory(void)
 {
     std::filesystem::path directory;
 #ifdef PORTABLE_INSTALL
-    if (is_portable_mode())
+    if (CoreGetPortableDirectoryMode())
     {
-        std::cout << get_appdata_directory("Config").string() << std::endl;
         directory = "Config";
     }
     else
@@ -322,7 +325,7 @@ std::filesystem::path CoreGetDefaultUserDataDirectory(void)
 {
     std::filesystem::path directory;
 #ifdef PORTABLE_INSTALL
-    if (is_portable_mode())
+    if (CoreGetPortableDirectoryMode())
     {
         directory = "Data";
     }
@@ -342,7 +345,7 @@ std::filesystem::path CoreGetDefaultUserCacheDirectory(void)
 {
     std::filesystem::path directory;
 #ifdef PORTABLE_INSTALL
-    if (is_portable_mode())
+    if (CoreGetPortableDirectoryMode())
     {
         directory = "Cache";
     }
@@ -363,7 +366,7 @@ std::filesystem::path CoreGetDefaultSaveDirectory(void)
 {
     std::filesystem::path directory;
 #ifdef PORTABLE_INSTALL
-    if (is_portable_mode())
+    if (CoreGetPortableDirectoryMode())
     {
         directory = "Save/Game";
     }
@@ -385,7 +388,7 @@ std::filesystem::path CoreGetDefaultSaveStateDirectory(void)
 {
     std::filesystem::path directory;
 #ifdef PORTABLE_INSTALL
-    if (is_portable_mode())
+    if (CoreGetPortableDirectoryMode())
     {
         directory = "Save/State";
     }
@@ -407,7 +410,7 @@ std::filesystem::path CoreGetDefaultScreenshotDirectory(void)
 {
     std::filesystem::path directory;
 #ifdef PORTABLE_INSTALL
-    if (is_portable_mode())
+    if (CoreGetPortableDirectoryMode())
     {
         directory = "Screenshots";
     }
@@ -446,28 +449,26 @@ std::filesystem::path CoreGetSharedDataDirectory(void)
 {
     std::filesystem::path directory;
 #ifdef PORTABLE_INSTALL
-    if (is_portable_mode())
+    if (CoreGetPortableDirectoryMode())
     {
         directory = "Data";
     }
     else
-#endif // PORTABLE_INSTALL
     {
-#ifdef _WIN32
         directory = get_exe_directory();
         directory += "/Data";
-#else
-        if (!l_SharedDataPathOverride.empty())
-        {
-            directory = l_SharedDataPathOverride;
-        }
-        else
-        {
-            directory = CORE_INSTALL_PREFIX;
-            directory += "/share/RMG";
-        }
-#endif // _WIN32
     }
+#else // Linux install
+    if (!l_SharedDataPathOverride.empty())
+    {
+        directory = l_SharedDataPathOverride;
+    }
+    else
+    {
+        directory = CORE_INSTALL_PREFIX;
+        directory += "/share/RMG";
+    }
+#endif // PORTABLE_INSTALL
     return directory;
 }
 
