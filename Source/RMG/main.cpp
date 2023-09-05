@@ -138,12 +138,9 @@ int main(int argc, char **argv)
     UserInterface::MainWindow window;
 
 #ifdef PORTABLE_INSTALL
-    // we have to keep backwards compatability
-    // with <v0.5.2, so we'll check if a portable.txt file exists,
-    // or if the Config/mupen64plus.cfg file exists, if it does, 
-    // then change the current directory to the executable path
-    if (QFile(app.applicationDirPath() + "/portable.txt").exists() ||
-        QFile(app.applicationDirPath() + "/Config/mupen64plus.cfg").exists())
+    // only change current directory
+    // when we're in portable directory mode
+    if (CoreGetPortableDirectoryMode())
     {
         QDir::setCurrent(app.applicationDirPath());
     }
