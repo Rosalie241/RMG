@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# ./BundleDependencies.sh "./Bin/Release/rmg/RMG.exe" "./Bin/Release/rmg" "/mingw64/bin"
+# ./BundleDependencies.sh "./Bin/Release/RMG.exe" "./Bin/Release/" "/mingw64/bin"
 #
 
 exe="$1"
@@ -41,5 +41,8 @@ windeployqt-qt6 --no-translations "$exe"
 cp "$path/libcrypto-3-x64.dll" "$bin_dir/"
 cp "$path/libssl-3-x64.dll"    "$bin_dir/"
 cp "$path/libjpeg-8.dll"       "$bin_dir/"
+
+# remove *.a files
+find "$bin_dir/" -name '*.a' -delete
 
 exit 0
