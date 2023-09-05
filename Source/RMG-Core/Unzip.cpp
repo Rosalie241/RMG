@@ -13,6 +13,7 @@
 #include <exception>
 #include <filesystem>
 #include <fstream>
+#include <vector>
 #include <unzip.h>
 
 //
@@ -29,23 +30,15 @@ bool CoreUnzip(std::filesystem::path file, std::filesystem::path path)
 {
     std::string error;
 
-    unzFile         zipFile;
-    unz_global_info zipInfo;
-    std::ofstream   outputStream;
-    char* read_buffer = (char*)malloc(UNZIP_READ_SIZE);
+    unzFile           zipFile;
+    unz_global_info   zipInfo;
+    std::ofstream     outputStream;
+    std::vector<char> readBuffer(UNZIP_READ_SIZE);
     int bytes_read = 0;
-
-    if (read_buffer == nullptr)
-    {
-        error = "CoreUnzip: malloc Failed!";
-        CoreSetError(error);
-        return false;
-    }
 
     zipFile = unzOpen(file.string().c_str());
     if (zipFile == nullptr)
     {
-        free(read_buffer);
         error = "CoreUnzip: unzOpen Failed!";
         CoreSetError(error);
         return false;
@@ -53,7 +46,6 @@ bool CoreUnzip(std::filesystem::path file, std::filesystem::path path)
 
     if (unzGetGlobalInfo(zipFile, &zipInfo) != UNZ_OK)
     {
-        free(read_buffer);
         error = "CoreUnzip: unzGetGlobalInfo Failed!";
         CoreSetError(error);
         return false;
@@ -69,7 +61,6 @@ bool CoreUnzip(std::filesystem::path file, std::filesystem::path path)
         // ensure we can retrieve the current file info
         if (unzGetCurrentFileInfo(zipFile, &fileInfo, fileName, PATH_MAX, nullptr, 0, nullptr, 0) != UNZ_OK)
         {
-            free(read_buffer);
             unzClose(zipFile);
             error = "CoreUnzip: unzGetCurrentFileInfo Failed!";
             CoreSetError(error);
@@ -92,7 +83,6 @@ bool CoreUnzip(std::filesystem::path file, std::filesystem::path path)
             }
             catch (...)
             {
-                free(read_buffer);
                 unzClose(zipFile);
                 error = "CoreUnzip: std::filesystem::create_directory(";
                 error += targetPath.string();
@@ -105,7 +95,6 @@ bool CoreUnzip(std::filesystem::path file, std::filesystem::path path)
         { // file
             if (unzOpenCurrentFile(zipFile) != UNZ_OK)
             {
-                free(read_buffer);
                 unzClose(zipFile);
                 error = "CoreUnzip: unzOpenCurrentFile Failed!";
                 CoreSetError(error);
@@ -115,7 +104,6 @@ bool CoreUnzip(std::filesystem::path file, std::filesystem::path path)
             outputStream.open(targetPath, std::ios::trunc | std::ios::binary);
             if (!outputStream.is_open())
             {
-                free(read_buffer);
                 unzCloseCurrentFile(zipFile);
                 unzClose(zipFile);
                 error = "CoreUnzip: failed to open file!";
@@ -124,21 +112,20 @@ bool CoreUnzip(std::filesystem::path file, std::filesystem::path path)
                 return false;
             }
 
-            do    
+            do
             {
-                bytes_read = unzReadCurrentFile(zipFile, read_buffer, UNZIP_READ_SIZE);
+                bytes_read = unzReadCurrentFile(zipFile, readBuffer.data(), UNZIP_READ_SIZE);
                 if (bytes_read < 0)
                 {
-                    free(read_buffer);
                     unzCloseCurrentFile(zipFile);
                     unzClose(zipFile);
                     error = "CoreUnzip: unzReadCurrentFile Failed!";
                     CoreSetError(error);
                     return false;
                 }
-                else
+                else if (bytes_read > 0)
                 { // write data to file
-                    outputStream.write(read_buffer, bytes_read);
+                    outputStream.write(readBuffer.data(), bytes_read);
                 }
             } while (bytes_read > 0);
 
@@ -155,7 +142,6 @@ bool CoreUnzip(std::filesystem::path file, std::filesystem::path path)
         // move to next file
         if (unzGoToNextFile(zipFile) != UNZ_OK)
         {
-            free(read_buffer);
             unzClose(zipFile);
             error = "CoreUnzip: unzGoToNextFile Failed!";
             CoreSetError(error);
@@ -164,6 +150,5 @@ bool CoreUnzip(std::filesystem::path file, std::filesystem::path path)
     }
 
     unzClose(zipFile);
-    free(read_buffer);
     return true;
 }

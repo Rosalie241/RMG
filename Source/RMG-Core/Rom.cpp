@@ -33,6 +33,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <algorithm>
+#include <iterator>
 
 //
 // Local Defines
@@ -134,7 +135,7 @@ static int zlib_filefunc_testerror(voidpf opaque, voidpf stream)
     return errno;
 }
 
-static bool read_zip_file(std::filesystem::path file, std::filesystem::path* extractedFileName, bool* isDisk, char** buf, int* size)
+static bool read_zip_file(std::filesystem::path file, std::filesystem::path& extractedFileName, bool& isDisk, std::vector<char>& outBuffer)
 {
     std::string  error;
     std::fstream fileStream;
@@ -202,33 +203,13 @@ static bool read_zip_file(std::filesystem::path file, std::filesystem::path* ext
             fileExtension == ".ndd" ||
             fileExtension == ".d64")
         {
-            char* buffer;
-            char* outBuffer;
-            int   dataSize = UNZIP_READ_SIZE;
-            int   total_bytes_read = 0;
-            int   bytes_read = 0;
+            std::vector<char> buffer(UNZIP_READ_SIZE);
+            int bytes_read = 0;
 
-            buffer = (char*)malloc(UNZIP_READ_SIZE);
-            if (buffer == nullptr)
-            {
-                error = "read_zip_file Failed: malloc Failed!";
-                CoreSetError(error);
-                return false;
-            }
-
-            outBuffer = (char*)malloc(UNZIP_READ_SIZE);
-            if (outBuffer == nullptr)
-            {
-                free(buffer);
-                error = "read_zip_file Failed: malloc Failed!";
-                CoreSetError(error);
-                return false;
-            }
+            outBuffer.reserve(UNZIP_READ_SIZE);
 
             if (unzOpenCurrentFile(zipFile) != UNZ_OK)
             {
-                free(buffer);
-                free(outBuffer);
                 error = "read_zip_file Failed: unzOpenCurrentFile Failed!";
                 CoreSetError(error);
                 return false;
@@ -236,49 +217,26 @@ static bool read_zip_file(std::filesystem::path file, std::filesystem::path* ext
 
             do
             {
-                bytes_read = unzReadCurrentFile(zipFile, buffer, UNZIP_READ_SIZE);
+                bytes_read = unzReadCurrentFile(zipFile, buffer.data(), UNZIP_READ_SIZE);
                 if (bytes_read < 0)
                 {
                     unzCloseCurrentFile(zipFile);
                     unzClose(zipFile);
-                    free(buffer);
-                    free(outBuffer);
                     error = "read_zip_file Failed: unzReadCurrentFile Failed: ";
                     error += std::to_string(bytes_read);
                     CoreSetError(error);
                     return false;
                 }
-
-                if (bytes_read > 0)
+                else if (bytes_read > 0)
                 {
-                    if (total_bytes_read + bytes_read > dataSize)
-                    {
-                        outBuffer = (char*)realloc(outBuffer, total_bytes_read + bytes_read);
-                        dataSize += bytes_read;
-                        if (outBuffer == nullptr)
-                        {
-                            unzCloseCurrentFile(zipFile);
-                            unzClose(zipFile);
-                            free(buffer);
-                            free(outBuffer);
-                            error = "read_zip_file Failed: realloc Failed!";
-                            CoreSetError(error);
-                            return false;
-                        }
-                    }
-
-                    memcpy((outBuffer + total_bytes_read), buffer, bytes_read);
-                    total_bytes_read += bytes_read;
+                    outBuffer.insert(outBuffer.end(), buffer.begin(), std::next(buffer.begin(), bytes_read));
                 }
             } while (bytes_read > 0);
 
-            *size              = total_bytes_read;
-            *buf               = outBuffer;
-            *extractedFileName = fileNamePath;
-            *isDisk            = (fileExtension == ".ndd" || fileExtension == ".d64");
+            extractedFileName = fileNamePath;
+            isDisk            = (fileExtension == ".ndd" || fileExtension == ".d64");
             unzCloseCurrentFile(zipFile);
             unzClose(zipFile);
-            free(buffer);
             return true;
         }
 
@@ -304,7 +262,7 @@ static bool read_zip_file(std::filesystem::path file, std::filesystem::path* ext
     return false;
 }
 
-static bool read_7zip_file(std::filesystem::path file, std::filesystem::path* extractedFileName, bool* isDisk, char** buf, int* size)
+static bool read_7zip_file(std::filesystem::path file, std::filesystem::path& extractedFileName, bool& isDisk, std::vector<char>& outBuffer)
 {
     std::string  error;
 
@@ -405,13 +363,13 @@ static bool read_7zip_file(std::filesystem::path file, std::filesystem::path* ex
             fileExtension == ".d64")
         {
             uint32_t blockIndex = 0xFFFFFFFF;
-            uint8_t* outBuffer  = nullptr;
-            size_t   outBufferSize = 0;
+            uint8_t* readBuffer = nullptr;
+            size_t   readBufferSize = 0;
             size_t   offset = 0;
             size_t   outSizeProcessed = 0;
 
             res = SzArEx_Extract(&db, &lookStream.vt, i,
-                                    &blockIndex, &outBuffer, &outBufferSize,
+                                    &blockIndex, &readBuffer, &readBufferSize,
                                     &offset, &outSizeProcessed,
                                     &allocImp, &allocTempImp);
             if (res != SZ_OK)
@@ -423,22 +381,18 @@ static bool read_7zip_file(std::filesystem::path file, std::filesystem::path* ex
                 SzArEx_Free(&db, &allocImp);
                 ISzAlloc_Free(&allocImp, lookStream.buf);
                 File_Close(&archiveStream.file);
-                ISzAlloc_Free(&allocImp, outBuffer);
+                ISzAlloc_Free(&allocImp, readBuffer);
                 return false;
             }
 
-            *size              = outSizeProcessed;
-            // we have to memcpy it into buf, otherwise
-            // the free() in CoreOpenRom() crashes
-            *buf               = (char*)malloc(outSizeProcessed);
-            memcpy(*buf, (outBuffer + offset), outSizeProcessed);
-            *extractedFileName = fileNamePath;
-            *isDisk            = (fileExtension == ".ndd" || fileExtension == ".d64");
+            outBuffer.insert(outBuffer.begin(), readBuffer, readBuffer + outSizeProcessed);
+            extractedFileName = fileNamePath;
+            isDisk            = (fileExtension == ".ndd" || fileExtension == ".d64");
 
             SzArEx_Free(&db, &allocImp);
             ISzAlloc_Free(&allocImp, lookStream.buf);
             File_Close(&archiveStream.file);
-            ISzAlloc_Free(&allocImp, outBuffer);
+            ISzAlloc_Free(&allocImp, readBuffer);
             return true;
         }
     }
@@ -453,12 +407,11 @@ static bool read_7zip_file(std::filesystem::path file, std::filesystem::path* ex
     return false;
 }
 
-static bool read_raw_file(std::filesystem::path file, char** buf, int* size)
+static bool read_raw_file(std::filesystem::path file, std::vector<char>& outBuffer)
 {
     std::string   error;
     std::ifstream fileStream;
     int           fileStreamLen;
-    char*         fileStreamBuf;
 
     // attempt to open file
     fileStream.open(file, std::ios::binary);
@@ -479,29 +432,17 @@ static bool read_raw_file(std::filesystem::path file, char** buf, int* size)
     fileStreamLen = fileStream.tellg();
     fileStream.seekg(0, fileStream.beg);
 
-    // try to create buffer
-    fileStreamBuf = (char*)malloc(fileStreamLen);
-    if (fileStreamBuf == nullptr)
-    {
-        error = "read_raw_file Failed: ";
-        error += "malloc failed!";
-        CoreSetError(error);
-        free(fileStreamBuf);
-        fileStream.close();
-        return false;
-    }
+    // resize buffer
+    outBuffer.resize(fileStreamLen);
 
     // read file
-    fileStream.read(fileStreamBuf, fileStreamLen);
-
-    *buf  = fileStreamBuf;
-    *size = fileStreamLen;
+    fileStream.read(outBuffer.data(), fileStreamLen);
 
     fileStream.close();
     return true;
 }
 
-static bool write_file(std::filesystem::path file, char* buf, int size)
+static bool write_file(std::filesystem::path file, std::vector<char>& buffer)
 {
     std::string   error;
     std::ofstream fileStream;
@@ -521,7 +462,7 @@ static bool write_file(std::filesystem::path file, char* buf, int size)
     }
 
     // write buffer to file
-    fileStream.write(buf, size);
+    fileStream.write(buffer.data(), buffer.size());
     fileStream.close();
     return true;
 }
@@ -534,8 +475,7 @@ bool CoreOpenRom(std::filesystem::path file)
 {
     std::string error;
     m64p_error  ret;
-    char*       buf      = nullptr;
-    int         buf_size = 0;
+    std::vector<char> buf;
     std::string file_extension;
 
     if (!m64p::Core.IsHooked())
@@ -562,14 +502,14 @@ bool CoreOpenRom(std::filesystem::path file)
 
         if (file_extension == ".zip")
         {
-            if (!read_zip_file(file, &extracted_file, &is_disk, &buf, &buf_size))
+            if (!read_zip_file(file, extracted_file, is_disk, buf))
             {
                 return false;
             }
         }
         else
         {
-            if (!read_7zip_file(file, &extracted_file, &is_disk, &buf, &buf_size))
+            if (!read_7zip_file(file, extracted_file, is_disk, buf))
             {
                 return false;
             }
@@ -598,14 +538,12 @@ bool CoreOpenRom(std::filesystem::path file)
                 error += disk_file.parent_path().string();
                 error += "\"!";
                 CoreSetError(error);
-                free(buf);
                 return false;
             }
 
             // attempt to write temporary file
-            if (!write_file(disk_file, buf, buf_size))
+            if (!write_file(disk_file, buf))
             {
-                free(buf);
                 return false;
             }
 
@@ -626,7 +564,7 @@ bool CoreOpenRom(std::filesystem::path file)
     }
     else
     {
-        if (!read_raw_file(file, &buf, &buf_size))
+        if (!read_raw_file(file, buf))
         {
             return false;
         }
@@ -642,13 +580,8 @@ bool CoreOpenRom(std::filesystem::path file)
     }
     else
     {
-        ret = m64p::Core.DoCommand(M64CMD_ROM_OPEN, buf_size, buf);
+        ret = m64p::Core.DoCommand(M64CMD_ROM_OPEN, buf.size(), buf.data());
         error = "CoreOpenRom: m64p::Core.DoCommand(M64CMD_ROM_OPEN) Failed: ";
-    }
-
-    if (!l_HasDisk || l_HasExtractedDisk)
-    {
-        free(buf);
     }
 
     if (ret != M64ERR_SUCCESS)
