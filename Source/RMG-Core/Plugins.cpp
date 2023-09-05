@@ -39,6 +39,12 @@ static char l_PluginContext[(int)CorePluginType::Input][20];
 
 m64p::PluginApi* get_plugin(CorePluginType type)
 {
+    if (type == CorePluginType::Invalid ||
+        (int)type < 0 || (int)type > 4)
+    {
+        return nullptr;
+    }
+
     return &l_Plugins[(int)type - 1];
 }
 
@@ -321,6 +327,14 @@ bool open_plugin_config(CorePluginType type, bool romConfig)
     }
 
     plugin = get_plugin(type);
+    if (plugin == nullptr)
+    {
+        error = "open_plugin_config Failed: ";
+        error += get_plugin_type_name(type);
+        error += " isn't a valid plugin type!";
+        CoreSetError(error);
+        return false;
+    }
 
     // check if the plugin has the Config2
     // or Config function, the Config2 function
@@ -455,9 +469,18 @@ bool CoreArePluginsReady(void)
 
 bool CorePluginsHasConfig(CorePluginType type)
 {
+    std::string error;
     m64p::PluginApi* plugin;
 
     plugin = get_plugin(type);
+    if (plugin == nullptr)
+    {
+        error = "CorePluginsHasConfig Failed: ";
+        error += get_plugin_type_name(type);
+        error += " isn't a valid plugin type!";
+        CoreSetError(error);
+        return false;
+    }
 
     return plugin->Config != nullptr ||
             plugin->Config2 != nullptr;
