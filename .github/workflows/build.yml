@@ -84,6 +84,9 @@ jobs:
         shell: msys2 {0}
       - name: Create Installer
         run: .\Build\Release\Source\Installer\CreateInstaller.bat
+      - name: Configure RMG (Portable)
+        run: touch Bin/Release/portable.txt
+        shell: msys2 {0}
       - name: Upload RMG (Portable)
         uses: actions/upload-artifact@v3
         with:
