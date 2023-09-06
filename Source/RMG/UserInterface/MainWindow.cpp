@@ -366,7 +366,7 @@ void MainWindow::configureTheme(QApplication* app)
     QIcon::setFallbackThemeName(fallbackThemeName);
 }
 
-void MainWindow::showErrorMessage(QString text, QString details)
+void MainWindow::showErrorMessage(QString text, QString details, bool force)
 {
     // update the message box list and ensure
     // that we don't already have one open with
@@ -379,7 +379,8 @@ void MainWindow::showErrorMessage(QString text, QString details)
             continue;
         }
 
-        if (messageBox->text() == text &&
+        if (!force &&
+            messageBox->text() == text &&
             messageBox->detailedText() == details)
         {
             return;
@@ -388,7 +389,7 @@ void MainWindow::showErrorMessage(QString text, QString details)
 
     // ensure we only display 10 errors at
     // the same time, to prevent message dialog spam
-    if (this->ui_MessageBoxList.size() >= 10)
+    if (!force && this->ui_MessageBoxList.size() >= 10)
     {
         return;
     }
@@ -2312,7 +2313,7 @@ void MainWindow::on_Core_DebugCallback(CoreDebugMessageType type, QString contex
         // emulation run, we'll stop displaying it
         if (this->ui_DebugCallbackErrors.count(message) < 50)
         {
-            this->showErrorMessage("Core Error", message);
+            this->showErrorMessage("Core Error", message, false);
         }
         this->ui_DebugCallbackErrors.append(message);
         return;
