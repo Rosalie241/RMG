@@ -28,7 +28,7 @@
 #include "../3rdParty/fmt/include/fmt/format-inl.h"
 #include "../3rdParty/fmt/src/format.cc"
 
-#define fmt_string(...) fmt_string(__VA_ARGS__)
+#define fmt_string(...) fmt::format(__VA_ARGS__)
 #else // USE_LIBFMT
 #include <format>
 
