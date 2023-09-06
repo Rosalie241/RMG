@@ -38,31 +38,35 @@ static std::filesystem::path l_SharedDataPathOverride;
 #ifdef PORTABLE_INSTALL
 static std::filesystem::path get_exe_directory(void)
 {
-    static std::filesystem::path path;
+    static std::filesystem::path directory;
 #ifdef _WIN32
     wchar_t buffer[MAX_PATH] = {0};
 #endif // _WIN32
 
-    if (!path.empty())
+    if (!directory.empty())
     {
-        return path;
+        return directory;
     }
 
 #ifdef _WIN32
-    GetModuleFileNameW(nullptr, buffer, MAX_PATH);
-    path = std::filesystem::path(buffer).parent_path();
+    if (GetModuleFileNameW(nullptr, buffer, MAX_PATH) == 0)
+    {
+        MessageBoxA(nullptr, "get_exe_directory: GetModuleFileNameW() Failed!", "Error", MB_OK | MB_ICONERROR);
+        std::terminate();
+    }
+    directory = std::filesystem::path(buffer).parent_path();
 #else // _WIN32
     try
     {
-        return std::filesystem::canonical("/proc/self/exe").parent_path();
+        directory =  std::filesystem::canonical("/proc/self/exe").parent_path();
     }
     catch (...)
     { // fail silently and fallback to current path
-        std::cerr << "get_exe_directory: std::filesystem::canonical(\"/proc/self/exe\") threw an exception, falling back to current directory!" << std::endl;
-        return std::filesystem::current_path();
+        std::cerr << "get_exe_directory: std::filesystem::canonical(\"/proc/self/exe\") threw an exception!" << std::endl;
+        std::terminate();
     }
 #endif // _WIN32
-    return path;   
+    return directory;
 }
 #endif // PORTABLE_INSTALL
 
