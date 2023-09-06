@@ -12,11 +12,13 @@
 
 #include "ConfigApi.hpp"
 #include "CoreApi.hpp"
+#include "DebugApi.hpp"
 
 namespace m64p
 {
 extern m64p::CoreApi Core;
 extern m64p::ConfigApi Config;
+extern m64p::DebugApi Debug;
 } // namespace m64p
 
 #endif // M64P_API_HPP

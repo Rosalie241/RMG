@@ -12,6 +12,7 @@
 #include "RomSettings.hpp"
 #include "Emulation.hpp"
 #include "m64p/Api.hpp"
+#include "GDBStub.hpp"
 #include "Plugins.hpp"
 #include "Cheats.hpp"
 #include "Error.hpp"
@@ -88,11 +89,21 @@ static void apply_game_coresettings_overlay(void)
 // Exported Functions
 //
 
+#include <iostream>
 bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64ddrom)
 {
     std::string error;
     m64p_error  ret;
     CoreRomType type;
+
+    // TODO: don't hardcode it here
+    // the overlay will be copied later here
+    CoreSettingsSetValue(SettingsID::CoreOverlay_EnableDebugger, true);
+
+    if (!CoreGDBStubInit(5001))
+    {
+        return false;
+    }
 
     if (!CoreOpenRom(n64rom))
     {
@@ -159,6 +170,8 @@ bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64d
         error = "CoreStartEmulation m64p::Core.DoCommand(M64CMD_EXECUTE) Failed: ";
         error += m64p::Core.ErrorMessage(ret);
     }
+
+    CoreGDBStubShutdown();
 
     CoreClearCheats();
     CoreDetachPlugins();
