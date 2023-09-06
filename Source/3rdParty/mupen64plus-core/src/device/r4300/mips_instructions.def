@@ -1553,8 +1553,17 @@ DECLARE_INSTRUCTION(CTC1)
         (*r4300_cp1_fcr31(&r4300->cp1)) = rrt32;
         update_x86_rounding_mode(&r4300->cp1);
     }
-    //if (((*r4300_cp1_fcr31(&r4300->cp1)) >> 7) & 0x1F) printf("FPU Exception enabled : %x\n",
-    //                 (int)(((*r4300_cp1_fcr31(&r4300->cp1)) >> 7) & 0x1F));
+
+    //printf("CTC1 rtt32 = 0x%08X\n", rrt32);
+
+    if (fpu_throw_exception(&rrt32))
+    {
+        uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+        cp0_regs[CP0_CAUSE_REG] = CP0_CAUSE_EXCCODE_FPE;
+        exception_general(r4300);
+        return;
+    }
+
     ADD_TO_PC(1);
 }
 
@@ -1646,7 +1655,13 @@ DECLARE_INSTRUCTION(ADD_S)
 {
     DECLARE_R4300
     if (check_cop1_unusable(r4300)) { return; }
-    add_s(r4300_cp1_fcr31(&r4300->cp1), (r4300_cp1_regs_simple(&r4300->cp1))[cffs], (r4300_cp1_regs_simple(&r4300->cp1))[cfft], (r4300_cp1_regs_simple(&r4300->cp1))[cffd]);
+    if (add_s(r4300_cp1_fcr31(&r4300->cp1), (r4300_cp1_regs_simple(&r4300->cp1))[cffs], (r4300_cp1_regs_simple(&r4300->cp1))[cfft], (r4300_cp1_regs_simple(&r4300->cp1))[cffd]))
+    {
+        uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+        cp0_regs[CP0_CAUSE_REG] = CP0_CAUSE_EXCCODE_FPE;
+        exception_general(r4300);
+        return;
+    }
     ADD_TO_PC(1);
 }
 

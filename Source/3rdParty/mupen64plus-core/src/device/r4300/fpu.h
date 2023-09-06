@@ -44,7 +44,7 @@ static __inline float  truncf(float x) { return (float)(int)x; }
 #endif
 
 #define FCR31_CMP_BIT UINT32_C(0x800000)
-
+#define FCR31_FS_BIT UINT32_C(0x1000000)
 #define FCR31_CAUSE_BITS UINT32_C(0x01F000)
 
 #define FCR31_CAUSE_INEXACT_BIT   UINT32_C(0x001000)
@@ -86,9 +86,62 @@ M64P_FPU_INLINE void set_rounding(uint32_t fcr31)
 }
 
 #ifdef ACCURATE_FPU_BEHAVIOR
+M64P_FPU_INLINE int is_qnan_float(float* value)
+{
+    uint32_t v;
+    memcpy(&v, value, 4);
+    return (v & (1 << 22)) != 0;
+}
+
 M64P_FPU_INLINE void fpu_reset_cause(uint32_t* fcr31)
 {
     (*fcr31) &= ~FCR31_CAUSE_BITS;
+}
+
+M64P_FPU_INLINE int fpu_throw_exception(uint32_t* fcr31)
+{
+    if ((*fcr31) & FCR31_ENABLE_DIVBYZERO_BIT &&
+        (*fcr31) & FCR31_CAUSE_DIVBYZERO_BIT)
+    {
+        printf("fpu_throw_exception FCR31_ENABLE_DIVBYZERO_BIT\n");
+        return 1;
+    }
+
+    if ((*fcr31) & FCR31_ENABLE_INEXACT_BIT &&
+        (*fcr31) & FCR31_CAUSE_INEXACT_BIT)
+    {
+        printf("fpu_throw_exception FCR31_ENABLE_INEXACT_BIT\n");
+        return 1;
+    }
+
+    if ((*fcr31) & FCR31_ENABLE_UNDERFLOW_BIT &&
+        (*fcr31) & FCR31_CAUSE_UNDERFLOW_BIT)
+    {
+        printf("fpu_throw_exception FCR31_ENABLE_UNDERFLOW_BIT\n");
+        return 1;
+    }
+
+    if ((*fcr31) & FCR31_ENABLE_OVERFLOW_BIT &&
+        (*fcr31) & FCR31_CAUSE_OVERFLOW_BIT)
+    {
+        printf("fpu_throw_exception FCR31_ENABLE_OVERFLOW_BIT\n");
+        return 1;
+    }
+
+    if ((*fcr31) & FCR31_ENABLE_INVALIDOP_BIT &&
+        (*fcr31) & FCR31_CAUSE_INVALIDOP_BIT)
+    {
+        printf("fpu_throw_exception FCR31_ENABLE_INVALIDOP_BIT\n");
+        return 1;
+    }
+
+    if ((*fcr31) & FCR31_CAUSE_UNIMPLOP_BIT)
+    {
+        printf("fpu_throw_exception FCR31_CAUSE_UNIMPLOP_BIT\n");
+        return 1;
+    }
+
+    return 0;
 }
 
 M64P_FPU_INLINE void fpu_reset_exceptions()
@@ -102,68 +155,134 @@ M64P_FPU_INLINE int fpu_check_exceptions(uint32_t* fcr31)
 
     fexceptions = fetestexcept(FE_ALL_EXCEPT) & FE_ALL_EXCEPT;
 
+    const int divByZeroEnabled = (*fcr31) & FCR31_ENABLE_DIVBYZERO_BIT;
+    const int inexactEnabled   = (*fcr31) & FCR31_ENABLE_INEXACT_BIT;
+    const int overflowEnabled  = (*fcr31) & FCR31_ENABLE_OVERFLOW_BIT;
+    const int underflowEnabled = (*fcr31) & FCR31_ENABLE_UNDERFLOW_BIT;
+    const int invalidOpEnabled = (*fcr31) & FCR31_ENABLE_INVALIDOP_BIT;
+    int throw_exception = 0;
+
+    if (fexceptions & FE_UNDERFLOW)
+    {
+        if (!(*fcr31) & FCR31_FS_BIT ||
+            (*fcr31) & FCR31_ENABLE_UNDERFLOW_BIT ||
+            (*fcr31) & FCR31_ENABLE_INEXACT_BIT)
+        {
+            (*fcr31) |= FCR31_CAUSE_UNIMPLOP_BIT;
+            return 1;
+        }
+
+        (*fcr31) |= FCR31_CAUSE_UNDERFLOW_BIT;
+        if (!underflowEnabled) (*fcr31) |= FCR31_FLAG_UNDERFLOW_BIT;
+        else throw_exception |= 1;
+    }
     if (fexceptions & FE_DIVBYZERO)
     {
         (*fcr31) |= FCR31_CAUSE_DIVBYZERO_BIT;
-        (*fcr31) |= FCR31_FLAG_DIVBYZERO_BIT;
+        if (!divByZeroEnabled) (*fcr31) |= FCR31_FLAG_DIVBYZERO_BIT;
+        else throw_exception |= 1;
     }
     if (fexceptions & FE_INEXACT)
     {
         (*fcr31) |= FCR31_CAUSE_INEXACT_BIT;
-        (*fcr31) |= FCR31_FLAG_INEXACT_BIT;
-    }
-    if (fexceptions & FE_UNDERFLOW)
-    {
-        (*fcr31) |= FCR31_CAUSE_UNDERFLOW_BIT;
-        (*fcr31) |= FCR31_FLAG_UNDERFLOW_BIT;
+        if (!inexactEnabled) (*fcr31) |= FCR31_FLAG_INEXACT_BIT;
+        else throw_exception |= 1;
     }
     if (fexceptions & FE_OVERFLOW)
     {
         (*fcr31) |= FCR31_CAUSE_OVERFLOW_BIT;
-        (*fcr31) |= FCR31_FLAG_OVERFLOW_BIT;
+        if (!overflowEnabled) (*fcr31) |= FCR31_FLAG_OVERFLOW_BIT;
+        else throw_exception |= 1;
     }
     if (fexceptions & FE_INVALID)
     {
         (*fcr31) |= FCR31_CAUSE_INVALIDOP_BIT;
-        (*fcr31) |= FCR31_FLAG_INVALIDOP_BIT;
+        if (!invalidOpEnabled) (*fcr31) |= FCR31_FLAG_INVALIDOP_BIT;
+        else throw_exception |= 1;
     }
 
-    return 0; // TODO: exceptions
+    return throw_exception;
 }
 
-M64P_FPU_INLINE void fpu_check_input_float(uint32_t* fcr31, const float* value)
-{
-    switch (fpclassify(*value))
-    {
-    default:
-    case FP_SUBNORMAL: // TODO
-        return;
-    case FP_NAN:
-        (*fcr31) |= FCR31_CAUSE_INVALIDOP_BIT;
-        (*fcr31) |= FCR31_FLAG_INVALIDOP_BIT;
-        break;
-    }
-}
-
-M64P_FPU_INLINE void fpu_check_input_double(uint32_t* fcr31, const double* value)
-{
-    switch (fpclassify(*value))
-    {
-    default:
-    case FP_SUBNORMAL: // TODO
-        return;
-    case FP_NAN:
-        (*fcr31) |= FCR31_CAUSE_INVALIDOP_BIT;
-        (*fcr31) |= FCR31_FLAG_INVALIDOP_BIT;
-        break;
-    }
-}
-
-M64P_FPU_INLINE void fpu_check_output_float(uint32_t* fcr31, const float* value)
+M64P_FPU_INLINE int fpu_check_input_float(uint32_t* fcr31, const float* value)
 {
     switch (fpclassify(*value))
     {
     case FP_SUBNORMAL:
+        (*fcr31) |=  FCR31_CAUSE_UNIMPLOP_BIT;
+        return 1;
+    case FP_NAN:
+        if (is_qnan_float(value))
+        {
+            (*fcr31) |= FCR31_CAUSE_INVALIDOP_BIT;
+            if ((*fcr31 & FCR31_ENABLE_INVALIDOP_BIT)) return 1;
+            (*fcr31) |= FCR31_FLAG_INVALIDOP_BIT;
+            break;
+        }
+        else
+        {
+            (*fcr31) |= FCR31_CAUSE_UNIMPLOP_BIT;
+            return 1;
+        }
+    default:
+        break;
+    }
+
+    return 0;
+}
+
+M64P_FPU_INLINE int fpu_check_input_double(uint32_t* fcr31, const double* value)
+{
+    switch (fpclassify(*value))
+    {
+    case FP_SUBNORMAL:
+        (*fcr31) |=  FCR31_CAUSE_UNIMPLOP_BIT;
+        return 1;
+    case FP_NAN:
+        /* if (nan)
+        {
+            (*fcr31) |= FCR31_CAUSE_INVALIDOP_BIT;
+            (*fcr31) |= FCR31_FLAG_INVALIDOP_BIT;
+            break;
+        } else */
+        (*fcr31) |=  FCR31_CAUSE_UNIMPLOP_BIT;
+        return 1;
+    default:
+        break;
+    }
+
+    return 0;
+}
+
+M64P_FPU_INLINE int fpu_check_output_float(uint32_t* fcr31, float* value)
+{
+    switch (fpclassify(*value))
+    {
+    case FP_SUBNORMAL:
+        break;
+    case FP_NAN:
+        //uint32_t v = 0x7fbfffff;
+        //memcpy(value, &v, 4);
+        break;
+    default:
+        break;
+    }
+
+    return 0;
+}
+
+M64P_FPU_INLINE int fpu_check_output_double(uint32_t* fcr31, const double* value)
+{
+    switch (fpclassify(*value))
+    {
+    case FP_SUBNORMAL:
+        if (!((*fcr31) & FCR31_FS_BIT) ||
+            (*fcr31) & FCR31_ENABLE_UNDERFLOW_BIT ||
+            (*fcr31) & FCR31_ENABLE_INEXACT_BIT)
+        {
+            (*fcr31) |= FCR31_CAUSE_UNIMPLOP_BIT;
+            return 1;
+        }
         (*fcr31) |= FCR31_CAUSE_UNDERFLOW_BIT;
         (*fcr31) |= FCR31_FLAG_UNDERFLOW_BIT;
         (*fcr31) |= FCR31_CAUSE_INEXACT_BIT;
@@ -171,34 +290,24 @@ M64P_FPU_INLINE void fpu_check_output_float(uint32_t* fcr31, const float* value)
         break;
 
     case FP_NAN:
+        uint64_t v = 0x7ff7ffffffffffff;
+        memcpy(value, &v, 8);
         break;
 
     default:
         break;
     }
-}
 
-M64P_FPU_INLINE void fpu_check_output_double(uint32_t* fcr31, const double* value)
-{
-    switch (fpclassify(*value))
-    {
-    case FP_SUBNORMAL:
-        (*fcr31) |= FCR31_CAUSE_UNDERFLOW_BIT;
-        (*fcr31) |= FCR31_FLAG_UNDERFLOW_BIT;
-        (*fcr31) |= FCR31_CAUSE_INEXACT_BIT;
-        (*fcr31) |= FCR31_FLAG_INEXACT_BIT;
-        break;
-
-    case FP_NAN:
-        break;
-
-    default:
-        break;
-    }
+    return 0;
 }
 #else
 M64P_FPU_INLINE void fpu_reset_cause(uint32_t* fcr31)
 {
+}
+
+M64P_FPU_INLINE int fpu_throw_exception(uint32_t* fcr31)
+{
+    return 0;
 }
 
 M64P_FPU_INLINE void fpu_reset_exceptions()
@@ -210,20 +319,24 @@ M64P_FPU_INLINE int fpu_check_exceptions(uint32_t* fcr31)
     return 0;
 }
 
-M64P_FPU_INLINE void fpu_check_input_float(uint32_t* fcr31, const float* value)
+M64P_FPU_INLINE int fpu_check_input_float(uint32_t* fcr31, const float* value)
 {
+    return 0;
 }
 
-M64P_FPU_INLINE void fpu_check_input_double(uint32_t* fcr31, const double* value)
+M64P_FPU_INLINE int fpu_check_input_double(uint32_t* fcr31, const double* value)
 {
+    return 0;
 }
 
-M64P_FPU_INLINE void fpu_check_output_float(uint32_t* fcr31, const float* value)
+M64P_FPU_INLINE int fpu_check_output_float(uint32_t* fcr31, const float* value)
 {
+    return 0;
 }
 
-M64P_FPU_INLINE void fpu_check_output_double(uint32_t* fcr31, const double* value)
+M64P_FPU_INLINE int fpu_check_output_double(uint32_t* fcr31, const double* value)
 {
+    return 0;
 }
 #endif /* ACCURATE_FPU_BEHAVIOR */
 
@@ -975,21 +1088,25 @@ M64P_FPU_INLINE void c_ngt_d(uint32_t* fcr31, const double* source, const double
 }
 
 
-M64P_FPU_INLINE void add_s(uint32_t* fcr31, const float* source1, const float* source2, float* target)
+M64P_FPU_INLINE int add_s(uint32_t* fcr31, const float* source1, const float* source2, float* target)
 {
     set_rounding(*fcr31);
 
     fpu_reset_cause(fcr31);
-    fpu_check_input_float(fcr31, source1);
-    fpu_check_input_float(fcr31, source2);
+
+    if (fpu_check_input_float(fcr31, source1)) return 1;
+    if (fpu_check_input_float(fcr31, source2)) return 1;
 
     fpu_reset_exceptions();
 
-    *target = *source1 + *source2;
+    const float value = *source1 + *source2;
 
-    fpu_check_exceptions(fcr31);
+    if (fpu_check_exceptions(fcr31)) return 1;
+    if (fpu_check_output_float(fcr31, &value)) return 1;
+    if (fpu_throw_exception(fcr31)) return 1;
 
-    fpu_check_output_float(fcr31, target);
+    *target = value;
+    return 0;
 }
 M64P_FPU_INLINE void sub_s(uint32_t* fcr31, const float* source1, const float* source2, float* target)
 {
