@@ -33,6 +33,20 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.5.2" date="2023-09-06" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix drag and drop not working in the loading screen of the ROM browser</li>
+          <li>Fix ROM browser not refreshing when launching RMG with a ROM specified through the commandline, using drag and drop and then returning to the ROM browser</li>
+          <li>Fix ROM browser refreshing with '--quit-after-emulation' specified through the commandline after a ROM has finished executing causing some extra debug callbacks to be displayed</li>
+          <li>Fix ROMs which have a ROM header name with 20 characters without a 0 byte at the end (fixes a crash on windows)</li>
+          <li>Improve build process by automatically detecting whether 'std::format' is supported or not (if not, use libfmt)</li>
+          <li>Improve message box behavior when there are a lot of errors</li>
+          <li>Improve default directories on windows (it'll now use '%APPDATA%\RMG' unless 'portable.txt' or 'Config\mupen64plus.cfg' exists)</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.5.1" date="2023-08-27" type="stable">
       <description>
         <p>Changes:</p>
