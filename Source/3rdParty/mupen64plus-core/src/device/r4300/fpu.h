@@ -25,6 +25,7 @@
 #include <math.h>
 #include <stdint.h>
 #include <float.h>
+#include <string.h>
 
 #include <stdio.h> // TODO: remove
 
@@ -418,7 +419,7 @@ M64P_FPU_INLINE int cvt_s_w(uint32_t* fcr31, const int32_t* source, float* dest)
 
     float value = (float)*source;
 
-    if (fpu_check_exceptions(fcr31))         return 1;
+    if (fpu_check_exceptions(fcr31))           return 1;
     if (fpu_check_output_float(fcr31, &value)) return 1;
 
     *dest = value;
@@ -482,9 +483,9 @@ M64P_FPU_INLINE int cvt_s_d(uint32_t* fcr31, const double* source, float* dest)
 
     fpu_reset_exceptions();
 
-    float value = *(float*)source;
+    float value = (float)*source;
 
-    if (fpu_check_exceptions(fcr31))         return 1;
+    if (fpu_check_exceptions(fcr31))           return 1;
     if (fpu_check_output_float(fcr31, &value)) return 1;
 
     *dest = value;

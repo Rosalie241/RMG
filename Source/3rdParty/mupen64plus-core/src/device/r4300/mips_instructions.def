@@ -1653,7 +1653,13 @@ DECLARE_INSTRUCTION(ABS_D)
 {
     DECLARE_R4300
     if (check_cop1_unusable(r4300)) { return; }
-    abs_d(r4300_cp1_fcr31(&r4300->cp1), (r4300_cp1_regs_double(&r4300->cp1))[cffs], (r4300_cp1_regs_double(&r4300->cp1))[cffd]);
+    if (abs_d(r4300_cp1_fcr31(&r4300->cp1), (r4300_cp1_regs_double(&r4300->cp1))[cffs], (r4300_cp1_regs_double(&r4300->cp1))[cffd]))
+    {
+        uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+        cp0_regs[CP0_CAUSE_REG] = CP0_CAUSE_EXCCODE_FPE;
+        exception_general(r4300);
+        return;
+    }
     ADD_TO_PC(1);
 }
 
