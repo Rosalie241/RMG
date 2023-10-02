@@ -311,6 +311,7 @@ M64P_FPU_INLINE int fpu_check_output_float(uint32_t* fcr31, float* value)
     switch (fpclassify(*value))
     {
     case FP_SUBNORMAL:
+    {
         if (!((*fcr31) & FCR31_FS_BIT) ||
             (*fcr31) & FCR31_ENABLE_UNDERFLOW_BIT ||
             (*fcr31) & FCR31_ENABLE_INEXACT_BIT)
@@ -323,11 +324,12 @@ M64P_FPU_INLINE int fpu_check_output_float(uint32_t* fcr31, float* value)
         (*fcr31) |= FCR31_CAUSE_INEXACT_BIT;
         (*fcr31) |= FCR31_FLAG_INEXACT_BIT;
         fpu_flush_output_float(fcr31, value);
-        break;
+    } break;
     case FP_NAN:
+    {
         uint32_t v = 0x7fbfffff;
         memcpy(value, &v, 4);
-        break;
+    } break;
     default:
         break;
     }
@@ -340,6 +342,7 @@ M64P_FPU_INLINE int fpu_check_output_double(uint32_t* fcr31, double* value)
     switch (fpclassify(*value))
     {
     case FP_SUBNORMAL:
+    {
         if (!((*fcr31) & FCR31_FS_BIT) ||
             (*fcr31) & FCR31_ENABLE_UNDERFLOW_BIT ||
             (*fcr31) & FCR31_ENABLE_INEXACT_BIT)
@@ -352,12 +355,13 @@ M64P_FPU_INLINE int fpu_check_output_double(uint32_t* fcr31, double* value)
         (*fcr31) |= FCR31_CAUSE_INEXACT_BIT;
         (*fcr31) |= FCR31_FLAG_INEXACT_BIT;
         fpu_flush_output_double(fcr31, value);
-        break;
+    } break;
 
     case FP_NAN:
+    {
         uint64_t v = 0x7ff7ffffffffffff;
         memcpy(value, &v, 8);
-        break;
+    } break;
 
     default:
         break;
