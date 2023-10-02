@@ -604,6 +604,7 @@ enum r4300_opcode r4300_decode(struct precomp_instr* inst, struct r4300_core* r4
         idec_u53(iw, idec->u53[0], &inst->f.cf.fd);
         switch(dummy)
         {
+        case 0x10: inst->ops = cached_interp_CVT_S_S; return idec->opcode;
         case 0x11: inst->ops = cached_interp_CVT_S_D; return idec->opcode;
         case 0x14: inst->ops = cached_interp_CVT_S_W; return idec->opcode;
         case 0x15: inst->ops = cached_interp_CVT_S_L; return idec->opcode;

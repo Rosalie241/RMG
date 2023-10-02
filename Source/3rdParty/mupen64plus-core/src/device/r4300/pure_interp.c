@@ -525,6 +525,7 @@ void InterpretOpcode(struct r4300_core* r4300)
 			case 13: TRUNC_W_S(r4300, op); break;
 			case 14: CEIL_W_S(r4300, op); break;
 			case 15: FLOOR_W_S(r4300, op); break;
+			case 32: CVT_S_S(r4300, op); break;
 			case 33: CVT_D_S(r4300, op); break;
 			case 36: CVT_W_S(r4300, op); break;
 			case 37: CVT_L_S(r4300, op); break;
@@ -569,6 +570,7 @@ void InterpretOpcode(struct r4300_core* r4300)
 			case 14: CEIL_W_D(r4300, op); break;
 			case 15: FLOOR_W_D(r4300, op); break;
 			case 32: CVT_S_D(r4300, op); break;
+			case 33: CVT_D_D(r4300, op); break;
 			case 36: CVT_W_D(r4300, op); break;
 			case 37: CVT_L_D(r4300, op); break;
 			case 48: C_F_D(r4300, op); break;

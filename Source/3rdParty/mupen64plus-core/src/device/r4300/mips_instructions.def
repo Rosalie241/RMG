@@ -1851,7 +1851,13 @@ DECLARE_INSTRUCTION(TRUNC_W_S)
 {
     DECLARE_R4300
     if (check_cop1_unusable(r4300)) { return; }
-    trunc_w_s((r4300_cp1_regs_simple(&r4300->cp1))[cffs], (int32_t*) (r4300_cp1_regs_simple(&r4300->cp1))[cffd]);
+    if (trunc_w_s(r4300_cp1_fcr31(&r4300->cp1), (r4300_cp1_regs_simple(&r4300->cp1))[cffs], (int32_t*) (r4300_cp1_regs_simple(&r4300->cp1))[cffd]))
+    {
+        uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+        cp0_regs[CP0_CAUSE_REG] = CP0_CAUSE_EXCCODE_FPE;
+        exception_general(r4300);
+        return;
+    }
     ADD_TO_PC(1);
 }
 
@@ -1883,7 +1889,13 @@ DECLARE_INSTRUCTION(ROUND_W_S)
 {
     DECLARE_R4300
     if (check_cop1_unusable(r4300)) { return; }
-    round_w_s((r4300_cp1_regs_simple(&r4300->cp1))[cffs], (int32_t*) (r4300_cp1_regs_simple(&r4300->cp1))[cffd]);
+    if (round_w_s(r4300_cp1_fcr31(&r4300->cp1), (r4300_cp1_regs_simple(&r4300->cp1))[cffs], (int32_t*) (r4300_cp1_regs_simple(&r4300->cp1))[cffd]))
+    {
+        uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+        cp0_regs[CP0_CAUSE_REG] = CP0_CAUSE_EXCCODE_FPE;
+        exception_general(r4300);
+        return;
+    }
     ADD_TO_PC(1);
 }
 
@@ -1915,7 +1927,13 @@ DECLARE_INSTRUCTION(CEIL_W_S)
 {
     DECLARE_R4300
     if (check_cop1_unusable(r4300)) { return; }
-    ceil_w_s((r4300_cp1_regs_simple(&r4300->cp1))[cffs], (int32_t*) (r4300_cp1_regs_simple(&r4300->cp1))[cffd]);
+    if (ceil_w_s(r4300_cp1_fcr31(&r4300->cp1), (r4300_cp1_regs_simple(&r4300->cp1))[cffs], (int32_t*) (r4300_cp1_regs_simple(&r4300->cp1))[cffd]))
+    {
+        uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+        cp0_regs[CP0_CAUSE_REG] = CP0_CAUSE_EXCCODE_FPE;
+        exception_general(r4300);
+        return;
+    }
     ADD_TO_PC(1);
 }
 
@@ -1975,6 +1993,18 @@ DECLARE_INSTRUCTION(FLOOR_L_D)
     ADD_TO_PC(1);
 }
 
+DECLARE_INSTRUCTION(CVT_S_S)
+{
+    DECLARE_R4300
+    if (check_cop1_unusable(r4300)) { return; }
+
+    *r4300_cp1_fcr31(&r4300->cp1) |= FCR31_CAUSE_UNIMPLOP_BIT;
+
+    uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+    cp0_regs[CP0_CAUSE_REG] = CP0_CAUSE_EXCCODE_FPE;
+    exception_general(r4300);
+}
+
 DECLARE_INSTRUCTION(CVT_S_D)
 {
     DECLARE_R4300
@@ -2021,15 +2051,39 @@ DECLARE_INSTRUCTION(CVT_D_S)
 {
     DECLARE_R4300
     if (check_cop1_unusable(r4300)) { return; }
-    cvt_d_s(r4300_cp1_fcr31(&r4300->cp1), (r4300_cp1_regs_simple(&r4300->cp1))[cffs], (r4300_cp1_regs_double(&r4300->cp1))[cffd]);
+    if (cvt_d_s(r4300_cp1_fcr31(&r4300->cp1), (r4300_cp1_regs_simple(&r4300->cp1))[cffs], (r4300_cp1_regs_double(&r4300->cp1))[cffd]))
+    {
+        uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+        cp0_regs[CP0_CAUSE_REG] = CP0_CAUSE_EXCCODE_FPE;
+        exception_general(r4300);
+        return;
+    }
     ADD_TO_PC(1);
+}
+
+DECLARE_INSTRUCTION(CVT_D_D)
+{
+    DECLARE_R4300
+    if (check_cop1_unusable(r4300)) { return; }
+
+    *r4300_cp1_fcr31(&r4300->cp1) |= FCR31_CAUSE_UNIMPLOP_BIT;
+
+    uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+    cp0_regs[CP0_CAUSE_REG] = CP0_CAUSE_EXCCODE_FPE;
+    exception_general(r4300);
 }
 
 DECLARE_INSTRUCTION(CVT_D_W)
 {
     DECLARE_R4300
     if (check_cop1_unusable(r4300)) { return; }
-    cvt_d_w(r4300_cp1_fcr31(&r4300->cp1), (int32_t*) (r4300_cp1_regs_simple(&r4300->cp1))[cffs], (r4300_cp1_regs_double(&r4300->cp1))[cffd]);
+    if (cvt_d_w(r4300_cp1_fcr31(&r4300->cp1), (int32_t*) (r4300_cp1_regs_simple(&r4300->cp1))[cffs], (r4300_cp1_regs_double(&r4300->cp1))[cffd]))
+    {
+        uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+        cp0_regs[CP0_CAUSE_REG] = CP0_CAUSE_EXCCODE_FPE;
+        exception_general(r4300);
+        return;
+    }
     ADD_TO_PC(1);
 }
 
@@ -2037,7 +2091,13 @@ DECLARE_INSTRUCTION(CVT_D_L)
 {
     DECLARE_R4300
     if (check_cop1_unusable(r4300)) { return; }
-    cvt_d_l(r4300_cp1_fcr31(&r4300->cp1), (int64_t*) (r4300_cp1_regs_double(&r4300->cp1))[cffs], (r4300_cp1_regs_double(&r4300->cp1))[cffd]);
+    if (cvt_d_l(r4300_cp1_fcr31(&r4300->cp1), (int64_t*) (r4300_cp1_regs_double(&r4300->cp1))[cffs], (r4300_cp1_regs_double(&r4300->cp1))[cffd]))
+    {
+        uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+        cp0_regs[CP0_CAUSE_REG] = CP0_CAUSE_EXCCODE_FPE;
+        exception_general(r4300);
+        return;
+    }
     ADD_TO_PC(1);
 }
 
@@ -2045,7 +2105,13 @@ DECLARE_INSTRUCTION(CVT_W_S)
 {
     DECLARE_R4300
     if (check_cop1_unusable(r4300)) { return; }
-    cvt_w_s(r4300_cp1_fcr31(&r4300->cp1), (r4300_cp1_regs_simple(&r4300->cp1))[cffs], (int32_t*) (r4300_cp1_regs_simple(&r4300->cp1))[cffd]);
+    if (cvt_w_s(r4300_cp1_fcr31(&r4300->cp1), (r4300_cp1_regs_simple(&r4300->cp1))[cffs], (int32_t*) (r4300_cp1_regs_simple(&r4300->cp1))[cffd]))
+    {
+        uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+        cp0_regs[CP0_CAUSE_REG] = CP0_CAUSE_EXCCODE_FPE;
+        exception_general(r4300);
+        return;
+    }
     ADD_TO_PC(1);
 }
 
@@ -2053,7 +2119,13 @@ DECLARE_INSTRUCTION(CVT_W_D)
 {
     DECLARE_R4300
     if (check_cop1_unusable(r4300)) { return; }
-    cvt_w_d(r4300_cp1_fcr31(&r4300->cp1), (r4300_cp1_regs_double(&r4300->cp1))[cffs], (int32_t*) (r4300_cp1_regs_simple(&r4300->cp1))[cffd]);
+    if (cvt_w_d(r4300_cp1_fcr31(&r4300->cp1), (r4300_cp1_regs_double(&r4300->cp1))[cffs], (int32_t*) (r4300_cp1_regs_simple(&r4300->cp1))[cffd]))
+    {
+        uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+        cp0_regs[CP0_CAUSE_REG] = CP0_CAUSE_EXCCODE_FPE;
+        exception_general(r4300);
+        return;
+    }
     ADD_TO_PC(1);
 }
 

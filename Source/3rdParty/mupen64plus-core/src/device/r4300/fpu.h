@@ -269,6 +269,52 @@ M64P_FPU_INLINE int fpu_check_input_double(uint32_t* fcr31, const double* value)
     return 0;
 }
 
+M64P_FPU_INLINE int fpu_check_input_float_conv_int32(uint32_t* fcr31, const float* source)
+{
+    switch (fpclassify(*source))
+    {
+    case FP_SUBNORMAL:
+    case FP_INFINITE:
+    case FP_NAN:
+        (*fcr31) |= FCR31_CAUSE_UNIMPLOP_BIT;
+        return 1;
+    default:
+        break;
+    }
+
+    if (*source >= 0x1p+31f ||
+        *source < -0x1p+31f)
+    {
+        (*fcr31) |= FCR31_CAUSE_UNIMPLOP_BIT;
+        return 1;
+    }
+
+    return 0;
+}
+
+M64P_FPU_INLINE int fpu_check_input_double_conv_int32(uint32_t* fcr31, const double* source)
+{
+    switch (fpclassify(*source))
+    {
+    case FP_SUBNORMAL:
+    case FP_INFINITE:
+    case FP_NAN:
+        (*fcr31) |= FCR31_CAUSE_UNIMPLOP_BIT;
+        return 1;
+    default:
+        break;
+    }
+
+    if (*source >= 0x1p+31 ||
+        *source < -0x1p+31)
+    {
+        (*fcr31) |= FCR31_CAUSE_UNIMPLOP_BIT;
+        return 1;
+    }
+
+    return 0;
+}
+
 M64P_FPU_INLINE void fpu_flush_output_float(uint32_t* fcr31, float* value)
 {
     switch (fegetround())
@@ -399,6 +445,16 @@ M64P_FPU_INLINE int fpu_check_input_double(uint32_t* fcr31, const double* value)
     return 0;
 }
 
+M64P_FPU_INLINE int fpu_check_input_float_conv_int32(uint32_t* fcr31, const float* source)
+{
+    return 0;
+}
+
+M64P_FPU_INLINE int fpu_check_input_double_conv_int32(uint32_t* fcr31, const double* source)
+{
+    return 0;
+}
+
 M64P_FPU_INLINE int fpu_check_output_float(uint32_t* fcr31, const float* value)
 {
     return 0;
@@ -425,54 +481,81 @@ M64P_FPU_INLINE int cvt_s_w(uint32_t* fcr31, const int32_t* source, float* dest)
     *dest = value;
     return 0;
 }
-M64P_FPU_INLINE void cvt_d_w(uint32_t* fcr31, const int32_t* source, double* dest)
-{
-    fpu_reset_cause(fcr31);
-    fpu_reset_exceptions();
-
-    *dest = (double)*source;
-
-    fpu_check_exceptions(fcr31);
-    fpu_check_output_double(fcr31, dest);
-}
-M64P_FPU_INLINE int cvt_s_l(uint32_t* fcr31, const int64_t* source, float* dest)
+M64P_FPU_INLINE int cvt_d_w(uint32_t* fcr31, const int32_t* source, double* dest)
 {
     set_rounding(*fcr31);
 
     fpu_reset_cause(fcr31);
     fpu_reset_exceptions();
 
+    double value = (double)*source;
+
+    if (fpu_check_exceptions(fcr31))            return 1;
+    if (fpu_check_output_double(fcr31, &value)) return 1;
+
+    *dest = value;
+    return 0;
+}
+M64P_FPU_INLINE int cvt_s_l(uint32_t* fcr31, const int64_t* source, float* dest)
+{
+    set_rounding(*fcr31);
+    fpu_reset_cause(fcr31);
+
+    if (*source <  (int64_t)0xff80000000000000ULL ||
+        *source >= (int64_t)0x0080000000000000ULL)
+    {
+        (*fcr31) |= FCR31_CAUSE_UNIMPLOP_BIT;
+        return 1;
+    }
+
+    fpu_reset_exceptions();
+
     float value = (float)*source;
 
-    if (fpu_check_exceptions(fcr31))         return 1;
+    if (fpu_check_exceptions(fcr31))           return 1;
     if (fpu_check_output_float(fcr31, &value)) return 1;
 
     *dest = value;
     return 0;
 }
-M64P_FPU_INLINE void cvt_d_l(uint32_t* fcr31, const int64_t* source, double* dest)
+M64P_FPU_INLINE int cvt_d_l(uint32_t* fcr31, const int64_t* source, double* dest)
 {
     set_rounding(*fcr31);
-
     fpu_reset_cause(fcr31);
+
+    if (*source <  (int64_t)0xff80000000000000ULL ||
+        *source >= (int64_t)0x0080000000000000ULL)
+    {
+        (*fcr31) |= FCR31_CAUSE_UNIMPLOP_BIT;
+        return 1;
+    }
+
     fpu_reset_exceptions();
 
-    *dest = (double)*source;
+    double value = (double)*source;
 
-    fpu_check_exceptions(fcr31);
-    fpu_check_output_double(fcr31, dest);
+    if (fpu_check_exceptions(fcr31))            return 1;
+    if (fpu_check_output_double(fcr31, &value)) return 1;
+
+    *dest = value;
+    return 0;
 }
-M64P_FPU_INLINE void cvt_d_s(uint32_t* fcr31, const float* source, double* dest)
+M64P_FPU_INLINE int cvt_d_s(uint32_t* fcr31, const float* source, double* dest)
 {
+    set_rounding(*fcr31);
     fpu_reset_cause(fcr31);
-    fpu_check_input_float(fcr31, source);
+
+    if (fpu_check_input_float(fcr31, source)) return 1;
 
     fpu_reset_exceptions();
 
-    *dest = (double)*source;
+    double value = (double)*source;
 
-    fpu_check_exceptions(fcr31);
-    fpu_check_output_double(fcr31, dest);
+    if (fpu_check_exceptions(fcr31))            return 1;
+    if (fpu_check_output_double(fcr31, &value)) return 1;
+
+    *dest = value;
+    return 0;
 }
 M64P_FPU_INLINE int cvt_s_d(uint32_t* fcr31, const double* source, float* dest)
 {
@@ -511,40 +594,75 @@ M64P_FPU_INLINE void round_l_s(const float* source, int64_t* dest)
         *dest = (int64_t)roundf(*source);
     }
 }
-M64P_FPU_INLINE void round_w_s(const float* source, int32_t* dest)
+M64P_FPU_INLINE int round_w_s(uint32_t* fcr31, const float* source, int32_t* dest)
 {
-    float remainder = *source - floorf(*source);
-    if (remainder == 0.5)
+    set_rounding(*fcr31);
+    fpu_reset_cause(fcr31);
+
+    if (fpu_check_input_float_conv_int32(fcr31, source)) return 1;
+
+    fpu_reset_exceptions();
+
+    int32_t value = (int32_t)roundf(*source);
+
+    if (fpu_check_exceptions(fcr31)) return 1;
+
+    if (*source != value)
     {
-        if (*source < 0)
-        {
-            *dest = (int32_t)truncf(*source) % 2 != 0 ? (int32_t)floorf(*source) : (int32_t)ceilf(*source);
-        }
-        else
-        {
-            *dest = (int32_t)truncf(*source) % 2 != 0 ? (int32_t)ceilf(*source) : (int32_t)floorf(*source);
-        }
+        (*fcr31) |= FCR31_CAUSE_INEXACT_BIT;
+        if ((*fcr31) & FCR31_ENABLE_INEXACT_BIT) return 1;
+        (*fcr31) |= FCR31_FLAG_INEXACT_BIT;
     }
-    else
-    {
-        *dest = (int32_t)roundf(*source);
-    }
+
+    *dest = value;
+    return 0;
 }
 M64P_FPU_INLINE void trunc_l_s(const float* source, int64_t* dest)
 {
     *dest = (int64_t)truncf(*source);
 }
-M64P_FPU_INLINE void trunc_w_s(const float* source, int32_t* dest)
+M64P_FPU_INLINE int trunc_w_s(uint32_t* fcr31, const float* source, int32_t* dest)
 {
-    *dest = (int32_t)truncf(*source);
+    set_rounding(*fcr31);
+    fpu_reset_cause(fcr31);
+
+    if (fpu_check_input_float_conv_int32(fcr31, source)) return 1;
+
+    fpu_reset_exceptions();
+
+    int32_t value = (int32_t)truncf(*source);
+
+    if (fpu_check_exceptions(fcr31)) return 1;
+
+    if (*source != value)
+    {
+        (*fcr31) |= FCR31_CAUSE_INEXACT_BIT;
+        if ((*fcr31) & FCR31_ENABLE_INEXACT_BIT) return 1;
+        (*fcr31) |= FCR31_FLAG_INEXACT_BIT;
+    }
+
+    *dest = value;
+    return 0;
 }
 M64P_FPU_INLINE void ceil_l_s(const float* source, int64_t* dest)
 {
     *dest = (int64_t)ceilf(*source);
 }
-M64P_FPU_INLINE void ceil_w_s(const float* source, int32_t* dest)
+M64P_FPU_INLINE int ceil_w_s(uint32_t* fcr31, const float* source, int32_t* dest)
 {
-    *dest = (int32_t)ceilf(*source);
+    set_rounding(*fcr31);
+    fpu_reset_cause(fcr31);
+
+    if (fpu_check_input_float_conv_int32(fcr31, source)) return 1;
+
+    fpu_reset_exceptions();
+
+    int32_t value = (int32_t)ceilf(*source);
+
+    if (fpu_check_exceptions(fcr31)) return 1;
+
+    *dest = value;
+    return 0;
 }
 M64P_FPU_INLINE void floor_l_s(const float* source, int64_t* dest)
 {
@@ -619,42 +737,39 @@ M64P_FPU_INLINE void floor_w_d(const double* source, int32_t* dest)
     *dest = (int32_t)floor(*source);
 }
 
-M64P_FPU_INLINE void cvt_w_s(uint32_t* fcr31, const float* source, int32_t* dest)
+M64P_FPU_INLINE int cvt_w_s(uint32_t* fcr31, const float* source, int32_t* dest)
 {
+    set_rounding(*fcr31);
     fpu_reset_cause(fcr31);
 
-    fpu_check_input_float(fcr31, source);
+    if (fpu_check_input_float_conv_int32(fcr31, source)) return 1;
 
     fpu_reset_exceptions();
 
-    switch(*fcr31 & 3)
-    {
-    case 0: round_w_s(source, dest); return;
-    case 1: trunc_w_s(source, dest); return;
-    case 2: ceil_w_s (source, dest); return;
-    case 3: floor_w_s(source, dest); return;
-    }
+    int32_t value = rintf(*source);
 
-    fpu_check_exceptions(fcr31);
+    if (fpu_check_exceptions(fcr31)) return 1;
+
+    *dest = value;
+    return 0;
 }
-M64P_FPU_INLINE void cvt_w_d(uint32_t* fcr31, const double* source, int32_t* dest)
+M64P_FPU_INLINE int cvt_w_d(uint32_t* fcr31, const double* source, int32_t* dest)
 {
+    set_rounding(*fcr31);
     fpu_reset_cause(fcr31);
 
-    fpu_check_input_double(fcr31, source);
+    if (fpu_check_input_double_conv_int32(fcr31, source)) return 1;
 
     fpu_reset_exceptions();
 
-    switch(*fcr31 & 3)
-    {
-    case 0: round_w_d(source, dest); return;
-    case 1: trunc_w_d(source, dest); return;
-    case 2: ceil_w_d (source, dest); return;
-    case 3: floor_w_d(source, dest); return;
-    }
+    int32_t value = rint(*source);
 
-    fpu_check_exceptions(fcr31);
+    if (fpu_check_exceptions(fcr31)) return 1;
+
+    *dest = value;
+    return 0;
 }
+
 M64P_FPU_INLINE void cvt_l_s(uint32_t* fcr31, const float* source, int64_t* dest)
 {
     fpu_reset_cause(fcr31);
