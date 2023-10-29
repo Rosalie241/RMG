@@ -26,7 +26,7 @@ struct CoreCheatCode
     int  OptionIndex = 0;
     int  OptionSize  = 0;
 
-    bool operator==(const CoreCheatCode other) const
+    bool operator==(const CoreCheatCode& other) const
     {
         return Address == other.Address &&
                 Value == other.Value &&
@@ -47,7 +47,7 @@ struct CoreCheatOption
     // Cheat Option Value Size
     int32_t     Size  = 0;
 
-    bool operator==(const CoreCheatOption other) const
+    bool operator==(const CoreCheatOption& other) const
     {
         return Name == other.Name &&
                 Value == other.Value &&
@@ -74,7 +74,7 @@ struct CoreCheat
     // Cheat Codes
     std::vector<CoreCheatCode> CheatCodes;
 
-    bool operator==(const CoreCheat other) const
+    bool operator==(const CoreCheat& other) const
     {
         return Name == other.Name &&
                 Author == other.Author &&
@@ -104,7 +104,7 @@ struct CoreCheatFile
 bool CoreGetCurrentCheats(std::vector<CoreCheat>& cheats);
 
 // attempts to parse cheat from lines
-bool CoreParseCheat(std::vector<std::string> lines, CoreCheat& cheat);
+bool CoreParseCheat(const std::vector<std::string>& lines, CoreCheat& cheat);
 
 // attemps to convert the cheat into parsable code lines & option lines
 bool CoreGetCheatLines(CoreCheat cheat, std::vector<std::string>& codeLines, std::vector<std::string>& optionLines);
