@@ -40,7 +40,7 @@ Rosalie's Mupen GUI is a free and open-source mupen64plus front-end written in C
 %autosetup
 
 %build
-%cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DPORTABLE_INSTALL=OFF -DDISCORD_RPC=OFF
+%cmake -DCMAKE_BUILD_TYPE=Release -DPORTABLE_INSTALL=OFF -DDISCORD_RPC=OFF
 %cmake_build
 
 %install
