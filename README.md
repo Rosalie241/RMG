@@ -14,6 +14,7 @@ You can download Rosalie's Mupen GUI on
 * [Github Releases (AppImage)](https://github.com/Rosalie241/RMG/releases)
 * [Flathub (Flatpak)](https://flathub.org/apps/details/com.github.Rosalie241.RMG)
 * [Arch User Repository](https://aur.archlinux.org/packages/rmg)
+* [Fedora COPR](https://copr.fedorainfracloud.org/coprs/rosalie/RMG/)
 
 ## Support
 
