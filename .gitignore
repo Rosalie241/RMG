@@ -8,6 +8,10 @@ Package/ArchLinux/pkg/
 Package/ArchLinux/rmg/
 Package/ArchLinux/src/
 Package/ArchLinux/*.pkg.*
+# Fedora Package
+Package/Fedora/*.rpm
+Package/Fedora/*.tar.gz
+Package/Fedora/results_*/
 # Clangd compile_commands.json
 compile_commands.json
 # AppImage
