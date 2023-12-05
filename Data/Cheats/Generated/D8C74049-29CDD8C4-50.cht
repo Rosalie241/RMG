@@ -1,0 +1,50 @@
+[D8C74049-29CDD8C4-C:50]
+Name=007 - The World is Not Enough (E) [T+Spa1.0.1_IlDucci]
+
+$$Acceso\Todos los Gadgets e Items
+801147DD 0001
+
+$$Acceso\Todas las Armas
+Note=Viene con munición
+801147DC 0001
+
+$$Acceso\Todos los Niveles & Dificultades
+81103B66 0021
+50000D01 0000
+80118F38 0001
+
+$$Infinito\Oxígeno
+800E25E4 0004
+
+$$Infinito\Tiempo
+81103B82 0000
+
+$$Invencible
+811147D8 0101
+
+$$Multijugador\Acceso a Todos los Personajes Malvados
+801147EB 0001
+811147EC 0101
+801147EE 0001
+
+$$Multijugador\Acceso a Todas las Arenas
+50005C0C 0000
+800C0167 0081
+
+$$Multijugador\Acceso a Todos los Escenarios
+801147EF 0001
+811147F0 0101
+
+$$Multijugador\Acceso a Todos los Modos de Armamento
+811147F2 0101
+801147F4 0001
+
+$$Multijugador\Acceso a Q Malvado
+800C06EF 0081
+
+$$Multijugador\Acceso a Q Bueno
+800C06EF 0001
+
+$$Multijugador\Invencible
+811147D8 0101
+
