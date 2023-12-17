@@ -1160,8 +1160,19 @@ void MainWindow::timerEvent(QTimerEvent *event)
             return;
         }
 
-        int expectedWidth  = this->ui_Widget_OpenGL->GetWidget()->width()  * this->devicePixelRatio();
-        int expectedHeight = this->ui_Widget_OpenGL->GetWidget()->height() * this->devicePixelRatio();
+        int expectedWidth  = 0;
+        int expectedHeight = 0;
+        if (this->ui_VidExtRenderMode == VidExtRenderMode::OpenGL)
+        {
+            expectedWidth  = this->ui_Widget_OpenGL->GetWidget()->width()  * this->devicePixelRatio();
+            expectedHeight = this->ui_Widget_OpenGL->GetWidget()->height() * this->devicePixelRatio();
+        }
+        else
+        {
+            expectedWidth  = this->ui_Widget_Vulkan->GetWidget()->width()  * this->devicePixelRatio();
+            expectedHeight = this->ui_Widget_Vulkan->GetWidget()->height() * this->devicePixelRatio();
+        }
+
         if (width  != expectedWidth ||
             height != expectedHeight)
         {
