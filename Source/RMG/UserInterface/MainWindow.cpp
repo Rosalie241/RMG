@@ -575,12 +575,6 @@ void MainWindow::launchEmulationThread(QString cartRom, QString diskRom, bool re
         this->ui_Widget_RomBrowser->StopRefreshRomList();
     }
 
-    if (this->ui_LaunchInFullscreen || CoreSettingsGetBoolValue(SettingsID::GUI_AutomaticFullscreen))
-    {
-        this->ui_FullscreenTimerId = this->startTimer(100);
-        this->ui_LaunchInFullscreen = false;
-    }
-
     if (!CoreArePluginsReady())
     {
         // always go back to ROM Browser
@@ -589,6 +583,12 @@ void MainWindow::launchEmulationThread(QString cartRom, QString diskRom, bool re
 
         this->showErrorMessage("CoreArePluginsReady() Failed", QString::fromStdString(CoreGetError()));
         return;
+    }
+
+    if (this->ui_LaunchInFullscreen || CoreSettingsGetBoolValue(SettingsID::GUI_AutomaticFullscreen))
+    {
+        this->ui_FullscreenTimerId = this->startTimer(100);
+        this->ui_LaunchInFullscreen = false;
     }
 
     this->ui_HideCursorInEmulation = CoreSettingsGetBoolValue(SettingsID::GUI_HideCursorInEmulation);
