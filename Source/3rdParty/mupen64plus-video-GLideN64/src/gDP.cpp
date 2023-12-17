@@ -954,6 +954,21 @@ void gDPTextureRectangle(f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, s16 s, s1
 
 void gDPFullSync()
 {
+	enum
+	{
+		DPC_STATUS_XBUS_DMEM_DMA = 0x001,	// Bit  0: xbus_dmem_dma
+		DPC_STATUS_FREEZE = 0x002,			// Bit  1: Freeze
+		DPC_STATUS_FLUSH = 0x004,			// Bit  2: Flush
+		DPC_STATUS_START_GCLK = 0x008,		// Bit  3: Start GCLK
+		DPC_STATUS_TMEM_BUSY = 0x010,		// Bit  4: TMEM busy
+		DPC_STATUS_PIPE_BUSY = 0x020,		// Bit  5: Pipe busy
+		DPC_STATUS_CMD_BUSY = 0x040,		// Bit  6: CMD busy
+		DPC_STATUS_CBUF_READY = 0x080,		// Bit  7: CBUF ready
+		DPC_STATUS_DMA_BUSY = 0x100,		// Bit  8: DMA busy
+		DPC_STATUS_END_VALID = 0x200,		// Bit  9: End valid
+		DPC_STATUS_START_VALID = 0x400,		// Bit 10: Start valid
+	};
+
 	if (config.frameBufferEmulation.copyAuxToRDRAM != 0) {
 		frameBufferList().copyAux();
 		frameBufferList().removeAux();
@@ -980,7 +995,7 @@ void gDPFullSync()
 	}
 
 	*REG.MI_INTR |= MI_INTR_DP;
-
+	*REG.DPC_STATUS &= ~(DPC_STATUS_PIPE_BUSY | DPC_STATUS_CMD_BUSY | DPC_STATUS_START_GCLK);
 	CheckInterrupts();
 
 	DebugMsg( DEBUG_NORMAL, "gDPFullSync();\n" );

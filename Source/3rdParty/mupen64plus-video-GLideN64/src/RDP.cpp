@@ -571,7 +571,7 @@ inline u32 READ_RDP_DATA(u32 address)
 void RDP_ProcessRDPList()
 {
 	if (ConfigOpen || dwnd().isResizeWindow()) {
-		dp_start = dp_current = dp_end;
+		dp_current = dp_end;
 		gDPFullSync();
 		return;
 	}
@@ -623,5 +623,5 @@ void RDP_ProcessRDPList()
 	gDP.changed |= CHANGED_COLORBUFFER;
 	gDP.changed &= ~CHANGED_CPU_FB_WRITE;
 
-	dp_start = dp_current = dp_end;
+	dp_current = dp_end;
 }
