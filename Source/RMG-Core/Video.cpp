@@ -13,13 +13,47 @@
 #include "m64p/Api.hpp"
 
 #include <string>
+#include <mutex>
+
+//
+// Local Variables
+//
+
+static std::mutex l_VideoMutex;
 
 //
 // Exported Functions
 //
 
+bool CoreGetVideoSize(int& width, int& height)
+{
+    const std::lock_guard<std::mutex> guard(l_VideoMutex);
+    std::string error;
+    m64p_error ret;
+    int size = 0;
+
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
+
+    ret = m64p::Core.DoCommand(M64CMD_CORE_STATE_QUERY, M64CORE_VIDEO_SIZE, &size);
+    if (ret != M64ERR_SUCCESS)
+    {
+        error = "CoreGetVideoSize m64p::Core.DoCommand(M64CMD_CORE_STATE_QUERY) Failed: ";
+        error += m64p::Core.ErrorMessage(ret);
+        CoreSetError(error);
+        return false;
+    }
+
+    width  = (size >> 16) & 0xffff;
+    height = size & 0xffff;
+    return true;
+}
+
 bool CoreSetVideoSize(int width, int height)
 {
+    const std::lock_guard<std::mutex> guard(l_VideoMutex);
     std::string error;
     m64p_error ret;
     int size;

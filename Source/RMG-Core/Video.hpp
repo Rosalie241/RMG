@@ -10,6 +10,9 @@
 #ifndef CORE_VIDEO_HPP
 #define CORE_VIDEO_HPP
 
+// attempts to retrieve the video size
+bool CoreGetVideoSize(int& width, int& height);
+
 // sets video size with given width & height
 bool CoreSetVideoSize(int width, int height);
 
