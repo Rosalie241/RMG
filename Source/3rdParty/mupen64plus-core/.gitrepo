@@ -4,9 +4,9 @@
 ; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
 ;
 [subrepo]
-	remote = git@github.com:/Rosalie241/mupen64plus-core.git
-	branch = memchr
-	commit = 6f926b6a9026f100020cb350e5e28aee68d34e4c
-	parent = 010035d697d2514e5a19ed9e6c9344e67fad7478
+	remote = git@github.com:mupen64plus/mupen64plus-core.git
+	branch = master
+	commit = f500eb58f76e636e231c3cc2b3d904210f0677c9
+	parent = 6fb6fa59ad4f67ce361121f7ce48bac569ba375b
 	method = merge
 	cmdver = 0.4.6
