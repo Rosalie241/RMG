@@ -86,7 +86,7 @@ void OptionsDialog::on_changeGameboyRomButton_clicked()
 
     if (!gameBoyRom.isEmpty())
     {
-        this->gameboyRomLineEdit->setText(gameBoyRom);
+        this->gameboyRomLineEdit->setText(QDir::toNativeSeparators(gameBoyRom));
     }
 }
 
@@ -97,6 +97,6 @@ void OptionsDialog::on_changeGameboySaveButton_clicked()
 
     if (!gameBoySave.isEmpty())
     {
-        this->gameboySaveLineEdit->setText(gameBoySave);
+        this->gameboySaveLineEdit->setText(QDir::toNativeSeparators(gameBoySave));
     }
 }
