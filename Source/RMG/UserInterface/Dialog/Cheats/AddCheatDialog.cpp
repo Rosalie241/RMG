@@ -95,10 +95,10 @@ void AddCheatDialog::showErrorMessage(QString error, QString details)
 bool AddCheatDialog::validate(void)
 {
     QTextDocument* document;
+    QStringList    documentLines;
     bool foundOption = false;
-    int  optionSize = -1;
+    int  optionSize  = -1;
     QRegularExpression hexRegExpr("^[0-9A-F]+$");
-
 
     // ensure name isn't empty
     QString name = this->nameLineEdit->text();
@@ -115,17 +115,17 @@ bool AddCheatDialog::validate(void)
         }
     }
 
+    documentLines = this->getLines(this->codeTextEdit->document());
+
     // ensure code lines aren't empty
-    if (this->codeTextEdit->toPlainText().isEmpty())
+    if (documentLines.isEmpty())
     {
         return false;
     }
 
     // parse code lines
-    document = this->codeTextEdit->document();
-    for (int i = 0; i < document->lineCount(); i++)
+    for (const QString& line : documentLines)
     {
-        QString line = document->findBlockByLineNumber(i).text();
         QStringList splitLine = line.split(' ');
 
         if (splitLine.size() != 2)
@@ -171,17 +171,15 @@ bool AddCheatDialog::validate(void)
         }
     }
 
-
     // parse option lines
-    document = this->optionsTextEdit->document();
+    documentLines = this->getLines(this->optionsTextEdit->document());
     if (!foundOption)
     {
-        return document->isEmpty();
+        return documentLines.isEmpty();
     }
 
-    for (int i = 0; i < document->lineCount(); i++)
+    for (const QString& line : documentLines)
     {
-        QString line = document->findBlockByLineNumber(i).text();
         QStringList splitLine = line.split(' ');
 
         if (splitLine.size() < 2)
@@ -218,8 +216,28 @@ void AddCheatDialog::validateOkButton(void)
     okButton->setEnabled(this->validate());
 }
 
+QStringList AddCheatDialog::getLines(QTextDocument* textDocument)
+{
+    QString line;
+    QStringList lines;
+
+    lines.reserve(textDocument->lineCount());
+
+    for (int i = 0; i < textDocument->lineCount(); i++)
+    {
+        line = textDocument->findBlockByLineNumber(i).text();
+        if (!line.isEmpty())
+        {
+            lines.push_back(line);
+        }
+    }
+
+    return lines;
+}
+
 bool AddCheatDialog::getCheat(CoreCheat& cheat)
 {
+    QStringList qLines;
     std::vector<std::string> lines;
 
     QTextDocument* document;
@@ -241,16 +259,14 @@ bool AddCheatDialog::getCheat(CoreCheat& cheat)
         lines.push_back("Note=" + note.toStdString());
     }
 
-    document = this->codeTextEdit->document();
-    for (int i = 0; i < document->lineCount(); i++)
+    qLines = this->getLines(this->codeTextEdit->document());
+    for (const QString& line : qLines)
     {
-        QString line = document->findBlockByLineNumber(i).text();
         lines.push_back(line.toStdString());
     }
-    document = this->optionsTextEdit->document();
-    for (int i = 0; i < document->lineCount(); i++)
+    qLines = this->getLines(this->optionsTextEdit->document());
+    for (const QString& line : qLines)
     {
-        QString line = document->findBlockByLineNumber(i).text();
         lines.push_back(line.toStdString());
     }
 

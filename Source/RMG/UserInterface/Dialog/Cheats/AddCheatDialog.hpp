@@ -41,6 +41,7 @@ class AddCheatDialog : public QDialog, private Ui::AddCheatDialog
     bool validate(void);
     void validateOkButton(void);
 
+    QStringList getLines(QTextDocument* textDocument);
     bool getCheat(CoreCheat& cheat);
     bool addCheat(void);
     bool updateCheat(void);
