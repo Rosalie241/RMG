@@ -1037,7 +1037,7 @@ void SettingsDialog::chooseDirectory(QLineEdit *lineEdit)
         return;
     }
 
-    lineEdit->setText(dir);
+    lineEdit->setText(QDir::toNativeSeparators(dir));
 }
 
 void SettingsDialog::chooseIPLRom(QLineEdit *lineEdit)
@@ -1050,7 +1050,7 @@ void SettingsDialog::chooseIPLRom(QLineEdit *lineEdit)
         return;
     }
 
-    lineEdit->setText(file);
+    lineEdit->setText(QDir::toNativeSeparators(file));
 }
 
 bool SettingsDialog::applyPluginSettings(void)

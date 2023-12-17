@@ -11,6 +11,7 @@
 
 #include <QMessageBox>
 #include <QFileInfo>
+#include <QDir>
 
 using namespace UserInterface::Dialog;
 
@@ -26,7 +27,7 @@ RomInfoDialog::RomInfoDialog(QString file, CoreRomHeader romHeader, CoreRomSetti
     this->md5LineEdit->setCursorPosition(0);
     this->fileNameLineEdit->setText(qFileInfo.fileName());
     this->fileNameLineEdit->setCursorPosition(0);
-    this->locationLineEdit->setText(qFileInfo.absolutePath());
+    this->locationLineEdit->setText(QDir::toNativeSeparators(qFileInfo.absolutePath()));
     this->locationLineEdit->setCursorPosition(0);
     this->crc1LineEdit->setText(QString::number(romHeader.CRC1, 16).toUpper());
     this->crc2LineEdit->setText(QString::number(romHeader.CRC2, 16).toUpper());
