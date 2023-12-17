@@ -45,7 +45,7 @@ static std::filesystem::path get_exe_directory(void)
 
     if (!directory.empty())
     {
-        return directory;
+        return directory.make_preferred();
     }
 
 #ifdef _WIN32
@@ -66,7 +66,7 @@ static std::filesystem::path get_exe_directory(void)
         std::terminate();
     }
 #endif // _WIN32
-    return directory;
+    return directory.make_preferred();
 }
 #endif // PORTABLE_INSTALL
 
@@ -121,7 +121,7 @@ static std::filesystem::path get_var_directory(std::string var, std::string appe
         directory += append;
     }
 
-    return directory;
+    return directory.make_preferred();
 }
 
 static std::filesystem::path get_command_output(std::string command)
@@ -248,7 +248,7 @@ std::filesystem::path CoreGetLibraryDirectory(void)
         directory += "/lib/RMG/";
     }
 #endif // PORTABLE_INSTALL
-    return directory;
+    return directory.make_preferred();
 }
 
 std::filesystem::path CoreGetCoreDirectory(void)
@@ -275,7 +275,7 @@ std::filesystem::path CoreGetCoreDirectory(void)
         directory += "/lib/RMG/Core";
     }
 #endif // CORE_INSTALL_PREFIX
-    return directory;
+    return directory.make_preferred();
 }
 
 std::filesystem::path CoreGetPluginDirectory(void)
@@ -302,7 +302,7 @@ std::filesystem::path CoreGetPluginDirectory(void)
         directory += "/lib/RMG/Plugin";
     }
 #endif // CORE_INSTALL_PREFIX
-    return directory;
+    return directory.make_preferred();
 }
 
 std::filesystem::path CoreGetUserConfigDirectory(void)
@@ -323,7 +323,7 @@ std::filesystem::path CoreGetUserConfigDirectory(void)
         directory = get_var_directory("XDG_CONFIG_HOME", "/RMG", "HOME", "/.config/RMG");
 #endif // _WIN32
     }
-    return directory;
+    return directory.make_preferred();
 }
 
 std::filesystem::path CoreGetDefaultUserDataDirectory(void)
@@ -343,7 +343,7 @@ std::filesystem::path CoreGetDefaultUserDataDirectory(void)
         directory = get_var_directory("XDG_DATA_HOME", "/RMG", "HOME", "/.local/share/RMG");
 #endif // _WIN32
     }
-    return directory;
+    return directory.make_preferred();
 }
 
 std::filesystem::path CoreGetDefaultUserCacheDirectory(void)
@@ -364,7 +364,7 @@ std::filesystem::path CoreGetDefaultUserCacheDirectory(void)
         directory = get_var_directory("XDG_CACHE_HOME", "/RMG", "HOME", "/.cache/RMG");
 #endif // _WIN32
     }
-    return directory;
+    return directory.make_preferred();
 }
 
 std::filesystem::path CoreGetDefaultSaveDirectory(void)
@@ -386,7 +386,7 @@ std::filesystem::path CoreGetDefaultSaveDirectory(void)
         directory += "/Save/Game";
 #endif // _WIN32
     }
-    return directory;
+    return directory.make_preferred();
 }
 
 std::filesystem::path CoreGetDefaultSaveStateDirectory(void)
@@ -408,7 +408,7 @@ std::filesystem::path CoreGetDefaultSaveStateDirectory(void)
         directory += "/Save/State";
 #endif // _WIN32
     }
-    return directory;
+    return directory.make_preferred();
 }
 
 std::filesystem::path CoreGetDefaultScreenshotDirectory(void)
@@ -437,7 +437,7 @@ std::filesystem::path CoreGetDefaultScreenshotDirectory(void)
         }
 #endif // _WIN32
     }
-    return directory;
+    return directory.make_preferred();
 }
 
 std::filesystem::path CoreGetUserDataDirectory(void)
@@ -474,7 +474,7 @@ std::filesystem::path CoreGetSharedDataDirectory(void)
         directory += "/share/RMG";
     }
 #endif // PORTABLE_INSTALL
-    return directory;
+    return directory.make_preferred();
 }
 
 std::filesystem::path CoreGetSaveDirectory(void)
