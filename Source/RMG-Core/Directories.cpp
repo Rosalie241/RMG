@@ -245,7 +245,9 @@ std::filesystem::path CoreGetLibraryDirectory(void)
     else
     {
         directory = CORE_INSTALL_PREFIX;
-        directory += "/lib/RMG/";
+        directory += "/";
+        directory += CORE_INSTALL_LIBDIR;
+        directory += "/RMG/";
     }
 #endif // PORTABLE_INSTALL
     return directory.make_preferred();
@@ -271,8 +273,8 @@ std::filesystem::path CoreGetCoreDirectory(void)
     }
     else
     {
-        directory = CORE_INSTALL_PREFIX;
-        directory += "/lib/RMG/Core";
+        directory = CoreGetLibraryDirectory();
+        directory += "/Core";
     }
 #endif // CORE_INSTALL_PREFIX
     return directory.make_preferred();
@@ -298,8 +300,8 @@ std::filesystem::path CoreGetPluginDirectory(void)
     }
     else
     {
-        directory = CORE_INSTALL_PREFIX;
-        directory += "/lib/RMG/Plugin";
+        directory = CoreGetLibraryDirectory();
+        directory += "/Plugin";
     }
 #endif // CORE_INSTALL_PREFIX
     return directory.make_preferred();
@@ -471,7 +473,9 @@ std::filesystem::path CoreGetSharedDataDirectory(void)
     else
     {
         directory = CORE_INSTALL_PREFIX;
-        directory += "/share/RMG";
+        directory += "/";
+        directory += CORE_INSTALL_DATADIR;
+        directory += "/RMG";
     }
 #endif // PORTABLE_INSTALL
     return directory.make_preferred();
