@@ -76,7 +76,7 @@ extern "C"
 
 	EXPORT unsigned int CALL DoRspCycles(unsigned int cycles)
 	{
-		if (*RSP::rsp.SP_STATUS_REG & (SP_STATUS_HALT | SP_STATUS_BROKE))
+		if (*RSP::rsp.SP_STATUS_REG & SP_STATUS_HALT)
 			return 0;
 
 		// We don't know if Mupen from the outside invalidated our IMEM.
