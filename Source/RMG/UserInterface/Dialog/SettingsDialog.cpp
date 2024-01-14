@@ -266,7 +266,7 @@ void SettingsDialog::loadGameCoreSettings(void)
 
     gameOverrideCoreSettingsGroupBox->setChecked(overrideEnabled);
     gameCoreCpuEmulatorComboBox->setCurrentIndex(cpuEmulator);
-    gameOverclockingFactorComboBox->setCurrentIndex(overclockingFactor);
+    gameOverclockingFactorSpinBox->setValue(overclockingFactor);
     gameRandomizeTimingCheckBox->setChecked(randomizeInterrupt);
 }
 
@@ -490,7 +490,7 @@ void SettingsDialog::loadDefaultGameCoreSettings(void)
 
     gameOverrideCoreSettingsGroupBox->setChecked(overrideEnabled);
     gameCoreCpuEmulatorComboBox->setCurrentIndex(cpuEmulator);
-    gameOverclockingFactorComboBox->setCurrentIndex(overclockingFactor);
+    gameOverclockingFactorSpinBox->setValue(overclockingFactor);
     gameRandomizeTimingCheckBox->setChecked(randomizeInterrupt);
 }
 
@@ -658,7 +658,7 @@ void SettingsDialog::saveGameCoreSettings(void)
 
     overrideEnabled = gameOverrideCoreSettingsGroupBox->isChecked();
     cpuEmulator = gameCoreCpuEmulatorComboBox->currentIndex();
-    overclockingFactor = gameOverclockingFactorComboBox->currentIndex();
+    overclockingFactor = gameOverclockingFactorSpinBox->value();
     randomizeInterrupt = gameRandomizeTimingCheckBox->isChecked();
 
     defaultOverrideEnabled = CoreSettingsGetDefaultBoolValue(SettingsID::Game_OverrideCoreSettings);
