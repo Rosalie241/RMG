@@ -6,10 +6,10 @@ jobs:
   Linux:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: hendrikmuhs/ccache-action@v1.2.5
+      - uses: hendrikmuhs/ccache-action@v1.2
         with:
           key: Linux
       - name: Install Packages
@@ -36,7 +36,7 @@ jobs:
           ./Package/AppImage/Create.sh
         shell: bash
       - name: Upload RMG (AppImage)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: RMG-Portable-Linux64-${{ env.GIT_REVISION }}
           path: Bin/*.AppImage
@@ -44,10 +44,10 @@ jobs:
   Windows:
     runs-on: windows-2019
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: hendrikmuhs/ccache-action@v1.2.5
+      - uses: hendrikmuhs/ccache-action@v1.2
         with:
           key: Windows
       - uses: msys2/setup-msys2@v2
@@ -85,12 +85,12 @@ jobs:
         run: touch Bin/Release/portable.txt
         shell: msys2 {0}
       - name: Upload RMG (Portable)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: RMG-Portable-Windows64-${{ env.GIT_REVISION }}
           path: Bin/Release/*
       - name: Upload RMG (Installer)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: RMG-Setup-Windows64-${{ env.GIT_REVISION }}
           path: Bin/*.exe
