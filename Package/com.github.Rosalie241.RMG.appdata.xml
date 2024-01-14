@@ -33,6 +33,15 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.5.5" date="2024-01-14" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Add TryExec to desktop file (thank you JakobDev)</li>
+          <li>Update mupen64plus-core, parallel-rsp, mupen64plus-rsp-hle, GLideN64 and SDL_GameControllerDB</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.5.4" date="2023-12-17" type="stable">
       <description>
         <p>Changes:</p>
