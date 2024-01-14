@@ -149,7 +149,7 @@ TxFilter::TxFilter(int maxwidth,
 		wchar_t fullTexPackPath[MAX_PATH];
 		wcscpy(fullTexPackPath, texPackPath);
 		wcscat(fullTexPackPath, OSAL_DIR_SEPARATOR_STR);
-		wcscat(fullTexPackPath, ident);
+		wcscat(fullTexPackPath, _ident.c_str());
 		_txHiResLoader = new TxHiResNoCache(_maxwidth, _maxheight, _maxbpp, _options, texCachePath, texPackPath, fullTexPackPath, _ident.c_str(), callback);
 	} else {
 		_txHiResLoader = new TxHiResCache(_maxwidth, _maxheight, _maxbpp, _options, texCachePath, texPackPath, _ident.c_str(), callback);

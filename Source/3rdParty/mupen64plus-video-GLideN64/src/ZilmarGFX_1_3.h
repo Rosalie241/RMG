@@ -277,6 +277,14 @@ EXPORT void CALL ViWidthChanged (void);
  ******************************************************************/
 EXPORT void CALL ReadScreen (void **dest, long *width, long *height);
 
+/******************************************************************
+  Function: DllCrtFree
+  Purpose:  Frees the memory at the specified address with the dll's standard library
+  Input:    none
+  Output:   none
+ ******************************************************************/
+EXPORT void CALL DllCrtFree(void* addr);
+
 #if defined(__cplusplus)
 }
 #endif

@@ -55,4 +55,9 @@ EXPORT void CALL ReadScreen (void **dest, long *width, long *height)
 	api().ReadScreen(dest, width, height);
 }
 
+EXPORT void CALL DllCrtFree(void* addr)
+{
+	free(addr);
+}
+
 }
