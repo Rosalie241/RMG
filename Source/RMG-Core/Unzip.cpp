@@ -29,6 +29,8 @@
 bool CoreUnzip(std::filesystem::path file, std::filesystem::path path)
 {
     std::string error;
+    std::filesystem::path targetPath;
+    std::filesystem::path fileNamePath;
 
     unzFile           zipFile;
     unz_global_info   zipInfo;
@@ -56,7 +58,6 @@ bool CoreUnzip(std::filesystem::path file, std::filesystem::path path)
     {
         unz_file_info fileInfo;
         char          fileName[PATH_MAX];
-        std::filesystem::path targetPath;
 
         // ensure we can retrieve the current file info
         if (unzGetCurrentFileInfo(zipFile, &fileInfo, fileName, PATH_MAX, nullptr, 0, nullptr, 0) != UNZ_OK)
@@ -67,16 +68,18 @@ bool CoreUnzip(std::filesystem::path file, std::filesystem::path path)
             return false;
         }
 
-        targetPath = path;
-        targetPath += "/";
-        targetPath += fileName;
+        fileNamePath = fileName;
+        targetPath   = path;
+        targetPath   += "/";
+        targetPath   += fileName;
 
-        if (targetPath.string().ends_with("/"))
-        { // directory
+        if (fileNamePath.has_filename() &&
+            fileNamePath.has_parent_path())
+        { // create parent directories
             try
             {
-                if (!std::filesystem::is_directory(targetPath) && 
-                    !std::filesystem::create_directory(targetPath))
+                if (!std::filesystem::is_directory(targetPath.parent_path()) && 
+                    !std::filesystem::create_directories(targetPath.parent_path()))
                 {
                     throw std::exception();
                 }
@@ -91,8 +94,9 @@ bool CoreUnzip(std::filesystem::path file, std::filesystem::path path)
                 return false;
             }
         }
-        else
-        { // file
+
+        if (fileNamePath.has_filename())
+        { // extract file
             if (unzOpenCurrentFile(zipFile) != UNZ_OK)
             {
                 unzClose(zipFile);
@@ -106,7 +110,7 @@ bool CoreUnzip(std::filesystem::path file, std::filesystem::path path)
             {
                 unzCloseCurrentFile(zipFile);
                 unzClose(zipFile);
-                error = "CoreUnzip: failed to open file!";
+                error = "CoreUnzip: failed to open file: ";
                 error += targetPath.string();
                 CoreSetError(error);
                 return false;
