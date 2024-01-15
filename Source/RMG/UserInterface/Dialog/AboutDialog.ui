@@ -94,7 +94,7 @@
    <item>
     <widget class="QLabel" name="label_4">
      <property name="text">
-      <string>Copyright © 2020-2023 Rosalie Wanders</string>
+      <string>Copyright © 2020-2024 Rosalie Wanders</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
