@@ -155,19 +155,21 @@ foreach(LANG ${GLIDENUI_TRANSLATIONS_LANGS})
     list(APPEND GLIDENUI_TRANSLATIONS "${GLIDEN64_DIR}/translations/release/gliden64_${LANG}.qm")
 endforeach()
 
-ExternalProject_Add(mupen64plus-video-angrylion-plus
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-video-angrylion-plus
+if (USE_ANGRYLION)
+    ExternalProject_Add(mupen64plus-video-angrylion-plus
+        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-video-angrylion-plus
 
-    INSTALL_COMMAND ""
+        INSTALL_COMMAND ""
 
-    BUILD_IN_SOURCE False
-    BUILD_ALWAYS True
-    CMAKE_ARGS -DBUILD_MUPEN64PLUS=ON -DBUILD_PROJECT64=OFF -DUSE_QT5=OFF ${CMAKE_CONFIGURE_ARGS}
-    BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-video-angrylion-plus
+        BUILD_IN_SOURCE False
+        BUILD_ALWAYS True
+        CMAKE_ARGS -DBUILD_MUPEN64PLUS=ON -DBUILD_PROJECT64=OFF -DUSE_QT5=OFF ${CMAKE_CONFIGURE_ARGS}
+        BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-video-angrylion-plus
 
-    BUILD_BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-video-angrylion-plus/mupen64plus-video-angrylion-plus.${SO_EXT}
-    DEPENDS mupen64plus-core
-)
+        BUILD_BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-video-angrylion-plus/mupen64plus-video-angrylion-plus.${SO_EXT}
+        DEPENDS mupen64plus-core
+    )
+endif(USE_ANGRYLION)
 
 ExternalProject_Add(mupen64plus-video-GLideN64
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-video-GLideN64
@@ -282,8 +284,10 @@ if (BUILD_INPUT_GCA)
     set(MUPEN64PLUS_PLUGIN_INPUT_GCA ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 endif(BUILD_INPUT_GCA)
 
-ExternalProject_Get_property(mupen64plus-video-angrylion-plus BUILD_BYPRODUCTS)
-set(MUPEN64PLUS_PLUGIN_GFX_ANGRYLION ${BUILD_BYPRODUCTS} PARENT_SCOPE)
+if (USE_ANGRYLION)
+    ExternalProject_Get_property(mupen64plus-video-angrylion-plus BUILD_BYPRODUCTS)
+    set(MUPEN64PLUS_PLUGIN_GFX_ANGRYLION ${BUILD_BYPRODUCTS} PARENT_SCOPE)
+endif(USE_ANGRYLION)
 
 ExternalProject_Get_property(mupen64plus-video-GLideN64 BUILD_BYPRODUCTS)
 set(MUPEN64PLUS_PLUGIN_GFX_GLIDEN64 ${BUILD_BYPRODUCTS} ${GLIDENUI_TRANSLATIONS} ${GLIDEN64_CUSTOM_INI} PARENT_SCOPE)

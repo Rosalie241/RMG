@@ -13,6 +13,7 @@ option(USE_CCACHE       "Enables usage of ccache when ccache has been found" ON)
 option(USE_LTO          "Enables building with LTO/IPO when compiler supports it" ON)
 option(NO_RUST          "Disables the building of rust subprojects" OFF)
 option(USE_LIBFMT       "Enables usage of libfmt instead of detecting whether std::format is supported" OFF)
+option(USE_ANGRYLION    "Enables building angrylion-rdp-plus which uses a non-GPL compliant license" OFF)
 
 project(RMG)
 
@@ -192,9 +193,11 @@ install(FILES ${MUPEN64PLUS_PLUGIN_INPUT_RAPHNET}
 install(FILES ${MUPEN64PLUS_PLUGIN_INPUT_GCA}
     DESTINATION ${PLUGIN_INSTALL_PATH}/Input
 )
-install(FILES ${MUPEN64PLUS_PLUGIN_GFX_ANGRYLION}
-    DESTINATION ${PLUGIN_INSTALL_PATH}/GFX
-)
+if (USE_ANGRYLION)
+    install(FILES ${MUPEN64PLUS_PLUGIN_GFX_ANGRYLION}
+        DESTINATION ${PLUGIN_INSTALL_PATH}/GFX
+    )
+endif(USE_ANGRYLION)
 install(FILES ${MUPEN64PLUS_PLUGIN_GFX_GLIDEN64}
     DESTINATION ${PLUGIN_INSTALL_PATH}/GFX
 )
