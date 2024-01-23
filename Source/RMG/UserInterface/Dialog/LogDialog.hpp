@@ -31,6 +31,8 @@ class LogDialog : public QDialog, private Ui::LogDialog
     LogDialog(QWidget* parent = nullptr);
     ~LogDialog(void);
 
+    int GetLineCount(void);
+
     void AddLogLine(CoreDebugMessageType type, QString context, QString line);
     void Clear(void);
 };

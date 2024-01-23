@@ -1836,7 +1836,12 @@ void MainWindow::on_Action_Audio_ToggleVolumeMute(void)
 
 void MainWindow::on_Emulation_Started(void)
 {
-    this->logDialog.Clear();
+    // only clear log dialog when we've gone over the limit
+    if (this->logDialog.GetLineCount() >= 500000)
+    {
+        this->logDialog.Clear();
+    }
+
     this->ui_MessageBoxList.clear();
     this->ui_DebugCallbackErrors.clear();
 }

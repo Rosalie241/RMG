@@ -29,6 +29,11 @@ LogDialog::~LogDialog(void)
 {
 }
 
+int LogDialog::GetLineCount(void)
+{
+    return this->plainTextEdit->document()->lineCount();
+}
+
 void LogDialog::AddLogLine(CoreDebugMessageType type, QString context, QString line)
 {
     QString text;
