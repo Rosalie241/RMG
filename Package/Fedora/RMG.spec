@@ -1,5 +1,5 @@
 Name:    RMG       
-Version: 0.5.5
+Version: 0.5.6
 Release: %autorelease
 Summary: Rosalie's Mupen GUI 
 
@@ -40,7 +40,7 @@ Rosalie's Mupen GUI is a free and open-source mupen64plus front-end written in C
 %autosetup
 
 %build
-%cmake -DCMAKE_BUILD_TYPE=Release -DPORTABLE_INSTALL=OFF -DDISCORD_RPC=OFF
+%cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DPORTABLE_INSTALL=OFF -DDISCORD_RPC=OFF
 %cmake_build
 
 %install
@@ -48,8 +48,8 @@ Rosalie's Mupen GUI is a free and open-source mupen64plus front-end written in C
 
 %files
 /usr/bin/RMG
-/usr/lib/libRMG-Core.so
-/usr/lib/RMG/
+/usr/lib64/libRMG-Core.so
+/usr/lib64/RMG/
 /usr/share/RMG/
 /usr/share/applications/com.github.Rosalie241.RMG.desktop
 /usr/share/icons/hicolor/scalable/apps/com.github.Rosalie241.RMG.svg

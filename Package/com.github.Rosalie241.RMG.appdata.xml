@@ -33,6 +33,24 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.5.6" date="2024-01-23" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix updater for portable installs on windows failing to extract the zip file</li>
+          <li>Fix Load State and View Log having the same default shortcut</li>
+          <li>Fix not being GPL compliant by disabling the building of angrylion-rdp-plus by default (thank you orbea and carmiker)</li>
+          <li>Fix installation not respecting CMAKE_INSTALL_LIBDIR</li>
+          <li>Fix third party projects not respecting CMAKE_C_FLAGS and CMAKE_CXX_FLAGS</li>
+          <li>Fix not all third party projects respecting the RelWithDebInfo configuration properly</li>
+          <li>Fix GLideN64 not installing correctly with the RelWithDebInfo configuration</li>
+          <li>Fix mupen64plus callbacks during initialization not showing up in the log window</li>
+          <li>Add a few GUI logging messages</li>
+          <li>Improve view log dialog behavior with clearing the log</li>
+          <li>Update copyright year in the about dialog (thank you JakobDev)</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.5.5" date="2024-01-14" type="stable">
       <description>
         <p>Changes:</p>
