@@ -55,6 +55,13 @@ else()
     set(MAKE_OPTFLAGS "${CMAKE_C_FLAGS}")
 endif()
 
+if ("${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo" OR
+    "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+    set(MAKE_DEBUG "1")
+else()
+    set(MAKE_DEBUG "0")
+endif()
+
 ExternalProject_Add(mupen64plus-core
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-core/
 
@@ -65,7 +72,7 @@ ExternalProject_Add(mupen64plus-core
         SRCDIR=${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-core/src 
         SUBDIR=${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-core/subprojects 
         OSD=0 NEW_DYNAREC=1 KEYBINDINGS=0 ACCURATE_FPU=1 
-        TARGET=${CORE_FILE} DEBUG=$<CONFIG:Debug>
+        TARGET=${CORE_FILE} DEBUG=${MAKE_DEBUG}
         CC=${MAKE_CC_COMPILER} CXX=${MAKE_CXX_COMPILER}
         OPTFLAGS=${MAKE_OPTFLAGS}
     BUILD_IN_SOURCE False
@@ -85,7 +92,7 @@ ExternalProject_Add(mupen64plus-rsp-cxd4
 
     BUILD_COMMAND ${MAKE_CMD} all -f ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-rsp-cxd4/projects/unix/Makefile
         SRCDIR=${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-rsp-cxd4
-        APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug> POSTFIX= 
+        APIDIR=${APIDIR} DEBUG=${MAKE_DEBUG} POSTFIX= 
         CC=${MAKE_CC_COMPILER} CXX=${MAKE_CXX_COMPILER}
         OPTFLAGS=${MAKE_OPTFLAGS}
     BUILD_IN_SOURCE False
@@ -103,7 +110,7 @@ ExternalProject_Add(mupen64plus-rsp-hle
 
     BUILD_COMMAND ${MAKE_CMD} all -f ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-rsp-hle/projects/unix/Makefile
         SRCDIR=${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-rsp-hle/src
-        APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug>
+        APIDIR=${APIDIR} DEBUG=${MAKE_DEBUG}
         CC=${MAKE_CC_COMPILER} CXX=${MAKE_CXX_COMPILER}
         OPTFLAGS=${MAKE_OPTFLAGS}
     BUILD_IN_SOURCE False
@@ -134,7 +141,7 @@ ExternalProject_Add(mupen64plus-input-raphnetraw
 
     BUILD_COMMAND ${MAKE_CMD} all -f ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-input-raphnetraw/projects/unix/Makefile
         SRCDIR=${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-input-raphnetraw/src
-        APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug>
+        APIDIR=${APIDIR} DEBUG=${MAKE_DEBUG}
         CC=${MAKE_CC_COMPILER} CXX=${MAKE_CXX_COMPILER}
         OPTFLAGS=${MAKE_OPTFLAGS}
     BUILD_IN_SOURCE False
@@ -165,11 +172,11 @@ if (WIN32)
     set(GLIDEN64_LIB "${GLIDEN64_BUILD_DIR}/mupen64plus-video-GLideN64.${SO_EXT}")
 else(WIN32)
     # taken from GLideN64's CMakeLists.txt
-    if(CMAKE_BUILD_TYPE STREQUAL "Release"
-        OR CMAKE_BUILD_TYPE STREQUAL "MinSizeRel"
-        OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+    if("${CMAKE_BUILD_TYPE}" STREQUAL "Release" OR
+        "${CMAKE_BUILD_TYPE}" STREQUAL "MinSizeRel" OR
+        "${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo")
         set(GLIDEN64_BUILD_TYPE Release)
-    elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    elseif("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
         set(GLIDEN64_BUILD_TYPE Debug)
     endif()
     set(GLIDEN64_LIB "${GLIDEN64_BUILD_DIR}/plugin/${GLIDEN64_BUILD_TYPE}/mupen64plus-video-GLideN64.${SO_EXT}")
