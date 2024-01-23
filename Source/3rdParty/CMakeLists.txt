@@ -142,9 +142,11 @@ if (WIN32)
     set(GLIDEN64_LIB "${GLIDEN64_BUILD_DIR}/mupen64plus-video-GLideN64.${SO_EXT}")
 else(WIN32)
     # taken from GLideN64's CMakeLists.txt
-    if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
+    if(CMAKE_BUILD_TYPE STREQUAL "Release"
+        OR CMAKE_BUILD_TYPE STREQUAL "MinSizeRel"
+        OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
         set(GLIDEN64_BUILD_TYPE Release)
-    elseif(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+    elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(GLIDEN64_BUILD_TYPE Debug)
     endif()
     set(GLIDEN64_LIB "${GLIDEN64_BUILD_DIR}/plugin/${GLIDEN64_BUILD_TYPE}/mupen64plus-video-GLideN64.${SO_EXT}")
