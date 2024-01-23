@@ -18,14 +18,14 @@
 #include "osal/osal_files.hpp"
 #include "CachedRomHeaderAndSettings.hpp"
 
-// 7-Zip includes
-#include "../3rdParty/7-Zip/C/7zTypes.h"
-#include "../3rdParty/7-Zip/C/7z.h"
-#include "../3rdParty/7-Zip/C/7zAlloc.h"
-#include "../3rdParty/7-Zip/C/7zBuf.h"
-#include "../3rdParty/7-Zip/C/7zCrc.h"
-#include "../3rdParty/7-Zip/C/7zFile.h"
-#include "../3rdParty/7-Zip/C/7zVersion.h"
+// lzma includes
+#include "../3rdParty/lzma/7zTypes.h"
+#include "../3rdParty/lzma/7z.h"
+#include "../3rdParty/lzma/7zAlloc.h"
+#include "../3rdParty/lzma/7zBuf.h"
+#include "../3rdParty/lzma/7zCrc.h"
+#include "../3rdParty/lzma/7zFile.h"
+#include "../3rdParty/lzma/7zVersion.h"
 
 #include <string>
 #include <unzip.h>

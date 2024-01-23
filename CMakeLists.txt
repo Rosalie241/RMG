@@ -127,7 +127,7 @@ else()
 endif()
 
 add_subdirectory(Source/3rdParty)
-add_subdirectory(Source/3rdParty/7-Zip)
+add_subdirectory(Source/3rdParty/lzma)
 if (VRU)
     add_subdirectory(Source/3rdParty/vosk-api)
 endif(VRU)
