@@ -37,6 +37,14 @@ else(USE_CCACHE)
     set(MAKE_CXX_COMPILER "${CMAKE_CXX_COMPILER}")
 endif(USE_CCACHE)
 
+# use sub-make when available
+if ("${CMAKE_GENERATOR}" STREQUAL "Unix Makefiles" OR
+    "${CMAKE_GENERATOR}" STREQUAL "MSYS Makefiles")
+    set(MAKE_CMD "$(MAKE)")
+else()
+    set(MAKE_CMD "make")
+endif()
+
 if ("${CMAKE_C_FLAGS}" STREQUAL "")
     if (USE_LTO)
         set(MAKE_OPTFLAGS "-O3 -flto")
@@ -53,7 +61,7 @@ ExternalProject_Add(mupen64plus-core
     CONFIGURE_COMMAND ""
     INSTALL_COMMAND ""
 
-    BUILD_COMMAND make all -f ${M64P_CORE_DIR}/projects/unix/Makefile 
+    BUILD_COMMAND ${MAKE_CMD} all -f ${M64P_CORE_DIR}/projects/unix/Makefile 
         SRCDIR=${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-core/src 
         SUBDIR=${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-core/subprojects 
         OSD=0 NEW_DYNAREC=1 KEYBINDINGS=0 ACCURATE_FPU=1 
@@ -75,7 +83,7 @@ ExternalProject_Add(mupen64plus-rsp-cxd4
     CONFIGURE_COMMAND ""
     INSTALL_COMMAND ""
 
-    BUILD_COMMAND make all -f ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-rsp-cxd4/projects/unix/Makefile
+    BUILD_COMMAND ${MAKE_CMD} all -f ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-rsp-cxd4/projects/unix/Makefile
         SRCDIR=${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-rsp-cxd4
         APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug> POSTFIX= 
         CC=${MAKE_CC_COMPILER} CXX=${MAKE_CXX_COMPILER}
@@ -85,7 +93,6 @@ ExternalProject_Add(mupen64plus-rsp-cxd4
     BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-rsp-cxd4
 
     BUILD_BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-rsp-cxd4/mupen64plus-rsp-cxd4.${SO_EXT}
-    DEPENDS mupen64plus-core
 )
 
 ExternalProject_Add(mupen64plus-rsp-hle
@@ -94,7 +101,7 @@ ExternalProject_Add(mupen64plus-rsp-hle
     CONFIGURE_COMMAND ""
     INSTALL_COMMAND ""
 
-    BUILD_COMMAND make all -f ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-rsp-hle/projects/unix/Makefile
+    BUILD_COMMAND ${MAKE_CMD} all -f ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-rsp-hle/projects/unix/Makefile
         SRCDIR=${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-rsp-hle/src
         APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug>
         CC=${MAKE_CC_COMPILER} CXX=${MAKE_CXX_COMPILER}
@@ -104,7 +111,6 @@ ExternalProject_Add(mupen64plus-rsp-hle
     BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-rsp-hle
 
     BUILD_BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-rsp-hle/mupen64plus-rsp-hle.${SO_EXT}
-    DEPENDS mupen64plus-core
 )
 
 ExternalProject_Add(mupen64plus-rsp-parallel
@@ -118,7 +124,6 @@ ExternalProject_Add(mupen64plus-rsp-parallel
     BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-rsp-parallel
 
     BUILD_BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-rsp-parallel/mupen64plus-rsp-parallel.${SO_EXT}
-    DEPENDS mupen64plus-core
 )
 
 ExternalProject_Add(mupen64plus-input-raphnetraw
@@ -127,7 +132,7 @@ ExternalProject_Add(mupen64plus-input-raphnetraw
     CONFIGURE_COMMAND ""
     INSTALL_COMMAND ""
 
-    BUILD_COMMAND make all -f ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-input-raphnetraw/projects/unix/Makefile
+    BUILD_COMMAND ${MAKE_CMD} all -f ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-input-raphnetraw/projects/unix/Makefile
         SRCDIR=${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-input-raphnetraw/src
         APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug>
         CC=${MAKE_CC_COMPILER} CXX=${MAKE_CXX_COMPILER}
@@ -137,7 +142,6 @@ ExternalProject_Add(mupen64plus-input-raphnetraw
     BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-input-raphnetraw
 
     BUILD_BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-input-raphnetraw/mupen64plus-input-raphnetraw.${SO_EXT}
-    DEPENDS mupen64plus-core
 )
 
 if (BUILD_INPUT_GCA)
@@ -151,7 +155,6 @@ if (BUILD_INPUT_GCA)
         BUILD_IN_SOURCE True
 
         BUILD_BYPRODUCTS ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-input-gca/target/release/${GCA_LIB}
-        DEPENDS mupen64plus-core
     )
 endif(BUILD_INPUT_GCA)
 
@@ -189,7 +192,6 @@ if (USE_ANGRYLION)
         BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-video-angrylion-plus
 
         BUILD_BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-video-angrylion-plus/mupen64plus-video-angrylion-plus.${SO_EXT}
-        DEPENDS mupen64plus-core
     )
 endif(USE_ANGRYLION)
 
@@ -219,7 +221,6 @@ ExternalProject_Add(mupen64plus-video-parallel
     BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-video-parallel
 
     BUILD_BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-video-parallel/mupen64plus-video-parallel.${SO_EXT}
-    DEPENDS mupen64plus-core
 )
 
 if (DISCORD_RPC)
