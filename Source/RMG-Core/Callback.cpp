@@ -14,6 +14,17 @@
 #include <iostream>
 
 //
+// Local Structs
+//
+
+struct l_DebugCallbackMessage
+{
+    std::string Context;
+    int         Level = 0;
+    std::string Message;
+};
+
+//
 // Local Variables
 //
 
@@ -21,6 +32,8 @@ static bool l_SetupCallbacks = false;
 static std::function<void(enum CoreDebugMessageType, std::string, std::string)> l_DebugCallbackFunc;
 static std::function<void(enum CoreStateCallbackType, int)> l_StateCallbackFunc;
 static bool l_PrintCallbacks = false;
+static std::vector<l_DebugCallbackMessage> l_PendingCallbacks;
+
 
 //
 // Internal Functions
@@ -31,14 +44,15 @@ void CoreDebugCallback(void* context, int level, const char* message)
     std::string contextString((const char*)context);
     std::string messageString(message);
 
+    if (!l_SetupCallbacks)
+    {
+        l_PendingCallbacks.push_back({contextString, level, message});
+        return;
+    }
+
     if (l_PrintCallbacks)
     {
         std::cout << contextString << messageString << std::endl;
-    }
-
-    if (!l_SetupCallbacks)
-    {
-        return;
     }
 
     // convert string encoding accordingly
@@ -74,6 +88,14 @@ bool CoreSetupCallbacks(std::function<void(enum CoreDebugMessageType, std::strin
     l_DebugCallbackFunc = debugCallbackFunc;
     l_StateCallbackFunc = stateCallbackFunc;
     l_SetupCallbacks = true;
+    
+    // send pending messages
+    for (const auto& callback : l_PendingCallbacks)
+    {
+        CoreDebugCallback((void*)callback.Context.c_str(), callback.Level, callback.Message.c_str());
+    }
+    l_PendingCallbacks.clear();
+
     return true;
 }
 
