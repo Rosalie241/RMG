@@ -19,7 +19,8 @@ cmake -S "$toplvl_dir" -B "$build_dir" -DCMAKE_BUILD_TYPE="$build_config" -DPORT
 
 cmake --build "$build_dir" --parallel "$threads"
 
-if [[ "$build_config" = "Debug" ]]
+if [[ "$build_config" = "Debug" ]] ||
+    [[ "$build_config" = "RelWithDebInfo" ]]
 then
     cmake --install "$build_dir" --prefix="$toplvl_dir"
 else
