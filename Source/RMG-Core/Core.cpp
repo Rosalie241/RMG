@@ -129,6 +129,8 @@ bool CoreInit(void)
         return false;
     }
 
+    CoreAddCallbackMessage(CoreDebugMessageType::Info, "Initialized " + core_file.filename().string());
+
     ret = CoreSetupMediaLoader();
     if (!ret)
     {

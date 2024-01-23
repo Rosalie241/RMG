@@ -137,10 +137,10 @@ std::string get_plugin_context_name(CorePluginType type)
     return name;
 }
 
-std::string get_plugin_path(CorePluginType type, std::string settingsValue)
+std::filesystem::path get_plugin_path(CorePluginType type, std::string settingsValue)
 {
-    std::string pluginPath;
-    std::string path;
+    std::filesystem::path pluginPath;
+    std::filesystem::path path;
     std::string typeName;
 
     // return an empty string when the value is empty
@@ -149,7 +149,7 @@ std::string get_plugin_path(CorePluginType type, std::string settingsValue)
         return std::string();
     }
 
-    pluginPath = CoreGetPluginDirectory().string();
+    pluginPath = CoreGetPluginDirectory();
 
     // if the full plugin path is in the settings value,
     // we know it's the old type
@@ -188,7 +188,7 @@ std::string get_plugin_path(CorePluginType type, std::string settingsValue)
 bool apply_plugin_settings(std::string pluginSettings[4])
 {
     std::string            error;
-    std::string            settingValue;
+    std::filesystem::path  settingValue;
     m64p::PluginApi*       plugin;
     CorePluginType         pluginType;
     osal_dynlib_lib_handle handle;
@@ -284,6 +284,9 @@ bool apply_plugin_settings(std::string pluginSettings[4])
             }
 
             l_PluginFiles[i] = settingValue;
+
+            CoreAddCallbackMessage(CoreDebugMessageType::Info, 
+                "Loaded plugin " + settingValue.filename().string());
         }
     }
 

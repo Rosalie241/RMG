@@ -103,3 +103,8 @@ void CoreSetPrintDebugCallback(bool enabled)
 {
     l_PrintCallbacks = enabled;
 }
+
+void CoreAddCallbackMessage(CoreDebugMessageType type, std::string message)
+{
+    CoreDebugCallback((void*)"[GUI]   ", (int)type, message.c_str());
+}
