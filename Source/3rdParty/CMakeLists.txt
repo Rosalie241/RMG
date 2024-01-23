@@ -42,6 +42,7 @@ ExternalProject_Add(mupen64plus-core
     INSTALL_COMMAND ""
 
     BUILD_COMMAND make all -f ${M64P_CORE_DIR}/projects/unix/Makefile 
+        OPTFLAGS=${CMAKE_C_FLAGS}
         SRCDIR=${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-core/src 
         SUBDIR=${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-core/subprojects 
         OSD=0 NEW_DYNAREC=1 KEYBINDINGS=0 ACCURATE_FPU=1 
@@ -62,6 +63,7 @@ ExternalProject_Add(mupen64plus-rsp-cxd4
     INSTALL_COMMAND ""
 
     BUILD_COMMAND make all -f ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-rsp-cxd4/projects/unix/Makefile
+        OPTFLAGS=${CMAKE_C_FLAGS}
         SRCDIR=${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-rsp-cxd4
         APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug> POSTFIX= CC=${MAKE_CC_COMPILER} CXX=${MAKE_CXX_COMPILER}
     BUILD_IN_SOURCE False
@@ -79,6 +81,7 @@ ExternalProject_Add(mupen64plus-rsp-hle
     INSTALL_COMMAND ""
 
     BUILD_COMMAND make all -f ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-rsp-hle/projects/unix/Makefile
+        OPTFLAGS=${CMAKE_C_FLAGS}
         SRCDIR=${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-rsp-hle/src
         APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug> CC=${MAKE_CC_COMPILER} CXX=${MAKE_CXX_COMPILER}
     BUILD_IN_SOURCE False
@@ -110,6 +113,7 @@ ExternalProject_Add(mupen64plus-input-raphnetraw
     INSTALL_COMMAND ""
 
     BUILD_COMMAND make all -f ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-input-raphnetraw/projects/unix/Makefile
+        OPTFLAGS=${CMAKE_C_FLAGS}
         SRCDIR=${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-input-raphnetraw/src
         APIDIR=${APIDIR} DEBUG=$<CONFIG:Debug> CC=${MAKE_CC_COMPILER} CXX=${MAKE_CXX_COMPILER}
     BUILD_IN_SOURCE False
