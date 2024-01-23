@@ -217,6 +217,9 @@ int main(int argc, char **argv)
     // specified ROM path to launch
     QStringList args = parser.positionalArguments();
 
+    CoreAddCallbackMessage(CoreDebugMessageType::Info, 
+            "Initializing on " + QGuiApplication::platformName().toStdString());
+
     // initialize window
     if (!window.Init(&app, !parser.isSet(noGuiOption), !args.empty()))
     {
