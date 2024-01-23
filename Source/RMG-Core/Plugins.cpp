@@ -153,7 +153,7 @@ std::filesystem::path get_plugin_path(CorePluginType type, std::string settingsV
 
     // if the full plugin path is in the settings value,
     // we know it's the old type
-    if (settingsValue.find(pluginPath) != std::string::npos)
+    if (settingsValue.find(pluginPath.string()) != std::string::npos)
     {
         return settingsValue;
     }
