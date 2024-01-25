@@ -428,15 +428,8 @@ std::filesystem::path CoreGetDefaultScreenshotDirectory(void)
         directory = get_appdata_directory("Screenshots");
 
 #else
-        directory = get_command_output("xdg-user-dir PICTURES");
-        if (!directory.empty())
-        {
-            directory += "/RMG";
-        }
-        else
-        {
-            directory = get_var_directory("XDG_PICTURES_DIR", "/RMG", "HOME", "/Pictures/RMG");
-        }
+        directory = CoreGetDefaultUserDataDirectory();
+        directory += "/Screenshots";
 #endif // _WIN32
     }
     return directory.make_preferred();
