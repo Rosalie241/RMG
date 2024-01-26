@@ -33,6 +33,17 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.5.7" date="2024-01-26" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix backwards compatibility with older plugin setting format</li>
+          <li>Add NO_ASM build option to build mupen64plus-core without asm (thank you @orbea)</li>
+          <li>Change default screenshot directory on Linux (thank you @orbea)</li>
+          <li>Update mupen64plus-core</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.5.6" date="2024-01-23" type="stable">
       <description>
         <p>Changes:</p>
