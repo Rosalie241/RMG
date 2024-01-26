@@ -247,7 +247,7 @@ std::filesystem::path CoreGetLibraryDirectory(void)
         directory = CORE_INSTALL_PREFIX;
         directory += "/";
         directory += CORE_INSTALL_LIBDIR;
-        directory += "/RMG/";
+        directory += "/RMG";
     }
 #endif // PORTABLE_INSTALL
     return directory.make_preferred();
