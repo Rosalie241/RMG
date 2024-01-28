@@ -244,9 +244,7 @@ std::filesystem::path CoreGetLibraryDirectory(void)
     }
     else
     {
-        directory = CORE_INSTALL_PREFIX;
-        directory += "/";
-        directory += CORE_INSTALL_LIBDIR;
+        directory = CORE_INSTALL_LIBDIR;
         directory += "/RMG";
     }
 #endif // PORTABLE_INSTALL
@@ -465,9 +463,7 @@ std::filesystem::path CoreGetSharedDataDirectory(void)
     }
     else
     {
-        directory = CORE_INSTALL_PREFIX;
-        directory += "/";
-        directory += CORE_INSTALL_DATADIR;
+        directory = CORE_INSTALL_DATADIR;
         directory += "/RMG";
     }
 #endif // PORTABLE_INSTALL
