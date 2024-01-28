@@ -29,9 +29,9 @@
 // Local Variables
 //
 
-static m64p::PluginApi l_Plugins[(int)CorePluginType::Input];
-static std::string     l_PluginFiles[(int)CorePluginType::Input];
-static char l_PluginContext[(int)CorePluginType::Input][20];
+static m64p::PluginApi l_Plugins[(int)CorePluginType::Execution];
+static std::string     l_PluginFiles[(int)CorePluginType::Execution];
+static char l_PluginContext[(int)CorePluginType::Execution][20];
 
 //
 // Local Functions
@@ -40,7 +40,7 @@ static char l_PluginContext[(int)CorePluginType::Input][20];
 m64p::PluginApi* get_plugin(CorePluginType type)
 {
     if (type == CorePluginType::Invalid ||
-        (int)type < 0 || (int)type > 4)
+        (int)type < 0 || (int)type > 5)
     {
         return nullptr;
     }
@@ -59,7 +59,7 @@ CorePluginType get_plugin_type(m64p::PluginApi* plugin)
         return CorePluginType::Invalid;
     }
 
-    if (m64p_type < 1 || m64p_type > 4)
+    if (m64p_type < 1 || m64p_type > 5)
     {
         return CorePluginType::Invalid;
     }
@@ -103,6 +103,9 @@ std::string get_plugin_type_name(CorePluginType type)
         case CorePluginType::Input:
             name = "Input";
             break;
+        case CorePluginType::Execution:
+            name = "Execution";
+            break;
         case CorePluginType::Invalid:
             name = "Invalid";
             break;
@@ -131,6 +134,9 @@ std::string get_plugin_context_name(CorePluginType type)
             break;
         case CorePluginType::Input:
             name = "[INPUT] ";
+            break;
+        case CorePluginType::Execution:
+            name = "[EXECUTION] ";
             break;
     }
 
@@ -172,6 +178,9 @@ std::string get_plugin_path(CorePluginType type, std::string settingsValue)
     case CorePluginType::Input:
         typeName = "Input";
         break;
+    case CorePluginType::Execution:
+        typeName = "Execution";
+        break;
     default:
         return path;
     }
@@ -185,7 +194,7 @@ std::string get_plugin_path(CorePluginType type, std::string settingsValue)
     return path;
 }
 
-bool apply_plugin_settings(std::string pluginSettings[4])
+bool apply_plugin_settings(std::string pluginSettings[5])
 {
     std::string            error;
     std::string            settingValue;
@@ -194,7 +203,7 @@ bool apply_plugin_settings(std::string pluginSettings[4])
     osal_dynlib_lib_handle handle;
     m64p_error             ret;
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 5; i++)
     {
         pluginType = (CorePluginType)(i + 1);
         settingValue = get_plugin_path(pluginType, pluginSettings[i]);
@@ -385,6 +394,9 @@ std::vector<CorePlugin> CoreGetAllPlugins(void)
     osal_dynlib_lib_handle  handle;
     m64p::PluginApi         plugin;
 
+    CorePlugin corePlugin = {"(None)", "(None)", CorePluginType::Execution};
+    plugins.emplace_back(corePlugin);
+
     for (const auto& entry : std::filesystem::recursive_directory_iterator(CoreGetPluginDirectory()))
     {
         std::string path = entry.path().string();
@@ -424,7 +436,8 @@ bool CoreApplyPluginSettings(void)
         CoreSettingsGetStringValue(SettingsID::Core_RSP_Plugin),
         CoreSettingsGetStringValue(SettingsID::Core_GFX_Plugin),
         CoreSettingsGetStringValue(SettingsID::Core_AUDIO_Plugin),
-        CoreSettingsGetStringValue(SettingsID::Core_INPUT_Plugin)
+        CoreSettingsGetStringValue(SettingsID::Core_INPUT_Plugin),
+        CoreSettingsGetStringValue(SettingsID::Core_EXECUTION_Plugin),
     };
 
     return apply_plugin_settings(settings);
@@ -444,7 +457,8 @@ bool CoreApplyRomPluginSettings(void)
         CoreSettingsGetStringValue(SettingsID::Game_RSP_Plugin, romSettings.MD5),
         CoreSettingsGetStringValue(SettingsID::Game_GFX_Plugin, romSettings.MD5),
         CoreSettingsGetStringValue(SettingsID::Game_AUDIO_Plugin, romSettings.MD5),
-        CoreSettingsGetStringValue(SettingsID::Game_INPUT_Plugin, romSettings.MD5)
+        CoreSettingsGetStringValue(SettingsID::Game_INPUT_Plugin, romSettings.MD5),
+        CoreSettingsGetStringValue(SettingsID::Game_EXECUTION_Plugin, romSettings.MD5),
     };
 
     return apply_plugin_settings(settings);
@@ -454,8 +468,13 @@ bool CoreArePluginsReady(void)
 {
     std::string error;
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 5; i++)
     {
+        if ((CorePluginType)(i + 1) == CorePluginType::Execution)
+        {
+            continue;
+        }
+
         if (!l_Plugins[i].IsHooked())
         {
             error = "CoreArePluginsReady Failed: ";
@@ -519,7 +538,8 @@ bool CoreAttachPlugins(void)
         M64PLUGIN_GFX,
         M64PLUGIN_AUDIO,
         M64PLUGIN_INPUT,
-        M64PLUGIN_RSP
+        M64PLUGIN_RSP,
+        M64PLUGIN_EXECUTION
     };
 
     if (!m64p::Core.IsHooked())
@@ -527,7 +547,7 @@ bool CoreAttachPlugins(void)
         return false;
     }
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 5; i++)
     {
         ret = m64p::Core.AttachPlugin(plugin_types[i], get_plugin((CorePluginType)plugin_types[i])->GetHandle());
         if (ret != M64ERR_SUCCESS)
@@ -554,7 +574,7 @@ bool CoreDetachPlugins(void)
         return false;
     }
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 5; i++)
     {
         ret = m64p::Core.DetachPlugin((m64p_plugin_type)(i + 1));
         if (ret != M64ERR_SUCCESS)
@@ -577,7 +597,7 @@ bool CorePluginsShutdown(void)
     m64p::PluginApi* plugin;
     m64p_error       ret;
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 5; i++)
     {
         plugin = &l_Plugins[i];
 

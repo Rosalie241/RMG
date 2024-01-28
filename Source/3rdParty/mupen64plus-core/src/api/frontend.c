@@ -82,6 +82,7 @@ EXPORT m64p_error CALL CoreStartup(int APIVersion, const char *ConfigPath, const
     plugin_connect(M64PLUGIN_GFX, NULL);
     plugin_connect(M64PLUGIN_AUDIO, NULL);
     plugin_connect(M64PLUGIN_INPUT, NULL);
+    plugin_connect(M64PLUGIN_EXECUTION, NULL);
     plugin_connect(M64PLUGIN_CORE, NULL);
 
     savestates_init();

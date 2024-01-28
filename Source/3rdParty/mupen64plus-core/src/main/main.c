@@ -951,6 +951,8 @@ void new_frame(void)
     if (g_FrameCallback != NULL)
         (*g_FrameCallback)(l_CurrentFrame);
 
+    execution.frame(l_CurrentFrame);
+
     /* advance the current frame */
     l_CurrentFrame++;
 
@@ -1920,6 +1922,8 @@ m64p_error main_run(void)
                 dd_rom_size,
                 &dd_disk, dd_idisk);
 
+    initiate_execution_plugin();
+
     // Attach rom to plugins
     failure_rval = M64ERR_PLUGIN_FAIL;
     if (!gfx.romOpen())
@@ -1933,6 +1937,10 @@ m64p_error main_run(void)
     if (!input.romOpen())
     {
         goto on_input_open_failure;
+    }
+    if (!execution.romOpen())
+    {
+        goto on_execution_open_failure;
     }
 
     /* set up the SDL key repeat and event filter to catch keyboard/joystick commands for the core */
@@ -2004,6 +2012,7 @@ m64p_error main_run(void)
     }
 
     rsp.romClosed();
+    execution.romClosed();
     input.romClosed();
     audio.romClosed();
     gfx.romClosed();
@@ -2017,6 +2026,8 @@ m64p_error main_run(void)
 on_disk_failure:
     failure_rval = M64ERR_INVALID_STATE;
     rsp.romClosed();
+    execution.romClosed();
+on_execution_open_failure:
     input.romClosed();
 on_input_open_failure:
     audio.romClosed();

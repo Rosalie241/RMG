@@ -153,13 +153,16 @@ DECLARE_INSTRUCTION(LB)
     DECLARE_R4300
     const uint32_t lsaddr = (uint32_t) irs32 + (uint32_t) iimmediate;
     int64_t *lsrtp = &irt;
-    ADD_TO_PC(1);
     uint32_t value;
     unsigned int shift = bshift(lsaddr);
 
     if (r4300_read_aligned_word(r4300, lsaddr, &value)) {
-        *lsrtp = SE8((value >> shift) & 0xff);
+        uint8_t v = (value >> shift) & 0xff;
+        if (execution_addr_masked(lsaddr)) execution.read8(lsaddr, &v);
+        *lsrtp = SE8(v);
     }
+
+    ADD_TO_PC(1);
 }
 
 DECLARE_INSTRUCTION(LBU)
@@ -167,13 +170,16 @@ DECLARE_INSTRUCTION(LBU)
     DECLARE_R4300
     const uint32_t lsaddr = (uint32_t) irs32 + (uint32_t) iimmediate;
     int64_t *lsrtp = &irt;
-    ADD_TO_PC(1);
     uint32_t value;
     unsigned int shift = bshift(lsaddr);
 
     if (r4300_read_aligned_word(r4300, lsaddr, &value)) {
-        *lsrtp = (value >> shift) & 0xff;
+        uint8_t v = (value >> shift) & 0xff;
+        if (execution_addr_masked(lsaddr)) execution.read8(lsaddr, &v);
+        *lsrtp = v;
     }
+
+    ADD_TO_PC(1);
 }
 
 DECLARE_INSTRUCTION(LH)
@@ -181,13 +187,16 @@ DECLARE_INSTRUCTION(LH)
     DECLARE_R4300
     const uint32_t lsaddr = (uint32_t) irs32 + (uint32_t) iimmediate;
     int64_t *lsrtp = &irt;
-    ADD_TO_PC(1);
     uint32_t value;
     unsigned int shift = hshift(lsaddr);
 
     if (r4300_read_aligned_word(r4300, lsaddr, &value)) {
-        *lsrtp = SE16((value >> shift) & 0xffff);
+        uint16_t v = (value >> shift) & 0xffff;
+        if (execution_addr_masked(lsaddr)) execution.read16(lsaddr, &v);
+        *lsrtp = SE16(v);
     }
+
+    ADD_TO_PC(1);
 }
 
 DECLARE_INSTRUCTION(LHU)
@@ -195,13 +204,16 @@ DECLARE_INSTRUCTION(LHU)
     DECLARE_R4300
     const uint32_t lsaddr = (uint32_t) irs32 + (uint32_t) iimmediate;
     int64_t *lsrtp = &irt;
-    ADD_TO_PC(1);
     uint32_t value;
     unsigned int shift = hshift(lsaddr);
 
     if (r4300_read_aligned_word(r4300, lsaddr, &value)) {
-        *lsrtp = (value >> shift) & 0xffff;
+        uint16_t v = (value >> shift) & 0xffff;
+        if (execution_addr_masked(lsaddr)) execution.read16(lsaddr, &v);
+        *lsrtp = v;
     }
+
+    ADD_TO_PC(1);
 }
 
 DECLARE_INSTRUCTION(LL)
@@ -209,13 +221,15 @@ DECLARE_INSTRUCTION(LL)
     DECLARE_R4300
     const uint32_t lsaddr = (uint32_t) irs32 + (uint32_t) iimmediate;
     int64_t *lsrtp = &irt;
-    ADD_TO_PC(1);
     uint32_t value;
 
     if (r4300_read_aligned_word(r4300, lsaddr, &value)) {
+        if (execution_addr_masked(lsaddr)) execution.read32(lsaddr, &value);
         *lsrtp = SE32(value);
         r4300->llbit = 1;
     }
+
+    ADD_TO_PC(1);
 }
 
 DECLARE_INSTRUCTION(LW)
@@ -223,12 +237,14 @@ DECLARE_INSTRUCTION(LW)
     DECLARE_R4300
     const uint32_t lsaddr = (uint32_t) irs32 + (uint32_t) iimmediate;
     int64_t *lsrtp = &irt;
-    ADD_TO_PC(1);
     uint32_t value;
 
     if (r4300_read_aligned_word(r4300, lsaddr, &value)) {
+        if (execution_addr_masked(lsaddr)) execution.read32(lsaddr, &value);
         *lsrtp = SE32(value);
     }
+
+    ADD_TO_PC(1);
 }
 
 DECLARE_INSTRUCTION(LWU)
@@ -236,13 +252,15 @@ DECLARE_INSTRUCTION(LWU)
     DECLARE_R4300
     const uint32_t lsaddr = (uint32_t) irs32 + (uint32_t) iimmediate;
     int64_t *lsrtp = &irt;
-    ADD_TO_PC(1);
 
     uint32_t value;
 
     if (r4300_read_aligned_word(r4300, lsaddr, &value)) {
+        if (execution_addr_masked(lsaddr)) execution.read32(lsaddr, &value);
         *lsrtp = value;
     }
+
+    ADD_TO_PC(1);
 }
 
 DECLARE_INSTRUCTION(LWL)
@@ -286,9 +304,11 @@ DECLARE_INSTRUCTION(LD)
     DECLARE_R4300
     const uint32_t lsaddr = (uint32_t) irs32 + (uint32_t) iimmediate;
     int64_t *lsrtp = &irt;
-    ADD_TO_PC(1);
 
     r4300_read_aligned_dword(r4300, lsaddr, (uint64_t*)lsrtp);
+    if (execution_addr_masked(lsaddr)) execution.read64(lsaddr, lsrtp);
+
+    ADD_TO_PC(1);
 }
 
 DECLARE_INSTRUCTION(LDL)
@@ -334,10 +354,13 @@ DECLARE_INSTRUCTION(SB)
     DECLARE_R4300
     const uint32_t lsaddr = (uint32_t) irs32 + (uint32_t) iimmediate;
     int64_t *lsrtp = &irt;
-    ADD_TO_PC(1);
     unsigned int shift = bshift(lsaddr);
 
-    r4300_write_aligned_word(r4300, lsaddr, (uint32_t)*lsrtp << shift, UINT32_C(0xff) << shift);
+    uint8_t v = *lsrtp;
+    if (execution_addr_masked(lsaddr)) execution.write8(lsaddr, &v);
+    r4300_write_aligned_word(r4300, lsaddr, (uint32_t)v << shift, UINT32_C(0xff) << shift);
+
+    ADD_TO_PC(1);
 }
 
 DECLARE_INSTRUCTION(SH)
@@ -345,10 +368,13 @@ DECLARE_INSTRUCTION(SH)
     DECLARE_R4300
     const uint32_t lsaddr = (uint32_t) irs32 + (uint32_t) iimmediate;
     int64_t *lsrtp = &irt;
-    ADD_TO_PC(1);
     unsigned int shift = hshift(lsaddr);
 
-    r4300_write_aligned_word(r4300, lsaddr, (uint32_t)*lsrtp << shift, UINT32_C(0xffff) << shift);
+    uint16_t v = *lsrtp;
+    if (execution_addr_masked(lsaddr)) execution.write16(lsaddr, &v);
+    r4300_write_aligned_word(r4300, lsaddr, (uint32_t)v << shift, UINT32_C(0xffff) << shift);
+
+    ADD_TO_PC(1);
 }
 
 DECLARE_INSTRUCTION(SC)
@@ -356,11 +382,12 @@ DECLARE_INSTRUCTION(SC)
     DECLARE_R4300
     const uint32_t lsaddr = (uint32_t) irs32 + (uint32_t) iimmediate;
     int64_t *lsrtp = &irt;
-    ADD_TO_PC(1);
 
     if (r4300->llbit)
     {
-        if (r4300_write_aligned_word(r4300, lsaddr, (uint32_t)*lsrtp, ~UINT32_C(0))) {
+        uint32_t v = *lsrtp;
+        if (execution_addr_masked(lsaddr)) execution.write32(lsaddr, &v);
+        if (r4300_write_aligned_word(r4300, lsaddr, v, ~UINT32_C(0))) {
             r4300->llbit = 0;
             *lsrtp = 1;
         }
@@ -369,6 +396,8 @@ DECLARE_INSTRUCTION(SC)
     {
         *lsrtp = 0;
     }
+
+    ADD_TO_PC(1);
 }
 
 DECLARE_INSTRUCTION(SW)
@@ -376,9 +405,12 @@ DECLARE_INSTRUCTION(SW)
     DECLARE_R4300
     const uint32_t lsaddr = (uint32_t) irs32 + (uint32_t) iimmediate;
     int64_t *lsrtp = &irt;
-    ADD_TO_PC(1);
 
-    r4300_write_aligned_word(r4300, lsaddr, (uint32_t)*lsrtp, ~UINT32_C(0));
+    uint32_t v = *lsrtp;
+    if (execution_addr_masked(lsaddr)) execution.write32(lsaddr, &v);
+    r4300_write_aligned_word(r4300, lsaddr, v, ~UINT32_C(0));
+
+    ADD_TO_PC(1);
 }
 
 DECLARE_INSTRUCTION(SWL)
@@ -418,9 +450,11 @@ DECLARE_INSTRUCTION(SD)
     DECLARE_R4300
     const uint32_t lsaddr = (uint32_t) irs32 + (uint32_t) iimmediate;
     int64_t *lsrtp = &irt;
-    ADD_TO_PC(1);
 
+    if (execution_addr_masked(lsaddr)) execution.write64(lsaddr, lsrtp);
     r4300_write_aligned_dword(r4300, lsaddr, (uint64_t)*lsrtp, ~UINT64_C(0));
+
+    ADD_TO_PC(1);
 }
 
 DECLARE_INSTRUCTION(SDL)

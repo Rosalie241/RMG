@@ -605,6 +605,7 @@ SOURCE = \
     $(SRCDIR)/plugin/dummy_audio.c \
     $(SRCDIR)/plugin/dummy_input.c \
     $(SRCDIR)/plugin/dummy_rsp.c \
+    $(SRCDIR)/plugin/dummy_execution.c \
     $(MINIZIP_SOURCE)
 
 # MD5 lib

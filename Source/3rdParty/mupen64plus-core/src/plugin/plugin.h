@@ -35,10 +35,11 @@ enum { NUM_CONTROLLER = 4 };
 extern CONTROL Controls[NUM_CONTROLLER];
 
 /*** Version requirement information ***/
-#define RSP_API_VERSION   0x20000
-#define GFX_API_VERSION   0x20200
-#define AUDIO_API_VERSION 0x20000
-#define INPUT_API_VERSION 0x20101
+#define RSP_API_VERSION       0x20000
+#define GFX_API_VERSION       0x20200
+#define AUDIO_API_VERSION     0x20000
+#define INPUT_API_VERSION     0x20101
+#define EXECUTION_API_VERSION 0x20000
 
 /* video plugin function pointers */
 typedef struct _gfx_plugin_functions
@@ -120,6 +121,35 @@ typedef struct _rsp_plugin_functions
 } rsp_plugin_functions;
 
 extern rsp_plugin_functions rsp;
+
+/* execution plugin function pointers */
+typedef struct _execution_plugin_functions
+{
+	ptr_PluginGetVersion    getVersion;
+	ptr_RomOpen             romOpen;
+	ptr_RomClosed           romClosed;
+	ptr_InitiateExecution   initiateExecution;
+	ptr_Input               input;
+	ptr_Frame               frame;
+	ptr_Execute             execute;
+	ptr_ExecuteDone         executeDone;
+	ptr_Read8               read8;
+	ptr_Read16              read16;
+	ptr_Read32              read32;
+	ptr_Read64              read64;
+	ptr_Write8              write8;
+	ptr_Write16             write16;
+	ptr_Write32             write32;
+	ptr_Write64             write64;
+} execution_plugin_functions;
+
+extern execution_plugin_functions execution;
+
+extern uint8_t execution_addr_mask[1024];
+
+inline int execution_addr_masked(uint32_t addr) {
+	return execution_addr_mask[(addr & 0b111111111100000) >> 5] & (1 << ((addr & 0b11100) >> 2));
+}
 
 #endif
 

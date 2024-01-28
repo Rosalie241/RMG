@@ -38,6 +38,7 @@
 #include "dummy_input.h"
 #include "dummy_rsp.h"
 #include "dummy_video.h"
+#include "dummy_execution.h"
 #include "main/main.h"
 #include "main/rom.h"
 #include "main/version.h"
@@ -51,6 +52,9 @@ gfx_plugin_functions gfx;
 audio_plugin_functions audio;
 input_plugin_functions input;
 rsp_plugin_functions rsp;
+execution_plugin_functions execution;
+
+uint8_t execution_addr_mask[1024];
 
 /* local data structures and functions */
 static const gfx_plugin_functions dummy_gfx = {
@@ -111,15 +115,35 @@ static const rsp_plugin_functions dummy_rsp = {
     dummyrsp_RomClosed
 };
 
+static const execution_plugin_functions dummy_execution = {
+    dummyexecution_PluginGetVersion,
+    dummyexecution_RomOpen,
+    dummyexecution_RomClosed,
+    dummyexecution_InitiateExecution,
+    dummyexecution_Input,
+    dummyexecution_Frame,
+    dummyexecution_Execute,
+    dummyexecution_Read8,
+    dummyexecution_Read16,
+    dummyexecution_Read32,
+    dummyexecution_Read64,
+    dummyexecution_Write8,
+    dummyexecution_Write16,
+    dummyexecution_Write32,
+    dummyexecution_Write64
+};
+
 static GFX_INFO gfx_info;
 static AUDIO_INFO audio_info;
 static CONTROL_INFO control_info;
 static RSP_INFO rsp_info;
+static EXECUTION_INFO execution_info;
 
 static int l_RspAttached = 0;
 static int l_InputAttached = 0;
 static int l_AudioAttached = 0;
 static int l_GfxAttached = 0;
+static int l_ExecutionAttached = 0;
 
 static unsigned int dummy;
 
@@ -525,6 +549,58 @@ static m64p_error plugin_start_rsp(void)
     return M64ERR_SUCCESS;
 }
 
+static void plugin_disconnect_execution(void)
+{
+    execution = dummy_execution;
+    memset(&execution_addr_mask, 0, sizeof(execution_addr_mask));
+    l_ExecutionAttached = 0;
+}
+
+static m64p_error plugin_connect_execution(m64p_dynlib_handle plugin_handle)
+{
+    /* attach the Execution plugin function pointers */
+    if (plugin_handle != NULL)
+    {
+        if (l_ExecutionAttached)
+            return M64ERR_INVALID_STATE;
+
+        if (!GET_FUNC(ptr_PluginGetVersion, execution.getVersion, "PluginGetVersion") ||
+            !GET_FUNC(ptr_RomOpen, execution.romOpen, "RomOpen") ||
+            !GET_FUNC(ptr_RomClosed, execution.romClosed, "RomClosed") ||
+            !GET_FUNC(ptr_InitiateExecution, execution.initiateExecution, "InitiateExecution") ||
+            !GET_FUNC(ptr_Input, execution.input, "Input") ||
+            !GET_FUNC(ptr_Frame, execution.frame, "Frame") ||
+            !GET_FUNC(ptr_Execute, execution.execute, "Execute") ||
+            !GET_FUNC(ptr_ExecuteDone, execution.executeDone, "ExecuteDone") ||
+            !GET_FUNC(ptr_Read8, execution.read8, "Read8") ||
+            !GET_FUNC(ptr_Read16, execution.read16, "Read16") ||
+            !GET_FUNC(ptr_Read32, execution.read32, "Read32") ||
+            !GET_FUNC(ptr_Read64, execution.read64, "Read64") ||
+            !GET_FUNC(ptr_Write8, execution.write8, "Write8") ||
+            !GET_FUNC(ptr_Write16, execution.write16, "Write16") ||
+            !GET_FUNC(ptr_Write32, execution.write32, "Write32") ||
+            !GET_FUNC(ptr_Write64, execution.write64, "Write64"))
+        {
+            DebugMessage(M64MSG_ERROR, "broken execution plugin; function(s) not found.");
+            plugin_disconnect_execution();
+            return M64ERR_INPUT_INVALID;
+        }
+
+        memset(&execution_addr_mask, 0, sizeof(execution_addr_mask));
+        l_ExecutionAttached = 1;
+    }
+    else {
+        plugin_disconnect_execution();
+    }
+
+    return M64ERR_SUCCESS;
+}
+
+static m64p_error plugin_start_execution(void)
+{
+    return M64ERR_SUCCESS;
+}
+
 /* global functions */
 m64p_error plugin_connect(m64p_plugin_type type, m64p_dynlib_handle plugin_handle)
 {
@@ -544,6 +620,8 @@ m64p_error plugin_connect(m64p_plugin_type type, m64p_dynlib_handle plugin_handl
             return plugin_connect_input(plugin_handle);
         case M64PLUGIN_RSP:
             return plugin_connect_rsp(plugin_handle);
+        case M64PLUGIN_EXECUTION:
+            return plugin_connect_execution(plugin_handle);
         default:
             return M64ERR_INPUT_INVALID;
     }
@@ -563,6 +641,8 @@ m64p_error plugin_start(m64p_plugin_type type)
             return plugin_start_audio();
         case M64PLUGIN_INPUT:
             return plugin_start_input();
+        case M64PLUGIN_EXECUTION:
+            return plugin_start_execution();
         default:
             return M64ERR_INPUT_INVALID;
     }
@@ -584,3 +664,17 @@ m64p_error plugin_check(void)
     return M64ERR_SUCCESS;
 }
 
+void initiate_execution_plugin(void)
+{
+    execution_info.window = 0;
+    execution_info.rom_name = ROM_HEADER.Name;
+    execution_info.rom_hash = ROM_SETTINGS.MD5;
+    execution_info.addr_mask = execution_addr_mask;
+    execution_info.pc = r4300_pc_g;
+    execution_info.jump = jump;
+    execution_info.gpr = r4300_regs(&g_dev.r4300);
+    execution_info.fpr = (double*)r4300_cp1_regs(&g_dev.r4300.cp1);
+    execution_info.rdram = mem_base_u32(g_mem_base, MM_RDRAM_DRAM);
+    execution_info.rdram_size = g_dev.rdram.dram_size;
+    execution.initiateExecution(execution_info);
+}

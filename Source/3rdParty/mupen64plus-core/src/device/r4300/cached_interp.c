@@ -36,6 +36,7 @@
 #include "device/r4300/idec.h"
 #include "main/main.h"
 #include "osal/preproc.h"
+#include "plugin/plugin.h"
 
 #ifdef DBG
 #include "debugger/dbg_debugger.h"

@@ -31,6 +31,7 @@
 #include "api/m64p_types.h"
 #include "device/r4300/r4300_core.h"
 #include "osal/preproc.h"
+#include "plugin/plugin.h"
 
 #ifdef DBG
 #include "debugger/dbg_debugger.h"
@@ -58,7 +59,10 @@ static void InterpretOpcode(struct r4300_core* r4300);
       { \
         r4300->interp_PC.addr += 4; \
         r4300->delay_slot=1; \
+        const uint32_t pc = r4300->interp_PC.addr; \
+        if (execution_addr_masked(pc)) execution.execute(pc); \
         InterpretOpcode(r4300); \
+        if (execution_addr_masked(pc)) execution.executeDone(pc); \
         cp0_update_count(r4300); \
         r4300->delay_slot=0; \
         if (take_jump && !r4300->skip_jump) \
@@ -751,12 +755,23 @@ void run_pure_interpreter(struct r4300_core* r4300)
 
    while (!*r4300_stop(r4300))
    {
+	 uint32_t pc = *r4300_pc(r4300);
+	 if (execution_addr_masked(pc))
+	 {
+		 execution.execute(pc);
+		 if (*r4300_pc(r4300) != pc) continue;
+	 }
 #ifdef COMPARE_CORE
      CoreCompareCallback();
 #endif
+	 
 #ifdef DBG
-     if (g_DebuggerActive) update_debugger(*r4300_pc(r4300));
+     if (g_DebuggerActive) update_debugger(pc);
 #endif
      InterpretOpcode(r4300);
+	 if (execution_addr_masked(pc))
+	 {
+		 execution.executeDone(pc);
+	 }
    }
 }

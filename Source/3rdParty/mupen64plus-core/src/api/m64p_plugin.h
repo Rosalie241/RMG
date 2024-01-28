@@ -178,6 +178,19 @@ typedef struct {
                                CONTROL Controls[4]; */
 } CONTROL_INFO;
 
+typedef struct {
+    void* window;
+    char* rom_name;
+    char* rom_hash;
+    unsigned char* addr_mask;
+    unsigned int (*pc)();
+    void (*jump)(unsigned int addr);
+    long long* gpr;
+    double* fpr;
+    void* rdram;
+    unsigned int rdram_size;
+} EXECUTION_INFO;
+
 /* common plugin function pointer types */
 typedef void (*ptr_RomClosed)(void);
 typedef int  (*ptr_RomOpen)(void);
@@ -291,6 +304,36 @@ typedef void (*ptr_InitiateRSP)(RSP_INFO Rsp_Info, unsigned int *CycleCount);
 #if defined(M64P_PLUGIN_PROTOTYPES)
 EXPORT unsigned int CALL DoRspCycles(unsigned int Cycles);
 EXPORT void CALL InitiateRSP(RSP_INFO Rsp_Info, unsigned int *CycleCount);
+#endif
+
+/* execution plugin function pointers */
+typedef void(*ptr_InitiateExecution)(EXECUTION_INFO ExecutionInfo);
+typedef void(*ptr_Input)(int port, BUTTONS* buttons);
+typedef void(*ptr_Frame)  (unsigned int frame);
+typedef void(*ptr_Execute)(unsigned int pc);
+typedef void(*ptr_ExecuteDone)(unsigned int pc);
+typedef void(*ptr_Read8)  (unsigned int addr, unsigned char* value);
+typedef void(*ptr_Read16) (unsigned int addr, unsigned short* value);
+typedef void(*ptr_Read32) (unsigned int addr, unsigned int* value);
+typedef void(*ptr_Read64) (unsigned int addr, unsigned long long* value);
+typedef void(*ptr_Write8) (unsigned int addr, unsigned char* value);
+typedef void(*ptr_Write16)(unsigned int addr, unsigned short* value);
+typedef void(*ptr_Write32)(unsigned int addr, unsigned int* value);
+typedef void(*ptr_Write64)(unsigned int addr, unsigned long long* value);
+#if defined(M64P_PLUGIN_PROTOTYPES)
+EXPORT void CALL InitiateExecution(EXECUTION_INFO ExecutionInfo);
+EXPORT void CALL Input(int port, BUTTONS* buttons);
+EXPORT void CALL Frame(unsigned int frame);
+EXPORT void CALL Execute(unsigned int pc);
+EXPORT void CALL ExecuteDone(unsigned int pc);
+EXPORT void CALL Read8(unsigned int addr, unsigned char* value);
+EXPORT void CALL Read16(unsigned int addr, unsigned short* value);
+EXPORT void CALL Read32(unsigned int addr, unsigned int* value);
+EXPORT void CALL Read64(unsigned int addr, unsigned long long* value);
+EXPORT void CALL Write8(unsigned int addr, unsigned char* value);
+EXPORT void CALL Write16(unsigned int addr, unsigned short* value);
+EXPORT void CALL Write32(unsigned int addr, unsigned int* value);
+EXPORT void CALL Write64(unsigned int addr, unsigned long long* value);
 #endif
 
 #ifdef __cplusplus

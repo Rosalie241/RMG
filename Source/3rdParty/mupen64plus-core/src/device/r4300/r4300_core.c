@@ -247,6 +247,14 @@ unsigned int* r4300_llbit(struct r4300_core* r4300)
     return &r4300->llbit;
 }
 
+uint32_t r4300_pc_g() {
+    return *r4300_pc(&g_dev.r4300);
+}
+
+void jump(uint32_t address) {
+    generic_jump_to(&g_dev.r4300, address);
+}
+
 uint32_t* r4300_pc(struct r4300_core* r4300)
 {
 #ifdef NEW_DYNAREC

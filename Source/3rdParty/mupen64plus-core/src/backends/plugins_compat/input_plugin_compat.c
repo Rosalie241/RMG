@@ -63,8 +63,10 @@ static m64p_error input_plugin_get_input(void* opaque, uint32_t* input_)
     /* first poll controller */
     if (!netplay_is_init())
     {
-        if (input.getKeys)
+        if (input.getKeys) {
             input.getKeys(cin_compat->control_id, &keys);
+            execution.input(cin_compat->control_id, &keys);
+        }
     }
     else
     {
@@ -75,8 +77,10 @@ static m64p_error input_plugin_get_input(void* opaque, uint32_t* input_)
             //by passing it the controller number that is controlling the player during netplay
             uint8_t plugin = Controls[netplay_controller].Plugin;
             uint8_t present = Controls[netplay_controller].Present;
-            if (input.getKeys)
+            if (input.getKeys) {
                 input.getKeys(netplay_controller, &keys);
+                execution.input(cin_compat->control_id, &keys);
+            }
 
             Controls[netplay_controller].Plugin = plugin;
             Controls[netplay_controller].Present = present;

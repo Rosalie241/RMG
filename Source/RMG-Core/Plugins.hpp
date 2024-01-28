@@ -19,6 +19,7 @@ enum class CorePluginType
     Gfx = 2,
     Audio = 3,
     Input = 4,
+    Execution = 5,
     Invalid,
 };
 
