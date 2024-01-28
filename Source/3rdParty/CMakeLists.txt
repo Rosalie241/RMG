@@ -71,7 +71,7 @@ ExternalProject_Add(mupen64plus-core
     BUILD_COMMAND ${MAKE_CMD} all -f ${M64P_CORE_DIR}/projects/unix/Makefile 
         SRCDIR=${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-core/src 
         SUBDIR=${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-core/subprojects 
-        OSD=0 NEW_DYNAREC=1 NO_ASM=$<BOOL:${NO_ASM}> KEYBINDINGS=0 ACCURATE_FPU=1
+        OSD=0 NEW_DYNAREC=1 NO_ASM=$<BOOL:${NO_ASM}> KEYBINDINGS=0 ACCURATE_FPU=0
         TARGET=${CORE_FILE} DEBUG=${MAKE_DEBUG}
         CC=${MAKE_CC_COMPILER} CXX=${MAKE_CXX_COMPILER}
         OPTFLAGS=${MAKE_OPTFLAGS}

@@ -67,9 +67,17 @@ static __inline float  truncf(float x) { return (float)(int)x; }
 #define FCR31_FLAG_INVALIDOP_BIT UINT32_C(0x000040)
 
 
+extern int rounding_mode;
+
 M64P_FPU_INLINE void set_rounding(uint32_t fcr31)
 {
-    switch(fcr31 & 3) {
+    int new_rounding_mode = fcr31 & 3;
+    if (new_rounding_mode == rounding_mode) {
+        return;
+    }
+    rounding_mode = new_rounding_mode;
+
+    switch(rounding_mode) {
     case 0: /* Round to nearest, or to even if equidistant */
         fesetround(FE_TONEAREST);
         break;

@@ -166,6 +166,8 @@ static void InterpretOpcode(struct r4300_core* r4300);
 
 #include "mips_instructions.def"
 
+int rounding_mode = -1;
+
 void InterpretOpcode(struct r4300_core* r4300)
 {
 	uint32_t* op_address = fast_mem_access(r4300, *r4300_pc(r4300));
