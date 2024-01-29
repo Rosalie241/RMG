@@ -210,6 +210,10 @@ static void render_frame(Vulkan::Device &device)
 			VkViewport vp = cmd->get_viewport();
 			calculate_viewport(&vp.x, &vp.y, &vp.width, &vp.height);
 
+			auto sampler = vk_rescaling >= 4
+				? Vulkan::StockSampler::LinearClamp
+				: Vulkan::StockSampler::NearestClamp;
+
 			cmd->set_program(program);
 
 			// Basic default render state.
@@ -217,7 +221,7 @@ static void render_frame(Vulkan::Device &device)
 			cmd->set_depth_test(false, false);
 			cmd->set_cull_mode(VK_CULL_MODE_NONE);
 
-			cmd->set_texture(0, 0, image->get_view(), Vulkan::StockSampler::NearestClamp);
+			cmd->set_texture(0, 0, image->get_view(), sampler);
 			cmd->set_viewport(vp);
 
 			// The vertices are constants in the shader.
