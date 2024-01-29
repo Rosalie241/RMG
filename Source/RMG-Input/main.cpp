@@ -909,6 +909,8 @@ static void sdl_init()
     std::string debugMessage;
     int ret = -1;
 
+    SDL_SetHint(SDL_HINT_JOYSTICK_RAWINPUT, "0");
+
     for (const int subsystem : {SDL_INIT_GAMECONTROLLER, SDL_INIT_AUDIO, SDL_INIT_VIDEO, SDL_INIT_HAPTIC})
     {
         if (!SDL_WasInit(subsystem))
