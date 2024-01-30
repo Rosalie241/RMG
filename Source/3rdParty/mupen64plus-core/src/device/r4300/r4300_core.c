@@ -35,6 +35,7 @@
 #include "debugger/dbg_debugger.h"
 #endif
 #include "main/main.h"
+#include "plugin/plugin.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -253,6 +254,23 @@ uint32_t r4300_pc_g() {
 
 void jump(uint32_t address) {
     generic_jump_to(&g_dev.r4300, address);
+}
+
+void exec_cached_ops(struct r4300_core* r4300) {
+	uint32_t pc = *r4300_pc(r4300);
+
+	if (execution_addr_masked(pc))
+	{
+		execution.execute(pc);
+		if (*r4300_pc(r4300) != pc) return;
+	}
+
+    (*r4300_pc_struct(r4300))->ops();
+
+	if (execution_addr_masked(pc))
+	{
+		execution.executeDone(pc);
+	}
 }
 
 uint32_t* r4300_pc(struct r4300_core* r4300)

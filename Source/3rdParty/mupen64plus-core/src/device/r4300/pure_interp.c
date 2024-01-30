@@ -170,7 +170,15 @@ int rounding_mode = -1;
 
 void InterpretOpcode(struct r4300_core* r4300)
 {
-	uint32_t* op_address = fast_mem_access(r4300, *r4300_pc(r4300));
+	uint32_t pc = *r4300_pc(r4300);
+
+	if (execution_addr_masked(pc))
+	{
+		execution.execute(pc);
+		if (*r4300_pc(r4300) != pc) return;
+	}
+
+	uint32_t* op_address = fast_mem_access(r4300, pc);
 	if (op_address == NULL)
 		return;
 	uint32_t op = *op_address;
@@ -747,6 +755,11 @@ void InterpretOpcode(struct r4300_core* r4300)
 		RESERVED(r4300, op);
 		break;
 	} /* switch ((op >> 26) & 0x3F) */
+
+	if (execution_addr_masked(pc))
+	{
+		execution.executeDone(pc);
+	}
 }
 
 void run_pure_interpreter(struct r4300_core* r4300)
@@ -757,23 +770,12 @@ void run_pure_interpreter(struct r4300_core* r4300)
 
    while (!*r4300_stop(r4300))
    {
-	 uint32_t pc = *r4300_pc(r4300);
-	 if (execution_addr_masked(pc))
-	 {
-		 execution.execute(pc);
-		 if (*r4300_pc(r4300) != pc) continue;
-	 }
 #ifdef COMPARE_CORE
      CoreCompareCallback();
 #endif
-	 
 #ifdef DBG
-     if (g_DebuggerActive) update_debugger(pc);
+     if (g_DebuggerActive) update_debugger(*r4300_pc(r4300));
 #endif
      InterpretOpcode(r4300);
-	 if (execution_addr_masked(pc))
-	 {
-		 execution.executeDone(pc);
-	 }
    }
 }
