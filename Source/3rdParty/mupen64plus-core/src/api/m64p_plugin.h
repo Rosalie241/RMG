@@ -180,15 +180,15 @@ typedef struct {
 
 typedef struct {
     void* window;
-    char* rom_name;
-    char* rom_hash;
-    unsigned char* addr_mask;
-    unsigned int (*pc)();
-    void (*jump)(unsigned int addr);
-    long long* gpr;
+    uint8_t* rom_name;
+    uint8_t* rom_hash;
+    uint8_t* addr_mask;
+    uint32_t (*pc)();
+    void (*jump)(uint32_t addr);
+    int64_t* gpr;
     double* fpr;
     void* rdram;
-    unsigned int rdram_size;
+    uint32_t rdram_size;
 } EXECUTION_INFO;
 
 /* common plugin function pointer types */
@@ -309,31 +309,31 @@ EXPORT void CALL InitiateRSP(RSP_INFO Rsp_Info, unsigned int *CycleCount);
 /* execution plugin function pointers */
 typedef void(*ptr_InitiateExecution)(EXECUTION_INFO ExecutionInfo);
 typedef void(*ptr_Input)(int port, BUTTONS* buttons);
-typedef void(*ptr_Frame)  (unsigned int frame);
-typedef void(*ptr_Execute)(unsigned int pc);
-typedef void(*ptr_ExecuteDone)(unsigned int pc);
-typedef void(*ptr_Read8)  (unsigned int addr, unsigned char* value);
-typedef void(*ptr_Read16) (unsigned int addr, unsigned short* value);
-typedef void(*ptr_Read32) (unsigned int addr, unsigned int* value);
-typedef void(*ptr_Read64) (unsigned int addr, unsigned long long* value);
-typedef void(*ptr_Write8) (unsigned int addr, unsigned char* value);
-typedef void(*ptr_Write16)(unsigned int addr, unsigned short* value);
-typedef void(*ptr_Write32)(unsigned int addr, unsigned int* value);
-typedef void(*ptr_Write64)(unsigned int addr, unsigned long long* value);
+typedef void(*ptr_Frame)  (uint32_t frame);
+typedef void(*ptr_Execute)(uint32_t pc);
+typedef void(*ptr_ExecuteDone)(uint32_t pc);
+typedef void(*ptr_Read8)  (uint32_t addr, uint8_t* value);
+typedef void(*ptr_Read16) (uint32_t addr, uint16_t* value);
+typedef void(*ptr_Read32) (uint32_t addr, uint32_t* value);
+typedef void(*ptr_Read64) (uint32_t addr, uint64_t* value);
+typedef void(*ptr_Write8) (uint32_t addr, uint8_t* value);
+typedef void(*ptr_Write16)(uint32_t addr, uint16_t* value);
+typedef void(*ptr_Write32)(uint32_t addr, uint32_t* value);
+typedef void(*ptr_Write64)(uint32_t addr, uint64_t* value);
 #if defined(M64P_PLUGIN_PROTOTYPES)
 EXPORT void CALL InitiateExecution(EXECUTION_INFO ExecutionInfo);
 EXPORT void CALL Input(int port, BUTTONS* buttons);
-EXPORT void CALL Frame(unsigned int frame);
-EXPORT void CALL Execute(unsigned int pc);
-EXPORT void CALL ExecuteDone(unsigned int pc);
-EXPORT void CALL Read8(unsigned int addr, unsigned char* value);
-EXPORT void CALL Read16(unsigned int addr, unsigned short* value);
-EXPORT void CALL Read32(unsigned int addr, unsigned int* value);
-EXPORT void CALL Read64(unsigned int addr, unsigned long long* value);
-EXPORT void CALL Write8(unsigned int addr, unsigned char* value);
-EXPORT void CALL Write16(unsigned int addr, unsigned short* value);
-EXPORT void CALL Write32(unsigned int addr, unsigned int* value);
-EXPORT void CALL Write64(unsigned int addr, unsigned long long* value);
+EXPORT void CALL Frame(uint32_t frame);
+EXPORT void CALL Execute(uint32_t pc);
+EXPORT void CALL ExecuteDone(uint32_t pc);
+EXPORT void CALL Read8(uint32_t addr, uint8_t* value);
+EXPORT void CALL Read16(uint32_t addr, uint16_t* value);
+EXPORT void CALL Read32(uint32_t addr, uint32_t* value);
+EXPORT void CALL Read64(uint32_t addr, uint64_t* value);
+EXPORT void CALL Write8(uint32_t addr, uint8_t* value);
+EXPORT void CALL Write16(uint32_t addr, uint16_t* value);
+EXPORT void CALL Write32(uint32_t addr, uint32_t* value);
+EXPORT void CALL Write64(uint32_t addr, uint64_t* value);
 #endif
 
 #ifdef __cplusplus

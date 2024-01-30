@@ -102,7 +102,8 @@ pub const m64p_plugin_type_M64PLUGIN_RSP: m64p_plugin_type = 1;
 pub const m64p_plugin_type_M64PLUGIN_GFX: m64p_plugin_type = 2;
 pub const m64p_plugin_type_M64PLUGIN_AUDIO: m64p_plugin_type = 3;
 pub const m64p_plugin_type_M64PLUGIN_INPUT: m64p_plugin_type = 4;
-pub const m64p_plugin_type_M64PLUGIN_CORE: m64p_plugin_type = 5;
+pub const m64p_plugin_type_M64PLUGIN_EXECUTION: m64p_plugin_type = 5;
+pub const m64p_plugin_type_M64PLUGIN_CORE: m64p_plugin_type = 6;
 pub type m64p_plugin_type = ::std::os::raw::c_uint;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]

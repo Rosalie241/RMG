@@ -586,7 +586,6 @@ static m64p_error plugin_connect_execution(m64p_dynlib_handle plugin_handle)
             return M64ERR_INPUT_INVALID;
         }
 
-        memset(&execution_addr_mask, 0, sizeof(execution_addr_mask));
         l_ExecutionAttached = 1;
     }
     else {
@@ -666,6 +665,8 @@ m64p_error plugin_check(void)
 
 void initiate_execution_plugin(void)
 {
+    memset(&execution_addr_mask, 0, sizeof(execution_addr_mask));
+    
     execution_info.window = 0;
     execution_info.rom_name = ROM_HEADER.Name;
     execution_info.rom_hash = ROM_SETTINGS.MD5;

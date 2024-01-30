@@ -79,7 +79,7 @@ static m64p_error input_plugin_get_input(void* opaque, uint32_t* input_)
             uint8_t present = Controls[netplay_controller].Present;
             if (input.getKeys) {
                 input.getKeys(netplay_controller, &keys);
-                execution.input(cin_compat->control_id, &keys);
+                execution.input(netplay_controller, &keys);
             }
 
             Controls[netplay_controller].Plugin = plugin;
