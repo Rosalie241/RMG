@@ -312,28 +312,28 @@ typedef void(*ptr_Input)(int port, BUTTONS* buttons);
 typedef void(*ptr_Frame)  (uint32_t frame);
 typedef void(*ptr_Execute)(uint32_t pc);
 typedef void(*ptr_ExecuteDone)(uint32_t pc);
-typedef void(*ptr_Read8)  (uint32_t addr, uint8_t* value);
-typedef void(*ptr_Read16) (uint32_t addr, uint16_t* value);
-typedef void(*ptr_Read32) (uint32_t addr, uint32_t* value);
-typedef void(*ptr_Read64) (uint32_t addr, uint64_t* value);
-typedef void(*ptr_Write8) (uint32_t addr, uint8_t* value);
-typedef void(*ptr_Write16)(uint32_t addr, uint16_t* value);
-typedef void(*ptr_Write32)(uint32_t addr, uint32_t* value);
-typedef void(*ptr_Write64)(uint32_t addr, uint64_t* value);
+typedef void(*ptr_Read8)  (uint8_t*  value, uint32_t pc, uint32_t addr);
+typedef void(*ptr_Read16) (uint16_t* value, uint32_t pc, uint32_t addr);
+typedef void(*ptr_Read32) (uint32_t* value, uint32_t pc, uint32_t addr);
+typedef void(*ptr_Read64) (uint64_t* value, uint32_t pc, uint32_t addr);
+typedef void(*ptr_Write8) (uint8_t*  value, uint32_t pc, uint32_t addr);
+typedef void(*ptr_Write16)(uint16_t* value, uint32_t pc, uint32_t addr);
+typedef void(*ptr_Write32)(uint32_t* value, uint32_t pc, uint32_t addr);
+typedef void(*ptr_Write64)(uint64_t* value, uint32_t pc, uint32_t addr);
 #if defined(M64P_PLUGIN_PROTOTYPES)
 EXPORT void CALL InitiateExecution(EXECUTION_INFO ExecutionInfo);
 EXPORT void CALL Input(int port, BUTTONS* buttons);
 EXPORT void CALL Frame(uint32_t frame);
 EXPORT void CALL Execute(uint32_t pc);
 EXPORT void CALL ExecuteDone(uint32_t pc);
-EXPORT void CALL Read8(uint32_t addr, uint8_t* value);
-EXPORT void CALL Read16(uint32_t addr, uint16_t* value);
-EXPORT void CALL Read32(uint32_t addr, uint32_t* value);
-EXPORT void CALL Read64(uint32_t addr, uint64_t* value);
-EXPORT void CALL Write8(uint32_t addr, uint8_t* value);
-EXPORT void CALL Write16(uint32_t addr, uint16_t* value);
-EXPORT void CALL Write32(uint32_t addr, uint32_t* value);
-EXPORT void CALL Write64(uint32_t addr, uint64_t* value);
+EXPORT void CALL Read8  (uint8_t*  value, uint32_t pc, uint32_t addr);
+EXPORT void CALL Read16 (uint16_t* value, uint32_t pc, uint32_t addr);
+EXPORT void CALL Read32 (uint32_t* value, uint32_t pc, uint32_t addr);
+EXPORT void CALL Read64 (uint64_t* value, uint32_t pc, uint32_t addr);
+EXPORT void CALL Write8 (uint8_t*  value, uint32_t pc, uint32_t addr);
+EXPORT void CALL Write16(uint16_t* value, uint32_t pc, uint32_t addr);
+EXPORT void CALL Write32(uint32_t* value, uint32_t pc, uint32_t addr);
+EXPORT void CALL Write64(uint64_t* value, uint32_t pc, uint32_t addr);
 #endif
 
 #ifdef __cplusplus
