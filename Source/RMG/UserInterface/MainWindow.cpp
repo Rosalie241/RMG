@@ -168,7 +168,8 @@ void MainWindow::initializeUI(bool launchROM)
     this->ui_Widget_Vulkan = new Widget::VKWidget(this);
     this->ui_EventFilter = new EventFilter(this);
     this->ui_StatusBar_Label = new QLabel(this);
-    this->ui_StatusBar_RenderModeLabel = new QLabel(this);
+    //this->ui_StatusBar_RenderModeLabel = new QLabel(this);
+    this->ui_StatusBar_SpeedLabel = new QLabel(this);
 
     // only start refreshing the ROM browser
     // when RMG isn't launched with a ROM 
@@ -240,7 +241,8 @@ void MainWindow::configureUI(QApplication* app, bool showUI)
     this->toolBar->setVisible(this->ui_ShowToolbar);
     this->statusBar()->setVisible(this->ui_ShowStatusbar);
     this->statusBar()->addPermanentWidget(this->ui_StatusBar_Label, 99);
-    this->statusBar()->addPermanentWidget(this->ui_StatusBar_RenderModeLabel, 1);
+    //this->statusBar()->addPermanentWidget(this->ui_StatusBar_RenderModeLabel, 1);
+    this->statusBar()->addPermanentWidget(this->ui_StatusBar_SpeedLabel, 1);
 
     // set toolbar position according to setting
     int toolbarAreaSetting = CoreSettingsGetIntValue(SettingsID::GUI_ToolbarArea);
@@ -437,12 +439,12 @@ void MainWindow::updateUI(bool inEmulation, bool isPaused)
 
         if (this->ui_VidExtRenderMode == VidExtRenderMode::OpenGL)
         {
-            this->ui_StatusBar_RenderModeLabel->setText("OpenGL");
+            //this->ui_StatusBar_RenderModeLabel->setText("OpenGL");
             this->ui_Widgets->setCurrentWidget(this->ui_Widget_OpenGL->GetWidget());
         }
         else
         {
-            this->ui_StatusBar_RenderModeLabel->setText("Vulkan");
+            //this->ui_StatusBar_RenderModeLabel->setText("Vulkan");
             this->ui_Widgets->setCurrentWidget(this->ui_Widget_Vulkan->GetWidget());
         }
 
@@ -452,7 +454,8 @@ void MainWindow::updateUI(bool inEmulation, bool isPaused)
     {
         this->setWindowTitle(this->ui_WindowTitle);
         this->ui_Widgets->setCurrentWidget(this->ui_Widget_RomBrowser);
-        this->ui_StatusBar_RenderModeLabel->clear();
+        //this->ui_StatusBar_RenderModeLabel->clear();
+        this->ui_StatusBar_SpeedLabel->clear();
         this->loadGeometry();
     }
     else
@@ -2489,6 +2492,16 @@ void MainWindow::on_Core_StateCallback(CoreStateCallbackType type, int value)
             else
             {
                 OnScreenDisplaySetMessage("Captured screenshot.");
+            }
+        } break;
+        case CoreStateCallbackType::SpeedUpdate:
+        {
+            if (value > 0)
+            {
+                std::ostringstream stream;
+                stream << std::fixed << std::setprecision(0) << (30000.0 / value) << " VI/s";
+                std::string result = stream.str();
+                this->ui_StatusBar_SpeedLabel->setText(result.c_str());
             }
         } break;
     }
