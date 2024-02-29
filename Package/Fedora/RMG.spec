@@ -33,11 +33,13 @@ Requires: speexdsp
 Requires: qt6-qtbase
 Requires: qt6-qtsvg
 
+Patch0: Fix-Compilation-With-Minizip-NG.patch
+
 %description
 Rosalie's Mupen GUI is a free and open-source mupen64plus front-end written in C++
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 %cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DPORTABLE_INSTALL=OFF -DDISCORD_RPC=OFF

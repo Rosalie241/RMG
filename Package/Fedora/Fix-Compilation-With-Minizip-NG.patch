@@ -1,0 +1,21 @@
+diff --git a/Source/RMG-Core/Rom.cpp b/Source/RMG-Core/Rom.cpp
+index e4d786a5..1a399caf 100644
+--- a/Source/RMG-Core/Rom.cpp
++++ b/Source/RMG-Core/Rom.cpp
+@@ -29,6 +29,7 @@
+ 
+ #include <string>
+ #include <unzip.h>
++#include <zlib.h>
+ #include <fstream>
+ #include <cstdlib>
+ #include <cstring>
+@@ -91,7 +91,7 @@ static uLong zlib_filefunc_read(voidpf opaque, voidpf stream, void* buf, uLong s
+ {
+     std::ifstream* fileStream = (std::ifstream*)stream;
+     fileStream->read((char*)buf, size);
+-    return fileStream->fail() ? 0 : size;
++    return fileStream->fail() ? fileStream->gcount() : size;
+ }
+ 
+ static ZPOS64_T zlib_filefunc_tell(voidpf opaque, voidpf stream)
