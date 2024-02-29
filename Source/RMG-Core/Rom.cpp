@@ -91,7 +91,7 @@ static uLong zlib_filefunc_read(voidpf opaque, voidpf stream, void* buf, uLong s
 {
     std::ifstream* fileStream = (std::ifstream*)stream;
     fileStream->read((char*)buf, size);
-    return fileStream->bad() ? 0 : fileStream->gcount();
+    return fileStream->fail() ? fileStream->gcount() : size;
 }
 
 static ZPOS64_T zlib_filefunc_tell(voidpf opaque, voidpf stream)
