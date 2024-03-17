@@ -270,6 +270,7 @@ struct gDPInfo
 	gDPLoadTileInfo loadInfo[512];
 	gDPTexrectInfo lastTexRectInfo;
 	texCoordBounds m_texCoordBounds;
+	bool m_subscreen{ false };
 };
 
 extern gDPInfo gDP;

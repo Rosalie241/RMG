@@ -330,8 +330,11 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 	case Config::a169:
 		ui->aspectComboBox->setCurrentIndex(1);
 		break;
-	case Config::aAdjust:
+	case Config::aAdjust43:
 		ui->aspectComboBox->setCurrentIndex(3);
+		break;
+	case Config::aAdjust169:
+		ui->aspectComboBox->setCurrentIndex(4);
 		break;
 	}
 
@@ -649,7 +652,9 @@ void ConfigDialog::accept(bool justSave) {
 	else if (ui->aspectComboBox->currentIndex() == 1)
 		config.frameBufferEmulation.aspect = Config::a169;
 	else if (ui->aspectComboBox->currentIndex() == 3)
-		config.frameBufferEmulation.aspect = Config::aAdjust;
+		config.frameBufferEmulation.aspect = Config::aAdjust43;
+	else if (ui->aspectComboBox->currentIndex() == 4)
+		config.frameBufferEmulation.aspect = Config::aAdjust169;
 
 	if (ui->factor0xRadioButton->isChecked())
 		config.frameBufferEmulation.nativeResFactor = 0;

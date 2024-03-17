@@ -186,24 +186,22 @@ loop1:
 		}
 #else
 		int y = height - 1;
-		while (y >= 0)
-		{
+		do {
 			uint32 esi = 0;
 			int x = bytesPerLine - 4;
-			while (x >= 0)
-			{
+			do {
 				esi = *(uint32*)(src + x);
 				esi ^= x;
 
 				crc32Ret = (crc32Ret << 4) + ((crc32Ret >> 28) & 15);
 				crc32Ret += esi;
 				x -= 4;
-			}
+			} while (x >= 0);
 			esi ^= y;
 			crc32Ret += esi;
 			src += rowStride;
 			--y;
-		}
+		} while (y >= 0);
 #endif
 	} catch(...) {
 		DBG_INFO(80, wst("Error: RiceCRC32 exception!\n"));

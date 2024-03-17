@@ -174,12 +174,21 @@ void DisplayWindow::_setBufferSize()
 			m_height = m_screenHeight;
 		}
 		break;
-	case Config::aAdjust: // adjust
+	case Config::aAdjust43: // adjust
 		m_width = m_screenWidth;
 		m_height = m_screenHeight;
 		if (m_screenWidth * 3 / 4 > m_screenHeight) {
 			f32 width43 = m_screenHeight * 4.0f / 3.0f;
 			m_adjustScale = width43 / m_screenWidth;
+			m_bAdjustScreen = true;
+		}
+		break;
+	case Config::aAdjust169: // adjust
+		m_width = m_screenWidth;
+		m_height = m_screenHeight;
+		if (m_screenWidth * 9 / 16 > m_screenHeight) {
+			f32 width169 = m_screenHeight * 16.0f / 9.0f;
+			m_adjustScale = width169 / m_screenWidth;
 			m_bAdjustScreen = true;
 		}
 		break;

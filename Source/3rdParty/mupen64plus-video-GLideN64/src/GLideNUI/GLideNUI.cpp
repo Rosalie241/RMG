@@ -31,13 +31,14 @@ int openConfigDialog(const wchar_t * _strFileName, const wchar_t * _strSharedFil
 	if (config.generalEmulation.enableCustomSettings != 0 && _romName != nullptr && strlen(_romName) != 0)
 		loadCustomRomSettings(strIniFileName, strSharedIniFileName, _romName);
 
+	int argc = 1;
+	char argv0[] = "GLideN64";
+	char * argv[] = { argv0 };
 	std::unique_ptr<QApplication> pQApp;
 	QCoreApplication* pApp = QCoreApplication::instance();
 
 	if (pApp == nullptr) {
-		int argc = 0;
-		char * argv = 0;
-		pQApp.reset(new QApplication(argc, &argv));
+		pQApp.reset(new QApplication(argc, argv));
 		pApp = pQApp.get();
 	}
 
@@ -63,9 +64,10 @@ int openAboutDialog(const wchar_t * _strFileName)
 	cleanMyResource();
 	initMyResource();
 
-	int argc = 0;
-	char * argv = 0;
-	QApplication a(argc, &argv);
+	int argc = 1;
+	char argv0[] = "GLideN64";
+	char * argv[] = { argv0 };
+	QApplication a(argc, argv);
 
 	QTranslator translator;
 	if (translator.load(getTranslationFile(), QString::fromWCharArray(_strFileName)))

@@ -33,11 +33,12 @@ void LoadDefaultStrings(void)
 	g_defaultStrings.insert(LANG_STRINGS::value_type(VIDEO_WINDOWED_RESOLUTION, "Windowed resolution:"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(VIDEO_WINDOWED_RESOLUTION_TOOLTIP, "This option selects the resolution for windowed mode. You can also type in a custom window size.\n\n[Recommended: 640 x 480, 800 x 600, 1024 x 768, 1280 x 960]"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(VIDEO_ASPECT_RATIO, "Aspect ratio:"));
-	g_defaultStrings.insert(LANG_STRINGS::value_type(VIDEO_ASPECT_RATIO_TOOLTIP, "This setting adjusts the aspect ratio of the video output. All N64 games support 4:3. Some games support 16:9 within game settings. Use Stretch to fill the screen without pillar or letterboxing.\n\nTry to adjust game to fit tries to adjust the viewing space to fit without stretching. Many games work well adjusted, but some don't."));
+	g_defaultStrings.insert(LANG_STRINGS::value_type(VIDEO_ASPECT_RATIO_TOOLTIP, "This setting adjusts the aspect ratio of the video output. All N64 games support 4:3. Some games support 16:9 within game settings. Use Stretch to fill the screen without pillar or letterboxing.\n\nTry to adjust 4:3 game to fit (also known as \"widescreen hack\") tries to adjust the viewing space to fit a game designed for 4:3 without stretching. Many games work well adjusted, but some don't.\n\nTry to adjust 16:9 game to fit&lt;/span&gt; (also known as \"ultrawidescreen hack\") tries to adjust the viewing space to fit a game designed for 16:9 without stretching. Many games work well adjusted, but some don't. For games offering native 16:9 options, this is generally preferable for ultrawide aspect ratios as it'll lead to fewer rendering issues."));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(VIDEO_ASPECT_4_3, "4:3 (recommended)"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(VIDEO_ASPECT_16_19, "16:9"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(VIDEO_ASPECT_STRETCH, "Stretch"));
-	g_defaultStrings.insert(LANG_STRINGS::value_type(VIDEO_ASPECT_ADJUST, "Try to adjust game to fit"));
+	g_defaultStrings.insert(LANG_STRINGS::value_type(VIDEO_ASPECT_ADJUST, "Try to adjust 4:3 game to fit"));
+	g_defaultStrings.insert(LANG_STRINGS::value_type(VIDEO_ASPECT_ADJUST, "Try to adjust 16:9 game to fit"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(VIDEO_VSYNC, "Enable VSync"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(VIDEO_VSYNC_TOOLTIP, "Vertical sync, or VSync, can improve the image by syncing the game's frame rate to your monitor's refresh rate. This prevents image tearing, but may cause performance problems.\n\n[Recommended: Usually off, on if you have image tearing problems]"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(VIDEO_THREADED_VIDEO, "Enable threaded video"));
