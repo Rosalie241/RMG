@@ -6,7 +6,7 @@
 [subrepo]
 	remote = git@github.com:/Rosalie241/parallel-rsp.git
 	branch = RMG
-	commit = eb7b30e25ac560e969e6f00b1cd2ba6d93901df0
-	parent = 5035c537840753fcaa237f23eff64ae0284c95c1
+	commit = 0b1443e695508268186cec8bfcb14f62faa2326b
+	parent = 3392fe8d6233a155dd4d71a75dca06f5cebc46d9
 	method = merge
 	cmdver = 0.4.6
