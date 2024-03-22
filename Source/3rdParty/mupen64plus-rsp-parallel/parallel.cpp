@@ -84,6 +84,8 @@ extern "C"
 			return cycles;
 		else if (*RSP::cpu.get_state().cp0.irq & 1)
 			RSP::rsp.CheckInterrupts();
+		else if (*RSP::rsp.SP_STATUS_REG & SP_STATUS_HALT)
+			return cycles;
 		else if (*RSP::rsp.SP_SEMAPHORE_REG != 0) // Semaphore lock fixes.
 		{
 		}
