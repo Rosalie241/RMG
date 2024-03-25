@@ -123,34 +123,6 @@ static std::filesystem::path get_var_directory(std::string var, std::string appe
 
     return directory.make_preferred();
 }
-
-static std::filesystem::path get_command_output(std::string command)
-{
-    std::string output;
-    char buf[2048];
-    FILE* pipe = nullptr;
-
-    pipe = popen(command.c_str(), "r");
-    if (pipe == nullptr)
-    {
-        return std::string();
-    }
-
-    while (fgets(buf, sizeof(buf), pipe) != nullptr)
-    {
-        output += buf;
-    }
-
-    pclose(pipe);
-
-    // strip newline
-    if (output.back() == '\n')
-    {
-        output.pop_back();
-    }
-
-    return output;
-}
 #endif // _WIN32
 
 //
