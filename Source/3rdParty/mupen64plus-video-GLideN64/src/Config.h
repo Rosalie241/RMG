@@ -177,6 +177,7 @@ struct Config
 		u32 txCacheCompression;			// Zip textures cache
 		u32 txSaveCache;				// Save texture cache to hard disk
 		u32 txDump;                     // Dump textures
+		u32 txStrongCRC;                // Dump textures with alternative (strong) CRC
 
 		u32 txEnhancedTextureFileStorage;	// Use file storage instead of memory cache for enhanced textures.
 		u32 txHiresTextureFileStorage;		// Use file storage instead of memory cache for hires textures.
@@ -239,6 +240,7 @@ struct Config
 		hkOsdRenderingResolution,
 		hkForceGammaCorrection,
 		hkInaccurateTexCords,
+		hkStrongCRC,
 		hkTotal
 	};
 

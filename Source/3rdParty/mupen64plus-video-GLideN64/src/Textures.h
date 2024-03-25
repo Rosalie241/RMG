@@ -90,7 +90,7 @@ private:
 	CachedTexture * _addTexture(u64 _crc64);
 	void _loadFast(u32 _tile, CachedTexture *_pTexture);
 	void _loadAccurate(u32 _tile, CachedTexture *_pTexture);
-	bool _loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & _ricecrc);
+	bool _loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & _ricecrc, u64 & _strongcrc);
 	void _loadBackground(CachedTexture *pTexture);
 	bool _loadHiresBackground(CachedTexture *_pTexture, u64 & _ricecrc);
 	void _loadDepthTexture(CachedTexture * _pTexture, u16* _pDest);

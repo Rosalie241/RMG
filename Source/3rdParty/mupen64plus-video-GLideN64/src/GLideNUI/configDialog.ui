@@ -2679,6 +2679,16 @@
                 </widget>
                </item>
                <item>
+                <widget class="QCheckBox" name="strongCRCCheckBox">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option enables alternative, strong CRC method instead of RiceCRC for texture dump. If you find some textures not dumped, try checking this option.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Mostly unchecked, unless RiceCRC fails&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string>Strong CRC calculation (when RiceCRC fails)</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <widget class="QCheckBox" name="hiresTexFileStorageCheckBox">
                  <property name="toolTip">
                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option enables alternative storage for hi-res textures.&lt;/p&gt;&lt;p&gt;Normally memory cache is used. It keeps all hi-res textures in RAM and thus limited by available RAM size.&lt;/p&gt;&lt;p&gt;File storage keeps texture cache on HDD. It is slower than memory cache, but has virtually no limits on cache size.&lt;/p&gt;&lt;p&gt;Disable &amp;quot;Compress texture cache&amp;quot; option for better performance.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
