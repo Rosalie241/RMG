@@ -14,6 +14,14 @@ using namespace Thread;
 
 EmulationThread::EmulationThread(QObject *parent) : QThread(parent)
 {
+#ifndef _WIN32
+    // on Linux, musl has a too small stack size,
+    // causing a crash in mesa when using paraLLEl,
+    // so to fix it, set a stack size of 2MiB for
+    // the emulation thread
+    // see https://github.com/Rosalie241/RMG/issues/219
+    this->setStackSize(0x200000);
+#endif
 }
 
 EmulationThread::~EmulationThread(void)
