@@ -1,5 +1,5 @@
 Name:    RMG       
-Version: 0.5.7
+Version: 0.5.8
 Release: %autorelease
 Summary: Rosalie's Mupen GUI 
 
@@ -33,13 +33,11 @@ Requires: speexdsp
 Requires: qt6-qtbase
 Requires: qt6-qtsvg
 
-Patch0: Fix-Compilation-With-Minizip-NG.patch
-
 %description
 Rosalie's Mupen GUI is a free and open-source mupen64plus front-end written in C++
 
 %prep
-%autosetup -p1
+%autosetup
 
 %build
 %cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DPORTABLE_INSTALL=OFF -DDISCORD_RPC=OFF

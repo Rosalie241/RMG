@@ -33,13 +33,24 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.5.8" date="2024-03-25" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix incorrect usage of cmake's GNUInstallDirs (thank you OPNA2608)</li>
+          <li>Fix opening zipped ROMs when compiling with minizip-ng instead of minizip</li>
+          <li>Fix RMG with paraLLEl crashing in mesa when using musl libc (thank you orbea and nekopsykose)</li>
+          <li>Update GLideN64, parallel-rsp and SDL_GameControllerDB</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.5.7" date="2024-01-26" type="stable">
       <description>
         <p>Changes:</p>
         <ul>
           <li>Fix backwards compatibility with older plugin setting format</li>
-          <li>Add NO_ASM build option to build mupen64plus-core without asm (thank you @orbea)</li>
-          <li>Change default screenshot directory on Linux (thank you @orbea)</li>
+          <li>Add NO_ASM build option to build mupen64plus-core without asm (thank you orbea)</li>
+          <li>Change default screenshot directory on Linux (thank you orbea)</li>
           <li>Update mupen64plus-core</li>
         </ul>
       </description>
