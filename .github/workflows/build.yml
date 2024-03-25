@@ -74,6 +74,7 @@ jobs:
             mingw-w64-x86_64-libsamplerate
             mingw-w64-x86_64-nasm
             mingw-w64-x86_64-minizip
+            mingw-w64-x86_64-vulkan-headers
             git
       - name: Prepare Environment
         run: |
