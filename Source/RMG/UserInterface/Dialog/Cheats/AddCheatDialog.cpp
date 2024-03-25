@@ -94,8 +94,7 @@ void AddCheatDialog::showErrorMessage(QString error, QString details)
 
 bool AddCheatDialog::validate(void)
 {
-    QTextDocument* document;
-    QStringList    documentLines;
+    QStringList documentLines;
     bool foundOption = false;
     int  optionSize  = -1;
     QRegularExpression hexRegExpr("^[0-9A-F]+$");
@@ -240,7 +239,6 @@ bool AddCheatDialog::getCheat(CoreCheat& cheat)
     QStringList qLines;
     std::vector<std::string> lines;
 
-    QTextDocument* document;
     QString name;
     QString author;
     QString note;
