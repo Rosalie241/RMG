@@ -183,7 +183,7 @@ static std::string join_split_string(const std::vector<std::string>& splitStr, c
     std::string joinedString;
     std::string element;
     int skippedElements = 0;
-    for (uint32_t i = 0; i < splitStr.size(); i++)
+    for (size_t i = 0; i < splitStr.size(); i++)
     {
         // allow for skipping elements
         if (skippedElements++ < skip)
@@ -209,7 +209,7 @@ static bool parse_cheat(const std::vector<std::string>& lines, int startIndex, C
 {
     std::string error;
     std::string line;
-    for (uint32_t i = startIndex; i < lines.size(); i++)
+    for (size_t i = startIndex; i < lines.size(); i++)
     {
         line = lines.at(i);
 
@@ -348,7 +348,7 @@ static bool parse_cheat_file(const std::vector<std::string>& lines, CoreCheatFil
     bool readHeader = false;
     bool readHeaderName = false;
 
-    for (uint32_t index = 0; index < lines.size(); index++)
+    for (size_t index = 0; index < lines.size(); index++)
     {
         line = lines.at(index);
 

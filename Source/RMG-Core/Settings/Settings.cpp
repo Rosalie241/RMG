@@ -1517,7 +1517,7 @@ static bool config_option_default_set(std::string section, std::string key, m64p
 
 static bool int_list_to_string(std::vector<int> intList, std::string& string)
 {
-    for (uint32_t i = 0; i < intList.size(); i++)
+    for (size_t i = 0; i < intList.size(); i++)
     {
         int num = intList.at(i);
         string += std::to_string(num);
@@ -1561,7 +1561,7 @@ static bool string_list_to_string(std::vector<std::string> stringList, std::stri
 {
     std::string error;
 
-    for (uint32_t i = 0; i < stringList.size(); i++)
+    for (size_t i = 0; i < stringList.size(); i++)
     {
         std::string str = stringList.at(i);
 
