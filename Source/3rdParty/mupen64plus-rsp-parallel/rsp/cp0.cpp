@@ -40,6 +40,7 @@ extern "C"
 		}
 #endif
 
+#if 0 // FIXME: this is broken with upstream mupen64plus-core
 		if (rd == CP0_REGISTER_SP_SEMAPHORE)
 		{
 			if (*rsp->cp0.cr[CP0_REGISTER_SP_SEMAPHORE])
@@ -56,6 +57,7 @@ extern "C"
 			else
 				*rsp->cp0.cr[CP0_REGISTER_SP_SEMAPHORE] = 1;
 		}
+#endif
 
 		//if (rd == 4) // SP_STATUS_REG
 		//   fprintf(stderr, "READING STATUS REG!\n");
