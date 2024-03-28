@@ -1,0 +1,148 @@
+[34AEB154-A4253B86-C:45]
+Name=Conker's Bad Fur Day (U) [T+Spa1.1_Blade133bo]
+
+$$Acceso\Todos los Capítulos, Escenas & Personajes Multijugador
+50000401 0000
+800E9D01 00FF
+
+$$Acceso\Todos los Personajes & Armas en Multi Race
+810E9D02 ??FF
+FF Todos los Personajes & Bate de Béisbol
+FB Todos los Personajes & Sartén
+F3 Todos los Personajes & Huesos
+
+$$Seleccionar Velocidad de Conker
+810CC318 ????
+3F00 Conker Lento
+3F80 Conker Normal
+3FF0 Conker Rápido
+4030 Conker Superrápido
+
+$$Infinito\Recuento de Precisión Jugador 1
+Note=SOLO EN MULTI. Solo pon este código una vez que estés en el juego.
+800E0B67 0001
+
+$$Infinito\Bolsas En Heist
+800E0BE4 00FF
+
+$$Infinito\Bombas
+802055CA 0030
+
+$$Infinito\Recuento de Disparos a la Cabeza Jugador 1
+Note=SOLO EN MULTI. Solo pon este código una vez que estés en el juego. Una vez que recojas un arma y dispares una vez, acertarás al 100%.
+800E0B6B 03E7
+
+$$Infinito\Salud\Jugador 1
+800CC49A 0006
+
+$$Infinito\Salud\Jugador 2
+800CC7C6 270F
+
+$$Infinito\Salud\Jugador 3
+800CCAF2 270F
+
+$$Infinito\Salud\Jugador 4
+800CCE1E 270F
+
+$$Infinito\Vidas Jugador 1
+800D2144 0064
+
+$$Infinito\Máximo de Muertes Jugador 1
+800E0B47 03E7
+
+$$Infinito\Lotes de Dinero
+810D214A FFFF
+
+$$Infinito\Tiempo En Multi
+8108FD7A 7500
+
+$$Modo Matrix (En Cualquier Momento)
+Note=Pulsa R para activar y luego C-Derecha para salir.
+D1042A14 0010
+800BEA0C 0001
+D1042A14 0010
+810BE574 D202
+D1042A14 0001
+800BEA0C 0000
+D1042A14 0001
+810BE574 0000
+
+$$Jugar como Opción 1
+Note=Aquí puedes elegir con quién quieres jugar, pero solo una opción a la vez. La sombra no será visible, excepto cuando juegues como Conker.
+800D213F 00??
+01 Comadreja
+02 Comadreja (Traje negro)
+03 Tedi
+04 Ardilla de Combate
+05 Conker
+08 Tanque (No se puede mover)
+09 Dinosaurio (No se puede mover)
+0B Uga
+0C Cavernícola Calvo
+0D Cavernícola
+0E Cavernícola Mohicano
+0F Cavernícola Spikey
+10 Conker Neo
+11 Aldeano Masculino
+12 Aldeano Masculino (con gafas)
+13 Aldeano Masculino (con bigote)
+14 Aldeano Masculino (con gafas y bigote)
+15 Aldeano Masculino (con sombrero)
+16 Aldeano Masculino (con sombrero y gafas)
+17 Aldeano Masculino (con sombrero y bigote)
+18 Aldeano Masculino (con sombrero y gafas y bigote)
+19 Aldeano Masculino (con gorra)
+1A Aldeano Masculino (con gorra y gafas)
+1B Aldeano Masculino (con gorra y bigote)
+1C Aldeano Masculino (con gorra y gafas y bigote)
+1D Aldeana Femenina
+1F Aldeana Femenina (con capucha y gafas)
+21 Zombi Masculino
+22 Zombi Femenino
+23 Murciélago Enemigo
+24 Conker el Murciélago
+25 Capitán del Ejercito
+26 Jefe Tedi
+27 Gregg
+28 Gregg Huesudo
+
+$$Pulsa L Para Levitar\Jugador 1
+Note=Pulsa el Botón L para Levitar y Sueltalo para bajar
+D0042A15 0020
+810CC2F0 41CB
+
+$$Pulsa L Para Levitar\Jugador 2
+Note=Pulsa el Botón L para Levitar y Sueltalo para bajar
+D0042A1D 0020
+810CC61C 41CB
+
+$$Pulsa L Para Levitar\Jugador 3
+Note=Pulsa el Botón L para Levitar y Sueltalo para bajar
+D0042A25 0020
+810CC948 41CB
+
+$$Pulsa L Para Levitar\Jugador 4
+Note=Pulsa el Botón L para Levitar y Sueltalo para bajar
+D0042A2D 0020
+810CCC74 41CB
+
+$$Activador de Animación de Espera
+800CC5C8 00??
+00 Por defecto como máximo
+02 Animaciones de espera deshabilitadas
+
+$$Selección de Arma en Multi (Al recoger)
+Note=Selecciona el arma que quieras en el modo multijugador y luego, en una recogida de armas, tendrás el arma de tu elección. (Debes tener un arma ya recogida para cambiar por la próxima.)
+80180873 00??
+01 Espada
+02 Nada
+03 Motosierra Amarilla
+04 Cuchillos Arrojadizos
+05 Rifle
+06 Revolver con Mira
+07 Lanzacohetes
+08 Escopeta
+0A Rifle Francotirador Con Alcance
+0C Metralletas Dobles
+13 Máscara Antigás
+
