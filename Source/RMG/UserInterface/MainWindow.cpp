@@ -1801,24 +1801,12 @@ void MainWindow::on_Action_Help_Update(void)
 
 void MainWindow::on_Action_Audio_IncreaseVolume(void)
 {
-    if (!CoreIncreaseVolume())
-    {
-        // It's rather annoying to have an error message pop-up everytime
-        // you use the increase volume hotkey when the volume is already
-        // at 100%, so we'll disable the error message
-        //this->showErrorMessage("CoreIncreaseVolume() Failed", QString::fromStdString(CoreGetError()));
-    }
+    CoreIncreaseVolume();
 }
 
 void MainWindow::on_Action_Audio_DecreaseVolume(void)
 {
-    if (!CoreDecreaseVolume())
-    {
-        // It's rather annoying to have an error message pop-up everytime
-        // you use the decrease volume hotkey when the volume is already
-        // at 0%, so we'll disable the error message
-        //this->showErrorMessage("CoreDecreaseVolume() Failed", QString::fromStdString(CoreGetError()));
-    }
+    CoreDecreaseVolume();
 }
 
 void MainWindow::on_Action_Audio_ToggleVolumeMute(void)
