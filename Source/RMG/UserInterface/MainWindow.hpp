@@ -201,6 +201,9 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     void on_Action_View_ClearRomCache(void);
     void on_Action_View_Log(void);
 
+    void on_action_Debug_CompareRecord(void);
+    void on_action_Debug_CompareReplay(void);
+
     void on_Action_Help_Github(void);
     void on_Action_Help_About(void);
     void on_Action_Help_Update(void);

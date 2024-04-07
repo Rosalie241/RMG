@@ -29,6 +29,7 @@
 #include "Error.hpp"
 #include "Unzip.hpp"
 #include "Video.hpp"
+#include "Debug.hpp"
 #include "Key.hpp"
 #include "Rom.hpp"
 #ifdef CORE_PLUGIN

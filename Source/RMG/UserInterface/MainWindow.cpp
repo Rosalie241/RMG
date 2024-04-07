@@ -1054,6 +1054,9 @@ void MainWindow::connectActionSignals(void)
     connect(this->action_View_ClearRomCache, &QAction::triggered, this, &MainWindow::on_Action_View_ClearRomCache);
     connect(this->action_View_Log, &QAction::triggered, this, &MainWindow::on_Action_View_Log);
 
+    connect(this->action_Debug_CompareRecord, &QAction::triggered, this, &MainWindow::on_action_Debug_CompareRecord);
+    connect(this->action_Debug_CompareReplay, &QAction::triggered, this, &MainWindow::on_action_Debug_CompareReplay);
+
     connect(this->action_Help_Github, &QAction::triggered, this, &MainWindow::on_Action_Help_Github);
     connect(this->action_Help_About, &QAction::triggered, this, &MainWindow::on_Action_Help_About);
     connect(this->action_Help_Update, &QAction::triggered, this, &MainWindow::on_Action_Help_Update);
@@ -1779,6 +1782,39 @@ void MainWindow::on_Action_View_ClearRomCache(void)
 void MainWindow::on_Action_View_Log(void)
 {
     this->logDialog.show();
+}
+
+
+#include <iostream>
+void MainWindow::on_action_Debug_CompareRecord(void)
+{
+    static bool recording = false;
+
+    if (!recording)
+    {
+        if (!CoreCompareStart(CoreCompareMode::Record))
+        {
+            this->showErrorMessage("CoreCompareStart() Failed", QString::fromStdString(CoreGetError()));
+        }
+    }
+    else
+    {
+        if (!CoreCompareStop())
+        {
+            this->showErrorMessage("CoreCompareStop() Failed", QString::fromStdString(CoreGetError()));
+        }
+    }
+
+    // toggle
+    recording = !recording;
+}
+
+void MainWindow::on_action_Debug_CompareReplay(void)
+{
+    if (!CoreCompareStart(CoreCompareMode::Replay))
+    {
+        this->showErrorMessage("CoreCompareStart() Failed", QString::fromStdString(CoreGetError()));
+    }
 }
 
 void MainWindow::on_Action_Help_Github(void)

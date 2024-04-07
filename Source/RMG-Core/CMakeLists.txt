@@ -51,6 +51,7 @@ set(RMG_CORE_SOURCES
     Video.cpp
     Error.cpp
     Unzip.cpp
+    Debug.cpp
     Core.cpp
     Key.cpp
     Rom.cpp
