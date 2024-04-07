@@ -13,4 +13,5 @@ namespace m64p
 {
 m64p::CoreApi Core;
 m64p::ConfigApi Config;
+m64p::DebugApi Debug;
 } // namespace m64p

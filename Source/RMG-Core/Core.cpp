@@ -120,6 +120,14 @@ bool CoreInit(void)
         return false;
     }
 
+    ret = m64p::Debug.Hook(l_CoreLibHandle);
+    if (!ret)
+    {
+        error = m64p::Debug.GetLastError();
+        CoreSetError(error);
+        return false;
+    }
+
     m64p_ret = m64p::Core.Startup(FRONTEND_API_VERSION, CoreGetUserConfigDirectory().string().c_str(), CoreGetSharedDataDirectory().string().c_str(), (void*)l_CoreContextString, CoreDebugCallback, nullptr, CoreStateCallback);
     if (m64p_ret != M64ERR_SUCCESS)
     {
