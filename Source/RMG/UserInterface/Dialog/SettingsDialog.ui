@@ -23,7 +23,7 @@
    <item row="1" column="0">
     <layout class="QVBoxLayout" name="verticalLayout">
      <property name="sizeConstraint">
-      <enum>QLayout::SetNoConstraint</enum>
+      <enum>QLayout::SizeConstraint::SetNoConstraint</enum>
      </property>
      <property name="rightMargin">
       <number>0</number>
@@ -34,7 +34,7 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <property name="sizeConstraint">
-        <enum>QLayout::SetNoConstraint</enum>
+        <enum>QLayout::SizeConstraint::SetNoConstraint</enum>
        </property>
        <item>
         <widget class="QTabWidget" name="tabWidget">
@@ -125,7 +125,7 @@
                <item>
                 <spacer name="verticalSpacer_3">
                  <property name="orientation">
-                  <enum>Qt::Vertical</enum>
+                  <enum>Qt::Orientation::Vertical</enum>
                  </property>
                  <property name="sizeHint" stdset="0">
                   <size>
@@ -171,7 +171,7 @@
                     <string>Changes will be applied on next emulation run</string>
                    </property>
                    <property name="textFormat">
-                    <enum>Qt::PlainText</enum>
+                    <enum>Qt::TextFormat::PlainText</enum>
                    </property>
                   </widget>
                  </item>
@@ -222,7 +222,7 @@
                <item>
                 <spacer name="verticalSpacer_5">
                  <property name="orientation">
-                  <enum>Qt::Vertical</enum>
+                  <enum>Qt::Orientation::Vertical</enum>
                  </property>
                  <property name="sizeHint" stdset="0">
                   <size>
@@ -249,7 +249,7 @@
                <item>
                 <spacer name="verticalSpacer_12">
                  <property name="orientation">
-                  <enum>Qt::Vertical</enum>
+                  <enum>Qt::Orientation::Vertical</enum>
                  </property>
                  <property name="sizeHint" stdset="0">
                   <size>
@@ -351,24 +351,36 @@
                 </layout>
                </item>
                <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_11">
+                <layout class="QHBoxLayout" name="horizontalLayout_15">
                  <item>
-                  <widget class="QLabel" name="label_10">
+                  <widget class="QLabel" name="label_14">
                    <property name="text">
-                    <string>Opacity</string>
+                    <string>Background Color</string>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QDoubleSpinBox" name="osdOpacitySpinBox">
-                   <property name="decimals">
-                    <number>1</number>
+                  <widget class="QPushButton" name="changeBackgroundColorButton">
+                   <property name="text">
+                    <string/>
                    </property>
-                   <property name="maximum">
-                    <double>1.000000000000000</double>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_16">
+                 <item>
+                  <widget class="QLabel" name="label_15">
+                   <property name="text">
+                    <string>Text Color</string>
                    </property>
-                   <property name="singleStep">
-                    <double>0.100000000000000</double>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="changeTextColorButton">
+                   <property name="text">
+                    <string/>
                    </property>
                   </widget>
                  </item>
@@ -398,7 +410,7 @@
                <item>
                 <spacer name="verticalSpacer_17">
                  <property name="orientation">
-                  <enum>Qt::Vertical</enum>
+                  <enum>Qt::Orientation::Vertical</enum>
                  </property>
                  <property name="sizeHint" stdset="0">
                   <size>
@@ -444,7 +456,7 @@
                     <string>The On-Screen Display will only work with OpenGL video plugins</string>
                    </property>
                    <property name="textFormat">
-                    <enum>Qt::PlainText</enum>
+                    <enum>Qt::TextFormat::PlainText</enum>
                    </property>
                   </widget>
                  </item>
@@ -534,7 +546,7 @@
                <item>
                 <spacer name="verticalSpacer_6">
                  <property name="orientation">
-                  <enum>Qt::Vertical</enum>
+                  <enum>Qt::Orientation::Vertical</enum>
                  </property>
                  <property name="sizeHint" stdset="0">
                   <size>
@@ -580,7 +592,7 @@
                     <string>Changes will be applied on next application run</string>
                    </property>
                    <property name="textFormat">
-                    <enum>Qt::PlainText</enum>
+                    <enum>Qt::TextFormat::PlainText</enum>
                    </property>
                   </widget>
                  </item>
@@ -600,7 +612,7 @@
            <item>
             <widget class="QScrollArea" name="scrollArea">
              <property name="frameShadow">
-              <enum>QFrame::Plain</enum>
+              <enum>QFrame::Shadow::Plain</enum>
              </property>
              <property name="widgetResizable">
               <bool>true</bool>
@@ -610,8 +622,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>442</width>
-                <height>692</height>
+                <width>444</width>
+                <height>690</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -898,7 +910,7 @@
                    <item>
                     <spacer name="verticalSpacer_14">
                      <property name="orientation">
-                      <enum>Qt::Vertical</enum>
+                      <enum>Qt::Orientation::Vertical</enum>
                      </property>
                      <property name="sizeHint" stdset="0">
                       <size>
@@ -1134,7 +1146,7 @@
                    <item>
                     <spacer name="verticalSpacer_9">
                      <property name="orientation">
-                      <enum>Qt::Vertical</enum>
+                      <enum>Qt::Orientation::Vertical</enum>
                      </property>
                      <property name="sizeHint" stdset="0">
                       <size>
@@ -1334,7 +1346,7 @@
                    <item>
                     <spacer name="verticalSpacer_13">
                      <property name="orientation">
-                      <enum>Qt::Vertical</enum>
+                      <enum>Qt::Orientation::Vertical</enum>
                      </property>
                      <property name="sizeHint" stdset="0">
                       <size>
@@ -1408,7 +1420,7 @@
                    <item>
                     <spacer name="verticalSpacer_18">
                      <property name="orientation">
-                      <enum>Qt::Vertical</enum>
+                      <enum>Qt::Orientation::Vertical</enum>
                      </property>
                      <property name="sizeHint" stdset="0">
                       <size>
@@ -1518,7 +1530,7 @@
                    <item>
                     <spacer name="verticalSpacer_15">
                      <property name="orientation">
-                      <enum>Qt::Vertical</enum>
+                      <enum>Qt::Orientation::Vertical</enum>
                      </property>
                      <property name="sizeHint" stdset="0">
                       <size>
@@ -1592,7 +1604,7 @@
                    <item>
                     <spacer name="verticalSpacer_16">
                      <property name="orientation">
-                      <enum>Qt::Vertical</enum>
+                      <enum>Qt::Orientation::Vertical</enum>
                      </property>
                      <property name="sizeHint" stdset="0">
                       <size>
@@ -1801,7 +1813,7 @@
            <item>
             <spacer name="verticalSpacer_7">
              <property name="orientation">
-              <enum>Qt::Vertical</enum>
+              <enum>Qt::Orientation::Vertical</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -1847,7 +1859,7 @@
                 <string>Changes will be applied on next emulation run</string>
                </property>
                <property name="textFormat">
-                <enum>Qt::PlainText</enum>
+                <enum>Qt::TextFormat::PlainText</enum>
                </property>
               </widget>
              </item>
@@ -2033,7 +2045,7 @@
                <item>
                 <spacer name="verticalSpacer_8">
                  <property name="orientation">
-                  <enum>Qt::Vertical</enum>
+                  <enum>Qt::Orientation::Vertical</enum>
                  </property>
                  <property name="sizeHint" stdset="0">
                   <size>
@@ -2123,7 +2135,7 @@
                <item>
                 <spacer name="verticalSpacer_4">
                  <property name="orientation">
-                  <enum>Qt::Vertical</enum>
+                  <enum>Qt::Orientation::Vertical</enum>
                  </property>
                  <property name="sizeHint" stdset="0">
                   <size>
@@ -2233,7 +2245,7 @@
                   <string>Reality Signal Processor Plugin</string>
                  </property>
                  <property name="alignment">
-                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                  <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
                  </property>
                  <property name="flat">
                   <bool>false</bool>
@@ -2261,7 +2273,7 @@
                <item>
                 <spacer name="verticalSpacer_10">
                  <property name="orientation">
-                  <enum>Qt::Vertical</enum>
+                  <enum>Qt::Orientation::Vertical</enum>
                  </property>
                  <property name="sizeHint" stdset="0">
                   <size>
@@ -2307,7 +2319,7 @@
                     <string>Make sure to use a LLE RSP plugin (i.e paraLLEl RSP) when using a LLE Video plugin (i.e paraLLEl)</string>
                    </property>
                    <property name="textFormat">
-                    <enum>Qt::PlainText</enum>
+                    <enum>Qt::TextFormat::PlainText</enum>
                    </property>
                    <property name="wordWrap">
                     <bool>true</bool>
@@ -2356,7 +2368,7 @@
                 <string>Changes will be applied on next emulation run</string>
                </property>
                <property name="textFormat">
-                <enum>Qt::PlainText</enum>
+                <enum>Qt::TextFormat::PlainText</enum>
                </property>
               </widget>
              </item>
@@ -2432,7 +2444,7 @@
               <string>Reality Signal Processor Plugin</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
              <property name="flat">
               <bool>false</bool>
@@ -2457,7 +2469,7 @@
            <item>
             <spacer name="verticalSpacer_11">
              <property name="orientation">
-              <enum>Qt::Vertical</enum>
+              <enum>Qt::Orientation::Vertical</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -2503,7 +2515,7 @@
                 <string>Make sure to use a LLE RSP plugin (i.e paraLLEl RSP) when using a LLE Video plugin (i.e paraLLEl)</string>
                </property>
                <property name="textFormat">
-                <enum>Qt::PlainText</enum>
+                <enum>Qt::TextFormat::PlainText</enum>
                </property>
                <property name="wordWrap">
                 <bool>true</bool>
@@ -2548,7 +2560,7 @@
                 <string>Changes will be applied on next emulation run</string>
                </property>
                <property name="textFormat">
-                <enum>Qt::PlainText</enum>
+                <enum>Qt::TextFormat::PlainText</enum>
                </property>
               </widget>
              </item>
@@ -2636,7 +2648,7 @@
               <bool>true</bool>
              </property>
              <property name="title">
-              <string>Override User Directories</string>
+              <string>Override &amp;User Directories</string>
              </property>
              <property name="checkable">
               <bool>true</bool>
@@ -2697,7 +2709,7 @@
            <item>
             <spacer name="verticalSpacer">
              <property name="orientation">
-              <enum>Qt::Vertical</enum>
+              <enum>Qt::Orientation::Vertical</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -2710,7 +2722,7 @@
            <item>
             <layout class="QHBoxLayout" name="emulationInfoLayout_13">
              <property name="sizeConstraint">
-              <enum>QLayout::SetDefaultConstraint</enum>
+              <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
              </property>
              <item>
               <widget class="QLabel" name="infoIconLabel_3">
@@ -2746,7 +2758,7 @@
                 <string>Changes will be applied on next application run</string>
                </property>
                <property name="textFormat">
-                <enum>Qt::PlainText</enum>
+                <enum>Qt::TextFormat::PlainText</enum>
                </property>
               </widget>
              </item>
@@ -2856,7 +2868,7 @@
            <item>
             <spacer name="verticalSpacer_2">
              <property name="orientation">
-              <enum>Qt::Vertical</enum>
+              <enum>Qt::Orientation::Vertical</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -2902,7 +2914,7 @@
                 <string>Changes will be applied on next emulation run</string>
                </property>
                <property name="textFormat">
-                <enum>Qt::PlainText</enum>
+                <enum>Qt::TextFormat::PlainText</enum>
                </property>
               </widget>
              </item>
@@ -2917,10 +2929,10 @@
      <item>
       <widget class="QDialogButtonBox" name="buttonBox">
        <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <enum>Qt::Orientation::Horizontal</enum>
        </property>
        <property name="standardButtons">
-        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::RestoreDefaults</set>
+        <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok|QDialogButtonBox::StandardButton::RestoreDefaults</set>
        </property>
       </widget>
      </item>

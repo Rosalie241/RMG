@@ -14,6 +14,7 @@
 #include "UserInterface/Widget/KeybindButton.hpp"
 
 #include <QFileDialog>
+#include <QColorDialog>
 #include <QMessageBox>
 #include <QDirIterator>
 #include <QLabel>
@@ -401,8 +402,20 @@ void SettingsDialog::loadInterfaceOSDSettings(void)
     this->osdLocationComboBox->setCurrentIndex(CoreSettingsGetIntValue(SettingsID::GUI_OnScreenDisplayLocation));
     this->osdVerticalPaddingSpinBox->setValue(CoreSettingsGetIntValue(SettingsID::GUI_OnScreenDisplayPaddingY));
     this->osdHorizontalPaddingSpinBox->setValue(CoreSettingsGetIntValue(SettingsID::GUI_OnScreenDisplayPaddingX));
-    this->osdOpacitySpinBox->setValue(CoreSettingsGetFloatValue(SettingsID::GUI_OnScreenDisplayOpacity));
     this->osdDurationSpinBox->setValue(CoreSettingsGetIntValue(SettingsID::GUI_OnScreenDisplayDuration));
+
+    std::vector<int> backgroundColor = CoreSettingsGetIntListValue(SettingsID::GUI_OnScreenDisplayBackgroundColor);
+    std::vector<int> textColor = CoreSettingsGetIntListValue(SettingsID::GUI_OnScreenDisplayTextColor);
+    if (backgroundColor.size() == 4)
+    {
+        this->currentBackgroundColor = QColor(backgroundColor.at(0), backgroundColor.at(1), backgroundColor.at(2), backgroundColor.at(3));
+        this->chooseColor(this->changeBackgroundColorButton, &this->currentBackgroundColor, true);
+    }
+    if (textColor.size() == 4)
+    {
+        this->currentTextColor = QColor(textColor.at(0), textColor.at(1), textColor.at(2), textColor.at(3));
+        this->chooseColor(this->changeTextColorButton, &this->currentTextColor, true);
+    }
 }
 
 void SettingsDialog::loadInterfaceMiscSettings(void)
@@ -562,8 +575,20 @@ void SettingsDialog::loadDefaultInterfaceOSDSettings(void)
     this->osdLocationComboBox->setCurrentIndex(CoreSettingsGetDefaultIntValue(SettingsID::GUI_OnScreenDisplayLocation));
     this->osdVerticalPaddingSpinBox->setValue(CoreSettingsGetDefaultIntValue(SettingsID::GUI_OnScreenDisplayPaddingY));
     this->osdHorizontalPaddingSpinBox->setValue(CoreSettingsGetDefaultIntValue(SettingsID::GUI_OnScreenDisplayPaddingX));
-    this->osdOpacitySpinBox->setValue(CoreSettingsGetDefaultFloatValue(SettingsID::GUI_OnScreenDisplayOpacity));
     this->osdDurationSpinBox->setValue(CoreSettingsGetDefaultIntValue(SettingsID::GUI_OnScreenDisplayDuration));
+
+    std::vector<int> backgroundColor = CoreSettingsGetDefaultIntListValue(SettingsID::GUI_OnScreenDisplayBackgroundColor);
+    std::vector<int> textColor = CoreSettingsGetDefaultIntListValue(SettingsID::GUI_OnScreenDisplayTextColor);
+    if (backgroundColor.size() == 4)
+    {
+        this->currentBackgroundColor = QColor(backgroundColor.at(0), backgroundColor.at(1), backgroundColor.at(2), backgroundColor.at(3));
+        this->chooseColor(this->changeBackgroundColorButton, &this->currentBackgroundColor, true);
+    }
+    if (textColor.size() == 4)
+    {
+        this->currentTextColor = QColor(textColor.at(0), textColor.at(1), textColor.at(2), textColor.at(3));
+        this->chooseColor(this->changeTextColorButton, &this->currentTextColor, true);
+    }
 }
 
 void SettingsDialog::loadDefaultInterfaceMiscSettings(void)
@@ -770,8 +795,17 @@ void SettingsDialog::saveInterfaceOSDSettings(void)
     CoreSettingsSetValue(SettingsID::GUI_OnScreenDisplayLocation, this->osdLocationComboBox->currentIndex());
     CoreSettingsSetValue(SettingsID::GUI_OnScreenDisplayPaddingY, this->osdVerticalPaddingSpinBox->value());
     CoreSettingsSetValue(SettingsID::GUI_OnScreenDisplayPaddingX, this->osdHorizontalPaddingSpinBox->value());
-    CoreSettingsSetValue(SettingsID::GUI_OnScreenDisplayOpacity, (float)this->osdOpacitySpinBox->value());
     CoreSettingsSetValue(SettingsID::GUI_OnScreenDisplayDuration, this->osdDurationSpinBox->value());
+    CoreSettingsSetValue(SettingsID::GUI_OnScreenDisplayBackgroundColor, std::vector<int>({ this->currentBackgroundColor.red(),
+                                                                                            this->currentBackgroundColor.green(),
+                                                                                            this->currentBackgroundColor.blue(),
+                                                                                            this->currentBackgroundColor.alpha()
+                                                                                           }));
+    CoreSettingsSetValue(SettingsID::GUI_OnScreenDisplayTextColor, std::vector<int>({ this->currentTextColor.red(),
+                                                                                      this->currentTextColor.green(),
+                                                                                      this->currentTextColor.blue(),
+                                                                                      this->currentTextColor.alpha()
+                                                                                    }));
 }
 
 void SettingsDialog::saveInterfaceMiscSettings(void)
@@ -1053,6 +1087,28 @@ void SettingsDialog::chooseIPLRom(QLineEdit *lineEdit)
     lineEdit->setText(QDir::toNativeSeparators(file));
 }
 
+void SettingsDialog::chooseColor(QPushButton *pushButton, QColor *initialColor, bool skipChoice)
+{
+    QColor color = QColor::Invalid;
+
+    if (skipChoice)
+    {
+        color = *initialColor;
+    }
+    else
+    {
+        color = QColorDialog::getColor(*initialColor, this, "", QColorDialog::ColorDialogOption::ShowAlphaChannel);
+    }
+
+    if (!color.isValid())
+    {
+        return;
+    }
+
+    pushButton->setStyleSheet("background-color: " + color.name());
+    *initialColor = color;
+}
+
 bool SettingsDialog::applyPluginSettings(void)
 {
     // attempt to apply plugin settings when emulation
@@ -1180,6 +1236,16 @@ void SettingsDialog::on_changeAmericanIPLRomPathButton_clicked(void)
 void SettingsDialog::on_changeDevelopmentIPLRomPathButton_clicked(void)
 {
     this->chooseIPLRom(this->developmentIPLRomLineEdit);
+}
+
+void SettingsDialog::on_changeBackgroundColorButton_clicked(void)
+{
+    this->chooseColor(this->changeBackgroundColorButton, &this->currentBackgroundColor);
+}
+
+void SettingsDialog::on_changeTextColorButton_clicked(void)
+{
+    this->chooseColor(this->changeTextColorButton, &this->currentTextColor);
 }
 
 void SettingsDialog::on_KeybindButton_KeybindingChanged(KeybindButton* button)

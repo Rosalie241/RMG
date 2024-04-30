@@ -19,6 +19,7 @@
 #include <QTreeWidget>
 #include <QWidget>
 #include <QMutex>
+#include <QColor>
 
 #include <RMG-Core/Core.hpp>
 
@@ -55,6 +56,9 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     int             keybindButtonTimerId  = -1;
     int             keybindButtonTimeLeft = 5;
     KeybindButton*  currentKeybindButton  = nullptr;
+
+    QColor currentBackgroundColor;
+    QColor currentTextColor;
 
     std::vector<CorePlugin> pluginList;
 
@@ -118,6 +122,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
 
     void chooseDirectory(QLineEdit *);
     void chooseIPLRom(QLineEdit *);
+    void chooseColor(QPushButton *, QColor *, bool skipChoice = false);
 
     bool applyPluginSettings(void);
 
@@ -137,6 +142,9 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void on_changeJapaneseIPLRomPathButton_clicked(void);
     void on_changeAmericanIPLRomPathButton_clicked(void);
     void on_changeDevelopmentIPLRomPathButton_clicked(void);
+
+    void on_changeBackgroundColorButton_clicked(void);
+    void on_changeTextColorButton_clicked(void);
 
     void on_KeybindButton_KeybindingChanged(KeybindButton* button);
     void on_KeybindButton_Clicked(KeybindButton* button);
