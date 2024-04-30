@@ -117,6 +117,7 @@ void MainDialog::openInputDevice(QString deviceName, int deviceNum)
         this->currentDeviceName = "";
         this->currentDeviceNum  = deviceNum;
         controllerWidget->SetCurrentJoystickID(this->currentDeviceNum);
+        controllerWidget->SetCurrentJoystick(nullptr, nullptr);
         return;
     }
 
@@ -133,6 +134,7 @@ void MainDialog::openInputDevice(QString deviceName, int deviceNum)
             this->currentDeviceName = "";
             this->currentDeviceNum  = (int)InputDeviceType::Keyboard;
             controllerWidget->SetCurrentJoystickID(this->currentDeviceNum);
+            controllerWidget->SetCurrentJoystick(nullptr, nullptr);
             return;
         }
     }
@@ -152,6 +154,7 @@ void MainDialog::openInputDevice(QString deviceName, int deviceNum)
     joystickId = SDL_JoystickGetDeviceInstanceID(deviceNum);
     controllerWidget->SetCurrentJoystickID(joystickId);
     controllerWidget->SetIsCurrentJoystickGameController(currentController != nullptr);
+    controllerWidget->SetCurrentJoystick(this->currentJoystick, this->currentController);
 }
 
 void MainDialog::closeInputDevice()
