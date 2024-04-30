@@ -12,7 +12,7 @@ git clone https://github.com/project64/project64 "$tmp_dir"
 cd "$tmp_dir"
 
 # latest commit of cheats change
-git checkout e60f7ec6489e22c8b1988931f8ce3ca46edae91c -f
+git checkout 1bde8589e95478a7e82bfa67e84c3face0802e1b -f
 
 for file in "$source_cheat_dir"/*.cht
 do
