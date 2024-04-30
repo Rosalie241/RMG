@@ -174,6 +174,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->contextMenu = new QMenu(this);
     this->action_PlayGame = new QAction(this);
     this->action_PlayGameWith = new QAction(this);
+    this->menu_PlayGameWithSlot = new QMenu(this);
     this->action_RefreshRomList = new QAction(this);
     this->action_OpenRomDirectory = new QAction(this);
     this->action_ChangeRomDirectory = new QAction(this);
@@ -192,6 +193,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     // configure context menu contents
     this->action_PlayGame->setText("Play Game");
     this->action_PlayGameWith->setText("Play Game with Disk");
+    this->menu_PlayGameWithSlot->menuAction()->setText("Play Game with State");
     this->action_RefreshRomList->setText("Refresh ROM List");
     this->action_OpenRomDirectory->setText("Open ROM Directory");
     this->action_ChangeRomDirectory->setText("Change ROM Directory...");
@@ -219,6 +221,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     // configure context menu
     this->contextMenu->addAction(this->action_PlayGame);
     this->contextMenu->addAction(this->action_PlayGameWith);
+    this->contextMenu->addMenu(this->menu_PlayGameWithSlot);
     this->contextMenu->addSeparator();
     this->contextMenu->addAction(this->action_RefreshRomList);
     this->contextMenu->addSeparator();
@@ -600,6 +603,7 @@ void RomBrowserWidget::customContextMenuRequested(QPoint position)
 
     this->action_PlayGame->setEnabled(hasSelection);
     this->action_PlayGameWith->setEnabled(hasSelection);
+    this->menu_PlayGameWithSlot->menuAction()->setEnabled(hasSelection);
     this->action_RomInformation->setEnabled(hasSelection);
     this->action_EditGameSettings->setEnabled(hasSelection);
     this->action_EditGameInputSettings->setEnabled(hasSelection && CorePluginsHasROMConfig(CorePluginType::Input));
@@ -610,6 +614,11 @@ void RomBrowserWidget::customContextMenuRequested(QPoint position)
     this->action_SetCoverImage->setVisible(view == this->gridViewWidget);
     this->action_RemoveCoverImage->setEnabled(hasSelection && !data.coverFile.isEmpty());
     this->action_RemoveCoverImage->setVisible(view == this->gridViewWidget);
+
+    if (hasSelection)
+    {
+        this->generateStateMenu();
+    }
 
     if (hasSelection && data.type == CoreRomType::Disk)
     { // disk selected
@@ -656,6 +665,49 @@ void RomBrowserWidget::generateColumnsMenu(void)
             this->listViewWidget->horizontalHeader()->setSectionHidden(column, !checked);
         });
     }
+}
+
+void RomBrowserWidget::generateStateMenu(void)
+{
+    this->menu_PlayGameWithSlot->clear();
+
+    RomBrowserModelData data;
+
+    if (!this->getCurrentData(data))
+    {
+        return;
+    }
+
+    std::filesystem::path saveStatePath;
+    QString saveStateSlotText;
+
+    for (int i = 0; i < 10; i++)
+    {
+        if (!CoreGetSaveStatePath(data.header, data.settings, i, saveStatePath))
+        {
+            continue;
+        }
+
+        QFileInfo saveStateFileInfo(QString::fromStdWString(saveStatePath.wstring()));
+        if (!saveStatePath.empty() && saveStateFileInfo.exists())
+        {
+            saveStateSlotText = "Slot " + QString::number(i) + " - ";
+            saveStateSlotText += saveStateFileInfo.lastModified().toString("dd/MM/yyyy hh:mm");
+
+            QAction* slotAction = this->menu_PlayGameWithSlot->addAction(saveStateSlotText, QKeySequence());
+            connect(slotAction, &QAction::triggered, [=, this]()
+            {
+                QString slotText = slotAction->text().split(" ").at(1);
+                // sometimes the text can contain a '&'
+                // which will make the toInt() function return 0
+                // so strip it out
+                slotText.remove('&');
+                this->on_Action_PlayGameWithSlot(slotText.toInt());
+            });
+        }
+    }
+
+    this->menu_PlayGameWithSlot->setDisabled(this->menu_PlayGameWithSlot->isEmpty());
 }
 
 void RomBrowserWidget::on_listViewWidget_sortIndicatorChanged(int logicalIndex, Qt::SortOrder sortOrder)
@@ -889,6 +941,18 @@ void RomBrowserWidget::on_Action_PlayGameWith(void)
     }
 
     emit this->PlayGameWith(data.type, data.file);
+}
+
+void RomBrowserWidget::on_Action_PlayGameWithSlot(int slot)
+{
+    RomBrowserModelData data;
+
+    if (!this->getCurrentData(data))
+    {
+        return;
+    }
+
+    emit this->PlayGameWithSlot(data.file, slot);
 }
 
 void RomBrowserWidget::on_Action_RefreshRomList(void)
