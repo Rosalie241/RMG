@@ -118,6 +118,7 @@ void OptionsDialog::on_changeGameboySaveButton_clicked()
 
 void OptionsDialog::on_testRumbleButton_clicked()
 {
+#if SDL_VERSION_ATLEAST(2,0,18)
     if ((this->currentJoystick != nullptr   && SDL_JoystickHasRumble(this->currentJoystick) != SDL_TRUE) ||
         (this->currentController != nullptr && SDL_GameControllerHasRumble(this->currentController) != SDL_TRUE))
     {
@@ -129,6 +130,7 @@ void OptionsDialog::on_testRumbleButton_clicked()
         msgBox.exec();
         return;
     }
+#endif
 
     if (this->currentJoystick != nullptr)
     {
