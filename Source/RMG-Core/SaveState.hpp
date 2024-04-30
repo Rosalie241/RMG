@@ -10,6 +10,9 @@
 #ifndef CORE_SAVESTATE_HPP
 #define CORE_SAVESTATE_HPP
 
+#include "RomHeader.hpp"
+#include "RomSettings.hpp"
+
 #include <filesystem>
 
 // sets save state slot
@@ -27,7 +30,13 @@ bool CoreDecreaseSaveStateSlot(void);
 
 // retrieves the file path for
 // the save state in the given slot
+// for the currently opened ROM
 bool CoreGetSaveStatePath(int slot, std::filesystem::path& path);
+
+// retrieves the file path for
+// the save state in the given slot
+bool CoreGetSaveStatePath(CoreRomHeader header, CoreRomSettings settings, int slot, std::filesystem::path& path);
+
 
 // saves state
 bool CoreSaveState(void);

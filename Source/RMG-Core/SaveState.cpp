@@ -124,25 +124,14 @@ bool CoreDecreaseSaveStateSlot(void)
     return CoreSetSaveStateSlot(slot - 1);
 }
 
-bool CoreGetSaveStatePath(int slot, std::filesystem::path& path)
+bool CoreGetSaveStatePath(CoreRomHeader header, CoreRomSettings settings, int slot, std::filesystem::path& path)
 {
     // TODO: this should probably be an API function
     // in mupen64plus-core instead
-
     std::filesystem::path saveStatePath;
     std::filesystem::path oldSaveStatePath;
     std::string saveStateFileName;
     std::filesystem::path saveStateExtension;
-    CoreRomHeader romHeader;
-    CoreRomSettings romSettings;
-
-    // attempt to retrieve the current
-    // rom header and settings
-    if (!CoreGetCurrentRomHeader(romHeader) ||
-        !CoreGetCurrentRomSettings(romSettings))
-    {
-        return false;
-    }
 
     // retrieve save state directory
     saveStatePath = CoreGetSaveStateDirectory();
@@ -154,7 +143,7 @@ bool CoreGetSaveStatePath(int slot, std::filesystem::path& path)
 
     // construct old save state path
     oldSaveStatePath = saveStatePath;
-    oldSaveStatePath += romSettings.GoodName;
+    oldSaveStatePath += settings.GoodName;
     oldSaveStatePath += saveStateExtension;
 
     // use old filename if it exists
@@ -168,32 +157,32 @@ bool CoreGetSaveStatePath(int slot, std::filesystem::path& path)
     int format = CoreSettingsGetIntValue(SettingsID::Core_SaveFileNameFormat);
     if (format == 0)
     {
-        saveStatePath += romHeader.Name;
+        saveStatePath += header.Name;
         saveStatePath += saveStateExtension;
     }
     else
     {
-        if (romSettings.GoodName.find("(unknown rom)") == std::string::npos)
+        if (settings.GoodName.find("(unknown rom)") == std::string::npos)
         {
-            if (romSettings.GoodName.size() < 32)
+            if (settings.GoodName.size() < 32)
             {
-                saveStatePath += romSettings.GoodName;
+                saveStatePath += settings.GoodName;
             }
             else
             {
-                saveStatePath += romSettings.GoodName.substr(0, 32);
+                saveStatePath += settings.GoodName.substr(0, 32);
             }
         }
-        else if (!romHeader.Name.empty())
+        else if (!header.Name.empty())
         {
-            saveStatePath += romHeader.Name;
+            saveStatePath += header.Name;
         }
         else
         {
             saveStatePath += "unknown";
         }
         saveStatePath += "-";
-        saveStatePath += romSettings.MD5.substr(0, 8);
+        saveStatePath += settings.MD5.substr(0, 8);
         saveStatePath += saveStateExtension;
     }
 
@@ -208,6 +197,22 @@ bool CoreGetSaveStatePath(int slot, std::filesystem::path& path)
 
     path = saveStatePath;
     return true;
+}
+
+bool CoreGetSaveStatePath(int slot, std::filesystem::path& path)
+{
+    CoreRomHeader romHeader;
+    CoreRomSettings romSettings;
+
+    // attempt to retrieve the current
+    // rom header and settings
+    if (!CoreGetCurrentRomHeader(romHeader) ||
+        !CoreGetCurrentRomSettings(romSettings))
+    {
+        return false;
+    }
+
+    return CoreGetSaveStatePath(romHeader, romSettings, slot, path);
 }
 
 bool CoreSaveState(void)
