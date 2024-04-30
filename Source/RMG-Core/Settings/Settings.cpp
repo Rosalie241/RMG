@@ -117,8 +117,11 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::GUI_OnScreenDisplayPaddingY:
         setting = {SETTING_SECTION_GUI, "OnScreenDisplayPaddingY", 20};
         break;
-    case SettingsID::GUI_OnScreenDisplayOpacity:
-        setting = {SETTING_SECTION_GUI, "OnScreenDisplayOpacity", 0.5f};
+    case SettingsID::GUI_OnScreenDisplayBackgroundColor:
+        setting = {SETTING_SECTION_GUI, "OnScreenDisplayBackgroundColor", std::string("0;0;0;127")};
+        break;
+    case SettingsID::GUI_OnScreenDisplayTextColor:
+        setting = {SETTING_SECTION_GUI, "OnScreenDisplayTextColor", std::string("255;255;255;255")};
         break;
     case SettingsID::GUI_OnScreenDisplayDuration:
         setting = {SETTING_SECTION_GUI, "OnScreenDisplayDuration", 3};
