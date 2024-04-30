@@ -55,6 +55,8 @@ private:
     void hideEmulationInfoText(void);
 
 private slots:
+    void on_controllerPakComboBox_currentIndexChanged(int index);
+
     void on_changeGameboyRomButton_clicked();
     void on_changeGameboySaveButton_clicked();
     void on_testRumbleButton_clicked();

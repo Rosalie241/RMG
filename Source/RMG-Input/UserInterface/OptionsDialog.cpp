@@ -39,6 +39,7 @@ OptionsDialog::OptionsDialog(QWidget* parent, OptionsDialogSettings settings,
     this->currentJoystick   = joystick;
     this->currentController = controller;
 
+    this->testRumbleButton->setVisible(settings.ControllerPak == 1);
     this->testRumbleButton->setEnabled(this->currentJoystick != nullptr || this->currentController != nullptr);
 }
 
@@ -86,6 +87,11 @@ void OptionsDialog::accept()
     this->settings.FilterEventsForAxis = this->filterEventsForAxisCheckBox->isChecked();
 
     QDialog::accept();
+}
+
+void OptionsDialog::on_controllerPakComboBox_currentIndexChanged(int index)
+{
+    this->testRumbleButton->setVisible(index == 1);
 }
 
 void OptionsDialog::on_changeGameboyRomButton_clicked()
