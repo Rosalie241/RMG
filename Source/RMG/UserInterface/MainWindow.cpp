@@ -109,7 +109,7 @@ bool MainWindow::Init(QApplication* app, bool showUI, bool launchROM)
     return true;
 }
 
-void MainWindow::OpenROM(QString file, QString disk, bool fullscreen, bool quitAfterEmulation)
+void MainWindow::OpenROM(QString file, QString disk, bool fullscreen, bool quitAfterEmulation, int stateSlot)
 {
     this->ui_LaunchInFullscreen = fullscreen;
     this->ui_QuitAfterEmulation = quitAfterEmulation;
@@ -120,7 +120,7 @@ void MainWindow::OpenROM(QString file, QString disk, bool fullscreen, bool quitA
     // state, then the transition will be smoother
     this->updateUI(true, false);
 
-    this->launchEmulationThread(file, disk, true);
+    this->launchEmulationThread(file, disk, true, stateSlot);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

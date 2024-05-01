@@ -50,7 +50,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     ~MainWindow(void);
 
     bool Init(QApplication* app, bool showUI, bool launchROM);
-    void OpenROM(QString file, QString disk, bool fullscreen, bool quitAfterEmulation);
+    void OpenROM(QString file, QString disk, bool fullscreen, bool quitAfterEmulation, int stateSlot);
 
   private:
     Thread::EmulationThread *emulationThread = nullptr;
