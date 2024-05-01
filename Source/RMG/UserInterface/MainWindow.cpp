@@ -995,8 +995,12 @@ void MainWindow::configureActions(void)
         {
             if (checked)
             {
-                int slot = slotAction->text().split(" ").at(1).toInt();
-                this->on_Action_System_CurrentSaveState(slot);
+                QString slotText = slotAction->text().split(" ").at(1);
+                // sometimes the text can contain a '&'
+                // which will make the toInt() function return 0
+                // so strip it out
+                slotText.remove('&');
+                this->on_Action_System_CurrentSaveState(slotText.toInt());
             }
         });
     }
