@@ -232,7 +232,8 @@ int main(int argc, char **argv)
     {
         bool parsedNumber = false;
         int saveStateSlot = parser.value(loadStateSlot).toInt(&parsedNumber);
-        if (parser.value(loadStateSlot).isEmpty() || !parsedNumber)
+        if (parser.value(loadStateSlot).isEmpty() || !parsedNumber ||
+            saveStateSlot < 0 || saveStateSlot > 9)
         {
             saveStateSlot = -1;
         }
