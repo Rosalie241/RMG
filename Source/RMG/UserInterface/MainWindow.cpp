@@ -2467,8 +2467,8 @@ void MainWindow::on_Core_StateCallback(CoreStateCallbackType type, int value)
             if (this->ui_LoadSaveStateSlotTimerId != -1 && value == 0)
             {
                 this->ui_LoadSaveStateSlotCounter++;
-                if (this->ui_LoadSaveStateSlotCounter >= 10)
-                { // give up after 10 attempts
+                if (this->ui_LoadSaveStateSlotCounter >= 5)
+                { // give up after 5 attempts
                     this->showErrorMessage("Failed to load save state");
                     this->ui_LoadSaveStateSlotCounter = 0;
                     this->ui_LoadSaveStateSlotTimerId = -1;
