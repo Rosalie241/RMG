@@ -33,6 +33,22 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.5.9" date="2024-05-01" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix parallel-rsp regression introduced in v0.5.8</li>
+          <li>Fix corruption when using GLideN64 and resizing the window</li>
+          <li>Fix changing save state slot always selecting slot 0 on some system configurations</li>
+          <li>Fix changing speed factor always using 0% on some system configurations</li>
+          <li>Add color settings for the OSD in the settings dialog</li>
+          <li>Add 'Test Rumble' button to the options dialog in RMG-Input</li>
+          <li>Add 'Play Game with State' to the context menu of the ROM browser</li>
+          <li>Add '--load-state-slot' commandline option</li>
+          <li>Update cheats and GLideN64</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.5.8" date="2024-03-25" type="stable">
       <description>
         <p>Changes:</p>
