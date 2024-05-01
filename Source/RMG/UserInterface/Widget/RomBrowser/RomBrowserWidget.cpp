@@ -694,7 +694,7 @@ void RomBrowserWidget::generateStateMenu(void)
             saveStateSlotText = "Slot " + QString::number(i) + " - ";
             saveStateSlotText += saveStateFileInfo.lastModified().toString("dd/MM/yyyy hh:mm");
 
-            QAction* slotAction = this->menu_PlayGameWithSlot->addAction(saveStateSlotText, QKeySequence());
+            QAction* slotAction = this->menu_PlayGameWithSlot->addAction(saveStateSlotText);
             connect(slotAction, &QAction::triggered, [=, this]()
             {
                 QString slotText = slotAction->text().split(" ").at(1);
