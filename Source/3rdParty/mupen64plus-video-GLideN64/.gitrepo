@@ -6,7 +6,7 @@
 [subrepo]
 	remote = git@github.com:/gonetz/GLideN64.git
 	branch = master
-	commit = ded38f88aafb41bd3db574f2ec9f101b9bdba355
-	parent = 363131c1753ababf6d7745be6b850fe0e767e008
+	commit = 576ad87594e0f8f1908302a49b8a4d812facf3d4
+	parent = 4c000101e397911541532a43fce07ff879d1c174
 	method = merge
 	cmdver = 0.4.6

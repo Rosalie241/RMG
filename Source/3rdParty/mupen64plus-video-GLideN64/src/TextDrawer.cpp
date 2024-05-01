@@ -111,16 +111,16 @@ struct Atlas {
 		m_pTexture->mirrorT = 0;
 		m_pTexture->width = w;
 		m_pTexture->height = h;
-		m_pTexture->textureBytes = m_pTexture->width * m_pTexture->height * fbTexFormats.noiseFormatBytes;
+		m_pTexture->textureBytes = m_pTexture->width * m_pTexture->height * fbTexFormats.fontFormatBytes;
 
 		Context::InitTextureParams initParams;
 		initParams.handle = m_pTexture->name;
 		initParams.textureUnitIndex = textureIndices::Tex[0];
 		initParams.width = w;
 		initParams.height = h;
-		initParams.internalFormat = fbTexFormats.noiseInternalFormat;
-		initParams.format = fbTexFormats.noiseFormat;
-		initParams.dataType = fbTexFormats.noiseType;
+		initParams.internalFormat = fbTexFormats.fontInternalFormat;
+		initParams.format = fbTexFormats.fontFormat;
+		initParams.dataType = fbTexFormats.fontType;
 		gfxContext.init2DTexture(initParams);
 
 		Context::TexParameters setParams;

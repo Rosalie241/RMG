@@ -71,7 +71,6 @@ namespace graphics {
 
 	namespace textureIndices {
 		extern TextureUnitParam Tex[2];
-		extern TextureUnitParam NoiseTex;
 		extern TextureUnitParam DepthTex;
 		extern TextureUnitParam ZLUTTex;
 		extern TextureUnitParam PaletteTex;

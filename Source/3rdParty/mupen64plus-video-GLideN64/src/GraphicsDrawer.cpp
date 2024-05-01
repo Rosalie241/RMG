@@ -11,7 +11,6 @@
 #include "Performance.h"
 #include "TextureFilterHandler.h"
 #include "PostProcessor.h"
-#include "NoiseTexture.h"
 #include "ZlutTexture.h"
 #include "PaletteTexture.h"
 #include "TextDrawer.h"
@@ -1959,7 +1958,6 @@ void GraphicsDrawer::_initData()
 	TFH.init();
 	PostProcessor::get().init();
 	g_zlutTexture.init();
-	g_noiseTexture.init();
 	g_paletteTexture.init();
 	perf.reset();
 	FBInfo::fbInfo.reset();
@@ -1983,7 +1981,6 @@ void GraphicsDrawer::_destroyData()
 	m_texrectDrawer.destroy();
 	g_paletteTexture.destroy();
 	g_zlutTexture.destroy();
-	g_noiseTexture.destroy();
 	PostProcessor::get().destroy();
 	if (TFH.optionsChanged())
 		TFH.shutdown();

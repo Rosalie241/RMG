@@ -59,7 +59,6 @@ set(GLideN64_SOURCES
   gSP.cpp
   Log.cpp
   N64.cpp
-  NoiseTexture.cpp
   PaletteTexture.cpp
   Performance.cpp
   PostProcessor.cpp
@@ -192,7 +191,7 @@ if( NOT CMAKE_BUILD_TYPE)
         set( CMAKE_BUILD_TYPE Release)
 endif( NOT CMAKE_BUILD_TYPE)
 
-if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "MinSizeRel" OR 
+if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "MinSizeRel" OR
    CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
         set(GLIDEN64_BUILD_TYPE Release)
 elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")

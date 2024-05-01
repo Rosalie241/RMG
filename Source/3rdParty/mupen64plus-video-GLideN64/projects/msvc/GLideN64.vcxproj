@@ -369,7 +369,6 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
       <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_wtl'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\N64.cpp" />
-    <ClCompile Include="..\..\src\NoiseTexture.cpp" />
     <ClCompile Include="..\..\src\PaletteTexture.cpp" />
     <ClCompile Include="..\..\src\Performance.cpp" />
     <ClCompile Include="..\..\src\PostProcessor.cpp" />
@@ -520,7 +519,6 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
       <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_wtl'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\src\N64.h" />
-    <ClInclude Include="..\..\src\NoiseTexture.h" />
     <ClInclude Include="..\..\src\PaletteTexture.h" />
     <ClInclude Include="..\..\src\Performance.h" />
     <ClInclude Include="..\..\src\Platform.h" />
