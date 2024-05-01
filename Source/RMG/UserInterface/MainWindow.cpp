@@ -973,8 +973,12 @@ void MainWindow::configureActions(void)
         {
             if (checked)
             {
-                int factor = speedAction->text().split("%").first().toInt();
-                this->on_Action_System_SpeedFactor(factor);
+                QString factorText = speedAction->text().split("%").first();
+                // sometimes the text can contain a '&'
+                // which will make the toInt() function return 0
+                // so strip it out
+                factorText.remove('&');
+                this->on_Action_System_SpeedFactor(factorText.toInt());
             }
         });
     }
