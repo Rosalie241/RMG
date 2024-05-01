@@ -1208,6 +1208,14 @@ void MainWindow::timerEvent(QTimerEvent *event)
         if (!CoreSetSaveStateSlot(this->ui_LoadSaveStateSlot) ||
             !CoreLoadSaveState())
         {
+            this->ui_LoadSaveStateSlotCounter++;
+            if (this->ui_LoadSaveStateSlotCounter >= 5)
+            { // give up after 5 attempts
+                this->killTimer(this->ui_LoadSaveStateSlotTimerId);
+                this->ui_LoadSaveStateSlotCounter = 0;
+                this->ui_LoadSaveStateSlotTimerId = -1;
+                this->ui_LoadSaveStateSlot        = -1;
+            }
             return;
         }
 
