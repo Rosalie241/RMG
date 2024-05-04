@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.9)
 
 option(BUILD_MUPEN64PLUS "Enables build of mupen64plus version" ON)
 option(BUILD_PROJECT64   "Enables build of project64 version" WIN32)

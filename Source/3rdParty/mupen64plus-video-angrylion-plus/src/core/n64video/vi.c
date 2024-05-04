@@ -650,6 +650,8 @@ void n64video_update_screen(struct n64video_frame_buffer* fb)
 
     if (ctrl.aa_mode == VI_AA_REPLICATE && (ctrl.type & 2) && h_start < (ctrl.type == VI_TYPE_RGBA5551 ? 0x80 : 0x40) && x_add <= 0x200) {
         vinnglitch = ctrl.type == VI_TYPE_RGBA5551 ? 0x40 : 0x20;
+    } else {
+        vinnglitch = 0;
     }
 
     // cancel if the frame buffer contains no valid address
