@@ -66,6 +66,13 @@ void F3DDKR_DMA_Tri(u32 w0, u32 w1)
 	gSP.vertexi = 0;
 }
 
+void F3DJFG_DMA_Tri(u32 w0, u32 w1)
+{
+	gSP.texture.on = _SHIFTR(w0, 16, 4);
+	gSPDMATriangles(w1, _SHIFTR(w0, 20, 4) + 1);
+	gSP.vertexi = 0;
+}
+
 void F3DDKR_DMA_DList( u32 w0, u32 w1 )
 {
 	gSPDlistCount(_SHIFTR(w0, 16, 8), w1);
@@ -136,4 +143,5 @@ void F3DJFG_Init()
 {
 	F3DDKR_Init();
 	GBI_SetGBI(G_DMA_VTX, F3DDKR_DMA_VTX, F3DJFG_DMA_Vtx);
+	GBI_SetGBI(G_DMA_TRI, F3DDKR_DMA_TRI, F3DJFG_DMA_Tri);
 }
