@@ -58,6 +58,7 @@ mkdir -p "$build_dir"
 cmake -S "$src_dir" -B "$build_dir" -DCMAKE_BUILD_TYPE="Release" -DPORTABLE_INSTALL="OFF" -DCMAKE_INSTALL_PREFIX="/usr" -G "Ninja"
 cmake --build "$build_dir"
 cmake --install "$build_dir" --prefix="/usr"
+unset build_dir src_dir
 ```
 
 #### Windows
