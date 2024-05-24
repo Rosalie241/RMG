@@ -253,7 +253,7 @@ void MainWindow::configureUI(QApplication* app, bool showUI)
         this->addToolBar(toolbarArea, this->toolBar);
     }
 
-    this->ui_TimerTimeout = CoreSettingsGetIntValue(SettingsID::GUI_StatusbarMessageDuration);
+    this->ui_StatusBarTimerTimeout = CoreSettingsGetIntValue(SettingsID::GUI_StatusbarMessageDuration);
 
     this->ui_Widgets->addWidget(this->ui_Widget_RomBrowser);
     this->ui_Widgets->addWidget(this->ui_Widget_OpenGL->GetWidget());
@@ -463,7 +463,7 @@ void MainWindow::updateUI(bool inEmulation, bool isPaused)
     }
 
     // update timer timeout
-    this->ui_TimerTimeout = CoreSettingsGetIntValue(SettingsID::GUI_StatusbarMessageDuration);
+    this->ui_StatusBarTimerTimeout = CoreSettingsGetIntValue(SettingsID::GUI_StatusbarMessageDuration);
 }
 
 void MainWindow::storeGeometry(void)
@@ -1125,7 +1125,7 @@ void MainWindow::timerEvent(QTimerEvent *event)
 {
     int timerId = event->timerId();
 
-    if (timerId == this->ui_TimerId)
+    if (timerId == this->ui_ResetStatusBarTimerId)
     {
         this->ui_StatusBar_Label->clear();
     }
@@ -2405,11 +2405,11 @@ void MainWindow::on_Core_DebugCallback(QList<CoreCallbackMessage> messages)
     this->ui_StatusBar_Label->setText(statusbarMessage.Message);
 
     // reset label deletion timer
-    if (this->ui_TimerId != 0)
+    if (this->ui_ResetStatusBarTimerId != 0)
     {
-        this->killTimer(this->ui_TimerId);
+        this->killTimer(this->ui_ResetStatusBarTimerId);
     }
-    this->ui_TimerId = this->startTimer(this->ui_TimerTimeout * 1000);
+    this->ui_ResetStatusBarTimerId = this->startTimer(this->ui_StatusBarTimerTimeout * 1000);
 }
 
 void MainWindow::on_Core_StateCallback(CoreStateCallbackType type, int value)

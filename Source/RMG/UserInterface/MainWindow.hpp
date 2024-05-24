@@ -105,8 +105,8 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 
     bool ui_SilentUpdateCheck = false;
 
-    int ui_TimerId      = 0;
-    int ui_TimerTimeout = 0;
+    int ui_ResetStatusBarTimerId = 0;
+    int ui_StatusBarTimerTimeout = 0;
 
     int ui_FullscreenTimerId = 0;
     int ui_GamesharkButtonTimerId = 0;
