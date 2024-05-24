@@ -28,7 +28,6 @@ static std::string l_Message;
 static int         l_MessagePosition = 1;
 static float       l_MessagePaddingX = 20.0f;
 static float       l_MessagePaddingY = 20.0f;
-static float       l_MessageOpacity  = 1.0f;
 static float       l_BackgroundRed   = 1.0f;
 static float       l_BackgroundGreen = 1.0f;
 static float       l_BackgroundBlue  = 1.0f;
