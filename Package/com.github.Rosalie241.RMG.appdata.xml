@@ -33,6 +33,18 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.6.0" date="2024-05-24" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix 7z not being listed in the ROM browser when there are no ROMs found</li>
+          <li>Fix crash in GLideN64 with certain texture packs</li>
+          <li>Fix GLideN64 being able to create a large log file</li>
+          <li>Fix possible freezing by rate limiting callback messages</li>
+          <li>Update mupen64plus-core, angrylion-rdp-plus, GLideN64 and SDL_GameControllerDB</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.5.9" date="2024-05-01" type="stable">
       <description>
         <p>Changes:</p>
