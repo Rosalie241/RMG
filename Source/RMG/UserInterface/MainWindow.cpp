@@ -2355,10 +2355,10 @@ void MainWindow::on_VidExt_ToggleFS(bool fullscreen)
     }
 }
 
-void MainWindow::on_Core_DebugCallback(CoreDebugMessageType type, QString context, QString message)
+void MainWindow::on_Core_DebugCallback(QList<CoreCallbackMessage> messages)
 {
-    // pass callback to the log window
-    this->logDialog.AddLogLine(type, context, message);
+    // pass callback messages to the log window
+    this->logDialog.AddMessages(messages);
 
     // only display in statusbar when emulation is running
     if (!this->emulationThread->isRunning())
@@ -2366,32 +2366,34 @@ void MainWindow::on_Core_DebugCallback(CoreDebugMessageType type, QString contex
         return;
     }
 
-    if (!context.startsWith("[CORE]"))
+    const CoreCallbackMessage& statusbarMessage = messages.last();
+
+    if (!statusbarMessage.Context.startsWith("[CORE]"))
     {
         return;
     }
 
     // drop verbose messages
-    if (type == CoreDebugMessageType::Verbose)
+    if (statusbarMessage.Type == CoreDebugMessageType::Verbose)
     {
         return;
     }
 
     // drop IS64 messages
-    if (message.startsWith("IS64:"))
+    if (statusbarMessage.Message.startsWith("IS64:"))
     {
         return;
     }
 
-    if (type == CoreDebugMessageType::Error)
+    if (statusbarMessage.Type == CoreDebugMessageType::Error)
     {
         // when we've reached 50 of the same error in the same
         // emulation run, we'll stop displaying it
-        if (this->ui_DebugCallbackErrors.count(message) < 50)
+        if (this->ui_DebugCallbackErrors.count(statusbarMessage.Message) < 50)
         {
-            this->showErrorMessage("Core Error", message, false);
+            this->showErrorMessage("Core Error", statusbarMessage.Message, false);
         }
-        this->ui_DebugCallbackErrors.append(message);
+        this->ui_DebugCallbackErrors.append(statusbarMessage.Message);
         return;
     }
 
@@ -2400,7 +2402,7 @@ void MainWindow::on_Core_DebugCallback(CoreDebugMessageType type, QString contex
         return;
     }
 
-    this->ui_StatusBar_Label->setText(message);
+    this->ui_StatusBar_Label->setText(statusbarMessage.Message);
 
     // reset label deletion timer
     if (this->ui_TimerId != 0)

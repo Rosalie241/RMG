@@ -9,6 +9,9 @@
  */
 #include "Callbacks.hpp"
 
+#include <QTimerEvent>
+#include <QMutex>
+
 #include <RMG-Core/Core.hpp>
 
 //
@@ -17,6 +20,9 @@
 
 static CoreCallbacks* l_CoreCallbacks = nullptr;
 static bool           l_showVerboseMessages = false;
+
+static QMutex                     l_CallbackMessagesMutex;
+static QList<CoreCallbackMessage> l_CallbackMessages;
 
 //
 // Exported Functions
@@ -37,21 +43,46 @@ bool CoreCallbacks::Init(void)
     // needed for Qt
     qRegisterMetaType<CoreDebugMessageType>("CoreDebugMessageType");
     qRegisterMetaType<CoreDebugMessageType>("CoreStateCallbackType");
+    qRegisterMetaType<CoreCallbackMessage>("CoreCallbackMessage");
 
     this->LoadSettings();
 
     l_CoreCallbacks = this;
-    return CoreSetupCallbacks(this->coreDebugCallback, this->coreStateCallback);
+    
+    if (!CoreSetupCallbacks(this->coreDebugCallback, this->coreStateCallback))
+    {
+        return false;
+    }
+
+    this->callbackTimerId = this->startTimer(100);
+    return true;
 }
 
 void CoreCallbacks::Stop(void)
 {
     l_CoreCallbacks = nullptr;
+
+    this->killTimer(this->callbackTimerId);
+    this->callbackTimerId = -1;
 }
 
 void CoreCallbacks::LoadSettings(void)
 {
     l_showVerboseMessages = CoreSettingsGetBoolValue(SettingsID::GUI_ShowVerboseLogMessages);
+}
+
+void CoreCallbacks::timerEvent(QTimerEvent *event)
+{
+    if (event->timerId() == this->callbackTimerId)
+    {
+        l_CallbackMessagesMutex.lock();
+        if (!l_CallbackMessages.isEmpty())
+        {
+            emit this->OnCoreDebugCallback(l_CallbackMessages);
+            l_CallbackMessages.clear();
+        }
+        l_CallbackMessagesMutex.unlock();
+    }
 }
 
 void CoreCallbacks::coreDebugCallback(CoreDebugMessageType type, std::string context, std::string message)
@@ -67,7 +98,9 @@ void CoreCallbacks::coreDebugCallback(CoreDebugMessageType type, std::string con
         return;
     }
 
-    emit l_CoreCallbacks->OnCoreDebugCallback(type, QString::fromStdString(context), QString::fromStdString(message));
+    l_CallbackMessagesMutex.lock();
+    l_CallbackMessages.append({type, QString::fromStdString(context), QString::fromStdString(message)});
+    l_CallbackMessagesMutex.unlock();
 }
 
 void CoreCallbacks::coreStateCallback(CoreStateCallbackType type, int value)

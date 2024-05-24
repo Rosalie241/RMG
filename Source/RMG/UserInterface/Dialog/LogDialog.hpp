@@ -10,6 +10,9 @@
 #ifndef LOGDIALOG_HPP
 #define LOGDIALOG_HPP
 
+#include "Callbacks.hpp"
+
+#include <QList>
 #include <QWidget>
 #include <QDialog>
 
@@ -33,7 +36,7 @@ class LogDialog : public QDialog, private Ui::LogDialog
 
     int GetLineCount(void);
 
-    void AddLogLine(CoreDebugMessageType type, QString context, QString line);
+    void AddMessages(const QList<CoreCallbackMessage>& messages);
     void Clear(void);
 };
 } // namespace Dialog

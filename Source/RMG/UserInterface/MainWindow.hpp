@@ -234,7 +234,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     void on_VidExt_ResizeWindow(int width, int height);
     void on_VidExt_ToggleFS(bool fullscreen);
 
-    void on_Core_DebugCallback(CoreDebugMessageType type, QString context, QString message);
+    void on_Core_DebugCallback(QList<CoreCallbackMessage> messages);
     void on_Core_StateCallback(CoreStateCallbackType type, int value);
 };
 } // namespace UserInterface

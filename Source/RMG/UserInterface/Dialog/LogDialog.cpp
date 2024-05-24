@@ -34,34 +34,37 @@ int LogDialog::GetLineCount(void)
     return this->plainTextEdit->document()->lineCount();
 }
 
-void LogDialog::AddLogLine(CoreDebugMessageType type, QString context, QString line)
+void LogDialog::AddMessages(const QList<CoreCallbackMessage>& messages)
 {
     QString text;
 
-    text = context;
-
-    switch (type)
+    for (const auto& message : messages)
     {
-    case CoreDebugMessageType::Error:
-        text += "[ERROR]   ";
-        break;
-    case CoreDebugMessageType::Info:
-        text += "[INFO]    ";
-        break;
-    case CoreDebugMessageType::Verbose:
-        text += "[VERBOSE] ";
-        break;
-    case CoreDebugMessageType::Warning:
-        text += "[WARNING] ";
-        break;
-    case CoreDebugMessageType::Status:
-        text += "[STATUS]  ";
-        break;
+        text = message.Context;
+
+        switch (message.Type)
+        {
+        case CoreDebugMessageType::Error:
+            text += "[ERROR]   ";
+            break;
+        case CoreDebugMessageType::Info:
+            text += "[INFO]    ";
+            break;
+        case CoreDebugMessageType::Verbose:
+            text += "[VERBOSE] ";
+            break;
+        case CoreDebugMessageType::Warning:
+            text += "[WARNING] ";
+            break;
+        case CoreDebugMessageType::Status:
+            text += "[STATUS]  ";
+            break;
+        }
+
+        text += message.Message;
+
+        this->plainTextEdit->appendPlainText(text);
     }
-
-    text += line;
-
-    this->plainTextEdit->appendPlainText(text);
 }
 
 void LogDialog::Clear(void)
