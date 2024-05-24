@@ -174,9 +174,9 @@ void OnScreenDisplayRender(void)
     ImGui::Text("%s", l_Message.c_str());
     ImGui::End();
 
-    ImGui::Render();
-
     ImGui::PopStyleColor(2);
+
+    ImGui::Render();
 
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
