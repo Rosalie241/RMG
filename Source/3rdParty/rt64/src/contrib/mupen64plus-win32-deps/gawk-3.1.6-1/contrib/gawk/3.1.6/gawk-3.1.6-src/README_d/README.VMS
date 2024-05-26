@@ -1,0 +1,81 @@
+
+Compiling GAWK on VMS:
+
+     There's a DCL command procedure that will issue all the necessary
+CC and LINK commands, and there's also a Makefile for use with the MMS
+utility.  From the source directory, use either
+ |$ @[.VMS]VMSBUILD.COM
+or
+ |$ MMS/DECRIPTION=[.VMS]DECSRIP.MMS GAWK
+
+DEC C  -- use either vmsbuild.com or descrip.mms as is.
+VAX C  -- use `@vmsbuild VAXC' or `MMS/MACRO=("VAXC")'.  On a system
+        with both VAX C and DEC C installed where DEC C is the default,
+        use `MMS/MACRO=("VAXC","CC=CC/VAXC")' for the MMS variant; for
+        the vmsbuild.com variant, any need for `/VAXC' will be detected
+        automatically.
+GNU C  -- use `@vmsbuild GNUC' or `MMS/MACRO=("GNUC")'.  On a system
+        where the GCC command is not already defined, use either
+        `@vmsbuild GNUC DO_GNUC_SETUP' or
+        `MMS/MACRO=("GNUC","DO_GNUC_SETUP")'.
+
+     Tested under Alpha/VMS V7.1 using DEC C V6.4.  GAWK should work
+without modifications for VMS V4.6 and up.
+
+
+Installing GAWK on VMS:
+
+     All that's needed is a 'foreign' command, which is a DCL symbol
+whose value begins with a dollar sign.
+ |$ GAWK :== $device:[directory]GAWK
+(Substitute the actual location of gawk.exe for 'device:[directory]'.)
+That symbol should be placed in the user's login.com or in the system-
+wide sylogin.com procedure so that it will be defined every time the
+user logs on.
+
+     Optionally, the help entry can be loaded into a VMS help library.
+ |$ LIBRARY/HELP SYS$HELP:HELPLIB [.VMS]GAWK.HLP
+(You may want to substitute a site-specific help library rather than
+the standard VMS library 'HELPLIB'.)  After loading the help text,
+ |$ HELP GAWK
+will provide information about both the gawk implementation and the
+awk programming language.
+
+     The logical name AWK_LIBRARY can designate a default location
+for awk program files.  For the '-f' option, if the specified filename
+has no device or directory path information in it, Gawk will look in
+the current directory first, then in the directory specified by the
+translation of AWK_LIBRARY if it the file wasn't found.  If the file
+still isn't found, then ".awk" will be appended and the file access
+will be re-tried.  If AWK_LIBRARY is not defined, that portion of the
+file search will fail benignly.
+
+
+Running GAWK on VMS:
+
+     Command line parsing and quoting conventions are significantly
+different on VMS, so examples in _The_GAWK_Manual_ or the awk book
+often need minor changes.  They *are* minor though, and all the awk
+programs should run correctly.
+
+     Here are a couple of trivial tests:
+ |$ gawk -- "BEGIN {print ""Hello, World!""}"
+ |$ gawk -"W" version     !could also be -"W version" or "-W version"
+Note that upper- and mixed-case text must be quoted.
+
+     The VMS port of Gawk includes a DCL-style interface in addition
+to the original shell-style interface.  See the help entry for details.
+One side-effect of dual command line parsing is that if there's only a
+single parameter (as in the quoted string program above), the command
+becomes ambiguous.  To work-around this, the normally optional "--"
+flag is required to force shell rather than DCL parsing.  If any other
+dash-type options (or multiple parameters such as data files to be
+processed) are present, there is no ambiguity and "--" can be omitted.
+
+     The logical name AWKPATH can be used to override the default
+search path of "SYS$DISK:[],AWK_LIBRARY:" when looking for awk program
+files specified by the '-f' option.  The format of AWKPATH is a comma-
+separated list of directory specifications.  When defining it, the
+value should be quoted so that it retains a single translation, not a
+multi-translation RMS searchlist.
+

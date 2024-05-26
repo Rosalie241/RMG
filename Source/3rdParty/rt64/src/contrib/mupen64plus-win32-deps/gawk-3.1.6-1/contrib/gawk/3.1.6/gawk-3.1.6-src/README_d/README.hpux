@@ -1,0 +1,78 @@
+Wed Jul 28 16:28:42 IDT 2004
+============================
+As of gawk 3.1.4, configure should correctly handle HP-UX and
+I18N issues.  -- Arnold
+--------------------------------------------------------------
+2003-12-10 15:19:38 EST
+Michael Elizabeth Chastain <mec.gnu@mindspring.com>
+
+I built and tested gawk on hppa-hp-hpux11.11 and ia64-hp-hpux11.23.
+All the tests in the test suite passed.
+
+I built with these compilers:
+
+  gcc 3.3.2
+  hp ansi C from /opt/ansic/bin
+  hp aCC    from /opt/aCC/bin
+
+I ran into these problems:
+
+  NLS does not work; configure with --disable-nls.
+  -D_XOPEN_SOURCE=500 does not work.
+  Multibyte support is not available.
+
+To get multibyte support, the following ugly hack might work:
+--- gawk-3.1.3.orig/custom.h	2003-06-09 17:45:53.000000000 +0200
++++ gawk-3.1.3/custom.h	2003-12-17 15:55:04.000000000 +0100
+@@ -101,4 +101,7 @@
+ #undef HAVE_TZSET
+ #define HAVE_TZSET 1
+ #define _TZSET 1
++/* an ugly hack: */
++#include <sys/_mbstate_t.h>
++#define HAVE_MBRTOWC 1
+ #endif
+
+-------------------------------
+Mon, 27 May 2002 17:55:46 +0800
+
+The network support "|&" may not work under HP-UX 11.
+An error message appears similar to this:
+gawk: test_script.awk:3: fatal: get_a_record: iop->buf: can't allocate -61246
+bytes of memory (not enough space)
+
+Solution:
+This is a bug in the fstat() call of HP-UX 11.00, please apply
+the cumulative ARPA Transport patch PHNE_26771 to fix it.
+
+The following is the related description in PHNE_26771:
+
+	Customer's application gets the wrong value from fstat().
+        Resolution:
+        The value returned via st_blksize is now retrieved
+        from the same info as in 10.20.
+
+In case you cannot apply the HP patch, the attached patch to gawk source
+might work.
+
+Xiang Zhao <xiangz@163.net>
+Stepan Kasal <kasal@math.cas.cz>
+
+diff -ur gawk-3.1.3.a0/posix/gawkmisc.c gawk-3.1.3.a1/posix/gawkmisc.c
+--- gawk-3.1.3.a0/posix/gawkmisc.c	Sun May 25 15:26:19 2003
++++ gawk-3.1.3.a1/posix/gawkmisc.c	Fri Jul 11 08:56:03 2003
+@@ -126,7 +126,13 @@
+ 	 * meant for in the first place.
+ 	 */
+ #ifdef HAVE_ST_BLKSIZE
+-#define DEFBLKSIZE	(stb->st_blksize > 0 ? stb->st_blksize : BUFSIZ)
++			/*
++			 * 100k must be enough for everybody,
++			 * bigger number means probably a bug in fstat()
++			 */
++#define MAXBLKSIZE	102400
++#define DEFBLKSIZE	(stb->st_blksize > 0 && stb->st_blksize <= MAXBLKSIZE \
++				? stb->st_blksize : BUFSIZ)
+ #else
+ #define DEFBLKSIZE	BUFSIZ
+ #endif

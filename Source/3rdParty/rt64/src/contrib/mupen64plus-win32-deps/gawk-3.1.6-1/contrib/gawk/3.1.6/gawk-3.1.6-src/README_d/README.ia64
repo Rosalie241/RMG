@@ -1,0 +1,30 @@
+Tue Mar 11 13:19:45 IST 2003
+============================
+
+On real Itanium systems, builds with GCC are fine. If you're using the
+Intel compiler `ecc', you need:
+
+	CC=ecc ./configure && make all check install CFLAGS='-g -Drestrict='
+
+Tue Apr 16 13:55:15 IDT 2002
+============================
+The current version of the IA-64 environment builds gawk without any problems.
+
+Wed Apr 25 17:17:01 IDT 2001
+============================
+
+The Intel IA-64 emulation environment that sits on top of 32-bit Linux
+has problems.  Gawk does not work on it.
+
+1. The `sgicc' compiler lies to `configure' and pretends it's gcc. But it
+really isn't, and several things don't work.
+
+2. Even if used with gcc, the executable doesn't run; somehow quoted
+strings don't stay as one argument to gawk, which is, of course,
+disastrous.
+
+3. It's flaky; initially `configure' wouldn't even get past the getpgrp
+test.  Then later it would.
+
+Arnold Robbins
+arnold@skeeve.com

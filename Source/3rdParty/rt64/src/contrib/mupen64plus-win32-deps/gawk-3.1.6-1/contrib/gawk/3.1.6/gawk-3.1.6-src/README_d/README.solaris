@@ -1,0 +1,138 @@
+Solaris Problem #1:
+===================
+From: carson@lehman.com
+Date: Fri, 7 Feb 1997 01:05:58 -0500
+To: arnold@gnu.ai.mit.edu
+Subject: Solaris 2.5.1 x86 bug in gawk-3.0.2
+
+awktab.c has the following bogus logic:
+
+#ifndef alloca
+#ifdef __GNUC__
+#define alloca __builtin_alloca
+#else /* not GNU C.  */
+#if (!defined (__STDC__) && defined (sparc)) || defined (__sparc__) || defined (__sparc) || defined (__sgi)
+#include <alloca.h>
+#else /* not sparc */
+
+Solaris x86 obviously dosn't define sparc or __sparc.
+
+What you _meant_ to say was:
+
+if (defined(__sun) && defined(__SVR4))
+
+(which identifies Solaris 2.x under both Sun's cc and gcc)
+
+--
+Carson Gaspar -- carson@cs.columbia.edu carson@lehman.com
+http://www.cs.columbia.edu/~carson/home.html
+<This is the boring business .sig - no outre sayings here>
+
+	*	*	*	*	*	*	*
+
+Solution to Problem #1:
+=======================
+Tue Oct 20 21:25:11 IST 1998
+
+This has been fixed in 3.1.0 with the bisonfix.sed script.
+
+Arnold Robbins
+arnold@skeeve.com
+
+Solaris Problem #2:
+===================
+Tue Apr 13 16:57:45 IDT 1999
+
+There is a known problem in that the `manyfiles' test will fail under
+Solaris if you set your soft limit on the number of file descriptors to
+above 256.  This is due to a "feature" of fdopen that an fd must be
+less than 256 (see fdopen(3)).
+
+IMHO this is Sun's problem, not mine.
+
+Arnold Robbins
+arnold@skeeve.com
+
+Solution (a) to Problem #2:
+===========================
+Now fixed in the code via Paul Eggert's 2001-09-0 patch. See the
+ChangeLog.
+
+Solution (b) to Problem #2:
+===========================
+From: Paul Nevai <nevai@math.ohio-state.edu>
+Subject: Re: gawk-3.0.4
+To: arnold@skeeve.com (Aharon Robbins)
+Date: Tue, 6 Jul 1999 09:09:05 -0400 (EDT)
+
+Dear Aharon:
+
+Toda raba. Why don't you add something like that to README_d/README.solaris
+file:
+
+for the SunOS do in
+
+/bin/sh:   ulimit -n 256; ulimit -a; make test
+/bin/tcsh: limit descriptors 256; ulimit -a; make test
+
+otherwise "make test" will fail
+
+Shalom, Paul
+
+Aharon Robbins wrote to Paul Nevai:
+# >From the README_d/README.solaris file:
+# 
+# 	Tue Apr 13 16:57:45 IDT 1999
+# 	
+# 	There is a known problem in that the `manyfiles' test will fail under
+# 	Solaris if you set your soft limit on the number of file descriptors to
+# 	above 256.  This is due to a "feature" of fdopen that an fd must be
+# 	less than 256 (see fdopen(3)).
+# 	
+# 	IMHO this is Sun's problem, not mine.
+# 	
+# 	Arnold Robbins
+# 	arnold@skeeve.com
+# 
+# Double check your settings with ulimit; I suspect that this is
+# your problem.
+# 
+# Thanks,
+# 
+# Arnold
+# --
+# Aharon (Arnold) Robbins		arnold@skeeve.com  [ <<=== NOTE: NEW ADDRESS!! ]
+# P.O. Box 354		Home Phone: +972  8 979-0381	Fax: +1 603 761-6761
+# Nof Ayalon		Cell Phone: +972 51  297-545	(See www.efax.com)
+# D.N. Shimshon 99784	Laundry increases exponentially in the
+# ISRAEL			number of children. -- Miriam Robbins
+# 
+# 
+
+
+
+Paul Nevai                            pali+@osu.edu
+Department of Mathematics             nevai@math.ohio-state.edu
+The Ohio State University             http://www.math.ohio-state.edu/~nevai/
+231 West Eighteenth Avenue            http://www.math.ohio-state.edu/~jat/
+Columbus, Ohio 43210-1174             1-614-292-5310 (Office/Answering Device)
+The United States of America          1-614-292-1479 (Math Dept Fax)
+
+Solaris Problem #3:
+===================
+Sun Feb  9 10:35:51 IST 2003
+
+Certain versions of Sun C give compilation errors under Solaris 5.5, 5.6 and
+possibly later.  Here's what I was told:
+
+> We have this version of cc here:
+> cc -V
+> cc: Sun WorkShop 6 update 1 C 5.2 2000/09/11
+> 
+> Probably, the others use different combinations of OS and CC.
+> A quick fix was this (we use csh-syntax here):
+> 
+> setenv CC "/opt/SUNWspro/bin/cc -Xc"
+> ./configure
+> make check
+

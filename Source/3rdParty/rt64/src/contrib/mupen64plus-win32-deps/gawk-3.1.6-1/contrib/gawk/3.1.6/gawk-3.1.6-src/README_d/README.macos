@@ -1,0 +1,32 @@
+Mon Jun 11 05:37:03 IDT 2007
+============================
+
+The notes below no longer seem to apply.
+
+Mon Jul  4 09:55:22 IDT 2005
+============================
+
+If you use GCC 4.0 under Mac OS X to compile gawk with optimization,
+AND multibyte support is *disabled*, the `ignrcas2' test fails. This is
+a compiler bug. Either compile it without optimization, or use gcc-3.3.
+
+All the other tests pass.
+
+Happily, the default is for the multibyte support to be enabled, so all
+the tests pass by defualt.
+
+
+Sun Dec  3 18:11:09 IST 2000
+============================
+
+The `posix' test will fail because of output format differences but this
+is apparently otherwise benign.
+
+Gawk uses the system's mktime(3) routine, even though Autoconf thinks
+it's broken, so Caveat Emptor.
+
+If you ask me about either of these I will fuss at you for not having
+done your homework.
+
+Arnold Robbins
+arnold@skeeve.com

@@ -1,0 +1,29 @@
+Fri Jun  3 12:20:17 IDT 2005
+============================
+
+As noted in the NEWS file, as of 3.1.5, gawk uses character values instead
+of byte values for `index', `length', `substr' and `match'.  This works
+in multibyte and unicode locales.
+
+Wed Jun 18 16:47:31 IDT 2003
+============================
+
+Multibyte locales can cause occasional weirdness, in particular with
+ranges inside brackets: /[....]/.  Something that works great for ASCII
+will choke for, e.g., en_US.UTF-8.  One such program is test/gsubtst5.awk.
+
+By default, the test suite runs with LC_ALL=C and LANG=C. You
+can change this by doing (from a Bourne-style shell):
+
+	$ GAWKLOCALE=some_locale make check
+
+Then the test suite will set LC_ALL and LANG to the given locale.
+
+As of this writing, this works for en_US.UTF-8, and all tests
+pass except gsubtst5.
+
+For the normal case of RS = "\n", the locale is largely irrelevant.
+For other single byte record separators, using LC_ALL=C will give you
+much better performance when reading records.  Otherwise, gawk has to
+make several function calls, *per input character* to find the record
+terminator.  You have been warned.

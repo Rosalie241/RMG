@@ -1,0 +1,6 @@
+Tue Mar 11 13:21:26 IST 2003
+============================
+
+On AIX 4.2 systems, you need:
+
+	./configure --disable-nls && make all check install

@@ -1,0 +1,86 @@
+README for GNU awk under BeOS
+Last updated MCB, Tue Feb 6 10:15:46 GMT 2001
+
+BeOS port contact: Martin C Brown (mc@whoever.com)
+
+Building/Installing
+--------------------------
+
+Since BeOS DR9, all the tools that you should need to build gawk are now 
+included with BeOS. The process is basically identical to the Unix process
+of running configure and then make. Full instructions are given below:
+
+You can compile gawk under BeOS by extracting the standard sources, 
+and running the configure script. You MUST specify the location prefix 
+for the installation directory. Under BeOS DR9 and beyond the best 
+directory to use is /boot/home/config, so the configure command 
+would be:
+
+$ configure --prefix=/boot/home/config
+
+This will install the compiled application into /boot/home/config/bin, 
+which is already specified in the standard PATH.
+
+Once the configuration process has been completed, you can run make and 
+then make install:
+
+$ make
+....
+$ make install
+
+Socket Notes
+----------------------
+
+Due to the socket implementation under BeOS not all of the features under 
+gawk's socket implementation may work properly. In particular:
+
+    BeOS does not support a BSD SO_LINGER option, so sockets cannot remain 
+    open after a close if data is still present on the incoming buffer.
+
+    BeOS does not allow data to be read from a socket without removing the data
+    from the buffer (peek). If you need to use this feature in gawk, create a
+    separate input buffer and peek into your own copy, rather than the OS version.
+
+    BeOS does not support RAW socket connections, only UDP or TCP.
+
+Note that these are BeOS Unix-layer compatibility problems, and only affect certain
+aspects of network communication. Most socket based gawk scripts, and any scripts 
+that do not rely on sockets should work fine (excepting any other notes in this section).
+
+File Handle Notes
+---------------------------
+
+Expect the multiple file test (when running make check) to fail. The reason for this is 
+explained in the email shown below: 
+
+-------------------------------------------------------
+From mc@whoever.com  Sun Jul 23 17:06:38 2000
+Date: Sun, 23 Jul 2000 07:23:49 +0100
+Subject: Re: gawk-3.0.5 results on BeOS
+From: Martin C Brown <mc@whoever.com>
+To: Aharon Robbins <arnold@skeeve.com>, <haible@ilog.fr>
+
+Arnold/Bruno,
+
+> This is a known BeOS problem.  I am cc'ing the BeOS port person.
+> Sorry I don't have a fix.
+
+This problem is directly related to the FOPEN_MAX/OPEN_MAX parameter used in
+the stdio library by the BeOS. It seems that the BeOS strictly enforces this
+number to the point that opening the 128th file causes all previously opened
+files (except stdin/out/err) to be closed - hence the bad number.
+
+I've tried this outside of gawk and the same thing happens, so it's not a
+gawk problem.
+
+I've spent the past few days trying to find a suitable workaround, but it's
+obviously difficult trying to patch a kernel from the outside :))
+
+I'll be reporting this as a bug to Be shortly.
+
+MC
+
+-- 
+Martin 'MC' Brown, mc@mcslp.com        http://www.mcwords.com
+Writer, Author, Consultant
+'Life is pain, anyone who says differently is selling something'

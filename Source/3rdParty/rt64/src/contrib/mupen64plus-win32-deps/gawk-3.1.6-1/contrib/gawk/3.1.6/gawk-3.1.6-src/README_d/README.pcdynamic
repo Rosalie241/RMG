@@ -1,0 +1,93 @@
+This is the README for dynamic extension support for GNU awk 3.1.2 under Windows32
+This part of the README is directed to the gawk maintainers.
+
+The implementation consists of
+
+pc/dlfcn.h
+pc/dlfcn.c
+	An implementation of the POSIX dynamic loading functions for Windows32.
+	Bugs and limitations:
+		the RTLD_* flags are ignored
+		passing NULL as the module name is not really supported.
+		dlerror() doesn't always generate useful output.
+
+pc/w32dynamic.patch
+	A patch to pc/Makefile. This adds macros to allow dynamic loading
+	to be compiled in. The macros (DYN_EXP, DYN_OBJ, DYN_FLAGS, and
+	DYN_MAKEXP) are commented-out by default (which is the default on
+	Unix as well). 	I've added definitions only for MS VC and MinGW.
+	I also added support for pgawk under MS VC and MinGW.
+
+pc/gawkw32.def
+	A list of functions to export from gawk.exe. Every function used
+	in an extension DLL needs to be in this file. I've added the ones
+	required by the provided examples, but some thought should go into
+	determining a useful set of API functions. From a maintenance
+	perspective, it's important that the ordinals (the number following @)
+	never change. You can use an existing DLL with a gawk.exe which has
+	new exported functions, but if you change the ordinal of an existing
+	function, you have to recompile all the extensions that use it.
+
+extension/Makefile.pc
+	A make file which compiles a few of the extension examples.
+	Only readfile, ordchr, and arrayparm are built, since the
+	other functions didn't compile without sizeable modifications.
+
+extension/pcext.def
+	A module definition file which exports dlload.
+
+extension/w32dynamic.patch
+	A patch to readfile.c to have it open files in binary mode. Without
+	this, the bytes read doesn't always match the file size.
+
+w32dynamic.patch
+	A patch to awk.h. This makes the temporary variable _t static and
+	adds an attribute to some data declarations when WIN32_EXTENSION is
+	defined. The issue is that data imported from a separate module has
+	a different level of indirection from the same data in the
+	original module. The difference can be made transparent by adding
+	__declspec(dllimport)) to the declarations used in the importing module.
+	Since _t doesn't actually have to be shared, I've just made it
+	static to the extension module and avoided the problem.
+
+README_d/README.pcdynamic
+	This file.
+
+The remainder of the file is intended for people installing and using gawk
+and probably ought to be added to README.pc
+---
+To compile gawk with dynamic extension support, uncomment the
+definitions of DYN_FLAGS, DYN_EXP, DYN_OBJ, and DYN_MAKEXP in the
+configuration section of Makefile. There are two definitions for
+DYN_MAKEXP -- pick the one that matches your target.
+
+To build some of the example extension libraries, cd to the extension
+directory and copy Makefile.pc to Makefile. You can then build using the same
+two targets. To run the example awk scripts, you'll need to either change the
+call to the `extension' function to match the name of the library (for
+instance, change "./ordchr.so" to "ordchr.dll" or simply "ordchr"), or rename
+the library to match the call (for instance, rename ordchr.dll to ordchr.so).
+
+If you build gawk.exe with one compiler but want to build an extension library
+with the other, you need to copy the import library. Visual C uses a library
+called gawk.lib, while MinGW uses a library called libgawk.a. These files
+are equivalent and will interoperate if you give them the correct name.
+The resulting shared libraries are also interoperable.
+
+To create your own extension library, you can use the examples as models, but
+you're essentially on your own. Post to comp.lang.awk or send e-mail to
+ptjm@interlog.com if you have problems getting started. If you need to access
+functions or variables which are not exported by gawk.exe, add them to
+gawkw32.def and rebuild. You should also add ATTRIBUTE_EXPORTED to the
+declaration in awk.h of any variables you add to gawkw32.def.
+
+Note that extension libraries have the name of the awk executable embedded in
+them at link time, so they will work only with gawk.exe. In particular, they won't
+work if you rename gawk.exe to awk.exe or if you try to use pgawk.exe. You can
+perform profiling by temporarily renaming pgawk.exe to gawk.exe. You can resolve
+this problem by changing the program name in the definition of DYN_MAKEXP for
+your compiler.
+
+On Windows32, libraries are sought first in the current directory, then in the
+directory containing gawk.exe, and finally through the PATH environment
+variable.

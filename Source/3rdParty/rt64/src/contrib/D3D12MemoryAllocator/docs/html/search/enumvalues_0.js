@@ -1,0 +1,21 @@
+var searchData=
+[
+  ['allocation_5fflag_5fcan_5falias_0',['ALLOCATION_FLAG_CAN_ALIAS',['../namespace_d3_d12_m_a.html#abbad31a7e0b3d09d77f3fb704b77645ea4d6808f27de6d0ae57014ec1f4d54326',1,'D3D12MA']]],
+  ['allocation_5fflag_5fcommitted_1',['ALLOCATION_FLAG_COMMITTED',['../namespace_d3_d12_m_a.html#abbad31a7e0b3d09d77f3fb704b77645ea661a5472dba3dcecc5a2cc92afd25675',1,'D3D12MA']]],
+  ['allocation_5fflag_5fnever_5fallocate_2',['ALLOCATION_FLAG_NEVER_ALLOCATE',['../namespace_d3_d12_m_a.html#abbad31a7e0b3d09d77f3fb704b77645ea9a52c6ae694eadcd20896091e77c0628',1,'D3D12MA']]],
+  ['allocation_5fflag_5fnone_3',['ALLOCATION_FLAG_NONE',['../namespace_d3_d12_m_a.html#abbad31a7e0b3d09d77f3fb704b77645ea0bf578b096d6ea73cea86b031541733e',1,'D3D12MA']]],
+  ['allocation_5fflag_5fstrategy_5fbest_5ffit_4',['ALLOCATION_FLAG_STRATEGY_BEST_FIT',['../namespace_d3_d12_m_a.html#abbad31a7e0b3d09d77f3fb704b77645eaaeed6a77f0fe7f33459df593cea44c35',1,'D3D12MA']]],
+  ['allocation_5fflag_5fstrategy_5ffirst_5ffit_5',['ALLOCATION_FLAG_STRATEGY_FIRST_FIT',['../namespace_d3_d12_m_a.html#abbad31a7e0b3d09d77f3fb704b77645ea103ff3115f3c2126779c25be435bf6aa',1,'D3D12MA']]],
+  ['allocation_5fflag_5fstrategy_5fmask_6',['ALLOCATION_FLAG_STRATEGY_MASK',['../namespace_d3_d12_m_a.html#abbad31a7e0b3d09d77f3fb704b77645ea3e29297ad3c6cf9d9bb61b6d27a13ab3',1,'D3D12MA']]],
+  ['allocation_5fflag_5fstrategy_5fmin_5fmemory_7',['ALLOCATION_FLAG_STRATEGY_MIN_MEMORY',['../namespace_d3_d12_m_a.html#abbad31a7e0b3d09d77f3fb704b77645ea4b4fa95bb0daf6a80add7fb292aa63ae',1,'D3D12MA']]],
+  ['allocation_5fflag_5fstrategy_5fmin_5foffset_8',['ALLOCATION_FLAG_STRATEGY_MIN_OFFSET',['../namespace_d3_d12_m_a.html#abbad31a7e0b3d09d77f3fb704b77645eac30b62e36906b3c6e97b8b1d2ad8709d',1,'D3D12MA']]],
+  ['allocation_5fflag_5fstrategy_5fmin_5ftime_9',['ALLOCATION_FLAG_STRATEGY_MIN_TIME',['../namespace_d3_d12_m_a.html#abbad31a7e0b3d09d77f3fb704b77645eaa3ded8847563c24b4522af0586dbd2cb',1,'D3D12MA']]],
+  ['allocation_5fflag_5fupper_5faddress_10',['ALLOCATION_FLAG_UPPER_ADDRESS',['../namespace_d3_d12_m_a.html#abbad31a7e0b3d09d77f3fb704b77645eafb0e2dacce691336e717550a1df72474',1,'D3D12MA']]],
+  ['allocation_5fflag_5fwithin_5fbudget_11',['ALLOCATION_FLAG_WITHIN_BUDGET',['../namespace_d3_d12_m_a.html#abbad31a7e0b3d09d77f3fb704b77645eab374417c1f22a833ead268a6c21424e6',1,'D3D12MA']]],
+  ['allocator_5fflag_5falways_5fcommitted_12',['ALLOCATOR_FLAG_ALWAYS_COMMITTED',['../namespace_d3_d12_m_a.html#ad5ae5a5e42b878f2e18ab5d1fbfb9916a068863dc0538ff4ea153b046b31e94fb',1,'D3D12MA']]],
+  ['allocator_5fflag_5fdefault_5fpools_5fnot_5fzeroed_13',['ALLOCATOR_FLAG_DEFAULT_POOLS_NOT_ZEROED',['../namespace_d3_d12_m_a.html#ad5ae5a5e42b878f2e18ab5d1fbfb9916ae7dc7ab9168148281ebfe1586f554335',1,'D3D12MA']]],
+  ['allocator_5fflag_5fdont_5fprefer_5fsmall_5fbuffers_5fcommitted_14',['ALLOCATOR_FLAG_DONT_PREFER_SMALL_BUFFERS_COMMITTED',['../namespace_d3_d12_m_a.html#ad5ae5a5e42b878f2e18ab5d1fbfb9916a15c1ba5fbc182ac927b3011e23e74a72',1,'D3D12MA']]],
+  ['allocator_5fflag_5fmsaa_5ftextures_5falways_5fcommitted_15',['ALLOCATOR_FLAG_MSAA_TEXTURES_ALWAYS_COMMITTED',['../namespace_d3_d12_m_a.html#ad5ae5a5e42b878f2e18ab5d1fbfb9916adfbfd20d716f2a46f74d6226056fef1e',1,'D3D12MA']]],
+  ['allocator_5fflag_5fnone_16',['ALLOCATOR_FLAG_NONE',['../namespace_d3_d12_m_a.html#ad5ae5a5e42b878f2e18ab5d1fbfb9916a2fb30967b492c27823a80b5de3aea26f',1,'D3D12MA']]],
+  ['allocator_5fflag_5fsinglethreaded_17',['ALLOCATOR_FLAG_SINGLETHREADED',['../namespace_d3_d12_m_a.html#ad5ae5a5e42b878f2e18ab5d1fbfb9916a1b06bb21df006f76a9ed1bc41838bc52',1,'D3D12MA']]]
+];

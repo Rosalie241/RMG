@@ -1,0 +1,12 @@
+Sun Jan 19 23:13:50 EST 1997
+
+> Machine: SONY NWS-5000 (MIPS r4000)
+> OS     : NEWS-OS 4.2.1 (4.3BSD compatible)
+> 	 This OS doesn't have `uname'
+> Tools  : gcc-2.7.2.1, bison-1.25, cmp-2.7, bash-2.0
+
+This system has the same problem with the test/tweakfld case that Ultrix MIPS
+has. See the README.ultrix file for details.
+
+Arnold Robbins
+arnold@skeeve.com

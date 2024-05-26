@@ -1,0 +1,301 @@
+AWK(1P)                    POSIX Programmer's Manual                   AWK(1P)
+
+
+
+PROLOG
+       This  manual page is part of the POSIX Programmer's Man-
+       ual.  The Linux implementation  of  this  interface  may
+       differ  (consult the corresponding Linux manual page for
+       details of Linux behavior), or the interface may not  be
+       implemented on Linux.
+
+NAME
+       awk - pattern scanning and processing language
+
+SYNOPSIS
+       awk [-F ERE][-v assignment] ... program [argument ...]
+
+       awk  [-F ERE] -f progfile ...  [-v assignment] ...[argu-
+       ment ...]
+
+
+DESCRIPTION
+       The awk utility shall execute programs  written  in  the
+       awk  programming language, which is specialized for tex-
+       tual data manipulation. An awk program is a sequence  of
+       patterns  and  corresponding actions. When input is read
+       that matches a pattern, the action associated with  that
+       pattern is carried out.
+
+       Input  shall be interpreted as a sequence of records. By
+       default, a record is a line, less its terminating  <new-
+       line>,  but this can be changed by using the RS built-in
+       variable. Each record of input shall be matched in  turn
+       against  each  pattern  in the program. For each pattern
+       matched, the associated action shall be executed.
+
+       The awk utility shall interpret each input record  as  a
+       sequence  of  fields  where,  by  default,  a field is a
+       string of non- <blank>s. This default white-space  field
+       delimiter  can be changed by using the FS built-in vari-
+       able or -F ERE. The awk utility shall denote  the  first
+       field in a record $1, the second $2, and so on. The sym-
+       bol $0 shall refer to the  entire  record;  setting  any
+       other field causes the re-evaluation of $0. Assigning to
+       $0 shall reset the values of all other fields and the NF
+       built-in variable.
+
+OPTIONS
+       The  awk  utility  shall conform to the Base Definitions
+       volume of IEEE Std 1003.1-2001,  Section  12.2,  Utility
+       Syntax Guidelines.
+
+       The following options shall be supported:
+
+       -F  ERE
+              Define  the  input  field  separator  to  be  the
+              extended regular expression ERE, before any input
+              is read; see Regular Expressions .
+
+       -f  progfile
+              Specify  the  pathname  of the file progfile con-
+              taining an awk program. If multiple instances  of
+              this  option  are specified, the concatenation of
+              the files specified  as  progfile  in  the  order
+              specified  shall be the awk program. The awk pro-
+              gram can alternatively be specified in  the  com-
+              mand line as a single argument.
+
+       -v  assignment
+              The  application shall ensure that the assignment
+              argument is in the same  form  as  an  assignment
+              operand.  The specified variable assignment shall
+              occur prior to executing the awk program, includ-
+              ing  the  actions  associated with BEGIN patterns
+              (if any). Multiple occurrences of this option can
+              be specified.
+
+
+OPERANDS
+       The following operands shall be supported:
+
+       program
+              If  no  -f option is specified, the first operand
+              to awk shall be the text of the awk program.  The
+              application shall supply the program operand as a
+              single argument to awk. If the text does not  end
+              in  a  <newline>, awk shall interpret the text as
+              if it did.
+
+       argument
+              Either of the following two types of argument can
+              be intermixed:
+
+       file
+              A  pathname  of a file that contains the input to
+              be read, which is matched against the set of pat-
+              terns  in  the  program.  If no file operands are
+              specified, or if a file operand is '-', the stan-
+              dard input shall be used.
+
+       assignment
+              An  operand  that  begins  with  an underscore or
+              alphabetic character from the portable  character
+              set (see the table in the Base Definitions volume
+              of IEEE Std 1003.1-2001,  Section  6.1,  Portable
+              Character  Set), followed by a sequence of under-
+              scores, digits, and alphabetics from the portable
+              character  set,  followed  by  the '=' character,
+              shall specify a variable assignment rather than a
+              pathname. The characters before the '=' represent
+              the name of an awk variable; if that name  is  an
+              awk  reserved word (see Grammar ) the behavior is
+              undefined. The  characters  following  the  equal
+              sign  shall be interpreted as if they appeared in
+              the awk program preceded and followed by  a  dou-
+              ble-quote  (  '  )'  character, as a STRING token
+              (see Grammar ), except that if the last character
+              is  an  unescaped  backslash,  it shall be inter-
+              preted as a literal backslash rather than as  the
+              first  character of the sequence "\"" . The vari-
+              able shall be assigned the value of  that  STRING
+              token  and, if appropriate, shall be considered a
+              numeric string (see Expressions  in  awk  ),  the
+              variable  shall  also  be  assigned  its  numeric
+              value. Each such variable assignment shall  occur
+              just  prior  to  the  processing of the following
+              file, if any.  Thus,  an  assignment  before  the
+              first  file  argument shall be executed after the
+              BEGIN actions (if any), while an assignment after
+              the last file argument shall occur before the END
+              actions (if any). If there are no file arguments,
+              assignments  shall  be executed before processing
+              the standard input.
+
+
+
+STDIN
+       The standard  input  shall  be  used  only  if  no  file
+       operands  are  specified,  or if a file operand is '-' ;
+       see the INPUT FILES section. If the awk program contains
+       no actions and no patterns, but is otherwise a valid awk
+       program, standard input and any file operands shall  not
+       be read and awk shall exit with a return status of zero.
+
+INPUT FILES
+       Input files to the awk program from any of the following
+       sources shall be text files:
+
+        * Any  file  operands or their equivalents, achieved by
+          modifying the awk variables ARGV and ARGC
+
+
+        * Standard input in the absence of any file operands
+
+
+        * Arguments to the getline function
+
+
+       Whether the variable RS is set to a value other  than  a
+       <newline> or not, for these files, implementations shall
+       support records terminated with the specified  separator
+       up to {LINE_MAX} bytes and may support longer records.
+
+       If  -f  progfile  is  specified,  the  application shall
+       ensure that the files named  by  each  of  the  progfile
+       option-arguments are text files and their concatenation,
+       in the same order as they appear in the arguments, is an
+       awk program.
+
+ENVIRONMENT VARIABLES
+       The  following  environment  variables  shall affect the
+       execution of awk:
+
+       LANG   Provide a default value for the internationaliza-
+              tion  variables  that are unset or null. (See the
+              Base Definitions volume of  IEEE Std 1003.1-2001,
+              Section  8.2,  Internationalization Variables for
+              the precedence of internationalization  variables
+              used  to  determine  the  values  of locale cate-
+              gories.)
+
+       LC_ALL If set to a non-empty string value, override  the
+              values  of  all  the  other  internationalization
+              variables.
+
+       LC_COLLATE
+              Determine the locale for the behavior of  ranges,
+              equivalence  classes, and multi-character collat-
+              ing elements within regular  expressions  and  in
+              comparisons of string values.
+
+       LC_CTYPE
+              Determine  the  locale  for the interpretation of
+              sequences of bytes of  text  data  as  characters
+              (for  example,  single-byte  as opposed to multi-
+              byte characters in arguments  and  input  files),
+              the  behavior of character classes within regular
+              expressions, the identification of characters  as
+              letters,  and the mapping of uppercase and lower-
+              case characters for the toupper and tolower func-
+              tions.
+
+       LC_MESSAGES
+              Determine  the  locale  that  should  be  used to
+              affect the format and contents of diagnostic mes-
+              sages written to standard error.
+
+       LC_NUMERIC
+              Determine  the  radix  character used when inter-
+              preting  numeric  input,  performing  conversions
+              between numeric and string values, and formatting
+              numeric output. Regardless of locale, the  period
+              character  (the  decimal-point  character  of the
+              POSIX locale) is the decimal-point character rec-
+              ognized  in  processing  awk  programs (including
+              assignments in command line arguments).
+
+       NLSPATH
+              Determine the location of  message  catalogs  for
+              the processing of LC_MESSAGES .
+
+       PATH   Determine  the  search path when looking for com-
+              mands executed by system(expr), or input and out-
+              put  pipes;  see  the  Base Definitions volume of
+              IEEE Std 1003.1-2001,  Chapter   8,   Environment
+              Variables.
+
+
+       In  addition, all environment variables shall be visible
+       via the awk variable ENVIRON.
+
+ASYNCHRONOUS EVENTS
+       Default.
+
+STDOUT
+       The nature of the output files depends on the  awk  pro-
+       gram.
+
+STDERR
+       The  standard  error  shall  be used only for diagnostic
+       messages.
+
+OUTPUT FILES
+       The nature of the output files depends on the  awk  pro-
+       gram.
+
+EXTENDED DESCRIPTION
+   Overall Program Structure
+       An awk program is composed of pairs of the form:
+
+
+              pattern { action }
+
+       Either  the pattern or the action (including the enclos-
+       ing brace characters) can be omitted.
+
+       A missing pattern shall match any record of input, and a
+       missing action shall be equivalent to:
+
+
+              { print }
+
+       Execution  of  the awk program shall start by first exe-
+       cuting the actions associated with all BEGIN patterns in
+       the  order  they  occur  in  the program. Then each file
+       operand (or standard input if no files  were  specified)
+       shall be processed in turn by reading data from the file
+       until  a  record  separator  is  seen  (  <newline>   by
+       default).  Before  the first reference to a field in the
+       record is evaluated, the  record  shall  be  split  into
+       fields,  according  to the rules in Regular Expressions,
+       using the value of FS that was current at the  time  the
+       record  was read. Each pattern in the program then shall
+       be evaluated in the order of occurrence, and the  action
+       associated  with  each  pattern that matches the current
+       record executed. The action for a matching pattern shall
+       be   executed  before  evaluating  subsequent  patterns.
+       Finally, the actions associated with  all  END  patterns
+       shall  be  executed  in the order they occur in the pro-
+       gram.
+
+   Expressions in awk
+       Expressions describe computations used in  patterns  and
+       actions.   In  the  following  table,  valid  expression
+       operations are given in groups from  highest  precedence
+       first  to  lowest precedence last, with equal-precedence
+       operators grouped between horizontal lines.  In  expres-
+       sion  evaluation,  where the grammar is formally ambigu-
+       ous, higher  precedence  operators  shall  be  evaluated
+       before  lower  precedence operators. In this table expr,
+       expr1, expr2, and expr3 represent any expression,  while
+       lvalue  represents  any  entity  that can be assigned to
+       (that is, on the left side of an  assignment  operator).
+       The  precise syntax of expressions is given in Grammar .
+
+          Table: Expressions in Decreasing Precedence in awk
+
+
+
+
+IEEE/The Open Group                  2003                              AWK(1P)

@@ -1,0 +1,53 @@
+IGAWK(1)                       Utility Commands                       IGAWK(1)
+
+
+
+NAME
+       igawk - gawk with include files
+
+SYNOPSIS
+       igawk  [  all gawk options ] -f program-file [ -- ] file
+       ...
+       igawk [ all gawk options ] [ -- ] program-text file  ...
+
+DESCRIPTION
+       Igawk  is a simple shell script that adds the ability to
+       have ``include files'' to gawk(1).
+
+       AWK programs for igawk are the same as for gawk,  except
+       that, in addition, you may have lines like
+
+              @include getopt.awk
+
+       in  your  program  to  include  the file getopt.awk from
+       either the current directory or one of the other  direc-
+       tories in the search path.
+
+OPTIONS
+       See  gawk(1)  for a full description of the AWK language
+       and the options that gawk supports.
+
+EXAMPLES
+       cat << EOF > test.awk
+       @include getopt.awk
+
+       BEGIN {
+            while (getopt(ARGC, ARGV, "am:q") != -1)
+                 ...
+       }
+       EOF
+
+       igawk -f test.awk
+
+SEE ALSO
+       gawk(1)
+
+       Effective AWK Programming, Edition 1.0, published by the
+       Free Software Foundation, 1995.
+
+AUTHOR
+       Arnold Robbins (arnold@skeeve.com).
+
+
+
+Free Software Foundation          Nov 3 1999                          IGAWK(1)

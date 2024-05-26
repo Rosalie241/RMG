@@ -1,0 +1,21 @@
+Thu Apr 17 14:41:17 EDT 1997
+
+Some Linux systems, notably RedHat systems through RedHat 4.1, have the
+symbolic links for /dev/stdin and /dev/stdout messed up. Specifically,
+/dev/stdin is linked to ../proc/self/fd/1 and /dev/stdout to
+../proc/self/fd/0. This is backwards.  This causes strange behavior
+when using those files from within gawk.
+
+Removing and redoing the symlinks fixes the problem.  It is fixed in
+post-4.1 RedHat Linux.
+
+Arnold Robbins
+arnold@skeeve.com
+
+Sun Aug  3 15:07:06 EDT 1997
+
+As of version 3.1 of gawk, this is no longer a problem, since gawk now
+completely interprets the special file names internally.
+
+Arnold Robbins
+arnold@skeeve.com

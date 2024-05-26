@@ -1,0 +1,290 @@
+name: Core
+
+on:
+  push:
+    paths-ignore:
+      - '**/*.md'
+      - '.{gitattributes,gitignore,travis.yml}'
+      - 'appveyor.yml,README'
+  pull_request:
+    paths-ignore:
+      - '**/*.md'
+      - '.{gitattributes,gitignore,travis.yml}'
+      - 'appveyor.yml,README'
+  schedule:
+    - cron: '55 14 21 * *'
+  workflow_dispatch:
+
+jobs:
+
+  Linux:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - cc: GCC
+            platform: x64
+            bits: 64
+          - cc: GCC
+            platform: x86
+            bits: 32
+          - cc: Clang
+            platform: x64
+            bits: 64
+          - cc: Clang
+            platform: x86
+            bits: 32
+    name: Linux / ${{ matrix.cc }} / ${{ matrix.platform }}
+    runs-on: ubuntu-22.04
+    if: (github.event_name == 'schedule' && github.repository == 'mupen64plus/mupen64plus-core') || (github.event_name != 'schedule')
+    steps:
+      - uses: actions/checkout@v3
+      - name: Get build dependencies and arrange the environment
+        run: |
+          echo "G_REV=$(git rev-parse --short HEAD)" >> "${GITHUB_ENV}"
+          if [[ ${{ matrix.bits }} -eq 32 ]]; then sudo dpkg --add-architecture i386; fi
+          sudo apt-get update
+          sudo apt-get -y install libfreetype6-dev libgl1-mesa-dev libglu1-mesa-dev libpng-dev libsdl1.2-dev libsdl2-dev libvulkan-dev nasm zlib1g-dev
+          if [[ ${{ matrix.bits }} -eq 32 ]]; then sudo apt-get --reinstall -y install gcc-multilib g++-multilib libc6 libc6-dev-i386 libatomic1:i386 libgcc-s1:i386 libstdc++6:i386 libfreetype6-dev:i386 libgl1-mesa-dev:i386 libglu1-mesa-dev:i386 libpng-dev:i386 libsdl1.2-dev:i386 libsdl2-dev:i386 libvulkan-dev:i386 zlib1g-dev:i386; fi
+          sudo ldconfig
+      - name: Build and related stuff, backup binaries
+        run: |
+          if [[ ${{ matrix.bits }} -eq 32 ]]; then export PIC="1" CPU_TUNE="-msse2 -mtune=pentium4"; else CPU_TUNE="-mtune=core2"; fi
+          export OPTFLAGS="-O2 -flto ${CPU_TUNE}"
+          ORIG="$(pwd)"
+          CC="gcc"
+          CXX="g++"
+          if [[ "${{ matrix.cc }}" != "GCC" ]]; then
+            CC="clang"
+            CXX="clang++"
+          fi
+          ${CC} --version
+          SDL="sdl"
+          MSG="1.2"
+          mkdir pkg
+          for DYN in 0 1 0 1; do
+            unset POSTFIX
+            if [[ ${DYN} -eq 0 ]]; then export POSTFIX="-old"; else MSG="${MSG} / NEW_DYNAREC"; fi
+            echo ""
+            echo ":: ${{ matrix.cc }} ${{ matrix.platform }} / SDL${MSG} ::"
+            echo ""
+            make NEW_DYNAREC="${DYN}" -C projects/unix clean
+            echo ""
+            make CC="${CC}" CXX="${CXX}" BITS="${{ matrix.bits }}" SDL_CONFIG="${SDL}-config" NEW_DYNAREC="${DYN}" -C projects/unix all -j4
+            echo ""
+            make BITS="${{ matrix.bits }}" NEW_DYNAREC="${DYN}" -C projects/unix install DESTDIR="${ORIG}/pkg/"
+            echo ""
+            ls -gG pkg/usr/local/lib/libmupen64plus${POSTFIX}.so*
+            echo ""
+            ldd pkg/usr/local/lib/libmupen64plus${POSTFIX}.so.2.0.0
+            if [[ ${DYN} -eq 1 ]]; then
+              SDL="sdl2"
+              MSG="2"
+            fi
+          done
+          tar cvzf pkg/mupen64plus-core-linux-${{ matrix.platform }}-g${{ env.G_REV }}.tar.gz -C pkg/ "usr"
+      - name: Upload artifact
+        if: matrix.cc == 'GCC'
+        uses: actions/upload-artifact@v3
+        with:
+          name: mupen64plus-core-linux-${{ matrix.platform }}-g${{ env.G_REV }}
+          path: pkg/*.tar.gz
+
+  MSYS2:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - cc: GCC
+            platform: x64
+            cross: x86_64
+            bits: 64
+          - cc: GCC
+            platform: x86
+            cross: i686
+            bits: 32
+    name: Windows / MSYS2 ${{ matrix.cc }} / ${{ matrix.platform }}
+    runs-on: windows-2022
+    if: (github.event_name == 'schedule' && github.repository == 'mupen64plus/mupen64plus-core') || (github.event_name != 'schedule')
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW${{ matrix.bits }}
+          update: true
+          install: >-
+            git
+            libtool
+            make
+            mingw-w64-${{ matrix.cross }}-gcc
+            mingw-w64-${{ matrix.cross }}-toolchain
+            mingw-w64-${{ matrix.cross }}-freetype
+            mingw-w64-${{ matrix.cross }}-libpng
+            mingw-w64-${{ matrix.cross }}-nasm
+            mingw-w64-${{ matrix.cross }}-SDL2
+            mingw-w64-${{ matrix.cross }}-zlib
+      - name: Build and related stuff, backup binaries
+        run: |
+          echo "G_REV=$(git rev-parse --short HEAD)" >> "${GITHUB_ENV}"
+          if [[ ${{ matrix.bits }} -eq 32 ]]; then CPU_TUNE="-msse2 -mtune=pentium4"; else CPU_TUNE="-mtune=core2"; fi
+          export OPTFLAGS="-O2 -flto ${CPU_TUNE}"
+          ORIG="$(pwd)"
+          CC="gcc"
+          CXX="g++"
+          ${CC} --version
+          mkdir pkg
+          export POSTFIX="-old"
+          for DYN in 0 1; do
+            echo ""
+            echo ":: ${{ matrix.cc }} ${{ matrix.platform }} / SDL2${MSG} ::"
+            echo ""
+            make NEW_DYNAREC="${DYN}" -C projects/unix clean
+            echo ""
+            make CC="${CC}" CXX="${CXX}" BITS="${{ matrix.bits }}" NEW_DYNAREC="${DYN}" -C projects/unix all -j4
+            echo ""
+            make BITS="${{ matrix.bits }}" NEW_DYNAREC="${DYN}" -C projects/unix install PLUGINDIR="" SHAREDIR="" BINDIR="" MANDIR="" LIBDIR="" APPSDIR="" ICONSDIR="icons" INCDIR="api" LDCONFIG="true" DESTDIR="${ORIG}/pkg/"
+            echo ""
+            ls -gG pkg/mupen64plus${POSTFIX}.dll
+            echo ""
+            ldd pkg/mupen64plus${POSTFIX}.dll
+            unset POSTFIX
+            MSG=" / NEW_DYNAREC"
+          done
+      - name: Backup dependencies, etc...
+        run: |
+          if [[ ${{ matrix.bits }} -eq 32 ]]; then LIBGCC="libgcc_s_dw2-1"; else LIBGCC="libgcc_s_seh-1"; fi
+          for LIB in libbrotlicommon libbrotlidec libbz2-1 libfreetype-6 ${LIBGCC} libglib-2.0-0 libgraphite2 libharfbuzz-0 libiconv-2 libintl-8 libpcre2-8-0 libpng16-16 libstdc++-6 libwinpthread-1 SDL2 zlib1; do
+            echo ":: Copying ${LIB}.dll"
+            cp "/mingw${{ matrix.bits }}/bin/${LIB}.dll" pkg/
+          done
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: mupen64plus-core-msys2-${{ matrix.platform }}-g${{ env.G_REV }}
+          path: pkg/*
+
+  MSVC:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - toolset: v143
+            platform: x64
+            vs: 2022
+          - toolset: v141_xp
+            platform: x86
+            vs: 2019
+    name: Windows / MSVC with ${{ matrix.toolset }} / ${{ matrix.platform }}
+    runs-on: windows-${{ matrix.vs }}
+    if: (github.event_name == 'schedule' && github.repository == 'mupen64plus/mupen64plus-core') || (github.event_name != 'schedule')
+    defaults:
+      run:
+        shell: cmd
+    steps:
+      - uses: actions/checkout@v3
+      - uses: microsoft/setup-msbuild@v1
+      - name: Build and related stuff, backup binaries
+        run: |
+          for /f "tokens=1" %%R in ('git rev-parse --short HEAD') do echo G_REV=%%R>> "%GITHUB_ENV%"
+          set "ARCH=${{ matrix.platform }}"
+          if [%ARCH%] == [x86] set "ARCH=Win32"
+          echo.
+          msbuild --version
+          echo.
+          git clone --depth 1 https://github.com/mupen64plus/mupen64plus-win32-deps.git ..\mupen64plus-win32-deps
+          md pkg
+          for %%B in (Release New_Dynarec_Release) do (
+            echo.
+            msbuild projects\msvc\mupen64plus-core.vcxproj /p:Configuration=%%B;Platform=%ARCH%;PlatformToolset=${{ matrix.toolset }} /t:Rebuild
+            echo.
+            copy "projects\msvc\%ARCH%\%%B\mupen64plus.dll" pkg\
+            if not exist "pkg\mupen64plus-old.dll" (
+              ren "pkg\mupen64plus.dll" mupen64plus-old.dll
+              dir pkg\mupen64plus-old.dll
+            ) else dir pkg\mupen64plus.dll
+          )
+      - name: Backup dependencies, etc...
+        run: |
+          xcopy data pkg
+          copy "..\mupen64plus-win32-deps\freetype-2.13.0\lib\${{ matrix.platform }}\*.dll" pkg\
+          copy "..\mupen64plus-win32-deps\libpng-1.6.39\lib\${{ matrix.platform }}\*.dll" pkg\
+          copy "..\mupen64plus-win32-deps\SDL2-2.26.3\lib\${{ matrix.platform }}\*.dll" pkg\
+          copy "..\mupen64plus-win32-deps\SDL2_net-2.2.0\lib\${{ matrix.platform }}\*.dll" pkg\
+          copy "..\mupen64plus-win32-deps\zlib-1.2.13\lib\${{ matrix.platform }}\*.dll" pkg\
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: mupen64plus-core-msvc-${{ matrix.platform }}-g${{ env.G_REV }}
+          path: pkg/*
+
+  Nightly-build:
+    runs-on: ubuntu-latest
+    if: github.ref_name == 'master'
+    needs: [Linux, MSYS2, MSVC]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: binaries
+      - name: Get some tools
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install hashdeep
+      - name: Creating new artifacts and update nightly-build
+        run: |
+          mkdir pkg
+          cd binaries
+          for BIN in *; do
+            cd "${BIN}"
+            if [[ "${BIN:17:4}" == "msys" ]]; then
+              echo ":: Creating ${BIN}.zip"
+              zip -r "../../pkg/${BIN}.zip" *
+            elif [[ "${BIN:17:4}" == "msvc" ]]; then
+              echo ":: Creating ${BIN}.zip"
+              zip -r "../../pkg/${BIN}.zip" *
+            else
+              echo ":: Recovering ${BIN}.tar.gz"
+              mv *.tar.gz ../../pkg/
+            fi
+            cd ..
+          done
+          cd ../pkg
+          echo ""
+          for BIN in *; do
+            ls -gG ${BIN}
+            tigerdeep -lz ${BIN} >> ../${BIN:0:16}.tiger.txt
+            sha256sum ${BIN} >> ../${BIN:0:16}.sha256.txt
+            sha512sum ${BIN} >> ../${BIN:0:16}.sha512.txt
+            b2sum ${BIN} >> ../${BIN:0:16}.blake2.txt
+          done
+          mv ../*.tiger.txt .
+          mv ../*.sha*.txt .
+          mv ../*.blake2.txt .
+          echo ""
+          echo "TIGER:"
+          cat *.tiger.txt
+          echo ""
+          echo "SHA256:"
+          cat *.sha256.txt
+          echo ""
+          echo "SHA512:"
+          cat *.sha512.txt
+          echo ""
+          echo "BLAKE2:"
+          cat *.blake2.txt
+          echo ""
+          git tag -f nightly-build
+          git push -f origin nightly-build
+      - name: Nightly-build
+        uses: ncipollo/release-action@v1
+        with:
+          prerelease: true
+          allowUpdates: true
+          removeArtifacts: true
+          replacesArtifacts: false
+          tag: nightly-build
+          artifacts: pkg/*
