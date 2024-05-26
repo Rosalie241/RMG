@@ -3,6 +3,8 @@ project(rt64)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 option(RT64_BUILD_EXAMPLES "Build examples for RT64" OFF)
 if (${RT64_BUILD_EXAMPLES})
     set(RT64_STATIC ON)
@@ -293,6 +295,9 @@ set (SOURCES
     "${PROJECT_SOURCE_DIR}/src/contrib/implot/implot.cpp"
     "${PROJECT_SOURCE_DIR}/src/contrib/implot/implot_demo.cpp"
     "${PROJECT_SOURCE_DIR}/src/contrib/implot/implot_items.cpp"
+
+    "${PROJECT_SOURCE_DIR}/src/api/rt64_api_common.cpp"
+    "${PROJECT_SOURCE_DIR}/src/api/rt64_api_plugin.cpp"
 )
 
 include_directories(

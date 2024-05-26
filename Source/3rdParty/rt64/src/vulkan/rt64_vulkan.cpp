@@ -16,6 +16,10 @@
 #   include "render/rt64_dlss.h"
 #endif
 
+// cursed hacky thing
+#include "../api/rt64_api_common.h"
+
+
 #ifndef NDEBUG
 #   define VULKAN_VALIDATION_LAYER_ENABLED
 //#   define VULKAN_OBJECT_NAMES_ENABLED
@@ -42,6 +46,7 @@ namespace RT64 {
 
     static const std::unordered_set<std::string> RequiredInstanceExtensions = {
         VK_KHR_SURFACE_EXTENSION_NAME,
+#if 0
 #   if defined(_WIN64)
         VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
 #   elif defined(__ANDROID__)
@@ -49,6 +54,7 @@ namespace RT64 {
 #   elif defined(__linux__)
         VK_KHR_XLIB_SURFACE_EXTENSION_NAME,
 #   endif
+#endif
     };
 
     static const std::unordered_set<std::string> OptionalInstanceExtensions = {
@@ -1824,6 +1830,7 @@ namespace RT64 {
 
         VkResult res;
 
+#if 0
 #   ifdef _WIN64
         assert(renderWindow != 0);
         VkWin32SurfaceCreateInfoKHR surfaceCreateInfo = {};
@@ -1864,6 +1871,23 @@ namespace RT64 {
             return;
         }
 #   endif
+#endif
+        m64p_error ret;
+
+        ret = CoreVideo_SetVideoMode(640, 480, 0, M64VIDEO_WINDOWED, M64VIDEOFLAG_SUPPORT_RESIZING);
+        if (ret != M64ERR_SUCCESS)
+        {
+            fprintf(stderr, "CoreVideo_SetVideoMode failed with error code %i.\n", ret);
+            return;
+        }
+
+        VulkanInterface *renderInterface = commandQueue->device->renderInterface;
+        ret = CoreVideo_VK_GetSurface((void**)&surface, (void*)renderInterface->instance);
+        if (ret != M64ERR_SUCCESS)
+        {
+            fprintf(stderr, "CoreVideo_VK_GetSurface failed with error code %i.\n", ret);
+            return;
+        }
 
         VkBool32 presentSupported = false;
         VkPhysicalDevice physicalDevice = commandQueue->device->physicalDevice;
@@ -2178,6 +2202,10 @@ namespace RT64 {
     }
 
     void VulkanSwapChain::getWindowSize(uint32_t &dstWidth, uint32_t &dstHeight) const {
+        dstWidth = window_width;
+        dstHeight = window_height;
+        return;
+
 #   if defined(_WIN64)
         RECT rect;
         GetClientRect(renderWindow, &rect);
@@ -3946,12 +3974,32 @@ namespace RT64 {
         createInfo.ppEnabledLayerNames = nullptr;
         createInfo.enabledLayerCount = 0;
 
-        // Check for extensions.
-        uint32_t extensionCount;
-        vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+        m64p_error ret;
+        ret = CoreVideo_InitWithRenderMode(M64P_RENDER_VULKAN);
+        if (ret != M64ERR_SUCCESS)
+        {
+            fprintf(stderr, "CoreVideo_InitWithRenderMode failed with error code %i.\n", ret);
+            return;
+        }
 
-        std::vector<VkExtensionProperties> availableExtensions(extensionCount);
-        vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, availableExtensions.data());
+        // Check for extensions.
+        const char** extensionNames = nullptr;
+        uint32_t extensionCount = 0;
+
+        ret = CoreVideo_VK_GetInstanceExtensions(&extensionNames, &extensionCount);
+        if (ret != M64ERR_SUCCESS)
+        {
+            fprintf(stderr, "CoreVideo_VK_GetInstanceExtensions failed with %i\n", ret);
+            return;
+        }
+
+        std::vector<const char*> availableExtensions;
+
+        for (int i = 0; i < extensionCount; i++)
+        {
+            fprintf(stderr, "adding ext %s\n", extensionNames[i]);
+            availableExtensions.push_back(extensionNames[i]);
+        }
 
         std::unordered_set<std::string> missingRequiredExtensions = RequiredInstanceExtensions;
         std::unordered_set<std::string> supportedOptionalExtensions;
@@ -3959,7 +4007,7 @@ namespace RT64 {
         const std::unordered_set<std::string> dlssExtensions = DLSS::getRequiredInstanceExtensionsVulkan();
 #   endif
         for (uint32_t i = 0; i < extensionCount; i++) {
-            const std::string extensionName(availableExtensions[i].extensionName);
+            const std::string extensionName(availableExtensions[i]);
             missingRequiredExtensions.erase(extensionName);
 
             if (OptionalInstanceExtensions.find(extensionName) != OptionalInstanceExtensions.end()) {
@@ -3990,10 +4038,14 @@ namespace RT64 {
             enabledExtensions.push_back(extension.c_str());
         }
 
+        // we have to add to the exts, not make a single list...
+        for (const char* str : availableExtensions)
+            enabledExtensions.push_back(str);
+
         createInfo.ppEnabledExtensionNames = enabledExtensions.data();
         createInfo.enabledExtensionCount = uint32_t(enabledExtensions.size());
 
-#   ifdef VULKAN_VALIDATION_LAYER_ENABLED
+#   if  0
         // Search for validation layer and enabled it.
         uint32_t layerCount;
         vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
@@ -4025,7 +4077,10 @@ namespace RT64 {
     }
 
     VulkanInterface::~VulkanInterface() {
+
         if (instance != nullptr) {
+            printf("VulkanInterface teardown\n");
+            CoreVideo_Quit();
             vkDestroyInstance(instance, nullptr);
         }
     }

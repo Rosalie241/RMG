@@ -238,6 +238,10 @@ namespace RT64 {
             refreshRate++;
         }
 #   elif defined(__linux__)
+        // TODO: add vidext func....
+        refreshRate = 60;
+        return;
+
         // Sourced from: https://stackoverflow.com/a/66865623
         XRRScreenResources *screenResources = XRRGetScreenResources(windowHandle.display, windowHandle.window);
         if (screenResources == nullptr) {
@@ -273,6 +277,7 @@ namespace RT64 {
     }
 
     bool ApplicationWindow::detectWindowMoved() {
+        return false; // TODO
         int32_t newWindowLeft = INT32_MAX;
         int32_t newWindowTop = INT32_MAX;
 
