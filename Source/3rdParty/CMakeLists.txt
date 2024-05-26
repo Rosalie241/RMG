@@ -230,6 +230,19 @@ ExternalProject_Add(mupen64plus-video-parallel
     BUILD_BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-video-parallel/mupen64plus-video-parallel.${SO_EXT}
 )
 
+ExternalProject_Add(mupen64plus-video-rt64
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/rt64
+
+    INSTALL_COMMAND ""
+
+    BUILD_IN_SOURCE False
+    BUILD_ALWAYS True
+    CMAKE_ARGS ${CMAKE_CONFIGURE_ARGS}
+    BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/rt64
+
+    BUILD_BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/rt64/rt64.${SO_EXT}
+)
+
 if (DISCORD_RPC)
     ExternalProject_Add(discord-rpc
         SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/discord-rpc
@@ -325,6 +338,9 @@ set(MUPEN64PLUS_PLUGIN_GFX_GLIDEN64_DATA ${GLIDENUI_TRANSLATIONS} ${GLIDEN64_CUS
 
 ExternalProject_Get_property(mupen64plus-video-parallel BUILD_BYPRODUCTS)
 set(MUPEN64PLUS_PLUGIN_GFX_PARALLEL ${BUILD_BYPRODUCTS} PARENT_SCOPE)
+
+ExternalProject_Get_property(mupen64plus-video-rt64 BUILD_BYPRODUCTS)
+set(MUPEN64PLUS_PLUGIN_GFX_RT64 ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 
 if (DISCORD_RPC)
     ExternalProject_Get_property(discord-rpc BUILD_BYPRODUCTS)
