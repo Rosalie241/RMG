@@ -13,7 +13,34 @@
 #   define LOG_PLUGIN_API_CALLS
 #endif
 
+/* definitions of pointers to Core video extension functions */
+ptr_VidExt_InitWithRenderMode CoreVideo_InitWithRenderMode = NULL;
+ptr_VidExt_Quit CoreVideo_Quit = NULL;
+ptr_VidExt_SetCaption CoreVideo_SetCaption = NULL;
+ptr_VidExt_ToggleFullScreen CoreVideo_ToggleFullScreen = NULL;
+ptr_VidExt_ResizeWindow CoreVideo_ResizeWindow = NULL;
+ptr_VidExt_VK_GetSurface CoreVideo_VK_GetSurface = NULL;
+ptr_VidExt_VK_GetInstanceExtensions CoreVideo_VK_GetInstanceExtensions = NULL;
+ptr_VidExt_SetVideoMode CoreVideo_SetVideoMode = NULL;
+ptr_VidExt_GL_SwapBuffers CoreVideo_SwapCounter = NULL;
+
+#ifdef _WIN32
+#define DLSYM(a, b) GetProcAddress(a, b)
+#else
+#include <dlfcn.h>
+#define DLSYM(a, b) dlsym(a, b)
+#endif
+
 DLLEXPORT m64p_error CALL PluginStartup(m64p_dynlib_handle CoreLibHandle, void *Context, void (*DebugCallback)(void *, int, const char *)) {
+    CoreVideo_InitWithRenderMode = (ptr_VidExt_InitWithRenderMode)DLSYM(CoreLibHandle, "VidExt_InitWithRenderMode");
+    CoreVideo_Quit = (ptr_VidExt_Quit)DLSYM(CoreLibHandle, "VidExt_Quit");
+    CoreVideo_SetCaption = (ptr_VidExt_SetCaption)DLSYM(CoreLibHandle, "VidExt_SetCaption");
+    CoreVideo_ToggleFullScreen = (ptr_VidExt_ToggleFullScreen)DLSYM(CoreLibHandle, "VidExt_ToggleFullScreen");
+    CoreVideo_ResizeWindow = (ptr_VidExt_ResizeWindow)DLSYM(CoreLibHandle, "VidExt_ResizeWindow");
+    CoreVideo_VK_GetSurface = (ptr_VidExt_VK_GetSurface)DLSYM(CoreLibHandle, "VidExt_VK_GetSurface");
+    CoreVideo_VK_GetInstanceExtensions = (ptr_VidExt_VK_GetInstanceExtensions)DLSYM(CoreLibHandle, "VidExt_VK_GetInstanceExtensions");
+    CoreVideo_SetVideoMode = (ptr_VidExt_SetVideoMode)DLSYM(CoreLibHandle, "VidExt_SetVideoMode");
+    CoreVideo_SwapCounter = (ptr_VidExt_GL_SwapBuffers)DLSYM(CoreLibHandle, "VidExt_GL_SwapBuffers");
     return M64ERR_SUCCESS;
 }
 
@@ -52,15 +79,21 @@ DLLEXPORT void CALL MoveScreen(int xpos, int ypos) {
 }
 
 DLLEXPORT void CALL RomClosed(void) {
+    if (RT64::API.app != nullptr) {
+        RT64::API.app->end();
+        RT64::API.app.reset();
+    }
     // Do nothing.
 }
 
 DLLEXPORT int CALL RomOpen(void) {
+#if 0
     const bool isPJ64 = (RT64::API.apiType == RT64::APIType::Project64);
     if (isPJ64) {
         RT64::ApplicationWindow *appWindow = RT64::API.app->appWindow.get();
         appWindow->makeResizable();
     }
+#endif
 
     return 1;
 }
@@ -106,8 +139,12 @@ DLLEXPORT int CALL InitiateGFX(PluginGraphicsInfo graphicsInfo) {
     return (RT64::API.app->setup(0) == RT64::Application::SetupResult::Success);
 }
 
+int window_width  = 640;
+int window_height = 480;
+
 DLLEXPORT void CALL ResizeVideoOutput(int width, int height) {
-    // Do nothing.
+    window_width = width;
+    window_height = height;
 }
 
 DLLEXPORT void CALL FBRead(uint32_t addr) {
@@ -137,3 +174,4 @@ DLLEXPORT void CALL SetRenderingCallback(void (*callback)(int)) {
 DLLEXPORT void CALL CaptureScreen(const char *Directory) {
     // Unused.
 }
+

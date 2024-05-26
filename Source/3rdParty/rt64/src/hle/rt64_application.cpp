@@ -50,7 +50,7 @@ namespace RT64 {
 
     Application::Application(const Core &core, const ApplicationConfiguration &appConfig) {
         Timer::initialize();
-        FileDialog::initialize();
+//        FileDialog::initialize();
 
         this->core = core;
         this->appConfig = appConfig;
@@ -142,6 +142,7 @@ namespace RT64 {
         RenderInterfaceTest(renderInterface.get());
 #   endif
 
+#if 0 // TODO: fix later....
         // Create the application window.
         const char *windowTitle = "RT64";
         appWindow = std::make_unique<ApplicationWindow>();
@@ -154,6 +155,7 @@ namespace RT64 {
 
         // Detect refresh rate from the display the window is located at.
         appWindow->detectRefreshRate();
+#endif
 
         // Create the render device for the window
         device = renderInterface->createDevice();
@@ -178,7 +180,7 @@ namespace RT64 {
         textureComputeWorker = std::make_unique<RenderWorker>(device.get(), "Texture Compute", RenderCommandListType::COMPUTE);
         workloadGraphicsWorker = std::make_unique<RenderWorker>(device.get(), "Workload Graphics", RenderCommandListType::DIRECT);
         presentGraphicsWorker = std::make_unique<RenderWorker>(device.get(), "Present Graphics", RenderCommandListType::DIRECT);
-        swapChain = presentGraphicsWorker->commandQueue->createSwapChain(appWindow->windowHandle, 2, RenderFormat::B8G8R8A8_UNORM);
+        swapChain = presentGraphicsWorker->commandQueue->createSwapChain(RenderWindow{}, 2, RenderFormat::B8G8R8A8_UNORM);
 
         // Detect if the application should use HDR framebuffers or not.
         bool usesHDR;
@@ -244,7 +246,7 @@ namespace RT64 {
         sharedQueueResources->setEmulatorConfig(emulatorConfig);
         sharedQueueResources->setEnhancementConfig(enhancementConfig);
         sharedQueueResources->setSwapChainSize(swapChain->getWidth(), swapChain->getHeight());
-        sharedQueueResources->setSwapChainRate(appWindow->getRefreshRate());
+        sharedQueueResources->setSwapChainRate(60); // TODO...
         sharedQueueResources->renderTargetManager.setMultisampling(multisampling);
         sharedQueueResources->renderTargetManager.setUsesHDR(usesHDR);
 
@@ -266,7 +268,7 @@ namespace RT64 {
         workloadQueue->setup(workloadExt);
 
         PresentQueue::External presentExt;
-        presentExt.appWindow = appWindow.get();
+        presentExt.appWindow = nullptr;
         presentExt.device = device.get();
         presentExt.swapChain = swapChain.get();
         presentExt.presentGraphicsWorker = presentGraphicsWorker.get();
@@ -278,7 +280,7 @@ namespace RT64 {
         // Configure the state to use all the created components.
         State::External stateExt;
         stateExt.app = this;
-        stateExt.appWindow = appWindow.get();
+        stateExt.appWindow = nullptr;
         stateExt.interpreter = interpreter.get();
         stateExt.device = device.get();
         stateExt.swapChain = swapChain.get();
@@ -557,6 +559,8 @@ namespace RT64 {
     }
 
     void Application::setFullScreen(bool fullscreen) {
+#if 0
         appWindow->setFullScreen(fullscreen);
+#endif
     }
 };

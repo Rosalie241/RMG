@@ -55,15 +55,15 @@ DLLEXPORT void CALL UpdateScreen(void) {
 }
 
 DLLEXPORT void CALL ChangeWindow(void) {
+    CoreVideo_ToggleFullScreen();
+#if 0 // TODO...
     RT64::ApplicationWindow *appWindow = RT64::API.app->appWindow.get();
     appWindow->setFullScreen(!appWindow->fullScreen);
+#endif
 }
 
 DLLEXPORT m64p_error CALL PluginShutdown(void) {
-    if (RT64::API.app != nullptr) {
-        RT64::API.app->end();
-        RT64::API.app.reset();
-    }
+    
 
     return M64ERR_SUCCESS;
 }
