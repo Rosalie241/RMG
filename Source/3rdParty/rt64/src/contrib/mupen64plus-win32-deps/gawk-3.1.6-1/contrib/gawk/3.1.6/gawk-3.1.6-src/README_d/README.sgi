@@ -1,0 +1,20 @@
+Tue Jan 30 10:51:39 IST 2001
+
+There will be linker warnings on SGI Irix will be building gawk.
+These are related to use of dlopen and the dynamic loading of
+builtins.  The warnings can be ignored.
+======================================
+Tue May  2 11:40:54 IDT 2000
+
+GCC and gawk often don't mix on SGI systems.  Use the native C compiler to
+compile gawk.  `make test' should work ok, although the `tweakfld' test
+may fail.  That's ok; see README.ultrix for the details on that one.
+
+Note that the SGI compiler will complain about some constructs in
+regex.c and dfa.c.  It's ok to ignore those complaints.
+
+If you ask me about this, I will fuss at you for not having done
+your homework!
+
+Arnold Robbins
+arnold@skeeve.com

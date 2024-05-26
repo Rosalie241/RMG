@@ -1,0 +1,88 @@
+From: courierdavid@hotmail.com
+Newsgroups: comp.lang.awk
+Subject: Re: Compiling gawk extensions under Cygwin
+Date: 14 Mar 2005 20:47:09 -0800
+Organization: http://groups.google.com
+Lines: 67
+Message-ID: <1110862029.175727.109280@o13g2000cwo.googlegroups.com>
+References: <1e4e8dbe.0501140813.18248833@posting.google.com>
+   <u62nb2-pro.ln1@news.heiming.de>
+NNTP-Posting-Host: 194.237.142.24
+Mime-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
+X-Trace: posting.google.com 1110862033 8921 127.0.0.1 (15 Mar 2005 04:47:13 GMT)
+X-Complaints-To: groups-abuse@google.com
+NNTP-Posting-Date: Tue, 15 Mar 2005 04:47:13 +0000 (UTC)
+User-Agent: G2/0.2
+Complaints-To: groups-abuse@google.com
+Injection-Info: o13g2000cwo.googlegroups.com; posting-host=194.237.142.24;
+   posting-account=Iz4C5wwAAABx1yG_ft8eEAI99Wu1Tku1
+Path: news.012.net.il!seanews2.seabone.net!newsfeed.albacom.net!news.mailgate.org!newsfeed.stueberl.de!proxad.net!64.233.160.134.MISMATCH!postnews.google.com!o13g2000cwo.googlegroups.com!not-for-mail
+Xref: news.012.net.il comp.lang.awk:21835
+
+Thanks for your help there Michael. I wouldn't have thought of that one
+myself without your help :-)
+
+Anyway - for those who must stick with Cygwin here's a method that
+works using the mingw32 makefiles and some modifications:
+
+Basically you need to extract all exportable symbol names from the
+gawk.exe file into a text file and then create a dummy library file
+which we can link against on Cygwin. You then throw the library file
+away because in reality we use the gawk.exe file as the provider of
+those functions.
+
+1. First grab the gawk source, e.g. gawk-3.1.4.tar.bz2 and decompress
+it.
+2. Move to the gawk-3.1.4 directory you just created.
+3. cp pc/* .       (copy the pc directory into the main one)
+4. edit makefile - uncomment lines "DYN_FLAGS", "DYN_EXP", "DYN_OBJ"
+and "DYN_MAKEXP=$(DMEmingw32)
+5. make mingw32    (make a gawk.exe)
+6. run "gcc -o gawk.exe array.o builtin.o eval.o   field.o gawkmisc.o
+io.o main.o ext.o msg.o node.o profile.o re.o version.o dlfcn.o
+gawk.exp awkgram.o getid.o popen.o getopt.o getopt1.o dfa.o regex.o
+random.o" (i.e. remove the -s from the compile command from the
+makefile so the symbols are left in gawk.exe)
+
+now export all symbols from gawk.exe into foo.def so that we can put
+these in our library
+7. echo EXPORTS > foo.def
+8. nm gawk.exe | grep -E ' [TBD] _' | sed 's/.* [TBD] _//' >> foo.def
+9. cp foo.def gawkw32.def
+
+build the new library with all symbols included
+10. make mingw32
+
+Now you will see a file "libgawk.a" which you can link against to
+create extensions. For example to build an extension called "file" run:
+
+gcc -shared -dll -DHAVE_CONFIG_H -I . extension/file.c -o file.dll -L .
+-lgawk
+
+Then you can load it in gawk using the expression:
+
+extension("./file.dll", "dlload");
+
+You must use the gawk you compiled from source though. It won't work
+with any other gawk unfortunately :-( But that's OK because the
+stripped gawk is not too big in size.
+
+Cheers,
+Dave.
+
+Michael Heiming wrote:
+> In comp.lang.awk David Smith <courierdavid@hotmail.com>:
+> > Has anyone managed to compile gawk extensions (such as "filefuncs")
+> > under Cygwin?
+>
+> Solution is pretty simple, install a real OS, Linux/*BSD or any
+> other unix and this and further problems won't happen.
+>
+> Good luck
+>
+> --
+> Michael Heiming (X-PGP-Sig > GPG-Key ID: EDD27B94)
+> mail: echo zvpunry@urvzvat.qr | perl -pe 'y/a-z/n-za-m/'
+> #bofh excuse 242: Software uses US measurements, but the OS
+> is in metric...

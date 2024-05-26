@@ -1,0 +1,1 @@
+./premake/osx/premake5 --file=hlsl++.lua xcode4

@@ -1,0 +1,33 @@
+The Tandem port was done on a Cyclone machine running D20.
+The port is pretty clean and all facilities seem to work except for 
+some of the I/O piping stuff which is just too foreign a concept for
+Tandem.
+
+Usage is as for UNIX except that D20 requires all "{" and "}" characters
+to be escaped with "~" on the command line (not in script files) and the
+standard Tandem syntax for "/in filename,out filename/" must be used
+instead of the usual UNIX "<" and ">" for file redirection. (Redirection
+options on getline, print etc are supported.)
+
+The -mr=val option has been "stolen" to enable Tandem users to
+process fixed-length records with no "end-of-line" character. That
+is, -mr=74 tells gawk to read the input file as fixed 74-byte
+records.
+
+To build a Tandem executable from source, down-load all of the files
+so that the file names on the Tandem box are, for example ARRAYC or
+AWKH. That is, make all of the file names conform to the restrictions
+of D20. The "totally Tandem-specific" files are in the tandem
+"subvolume" and should be copied to the main src directory before
+building gawk.
+
+The file compit can then be used to compile and bind an executable.
+Sorry, no make and no autoconfig.
+
+This is my first UNIX port to Tandem so I may well have missed the best
+way of doing things: I just desperately needed a working awk at a 
+Tandem shop.
+
+Cheers,
+Stephen Davies
+(scldad@sdc.com.au)

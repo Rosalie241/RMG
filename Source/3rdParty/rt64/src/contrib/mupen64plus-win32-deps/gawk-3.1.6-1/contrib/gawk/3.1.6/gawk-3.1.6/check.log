@@ -1,0 +1,1296 @@
+Making check in .
+make[1]: Map '/cygdrive/j/Lang/gawk/3.1.6/gawk-3.1.6' wordt binnengegaan
+make 'CFLAGS=-Wall -Wpointer-arith -pedantic -O3 -fms-extensions -mms-bitfields -fno-exceptions -fomit-frame-pointer -march=i386 -ffast-math  -Wstrict-prototypes  ' 'LDFLAGS=-Wl,-s -Wl,--force-exe-suffix -Wl,--enable-auto-import -Wl,--enable-runtime-pseudo-reloc -Wl,--allow-multiple-definition -Wl,--enable-stdcall-fixup -LD:/Progra~1/GnuWin32/lib    -Wl,--major-image-version=3 -Wl,--minor-image-version=1 ' check-local
+make[2]: Map '/cygdrive/j/Lang/gawk/3.1.6/gawk-3.1.6' wordt binnengegaan
+make[2]: Map '/cygdrive/j/Lang/gawk/3.1.6/gawk-3.1.6' wordt verlaten
+make[1]: Map '/cygdrive/j/Lang/gawk/3.1.6/gawk-3.1.6' wordt verlaten
+Making check in awklib
+make[1]: Map '/cygdrive/j/Lang/gawk/3.1.6/gawk-3.1.6/awklib' wordt binnengegaan
+make[1]: Er is niets te doen voor 'check'.
+make[1]: Map '/cygdrive/j/Lang/gawk/3.1.6/gawk-3.1.6/awklib' wordt verlaten
+Making check in doc
+make[1]: Map '/cygdrive/j/Lang/gawk/3.1.6/gawk-3.1.6/doc' wordt binnengegaan
+make[1]: Er is niets te doen voor 'check'.
+make[1]: Map '/cygdrive/j/Lang/gawk/3.1.6/gawk-3.1.6/doc' wordt verlaten
+Making check in po
+make[1]: Map '/cygdrive/j/Lang/gawk/3.1.6/gawk-3.1.6/po' wordt binnengegaan
+make[1]: Er is niets te doen voor 'check'.
+make[1]: Map '/cygdrive/j/Lang/gawk/3.1.6/gawk-3.1.6/po' wordt verlaten
+Making check in test
+make[1]: Map '/cygdrive/j/Lang/gawk/3.1.6/gawk-3.1.6/test' wordt binnengegaan
+
+Any output from "diff.exe --text" is bad news, although some differences
+in floating point values are probably benign -- in particular,
+some systems may omit a leading zero and the floating point
+precision may lead to slightly different output in a few cases.
+
+Locale environment:
+	LC_ALL="C" LANG="C"
+
+======== Starting basic tests ========
+addcomma
+1c1,15
+< 0                            0.00
+---
+> 000 111 222 333 444 555 666 777 888 999 ²²² ³³³ ¹¹¹ ¼¼¼ ½½½ ¾¾¾ 
+>  (hard_LC_COLLATE)
+> 000 111 222 333 444 555 666 777 888 999 ²²² ³³³ ¹¹¹ ¼¼¼ ½½½ ¾¾¾ 
+>  (hard_LC_COLLATE)
+> 000 111 222 333 444 555 666 777 888 999 ²²² ³³³ ¹¹¹ ¼¼¼ ½½½ ¾¾¾ 
+>  (hard_LC_COLLATE)
+> 000 111 222 333 444 555 666 777 888 999 ²²² ³³³ ¹¹¹ ¼¼¼ ½½½ ¾¾¾ 
+>  (hard_LC_COLLATE)
+> 000 111 222 333 444 555 666 777 888 999 ²²² ³³³ ¹¹¹ ¼¼¼ ½½½ ¾¾¾ 
+>  (hard_LC_COLLATE)
+> 000 111 222 333 444 555 666 777 888 999 ²²² ³³³ ¹¹¹ ¼¼¼ ½½½ ¾¾¾ 
+>  (hard_LC_COLLATE)
+> 000 111 222 333 444 555 666 777 888 999 ²²² ³³³ ¹¹¹ ¼¼¼ ½½½ ¾¾¾ 
+>  (hard_LC_COLLATE)
+> ,,, ... 0                            0.00
+make[1]: [addcomma] Fout 1 (genegeerd)
+anchgsub
+1c1
+< This is a test, this is only a test.
+---
+>     			 This is a test, this is only a test.
+make[1]: [anchgsub] Fout 1 (genegeerd)
+argarray
+arrayparm
+arrayref
+arrymem1
+arrayprm2
+arrayprm3
+arryref2
+arryref3
+arryref4
+arryref5
+arynasty
+arynocls
+aryprm1
+aryprm2
+aryprm3
+aryprm4
+aryprm5
+aryprm6
+aryprm7
+aryprm8
+arysubnm
+asgext
+awkpath
+back89
+backgsub
+childin
+clobber
+clsflnam
+compare
+compare2
+concat1
+concat2
+concat3
+concat4
+convfmt
+datanonl
+1c1
+< bleble@foo1.bh.pl       deny
+---
+> 000 111 222 333 444 555 666 777 888 999 AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY ZzZ aaA bbB ccC ddD eeE ffF ggG hhH iiI jjJ kkK llL mmM nnN ooO ppP qqQ rrR ssS ttT uuU vvV wwW xxX yyY zzZ ƒƒƒ ŠšŠ ŒœŒ  ššŠ œœŒ  ŸÿŸ ªªª ²²² ³³³ µµµ ¹¹¹ ººº ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ ßßß ààÀ ááÁ ââÂ ããÃ ääÄ ååÅ ææÆ ççÇ èèÈ ééÉ êêÊ ëëË ììÌ ííÍ îîÎ ïïÏ ğğĞ ññÑ òòÒ óóÓ ôôÔ õõÕ ööÖ øøØ ùùÙ úúÚ ûûÛ üüÜ ııİ şşŞ ÿÿŸ 000 111 222 333 444 555 666 777 888 999 AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY ZzZ aaA bbB ccC ddD eeE ffF ggG hhH iiI jjJ kkK llL mmM nnN ooO ppP qqQ rrR ssS ttT uuU vvV wwW xxX yyY zzZ ƒƒƒ ŠšŠ ŒœŒ  ššŠ œœŒ  ŸÿŸ ªªª ²²² ³³³ µµµ ¹¹¹ ººº ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ ßßß ààÀ ááÁ ââÂ ããÃ ääÄ ååÅ ææÆ ççÇ èèÈ ééÉ êêÊ ëëË ììÌ ííÍ îîÎ ïïÏ ğğĞ ññÑ òòÒ óóÓ ôôÔ õõÕ ööÖ øøØ ùùÙ úúÚ ûûÛ üüÜ ııİ şşŞ ÿÿŸ 			     000 111 222 333 444 555 666 777 888 999 AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY ZzZ aaA bbB ccC ddD eeE ffF ggG hhH iiI jjJ kkK llL mmM nnN ooO ppP qqQ rrR ssS ttT uuU vvV wwW xxX yyY zzZ ƒƒƒ ŠšŠ ŒœŒ  ššŠ œœŒ  ŸÿŸ ªªª ²²² ³³³ µµµ ¹¹¹ ººº ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ ßßß ààÀ ááÁ ââÂ ããÃ ääÄ ååÅ ææÆ ççÇ èèÈ ééÉ êêÊ ëëË ììÌ ííÍ îîÎ ïïÏ ğğĞ ññÑ òòÒ óóÓ ôôÔ õõÕ ööÖ øøØ ùùÙ úúÚ ûûÛ üüÜ ııİ şşŞ ÿÿŸ 000 111 222 333 444 555 666 777 888 999 AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY ZzZ aaA bbB ccC ddD eeE ffF ggG hhH iiI jjJ kkK llL mmM nnN ooO ppP qqQ rrR ssS ttT uuU vvV wwW xxX yyY zzZ ƒƒƒ ŠšŠ ŒœŒ  ššŠ œœŒ  ŸÿŸ ªªª ²²² ³³³ µµµ ¹¹¹ ººº ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ ßßß ààÀ ááÁ ââÂ ããÃ ääÄ ååÅ ææÆ ççÇ èèÈ ééÉ êêÊ ëëË ììÌ ííÍ îîÎ ïïÏ ğğĞ ññÑ òòÒ óóÓ ôôÔ õõÕ ööÖ øøØ ùùÙ úúÚ ûûÛ üüÜ ııİ şşŞ ÿÿŸ 			     000 111 222 333 444 555 666 777 888 999 AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY ZzZ aaA bbB ccC ddD eeE ffF ggG hhH iiI jjJ kkK llL mmM nnN ooO ppP qqQ rrR ssS ttT uuU vvV wwW xxX yyY zzZ ƒƒƒ ŠšŠ ŒœŒ  ššŠ œœŒ  ŸÿŸ ªªª ²²² ³³³ µµµ ¹¹¹ ººº ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ ßßß ààÀ ááÁ ââÂ ããÃ ääÄ ååÅ ææÆ ççÇ èèÈ ééÉ êêÊ ëëË ììÌ ííÍ îîÎ ïïÏ ğğĞ ññÑ òòÒ óóÓ ôôÔ õõÕ ööÖ øøØ ùùÙ úúÚ ûûÛ üüÜ ııİ şşŞ ÿÿŸ 000 111 222 333 444 555 666 777 888 999 AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY ZzZ aaA bbB ccC ddD eeE ffF ggG hhH iiI jjJ kkK llL mmM nnN ooO ppP qqQ rrR ssS ttT uuU vvV wwW xxX yyY zzZ ƒƒƒ ŠšŠ ŒœŒ  ššŠ œœŒ  ŸÿŸ ªªª ²²² ³³³ µµµ ¹¹¹ ººº ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ ßßß ààÀ ááÁ ââÂ ããÃ ääÄ ååÅ ææÆ ççÇ èèÈ ééÉ êêÊ ëëË ììÌ ííÍ îîÎ ïïÏ ğğĞ ññÑ òòÒ óóÓ ôôÔ õõÕ ööÖ øøØ ùùÙ úúÚ ûûÛ üüÜ ııİ şşŞ ÿÿŸ 			     bleble@foo1.bh.pl       deny
+make[1]: [datanonl] Fout 1 (genegeerd)
+defref
+0a1
+> gawk: warning: `BINMODE' is a gawk extension
+make[1]: [defref] Fout 1 (genegeerd)
+delarprm
+delarpm2
+delfunc
+dynlj
+eofsplit
+exitval1
+exitval2
+1c1,2
+< foo
+---
+> read wordt niet herkend als een interne
+> of externe opdracht, programma of batchbestand.
+make[1]: [exitval2] Fout 1 (genegeerd)
+fldchg
+fldchgnf
+fmtspcl
+1,9c1,15
+< gawk: ../../gawk-3.1.6-src/test/fmtspcl.awk:10: warning: sqrt: called with negative argument -1
+< gawk: ../../gawk-3.1.6-src/test/fmtspcl.awk:6: warning: [s]printf: value NaN is out of range for `%x' format
+< gawk: ../../gawk-3.1.6-src/test/fmtspcl.awk:6: warning: [s]printf: value NaN is out of range for `%d' format
+< gawk: ../../gawk-3.1.6-src/test/fmtspcl.awk:6: warning: [s]printf: value NaN is out of range for `%x' format
+< gawk: ../../gawk-3.1.6-src/test/fmtspcl.awk:6: warning: [s]printf: value NaN is out of range for `%d' format
+< gawk: ../../gawk-3.1.6-src/test/fmtspcl.awk:6: warning: [s]printf: value Infinity is out of range for `%x' format
+< gawk: ../../gawk-3.1.6-src/test/fmtspcl.awk:6: warning: [s]printf: value Infinity is out of range for `%d' format
+< gawk: ../../gawk-3.1.6-src/test/fmtspcl.awk:6: warning: [s]printf: value Infinity is out of range for `%x' format
+< gawk: ../../gawk-3.1.6-src/test/fmtspcl.awk:6: warning: [s]printf: value Infinity is out of range for `%d' format
+---
+> gawk: warning: `BINMODE' is a gawk extension
+> gawk: ../../gawk-3.1.6-src/test/fmtspcl.awk:10: warning: sqrt: called with negative argument -1
+> sprintf(%x,NaN) = 8000000000000000 (!= NaN)
+> sprintf(%d,NaN) = -NaN (!= NaN)
+> sprintf(%x,NaN) = 8000000000000000 (!= NaN)
+> sprintf(%d,NaN) = -NaN (!= NaN)
+> gawk: ../../gawk-3.1.6-src/test/fmtspcl.awk:6: warning: [s]printf: value 1.#INF is out of range for `%x' format
+> gawk: ../../gawk-3.1.6-src/test/fmtspcl.awk:6: warning: [s]printf: value 1.#INF is out of range for `%d' format
+> sprintf(%f,Infinity) = Infinity (!= -Infinity)
+> sprintf(%s,Infinity) = Infinity (!= -Infinity)
+> sprintf(%g,Infinity) = Infinity (!= -Infinity)
+> gawk: ../../gawk-3.1.6-src/test/fmtspcl.awk:6: warning: [s]printf: value -1.#INF is out of range for `%x' format
+> sprintf(%x,Infinity) = Infinity (!= -Infinity)
+> gawk: ../../gawk-3.1.6-src/test/fmtspcl.awk:6: warning: [s]printf: value -1.#INF is out of range for `%d' format
+> sprintf(%d,Infinity) = Infinity (!= -Infinity)
+make[1]: [fmtspcl] Fout 1 (genegeerd)
+fmttest
+fnamedat
+fnarray
+fnarray2
+2a3
+> errcount: 1
+make[1]: [fnarray2] Fout 1 (genegeerd)
+fnarydel
+fnaryscl
+fnasgnm
+fnmisc
+2a3
+> errcount: 2
+make[1]: [fnmisc] Fout 1 (genegeerd)
+fnparydl
+fordel
+forsimp
+fsbs
+1c1
+< 1 2
+---
+> \\\ \\\ \\\ 1 2
+make[1]: [fsbs] Fout 1 (genegeerd)
+fsspcoln
+1c1
+< b
+---
+>     :::     :::     ::: b
+make[1]: [fsspcoln] Fout 1 (genegeerd)
+fsrs
+1c1,10
+< a b
+---
+>     			 
+> 
+> 
+>      			 
+> 
+> 
+>      			 
+> 
+> 
+>  a b
+make[1]: [fsrs] Fout 1 (genegeerd)
+fstabplus
+funsemnl
+funsmnam
+funstack
+0a1,21
+> SsS ssS TtT ttT RrR rrR IiI iiI NnN nnN GgG ggG PpP ppP RrR rrR EeE eeE AaA aaA MmM mmM BbB bbB LlL llL EeE eeE AaA aaA RrR rrR TtT ttT IiI iiI CcC ccC LlL llL EeE eeE {{{ === === """ ??? ??? {{{ === """ ^^^ ^^^ ^^^ ^^^ ^^^ ^^^ ^^^ ^^^ ^^^ ^^^ AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY ZzZ bbB ccC ddD eeE ffF ggG hhH iiI jjJ kkK llL mmM nnN ooO ppP qqQ rrR ssS ttT uuU vvV wwW xxX yyY zzZ ªªª ººº ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ ßßß ààÀ ááÁ ââÂ ããÃ ääÄ ååÅ ææÆ ççÇ èèÈ ééÉ êêÊ ëëË ììÌ ííÍ îîÎ ïïÏ ğğĞ ññÑ òòÒ óóÓ ôôÔ õõÕ ööÖ øøØ ùùÙ úúÚ ûûÛ üüÜ ııİ şşŞ ÿÿŸ 
+>  (hard_LC_COLLATE)
+> AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY aaA bbB ccC ddD eeE ffF ggG hhH iiI jjJ kkK llL mmM nnN ooO ppP qqQ rrR ssS ttT uuU vvV wwW xxX yyY zzZ ªªª ººº ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ ßßß ààÀ ááÁ ââÂ ããÃ ääÄ ååÅ ææÆ ççÇ èèÈ ééÉ êêÊ ëëË ììÌ ííÍ îîÎ ïïÏ ğğĞ ññÑ òòÒ óóÓ ôôÔ õõÕ ööÖ øøØ ùùÙ úúÚ ûûÛ üüÜ ııİ şşŞ ÿÿŸ 
+>  (hard_LC_COLLATE)
+> 000 111 222 333 444 555 666 777 888 999 ²²² ³³³ ¹¹¹ ¼¼¼ ½½½ ¾¾¾ 
+>  (hard_LC_COLLATE)
+> ((( ))) ::: ,,, ;;; ... /// --- >>> AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY ZzZ bbB ccC ddD eeE ffF ggG hhH iiI jjJ kkK llL mmM nnN ooO ppP qqQ rrR ssS ttT uuU vvV wwW xxX yyY zzZ ªªª ººº ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ ßßß ààÀ ááÁ ââÂ ããÃ ääÄ ååÅ ææÆ ççÇ èèÈ ééÉ êêÊ ëëË ììÌ ííÍ îîÎ ïïÏ ğğĞ ññÑ òòÒ óóÓ ôôÔ õõÕ ööÖ øøØ ùùÙ úúÚ ûûÛ üüÜ ııİ şşŞ ÿÿŸ 
+>  (hard_LC_COLLATE)
+> AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY aaA bbB ccC ddD eeE ffF ggG hhH iiI jjJ kkK llL mmM nnN ooO ppP qqQ rrR ssS ttT uuU vvV wwW xxX yyY zzZ ªªª ººº ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ ßßß ààÀ ááÁ ââÂ ããÃ ääÄ ååÅ ææÆ ççÇ èèÈ ééÉ êêÊ ëëË ììÌ ííÍ îîÎ ïïÏ ğğĞ ññÑ òòÒ óóÓ ôôÔ õõÕ ööÖ øøØ ùùÙ úúÚ ûûÛ üüÜ ııİ şşŞ ÿÿŸ 
+>  (hard_LC_COLLATE)
+> 000 111 222 333 444 555 666 777 888 999 ²²² ³³³ ¹¹¹ ¼¼¼ ½½½ ¾¾¾ 
+>  (hard_LC_COLLATE)
+> >>> $$$ $$$ $$$ $$$ $$$ $$$ $$$ AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY aaA bbB ccC ddD eeE ffF ggG hhH iiI jjJ kkK llL mmM nnN ooO ppP qqQ rrR ssS ttT uuU vvV wwW xxX yyY zzZ ªªª ººº ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ ßßß ààÀ ááÁ ââÂ ããÃ ääÄ ååÅ ææÆ ççÇ èèÈ ééÉ êêÊ ëëË ììÌ ííÍ îîÎ ïïÏ ğğĞ ññÑ òòÒ óóÓ ôôÔ õõÕ ööÖ øøØ ùùÙ úúÚ ûûÛ üüÜ ııİ şşŞ ÿÿŸ 
+>  (hard_LC_COLLATE)
+> AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY aaA bbB ccC ddD eeE ffF ggG hhH iiI jjJ kkK llL mmM nnN ooO ppP qqQ rrR ssS ttT uuU vvV wwW xxX yyY zzZ ªªª ººº ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ ßßß ààÀ ááÁ ââÂ ããÃ ääÄ ååÅ ææÆ ççÇ èèÈ ééÉ êêÊ ëëË ììÌ ííÍ îîÎ ïïÏ ğğĞ ññÑ òòÒ óóÓ ôôÔ õõÕ ööÖ øøØ ùùÙ úúÚ ûûÛ üüÜ ııİ şşŞ ÿÿŸ 
+>  (hard_LC_COLLATE)
+> AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY ZzZ bbB ccC ddD eeE ffF ggG hhH iiI jjJ kkK llL mmM nnN ooO ppP qqQ rrR ssS ttT uuU vvV wwW xxX yyY zzZ ªªª ººº ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ ßßß ààÀ ááÁ ââÂ ããÃ ääÄ ååÅ ææÆ ççÇ èèÈ ééÉ êêÊ ëëË ììÌ ííÍ îîÎ ïïÏ ğğĞ ññÑ òòÒ óóÓ ôôÔ õõÕ ööÖ øøØ ùùÙ úúÚ ûûÛ üüÜ ııİ şşŞ ÿÿŸ 
+>  (hard_LC_COLLATE)
+> AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY aaA bbB ccC ddD eeE ffF ggG hhH iiI jjJ kkK llL mmM nnN ooO ppP qqQ rrR ssS ttT uuU vvV wwW xxX yyY zzZ ªªª ººº ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ ßßß ààÀ ááÁ ââÂ ããÃ ääÄ ååÅ ææÆ ççÇ èèÈ ééÉ êêÊ ëëË ììÌ ííÍ îîÎ ïïÏ ğğĞ ññÑ òòÒ óóÓ ôôÔ õõÕ ööÖ øøØ ùùÙ úúÚ ûûÛ üüÜ ııİ şşŞ ÿÿŸ 
+>  (hard_LC_COLLATE)
+>     			     			 
+\ Geen witregel na einde bestand
+make[1]: [funstack] Fout 1 (genegeerd)
+getline
+getline2
+getline3
+getlnbuf
+getnr2tb
+getnr2tm
+gsubasgn
+4a5
+> errcount: 2
+make[1]: [gsubasgn] Fout 1 (genegeerd)
+gsubtest
+gsubtst2
+gsubtst3
+gsubtst4
+gsubtst5
+1c1,3
+< ThisIsaTitleMyTitle
+---
+>     """ ### $$$ %%% &&& ((( ))) *** ,,, ... /// 
+>  (hard_LC_COLLATE)
+> \\\ ::: ;;; [[[ ]]] @@@ ??? ... ,,, $$$ ThisIsaTitleMyTitle
+make[1]: [gsubtst5] Fout 1 (genegeerd)
+hex
+hsprint
+2c2
+<    %0|00045|00055|0002d|0012.68|001.27e+01|0000012.68|
+---
+>    %0|00045|00055|0002d|  12.68|  1.27e+01|     12.68|
+4c4
+<   %#0|00045|00055|0x02d|0012.68|001.27e+01|0000012.68|
+---
+>   %#0|00045|00055|0x02d|  12.68|  1.27e+01|     12.68|
+6c6
+<   % 0| 0045|00055|0002d| 012.68| 01.27e+01| 000012.68|
+---
+>   % 0| 0045|00055|0002d|  12.68|  1.27e+01|     12.68|
+8c8
+<  % #0| 0045|00055|0x02d| 012.68| 01.27e+01| 000012.68|
+---
+>  % #0| 0045|00055|0x02d|  12.68|  1.27e+01|     12.68|
+10c10
+<   %+0|+0045|00055|0002d|+012.68|+01.27e+01|+000012.68|
+---
+>   %+0|+0045|00055|0002d| +12.68| +1.27e+01|    +12.68|
+12c12
+<  %+#0|+0045|00055|0x02d|+012.68|+01.27e+01|+000012.68|
+---
+>  %+#0|+0045|00055|0x02d| +12.68| +1.27e+01|    +12.68|
+14c14
+<  %+ 0|+0045|00055|0002d|+012.68|+01.27e+01|+000012.68|
+---
+>  %+ 0|+0045|00055|0002d| +12.68| +1.27e+01|    +12.68|
+16c16
+< %+ #0|+0045|00055|0x02d|+012.68|+01.27e+01|+000012.68|
+---
+> %+ #0|+0045|00055|0x02d| +12.68| +1.27e+01|    +12.68|
+35c35
+<    %0|00zap|0000*|-000003|-003.46|-03.46e+00|-00003.457|
+---
+>    %0|00zap|0000*|     -3|  -3.46| -3.46e+00|    -3.457|
+37c37
+<   %#0|00zap|0000*|-00003.|-003.46|-03.46e+00|-00003.457|
+---
+>   %#0|00zap|0000*|    -3.|  -3.46| -3.46e+00|    -3.457|
+39c39
+<   % 0|00zap|0000*|-000003|-003.46|-03.46e+00|-00003.457|
+---
+>   % 0|00zap|0000*|     -3|  -3.46| -3.46e+00|    -3.457|
+41c41
+<  % #0|00zap|0000*|-00003.|-003.46|-03.46e+00|-00003.457|
+---
+>  % #0|00zap|0000*|    -3.|  -3.46| -3.46e+00|    -3.457|
+43c43
+<   %+0|00zap|0000*|-000003|-003.46|-03.46e+00|-00003.457|
+---
+>   %+0|00zap|0000*|     -3|  -3.46| -3.46e+00|    -3.457|
+45c45
+<  %+#0|00zap|0000*|-00003.|-003.46|-03.46e+00|-00003.457|
+---
+>  %+#0|00zap|0000*|    -3.|  -3.46| -3.46e+00|    -3.457|
+47c47
+<  %+ 0|00zap|0000*|-000003|-003.46|-03.46e+00|-00003.457|
+---
+>  %+ 0|00zap|0000*|     -3|  -3.46| -3.46e+00|    -3.457|
+49c49
+< %+ #0|00zap|0000*|-00003.|-003.46|-03.46e+00|-00003.457|
+---
+> %+ #0|00zap|0000*|    -3.|  -3.46| -3.46e+00|    -3.457|
+make[1]: [hsprint] Fout 1 (genegeerd)
+inputred
+intest
+intformat
+intprec
+iobug1
+leaddig
+leadnl
+1c1,10
+< Name is:  Jane Doe
+---
+>     			 
+> 
+> 
+>      			 
+> 
+> 
+>      			 
+> 
+> 
+>  Name is:  Jane Doe
+make[1]: [leadnl] Fout 1 (genegeerd)
+litoct
+gawk: warning: `BINMODE' is a gawk extension
+1c1
+< no match
+---
+> no match
+make[1]: [litoct] Fout 1 (genegeerd)
+longsub
+longwrds
+1,21c1,4
+< 20 long words
+< compatibility
+< concatenated
+< consistency
+< definitions
+< description
+< distributing
+< fistatements
+< gawk-options
+< gnu-specific
+< identically
+< implementation
+< implementations
+< information
+< non-portable
+< pattern-action
+< pre-defined
+< program-file
+< program-text
+< programming
+< restrictions
+---
+> AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY aaA bbB ccC ddD eeE ffF ggG hhH iiI jjJ kkK llL mmM nnN ooO ppP qqQ rrR ssS ttT uuU vvV wwW xxX yyY zzZ ªªª ººº ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ ßßß ààÀ ááÁ ââÂ ããÃ ääÄ ååÅ ææÆ ççÇ èèÈ ééÉ êêÊ ëëË ììÌ ííÍ îîÎ ïïÏ ğğĞ ññÑ òòÒ óóÓ ôôÔ õõÕ ööÖ øøØ ùùÙ úúÚ ûûÛ üüÜ ııİ şşŞ ÿÿŸ 
+>  (hard_LC_COLLATE)
+> LC_ALL wordt niet herkend als een interne
+> of externe opdracht, programma of batchbestand.
+make[1]: [longwrds] Fout 1 (genegeerd)
+manglprm
+math
+membug1
+messages
+minusstr
+mmap8k
+mtchi18n
+nasty
+1,2c1,5
+< aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+< X
+---
+> gawk: nasty.awk:79: fatal error: internal error
+> 
+> This application has requested the Runtime to terminate it in an unusual way.
+> Please contact the application's support team for more information.
+> EXIT CODE: 3
+make[1]: [nasty] Fout 1 (genegeerd)
+nasty2
+1,2c1,5
+< a = aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, f() = X
+< 123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123123
+---
+> gawk: nasty2.awk:20: fatal error: internal error
+> 
+> This application has requested the Runtime to terminate it in an unusual way.
+> Please contact the application's support team for more information.
+> EXIT CODE: 3
+make[1]: [nasty2] Fout 1 (genegeerd)
+negexp
+nested
+nfldstr
+nfneg
+nfset
+nlfldsep
+nlinstr
+1c1,10
+< ok
+---
+>     			 
+> 
+> 
+>      			 
+> 
+> 
+>      			 
+> 
+> 
+>  ok
+make[1]: [nlinstr] Fout 1 (genegeerd)
+nlstrina
+noeffect
+0a1
+> gawk: warning: `BINMODE' is a gawk extension
+make[1]: [noeffect] Fout 1 (genegeerd)
+nofile
+nofmtch
+0a1
+> gawk: warning: `BINMODE' is a gawk extension
+make[1]: [nofmtch] Fout 1 (genegeerd)
+noloop1
+0a1
+> ''' 
+\ Geen witregel na einde bestand
+make[1]: [noloop1] Fout 1 (genegeerd)
+noloop2
+0a1
+> ''' 
+\ Geen witregel na einde bestand
+make[1]: [noloop2] Fout 1 (genegeerd)
+nonl
+make[1]: [nonl] Fout 2 (genegeerd)
+0a1
+> gawk: warning: `BINMODE' is a gawk extension
+1a3
+> gawk: nonl.awk:1: fatal: cannot open file `/dev/null' for reading (No such file or directory)
+make[1]: [nonl] Fout 1 (genegeerd)
+noparms
+4a5
+> errcount: 3
+make[1]: [noparms] Fout 1 (genegeerd)
+nors
+nulrsend
+1c1,10
+< 1
+---
+>     			 
+> 
+> 
+>      			 
+> 
+> 
+>      			 
+> 
+> 
+>  1
+2a12,21
+>     			 
+> 
+> 
+>      			 
+> 
+> 
+>      			 
+> 
+> 
+>  
+\ Geen witregel na einde bestand
+make[1]: [nulrsend] Fout 1 (genegeerd)
+numindex
+numsubstr
+octsub
+ofmt
+0a1,2
+> 000 111 222 333 444 555 666 777 888 999 ²²² ³³³ ¹¹¹ ¼¼¼ ½½½ ¾¾¾ 
+>  (hard_LC_COLLATE)
+make[1]: [ofmt] Fout 1 (genegeerd)
+ofmtbig
+0a1,4
+> 000 111 222 333 444 555 666 777 888 999 ²²² ³³³ ¹¹¹ ¼¼¼ ½½½ ¾¾¾ 
+>  (hard_LC_COLLATE)
+> AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY aaA bbB ccC ddD eeE ffF ggG hhH iiI jjJ kkK llL mmM nnN ooO ppP qqQ rrR ssS ttT uuU vvV wwW xxX yyY zzZ ªªª ººº ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ ßßß ààÀ ááÁ ââÂ ããÃ ääÄ ååÅ ææÆ ççÇ èèÈ ééÉ êêÊ ëëË ììÌ ííÍ îîÎ ïïÏ ğğĞ ññÑ òòÒ óóÓ ôôÔ õõÕ ööÖ øøØ ùùÙ úúÚ ûûÛ üüÜ ııİ şşŞ ÿÿŸ 
+>  (hard_LC_COLLATE)
+make[1]: [ofmtbig] Fout 1 (genegeerd)
+ofmtfidl
+ofmts
+onlynl
+0a1,10
+>     			 
+> 
+> 
+>      			 
+> 
+> 
+>      			 
+> 
+> 
+>  
+\ Geen witregel na einde bestand
+make[1]: [onlynl] Fout 1 (genegeerd)
+opasnidx
+opasnslf
+ovrflow1
+paramdup
+2a3
+> errcount: 1
+make[1]: [paramdup] Fout 1 (genegeerd)
+paramtyp
+parse1
+parsefld
+parseme
+pcntplus
+prdupval
+prec
+printf0
+1c1,2
+< X
+---
+> gawk: warning: `BINMODE' is a gawk extension
+> X
+make[1]: [printf0] Fout 1 (genegeerd)
+printf1
+prmarscl
+prmreuse
+prt1eval
+1c1,5
+< 1
+---
+> gawk: prt1eval.awk:4: fatal error: internal error
+> 
+> This application has requested the Runtime to terminate it in an unusual way.
+> Please contact the application's support team for more information.
+> EXIT CODE: 3
+make[1]: [prt1eval] Fout 1 (genegeerd)
+prtoeval
+2c2,6
+< partial line: 'A STRING'
+---
+> gawk: prtoeval.awk:1: fatal error: internal error
+> 
+> This application has requested the Runtime to terminate it in an unusual way.
+> Please contact the application's support team for more information.
+> EXIT CODE: 3
+make[1]: [prtoeval] Fout 1 (genegeerd)
+psx96sub
+rand
+rebt8b1
+1c1
+< [an]*n    bANas ANd ANases iAN cAN
+---
+> aaA nnN aaA nnN úúÚ aaA úúÚ aaA nnN aaA úúÚ aaA nnN úúÚ aaA nnN aaA úúÚ aaA nnN úúÚ aaA nnN aaA úúÚ aaA nnN úúÚ [an]*n    bANas ANd ANases iAN cAN
+make[1]: [rebt8b1] Fout 1 (genegeerd)
+rebt8b2
+1,18c1,18
+< [an\000]*n  bANas ANd ANases iAN cAN
+< 	match
+< [an\001]*n  bANas ANd ANases iAN cAN
+< 	match
+< [an\002]*n  bANas ANd ANases iAN cAN
+< 	match
+< [an\003]*n  bANas ANd ANases iAN cAN
+< 	match
+< [an\004]*n  bANas ANd ANases iAN cAN
+< 	match
+< [an\005]*n  bANas ANd ANases iAN cAN
+< 	match
+< [an\006]*n  bANas ANd ANases iAN cAN
+< 	match
+< [an\007]*n  bANas ANd ANases iAN cAN
+< 	match
+< [an\010]*n  bANas ANd ANases iAN cAN
+< 	match
+---
+> aaA nnN     [an\000]*n  bANas ANd ANases iAN cAN
+> aaA nnN     	match
+> aaA nnN  [an\001]*n  bANas ANd ANases iAN cAN
+> aaA nnN  	match
+> aaA nnN  [an\002]*n  bANas ANd ANases iAN cAN
+> aaA nnN  	match
+> aaA nnN  [an\003]*n  bANas ANd ANases iAN cAN
+> aaA nnN  	match
+> aaA nnN  [an\004]*n  bANas ANd ANases iAN cAN
+> aaA nnN  	match
+> aaA nnN  [an\005]*n  bANas ANd ANases iAN cAN
+> aaA nnN  	match
+> aaA nnN  [an\006]*n  bANas ANd ANases iAN cAN
+> aaA nnN  	match
+> aaA nnN  [an\007]*n  bANas ANd ANases iAN cAN
+> aaA nnN  	match
+> aaA nnN  [an\010]*n  bANas ANd ANases iAN cAN
+> aaA nnN  	match
+make[1]: [rebt8b2] Fout 1 (genegeerd)
+redfilnm
+regeq
+reindops
+0a1,2
+> 222 333 444 555 666 777 888 999 ²²² ³³³ 
+>  (hard_LC_COLLATE)
+make[1]: [reindops] Fout 1 (genegeerd)
+reparse
+resplit
+rs
+1c1,10
+< a b
+---
+>     			 
+> 
+> 
+>      			 
+> 
+> 
+>      			 
+> 
+> 
+>  a b
+make[1]: [rs] Fout 1 (genegeerd)
+rsnul1nl
+1c1,10
+< This is...
+---
+>     			 
+> 
+> 
+>      			 
+> 
+> 
+>      			 
+> 
+> 
+>  This is...
+make[1]: [rsnul1nl] Fout 1 (genegeerd)
+rsnulbig
+1c1,5
+< 16386
+---
+> aaA     			 
+>      			 
+>      			 
+>  abcdefgh123456
+> 16395
+make[1]: [rsnulbig] Fout 1 (genegeerd)
+rsnulbig2
+1c1,5
+< 2
+---
+> aaA     			 
+>      			 
+>      			 
+>  abc
+> 11
+make[1]: [rsnulbig2] Fout 1 (genegeerd)
+rstest1
+1c1,19
+< 3
+---
+>     			 
+> 
+> 
+>      			 
+> 
+> 
+>      			 
+> 
+> 
+>  ::: 
+> 
+> 
+>  ::: 
+> 
+> 
+>  ::: 
+> 
+> 
+>  3
+make[1]: [rstest1] Fout 1 (genegeerd)
+rstest2
+1c1,19
+< a
+---
+>     			 
+> 
+> 
+>      			 
+> 
+> 
+>      			 
+> 
+> 
+>  \\\ 
+> 
+> 
+>  \\\ 
+> 
+> 
+>  \\\ 
+> 
+> 
+>  a
+make[1]: [rstest2] Fout 1 (genegeerd)
+rstest3
+0a1,10
+>     			 
+> 
+> 
+>      			 
+> 
+> 
+>      			 
+> 
+> 
+>  
+\ Geen witregel na einde bestand
+make[1]: [rstest3] Fout 1 (genegeerd)
+rstest4
+1c1,10
+< y = <a>
+---
+>     			 
+> 
+> 
+>      			 
+> 
+> 
+>      			 
+> 
+> 
+>  y = <"a>
+make[1]: [rstest4] Fout 1 (genegeerd)
+rstest5
+1,3c1,12
+< foo
+< baz
+< bar
+---
+>     			 
+> 
+> 
+>      			 
+> 
+> 
+>      			 
+> 
+> 
+>  'foo
+> 'foo
+> 'bar
+make[1]: [rstest5] Fout 1 (genegeerd)
+rswhite
+1c1,10
+< <    a b
+---
+>     			 
+> 
+> 
+>      			 
+> 
+> 
+>      			 
+> 
+> 
+>  <    a b
+make[1]: [rswhite] Fout 1 (genegeerd)
+scalar
+sclforin
+sclifin
+sortempty
+splitargv
+splitarr
+splitdef
+splitvar
+splitwht
+sprintfc
+strcat1
+strtod
+strnum1
+subamp
+0a1,2
+> AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY aaA bbB ccC ddD eeE ffF ggG hhH iiI jjJ kkK llL mmM nnN ooO ppP qqQ rrR ssS ttT uuU vvV wwW xxX yyY zzZ ªªª ººº ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ ßßß ààÀ ááÁ ââÂ ããÃ ääÄ ååÅ ææÆ ççÇ èèÈ ééÉ êêÊ ëëË ììÌ ííÍ îîÎ ïïÏ ğğĞ ññÑ òòÒ óóÓ ôôÔ õõÕ ööÖ øøØ ùùÙ úúÚ ûûÛ üüÜ ııİ şşŞ ÿÿŸ 
+>  (hard_LC_COLLATE)
+make[1]: [subamp] Fout 1 (genegeerd)
+subi18n
+1c1
+< "directory" version="1.0"
+---
+> === """     			 "directory" version="1.0"
+make[1]: [subi18n] Fout 1 (genegeerd)
+subsepnm
+subslash
+substr
+swaplns
+synerr1
+2a3
+> errcount: 1
+make[1]: [synerr1] Fout 1 (genegeerd)
+synerr2
+2a3
+> errcount: 1
+make[1]: [synerr2] Fout 1 (genegeerd)
+tradanch
+gawk: warning: `BINMODE' is a gawk extension
+tweakfld
+uninit2
+0a1
+> gawk: warning: `BINMODE' is a gawk extension
+make[1]: [uninit2] Fout 1 (genegeerd)
+uninit3
+0a1
+> gawk: warning: `BINMODE' is a gawk extension
+make[1]: [uninit3] Fout 1 (genegeerd)
+uninit4
+0a1
+> gawk: warning: `BINMODE' is a gawk extension
+make[1]: [uninit4] Fout 1 (genegeerd)
+uninitialized
+0a1
+> gawk: warning: `BINMODE' is a gawk extension
+make[1]: [uninitialized] Fout 1 (genegeerd)
+unterm
+wideidx
+wideidx2
+widesub
+1c1
+< "directory" version="1.0"
+---
+> === """     			 "directory" version="1.0"
+make[1]: [widesub] Fout 1 (genegeerd)
+widesub2
+widesub3
+widesub4
+wjposer1
+1c1,10
+< %IH:exertion
+---
+>     			 
+> 
+> 
+>      			 
+> 
+> 
+>      			 
+> 
+> 
+>  %IH:exertion
+make[1]: [wjposer1] Fout 1 (genegeerd)
+zeroe0
+zeroflag
+zero2
+======== Done with basic tests ========
+======== Starting Unix tests ========
+fflush
+getlnhd
+1,2c1
+< select * from user
+<   where Name = 'O\'Donell'
+---
+> << niet verwacht op dit moment.
+make[1]: [getlnhd] Fout 1 (genegeerd)
+localenl
+1,5c1,105
+< LC_ALL=C passed
+< LC_ALL=UNKNOWN passed
+< LC_ALL=POSIX passed
+< LC_ALL=en_US.ISO-8859-1 passed
+< LC_ALL=en_US.UTF-8 passed
+---
+> 222 
+> 
+> 
+>  333 
+> 
+> 
+>  444 
+> 
+> 
+>  555 			 666 
+> 
+> 
+>  AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY aaA bbB ccC ddD eeE ffF ggG hhH iiI jjJ kkK llL mmM nnN ooO ppP qqQ rrR ssS ttT uuU vvV wwW xxX yyY zzZ ªªª ººº ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ ßßß ààÀ ááÁ ââÂ ããÃ ääÄ ååÅ ææÆ ççÇ èèÈ ééÉ êêÊ ëëË ììÌ ííÍ îîÎ ïïÏ ğğĞ ññÑ òòÒ óóÓ ôôÔ õõÕ ööÖ øøØ ùùÙ úúÚ ûûÛ üüÜ ııİ şşŞ ÿÿŸ 
+>  (hard_LC_COLLATE)
+> 888 
+> 
+> 
+>  999 
+> 
+> 
+>  LC_ALL=C passed
+> 222 
+> 
+> 
+>  333 
+> 
+> 
+>  444 
+> 
+> 
+>  555 			 666 
+> 
+> 
+>  AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY aaA bbB ccC ddD eeE ffF ggG hhH iiI jjJ kkK llL mmM nnN ooO ppP qqQ rrR ssS ttT uuU vvV wwW xxX yyY zzZ ªªª ººº ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ ßßß ààÀ ááÁ ââÂ ããÃ ääÄ ååÅ ææÆ ççÇ èèÈ ééÉ êêÊ ëëË ììÌ ííÍ îîÎ ïïÏ ğğĞ ññÑ òòÒ óóÓ ôôÔ õõÕ ööÖ øøØ ùùÙ úúÚ ûûÛ üüÜ ııİ şşŞ ÿÿŸ 
+>  (hard_LC_COLLATE)
+> 888 
+> 
+> 
+>  999 
+> 
+> 
+>  LC_ALL=UNKNOWN passed
+> 222 
+> 
+> 
+>  333 
+> 
+> 
+>  444 
+> 
+> 
+>  555 			 666 
+> 
+> 
+>  AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY aaA bbB ccC ddD eeE ffF ggG hhH iiI jjJ kkK llL mmM nnN ooO ppP qqQ rrR ssS ttT uuU vvV wwW xxX yyY zzZ ªªª ººº ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ ßßß ààÀ ááÁ ââÂ ããÃ ääÄ ååÅ ææÆ ççÇ èèÈ ééÉ êêÊ ëëË ììÌ ííÍ îîÎ ïïÏ ğğĞ ññÑ òòÒ óóÓ ôôÔ õõÕ ööÖ øøØ ùùÙ úúÚ ûûÛ üüÜ ııİ şşŞ ÿÿŸ 
+>  (hard_LC_COLLATE)
+> 888 
+> 
+> 
+>  999 
+> 
+> 
+>  LC_ALL=POSIX passed
+> 222 
+> 
+> 
+>  333 
+> 
+> 
+>  444 
+> 
+> 
+>  555 			 666 
+> 
+> 
+>  AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY aaA bbB ccC ddD eeE ffF ggG hhH iiI jjJ kkK llL mmM nnN ooO ppP qqQ rrR ssS ttT uuU vvV wwW xxX yyY zzZ ªªª ººº ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ ßßß ààÀ ááÁ ââÂ ããÃ ääÄ ååÅ ææÆ ççÇ èèÈ ééÉ êêÊ ëëË ììÌ ííÍ îîÎ ïïÏ ğğĞ ññÑ òòÒ óóÓ ôôÔ õõÕ ööÖ øøØ ùùÙ úúÚ ûûÛ üüÜ ııİ şşŞ ÿÿŸ 
+>  (hard_LC_COLLATE)
+> 888 
+> 
+> 
+>  999 
+> 
+> 
+>  LC_ALL=en_US.ISO-8859-1 passed
+> 222 
+> 
+> 
+>  333 
+> 
+> 
+>  444 
+> 
+> 
+>  555 			 666 
+> 
+> 
+>  AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY aaA bbB ccC ddD eeE ffF ggG hhH iiI jjJ kkK llL mmM nnN ooO ppP qqQ rrR ssS ttT uuU vvV wwW xxX yyY zzZ ªªª ººº ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ ßßß ààÀ ááÁ ââÂ ããÃ ääÄ ååÅ ææÆ ççÇ èèÈ ééÉ êêÊ ëëË ììÌ ííÍ îîÎ ïïÏ ğğĞ ññÑ òòÒ óóÓ ôôÔ õõÕ ööÖ øøØ ùùÙ úúÚ ûûÛ üüÜ ııİ şşŞ ÿÿŸ 
+>  (hard_LC_COLLATE)
+> 888 
+> 
+> 
+>  999 
+> 
+> 
+>  LC_ALL=en_US.UTF-8 passed
+make[1]: [localenl] Fout 1 (genegeerd)
+pid
+1,2c1,2
+< PID ok
+< PPID ok
+---
+> Bad pid 4076, wanted 2852
+> Bad ppid 0, wanted 248
+make[1]: [pid] Fout 1 (genegeerd)
+pipeio1
+pipeio2
+2c2
+< January ....
+---
+>    January .... 
+4c4
+< S M Tu W Th F S
+---
+>  S  M Tu  W Th  F  S 
+6c6
+< . . . .
+---
+>           .  .  .  . 
+8c8
+< . . . . . .. ..
+---
+>  .  .  .  .  . .. .. 
+10c10
+< .. .. .. .. .. .. ..
+---
+> .. .. .. .. .. .. .. 
+12c12
+< .. .. .. .. .. .. ..
+---
+> .. .. .. .. .. .. .. 
+14c14
+< .. .. .. .. .. ..
+---
+> .. .. .. .. .. .. 
+make[1]: [pipeio2] Fout 1 (genegeerd)
+poundbang
+space
+strftlng
+======== Done with Unix tests ========
+======== Starting gawk extension tests ========
+argtest
+asort
+asorti
+backw
+badargs
+binmode1
+clos1way
+1,26c1,2
+< got a
+< got b
+< got c
+< got d
+< got e
+< got f
+< got g
+< got h
+< got i
+< got j
+< got k
+< got l
+< got m
+< got n
+< got o
+< got p
+< got q
+< got r
+< got s
+< got t
+< got u
+< got v
+< got w
+< got x
+< got y
+< got z
+---
+> gawk: clos1way.awk:7: fatal: `|&' not supported
+> EXIT CODE: 2
+make[1]: [clos1way] Fout 1 (genegeerd)
+devfd
+1,2c1,2
+< file on fd 4
+< file on fd 5
+---
+> gawk: cmd. line:1: fatal: can't stat fd 4 (Bad file descriptor)
+> EXIT CODE: 2
+make[1]: [devfd] Fout 1 (genegeerd)
+devfd1
+1,40c1,2
+< this is file f1, line 1
+< this is file f2, line 1
+< this is file f1, line 2
+< this is file f2, line 2
+< this is file f1, line 3
+< this is file f2, line 3
+< this is file f1, line 4
+< this is file f2, line 4
+< this is file f1, line 5
+< this is file f2, line 5
+< this is file f1, line 6
+< this is file f2, line 6
+< this is file f1, line 7
+< this is file f2, line 7
+< this is file f1, line 8
+< this is file f2, line 8
+< this is file f1, line 9
+< this is file f2, line 9
+< this is file f1, line 10
+< this is file f2, line 10
+< this is file f1, line 11
+< this is file f2, line 11
+< this is file f1, line 12
+< this is file f2, line 12
+< this is file f1, line 13
+< this is file f2, line 13
+< this is file f1, line 14
+< this is file f2, line 14
+< this is file f1, line 15
+< this is file f2, line 15
+< this is file f1, line 16
+< this is file f2, line 16
+< this is file f1, line 17
+< this is file f2, line 17
+< this is file f1, line 18
+< this is file f2, line 18
+< this is file f1, line 19
+< this is file f2, line 19
+< this is file f1, line 20
+< this is file f2, line 20
+---
+> gawk: ../../gawk-3.1.6-src/test/devfd1.awk:5: fatal: can't stat fd 4 (Bad file descriptor)
+> EXIT CODE: 2
+make[1]: [devfd1] Fout 1 (genegeerd)
+devfd2
+1,40c1,2
+< this is file f1, line 1
+< this is file f1, line 2
+< this is file f1, line 3
+< this is file f1, line 4
+< this is file f1, line 5
+< this is file f1, line 6
+< this is file f1, line 7
+< this is file f1, line 8
+< this is file f1, line 9
+< this is file f1, line 10
+< this is file f1, line 11
+< this is file f1, line 12
+< this is file f1, line 13
+< this is file f1, line 14
+< this is file f1, line 15
+< this is file f1, line 16
+< this is file f1, line 17
+< this is file f1, line 18
+< this is file f1, line 19
+< this is file f1, line 20
+< this is file f2, line 1
+< this is file f2, line 2
+< this is file f2, line 3
+< this is file f2, line 4
+< this is file f2, line 5
+< this is file f2, line 6
+< this is file f2, line 7
+< this is file f2, line 8
+< this is file f2, line 9
+< this is file f2, line 10
+< this is file f2, line 11
+< this is file f2, line 12
+< this is file f2, line 13
+< this is file f2, line 14
+< this is file f2, line 15
+< this is file f2, line 16
+< this is file f2, line 17
+< this is file f2, line 18
+< this is file f2, line 19
+< this is file f2, line 20
+---
+> gawk: cmd. line:1: fatal: can't stat fd 4 (Bad file descriptor)
+> EXIT CODE: 2
+make[1]: [devfd2] Fout 1 (genegeerd)
+double1
+double2
+fieldwdth
+fsfwfs
+fwtest
+fwtest2
+gensub
+gensub2
+gnuops2
+gnuops3
+gnureops
+icasefs
+1c1
+< aCa
+---
+> ccC ccC ccC aCa
+5,6c5,6
+< aCa
+< aCa
+---
+> xxX yyY aCa
+> xxX yyY aCa
+make[1]: [icasefs] Fout 1 (genegeerd)
+icasers
+1c1,10
+< 1111
+---
+> AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY ZzZ ŠšŠ ŒœŒ  ŸÿŸ ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ 
+> 
+> 
+>  AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY ZzZ ŠšŠ ŒœŒ  ŸÿŸ ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ 
+> 
+> 
+>  AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY ZzZ ŠšŠ ŒœŒ  ŸÿŸ ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ 
+> 
+> 
+>  1111
+make[1]: [icasers] Fout 1 (genegeerd)
+igncdym
+1c1
+< 0 bar:This is foo
+---
+> bbB aaA rrR 0 bar:This is foo
+3c3
+< 9 bar:This is bar
+---
+> bbB aaA rrR 9 bar:This is bar
+make[1]: [igncdym] Fout 1 (genegeerd)
+igncfs
+0a1,6
+> AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY aaA bbB ccC ddD eeE ffF ggG hhH iiI jjJ kkK llL mmM nnN ooO ppP qqQ rrR ssS ttT uuU vvV wwW xxX yyY zzZ ªªª ººº ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ ßßß ààÀ ááÁ ââÂ ããÃ ääÄ ååÅ ææÆ ççÇ èèÈ ééÉ êêÊ ëëË ììÌ ííÍ îîÎ ïïÏ ğğĞ ññÑ òòÒ óóÓ ôôÔ õõÕ ööÖ øøØ ùùÙ úúÚ ûûÛ üüÜ ııİ şşŞ ÿÿŸ 
+>  (hard_LC_COLLATE)
+> AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY aaA bbB ccC ddD eeE ffF ggG hhH iiI jjJ kkK llL mmM nnN ooO ppP qqQ rrR ssS ttT uuU vvV wwW xxX yyY zzZ ªªª ººº ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ ßßß ààÀ ááÁ ââÂ ããÃ ääÄ ååÅ ææÆ ççÇ èèÈ ééÉ êêÊ ëëË ììÌ ííÍ îîÎ ïïÏ ğğĞ ññÑ òòÒ óóÓ ôôÔ õõÕ ööÖ øøØ ùùÙ úúÚ ûûÛ üüÜ ııİ şşŞ ÿÿŸ 
+>  (hard_LC_COLLATE)
+> AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY ZzZ aaA bbB ccC ddD eeE ffF ggG hhH iiI jjJ kkK llL mmM nnN ooO ppP qqQ rrR ssS ttT uuU vvV wwW xxX yyY zzZ ªªª ººº ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ ßßß ààÀ ááÁ ââÂ ããÃ ääÄ ååÅ ææÆ ççÇ èèÈ ééÉ êêÊ ëëË ììÌ ííÍ îîÎ ïïÏ ğğĞ ññÑ òòÒ óóÓ ôôÔ õõÕ ööÖ øøØ ùùÙ úúÚ ûûÛ üüÜ ııİ şşŞ 
+>  (hard_LC_COLLATE)
+make[1]: [igncfs] Fout 1 (genegeerd)
+ignrcase
+1c1
+< xz
+---
+> yyY xz
+make[1]: [ignrcase] Fout 1 (genegeerd)
+ignrcas2
+1c1
+< OK
+---
+> 000 111 222 333 444 555 666 777 888 999 AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY ZzZ aaA bbB ccC ddD eeE ffF ggG hhH iiI jjJ kkK llL mmM nnN ooO ppP qqQ rrR ssS ttT uuU vvV wwW xxX yyY zzZ ƒƒƒ ŠšŠ ŒœŒ  ššŠ œœŒ  ŸÿŸ ªªª ²²² ³³³ µµµ ¹¹¹ ººº ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ ßßß ààÀ ááÁ ââÂ ããÃ ääÄ ååÅ ææÆ ççÇ èèÈ ééÉ êêÊ ëëË ììÌ ííÍ îîÎ ïïÏ ğğĞ ññÑ òòÒ óóÓ ôôÔ õõÕ ööÖ øøØ ùùÙ úúÚ ûûÛ üüÜ ııİ şşŞ ÿÿŸ 000 111 222 333 444 555 666 777 888 999 AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY ZzZ aaA bbB ccC ddD eeE ffF ggG hhH iiI jjJ kkK llL mmM nnN ooO ppP qqQ rrR ssS ttT uuU vvV wwW xxX yyY zzZ ƒƒƒ ŠšŠ ŒœŒ  ššŠ œœŒ  ŸÿŸ ªªª ²²² ³³³ µµµ ¹¹¹ ººº ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ ßßß ààÀ ááÁ ââÂ ããÃ ääÄ ååÅ ææÆ ççÇ èèÈ ééÉ êêÊ ëëË ììÌ ííÍ îîÎ ïïÏ ğğĞ ññÑ òòÒ óóÓ ôôÔ õõÕ ööÖ øøØ ùùÙ úúÚ ûûÛ üüÜ ııİ şşŞ ÿÿŸ 000 111 222 333 444 555 666 777 888 999 AaA BbB CcC DdD EeE FfF GgG HhH IiI JjJ KkK LlL MmM NnN OoO PpP QqQ RrR SsS TtT UuU VvV WwW XxX YyY ZzZ aaA bbB ccC ddD eeE ffF ggG hhH iiI jjJ kkK llL mmM nnN ooO ppP qqQ rrR ssS ttT uuU vvV wwW xxX yyY zzZ ƒƒƒ ŠšŠ ŒœŒ  ššŠ œœŒ  ŸÿŸ ªªª ²²² ³³³ µµµ ¹¹¹ ººº ÀàÀ ÁáÁ ÂâÂ ÃãÃ ÄäÄ ÅåÅ ÆæÆ ÇçÇ ÈèÈ ÉéÉ ÊêÊ ËëË ÌìÌ ÍíÍ ÎîÎ ÏïÏ ĞğĞ ÑñÑ ÒòÒ ÓóÓ ÔôÔ ÕõÕ ÖöÖ ØøØ ÙùÙ ÚúÚ ÛûÛ ÜüÜ İıİ ŞşŞ ßßß ààÀ ááÁ ââÂ ããÃ ääÄ ååÅ ææÆ ççÇ èèÈ ééÉ êêÊ ëëË ììÌ ííÍ îîÎ ïïÏ ğğĞ ññÑ òòÒ óóÓ ôôÔ õõÕ ööÖ øøØ ùùÙ úúÚ ûûÛ üüÜ ııİ şşŞ ÿÿŸ OK
+make[1]: [ignrcas2] Fout 1 (genegeerd)
+lint
+lintold
+16c16
+< done
+---
+> aaA bbB done
+make[1]: [lintold] Fout 1 (genegeerd)
+match1
+match2
+manyfiles
+nondec
+nondec2
+posix
+procinfs
+printfbad1
+regx8bit
+rebuf
+1c1
+< 1 0
+---
+> ttT iiI ddD wwW vvV 1 0
+make[1]: [rebuf] Fout 1 (genegeerd)
+reint
+reint2
+1c1,4
+< 1 2 3
+---
+> 000 111 222 333 444 555 666 777 888 999 ²²² ³³³ ¹¹¹ 			 
+> 
+> 
+>             1 2 3
+make[1]: [reint2] Fout 1 (genegeerd)
+rsstart1
+1c1
+< 2
+---
+> AaA 2
+make[1]: [rsstart1] Fout 1 (genegeerd)
+rsstart2
+1c1
+< 2
+---
+> AaA xxX 2
+make[1]: [rsstart2] Fout 1 (genegeerd)
+rsstart3
+1c1
+< 2
+---
+> AaA xxX 2
+make[1]: [rsstart3] Fout 1 (genegeerd)
+rstest6
+1c1
+< ABCD
+---
+> XxX YyY ZzZ ABCD
+make[1]: [rstest6] Fout 1 (genegeerd)
+shadow
+0a1
+> gawk: warning: `BINMODE' is a gawk extension
+make[1]: [shadow] Fout 1 (genegeerd)
+sort1
+strtonum
+This test could fail on slow machines or on a minute boundary,
+so if it does, double check the actual results:
+strftime
+whiny
+======== Done with gawk extension tests ========
+make[2]: Map '/cygdrive/j/Lang/gawk/3.1.6/gawk-3.1.6/test' wordt binnengegaan
+80 TESTS FAILED
+make[2]: Map '/cygdrive/j/Lang/gawk/3.1.6/gawk-3.1.6/test' wordt verlaten
+make[1]: Map '/cygdrive/j/Lang/gawk/3.1.6/gawk-3.1.6/test' wordt verlaten

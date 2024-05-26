@@ -1,0 +1,24 @@
+Sun Jan  7 23:49:46 EST 1996
+
+GCC and Autoconf disagree about the type of the array argument passed
+to getgroups(2).  You can thus ignore the warning that gcc will
+generate under SunOS 4.1.x for io.c.
+
+If you send me email about this without having read this file, I will
+fuss at you!
+
+Arnold Robbins
+arnold@skeeve.com
+
+Tue Jan 30 07:01:39 EST 1996
+
+The manyfiles test fails under SunOS 4.1.4.  There appears to be some
+bug in libc (shared and static) for SunOS 4.1.4.  I got a working gawk
+binary by linking in /usr/5lib/libc.a statically.
+
+
+,-*~'`^`'~*-,._.,-*~'`^`'~*-,._.,-*~'`^`'~*-,._.,-*~'`^`'~*-,._.,-*~'`^`'~*-,
+     Jim Farrell      | phone 610-940-6020       | Platinum technology
+Systems Administrator | vmail 800-526-9096 x7512 | 620 W. Germantown Pike
+  jwf@platinum.com    | fax   610-940-6021       | Plymouth Meeting,Pa,19462
+'~*-,._.,-*~'`^`'~*-,._.,-*~'`^`'~*-,._.,-*~'`^`'~*-,._.,-*~'`^`'~*-,._.,-*~'

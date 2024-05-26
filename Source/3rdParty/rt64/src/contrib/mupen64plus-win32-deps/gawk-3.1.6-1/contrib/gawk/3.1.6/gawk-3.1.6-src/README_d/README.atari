@@ -1,0 +1,26 @@
+Sun May  2 18:40:46 IDT 1999
+
+See the README.1st file in the atari directory.
+
+--------------------------------------------------------
+Gawk on the Atari has been compiled and tested using gcc, both
+with and without -mshort flag.  Other compilers can be used but if
+sizeof(pointer) != sizeof(int) this code will not compile correctly
+with a non-ANSI compiler (prototypes and library).
+
+Compiled executables were tested and passed successfully a test suite
+similar to 'make test'.  Required changes are minor and minor
+modifications are due to differences in environment and/or shell.  If
+a need will arise a modified test suite with a driving Makefile (for
+gulam) is available on a request from Michal Jaegermann,
+michal@gortel.phys.ualberta.ca or michal@ellpspace.math.ualberta.ca,
+via e-mail.
+
+Sample files atari/Makefile.st, atari/Makefile.awklib and
+atari/config.h assume gcc compilation and execution under TOS; it is
+likely that one would want to change it for another setup.  If they
+are ok then copy atari/Makefile.st to Makefile, atari/config.h to
+config.h and atari/Makefile.awklib to awklib/Makefile..  Pay attention
+to code fragments bracketed by '#ifdef atarist ... #endif'.  These
+modifications may not be required/desired with a different OS and/or
+libraries.

@@ -1,0 +1,14 @@
+Fri Aug 25 13:23:06 IDT 2006
+============================
+
+The files memmove.c, mktime.c, snprintf.c, strerror.c, strftime.c,
+strncasecmp.c, and system.c are copyright by the Free Software
+Foundation. They are licensed under the GPL or the LGPL. See the
+COPYING.LIB file in this directory and the COPYING file in the parent
+directory for licensing information.
+
+All other files are public domain.
+
+Arnold Robbins
+arnold@skeeve.com
+
