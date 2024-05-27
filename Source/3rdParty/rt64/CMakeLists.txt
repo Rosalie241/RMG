@@ -313,7 +313,7 @@ include_directories(
     "${PROJECT_SOURCE_DIR}/src/contrib/nativefiledialog-extended/src/include"
 )
 
-if (WIN32)
+if (NOT RT64_BUILD_PLUGIN AND WIN32)
     # DXC only needs to be included during runtime for Windows.
     include_directories("${PROJECT_SOURCE_DIR}/src/contrib/dxc/inc")
 endif()
@@ -347,6 +347,7 @@ if (NOT RT64_BUILD_PLUGIN AND WIN32)
 endif()
 
 if (RT64_BUILD_PLUGIN)
+    target_compile_definitions(rt64 PRIVATE RT64_BUILD_PLUGIN)
     target_sources(rt64 PRIVATE
         "${PROJECT_SOURCE_DIR}/src/api/rt64_api_common.cpp"
         "${PROJECT_SOURCE_DIR}/src/api/rt64_api_plugin.cpp"
