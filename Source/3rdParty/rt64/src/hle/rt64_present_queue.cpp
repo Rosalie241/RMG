@@ -461,7 +461,7 @@ namespace RT64 {
 
                 if (needsResize || ext.appWindow->detectWindowMoved()) {
                     ext.appWindow->detectRefreshRate();
-                    ext.sharedResources->setSwapChainRate(std::min(60u, displayTimingRate));
+                    ext.sharedResources->setSwapChainRate(std::min(ext.appWindow->getRefreshRate(), displayTimingRate));
                 }
 
                 if (displayTiming) {
