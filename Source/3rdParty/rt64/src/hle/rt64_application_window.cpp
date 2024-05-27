@@ -10,9 +10,13 @@
 #if defined(_WIN32)
 #   include <Windows.h>
 #   include <ShellScalingAPI.h>
-#elif defined(__linux__)
+#elif defined(__linux__) && !defined(RT64_BUILD_PLUGIN)
 #   define Status int
 #   include <X11/extensions/Xrandr.h>
+#endif
+
+#if RT64_BUILD_PLUGIN
+#   include "api/rt64_api_common.h"
 #endif
 
 #include "common/rt64_common.h"
@@ -54,6 +58,12 @@ namespace RT64 {
         windowHandle = window;
 
 #   ifdef _WIN32
+#   ifdef RT64_BUILD_PLUGIN
+        const bool isPJ64 = (RT64::API.apiType == RT64::APIType::Project64);
+        if (!isPJ64) {
+            return;
+        }
+#   endif
         if (listener->usesWindowMessageFilter()) {
             assert(HookedApplicationWindow == nullptr);
             assert(threadId != 0);
@@ -74,6 +84,12 @@ namespace RT64 {
         } bounds {};
 
 #   if defined(_WIN32)
+#   ifdef RT64_BUILD_PLUGIN
+        const bool isPJ64 = (RT64::API.apiType == RT64::APIType::Project64);
+        if (!isPJ64) {
+            return;
+        }
+#   endif
         SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
 
         RECT rect;
@@ -87,9 +103,9 @@ namespace RT64 {
         bounds.top = rect.top;
         bounds.width = rect.right - rect.left;
         bounds.height = rect.bottom - rect.top;
-#   elif defined(__ANDROID__)
+#   elif defined(__ANDROID__) && !defined(RT64_BUILD_PLUGIN)
         static_assert(false && "Android unimplemented");
-#   elif defined(__linux__) || defined(__APPLE__)
+#   elif defined(__linux__) || defined(__APPLE__) && !defined(RT64_BUILD_PLUGIN)
         if (SDL_VideoInit(nullptr) != 0) {
             printf("Failed to init SDL2 video: %s\n", SDL_GetError());
             assert(false && "Failed to init SDL2 video");
@@ -105,12 +121,12 @@ namespace RT64 {
         bounds.top = (dm.h - Height) / 2;
         bounds.width = Width;
         bounds.height = Height;
-#   else
+#   elif !defined(RT64_BUILD_PLUGIN)
         static_assert(false && "Unimplemented");
 #   endif
         
         // Create window.
-#ifdef RT64_SDL_WINDOW
+#if defined RT64_SDL_WINDOW && !defined(RT64_BUILD_PLUGIN)
         SDL_Window *sdlWindow = SDL_CreateWindow(windowTitle, bounds.left, bounds.top, bounds.width, bounds.height, SDL_WINDOW_RESIZABLE);
         SDL_SysWMinfo wmInfo;
         assert(sdlWindow && "Failed to open window with SDL");
@@ -129,7 +145,7 @@ namespace RT64 {
         static_assert(false && "Unimplemented");
 #   endif
         usingSdl = true;
-#else
+#elif !defined(RT64_BUILD_PLUGIN)
         static_assert(false && "Unimplemented");
 #endif
 
@@ -148,6 +164,13 @@ namespace RT64 {
         if (newFullScreen == fullScreen) {
             return;
         }
+
+#   ifdef RT64_BUILD_PLUGIN
+        const bool isPJ64 = (RT64::API.apiType == RT64::APIType::Project64);
+        if (!isPJ64) {
+            return;
+        }
+#   endif
 
 #   ifdef _WIN32
         if (newFullScreen) {
@@ -205,6 +228,12 @@ namespace RT64 {
     
     void ApplicationWindow::makeResizable() {
 #   ifdef _WIN32
+#   ifdef RT64_BUILD_PLUGIN
+        const bool isPJ64 = (RT64::API.apiType == RT64::APIType::Project64);
+        if (!isPJ64) {
+            return;
+        }
+#   endif
         LONG_PTR lStyle = GetWindowLongPtr(windowHandle, GWL_STYLE);
         windowMenu = GetMenu(windowHandle);
         lStyle |= WS_THICKFRAME | WS_MAXIMIZEBOX;
@@ -213,7 +242,11 @@ namespace RT64 {
     }
 
     void ApplicationWindow::detectRefreshRate() {
-#   if defined(_WIN32)
+#   if defined(RT64_BUILD_PLUGIN)
+        // TODO: add vidext func to mupen64plus for this....
+        refreshRate = 60;
+        return;
+#   elif defined(_WIN32)
         HMONITOR monitor = MonitorFromWindow(windowHandle, MONITOR_DEFAULTTONEAREST);
         MONITORINFOEX info = {};
         info.cbSize = sizeof(info);
@@ -238,10 +271,6 @@ namespace RT64 {
             refreshRate++;
         }
 #   elif defined(__linux__)
-        // TODO: add vidext func....
-        refreshRate = 60;
-        return;
-
         // Sourced from: https://stackoverflow.com/a/66865623
         XRRScreenResources *screenResources = XRRGetScreenResources(windowHandle.display, windowHandle.window);
         if (screenResources == nullptr) {
