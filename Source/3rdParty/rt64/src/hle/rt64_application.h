@@ -108,9 +108,7 @@ namespace RT64 {
         UserPaths userPaths;
         std::unique_ptr<Interpreter> interpreter;
         std::unique_ptr<State> state;
-#if 0 // TODO: uncomment later
         std::unique_ptr<ApplicationWindow> appWindow;
-#endif
         std::unique_ptr<RenderDevice> device;
         std::unique_ptr<RenderSwapChain> swapChain;
         std::unique_ptr<RenderWorker> framebufferGraphicsWorker;

@@ -16,6 +16,10 @@
 #   include "res/bluenoise/LDR_64_64_64_RGB1.h"
 #endif
 
+#if RT64_BUILD_PLUGIN
+#   include "api/rt64_api_common.h"
+#endif
+
 //#define TEST_RENDER_INTERFACE
 //#define LOG_DISPLAY_LISTS
 
@@ -142,7 +146,13 @@ namespace RT64 {
         RenderInterfaceTest(renderInterface.get());
 #   endif
 
-#if 0 // TODO: fix later....
+#   ifdef RT64_BUILD_PLUGIN
+        const bool isPJ64 = (RT64::API.apiType == RT64::APIType::Project64);
+        if (!isPJ64) {
+            appWindow = std::make_unique<ApplicationWindow>();
+        }
+        else {
+#   endif
         // Create the application window.
         const char *windowTitle = "RT64";
         appWindow = std::make_unique<ApplicationWindow>();
@@ -152,10 +162,11 @@ namespace RT64 {
         else {
             appWindow->setup(windowTitle, this);
         }
-
+#   ifdef RT64_BUILD_PLUGIN
+        }
+#   endif
         // Detect refresh rate from the display the window is located at.
         appWindow->detectRefreshRate();
-#endif
 
         // Create the render device for the window
         device = renderInterface->createDevice();
@@ -180,7 +191,7 @@ namespace RT64 {
         textureComputeWorker = std::make_unique<RenderWorker>(device.get(), "Texture Compute", RenderCommandListType::COMPUTE);
         workloadGraphicsWorker = std::make_unique<RenderWorker>(device.get(), "Workload Graphics", RenderCommandListType::DIRECT);
         presentGraphicsWorker = std::make_unique<RenderWorker>(device.get(), "Present Graphics", RenderCommandListType::DIRECT);
-        swapChain = presentGraphicsWorker->commandQueue->createSwapChain(RenderWindow{}, 2, RenderFormat::B8G8R8A8_UNORM);
+        swapChain = presentGraphicsWorker->commandQueue->createSwapChain(appWindow->windowHandle, 2, RenderFormat::B8G8R8A8_UNORM);
 
         // Detect if the application should use HDR framebuffers or not.
         bool usesHDR;
@@ -268,7 +279,7 @@ namespace RT64 {
         workloadQueue->setup(workloadExt);
 
         PresentQueue::External presentExt;
-        presentExt.appWindow = nullptr;
+        presentExt.appWindow = appWindow.get();
         presentExt.device = device.get();
         presentExt.swapChain = swapChain.get();
         presentExt.presentGraphicsWorker = presentGraphicsWorker.get();
@@ -280,7 +291,7 @@ namespace RT64 {
         // Configure the state to use all the created components.
         State::External stateExt;
         stateExt.app = this;
-        stateExt.appWindow = nullptr;
+        stateExt.appWindow = appWindow.get();
         stateExt.interpreter = interpreter.get();
         stateExt.device = device.get();
         stateExt.swapChain = swapChain.get();
@@ -559,8 +570,6 @@ namespace RT64 {
     }
 
     void Application::setFullScreen(bool fullscreen) {
-#if 0
         appWindow->setFullScreen(fullscreen);
-#endif
     }
 };
