@@ -8,7 +8,7 @@ namespace RT64 {
 int main(int argc, char** argv) {
     std::unique_ptr<RT64::RenderInterface> renderInterface = RT64::CreateVulkanInterface();
 
-#ifdef _WIN32
+#if defined(_WIN32)
     // Windows only: Can also use D3D12.
     const bool useVulkan = true;
     if (!useVulkan) {

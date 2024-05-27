@@ -352,6 +352,16 @@ if (RT64_BUILD_PLUGIN)
         "${PROJECT_SOURCE_DIR}/src/api/rt64_api_common.cpp"
         "${PROJECT_SOURCE_DIR}/src/api/rt64_api_plugin.cpp"
     )
+    if (WIN32)
+        target_sources(rt64 PRIVATE
+            "${PROJECT_SOURCE_DIR}/src/contrib/imgui/backends/imgui_impl_win32.cpp"
+        )
+        target_link_libraries(rt64
+            delayimp.lib
+            Shcore.lib
+            Dwmapi.lib
+        )
+    endif()
 endif(RT64_BUILD_PLUGIN)
 
 target_link_directories(rt64 PRIVATE ${PROJECT_SOURCE_DIR}/src/contrib/dxc)

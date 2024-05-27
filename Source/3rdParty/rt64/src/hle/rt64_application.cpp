@@ -119,7 +119,7 @@ namespace RT64 {
         // Create a render interface with the preferred backend.
         switch (userConfig.graphicsAPI) {
         case UserConfiguration::GraphicsAPI::D3D12:
-#       ifdef _WIN64
+#       if defined(_WIN64) && !defined(RT64_BUILD_PLUGIN)
             renderInterface = CreateD3D12Interface();
             break;
 #       else
