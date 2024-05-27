@@ -5,6 +5,8 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+option(RT64_BUILD_PLUGIN "Build plugin version of RT64" OFF)
+
 option(RT64_BUILD_EXAMPLES "Build examples for RT64" OFF)
 if (${RT64_BUILD_EXAMPLES})
     set(RT64_STATIC ON)
@@ -295,9 +297,6 @@ set (SOURCES
     "${PROJECT_SOURCE_DIR}/src/contrib/implot/implot.cpp"
     "${PROJECT_SOURCE_DIR}/src/contrib/implot/implot_demo.cpp"
     "${PROJECT_SOURCE_DIR}/src/contrib/implot/implot_items.cpp"
-
-    "${PROJECT_SOURCE_DIR}/src/api/rt64_api_common.cpp"
-    "${PROJECT_SOURCE_DIR}/src/api/rt64_api_plugin.cpp"
 )
 
 include_directories(
@@ -333,7 +332,7 @@ set_target_properties(rt64 PROPERTIES PREFIX "")
 target_link_libraries(rt64 nfd)
 
 # Add any Windows-specific source files and libraries
-if (WIN32)
+if (NOT RT64_BUILD_PLUGIN AND WIN32)
     target_sources(rt64 PRIVATE
         "${PROJECT_SOURCE_DIR}/src/d3d12/rt64_d3d12.cpp"
         "${PROJECT_SOURCE_DIR}/src/contrib/imgui/backends/imgui_impl_dx12.cpp"
@@ -347,13 +346,20 @@ if (WIN32)
         ${PROJECT_SOURCE_DIR}/src/contrib/dxc/lib/x64/dxcompiler.lib)
 endif()
 
+if (RT64_BUILD_PLUGIN)
+    target_sources(rt64 PRIVATE
+        "${PROJECT_SOURCE_DIR}/src/api/rt64_api_common.cpp"
+        "${PROJECT_SOURCE_DIR}/src/api/rt64_api_plugin.cpp"
+    )
+endif(RT64_BUILD_PLUGIN)
+
 target_link_directories(rt64 PRIVATE ${PROJECT_SOURCE_DIR}/src/contrib/dxc)
 
 if (NOT ANDROID)
     target_link_libraries(rt64 ${SDL2_LIBRARIES})
 endif()
 
-if (CMAKE_SYSTEM_NAME MATCHES "Linux")
+if (NOT RT64_BUILD_PLUGIN AND CMAKE_SYSTEM_NAME MATCHES "Linux")
     find_package(X11 REQUIRED)
     target_include_directories(rt64 PUBLIC ${X11_INCLUDE_DIR} ${X11_Xrandr_INCLUDE_PATH})
     target_link_libraries(rt64 ${X11_LIBRARIES} ${X11_Xrandr_LIB})
