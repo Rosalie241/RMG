@@ -90,7 +90,11 @@ namespace RT64 {
             return;
         }
 #   endif
+        // why doesnt this compile with mingw?
+        // TODO: fix that compile error...
+#   if 0
         SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
+#   endif
 
         RECT rect;
         UINT dwStyle = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
