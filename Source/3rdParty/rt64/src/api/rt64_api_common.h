@@ -8,7 +8,7 @@
 #include "m64p_types.h"
 #include "m64p_vidext.h"
 
-// uglyyyyy
+// mupen64plus function pointers for the video extension functions
 extern ptr_VidExt_InitWithRenderMode CoreVideo_InitWithRenderMode;
 extern ptr_VidExt_Quit CoreVideo_Quit;
 extern ptr_VidExt_SetCaption CoreVideo_SetCaption;
@@ -17,8 +17,8 @@ extern ptr_VidExt_ResizeWindow CoreVideo_ResizeWindow;
 extern ptr_VidExt_VK_GetSurface CoreVideo_VK_GetSurface;
 extern ptr_VidExt_VK_GetInstanceExtensions CoreVideo_VK_GetInstanceExtensions;
 extern ptr_VidExt_SetVideoMode CoreVideo_SetVideoMode;
-extern ptr_VidExt_GL_SwapBuffers CoreVideo_SwapCounter;
 
+// TODO: move this to applicationwindow?
 extern int window_width;
 extern int window_height;
 

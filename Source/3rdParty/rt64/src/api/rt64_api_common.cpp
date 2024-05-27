@@ -55,15 +55,11 @@ DLLEXPORT void CALL UpdateScreen(void) {
 }
 
 DLLEXPORT void CALL ChangeWindow(void) {
-    CoreVideo_ToggleFullScreen();
-#if 0 // TODO...
-    RT64::ApplicationWindow *appWindow = RT64::API.app->appWindow.get();
-    appWindow->setFullScreen(!appWindow->fullScreen);
-#endif
-}
-
-DLLEXPORT m64p_error CALL PluginShutdown(void) {
-    
-
-    return M64ERR_SUCCESS;
+    const bool isPJ64 = (RT64::API.apiType == RT64::APIType::Project64);
+    if (isPJ64) {
+        CoreVideo_ToggleFullScreen();
+    } else {
+        RT64::ApplicationWindow *appWindow = RT64::API.app->appWindow.get();
+        appWindow->setFullScreen(!appWindow->fullScreen);
+    }
 }

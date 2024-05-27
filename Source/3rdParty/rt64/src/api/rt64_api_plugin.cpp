@@ -22,7 +22,6 @@ ptr_VidExt_ResizeWindow CoreVideo_ResizeWindow = NULL;
 ptr_VidExt_VK_GetSurface CoreVideo_VK_GetSurface = NULL;
 ptr_VidExt_VK_GetInstanceExtensions CoreVideo_VK_GetInstanceExtensions = NULL;
 ptr_VidExt_SetVideoMode CoreVideo_SetVideoMode = NULL;
-ptr_VidExt_GL_SwapBuffers CoreVideo_SwapCounter = NULL;
 
 #ifdef _WIN32
 #define DLSYM(a, b) GetProcAddress(a, b)
@@ -40,7 +39,20 @@ DLLEXPORT m64p_error CALL PluginStartup(m64p_dynlib_handle CoreLibHandle, void *
     CoreVideo_VK_GetSurface = (ptr_VidExt_VK_GetSurface)DLSYM(CoreLibHandle, "VidExt_VK_GetSurface");
     CoreVideo_VK_GetInstanceExtensions = (ptr_VidExt_VK_GetInstanceExtensions)DLSYM(CoreLibHandle, "VidExt_VK_GetInstanceExtensions");
     CoreVideo_SetVideoMode = (ptr_VidExt_SetVideoMode)DLSYM(CoreLibHandle, "VidExt_SetVideoMode");
-    CoreVideo_SwapCounter = (ptr_VidExt_GL_SwapBuffers)DLSYM(CoreLibHandle, "VidExt_GL_SwapBuffers");
+    if (CoreVideo_InitWithRenderMode == NULL ||
+        CoreVideo_Quit == NULL ||
+        CoreVideo_SetCaption == NULL ||
+        CoreVideo_ToggleFullScreen == NULL ||
+        CoreVideo_ResizeWindow == NULL ||
+        CoreVideo_VK_GetSurface == NULL ||
+        CoreVideo_VK_GetInstanceExtensions == NULL ||
+        CoreVideo_SetVideoMode == NULL) {
+        return M64ERR_SYSTEM_FAIL;
+    }
+    return M64ERR_SUCCESS;
+}
+
+DLLEXPORT m64p_error CALL PluginShutdown(void) {   
     return M64ERR_SUCCESS;
 }
 
@@ -83,18 +95,14 @@ DLLEXPORT void CALL RomClosed(void) {
         RT64::API.app->end();
         RT64::API.app.reset();
     }
-    // Do nothing.
 }
 
 DLLEXPORT int CALL RomOpen(void) {
-#if 0
     const bool isPJ64 = (RT64::API.apiType == RT64::APIType::Project64);
     if (isPJ64) {
         RT64::ApplicationWindow *appWindow = RT64::API.app->appWindow.get();
         appWindow->makeResizable();
     }
-#endif
-
     return 1;
 }
 

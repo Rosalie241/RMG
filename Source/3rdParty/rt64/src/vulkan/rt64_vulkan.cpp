@@ -2216,9 +2216,14 @@ namespace RT64 {
     }
 
     void VulkanSwapChain::getWindowSize(uint32_t &dstWidth, uint32_t &dstHeight) const {
-        dstWidth = window_width;
-        dstHeight = window_height;
-        return;
+#   if defined(RT64_BUILD_PLUGIN)
+        const bool isPJ64 = (RT64::API.apiType == RT64::APIType::Project64);
+        if (!isPJ64) {
+            dstWidth  = window_width;
+            dstHeight = window_height;
+            return;
+        }
+#   endif
 
 #   if defined(_WIN64)
         RECT rect;
@@ -2228,7 +2233,7 @@ namespace RT64 {
 #   elif defined(__ANDROID__)
         dstWidth = ANativeWindow_getWidth(renderWindow);
         dstHeight = ANativeWindow_getHeight(renderWindow);
-#   elif defined(__linux__)
+#   elif defined(__linux__) && !defined(RT64_BUILD_PLUGIN)
         XWindowAttributes attributes;
         XGetWindowAttributes(renderWindow.display, renderWindow.window, &attributes);
         // The attributes width and height members do not include the border.
