@@ -4,6 +4,9 @@
 
 #include "rt64_api_common.h"
 
+#include <SDL.h>
+#include "imgui/backends/imgui_impl_sdl2.h"
+
 #define PLUGIN_NAME                 "RT64 Video Plugin"
 #define PLUGIN_VERSION              0x020509
 #define VIDEO_PLUGIN_API_VERSION    0x020200
@@ -71,9 +74,7 @@ DLLEXPORT m64p_error CALL PluginGetVersion(m64p_plugin_type *PluginType, int *Pl
         *PluginNamePtr = PLUGIN_NAME;
 
     if (Capabilities != NULL)
-    {
         *Capabilities = 0;
-    }
                     
     return M64ERR_SUCCESS;
 }
@@ -151,7 +152,7 @@ int window_width  = 640;
 int window_height = 480;
 
 DLLEXPORT void CALL ResizeVideoOutput(int width, int height) {
-    window_width = width;
+    window_width  = width;
     window_height = height;
 }
 
@@ -182,4 +183,80 @@ DLLEXPORT void CALL SetRenderingCallback(void (*callback)(int)) {
 DLLEXPORT void CALL CaptureScreen(const char *Directory) {
     // Unused.
 }
+
+// TODO: PR this to mupen64plus....
+DLLEXPORT void CALL SDL_KeyDown(int keymod, int keysym)
+{
+    SDL_Event event;
+    event.type = SDL_KEYDOWN;
+    event.key.keysym.mod = keymod;
+    event.key.keysym.sym = keysym;
+    if (RT64::API.app->presentQueue->inspector != nullptr) {
+        ImGui_ImplSDL2_ProcessEvent(&event);
+    }
+}
+
+DLLEXPORT void CALL SDL_KeyUp(int keymod, int keysym)
+{
+    SDL_Event event;
+    event.type = SDL_KEYUP;
+    event.key.keysym.mod = SDL_SCANCODE_TO_KEYCODE(keymod);
+    event.key.keysym.sym = SDL_SCANCODE_TO_KEYCODE(keysym);
+
+    if (keysym == SDL_SCANCODE_F10)
+    {
+        if (RT64::API.app->userConfig.developerMode) {
+            fprintf(stderr, "creating inspector...\n");
+            const std::lock_guard<std::mutex> lock(RT64::API.app->presentQueue->inspectorMutex);
+            if (RT64::API.app->presentQueue->inspector == nullptr) {
+                RT64::API.app->presentQueue->inspector = std::make_unique<RT64::Inspector>(RT64::API.app->device.get(), RT64::API.app->swapChain.get(), RT64::API.app->createdGraphicsAPI);
+                if (!RT64::API.app->userPaths.isEmpty()) {
+                    RT64::API.app->presentQueue->inspector->setIniPath(RT64::API.app->userPaths.imguiPath);
+                }
+
+                RT64::API.app->freeCamClearQueued = true;
+                ImGui_ImplSDL2_InitForVulkan(nullptr); // TODO: move this elsewhere...
+                //appWindow->blockSdlKeyboard();
+            }
+            else if (RT64::API.app->presentQueue->inspector != nullptr) {
+                RT64::API.app->presentQueue->inspector.reset(nullptr);
+                //appWindow->unblockSdlKeyboard();
+            }
+        }
+        else {
+            fprintf(stdout, "Inspector is not available: developer mode is not enabled in the configuration.\n");
+        }
+        return;
+    }
+
+    if (RT64::API.app->presentQueue->inspector != nullptr) {
+        ImGui_ImplSDL2_ProcessEvent(&event);
+    }
+}
+
+DLLEXPORT void CALL MouseMove(int x, int y)
+{
+    SDL_Event event;
+    event.type = SDL_MOUSEMOTION;
+    event.motion.which = 1;
+    event.motion.x = x;
+    event.motion.y = y;
+
+    if (RT64::API.app->presentQueue->inspector != nullptr) {
+        printf("MouseMove x = %i, y = %i\n", x,y);
+        ImGui_ImplSDL2_ProcessEvent(&event);
+    }
+}
+
+DLLEXPORT void CALL MouseButton(int left, int right)
+{
+    if (RT64::API.app->presentQueue->inspector != nullptr) {
+        printf("MouseButton left = %i\n", left);
+        SDL_Event event;
+        event.type = left ? SDL_MOUSEBUTTONDOWN : SDL_MOUSEBUTTONUP;
+        event.button.button = SDL_BUTTON_LEFT;
+        ImGui_ImplSDL2_ProcessEvent(&event);
+    }
+}
+
 
