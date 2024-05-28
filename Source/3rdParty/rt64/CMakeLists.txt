@@ -351,6 +351,7 @@ if (RT64_BUILD_PLUGIN)
     target_sources(rt64 PRIVATE
         "${PROJECT_SOURCE_DIR}/src/api/rt64_api_common.cpp"
         "${PROJECT_SOURCE_DIR}/src/api/rt64_api_plugin.cpp"
+        "${PROJECT_SOURCE_DIR}/src/contrib/imgui/backends/imgui_impl_sdl2.cpp"
     )
     if (WIN32)
         target_sources(rt64 PRIVATE

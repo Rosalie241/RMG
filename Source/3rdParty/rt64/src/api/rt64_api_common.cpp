@@ -56,7 +56,7 @@ DLLEXPORT void CALL UpdateScreen(void) {
 
 DLLEXPORT void CALL ChangeWindow(void) {
     const bool isPJ64 = (RT64::API.apiType == RT64::APIType::Project64);
-    if (isPJ64) {
+    if (!isPJ64) {
         CoreVideo_ToggleFullScreen();
     } else {
         RT64::ApplicationWindow *appWindow = RT64::API.app->appWindow.get();

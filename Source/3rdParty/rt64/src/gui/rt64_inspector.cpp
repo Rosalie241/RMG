@@ -22,6 +22,10 @@
 #   include "d3d12/rt64_d3d12.h"
 #endif
 
+#if defined(RT64_BUILD_PLUGIN)
+#   include "api/rt64_api_common.h"
+#endif
+
 // Volk must be included before the ImGui Vulkan backend.
 #include "vulkan/rt64_vulkan.h"
 #include "imgui/backends/imgui_impl_vulkan.h"
@@ -156,7 +160,8 @@ namespace RT64 {
 #   ifdef _WIN32
         ImGui_ImplWin32_Shutdown();
 #   else
-        assert(false && "Unimplemented.");
+        // if mupen64plus, dont assert...
+        //assert(false && "Unimplemented.");
 #   endif
 
         ImPlot::DestroyContext();
@@ -177,7 +182,11 @@ namespace RT64 {
 #   ifdef _WIN32
         ImGui_ImplWin32_NewFrame();
 #   else
-        assert(false && "Unimplemented.");
+        // ????????
+        // if mupen64plus == true, dont assert....
+        ImGuiIO &io = ImGui::GetIO();
+        io.DisplaySize = ImVec2((float)window_width, (float)window_height);
+        //assert(false && "Unimplemented.");
 #   endif
 
         switch (graphicsAPI) {
