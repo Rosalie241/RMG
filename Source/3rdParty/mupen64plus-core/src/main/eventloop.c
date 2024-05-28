@@ -676,8 +676,9 @@ void event_sdl_keydown(int keysym, int keymod)
     else
 #endif /* NO_KEYBINDINGS */
     {
-        /* pass all other keypresses to the input plugin */
+        /* pass all other keypresses to the input and graphics plugin */
         input.keyDown(keymod, keysym);
+        gfx.keyDown(keymod, keysym);
     }
 
 }
@@ -701,6 +702,23 @@ void event_sdl_keyup(int keysym, int keymod)
 #endif /* NO_KEYBINDINGS */
     {
         input.keyUp(keymod, keysym);
+        gfx.keyUp(keymod, keysym);
+    }
+}
+
+void event_mouse_move(int x, int y)
+{
+    if (gfx.mouseMove != NULL)
+    {
+        gfx.mouseMove(x, y);
+    }
+}
+
+void event_mouse_button(int left, int right)
+{
+    if (gfx.mouseButton != NULL)
+    {
+        gfx.mouseButton(left, right);
     }
 }
 

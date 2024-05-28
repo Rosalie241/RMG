@@ -62,6 +62,10 @@ static const gfx_plugin_functions dummy_gfx = {
     dummyvideo_ProcessRDPList,
     dummyvideo_RomClosed,
     dummyvideo_RomOpen,
+    dummyinput_SDL_KeyDown,
+    dummyinput_SDL_KeyUp,
+    NULL,
+    NULL,
     dummyvideo_ShowCFB,
     dummyvideo_UpdateScreen,
     dummyvideo_ViStatusChanged,
@@ -189,6 +193,20 @@ static m64p_error plugin_connect_gfx(m64p_dynlib_handle plugin_handle)
             DebugMessage(M64MSG_ERROR, "broken Video plugin; function(s) not found.");
             plugin_disconnect_gfx();
             return M64ERR_INPUT_INVALID;
+        }
+
+        if (!GET_FUNC(ptr_SDL_KeyDown, gfx.keyDown, "SDL_KeyDown") ||
+            !GET_FUNC(ptr_SDL_KeyUp, gfx.keyUp, "SDL_KeyUp"))
+        {
+            gfx.keyDown = dummyinput_SDL_KeyDown;
+            gfx.keyUp = dummyinput_SDL_KeyUp;
+            DebugMessage(M64MSG_WARNING, "abc");
+        }
+
+        if (!GET_FUNC(ptr_MouseMove, gfx.mouseMove, "MouseMove") ||
+            !GET_FUNC(ptr_MouseButton, gfx.mouseButton, "MouseButton"))
+        {
+            DebugMessage(M64MSG_WARNING, "gfx plugin does not contain n64 mouse support.");
         }
 
         /* set function pointers for optional functions */

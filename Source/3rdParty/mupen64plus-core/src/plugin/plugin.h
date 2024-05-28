@@ -51,6 +51,10 @@ typedef struct _gfx_plugin_functions
 	ptr_ProcessRDPList   processRDPList;
 	ptr_RomClosed        romClosed;
 	ptr_RomOpen          romOpen;
+	ptr_SDL_KeyDown      keyDown;
+	ptr_SDL_KeyUp        keyUp;
+	ptr_MouseMove           mouseMove;
+	ptr_MouseButton         mouseButton;
 	ptr_ShowCFB          showCFB;
 	ptr_UpdateScreen     updateScreen;
 	ptr_ViStatusChanged  viStatusChanged;
