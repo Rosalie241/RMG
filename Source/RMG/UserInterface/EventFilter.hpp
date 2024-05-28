@@ -32,6 +32,10 @@ class EventFilter : public QObject
     void on_EventFilter_KeyPressed(QKeyEvent *);
     void on_EventFilter_KeyReleased(QKeyEvent *);
 
+    void on_EventFilter_MouseMoved(QMouseEvent *);
+    void on_EventFilter_MouseButtonPressed(QMouseEvent *);
+    void on_EventFilter_MouseButtonReleased(QMouseEvent *);
+
     void on_EventFilter_FileDropped(QDropEvent *);
 };
 } // namespace UserInterface

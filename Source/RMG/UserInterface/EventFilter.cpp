@@ -32,6 +32,15 @@ bool EventFilter::eventFilter(QObject *object, QEvent *event)
     case QEvent::Type::KeyRelease:
         emit this->on_EventFilter_KeyReleased((QKeyEvent *)event);
         return true;
+    case QEvent::Type::MouseMove:
+        emit this->on_EventFilter_MouseMoved((QMouseEvent *)event);
+        return true;
+    case QEvent::Type::MouseButtonPress:
+        emit this->on_EventFilter_MouseButtonPressed((QMouseEvent *)event);
+        return true;
+    case QEvent::Type::MouseButtonRelease:
+        emit this->on_EventFilter_MouseButtonReleased((QMouseEvent *)event);
+        return true;
     default:
         break;
     }

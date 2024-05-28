@@ -167,6 +167,9 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
   private slots:
     void on_EventFilter_KeyPressed(QKeyEvent *event);
     void on_EventFilter_KeyReleased(QKeyEvent *event);
+    void on_EventFilter_MouseMoved(QMouseEvent *event);
+    void on_EventFilter_MouseButtonPressed(QMouseEvent *event);
+    void on_EventFilter_MouseButtonReleased(QMouseEvent *event);
     void on_EventFilter_FileDropped(QDropEvent *event);
 
     void on_QGuiApplication_applicationStateChanged(Qt::ApplicationState state);
