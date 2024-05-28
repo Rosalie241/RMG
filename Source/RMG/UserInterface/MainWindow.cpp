@@ -1293,7 +1293,10 @@ void MainWindow::on_EventFilter_MouseButtonPressed(QMouseEvent *event)
         return;
     }
 
-    CoreSetMouseButton((event->button() == Qt::MouseButton::LeftButton  ? 1 : 0), (event->button() == Qt::MouseButton::RightButton ? 1 : 0));
+    this->ui_LeftMouseButtonState  = (event->button() == Qt::MouseButton::LeftButton  ? 1 : this->ui_LeftMouseButtonState);
+    this->ui_RightMouseButtonState = (event->button() == Qt::MouseButton::RightButton ? 1 : this->ui_RightMouseButtonState);
+
+    CoreSetMouseButton(this->ui_LeftMouseButtonState, this->ui_RightMouseButtonState);
 }
 
 void MainWindow::on_EventFilter_MouseButtonReleased(QMouseEvent *event)
@@ -1304,7 +1307,10 @@ void MainWindow::on_EventFilter_MouseButtonReleased(QMouseEvent *event)
         return;
     }
 
-    CoreSetMouseButton((event->button() == Qt::MouseButton::LeftButton  ? 0 : 1), (event->button() == Qt::MouseButton::RightButton ? 0 : 1));
+    this->ui_LeftMouseButtonState  = (event->button() == Qt::MouseButton::LeftButton  ? 0 : this->ui_LeftMouseButtonState);
+    this->ui_RightMouseButtonState = (event->button() == Qt::MouseButton::RightButton ? 0 : this->ui_RightMouseButtonState);
+
+    CoreSetMouseButton(this->ui_LeftMouseButtonState, this->ui_RightMouseButtonState);
 }
 
 void MainWindow::on_EventFilter_FileDropped(QDropEvent *event)

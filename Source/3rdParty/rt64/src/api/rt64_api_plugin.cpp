@@ -243,7 +243,7 @@ DLLEXPORT void CALL MouseMove(int x, int y)
     event.motion.y = y;
 
     if (RT64::API.app->presentQueue->inspector != nullptr) {
-        printf("MouseMove x = %i, y = %i\n", x,y);
+        //printf("MouseMove x = %i, y = %i\n", x,y);
         ImGui_ImplSDL2_ProcessEvent(&event);
     }
 }
@@ -253,8 +253,13 @@ DLLEXPORT void CALL MouseButton(int left, int right)
     if (RT64::API.app->presentQueue->inspector != nullptr) {
         printf("MouseButton left = %i\n", left);
         SDL_Event event;
+
         event.type = left ? SDL_MOUSEBUTTONDOWN : SDL_MOUSEBUTTONUP;
         event.button.button = SDL_BUTTON_LEFT;
+        ImGui_ImplSDL2_ProcessEvent(&event);
+
+        event.type = right ? SDL_MOUSEBUTTONDOWN : SDL_MOUSEBUTTONUP;
+        event.button.button = SDL_BUTTON_RIGHT;
         ImGui_ImplSDL2_ProcessEvent(&event);
     }
 }
