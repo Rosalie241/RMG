@@ -48,6 +48,7 @@ set(RMG_CORE_SOURCES
     Cheats.cpp
     Volume.cpp
     VidExt.cpp
+    Mouse.cpp
     Video.cpp
     Error.cpp
     Unzip.cpp
