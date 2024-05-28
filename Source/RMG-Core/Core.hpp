@@ -27,6 +27,7 @@
 #include "Cheats.hpp"
 #include "Volume.hpp"
 #include "Error.hpp"
+#include "Mouse.hpp"
 #include "Unzip.hpp"
 #include "Video.hpp"
 #include "Key.hpp"
