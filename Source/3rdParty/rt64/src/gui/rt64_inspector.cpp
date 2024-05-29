@@ -77,7 +77,7 @@ namespace RT64 {
         ImPlot::CreateContext();
         ImGui::StyleColorsDark();
 
-#   ifdef _WIN32
+#   if defined(_WIN32) && !defined(RT64_BUILD_PLUGIN)
         RenderWindow renderWindow = swapChain->getWindow();
         ImGui_ImplWin32_Init(renderWindow);
 #   endif
@@ -157,7 +157,7 @@ namespace RT64 {
             break;
         }
 
-#   ifdef _WIN32
+#   if defined(_WIN32) && !defined(RT64_BUILD_PLUGIN)
         ImGui_ImplWin32_Shutdown();
 #   else
         // if mupen64plus, dont assert...
@@ -179,7 +179,7 @@ namespace RT64 {
 
         frameMutex.lock();
 
-#   ifdef _WIN32
+#   if defined(_WIN32) && !defined(RT64_BUILD_PLUGIN)
         ImGui_ImplWin32_NewFrame();
 #   else
         // ????????
