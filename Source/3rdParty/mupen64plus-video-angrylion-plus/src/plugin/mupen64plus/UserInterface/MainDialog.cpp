@@ -50,6 +50,7 @@ MainDialog::MainDialog(QWidget* parent) : QDialog(parent)
     this->viWidescreenCheckBox->setChecked(ConfigGetParamBool(configVideoAngrylionPlus, KEY_VI_WIDESCREEN));
     this->viHideOverscanCheckBox->setChecked(ConfigGetParamBool(configVideoAngrylionPlus, KEY_VI_HIDE_OVERSCAN));
     this->viIntegerScalingCheckBox->setChecked(ConfigGetParamBool(configVideoAngrylionPlus, KEY_VI_INTEGER_SCALING));
+    this->viVsyncCheckBox->setChecked(ConfigGetParamBool(configVideoAngrylionPlus, KEY_VI_VSYNC));
 }
 
 MainDialog::~MainDialog()
@@ -89,16 +90,13 @@ void MainDialog::on_buttonBox_clicked(QAbstractButton* button)
     ConfigSetParameter(configVideoAngrylionPlus, KEY_DP_COMPAT, M64TYPE_INT, &dpCompatValue);
 
     // checkboxes
-//  int fullscreenValue = this->fullscreenCheckBox->isChecked() ? 1 : 0; //(ConfigGetParamBool(configVideoAngrylionPlus, KEY_FULLSCREEN));
+    int parallelValue = this->parallelCheckBox->isChecked() ? 1 : 0;
+    int busyLoopValue = this->busyLoopCheckBox->isChecked() ? 1 : 0;
 
-    int parallelValue = this->parallelCheckBox->isChecked() ? 1 : 0; //(ConfigGetParamBool(configVideoAngrylionPlus, KEY_PARALLEL));
-    int busyLoopValue = this->busyLoopCheckBox->isChecked() ? 1 : 0; //(ConfigGetParamBool(configVideoAngrylionPlus, KEY_BUSY_LOOP));
-
-    int viWidescreenValue = this->viWidescreenCheckBox->isChecked() ? 1 : 0; //(ConfigGetParamBool(configVideoAngrylionPlus, KEY_VI_WIDESCREEN));
-    int viHideOverscanValue = this->viHideOverscanCheckBox->isChecked() ? 1 : 0; //(ConfigGetParamBool(configVideoAngrylionPlus, KEY_VI_HIDE_OVERSCAN));
-    int viIntegerScalingValue = this->viIntegerScalingCheckBox->isChecked() ? 1 : 0; //(ConfigGetParamBool(configVideoAngrylionPlus, KEY_VI_INTEGER_SCALING));
-
-//  ConfigSetParameter(configVideoAngrylionPlus, KEY_FULLSCREEN, M64TYPE_BOOL, &fullscreenValue);
+    int viWidescreenValue = this->viWidescreenCheckBox->isChecked() ? 1 : 0;
+    int viHideOverscanValue = this->viHideOverscanCheckBox->isChecked() ? 1 : 0;
+    int viIntegerScalingValue = this->viIntegerScalingCheckBox->isChecked() ? 1 : 0;
+    int viVsyncValue = this->viVsyncCheckBox->isChecked() ? 1 : 0;
 
     ConfigSetParameter(configVideoAngrylionPlus, KEY_PARALLEL, M64TYPE_BOOL, &parallelValue);
     ConfigSetParameter(configVideoAngrylionPlus, KEY_BUSY_LOOP, M64TYPE_BOOL, &busyLoopValue);
@@ -106,7 +104,7 @@ void MainDialog::on_buttonBox_clicked(QAbstractButton* button)
     ConfigSetParameter(configVideoAngrylionPlus, KEY_VI_WIDESCREEN, M64TYPE_BOOL, &viWidescreenValue);
     ConfigSetParameter(configVideoAngrylionPlus, KEY_VI_HIDE_OVERSCAN, M64TYPE_BOOL, &viHideOverscanValue);
     ConfigSetParameter(configVideoAngrylionPlus, KEY_VI_INTEGER_SCALING, M64TYPE_BOOL, &viIntegerScalingValue);
-
+    ConfigSetParameter(configVideoAngrylionPlus, KEY_VI_VSYNC, M64TYPE_BOOL, &viVsyncValue);
 
     ConfigSaveSection("Video-AngrylionPlus");
 }
