@@ -16,8 +16,9 @@
 
 enum class VidExtRenderMode
 {
-    OpenGL,
-    Vulkan
+    OpenGL  = 0,
+    Vulkan  = 1,
+    Invalid = 2
 };
 
 namespace Thread

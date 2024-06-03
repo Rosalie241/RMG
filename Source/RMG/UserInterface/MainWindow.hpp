@@ -11,15 +11,18 @@
 #define MAINWINDOW_HPP
 
 #include "Thread/EmulationThread.hpp"
+#include "EventFilter.hpp"
+#include "Callbacks.hpp"
+
+#include "Widget/Render/DummyWidget.hpp"
+#include "Widget/Render/OGLWidget.hpp"
+#include "Widget/Render/VKWidget.hpp"
+#include "Widget/RomBrowser/RomBrowserWidget.hpp"
+
 #include "Dialog/SettingsDialog.hpp"
 #include "Dialog/Cheats/CheatsDialog.hpp"
 #include "Dialog/RomInfoDialog.hpp"
 #include "Dialog/LogDialog.hpp"
-#include "EventFilter.hpp"
-#include "Widget/Render/OGLWidget.hpp"
-#include "Widget/Render/VKWidget.hpp"
-#include "Widget/RomBrowser/RomBrowserWidget.hpp"
-#include "Callbacks.hpp"
 
 #include <QAction>
 #include <QToolBar>
@@ -58,8 +61,9 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     CoreCallbacks* coreCallBacks = nullptr;
 
     QStackedWidget *ui_Widgets                     = nullptr;
-    Widget::OGLWidget *ui_Widget_OpenGL            = nullptr;
-    Widget::VKWidget  *ui_Widget_Vulkan            = nullptr;
+    Widget::DummyWidget *ui_Widget_Dummy           = nullptr;
+    Widget::OGLWidget   *ui_Widget_OpenGL          = nullptr;
+    Widget::VKWidget    *ui_Widget_Vulkan          = nullptr;
     Widget::RomBrowserWidget *ui_Widget_RomBrowser = nullptr;
     EventFilter *ui_EventFilter                    = nullptr;
     QLabel *ui_StatusBar_Label                     = nullptr;
@@ -78,7 +82,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     bool ui_RefreshRomListAfterEmulation = false;
     int  ui_LoadSaveStateSlot    = -1;
 
-    VidExtRenderMode ui_VidExtRenderMode = VidExtRenderMode::OpenGL;
+    VidExtRenderMode ui_VidExtRenderMode = VidExtRenderMode::Invalid;
 
     bool ui_ShowUI        = false;
     bool ui_ShowMenubar   = false;
@@ -233,6 +237,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     void on_VidExt_SetFullscreenMode(int width, int height, int bps, int flags);
     void on_VidExt_ResizeWindow(int width, int height);
     void on_VidExt_ToggleFS(bool fullscreen);
+    void on_VidExt_Quit(void);
 
     void on_Core_DebugCallback(QList<CoreCallbackMessage> messages);
     void on_Core_StateCallback(CoreStateCallbackType type, int value);
