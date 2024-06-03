@@ -2089,6 +2089,12 @@ void TextureCache::update(u32 _t)
 		pTile = gSP.textureTile[_t];
 	}
 
+	// Sanity check
+	if ((int)pTile->lrs - (int)pTile->uls < 0 || (int)pTile->lrt - (int)pTile->ult < 0) {
+		activateDummy(_t);
+		return;
+	}
+
 	TileSizes sizes;
 	_calcTileSizes(_t, sizes, gDP.loadTile);
 	TextureParams params;
