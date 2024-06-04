@@ -2118,7 +2118,7 @@ void MainWindow::on_VidExt_Init(VidExtRenderMode renderMode)
 
         this->ui_Widgets->addWidget(this->ui_Widget_OpenGL->GetWidget());
     }
-    else
+    else if (renderMode == VidExtRenderMode::Vulkan)
     {
         this->ui_Widget_Vulkan = new Widget::VKWidget(this);
         this->ui_Widget_Vulkan->installEventFilter(this->ui_EventFilter);
@@ -2581,7 +2581,7 @@ void MainWindow::on_VidExt_Quit(void)
         this->ui_Widget_OpenGL->destroy();
         this->ui_Widget_OpenGL = nullptr;
     }
-    else
+    else if (this->ui_VidExtRenderMode == VidExtRenderMode::Vulkan)
     {
         this->ui_Widgets->removeWidget(this->ui_Widget_Vulkan->GetWidget());
         this->ui_Widget_Vulkan->destroy();
