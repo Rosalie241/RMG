@@ -2579,11 +2579,13 @@ void MainWindow::on_VidExt_Quit(void)
     {
         this->ui_Widgets->removeWidget(this->ui_Widget_OpenGL->GetWidget());
         this->ui_Widget_OpenGL->destroy();
+        this->ui_Widget_OpenGL = nullptr;
     }
     else
     {
         this->ui_Widgets->removeWidget(this->ui_Widget_Vulkan->GetWidget());
         this->ui_Widget_Vulkan->destroy();
+        this->ui_Widget_Vulkan = nullptr;
     }
 
     this->ui_VidExtRenderMode = VidExtRenderMode::Invalid;
