@@ -33,6 +33,18 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.6.1" date="2024-06-05" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix vulkan video plugins crashing on second emulation run on some systems</li>
+          <li>Fix log dialog not showing a monospace font on windows</li>
+          <li>Remove settings dialog storing and restoring the window size</li>
+          <li>Add missing vsync option to angrylion-rdp-plus</li>
+          <li>Update imgui, mupen64plus-video-parallel, GLideN64 and SDL_GameControllerDB</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.6.0" date="2024-05-24" type="stable">
       <description>
         <p>Changes:</p>
