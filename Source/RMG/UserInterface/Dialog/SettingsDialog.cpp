@@ -64,23 +64,10 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 #ifndef DISCORD_RPC
     this->discordRpcCheckBox->setHidden(true);
 #endif // !DISCORD_RPC
-
-    int width = CoreSettingsGetIntValue(SettingsID::GUI_SettingsDialogWidth);
-    int height = CoreSettingsGetIntValue(SettingsID::GUI_SettingsDialogHeight);
-
-    if (width != 0 && height != 0)
-    {
-        // center current dialog
-        this->setGeometry(
-            QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, QSize(width, height), parent->geometry()));
-    }
 }
 
 SettingsDialog::~SettingsDialog(void)
 {
-    CoreSettingsSetValue(SettingsID::GUI_SettingsDialogWidth, this->size().width());
-    CoreSettingsSetValue(SettingsID::GUI_SettingsDialogHeight, this->size().height());
-    CoreSettingsSave();
 }
 
 void SettingsDialog::ShowGameTab(void)
@@ -623,6 +610,7 @@ void SettingsDialog::saveSettings(void)
     this->saveInterfaceLogSettings();
     this->saveInterfaceOSDSettings();
     this->saveInterfaceMiscSettings();
+    CoreSettingsSave();
 }
 
 void SettingsDialog::saveCoreSettings(void)
