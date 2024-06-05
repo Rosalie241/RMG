@@ -4,9 +4,7 @@
 enum class SettingsID
 {
     // GUI Settings
-    GUI_SettingsDialogWidth = 0,
-    GUI_SettingsDialogHeight,
-    GUI_HideCursorInEmulation,
+    GUI_HideCursorInEmulation = 0,
     GUI_HideCursorInFullscreenEmulation,
     GUI_StatusbarMessageDuration,
     GUI_PauseEmulationOnFocusLoss,
