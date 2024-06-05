@@ -2578,13 +2578,13 @@ void MainWindow::on_VidExt_Quit(void)
     if (this->ui_VidExtRenderMode == VidExtRenderMode::OpenGL)
     {
         this->ui_Widgets->removeWidget(this->ui_Widget_OpenGL->GetWidget());
-        this->ui_Widget_OpenGL->destroy();
+        this->ui_Widget_OpenGL->GetWidget()->deleteLater();
         this->ui_Widget_OpenGL = nullptr;
     }
     else if (this->ui_VidExtRenderMode == VidExtRenderMode::Vulkan)
     {
         this->ui_Widgets->removeWidget(this->ui_Widget_Vulkan->GetWidget());
-        this->ui_Widget_Vulkan->destroy();
+        this->ui_Widget_Vulkan->GetWidget()->deleteLater();
         this->ui_Widget_Vulkan = nullptr;
     }
 
