@@ -71,7 +71,7 @@ void InstallUpdateDialog::install(void)
             "   \"" + fullFilePath + "\" /CLOSEAPPLICATIONS /NOCANCEL /MERGETASKS=\"!desktopicon\"  /SILENT /DIR=\"" + appPath + "\"" + outputToLogLine,
             ")",
             "IF NOT ERRORLEVEL 0 (",
-            "   start \"\" cmd /c \"echo Rosalie's Mupen GUI failed to update, check the updater.log file in the Cache directory for more information && pause\"",
+            "   start \"\" cmd /c \"echo Rosalie's Mupen GUI failed to update, check the updater.log file in the user cache directory for more information && pause\"",
             ")",
             // remove temporary directory at last
             "rmdir /S /Q \"" + this->temporaryDirectory + "\"",
@@ -122,7 +122,7 @@ void InstallUpdateDialog::install(void)
         "   start \"\" \""                 + appPath + "\\RMG.exe\""           + outputToLogLine,
         ")",
         "IF NOT ERRORLEVEL 0 (",
-        "   start \"\" cmd /c \"echo Rosalie's Mupen GUI failed to update, check the updater.log file in the Cache directory for more information && pause\"",
+        "   start \"\" cmd /c \"echo Rosalie's Mupen GUI failed to update, check the updater.log file in the user cache directory for more information && pause\"",
         ")",
         // remove temporary directory at last
         "rmdir /S /Q \"" + this->temporaryDirectory + "\"",
