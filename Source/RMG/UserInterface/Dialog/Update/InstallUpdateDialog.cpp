@@ -8,7 +8,8 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "InstallUpdateDialog.hpp"
-#include "RMG-Core/Error.hpp"
+
+#include <RMG-Core/Core.hpp>
 
 #include <QMessageBox>
 #include <QProcess>
@@ -39,7 +40,8 @@ void InstallUpdateDialog::install(void)
 
     QString appPath = QCoreApplication::applicationDirPath();
     QString appPid  = QString::number(QCoreApplication::applicationPid());
-    QString logPath = appPath + "/Cache/updater.log";
+    QString logPath = QString::fromStdU32String(CoreGetUserCacheDirectory().u32string()) + "/updater.log";
+
 
     // convert paths to use the right path seperator
     this->temporaryDirectory = QDir::toNativeSeparators(this->temporaryDirectory);
