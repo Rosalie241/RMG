@@ -2393,7 +2393,16 @@ void MainWindow::on_Core_DebugCallback(QList<CoreCallbackMessage> messages)
         return;
     }
 
-    const CoreCallbackMessage& statusbarMessage = messages.last();
+    // attempt to find last core message
+    CoreCallbackMessage statusbarMessage = {};
+    for (qsizetype i = messages.size() - 1; i >= 0; i--)
+    {
+        if (messages[i].Context.startsWith("[CORE]"))
+        {
+            statusbarMessage = messages[i];
+            break;
+        }
+    }
 
     if (!statusbarMessage.Context.startsWith("[CORE]"))
     {
