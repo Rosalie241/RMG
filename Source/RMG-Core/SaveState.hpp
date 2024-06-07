@@ -15,6 +15,12 @@
 
 #include <filesystem>
 
+enum class CoreSaveStateType
+{
+	Mupen64Plus = 1,
+	Project64   = 2
+};
+
 // sets save state slot
 bool CoreSetSaveStateSlot(int slot);
 
@@ -42,7 +48,7 @@ bool CoreGetSaveStatePath(CoreRomHeader header, CoreRomSettings settings, int sl
 bool CoreSaveState(void);
 
 // saves state to file
-bool CoreSaveState(std::filesystem::path file);
+bool CoreSaveState(std::filesystem::path file, CoreSaveStateType type = CoreSaveStateType::Mupen64Plus);
 
 // loads saved state
 bool CoreLoadSaveState(void);
