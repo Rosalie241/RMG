@@ -2395,29 +2395,19 @@ void MainWindow::on_Core_DebugCallback(QList<CoreCallbackMessage> messages)
 
     // attempt to find last core message
     CoreCallbackMessage statusbarMessage = {};
-    for (qsizetype i = messages.size() - 1; i >= 0; i--)
+    qsizetype i = messages.size() - 1;
+    for (; i >= 0; i--)
     {
-        if (messages[i].Context.startsWith("[CORE]"))
+        if (messages[i].Context.startsWith("[CORE]") &&
+            messages[i].Type != CoreDebugMessageType::Verbose &&
+            !messages[i].Message.startsWith("IS64:"))
         {
             statusbarMessage = messages[i];
             break;
         }
     }
-
-    if (!statusbarMessage.Context.startsWith("[CORE]"))
-    {
-        return;
-    }
-
-    // drop verbose messages
-    if (statusbarMessage.Type == CoreDebugMessageType::Verbose)
-    {
-        return;
-    }
-
-    // drop IS64 messages
-    if (statusbarMessage.Message.startsWith("IS64:"))
-    {
+    if (i < 0)
+    { // no wanted core message found
         return;
     }
 
