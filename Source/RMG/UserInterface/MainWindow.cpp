@@ -1587,13 +1587,17 @@ void MainWindow::on_Action_System_SaveAs(void)
         this->on_Action_System_Pause();
     }
 
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save State"), "", tr("Save State (*.state);;All Files (*)"));
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save State"), "", tr("Save State (*.state);;Project64 Save State (*.pj);;All Files (*)"));
 
     if (!fileName.isEmpty())
     {
         this->ui_ManuallySavedState = true;
 
-        if (!CoreSaveState(fileName.toStdU32String()))
+        CoreSaveStateType type = fileName.endsWith(".pj") ? 
+                                    CoreSaveStateType::Project64 :
+                                    CoreSaveStateType::Mupen64Plus;
+
+        if (!CoreSaveState(fileName.toStdU32String(), type))
         {
             this->ui_ManuallySavedState = false;
             this->showErrorMessage("CoreSaveState() Failed", QString::fromStdString(CoreGetError()));
