@@ -6,7 +6,7 @@
 [subrepo]
 	remote = git@github.com:/Rosalie241/parallel-rdp-standalone.git
 	branch = RMG
-	commit = 1850b00b730e9f7c356abc3dbf6bcf4cc401939f
-	parent = 940344c70c6eda156fb175eaea5ce79b19ff84ba
+	commit = a81f1a3f0dcd37e2d038433a7397d8b111a568ac
+	parent = 87d1413c99b5b15f8995ff646c12197d34ac9df9
 	method = merge
 	cmdver = 0.4.6
