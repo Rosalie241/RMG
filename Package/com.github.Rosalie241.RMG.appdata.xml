@@ -33,6 +33,20 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.6.2" date="2024-06-08" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix updater not working on windows with non-portable installs</li>
+          <li>Fix OSD not showing native path separator when saving and loading a state from a file</li>
+          <li>Fix statusbar message not being up-to-date in some cases</li>
+          <li>Fix GLideN64 regression introduced in v0.6.1</li>
+          <li>Fix cmake not making installed libraries executable</li>
+          <li>Add 'Project64 Save State' option when saving a state to a file</li>
+          <li>Revert update to mupen64plus-video-parallel (thank you themaister for looking into the regression)</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.6.1" date="2024-06-05" type="stable">
       <description>
         <p>Changes:</p>
