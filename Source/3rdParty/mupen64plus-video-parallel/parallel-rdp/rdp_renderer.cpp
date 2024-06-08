@@ -165,38 +165,38 @@ bool Renderer::init_caps()
 		LOGI("Allow small types = %d.\n", int(allow_small_types));
 	}
 
-	if (!features.vk11_features.storageBuffer16BitAccess)
+	if (!features.storage_16bit_features.storageBuffer16BitAccess)
 	{
-		LOGE("16-bit storage for SSBOs is not supported! This is a minimum requirement for paraLLEl-RDP.\n");
+		LOGE("VK_KHR_16bit_storage for SSBOs is not supported! This is a minimum requirement for paraLLEl-RDP.\n");
 		return false;
 	}
 
-	if (!features.vk12_features.storageBuffer8BitAccess)
+	if (!features.storage_8bit_features.storageBuffer8BitAccess)
 	{
-		LOGE("8-bit storage for SSBOs is not supported! This is a minimum requirement for paraLLEl-RDP.\n");
+		LOGE("VK_KHR_8bit_storage for SSBOs is not supported! This is a minimum requirement for paraLLEl-RDP.\n");
 		return false;
 	}
 
 	// Driver workarounds here for 8/16-bit integer support.
 	if (features.supports_driver_properties && !forces_small_types)
 	{
-		if (features.driver_id == VK_DRIVER_ID_AMD_PROPRIETARY_KHR)
+		if (features.driver_properties.driverID == VK_DRIVER_ID_AMD_PROPRIETARY_KHR)
 		{
 			LOGW("Current proprietary AMD driver is known to be buggy with 8/16-bit integer arithmetic, disabling support for time being.\n");
 			allow_small_types = false;
 		}
-		else if (features.driver_id == VK_DRIVER_ID_AMD_OPEN_SOURCE_KHR ||
-		         features.driver_id == VK_DRIVER_ID_MESA_RADV_KHR)
+		else if (features.driver_properties.driverID == VK_DRIVER_ID_AMD_OPEN_SOURCE_KHR ||
+		         features.driver_properties.driverID == VK_DRIVER_ID_MESA_RADV_KHR)
 		{
 			LOGW("Current open-source AMD drivers are known to be slightly faster without 8/16-bit integer arithmetic.\n");
 			allow_small_types = false;
 		}
-		else if (features.driver_id == VK_DRIVER_ID_NVIDIA_PROPRIETARY_KHR)
+		else if (features.driver_properties.driverID == VK_DRIVER_ID_NVIDIA_PROPRIETARY_KHR)
 		{
 			LOGW("Current NVIDIA driver is known to be slightly faster without 8/16-bit integer arithmetic.\n");
 			allow_small_types = false;
 		}
-		else if (features.driver_id == VK_DRIVER_ID_INTEL_PROPRIETARY_WINDOWS_KHR)
+		else if (features.driver_properties.driverID == VK_DRIVER_ID_INTEL_PROPRIETARY_WINDOWS_KHR)
 		{
 			LOGW("Current proprietary Intel Windows driver is tested to perform much better without 8/16-bit integer support.\n");
 			allow_small_types = false;
@@ -209,7 +209,7 @@ bool Renderer::init_caps()
 	{
 		caps.supports_small_integer_arithmetic = false;
 	}
-	else if (features.enabled_features.shaderInt16 && features.vk12_features.shaderInt8)
+	else if (features.enabled_features.shaderInt16 && features.float16_int8_features.shaderInt8)
 	{
 		LOGI("Enabling 8 and 16-bit integer arithmetic support for more efficient shaders!\n");
 		caps.supports_small_integer_arithmetic = true;
@@ -220,7 +220,7 @@ bool Renderer::init_caps()
 		caps.supports_small_integer_arithmetic = false;
 	}
 
-	uint32_t subgroup_size = features.vk11_props.subgroupSize;
+	uint32_t subgroup_size = features.subgroup_properties.subgroupSize;
 
 	const VkSubgroupFeatureFlags required =
 			VK_SUBGROUP_FEATURE_BALLOT_BIT |
@@ -230,15 +230,15 @@ bool Renderer::init_caps()
 
 	caps.subgroup_tile_binning =
 			allow_subgroup &&
-			(features.vk11_props.subgroupSupportedOperations & required) == required &&
-			(features.vk11_props.subgroupSupportedStages & VK_SHADER_STAGE_COMPUTE_BIT) != 0 &&
+			(features.subgroup_properties.supportedOperations & required) == required &&
+			(features.subgroup_properties.supportedStages & VK_SHADER_STAGE_COMPUTE_BIT) != 0 &&
 			can_support_minimum_subgroup_size(32) && subgroup_size <= 64;
 
 	caps.subgroup_depth_blend =
 			caps.super_sample_readback &&
 			allow_subgroup &&
-			(features.vk11_props.subgroupSupportedOperations & required) == required &&
-			(features.vk11_props.subgroupSupportedOperations & VK_SHADER_STAGE_COMPUTE_BIT) != 0;
+			(features.subgroup_properties.supportedOperations & required) == required &&
+			(features.subgroup_properties.supportedStages & VK_SHADER_STAGE_COMPUTE_BIT) != 0;
 
 	return true;
 }
@@ -1131,7 +1131,7 @@ static bool combiner_uses_lod_frac(const StaticRasterizationState &state)
 void Renderer::deduce_noise_state()
 {
 	auto &state = stream.static_raster_state;
-	state.flags &= ~(RASTERIZATION_NEED_NOISE_BIT | RASTERIZATION_NEED_NOISE_DUAL_BIT);
+	state.flags &= ~RASTERIZATION_NEED_NOISE_BIT;
 
 	// Figure out if we need to seed noise variable for this primitive.
 	if ((state.dither & 3) == 2 || ((state.dither >> 2) & 3) == 2)
@@ -1144,17 +1144,12 @@ void Renderer::deduce_noise_state()
 		return;
 
 	if ((state.flags & RASTERIZATION_MULTI_CYCLE_BIT) != 0)
+	{
 		if (state.combiner[0].rgb.muladd == RGBMulAdd::Noise)
 			state.flags |= RASTERIZATION_NEED_NOISE_BIT;
-
-	if (state.combiner[1].rgb.muladd == RGBMulAdd::Noise)
+	}
+	else if (state.combiner[1].rgb.muladd == RGBMulAdd::Noise)
 		state.flags |= RASTERIZATION_NEED_NOISE_BIT;
-
-	// If both cycles use noise, they need to observe different values.
-	if ((state.flags & RASTERIZATION_MULTI_CYCLE_BIT) != 0 &&
-	    state.combiner[0].rgb.muladd == RGBMulAdd::Noise &&
-	    state.combiner[1].rgb.muladd == RGBMulAdd::Noise)
-		state.flags |= RASTERIZATION_NEED_NOISE_DUAL_BIT;
 
 	if ((state.flags & (RASTERIZATION_ALPHA_TEST_BIT | RASTERIZATION_ALPHA_TEST_DITHER_BIT)) ==
 	    (RASTERIZATION_ALPHA_TEST_BIT | RASTERIZATION_ALPHA_TEST_DITHER_BIT))
@@ -1869,7 +1864,7 @@ void Renderer::submit_tile_binning_combined(Vulkan::CommandBuffer &cmd, bool ups
 	cmd.push_constants(&push, 0, sizeof(push));
 
 	auto &features = device->get_device_features();
-	uint32_t subgroup_size = features.vk11_props.subgroupSize;
+	uint32_t subgroup_size = features.subgroup_properties.subgroupSize;
 
 	Vulkan::QueryPoolHandle start_ts, end_ts;
 	if (caps.timestamp >= 2)
@@ -3537,27 +3532,27 @@ void Renderer::set_primitive_color(uint8_t min_level, uint8_t prim_lod_frac, uin
 
 bool Renderer::can_support_minimum_subgroup_size(unsigned size) const
 {
-	return supports_subgroup_size_control(size, device->get_device_features().vk11_props.subgroupSize);
+	return supports_subgroup_size_control(size, device->get_device_features().subgroup_properties.subgroupSize);
 }
 
 bool Renderer::supports_subgroup_size_control(uint32_t minimum_size, uint32_t maximum_size) const
 {
 	auto &features = device->get_device_features();
 
-	if (!features.vk13_features.computeFullSubgroups)
+	if (!features.subgroup_size_control_features.computeFullSubgroups)
 		return false;
 
-	bool use_varying = minimum_size <= features.vk13_props.minSubgroupSize &&
-	                   maximum_size >= features.vk13_props.maxSubgroupSize;
+	bool use_varying = minimum_size <= features.subgroup_size_control_properties.minSubgroupSize &&
+	                   maximum_size >= features.subgroup_size_control_properties.maxSubgroupSize;
 
 	if (!use_varying)
 	{
-		bool outside_range = minimum_size > features.vk13_props.maxSubgroupSize ||
-		                     maximum_size < features.vk13_props.minSubgroupSize;
+		bool outside_range = minimum_size > features.subgroup_size_control_properties.maxSubgroupSize ||
+		                     maximum_size < features.subgroup_size_control_properties.minSubgroupSize;
 		if (outside_range)
 			return false;
 
-		if ((features.vk13_props.requiredSubgroupSizeStages & VK_SHADER_STAGE_COMPUTE_BIT) == 0)
+		if ((features.subgroup_size_control_properties.requiredSubgroupSizeStages & VK_SHADER_STAGE_COMPUTE_BIT) == 0)
 			return false;
 	}
 

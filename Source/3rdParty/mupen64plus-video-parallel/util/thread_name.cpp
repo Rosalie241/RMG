@@ -22,38 +22,19 @@
 
 #include "thread_name.hpp"
 
-#if !defined(_WIN32)
+#ifdef __linux__
 #include <pthread.h>
-#else
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <string>
 #endif
 
 namespace Util
 {
 void set_current_thread_name(const char *name)
 {
-#if defined(__linux__)
+#ifdef __linux__
 	pthread_setname_np(pthread_self(), name);
-#elif defined(__APPLE__)
-	pthread_setname_np(name);
-#elif defined(_WIN32)
-	using PFN_SetThreadDescription = HRESULT (WINAPI *)(HANDLE, PCWSTR);
-	auto module = GetModuleHandleA("kernel32.dll");
-	PFN_SetThreadDescription SetThreadDescription = module ? reinterpret_cast<PFN_SetThreadDescription>(
-	    (void *)GetProcAddress(module, "SetThreadDescription")) : nullptr;
-
-	if (SetThreadDescription)
-	{
-		std::wstring wname;
-		while (*name != '\0')
-		{
-			wname.push_back(*name);
-			name++;
-		}
-		SetThreadDescription(GetCurrentThread(), wname.c_str());
-	}
+#else
+	// TODO: Kinda messy.
+	(void)name;
 #endif
 }
 }

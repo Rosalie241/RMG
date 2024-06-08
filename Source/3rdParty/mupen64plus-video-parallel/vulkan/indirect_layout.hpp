@@ -43,7 +43,6 @@ struct IndirectLayoutToken
 		Draw,
 		DrawIndexed,
 		MeshTasks,
-		Dispatch
 	};
 
 	Type type = Type::Invalid;
@@ -76,16 +75,10 @@ public:
 		return layout;
 	}
 
-	VkPipelineBindPoint get_bind_point() const
-	{
-		return bind_point;
-	}
-
 private:
 	friend class Device;
 
 	Device *device;
 	VkIndirectCommandsLayoutNV layout;
-	VkPipelineBindPoint bind_point;
 };
 }

@@ -120,8 +120,6 @@ void Device::register_shader_module(VkShaderModule module, Fossilize::Hash hash,
 		return;
 	}
 
-	replayer_state->feature_filter->register_shader_module_info(module, &info);
-
 	if (!recorder_state->recorder.record_shader_module(module, info, hash))
 		LOGW("Failed to register shader module.\n");
 }
@@ -258,26 +256,17 @@ bool Device::fossilize_replay_graphics_pipeline(Fossilize::Hash hash, VkGraphics
 		                      reinterpret_cast<const ImmutableSamplerBank *>(info.layout));
 	}
 
-	if (ret)
-	{
-		// The layout is dummy, resolve it here.
-		info.layout = ret->get_pipeline_layout()->get_layout();
+	// The layout is dummy, resolve it here.
+	info.layout = ret->get_pipeline_layout()->get_layout();
 
-		// Resolve shader modules.
-		if (vert_index >= 0)
-			const_cast<VkPipelineShaderStageCreateInfo *>(info.pStages)[vert_index].module = vert_shader->get_module();
-		if (task_index >= 0)
-			const_cast<VkPipelineShaderStageCreateInfo *>(info.pStages)[task_index].module = task_shader->get_module();
-		if (mesh_index >= 0)
-			const_cast<VkPipelineShaderStageCreateInfo *>(info.pStages)[mesh_index].module = mesh_shader->get_module();
-		const_cast<VkPipelineShaderStageCreateInfo *>(info.pStages)[frag_index].module = frag_shader->get_module();
-	}
-
-	if (!ret || !replayer_state->feature_filter->graphics_pipeline_is_supported(&info))
-	{
-		replayer_state->progress.pipelines.fetch_add(1, std::memory_order_release);
-		return true;
-	}
+	// Resolve shader modules.
+	if (vert_index >= 0)
+		const_cast<VkPipelineShaderStageCreateInfo *>(info.pStages)[vert_index].module = vert_shader->get_module();
+	if (task_index >= 0)
+		const_cast<VkPipelineShaderStageCreateInfo *>(info.pStages)[task_index].module = task_shader->get_module();
+	if (mesh_index >= 0)
+		const_cast<VkPipelineShaderStageCreateInfo *>(info.pStages)[mesh_index].module = mesh_shader->get_module();
+	const_cast<VkPipelineShaderStageCreateInfo *>(info.pStages)[frag_index].module = frag_shader->get_module();
 
 #ifdef VULKAN_DEBUG
 	LOGI("Replaying graphics pipeline.\n");
@@ -343,20 +332,11 @@ bool Device::fossilize_replay_compute_pipeline(Fossilize::Hash hash, VkComputePi
 
 	auto *ret = request_program(shader, reinterpret_cast<const ImmutableSamplerBank *>(info.layout));
 
-	if (ret)
-	{
-		// The layout is dummy, resolve it here.
-		info.layout = ret->get_pipeline_layout()->get_layout();
+	// The layout is dummy, resolve it here.
+	info.layout = ret->get_pipeline_layout()->get_layout();
 
-		// Resolve shader module.
-		info.stage.module = shader->get_module();
-	}
-
-	if (!ret || !replayer_state->feature_filter->compute_pipeline_is_supported(&info))
-	{
-		replayer_state->progress.pipelines.fetch_add(1, std::memory_order_release);
-		return true;
-	}
+	// Resolve shader module.
+	info.stage.module = shader->get_module();
 
 #ifdef VULKAN_DEBUG
 	LOGI("Replaying compute pipeline.\n");
@@ -399,6 +379,13 @@ bool Device::enqueue_create_graphics_pipeline(Fossilize::Hash hash,
 		return true;
 	}
 
+	if (!replayer_state->feature_filter->graphics_pipeline_is_supported(create_info))
+	{
+		*pipeline = VK_NULL_HANDLE;
+		replayer_state->progress.pipelines.fetch_add(1, std::memory_order_release);
+		return true;
+	}
+
 	// The lifetime of create_info is tied to the replayer itself.
 	replayer_state->graphics_pipelines.emplace_back(hash, const_cast<VkGraphicsPipelineCreateInfo *>(create_info));
 	return true;
@@ -409,6 +396,13 @@ bool Device::enqueue_create_compute_pipeline(Fossilize::Hash hash,
                                              VkPipeline *pipeline)
 {
 	if (create_info->stage.module == VK_NULL_HANDLE || create_info->layout == VK_NULL_HANDLE)
+	{
+		*pipeline = VK_NULL_HANDLE;
+		replayer_state->progress.pipelines.fetch_add(1, std::memory_order_release);
+		return true;
+	}
+
+	if (!replayer_state->feature_filter->compute_pipeline_is_supported(create_info))
 	{
 		*pipeline = VK_NULL_HANDLE;
 		replayer_state->progress.pipelines.fetch_add(1, std::memory_order_release);
@@ -701,9 +695,7 @@ void Device::init_pipeline_state(const Fossilize::FeatureFilter &filter,
 
 	lock.read_only_cache.lock_read();
 
-	// Only non-const usage is to register modules, and that is atomic within the implementation.
-	replayer_state->feature_filter = const_cast<Fossilize::FeatureFilter *>(&filter);
-
+	replayer_state->feature_filter = &filter;
 	auto *group = get_system_handles().thread_group;
 
 	auto shader_manager_task = group->create_task([this]() {

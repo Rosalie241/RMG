@@ -13,7 +13,6 @@ public:
     uint32_t get_surface_height() override;
     bool alive(Vulkan::WSI &wsi) override;
     void poll_input() override;
-    void poll_input_async(Granite::InputTrackerHandler *handler) override;
     void do_resize();
 };
 

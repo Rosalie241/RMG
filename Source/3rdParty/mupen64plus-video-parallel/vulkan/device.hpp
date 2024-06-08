@@ -129,7 +129,7 @@ class BatchComposer
 public:
 	enum { MaxSubmissions = 8 };
 
-	BatchComposer();
+	explicit BatchComposer(bool split_binary_timeline_semaphores);
 	void add_wait_submissions(WaitSemaphores &sem);
 	void add_wait_semaphore(SemaphoreHolder &sem, VkPipelineStageFlags2 stage);
 	void add_wait_semaphore(VkSemaphore sem, VkPipelineStageFlags2 stage);
@@ -148,6 +148,10 @@ private:
 	Util::SmallVector<VkCommandBufferSubmitInfo> cmds[MaxSubmissions];
 
 	unsigned submit_index = 0;
+	bool split_binary_timeline_semaphores = false;
+
+	bool has_timeline_semaphore_in_batch(unsigned index) const;
+	bool has_binary_semaphore_in_batch(unsigned index) const;
 };
 }
 
@@ -245,14 +249,6 @@ public:
 
 	// Frame-pushing interface.
 	void next_frame_context();
-
-	// Normally, the main thread ensures forward progress of the frame context
-	// so that async tasks don't have to care about it,
-	// but in the case where async threads are continuously pumping Vulkan work
-	// in the background, they need to reclaim memory if WSI goes to sleep for a long period of time.
-	void next_frame_context_in_async_thread();
-	void set_enable_async_thread_frame_context(bool enable);
-
 	void wait_idle();
 	void end_frame_context();
 
@@ -479,11 +475,6 @@ public:
 		return ext;
 	}
 
-	bool consumes_debug_markers() const
-	{
-		return debug_marker_sensitive;
-	}
-
 	bool swapchain_touched() const;
 
 	double convert_device_timestamp_delta(uint64_t start_ticks, uint64_t end_ticks) const;
@@ -549,7 +540,6 @@ private:
 	VkPhysicalDeviceProperties gpu_props;
 
 	DeviceFeatures ext;
-	bool debug_marker_sensitive = false;
 	void init_stock_samplers();
 	void init_stock_sampler(StockSampler sampler, float max_aniso, float lod_bias);
 	void init_timeline_semaphores();
@@ -597,7 +587,6 @@ private:
 		std::condition_variable cond;
 		Util::RWSpinLock read_only_cache;
 		unsigned counter = 0;
-		bool async_frame_context = false;
 	} lock;
 
 	struct PerFrame
@@ -626,7 +615,8 @@ private:
 		std::vector<BufferBlock> ubo_blocks;
 		std::vector<BufferBlock> staging_blocks;
 
-		std::vector<VkFence> wait_and_recycle_fences;
+		std::vector<VkFence> wait_fences;
+		std::vector<VkFence> recycle_fences;
 
 		std::vector<DeviceAllocation> allocations;
 		std::vector<VkFramebuffer> destroyed_framebuffers;
@@ -696,6 +686,14 @@ private:
 		uint64_t value;
 	};
 
+	// Pending buffers which need to be copied from CPU to GPU before submitting graphics or compute work.
+	struct
+	{
+		std::vector<BufferBlock> vbo;
+		std::vector<BufferBlock> ibo;
+		std::vector<BufferBlock> ubo;
+	} dma;
+
 	void submit_queue(QueueIndices physical_type, InternalFence *fence,
 	                  SemaphoreHolder *external_semaphore = nullptr,
 	                  unsigned semaphore_count = 0,
@@ -750,6 +748,7 @@ private:
 	std::function<void ()> queue_lock_callback;
 	std::function<void ()> queue_unlock_callback;
 	void flush_frame(QueueIndices physical_type);
+	void sync_buffer_blocks();
 	void submit_empty_inner(QueueIndices type, InternalFence *fence,
 	                        SemaphoreHolder *external_semaphore,
 	                        unsigned semaphore_count,

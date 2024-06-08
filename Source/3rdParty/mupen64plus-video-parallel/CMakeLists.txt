@@ -68,7 +68,6 @@ set(PARALLEL_SOURCES
     util/aligned_alloc.cpp
     util/timer.cpp
     util/timeline_trace_file.cpp
-    util/environment.cpp
     util/thread_name.cpp
     volk/volk.c
     screen.c

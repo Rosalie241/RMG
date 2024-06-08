@@ -56,10 +56,6 @@ void MupenWSIPlatform::poll_input()
 {
 }
 
-void MupenWSIPlatform::poll_input_async(Granite::InputTrackerHandler *handler)
-{
-}
-
 void MupenWSIPlatform::do_resize()
 {
     resize = true;

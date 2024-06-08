@@ -21,7 +21,6 @@
  */
 
 #include "aligned_alloc.hpp"
-#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #ifdef _WIN32

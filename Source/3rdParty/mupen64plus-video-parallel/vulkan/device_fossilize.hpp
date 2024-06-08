@@ -50,7 +50,7 @@ struct Device::ReplayerState
 	Fossilize::StateReplayer base_replayer;
 	Fossilize::StateReplayer graphics_replayer;
 	Fossilize::StateReplayer compute_replayer;
-	Fossilize::FeatureFilter *feature_filter = nullptr;
+	const Fossilize::FeatureFilter *feature_filter = nullptr;
 	std::unique_ptr<Fossilize::DatabaseInterface> db;
 	Granite::TaskGroupHandle complete;
 	Granite::TaskGroupHandle module_ready;
