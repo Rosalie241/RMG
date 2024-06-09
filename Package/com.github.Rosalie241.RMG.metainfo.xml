@@ -1,34 +1,30 @@
 <?xml version='1.0' encoding='utf-8'?>
-<!-- Copyright 2022 Rosalie Wanders -->
-<component type="desktop">
-  <!--Created with jdAppdataEdit 2.1-->
+<!-- Copyright 2024 Rosalie Wanders -->
+<component type="desktop-application">
+  <!--Created with jdAppStreamEdit 9.1-->
   <id>com.github.Rosalie241.RMG</id>
   <name>Rosalie's Mupen GUI</name>
-  <summary>An easy to use &amp; cross-platform mupen64plus front-end written in C++ &amp; Qt</summary>
-  <developer_name>Rosalie</developer_name>
-  <launchable type="desktop-id">com.github.Rosalie241.RMG.desktop</launchable>
+  <summary>Play Nintendo 64 games easily</summary>
+  <developer id="com.github.rosalie241">
+    <name>Rosalie</name>
+  </developer>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-only</project_license>
-  <description><p>Rosalie's Mupen GUI is an easy to use yet customizable mupen64plus front-end, allowing you to easily play N64 games.</p></description>
+  <update_contact>rosalie@mailbox.org</update_contact>
+  <description>
+    <p>Rosalie's Mupen GUI is an easy to use yet customizable mupen64plus front-end, allowing you to easily play Nintendo 64 games.</p>
+  </description>
   <screenshots>
     <screenshot type="default">
-      <caption>01 - The Rom Browser</caption>
+      <caption>The Rom Browser</caption>
       <image type="source">https://github.com/Rosalie241/RMG/raw/master/Package/Screenshots/RomBrowser.png</image>
     </screenshot>
     <screenshot type="default">
-      <caption>02 - During A Game</caption>
+      <caption>During A Game</caption>
       <image type="source">https://github.com/Rosalie241/RMG/raw/master/Package/Screenshots/InGame.png</image>
     </screenshot>
     <screenshot type="default">
-      <caption>03 - Cheats</caption>
-      <image type="source">https://github.com/Rosalie241/RMG/raw/master/Package/Screenshots/Cheats.png</image>
-    </screenshot>
-    <screenshot type="default">
-      <caption>04 - Settings</caption>
-      <image type="source">https://github.com/Rosalie241/RMG/raw/master/Package/Screenshots/Settings.png</image>
-    </screenshot>
-    <screenshot type="default">
-      <caption>05 - Input Settings</caption>
+      <caption>Input Settings</caption>
       <image type="source">https://github.com/Rosalie241/RMG/raw/master/Package/Screenshots/InputSettings.png</image>
     </screenshot>
   </screenshots>
@@ -323,7 +319,7 @@
       <description>
         <p>Changes:</p>
         <ul>
-          <li>Fix "Don't check for updates again" checkbox appearing when requesting an update check through Help -> Check For Updates</li>
+          <li>Fix "Don't check for updates again" checkbox appearing when requesting an update check through Help -&gt; Check For Updates</li>
           <li>Add game format, file name, file extension, file size, game I.D. and game region columns to the list view of the ROM browser which can be toggled in the "Show/Hide Columns" menu of the context menu in the list view of the ROM browser (thank you RetraCarteR)</li>
           <li>Add "Reset Column Sizes" to context menu of the list view of the ROM browser (thank you RetraCarteR)</li>
           <li>Add "Analog Stick Sensitivity" setting to RMG-Input (thank you JaxonWasTaken)</li>
@@ -476,7 +472,7 @@
           <li>Add "Play Game with Cartridge" to context menu when a 64DD disk is selected in the ROM Browser</li>
           <li>Add "Open ROM Directory" to context menu in the ROM Browser</li>
           <li>Add an On-Screen Display (see the OSD tab in the settings dialog for settings)</li>
-          <li>Add Theme setting to settings dialog (see Interface -> Miscellaneous, this is a replacement for the previous Styles settings)</li>
+          <li>Add Theme setting to settings dialog (see Interface -&gt; Miscellaneous, this is a replacement for the previous Styles settings)</li>
           <li>Improve error message when opening a zip file fails</li>
           <li>Improve tab order and naming in settings dialog</li>
         </ul>
@@ -620,7 +616,7 @@
           <li>Fix --fullscreen not working like expected</li>
           <li>Fix crash on windows when exiting</li>
           <li>Implement octagon simulation in RMG-Input (thank you Jaxon)</li>
-          <li>implement cheat support</li>
+          <li>Implement cheat support</li>
           <li>Add 'Invert Axis Mapped To LRZ' option to RMG-Input</li>
           <li>Add --disk commandline argument (for opening N64 ROMs with 64DD disk files)</li>
           <li>Add configuration GUI to angrylion-rdp-plus (thank you GhostlyDark)</li>
@@ -657,8 +653,13 @@
   <recommends>
     <control>pointing</control>
     <control>keyboard</control>
+    <control>gamepad</control>
   </recommends>
+  <supports>
+    <control>voice</control>
+  </supports>
   <content_rating type="oars-1.1"/>
+  <launchable type="desktop-id">com.github.Rosalie241.RMG.desktop</launchable>
   <keywords>
     <keyword>mupen64plus</keyword>
     <keyword>RMG</keyword>
