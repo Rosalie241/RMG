@@ -122,7 +122,7 @@ else()
     set(PLUGIN_INSTALL_PATH "${SYSTEM_LIB_INSTALL_PATH}/RMG/Plugin")
     set(DATA_INSTALL_PATH "${CMAKE_INSTALL_DATADIR}/RMG")
     set(INSTALL_DESKTOP_FILE ON)
-    set(APPDATA_INSTALL_PATH "${CMAKE_INSTALL_DATADIR}/metainfo/")
+    set(METAINFO_INSTALL_PATH "${CMAKE_INSTALL_DATADIR}/metainfo/")
     set(DESKTOP_INSTALL_PATH "${CMAKE_INSTALL_DATADIR}/applications")
     set(ICON_INSTALL_PATH "${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps/")
 endif()
@@ -231,7 +231,7 @@ if (INSTALL_DESKTOP_FILE)
     install(FILES Package/com.github.Rosalie241.RMG.svg
         DESTINATION ${ICON_INSTALL_PATH}
     )
-    install(FILES Package/com.github.Rosalie241.RMG.appdata.xml
-        DESTINATION ${APPDATA_INSTALL_PATH}
+    install(FILES Package/com.github.Rosalie241.RMG.metainfo.xml
+        DESTINATION ${METAINFO_INSTALL_PATH}
     )
 endif(INSTALL_DESKTOP_FILE)
