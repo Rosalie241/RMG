@@ -11,6 +11,8 @@
 
 #include <RMG-Core/VidExt.hpp>
 #include <RMG-Core/m64p/Api.hpp>
+#include <RMG-Core/Core.hpp>
+
 #include "OnScreenDisplay.hpp"
 
 #include <QApplication>
@@ -52,11 +54,13 @@ static bool VidExt_OglSetup(void)
 
     if (!(*l_OGLWidget)->GetContext()->isValid())
     {
+        CoreAddCallbackMessage(CoreDebugMessageType::Error, "Failed to retrieve valid OpenGL context");
         return false;
     }
 
     if (!(*l_OGLWidget)->GetContext()->makeCurrent((*l_OGLWidget)))
     {
+        CoreAddCallbackMessage(CoreDebugMessageType::Error, "Failed to make OpenGL context current");
         return false;
     }
 
@@ -145,6 +149,7 @@ static m64p_error VidExt_SetMode(int Width, int Height, int BitsPerPixel, int Sc
         {
             if (!OnScreenDisplayInit())
             {
+                CoreAddCallbackMessage(CoreDebugMessageType::Error, "Failed to initialize OSD");
                 return M64ERR_SYSTEM_FAIL;
             }
 
@@ -403,6 +408,7 @@ EXPORT m64p_error CALL VidExt_VK_GetSurface(void** Surface, void* Instance)
         l_VulkanInstance.setVkInstance((VkInstance)Instance);
         if (!l_VulkanInstance.create())
         {
+            CoreAddCallbackMessage(CoreDebugMessageType::Error, "Failed to create vulkan instance");
             return M64ERR_SYSTEM_FAIL;
         }
         (*l_VulkanWidget)->setVulkanInstance(&l_VulkanInstance);
@@ -412,6 +418,7 @@ EXPORT m64p_error CALL VidExt_VK_GetSurface(void** Surface, void* Instance)
     VkSurfaceKHR vulkanSurface = QVulkanInstance::surfaceForWindow((*l_VulkanWidget));
     if (vulkanSurface == VK_NULL_HANDLE)
     {
+        CoreAddCallbackMessage(CoreDebugMessageType::Error, "Failed to retrieve vulkan surface for window");
         return M64ERR_SYSTEM_FAIL;
     }
 

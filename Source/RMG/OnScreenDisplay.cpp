@@ -58,7 +58,7 @@ bool OnScreenDisplayInit(void)
         return false;
     }
 
-    l_Initialized     = true;
+    l_Initialized = true;
     return true;
 }
 
