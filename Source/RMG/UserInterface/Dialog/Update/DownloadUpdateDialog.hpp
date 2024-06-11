@@ -16,7 +16,6 @@
 #include <QNetworkReply>
 
 #include <RMG-Core/Core.hpp>
-#include <qglobal.h>
 
 #include "ui_DownloadUpdateDialog.h"
 

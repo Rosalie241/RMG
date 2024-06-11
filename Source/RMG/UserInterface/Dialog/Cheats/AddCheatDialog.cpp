@@ -18,7 +18,6 @@
 #include <iostream>
 
 #include <RMG-Core/Core.hpp>
-#include <qpushbutton.h>
 
 using namespace UserInterface::Dialog;
 
