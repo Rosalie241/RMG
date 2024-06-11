@@ -972,8 +972,10 @@ void SettingsDialog::commonPluginSettings(SettingsDialogAction action)
     SettingsID settingsIdArray[] = {SettingsID::Core_RSP_Plugin, SettingsID::Core_GFX_Plugin, 
                                     SettingsID::Core_AUDIO_Plugin, SettingsID::Core_INPUT_Plugin};
     bool pluginFound[] = {false, false, false, false};
+    QString pluginFileNames[4];
 
     QComboBox *comboBox;
+    QString pluginName;
     QString pluginFileName;
     int index = 0;
 
@@ -983,18 +985,24 @@ void SettingsDialog::commonPluginSettings(SettingsDialogAction action)
         c->clear();
     }
 
+    for (int i = 0; i < 4; i++)
+    {
+        pluginFileName = action == SettingsDialogAction::LoadSettings ? 
+                            QString::fromStdString(CoreSettingsGetStringValue(settingsIdArray[i])) :
+                            QString::fromStdString(CoreSettingsGetDefaultStringValue(settingsIdArray[i]));
+
+        // account for full path (<v0.3.5 we used the full path)
+        pluginFileName = QFileInfo(pluginFileName).fileName();
+        
+        pluginFileNames[i] = pluginFileName;
+    }
+
     for (const auto &p : this->pluginList)
     {
         index = ((int)p.Type - 1);
         comboBox = comboBoxArray[index];
-
-        pluginFileName = action == SettingsDialogAction::LoadSettings ? 
-                            QString::fromStdString(CoreSettingsGetStringValue(settingsIdArray[index])) :
-                            QString::fromStdString(CoreSettingsGetDefaultStringValue(settingsIdArray[index]));
-
-        // account for full path (<v0.3.5 we used the full path)
-        pluginFileName = QFileInfo(pluginFileName).fileName();
-
+        pluginFileName = pluginFileNames[index];
+        
         comboBox->addItem(QString::fromStdString(p.Name), QString::fromStdString(p.File));
 
         if (pluginFileName == QString::fromStdString(p.File))
@@ -1009,8 +1017,10 @@ void SettingsDialog::commonPluginSettings(SettingsDialogAction action)
         comboBox = comboBoxArray[i];
         if (!pluginFound[i])
         {
-            comboBox->addItem("", "");
-            comboBox->setCurrentText("");
+            pluginName = pluginFileNames[i] + " (not found)";
+
+            comboBox->addItem(pluginName, pluginFileNames[i]);
+            comboBox->setCurrentText(pluginName);
         }
     }
 }
