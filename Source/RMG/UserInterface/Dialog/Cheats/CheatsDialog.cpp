@@ -96,6 +96,10 @@ void CheatsDialog::loadCheats(void)
                 {
                     foundParent->addChild(item);
                 }
+                else
+                {
+                    delete item;
+                }
 
                 // when the cheat is enabled & we're at the last item,
                 // expand each parent
