@@ -461,7 +461,7 @@ bool CoreArePluginsReady(void)
             error = "CoreArePluginsReady Failed: ";
             error += "(";
             error += get_plugin_type_name((CorePluginType)(i + 1));
-            error += ")->IsHooked returned false!";
+            error += ")->IsHooked() returned false!";
             CoreSetError(error);
             return false;
         }
