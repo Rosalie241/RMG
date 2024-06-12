@@ -5,7 +5,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt6 COMPONENTS Gui Widgets Core OpenGL REQUIRED)
+find_package(Qt6 COMPONENTS Gui Widgets Core REQUIRED)
 
 if (PORTABLE_INSTALL)
     add_definitions(-DPORTABLE_INSTALL)
@@ -113,7 +113,7 @@ target_include_directories(RMG PRIVATE
     ${IMGUI_DIR}
 )
 
-target_link_libraries(RMG Qt6::Gui Qt6::Widgets Qt6::OpenGL)
+target_link_libraries(RMG Qt6::Gui Qt6::Widgets)
 
 if (UPDATER)
     target_link_libraries(RMG Qt6::Network)
