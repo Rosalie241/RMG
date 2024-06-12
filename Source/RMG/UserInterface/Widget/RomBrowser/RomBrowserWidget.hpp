@@ -11,6 +11,7 @@
 #define ROMBROWSERWIDGET_HPP
 
 #include "Thread/RomSearcherThread.hpp"
+#include "UserInterface/NoFocusDelegate.hpp"
 
 #include "RomBrowserListViewWidget.hpp"
 #include "RomBrowserGridViewWidget.hpp"

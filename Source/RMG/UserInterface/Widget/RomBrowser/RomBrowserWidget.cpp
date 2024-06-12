@@ -81,6 +81,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->listViewModel  = new QStandardItemModel(this);
     this->listViewWidget->setModel(this->listViewModel);
     this->listViewWidget->setFrameStyle(QFrame::NoFrame);
+    this->listViewWidget->setItemDelegate(new NoFocusDelegate(this));
     this->listViewWidget->setWordWrap(false);
     this->listViewWidget->setShowGrid(false);
     this->listViewWidget->setSortingEnabled(true);
