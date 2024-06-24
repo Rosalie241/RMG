@@ -249,6 +249,7 @@ void SettingsDialog::loadGameSettings(void)
     this->gameMemorySizeComboBox->setCurrentIndex(!this->currentGameSettings.DisableExtraMem);
     this->gameSaveTypeComboBox->setCurrentIndex(this->currentGameSettings.SaveType);
     this->gameCounterFactorComboBox->setCurrentIndex(this->currentGameSettings.CountPerOp - 1);
+    this->gameTransferPakComboBox->setCurrentIndex(this->currentGameSettings.TransferPak);
     this->gameSiDmaDurationSpinBox->setValue(this->currentGameSettings.SiDMADuration);
 }
 
@@ -495,6 +496,7 @@ void SettingsDialog::loadDefaultGameSettings(void)
     this->gameMemorySizeComboBox->setCurrentIndex(!this->defaultGameSettings.DisableExtraMem);
     this->gameSaveTypeComboBox->setCurrentIndex(this->defaultGameSettings.SaveType);
     this->gameCounterFactorComboBox->setCurrentIndex(this->defaultGameSettings.CountPerOp - 1);
+    this->gameTransferPakComboBox->setCurrentIndex(this->defaultGameSettings.TransferPak);
     this->gameSiDmaDurationSpinBox->setValue(this->defaultGameSettings.SiDMADuration);
 }
 
@@ -671,14 +673,17 @@ void SettingsDialog::saveGameSettings(void)
     bool disableExtraMem = this->gameMemorySizeComboBox->currentIndex() == 0;
     int saveType = this->gameSaveTypeComboBox->currentIndex();
     int countPerOp = this->gameCounterFactorComboBox->currentIndex() + 1;
+    bool transferPak = this->gameTransferPakComboBox->currentIndex() != 0;
     int siDmaDuration = this->gameSiDmaDurationSpinBox->value();
 
     if ((this->defaultGameSettings.DisableExtraMem != disableExtraMem) ||
         (this->defaultGameSettings.SaveType != saveType) ||
         (this->defaultGameSettings.CountPerOp != countPerOp) ||
+        (this->defaultGameSettings.TransferPak != transferPak) ||
         (this->defaultGameSettings.SiDMADuration != siDmaDuration))
     {
         CoreSettingsSetValue(SettingsID::Game_OverrideSettings, this->gameSection, true);
+        CoreSettingsSetValue(SettingsID::Game_TransferPak, this->gameSection, transferPak);
         CoreSettingsSetValue(SettingsID::Game_DisableExtraMem, this->gameSection, disableExtraMem);
         CoreSettingsSetValue(SettingsID::Game_SaveType, this->gameSection, saveType);
         CoreSettingsSetValue(SettingsID::Game_CountPerOp, this->gameSection, countPerOp);

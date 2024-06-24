@@ -2086,6 +2086,31 @@
                 </layout>
                </item>
                <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_11">
+                 <item>
+                  <widget class="QLabel" name="label_5">
+                   <property name="text">
+                    <string>Transfer Pak</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="gameTransferPakComboBox">
+                   <item>
+                    <property name="text">
+                     <string>No</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Yes</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_52">
                  <item>
                   <widget class="QLabel" name="label_55">
