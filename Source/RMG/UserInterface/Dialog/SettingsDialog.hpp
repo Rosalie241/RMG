@@ -62,6 +62,8 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
 
     std::vector<CorePlugin> pluginList;
 
+    void showErrorMessage(QString, QString);
+
     int currentIndex(void);
 
     void restoreDefaults(int);
@@ -121,7 +123,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void hideEmulationInfoText(void);
 
     void chooseDirectory(QLineEdit *);
-    void chooseFile(QLineEdit *, QString filter = "");
+    void chooseFile(QLineEdit *, QString filter = "", QString md5 = "");
     void chooseColor(QPushButton *, QColor *, bool skipChoice = false);
 
     bool applyPluginSettings(void);

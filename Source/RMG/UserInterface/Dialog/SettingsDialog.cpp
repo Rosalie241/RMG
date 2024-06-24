@@ -13,6 +13,7 @@
 #include "RMG-Core/Settings/Settings.hpp"
 #include "UserInterface/Widget/KeybindButton.hpp"
 
+#include <QCryptographicHash>
 #include <QFileDialog>
 #include <QColorDialog>
 #include <QMessageBox>
@@ -73,6 +74,17 @@ SettingsDialog::~SettingsDialog(void)
 void SettingsDialog::ShowGameTab(void)
 {
     this->tabWidget->setCurrentIndex(3);
+}
+
+void SettingsDialog::showErrorMessage(QString error, QString details)
+{
+    QMessageBox msgBox(this);
+    msgBox.setIcon(QMessageBox::Icon::Critical);
+    msgBox.setWindowTitle("Error");
+    msgBox.setText(error);
+    msgBox.setDetailedText(details);
+    msgBox.addButton(QMessageBox::Ok);
+    msgBox.exec();
 }
 
 int SettingsDialog::currentIndex(void)
@@ -1101,7 +1113,7 @@ void SettingsDialog::chooseDirectory(QLineEdit *lineEdit)
     lineEdit->setText(QDir::toNativeSeparators(dir));
 }
 
-void SettingsDialog::chooseFile(QLineEdit *lineEdit, QString filter)
+void SettingsDialog::chooseFile(QLineEdit *lineEdit, QString filter, QString md5)
 {
     QString file;
 
@@ -1109,6 +1121,27 @@ void SettingsDialog::chooseFile(QLineEdit *lineEdit, QString filter)
     if (file.isEmpty())
     {
         return;
+    }
+
+    if (!md5.isEmpty())
+    {
+        QFile qFile(file);
+        if (!qFile.open(QFile::ReadOnly))
+        {
+            this->showErrorMessage("Failed to open file", "QFile::open() Failed!");
+            return;
+        }
+
+        QCryptographicHash hash(QCryptographicHash::Algorithm::Md5);
+        if (hash.addData(&qFile))
+        {
+            QString md5Hash = QString(hash.result().toHex());
+            if (md5Hash != md5)
+            {
+                this->showErrorMessage("MD5 mismatch!", "Expected file with MD5: \"" + md5 + "\"");
+                return;
+            }
+        }
     }
 
     lineEdit->setText(QDir::toNativeSeparators(file));
@@ -1145,13 +1178,7 @@ bool SettingsDialog::applyPluginSettings(void)
     {
         if (!CoreApplyPluginSettings())
         {
-            QMessageBox msgBox(this);
-            msgBox.setIcon(QMessageBox::Icon::Critical);
-            msgBox.setWindowTitle("Error");
-            msgBox.setText("CoreApplyPluginSettings() Failed");
-            msgBox.setDetailedText(QString::fromStdString(CoreGetError()));
-            msgBox.addButton(QMessageBox::Ok);
-            msgBox.exec();
+            this->showErrorMessage("CoreApplyPluginSettings() Failed", QString::fromStdString(CoreGetError()));
             return false;
         }
     }
@@ -1423,10 +1450,10 @@ void SettingsDialog::on_coreCpuEmulatorComboBox_currentIndexChanged(int index)
 
 void SettingsDialog::on_changeNTSCPifRomButton_clicked(void)
 {
-    this->chooseFile(this->ntscPifRomLineEdit, "PIF ROMs (*.rom)");
+    this->chooseFile(this->ntscPifRomLineEdit, "PIF ROMs (*.rom)", "5c124e7948ada85da603a522782940d0");
 }
 
 void SettingsDialog::on_changePALPifRomButton_clicked(void)
 {
-    this->chooseFile(this->palPifRomLineEdit, "PIF ROMs (*.rom)");
+    this->chooseFile(this->palPifRomLineEdit, "PIF ROMs (*.rom)", "d4232dc935cad0650ac2664d52281f3a");
 }
