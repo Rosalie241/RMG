@@ -121,7 +121,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void hideEmulationInfoText(void);
 
     void chooseDirectory(QLineEdit *);
-    void chooseIPLRom(QLineEdit *);
+    void chooseFile(QLineEdit *, QString filter = "");
     void chooseColor(QPushButton *, QColor *, bool skipChoice = false);
 
     bool applyPluginSettings(void);
@@ -149,6 +149,10 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void on_KeybindButton_KeybindingChanged(KeybindButton* button);
     void on_KeybindButton_Clicked(KeybindButton* button);
 
+    void on_coreCpuEmulatorComboBox_currentIndexChanged(int);
+
+    void on_changeNTSCPifRomButton_clicked(void);
+    void on_changePALPifRomButton_clicked(void);
   public:
     SettingsDialog(QWidget *parent);
     ~SettingsDialog(void);
