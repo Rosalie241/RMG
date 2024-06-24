@@ -90,6 +90,7 @@ enum class SettingsID
     // Game Specific Settings
     Game_OverrideSettings,
     Game_DisableExtraMem,
+    Game_TransferPak,
     Game_SaveType,
     Game_CountPerOp,
     Game_SiDmaDuration,

@@ -314,6 +314,9 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::Game_DisableExtraMem:
         setting = {"", "DisableExtraMem", false};
         break;
+    case SettingsID::Game_TransferPak:
+        setting = {"", "TransferPak", false};
+        break;
     case SettingsID::Game_SaveType:
         setting = {"", "SaveType", 0};
         break;
