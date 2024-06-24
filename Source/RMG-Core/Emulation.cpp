@@ -7,10 +7,13 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+#define CORE_INTERNAL
 #include "Settings/Settings.hpp"
 #include "MediaLoader.hpp"
 #include "RomSettings.hpp"
+#include "Utils/File.hpp"
 #include "Emulation.hpp"
+#include "RomHeader.hpp"
 #include "m64p/Api.hpp"
 #include "Plugins.hpp"
 #include "Cheats.hpp"
@@ -84,6 +87,60 @@ static void apply_game_coresettings_overlay(void)
     CoreSettingsSetValue(SettingsID::Core_CountPerOpDenomPot, CoreSettingsGetIntValue(SettingsID::Game_CountPerOpDenomPot, section));
 }
 
+static void apply_pif_rom_settings(void)
+{
+    CoreRomHeader romHeader;
+    std::string error;
+    m64p_error ret;
+    int cpuEmulator;
+    bool usePifROM;
+
+    // when we fail to retrieve the rom settings, return
+    if (!CoreGetCurrentRomHeader(romHeader))
+    {
+        return;
+    }
+
+    // when we're using the dynarec, return
+    cpuEmulator = CoreSettingsGetIntValue(SettingsID::Core_CPU_Emulator);
+    if (cpuEmulator >= 2)
+    {
+        return;
+    }
+
+    usePifROM = CoreSettingsGetBoolValue(SettingsID::Core_PIF_Use);
+    if (!usePifROM)
+    {
+        return;
+    }
+
+    const SettingsID settingsIds[] =
+    {
+        SettingsID::Core_PIF_NTSC,
+        SettingsID::Core_PIF_PAL,
+    };
+
+    std::string rom = CoreSettingsGetStringValue(settingsIds[(int)romHeader.SystemType]);
+    if (!std::filesystem::is_regular_file(rom))
+    {
+        return;
+    }
+
+    std::vector<char> buffer;
+    if (!CoreReadFile(rom, buffer))
+    {
+        return;
+    }
+
+    ret = m64p::Core.DoCommand(M64CMD_PIF_OPEN, buffer.size(), buffer.data());
+    if (ret != M64ERR_SUCCESS)
+    {
+        error = "open_pif_rom m64p::Core.DoCommand(M64CMD_PIF_OPEN) Failed: ";
+        error += m64p::Core.ErrorMessage(ret);
+        CoreSetError(error);
+    }
+}
+
 //
 // Exported Functions
 //
@@ -148,6 +205,9 @@ bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64d
 
     // apply game core settings overrides
     apply_game_coresettings_overlay();
+
+    // apply pif rom settings
+    apply_pif_rom_settings();
 
 #ifdef DISCORD_RPC
     CoreDiscordRpcUpdate(true);

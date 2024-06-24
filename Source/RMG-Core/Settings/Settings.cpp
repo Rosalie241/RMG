@@ -58,6 +58,7 @@ static std::vector<std::string> l_keyList;
 #define SETTING_SECTION_ROMBROWSER  SETTING_SECTION_GUI  " RomBrowser"
 #define SETTING_SECTION_SETTINGS    SETTING_SECTION_CORE " Settings"
 #define SETTING_SECTION_64DD        SETTING_SECTION_CORE " 64DD"
+#define SETTING_SECTION_PIF         SETTING_SECTION_CORE " PIF"
 #define SETTING_SECTION_GB          SETTING_SECTION_CORE " Gameboy"
 #define SETTING_SECTION_M64P        "Core"
 #define SETTING_SECTION_AUDIO       SETTING_SECTION_GUI  " - Audio Plugin"
@@ -270,6 +271,16 @@ static l_Setting get_setting(SettingsID settingId)
         break;
     case SettingsID::Core_64DD_SaveDiskFormat:
         setting = {SETTING_SECTION_M64P, "SaveDiskFormat", 1};
+        break;
+
+    case SettingsID::Core_PIF_Use:
+        setting = {SETTING_SECTION_PIF, "PIF_Use", false};
+        break;
+    case SettingsID::Core_PIF_NTSC:
+        setting = {SETTING_SECTION_PIF, "PIF_NTSC", std::string("")};
+        break;
+    case SettingsID::Core_PIF_PAL:
+        setting = {SETTING_SECTION_PIF, "PIF_PAL", std::string("")};
         break;
 
     case SettingsID::Core_Gameboy_P1_Rom:
