@@ -17,6 +17,7 @@
 #include "Cheats.hpp"
 #include "osal/osal_files.hpp"
 #include "CachedRomHeaderAndSettings.hpp"
+#include "Utils/File.hpp"
 
 // lzma includes
 #include "../3rdParty/lzma/7zTypes.h"
@@ -408,66 +409,6 @@ static bool read_7zip_file(std::filesystem::path file, std::filesystem::path& ex
     return false;
 }
 
-static bool read_raw_file(std::filesystem::path file, std::vector<char>& outBuffer)
-{
-    std::string   error;
-    std::ifstream fileStream;
-    int           fileStreamLen;
-
-    // attempt to open file
-    fileStream.open(file, std::ios::binary);
-    if (!fileStream.is_open())
-    {
-        error = "read_raw_file Failed: ";
-        error += "failed to open file: ";
-        error += strerror(errno);
-        error += " (";
-        error += std::to_string(errno);
-        error += ")";
-        CoreSetError(error);
-        return false;
-    }
-
-    // attempt to retrieve file length
-    fileStream.seekg(0, fileStream.end);
-    fileStreamLen = fileStream.tellg();
-    fileStream.seekg(0, fileStream.beg);
-
-    // resize buffer
-    outBuffer.resize(fileStreamLen);
-
-    // read file
-    fileStream.read(outBuffer.data(), fileStreamLen);
-
-    fileStream.close();
-    return true;
-}
-
-static bool write_file(std::filesystem::path file, std::vector<char>& buffer)
-{
-    std::string   error;
-    std::ofstream fileStream;
-
-    // attempt to open file
-    fileStream.open(file, std::ios::binary);
-    if (!fileStream.is_open())
-    {
-        error = "write_file Failed: ";
-        error += "failed to open file: ";
-        error += strerror(errno);
-        error += " (";
-        error += std::to_string(errno);
-        error += ")";
-        CoreSetError(error);
-        return false;
-    }
-
-    // write buffer to file
-    fileStream.write(buffer.data(), buffer.size());
-    fileStream.close();
-    return true;
-}
-
 //
 // Exported Functions
 //
@@ -543,7 +484,7 @@ bool CoreOpenRom(std::filesystem::path file)
             }
 
             // attempt to write temporary file
-            if (!write_file(disk_file, buf))
+            if (!CoreWriteFile(disk_file, buf))
             {
                 return false;
             }
@@ -565,7 +506,7 @@ bool CoreOpenRom(std::filesystem::path file)
     }
     else
     {
-        if (!read_raw_file(file, buf))
+        if (!CoreReadFile(file, buf))
         {
             return false;
         }
