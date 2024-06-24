@@ -112,6 +112,39 @@ static std::string get_region_from_countrycode(char countryCode)
     return region;
 }
 
+static CoreSystemType get_systemtype_from_countrycode(uint8_t countryCode)
+{
+    CoreSystemType systemType;
+
+    // taken from mupen64plus-core's rom.c
+    // TODO: maybe update it upstream?
+    switch (countryCode)
+    {
+        // PAL codes
+        case 0x44:
+        case 0x46:
+        case 0x49:
+        case 0x50:
+        case 0x53:
+        case 0x55:
+        case 0x58:
+        case 0x59:
+            systemType = CoreSystemType::PAL;
+            break;
+
+        // NTSC codes
+        case 0x37:
+        case 0x41:
+        case 0x45:
+        case 0x4a:
+        default: // Fallback for unknown codes
+            systemType = CoreSystemType::NTSC;
+            break;
+    }
+
+    return systemType;
+}
+
 //
 // Exported Functions
 //
@@ -142,6 +175,7 @@ bool CoreGetCurrentRomHeader(CoreRomHeader& header)
     header.Name        = CoreConvertStringEncoding(std::string((char*)m64p_header.Name, 20), CoreStringEncoding::Shift_JIS);
     header.GameID      = get_gameid_from_header(m64p_header);
     header.Region      = get_region_from_countrycode((char)header.CountryCode);
+    header.SystemType  = get_systemtype_from_countrycode(header.CountryCode);
 
     return true;
 }
