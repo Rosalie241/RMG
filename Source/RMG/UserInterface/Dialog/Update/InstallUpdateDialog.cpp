@@ -87,7 +87,7 @@ void InstallUpdateDialog::install(void)
     QDir dir(this->temporaryDirectory);
     if (!dir.mkdir("extract"))
     {
-        this->showErrorMessage("QDir::mkdir() Failed!", "");
+        this->showErrorMessage("QDir::mkdir() Failed", "");
         this->reject();
         return;
     }
@@ -98,7 +98,7 @@ void InstallUpdateDialog::install(void)
 
     if (!CoreUnzip(fullFilePath.toStdU32String(), extractDirectory.toStdU32String()))
     {
-        this->showErrorMessage("CoreUnzip() Failed!", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage("CoreUnzip() Failed", QString::fromStdString(CoreGetError()));
         this->reject();
         return;
     }
@@ -139,7 +139,7 @@ void InstallUpdateDialog::writeAndRunScript(QStringList stringList)
     QFile scriptFile(scriptPath);
     if (!scriptFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        this->showErrorMessage("QFile::open() Failed!", "");
+        this->showErrorMessage("QFile::open() Failed", "");
         return;
     }
 

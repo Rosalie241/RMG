@@ -269,7 +269,7 @@ bool AddCheatDialog::getCheat(CoreCheat& cheat)
 
     if (!CoreParseCheat(lines, cheat))
     {
-        this->showErrorMessage("CoreParseCheat() Failed!", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage("CoreParseCheat() Failed", QString::fromStdString(CoreGetError()));
         return false;
     }
 
@@ -287,7 +287,7 @@ bool AddCheatDialog::addCheat(void)
 
     if (!CoreAddCheat(cheat))
     {
-        this->showErrorMessage("CoreAddCheat() Failed!", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage("CoreAddCheat() Failed", QString::fromStdString(CoreGetError()));
         return false;
     }
 
@@ -312,7 +312,7 @@ bool AddCheatDialog::updateCheat(void)
 
     if (!CoreUpdateCheat(this->oldCheat,cheat))
     {
-        this->showErrorMessage("CoreUpdateCheat() Failed!", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage("CoreUpdateCheat() Failed", QString::fromStdString(CoreGetError()));
         return false;
     }
 
@@ -325,7 +325,7 @@ void AddCheatDialog::accept(void)
 
     if (!this->validate())
     {
-        this->showErrorMessage("Validating Cheat Failed!", "");
+        this->showErrorMessage("Validating Cheat Failed", "");
         return;
     }
 

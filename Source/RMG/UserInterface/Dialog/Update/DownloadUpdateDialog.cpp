@@ -74,7 +74,7 @@ void DownloadUpdateDialog::on_reply_finished(void)
 {
     if (this->reply->error())
     {
-        this->showErrorMessage("Failed to download update file!", this->reply->errorString());
+        this->showErrorMessage("Failed to download update file", this->reply->errorString());
         this->reply->deleteLater();
         this->reject();
         return;
@@ -87,7 +87,7 @@ void DownloadUpdateDialog::on_reply_finished(void)
     temporaryDir.setAutoRemove(false);
     if (!temporaryDir.isValid())
     {
-        this->showErrorMessage("Failed to create temporary directory!", "");
+        this->showErrorMessage("Failed to create temporary directory", "");
         this->reply->deleteLater();
         this->reject();
         return;
@@ -100,7 +100,7 @@ void DownloadUpdateDialog::on_reply_finished(void)
     if (appImageEnv == nullptr ||
         !QFile(appImageEnv).exists()) 
     {
-        this->showErrorMessage("APPIMAGE variable is empty or invalid!", "");
+        this->showErrorMessage("APPIMAGE variable is empty or invalid", "");
         this->reply->deleteLater();
         this->reject();
         return;
@@ -113,7 +113,7 @@ void DownloadUpdateDialog::on_reply_finished(void)
     QFile file(filePath);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
-        this->showErrorMessage("QFile::open() Failed!", "");
+        this->showErrorMessage("QFile::open() Failed", "");
         this->reply->deleteLater();
         this->reject();
         return;
@@ -129,7 +129,7 @@ void DownloadUpdateDialog::on_reply_finished(void)
     int ret = std::rename(filePath.toStdString().c_str(), appImageEnv);
     if (ret != 0)
     {
-        this->showErrorMessage("std::rename() Failed!", QString(strerror(errno)));
+        this->showErrorMessage("std::rename() Failed", QString(strerror(errno)));
         this->reply->deleteLater();
         this->reject();
         return;

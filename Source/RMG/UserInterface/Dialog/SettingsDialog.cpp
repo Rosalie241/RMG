@@ -1128,7 +1128,7 @@ void SettingsDialog::chooseFile(QLineEdit *lineEdit, QString filter, QString md5
         QFile qFile(file);
         if (!qFile.open(QFile::ReadOnly))
         {
-            this->showErrorMessage("Failed to open file", "QFile::open() Failed!");
+            this->showErrorMessage("Failed to open file", "QFile::open() Failed");
             return;
         }
 
@@ -1138,7 +1138,7 @@ void SettingsDialog::chooseFile(QLineEdit *lineEdit, QString filter, QString md5
             QString md5Hash = QString(hash.result().toHex());
             if (md5Hash != md5)
             {
-                this->showErrorMessage("MD5 mismatch!", "Expected file with MD5: \"" + md5 + "\"");
+                this->showErrorMessage("MD5 mismatch", "Expected file with MD5: \"" + md5 + "\"");
                 return;
             }
         }

@@ -1340,7 +1340,7 @@ void MainWindow::on_networkAccessManager_Finished(QNetworkReply* reply)
     {
         if (!this->ui_SilentUpdateCheck)
         {
-            this->showErrorMessage("Failed to check for updates!", reply->errorString());
+            this->showErrorMessage("Failed to check for updates", reply->errorString());
         }
         reply->deleteLater();
         return;
@@ -1359,7 +1359,7 @@ void MainWindow::on_networkAccessManager_Finished(QNetworkReply* reply)
     {
         if (!this->ui_SilentUpdateCheck)
         {
-            this->showErrorMessage("You're already on the latest version!");
+            this->showErrorMessage("You're already on the latest version");
         }
         return;
     }
@@ -1481,7 +1481,7 @@ void MainWindow::on_Action_System_Shutdown(void)
 
     if (!CoreStopEmulation())
     {
-        this->showErrorMessage("CoreStopEmulation() Failed!", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage("CoreStopEmulation() Failed", QString::fromStdString(CoreGetError()));
     }
 }
 
@@ -1494,7 +1494,7 @@ void MainWindow::on_Action_System_SoftReset(void)
 {
     if (!CoreResetEmulation(false))
     {
-        this->showErrorMessage("CoreResetEmulation() Failed!", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage("CoreResetEmulation() Failed", QString::fromStdString(CoreGetError()));
     }
 }
 
@@ -1502,7 +1502,7 @@ void MainWindow::on_Action_System_HardReset(void)
 {
     if (!CoreResetEmulation(true))
     {
-        this->showErrorMessage("CoreResetEmulation() Failed!", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage("CoreResetEmulation() Failed", QString::fromStdString(CoreGetError()));
     }
 }
 void MainWindow::on_Action_System_Pause(void)
@@ -1515,12 +1515,12 @@ void MainWindow::on_Action_System_Pause(void)
     if (!isPaused)
     {
         ret = CorePauseEmulation();
-        error = "CorePauseEmulation() Failed!";
+        error = "CorePauseEmulation() Failed";
     }
     else
     {
         ret = CoreResumeEmulation();
-        error = "CoreResumeEmulation() Failed!";
+        error = "CoreResumeEmulation() Failed";
     }
 
     if (!ret)
@@ -1536,7 +1536,7 @@ void MainWindow::on_Action_System_Screenshot(void)
 {
     if (!CoreTakeScreenshot())
     {
-        this->showErrorMessage("CoreTakeScreenshot() Failed!", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage("CoreTakeScreenshot() Failed", QString::fromStdString(CoreGetError()));
     }
 }
 
@@ -1550,7 +1550,7 @@ void MainWindow::on_Action_System_LimitFPS(void)
 
     if (!ret)
     {
-        this->showErrorMessage("CoreSetSpeedLimiterState() Failed!", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage("CoreSetSpeedLimiterState() Failed", QString::fromStdString(CoreGetError()));
     }
 }
 
@@ -1558,7 +1558,7 @@ void MainWindow::on_Action_System_SpeedFactor(int factor)
 {
     if (!CoreSetSpeedFactor(factor))
     {
-        this->showErrorMessage("CoreSetSpeedFactor() Failed!", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage("CoreSetSpeedFactor() Failed", QString::fromStdString(CoreGetError()));
     }
 }
 
