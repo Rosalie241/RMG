@@ -29,6 +29,19 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.6.3" date="2024-06-24" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix possible memory leak in the cheat dialog</li>
+          <li>Add log messages when initializing OpenGL or Vulkan fails</li>
+          <li>Add PIF ROM settings to the settings dialog</li>
+          <li>Add Transfer Pak setting to the settings dialog</li>
+          <li>Improve settings dialog behavior when a plugin hasn't been found</li>
+          <li>Improve error messages by removing the exclamation mark</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.6.2" date="2024-06-08" type="stable">
       <description>
         <p>Changes:</p>
