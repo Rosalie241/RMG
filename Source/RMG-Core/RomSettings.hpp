@@ -23,6 +23,8 @@ struct CoreRomSettings
     uint16_t SaveType;
     // whether the rom has the 4MB expansion RAM pak disabled
     bool DisableExtraMem;
+    // whether the rom supports the transfer pak
+    bool TransferPak;
     // Number of CPU cycles per instruction
     int32_t CountPerOp;
     // SI DMA duration

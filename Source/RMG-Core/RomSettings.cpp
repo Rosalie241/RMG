@@ -53,6 +53,7 @@ bool CoreGetCurrentRomSettings(CoreRomSettings& settings)
     settings.MD5 = std::string(m64p_settings.MD5);
     settings.SaveType = m64p_settings.savetype;
     settings.DisableExtraMem = m64p_settings.disableextramem;
+    settings.TransferPak = m64p_settings.transferpak;
     settings.CountPerOp = m64p_settings.countperop;
     settings.SiDMADuration = m64p_settings.sidmaduration;
     return true;
@@ -127,6 +128,7 @@ bool CoreApplyRomSettings(CoreRomSettings settings)
     // overide a few settings
     m64p_settings.savetype = settings.SaveType;
     m64p_settings.disableextramem = settings.DisableExtraMem;
+    m64p_settings.transferpak = settings.TransferPak;
     m64p_settings.countperop = settings.CountPerOp;
     m64p_settings.sidmaduration = settings.SiDMADuration;
 
@@ -166,6 +168,7 @@ bool CoreApplyRomSettingsOverlay(void)
 
     settings.SaveType = CoreSettingsGetIntValue(SettingsID::Game_SaveType, settings.MD5);
     settings.DisableExtraMem = CoreSettingsGetBoolValue(SettingsID::Game_DisableExtraMem, settings.MD5);
+    settings.TransferPak = CoreSettingsGetBoolValue(SettingsID::Game_TransferPak, settings.MD5);
     settings.CountPerOp = CoreSettingsGetIntValue(SettingsID::Game_CountPerOp, settings.MD5);
     settings.SiDMADuration = CoreSettingsGetIntValue(SettingsID::Game_SiDmaDuration, settings.MD5);
 
