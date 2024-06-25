@@ -33,6 +33,7 @@ RomInfoDialog::RomInfoDialog(QString file, CoreRomHeader romHeader, CoreRomSetti
     this->crc2LineEdit->setText(QString::number(romHeader.CRC2, 16).toUpper());
     this->gameIDLineEdit->setText(QString::fromStdString(romHeader.GameID));
     this->gameRegionLineEdit->setText(QString::fromStdString(romHeader.Region));
+    this->systemRegionLineEdit->setText(romHeader.SystemType == CoreSystemType::NTSC ? "NTSC" : "PAL");
 }
 
 RomInfoDialog::~RomInfoDialog(void)
