@@ -42,6 +42,7 @@ EXPORT m64p_error CALL PluginConfig2(int);
 typedef int (*ptr_PluginConfig2HasRomConfig)(void);
 #if defined(M64P_PLUGIN_PROTOTYPES) || defined(M64P_CORE_PROTOTYPES)
 EXPORT int CALL PluginConfig2HasRomConfig(void);
+#endif
 
 /* SetResetMousePositionCallback()
  *

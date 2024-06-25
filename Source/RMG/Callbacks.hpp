@@ -51,8 +51,6 @@ signals:
     void OnCoreDebugCallback(QList<CoreCallbackMessage> callbackMessages);
     void OnCoreStateCallback(CoreStateCallbackType type, int value);
 
-    static void resetMousePositionCallback(void);
-
 signals:
     void OnCoreDebugCallback(CoreDebugMessageType type, QString context, QString message);
     void OnResetMousePositionCallback(void);

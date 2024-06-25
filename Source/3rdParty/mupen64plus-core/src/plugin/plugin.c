@@ -101,6 +101,7 @@ static const input_plugin_functions dummy_input = {
     dummyinput_RomOpen,
     dummyinput_SDL_KeyDown,
     dummyinput_SDL_KeyUp,
+    NULL,
     dummyinput_RenderCallback
 };
 
@@ -401,6 +402,11 @@ static m64p_error plugin_connect_input(m64p_dynlib_handle plugin_handle)
             !GET_FUNC(ptr_SetVRUWordMask, input.setVRUWordMask, "SetVRUWordMask"))
         {
             DebugMessage(M64MSG_WARNING, "Input plugin does not contain VRU support.");
+        }
+
+        if (!GET_FUNC(ptr_MouseMove, input.mouseMove, "MouseMove"))
+        {
+            DebugMessage(M64MSG_WARNING, "Input plugin does not contain mouse support.");
         }
 
         /* check the version info */

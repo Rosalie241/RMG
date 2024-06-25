@@ -33,6 +33,7 @@ enum class N64ControllerButton
 
 enum class InputDeviceType
 {
+    Mouse      = -5,
     EmulateVRU = -4,
     None       = -3,
     Automatic  = -2,
@@ -44,12 +45,6 @@ enum class N64MouseButton
     Left = 0,
     Right,
     Invalid
-};
-
-enum class InputDeviceType
-{
-    Controller = 0,
-    Mouse
 };
 
 enum class InputType

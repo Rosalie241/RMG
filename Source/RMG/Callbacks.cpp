@@ -112,13 +112,3 @@ void CoreCallbacks::coreStateCallback(CoreStateCallbackType type, int value)
 
     emit l_CoreCallbacks->OnCoreStateCallback(type, value);
 }
-
-void CoreCallbacks::resetMousePositionCallback(void)
-{
-    if (l_CoreCallbacks == nullptr)
-    {
-        return;
-    }
-
-    emit l_CoreCallbacks->OnResetMousePositionCallback();
-}

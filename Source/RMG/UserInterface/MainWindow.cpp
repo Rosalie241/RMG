@@ -90,7 +90,7 @@ bool MainWindow::Init(QApplication* app, bool showUI, bool launchROM)
     this->coreCallBacks = new CoreCallbacks(this);
 
     // connect signals early due to pending debug callbacks
-    connect(coreCallBacks, &CoreCallbacks::OnCoreDebugCallback, this, &MainWindow::on_Core_DebugCallback);
+    //connect(coreCallBacks, &CoreCallbacks::OnCoreDebugCallback, this, &MainWindow::on_Core_DebugCallback);
     connect(coreCallBacks, &CoreCallbacks::OnCoreStateCallback, this, &MainWindow::on_Core_StateCallback);
     connect(app, &QGuiApplication::applicationStateChanged, this, &MainWindow::on_QGuiApplication_applicationStateChanged);
 
@@ -105,12 +105,6 @@ bool MainWindow::Init(QApplication* app, bool showUI, bool launchROM)
     {
         this->addActions();
     }
-
-    connect(coreCallBacks, &CoreCallbacks::OnCoreDebugCallback, this, &MainWindow::on_Core_DebugCallback);
-    connect(coreCallBacks, &CoreCallbacks::OnCoreDebugCallback, &this->logDialog, &Dialog::LogDialog::AddLogLine);
-    connect(coreCallBacks, &CoreCallbacks::OnResetMousePositionCallback, this, &MainWindow::on_Core_ResetMousPositionCallback, Qt::BlockingQueuedConnection);
-    connect(app, &QGuiApplication::applicationStateChanged, this, &MainWindow::on_QGuiApplication_applicationStateChanged);
-
     return true;
 }
 

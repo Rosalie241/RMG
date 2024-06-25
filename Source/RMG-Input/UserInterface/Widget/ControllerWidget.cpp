@@ -696,10 +696,6 @@ void ControllerWidget::on_inputTypeComboBox_currentIndexChanged(int value)
     {
         groupBox_4,
         deadZoneGroupBox,
-        groupBox,
-        groupBox_2,
-        groupBox_3,
-        groupBox_6,
     };
 
     if (value == 1)
@@ -1175,11 +1171,11 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
                     {
                         if (!sdlHatCentered && sdlHatDirection == direction)
                         {
-                            this->controllerImageWidget->SetButtonState(button.button, true);
+                            this->controllerImageWidget->SetControllerButtonState(button.button, true);
                         }
                         else
                         {
-                            this->controllerImageWidget->SetButtonState(button.button, false);
+                            this->controllerImageWidget->SetControllerButtonState(button.button, false);
                         }
                     }
                 }
@@ -1846,16 +1842,16 @@ void ControllerWidget::SaveSettings(QString section)
 
     this->GetCurrentInputDevice(deviceName, deviceNum, true);
 
-    CoreSettingsSetValue(SettingsID::Input_PluggedIn, section, this->IsPluggedIn());
-    CoreSettingsSetValue(SettingsID::Input_InputType, section, this->inputTypeComboBox->currentIndex());
-    CoreSettingsSetValue(SettingsID::Input_DeviceName, section, deviceName.toStdString());
-    CoreSettingsSetValue(SettingsID::Input_DeviceNum, section, deviceNum);
-    CoreSettingsSetValue(SettingsID::Input_Deadzone, section, this->deadZoneSlider->value());
-    CoreSettingsSetValue(SettingsID::Input_Pak, section, this->optionsDialogSettings.ControllerPak);
-    CoreSettingsSetValue(SettingsID::Input_GameboyRom, section, this->optionsDialogSettings.GameboyRom);
-    CoreSettingsSetValue(SettingsID::Input_GameboySave, section, this->optionsDialogSettings.GameboySave);
-    CoreSettingsSetValue(SettingsID::Input_RemoveDuplicateMappings, section, this->optionsDialogSettings.RemoveDuplicateMappings);
-    CoreSettingsSetValue(SettingsID::Input_InvertAxis, section, this->optionsDialogSettings.InvertAxis);
+    CoreSettingsSetValue(SettingsID::Input_PluggedIn, sectionStr, this->IsPluggedIn());
+    CoreSettingsSetValue(SettingsID::Input_InputType, sectionStr, this->inputTypeComboBox->currentIndex());
+    CoreSettingsSetValue(SettingsID::Input_DeviceName, sectionStr, deviceName.toStdString());
+    CoreSettingsSetValue(SettingsID::Input_DeviceNum, sectionStr, deviceNum);
+    CoreSettingsSetValue(SettingsID::Input_Deadzone, sectionStr, this->deadZoneSlider->value());
+    CoreSettingsSetValue(SettingsID::Input_Pak, sectionStr, this->optionsDialogSettings.ControllerPak);
+    CoreSettingsSetValue(SettingsID::Input_GameboyRom, sectionStr, this->optionsDialogSettings.GameboyRom);
+    CoreSettingsSetValue(SettingsID::Input_GameboySave, sectionStr, this->optionsDialogSettings.GameboySave);
+    CoreSettingsSetValue(SettingsID::Input_RemoveDuplicateMappings, sectionStr, this->optionsDialogSettings.RemoveDuplicateMappings);
+    //CoreSettingsSetValue(SettingsID::Input_InvertAxis, sectionStr, this->optionsDialogSettings.InvertAxis);
     CoreSettingsSetValue(SettingsID::Input_FilterEventsForButtons, sectionStr, this->optionsDialogSettings.FilterEventsForButtons);
     CoreSettingsSetValue(SettingsID::Input_FilterEventsForAxis, sectionStr, this->optionsDialogSettings.FilterEventsForAxis);
 

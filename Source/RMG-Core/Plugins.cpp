@@ -284,16 +284,6 @@ bool apply_plugin_settings(std::string pluginSettings[4])
                 return false;
             }
 
-            // register mouse callback for input plugin,
-            // if it exists
-            if (pluginType == CorePluginType::Input)
-            {
-                if (plugin->SetResetMousePositionCallback != nullptr)
-                {
-                    plugin->SetResetMousePositionCallback(ResetMousePositionCallback);
-                }
-            }
-
             l_PluginFiles[i] = settingValue;
 
             CoreAddCallbackMessage(CoreDebugMessageType::Info, 

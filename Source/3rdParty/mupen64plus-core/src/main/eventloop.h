@@ -26,6 +26,7 @@ extern int event_set_core_defaults(void);
 extern void event_initialize(void);
 extern void event_sdl_keydown(int keysym, int keymod);
 extern void event_sdl_keyup(int keysym, int keymod);
+extern void event_mouse_move(int x, int y);
 extern int event_gameshark_active(void);
 extern void event_set_gameshark(int active);
 

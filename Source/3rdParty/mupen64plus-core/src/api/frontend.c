@@ -169,6 +169,7 @@ EXPORT m64p_error CALL CoreDoCommand(m64p_command Command, int ParamInt, void *P
 {
     m64p_error rval;
     int keysym, keymod;
+    int x, y;
 
     if (!l_CoreInit)
         return M64ERR_NOT_INIT;
@@ -314,6 +315,13 @@ EXPORT m64p_error CALL CoreDoCommand(m64p_command Command, int ParamInt, void *P
             keysym = ParamInt & 0xffff;
             keymod = (ParamInt >> 16) & 0xffff;
             event_sdl_keyup(keysym, keymod);
+            return M64ERR_SUCCESS;
+        case M64CMD_SET_MOUSE_MOVE:
+            if (!g_EmulatorRunning)
+                return M64ERR_INVALID_STATE;
+            x = ParamInt & 0xffff;
+            y = (ParamInt >> 16) & 0xffff;
+            event_mouse_move(x, y);
             return M64ERR_SUCCESS;
         case M64CMD_SET_FRAME_CALLBACK:
             *(void**)&g_FrameCallback = ParamPtr;

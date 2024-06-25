@@ -69,7 +69,7 @@ struct InputProfile
     int DeadzoneValue = 0;
     int SensitivityValue = 100;
 
-    InputDeviceType DeviceType = InputDeviceType::Controller;
+    InputDeviceType DeviceType = InputDeviceType::Mouse;
 
     N64ControllerPak ControllerPak = N64ControllerPak::None;
 
@@ -449,7 +449,7 @@ static void apply_controller_profiles(void)
             l_ControlInfo.Controls[i].Type = CONT_TYPE_STANDARD;
         }
 
-        l_ControlInfo.Controls[i].Type    = (profile->DeviceType == InputDeviceType::Controller ? CONT_TYPE_STANDARD : CONT_TYPE_MOUSE);
+        l_ControlInfo.Controls[i].Type    = (profile->DeviceType != InputDeviceType::Mouse ? CONT_TYPE_STANDARD : CONT_TYPE_MOUSE);
     }
 }
 
@@ -1285,36 +1285,37 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
     if (Control == 0)
     {
         // mouse
-    if (profile->DeviceType == InputDeviceType::Mouse)
-    { // n64 mouse
-        l_MouseMutex.lock();
+        if (profile->DeviceType == InputDeviceType::Mouse)
+        { // n64 mouse
+            l_MouseMutex.lock();
 
-        // set left & right button state
-        Keys->A_BUTTON = l_MouseButtonState[0];
-        Keys->B_BUTTON = l_MouseButtonState[1];
+            // set left & right button state
+            Keys->A_BUTTON = l_MouseButtonState[0];
+            Keys->B_BUTTON = l_MouseButtonState[1];
 
-        if (!l_MouseMovements.empty())
-        {
-            // calculate how much the mouse has moved
-            const int x = l_MouseMovements.front().x - l_MouseMovements.back().x;
-            const int y = l_MouseMovements.front().y - l_MouseMovements.back().y;            
+            if (!l_MouseMovements.empty())
+            {
+                // calculate how much the mouse has moved
+                const int x = l_MouseMovements.front().x - l_MouseMovements.back().x;
+                const int y = l_MouseMovements.front().y - l_MouseMovements.back().y;            
 
-            // set axis state
-            Keys->X_AXIS = -x;
-            Keys->Y_AXIS = y;
+                // set axis state
+                Keys->X_AXIS = -x;
+                Keys->Y_AXIS = y;
 
-            l_MouseMovements.clear();
+                l_MouseMovements.clear();
+            }
+
+            l_MouseMutex.unlock();
+
+            // request front-end to reset mouse position
+            if (l_ResetMousPositionCallback != nullptr)
+            {
+                l_ResetMousPositionCallback();
+            }
+
+            return;
         }
-
-        l_MouseMutex.unlock();
-
-        // request front-end to reset mouse position
-        if (l_ResetMousPositionCallback != nullptr)
-        {
-            l_ResetMousPositionCallback();
-        }
-
-        return;
     }
 
     Keys->A_BUTTON     = get_button_state(profile, &profile->Button_A);

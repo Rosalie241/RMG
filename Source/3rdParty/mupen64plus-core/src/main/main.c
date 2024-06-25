@@ -1778,12 +1778,13 @@ m64p_error main_run(void)
         }
         /* otherwise let the core do the processing */
         else {
-            /* select appropriate controller
-             * FIXME: assume for now that only standard controller is compatible
-             * Use the rom db to know if other peripherals are compatibles (VRU, mouse, train, ...)
-             */
-            const struct game_controller_flavor* cont_flavor =
-                &g_standard_controller_flavor;
+            const struct game_controller_flavor* cont_flavor;
+
+            if (Controls[i].Type == CONT_TYPE_MOUSE) {
+                cont_flavor = &g_mouse_controller_flavor;
+            } else {
+                cont_flavor = &g_standard_controller_flavor;
+            }
 
             joybus_devices[i] = &g_dev.controllers[i];
             ijoybus_devices[i] = &g_ijoybus_device_controller;

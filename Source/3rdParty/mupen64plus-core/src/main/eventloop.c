@@ -704,6 +704,14 @@ void event_sdl_keyup(int keysym, int keymod)
     }
 }
 
+void event_mouse_move(int x, int y)
+{
+    if (input.mouseMove != NULL)
+    {
+        input.mouseMove(x, y);
+    }
+}
+
 int event_gameshark_active(void)
 {
     return GamesharkActive;
