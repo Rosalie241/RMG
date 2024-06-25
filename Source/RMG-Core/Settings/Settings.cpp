@@ -492,13 +492,13 @@ static l_Setting get_setting(SettingsID settingId)
         setting = {SETTING_SECTION_KEYBIND, "Settings", std::string("Ctrl+T")};
         break;
     case SettingsID::KeyBinding_IncreaseVolume:
-        setting = {SETTING_SECTION_KEYBIND, "IncreaseVolume", std::string("")};
+        setting = {SETTING_SECTION_KEYBIND, "IncreaseVolume", std::string("PgUp")};
         break;
     case SettingsID::KeyBinding_DecreaseVolume:
-        setting = {SETTING_SECTION_KEYBIND, "DecreaseVolume", std::string("")};
+        setting = {SETTING_SECTION_KEYBIND, "DecreaseVolume", std::string("PgDown")};
         break;
     case SettingsID::KeyBinding_ToggleMuteVolume:
-        setting = {SETTING_SECTION_KEYBIND, "ToggleMuteVolume", std::string("")};
+        setting = {SETTING_SECTION_KEYBIND, "ToggleMuteVolume", std::string("Pause")};
         break;
 
     case SettingsID::RomBrowser_Directory:
