@@ -23,6 +23,7 @@
 #include "m64p/Api.hpp"
 
 #include <filesystem>
+#include <algorithm>
 #include <cstring>
 
 //
@@ -413,6 +414,11 @@ std::vector<CorePlugin> CoreGetAllPlugins(void)
             plugins.emplace_back(corePlugin);
         }
     }
+
+    std::sort(plugins.begin(), plugins.end(), [](CorePlugin& a, CorePlugin& b)
+    {
+        return a.Name > b.Name;
+    });
 
     return plugins;
 }
