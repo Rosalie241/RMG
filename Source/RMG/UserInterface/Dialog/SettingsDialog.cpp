@@ -1043,12 +1043,13 @@ void SettingsDialog::commonPluginSettings(SettingsDialogAction action)
         index = ((int)p.Type - 1);
         comboBox = comboBoxArray[index];
         pluginFileName = pluginFileNames[index];
-        
-        comboBox->addItem(QString::fromStdString(p.Name), QString::fromStdString(p.File));
+        pluginName = QString::fromStdString(p.Name);
+
+        comboBox->addItem(pluginName, QString::fromStdString(p.File));
 
         if (pluginFileName == QString::fromStdString(p.File))
         {
-            comboBox->setCurrentText(QString::fromStdString(p.Name));
+            comboBox->setCurrentText(pluginName);
             pluginFound[index] = true;
         }
     }
@@ -1062,6 +1063,28 @@ void SettingsDialog::commonPluginSettings(SettingsDialogAction action)
 
             comboBox->addItem(pluginName, pluginFileNames[i]);
             comboBox->setCurrentText(pluginName);
+        }
+        else
+        { // find duplicates and append filename
+            for (int i = 0; i < comboBox->count(); i++)
+            {
+                pluginName = comboBox->itemText(i);
+                bool foundDuplicate = false;
+                for (int x = i + 1; x < comboBox->count(); x++)
+                {
+                    if (comboBox->itemText(x) == pluginName)
+                    {
+                        pluginFileName = QFileInfo(comboBox->itemData(x).toString()).fileName();
+                        comboBox->setItemText(x, pluginName + " (" + pluginFileName + ")");
+                        foundDuplicate = true;
+                    }
+                }
+                if (foundDuplicate)
+                {
+                    pluginFileName = QFileInfo(comboBox->itemData(i).toString()).fileName();
+                    comboBox->setItemText(i, pluginName + " (" + pluginFileName + ")");
+                }
+            }
         }
     }
 }
