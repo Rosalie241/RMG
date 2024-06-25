@@ -1245,7 +1245,8 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
     {
         profile->LastDeviceCheckTime = currentTime;
 
-        if (profile->DeviceNum != (int)InputDeviceType::Keyboard)
+        if (profile->DeviceNum != (int)InputDeviceType::Mouse &&
+            profile->DeviceNum != (int)InputDeviceType::Keyboard)
         {
             if (profile->InputDevice.IsOpeningDevice())
             {
@@ -1285,7 +1286,7 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
     if (Control == 0)
     {
         // mouse
-        if (profile->DeviceType == InputDeviceType::Mouse)
+        if (profile->DeviceNum == (int)InputDeviceType::Mouse)
         { // n64 mouse
             l_MouseMutex.lock();
 
@@ -1296,24 +1297,20 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
             if (!l_MouseMovements.empty())
             {
                 // calculate how much the mouse has moved
-                const int x = l_MouseMovements.front().x - l_MouseMovements.back().x;
-                const int y = l_MouseMovements.front().y - l_MouseMovements.back().y;            
+                // TODO: sensitivity
+                const int x = (l_MouseMovements.back().x - l_MouseMovements.front().x) * 5;
+                const int y = (l_MouseMovements.front().y - l_MouseMovements.back().y) * 5;            
 
                 // set axis state
-                Keys->X_AXIS = -x;
-                Keys->Y_AXIS = y;
+
+                // TODO: is this clamping correct?
+                Keys->X_AXIS = x < 0 ? std::max(x, -N64_AXIS_PEAK) : std::min(x, N64_AXIS_PEAK);;
+                Keys->Y_AXIS = y < 0 ? std::max(y, -N64_AXIS_PEAK) : std::min(y, N64_AXIS_PEAK);
 
                 l_MouseMovements.clear();
             }
 
             l_MouseMutex.unlock();
-
-            // request front-end to reset mouse position
-            if (l_ResetMousPositionCallback != nullptr)
-            {
-                l_ResetMousPositionCallback();
-            }
-
             return;
         }
     }
@@ -1417,14 +1414,21 @@ EXPORT void CALL SDL_KeyUp(int keymod, int keysym)
 
 EXPORT void CALL MouseMove(int x, int y)
 {
-    l_MouseMutex.lock();
+    if (!l_MouseMutex.try_lock())
+    {
+        return;
+    }
     l_MouseMovements.push_back({x, y});
     l_MouseMutex.unlock();
 }
 
 EXPORT void CALL MouseButton(int left, int right)
 {
-    l_MouseMutex.lock();
+    if (!l_MouseMutex.try_lock())
+    {
+        return;
+    }
+    std::cout << "MouseButton" << std::endl;
     l_MouseButtonState[0] = left;
     l_MouseButtonState[1] = right;
     l_MouseMutex.unlock();    

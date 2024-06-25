@@ -85,6 +85,7 @@ void ControllerImageWidget::SetMouseMode(bool value)
     if (this->isMouseMode != value)
     {
         this->isMouseMode = value;
+        this->needImageUpdate = true;
     }
 }
 

@@ -90,7 +90,7 @@ bool MainWindow::Init(QApplication* app, bool showUI, bool launchROM)
     this->coreCallBacks = new CoreCallbacks(this);
 
     // connect signals early due to pending debug callbacks
-    //connect(coreCallBacks, &CoreCallbacks::OnCoreDebugCallback, this, &MainWindow::on_Core_DebugCallback);
+    connect(coreCallBacks, &CoreCallbacks::OnCoreDebugCallback, this, &MainWindow::on_Core_DebugCallback);
     connect(coreCallBacks, &CoreCallbacks::OnCoreStateCallback, this, &MainWindow::on_Core_StateCallback);
     connect(app, &QGuiApplication::applicationStateChanged, this, &MainWindow::on_QGuiApplication_applicationStateChanged);
 
@@ -1316,13 +1316,13 @@ void MainWindow::on_EventFilter_MouseMoved(QMouseEvent *event)
         return;
     }
 
-    int x = event->globalPosition().x();
-    int y = event->globalPosition().y();
+    int x = event->position().x();
+    int y = event->position().y();
 
     CoreSetMouseMove(x, y);
-
 }
 
+#include <iostream>
 void MainWindow::on_EventFilter_MouseButtonPressed(QMouseEvent *event)
 {
     if (!CoreIsEmulationRunning())
@@ -1333,6 +1333,8 @@ void MainWindow::on_EventFilter_MouseButtonPressed(QMouseEvent *event)
 
     this->ui_LeftMouseButtonState  = (event->button() == Qt::MouseButton::LeftButton  ? 1 : this->ui_LeftMouseButtonState);
     this->ui_RightMouseButtonState = (event->button() == Qt::MouseButton::RightButton ? 1 : this->ui_RightMouseButtonState);
+
+    std::cout << "on_EventFilter_MouseButtonPressed" << std::endl;
 
     CoreSetMouseButton(this->ui_LeftMouseButtonState, this->ui_RightMouseButtonState);
 }
@@ -1347,6 +1349,7 @@ void MainWindow::on_EventFilter_MouseButtonReleased(QMouseEvent *event)
 
     this->ui_LeftMouseButtonState  = (event->button() == Qt::MouseButton::LeftButton  ? 0 : this->ui_LeftMouseButtonState);
     this->ui_RightMouseButtonState = (event->button() == Qt::MouseButton::RightButton ? 0 : this->ui_RightMouseButtonState);
+    std::cout << "on_EventFilter_MouseButtonReleased" << std::endl;
 
     CoreSetMouseButton(this->ui_LeftMouseButtonState, this->ui_RightMouseButtonState);
 }

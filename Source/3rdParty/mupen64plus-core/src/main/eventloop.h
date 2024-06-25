@@ -27,6 +27,7 @@ extern void event_initialize(void);
 extern void event_sdl_keydown(int keysym, int keymod);
 extern void event_sdl_keyup(int keysym, int keymod);
 extern void event_mouse_move(int x, int y);
+extern void event_mouse_button(int left, int right);
 extern int event_gameshark_active(void);
 extern void event_set_gameshark(int active);
 

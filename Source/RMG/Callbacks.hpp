@@ -50,10 +50,6 @@ private:
 signals:
     void OnCoreDebugCallback(QList<CoreCallbackMessage> callbackMessages);
     void OnCoreStateCallback(CoreStateCallbackType type, int value);
-
-signals:
-    void OnCoreDebugCallback(CoreDebugMessageType type, QString context, QString message);
-    void OnResetMousePositionCallback(void);
 };
 
 #endif // RMG_CALLBACKS_HPP

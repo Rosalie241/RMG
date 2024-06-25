@@ -323,6 +323,13 @@ EXPORT m64p_error CALL CoreDoCommand(m64p_command Command, int ParamInt, void *P
             y = (ParamInt >> 16) & 0xffff;
             event_mouse_move(x, y);
             return M64ERR_SUCCESS;
+        case M64CMD_SET_MOUSE_BUTTON:
+            if (!g_EmulatorRunning)
+                return M64ERR_INVALID_STATE;
+            x = ParamInt & 0xffff;
+            y = (ParamInt >> 16) & 0xffff;
+            event_mouse_button(x, y);
+            return M64ERR_SUCCESS;
         case M64CMD_SET_FRAME_CALLBACK:
             *(void**)&g_FrameCallback = ParamPtr;
             return M64ERR_SUCCESS;

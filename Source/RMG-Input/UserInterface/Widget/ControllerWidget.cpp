@@ -726,6 +726,7 @@ void ControllerWidget::on_inputDeviceComboBox_currentIndexChanged(int value)
     int deviceNum      = this->inputDeviceComboBox->itemData(value).toInt();
 
     this->ClearControllerImage();
+    this->controllerImageWidget->SetMouseMode((deviceNum == (int)InputDeviceType::Mouse));
 
     if (this->isCurrentDeviceNotFound())
     {
@@ -1443,7 +1444,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
         case SDL_MOUSEBUTTONDOWN:
         case SDL_MOUSEBUTTONUP:
         { // mouse button press
-            if (this->inputTypeComboBox->currentIndex() != 1)
+            if (this->inputDeviceComboBox->currentIndex() != 0)
             { // no mouse
                 return;
             }
@@ -1643,7 +1644,6 @@ void ControllerWidget::LoadSettings(QString sectionQString, bool loadUserProfile
     }
 
     this->deadZoneSlider->setValue(CoreSettingsGetIntValue(SettingsID::Input_Deadzone, section));
-    this->inputTypeComboBox->setCurrentIndex(CoreSettingsGetIntValue(SettingsID::Input_InputType, section));
     this->optionsDialogSettings.RemoveDuplicateMappings = CoreSettingsGetBoolValue(SettingsID::Input_RemoveDuplicateMappings, section);
     this->optionsDialogSettings.ControllerPak = CoreSettingsGetIntValue(SettingsID::Input_Pak, section);
     this->optionsDialogSettings.GameboyRom = CoreSettingsGetStringValue(SettingsID::Input_GameboyRom, section);
@@ -1699,9 +1699,6 @@ void ControllerWidget::LoadSettings(QString sectionQString, bool loadUserProfile
 
     // force refresh some UI elements
     this->CheckInputDeviceSettings(sectionQString);
-
-    // TODO: is this correct?
-    this->on_inputTypeComboBox_currentIndexChanged(this->inputTypeComboBox->currentIndex());
     this->on_deadZoneSlider_valueChanged(this->deadZoneSlider->value());
     this->setPluggedIn(this->IsPluggedIn());
 }
@@ -1843,7 +1840,6 @@ void ControllerWidget::SaveSettings(QString section)
     this->GetCurrentInputDevice(deviceName, deviceNum, true);
 
     CoreSettingsSetValue(SettingsID::Input_PluggedIn, sectionStr, this->IsPluggedIn());
-    CoreSettingsSetValue(SettingsID::Input_InputType, sectionStr, this->inputTypeComboBox->currentIndex());
     CoreSettingsSetValue(SettingsID::Input_DeviceName, sectionStr, deviceName.toStdString());
     CoreSettingsSetValue(SettingsID::Input_DeviceNum, sectionStr, deviceNum);
     CoreSettingsSetValue(SettingsID::Input_Deadzone, sectionStr, this->deadZoneSlider->value());

@@ -712,6 +712,15 @@ void event_mouse_move(int x, int y)
     }
 }
 
+void event_mouse_button(int left, int right)
+{
+    if (input.mouseButton != NULL)
+    {
+        input.mouseButton(left, right);
+    }
+}
+
+
 int event_gameshark_active(void)
 {
     return GamesharkActive;

@@ -73,6 +73,9 @@ MainDialog::MainDialog(QWidget* parent, Thread::SDLThread* sdlThread, bool romCo
             controllerWidget->AddInputDevice("Voice Recognition Unit", (int)InputDeviceType::EmulateVRU);
         }
 #endif // VRU
+        // TODO: shouldn't this be specific to 1 port??
+        controllerWidget->AddInputDevice("Mouse",       (int)InputDeviceType::Mouse);
+    
         controllerWidget->AddInputDevice("None",        (int)InputDeviceType::None);
         controllerWidget->AddInputDevice("Automatic",   (int)InputDeviceType::Automatic);
         controllerWidget->AddInputDevice("Keyboard",    (int)InputDeviceType::Keyboard);
@@ -114,8 +117,9 @@ void MainDialog::openInputDevice(QString deviceName, int deviceNum)
     Widget::ControllerWidget* controllerWidget;
     controllerWidget = this->controllerWidgets.at(this->tabWidget->currentIndex());
 
-    // we don't need to open a keyboard or VRU
+    // we don't need to open a mouse, keyboard or VRU
     if (deviceNum == (int)InputDeviceType::None ||
+        deviceNum == (int)InputDeviceType::Mouse ||
         deviceNum == (int)InputDeviceType::Keyboard ||
         deviceNum == (int)InputDeviceType::EmulateVRU)
     {
@@ -240,6 +244,7 @@ void MainDialog::on_ControllerWidget_CurrentInputDeviceChanged(ControllerWidget*
 
     // only open device when needed
     if (deviceNum != (int)InputDeviceType::None &&
+        deviceNum != (int)InputDeviceType::Mouse &&
         deviceNum != (int)InputDeviceType::Keyboard &&
         deviceNum != (int)InputDeviceType::EmulateVRU)
     {
@@ -306,6 +311,7 @@ void MainDialog::on_tabWidget_currentChanged(int index)
 
     // only open device when needed
     if (deviceNum != (int)InputDeviceType::None &&
+        deviceNum != (int)InputDeviceType::Mouse &&
         deviceNum != (int)InputDeviceType::Keyboard &&
         deviceNum != (int)InputDeviceType::EmulateVRU)
     {

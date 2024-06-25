@@ -102,6 +102,7 @@ static const input_plugin_functions dummy_input = {
     dummyinput_SDL_KeyDown,
     dummyinput_SDL_KeyUp,
     NULL,
+    NULL,
     dummyinput_RenderCallback
 };
 
@@ -404,7 +405,8 @@ static m64p_error plugin_connect_input(m64p_dynlib_handle plugin_handle)
             DebugMessage(M64MSG_WARNING, "Input plugin does not contain VRU support.");
         }
 
-        if (!GET_FUNC(ptr_MouseMove, input.mouseMove, "MouseMove"))
+        if (!GET_FUNC(ptr_MouseMove, input.mouseMove, "MouseMove") ||
+            !GET_FUNC(ptr_MouseMove, input.mouseButton, "MouseButton"))
         {
             DebugMessage(M64MSG_WARNING, "Input plugin does not contain mouse support.");
         }
