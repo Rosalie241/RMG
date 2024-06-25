@@ -14,7 +14,6 @@
 
 #include <QMessageBox>
 #include <QFileInfo>
-#include <iostream>
 
 #include <RMG-Core/Core.hpp>
 

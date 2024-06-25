@@ -15,7 +15,6 @@
 #include <QCloseEvent>
 #include <QRegularExpression>
 #include <QFileInfo>
-#include <iostream>
 
 #include <RMG-Core/Core.hpp>
 
