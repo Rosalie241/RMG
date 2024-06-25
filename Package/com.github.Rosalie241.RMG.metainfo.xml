@@ -29,6 +29,19 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.6.4" date="2024-06-25" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix soft and hard reset freezing RMG when using parallel-rsp</li>
+          <li>Add 'System Region' to ROM Information dialog</li>
+          <li>Add defaults for the audio hotkey settings</li>
+          <li>Improve settings dialog behavior when having plugins with the same name</li>
+          <li>Improve settings dialog behavior by sorting the plugins</li>
+          <li>Change audio resampler default to "src-linear" in RMG-Audio (thank you Fanatic-64)</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.6.3" date="2024-06-24" type="stable">
       <description>
         <p>Changes:</p>
