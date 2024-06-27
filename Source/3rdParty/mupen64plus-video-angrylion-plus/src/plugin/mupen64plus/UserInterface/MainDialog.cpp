@@ -61,50 +61,66 @@ void MainDialog::on_buttonBox_clicked(QAbstractButton* button)
 {
     QPushButton *pushButton = (QPushButton *)button;
     QPushButton *okButton = this->buttonBox->button(QDialogButtonBox::Ok);
+    QPushButton *defaultButton = this->buttonBox->button(QDialogButtonBox::RestoreDefaults);
 
-    if (pushButton != okButton)
+    if (pushButton == okButton)
     {
-        return;
+        // screen size
+        int width  = this->screenSizeComboBox->currentText().split(" x ").at(0).toInt();
+        int height = this->screenSizeComboBox->currentText().split(" x ").at(1).toInt();
+        ConfigSetParameter(configVideoAngrylionPlus, KEY_SCREEN_WIDTH, M64TYPE_INT, &width);
+        ConfigSetParameter(configVideoAngrylionPlus, KEY_SCREEN_HEIGHT, M64TYPE_INT, &height);
+
+        // numWorkers
+        int numWorkersValue = this->numWorkersSpinBox->value();
+        ConfigSetParameter(configVideoAngrylionPlus, KEY_NUM_WORKERS, M64TYPE_INT, &numWorkersValue);
+
+        // viMode
+        int viModeValue = this->viModeComboBox->currentIndex();
+        ConfigSetParameter(configVideoAngrylionPlus, KEY_VI_MODE, M64TYPE_INT, &viModeValue);
+
+        // viInterpolation
+        int viInterpolationValue = this->viInterpolationComboBox->currentIndex();
+        ConfigSetParameter(configVideoAngrylionPlus, KEY_VI_INTERP, M64TYPE_INT, &viInterpolationValue);
+
+        // DpCompat
+        int dpCompatValue = this->dpCompatComboBox->currentIndex();
+        ConfigSetParameter(configVideoAngrylionPlus, KEY_DP_COMPAT, M64TYPE_INT, &dpCompatValue);
+
+        // checkboxes
+        int parallelValue = this->parallelCheckBox->isChecked() ? 1 : 0;
+        int busyLoopValue = this->busyLoopCheckBox->isChecked() ? 1 : 0;
+
+        int viWidescreenValue = this->viWidescreenCheckBox->isChecked() ? 1 : 0;
+        int viHideOverscanValue = this->viHideOverscanCheckBox->isChecked() ? 1 : 0;
+        int viIntegerScalingValue = this->viIntegerScalingCheckBox->isChecked() ? 1 : 0;
+        int viVsyncValue = this->viVsyncCheckBox->isChecked() ? 1 : 0;
+
+        ConfigSetParameter(configVideoAngrylionPlus, KEY_PARALLEL, M64TYPE_BOOL, &parallelValue);
+        ConfigSetParameter(configVideoAngrylionPlus, KEY_BUSY_LOOP, M64TYPE_BOOL, &busyLoopValue);
+
+        ConfigSetParameter(configVideoAngrylionPlus, KEY_VI_WIDESCREEN, M64TYPE_BOOL, &viWidescreenValue);
+        ConfigSetParameter(configVideoAngrylionPlus, KEY_VI_HIDE_OVERSCAN, M64TYPE_BOOL, &viHideOverscanValue);
+        ConfigSetParameter(configVideoAngrylionPlus, KEY_VI_INTEGER_SCALING, M64TYPE_BOOL, &viIntegerScalingValue);
+        ConfigSetParameter(configVideoAngrylionPlus, KEY_VI_VSYNC, M64TYPE_BOOL, &viVsyncValue);
+
+        ConfigSaveSection("Video-AngrylionPlus");   
     }
+    else if (pushButton == defaultButton)
+    {
+        n64video_config config;
+        n64video_config_init(&config);
 
-    // screen size
-    int width  = this->screenSizeComboBox->currentText().split(" x ").at(0).toInt();
-    int height = this->screenSizeComboBox->currentText().split(" x ").at(1).toInt();
-    ConfigSetParameter(configVideoAngrylionPlus, KEY_SCREEN_WIDTH, M64TYPE_INT, &width);
-    ConfigSetParameter(configVideoAngrylionPlus, KEY_SCREEN_HEIGHT, M64TYPE_INT, &height);
-
-    // numWorkers
-    int numWorkersValue = this->numWorkersSpinBox->value();
-    ConfigSetParameter(configVideoAngrylionPlus, KEY_NUM_WORKERS, M64TYPE_INT, &numWorkersValue);
-
-    // viMode
-    int viModeValue = this->viModeComboBox->currentIndex();
-    ConfigSetParameter(configVideoAngrylionPlus, KEY_VI_MODE, M64TYPE_INT, &viModeValue);
-
-    // viInterpolation
-    int viInterpolationValue = this->viInterpolationComboBox->currentIndex();
-    ConfigSetParameter(configVideoAngrylionPlus, KEY_VI_INTERP, M64TYPE_INT, &viInterpolationValue);
-
-    // DpCompat
-    int dpCompatValue = this->dpCompatComboBox->currentIndex();
-    ConfigSetParameter(configVideoAngrylionPlus, KEY_DP_COMPAT, M64TYPE_INT, &dpCompatValue);
-
-    // checkboxes
-    int parallelValue = this->parallelCheckBox->isChecked() ? 1 : 0;
-    int busyLoopValue = this->busyLoopCheckBox->isChecked() ? 1 : 0;
-
-    int viWidescreenValue = this->viWidescreenCheckBox->isChecked() ? 1 : 0;
-    int viHideOverscanValue = this->viHideOverscanCheckBox->isChecked() ? 1 : 0;
-    int viIntegerScalingValue = this->viIntegerScalingCheckBox->isChecked() ? 1 : 0;
-    int viVsyncValue = this->viVsyncCheckBox->isChecked() ? 1 : 0;
-
-    ConfigSetParameter(configVideoAngrylionPlus, KEY_PARALLEL, M64TYPE_BOOL, &parallelValue);
-    ConfigSetParameter(configVideoAngrylionPlus, KEY_BUSY_LOOP, M64TYPE_BOOL, &busyLoopValue);
-
-    ConfigSetParameter(configVideoAngrylionPlus, KEY_VI_WIDESCREEN, M64TYPE_BOOL, &viWidescreenValue);
-    ConfigSetParameter(configVideoAngrylionPlus, KEY_VI_HIDE_OVERSCAN, M64TYPE_BOOL, &viHideOverscanValue);
-    ConfigSetParameter(configVideoAngrylionPlus, KEY_VI_INTEGER_SCALING, M64TYPE_BOOL, &viIntegerScalingValue);
-    ConfigSetParameter(configVideoAngrylionPlus, KEY_VI_VSYNC, M64TYPE_BOOL, &viVsyncValue);
-
-    ConfigSaveSection("Video-AngrylionPlus");
+        this->screenSizeComboBox->setCurrentText("640 x 480");
+        this->numWorkersSpinBox->setValue(config.num_workers);
+        this->viModeComboBox->setCurrentIndex(config.vi.mode);
+        this->viInterpolationComboBox->setCurrentIndex(config.vi.interp);
+        this->dpCompatComboBox->setCurrentIndex(config.dp.compat);
+        this->parallelCheckBox->setChecked(config.parallel);
+        this->busyLoopCheckBox->setChecked(config.busyloop);
+        this->viWidescreenCheckBox->setChecked(config.vi.widescreen);
+        this->viHideOverscanCheckBox->setChecked(config.vi.hide_overscan);
+        this->viIntegerScalingCheckBox->setChecked(config.vi.integer_scaling);
+        this->viVsyncCheckBox->setChecked(config.vi.vsync);
+    }
 }
