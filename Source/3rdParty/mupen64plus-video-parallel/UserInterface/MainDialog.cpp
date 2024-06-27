@@ -89,73 +89,94 @@ void MainDialog::on_buttonBox_clicked(QAbstractButton* button)
 {
     QPushButton *pushButton = (QPushButton *)button;
     QPushButton *okButton = this->buttonBox->button(QDialogButtonBox::Ok);
+    QPushButton *defaultButton = this->buttonBox->button(QDialogButtonBox::RestoreDefaults);
 
-    if (pushButton != okButton)
+    if (pushButton == okButton)
     {
-        return;
-    }
+        // screen size
+        int width  = this->screenSizeComboBox->currentText().split(" x ").at(0).toInt();
+        int height = this->screenSizeComboBox->currentText().split(" x ").at(1).toInt();
+        ConfigSetParameter(configVideoParallel, KEY_SCREEN_WIDTH, M64TYPE_INT, &width);
+        ConfigSetParameter(configVideoParallel, KEY_SCREEN_HEIGHT, M64TYPE_INT, &height);
 
-    // screen size
-    int width  = this->screenSizeComboBox->currentText().split(" x ").at(0).toInt();
-    int height = this->screenSizeComboBox->currentText().split(" x ").at(1).toInt();
-    ConfigSetParameter(configVideoParallel, KEY_SCREEN_WIDTH, M64TYPE_INT, &width);
-    ConfigSetParameter(configVideoParallel, KEY_SCREEN_HEIGHT, M64TYPE_INT, &height);
-
-    // upscaling
-    int upscalingIndex = this->resolutionUpscaleComboBox->currentIndex();
-    int upscalingValue = 0;
-    if (upscalingIndex == 0)
-    {
-        upscalingValue = 1;
-    }
-    else
-    {
-        upscalingValue = this->resolutionUpscaleComboBox->currentText().split("x").at(0).toInt();
-    }
-    ConfigSetParameter(configVideoParallel, KEY_UPSCALING, M64TYPE_INT, &upscalingValue);
+        // upscaling
+        int upscalingIndex = this->resolutionUpscaleComboBox->currentIndex();
+        int upscalingValue = 0;
+        if (upscalingIndex == 0)
+        {
+            upscalingValue = 1;
+        }
+        else
+        {
+            upscalingValue = this->resolutionUpscaleComboBox->currentText().split("x").at(0).toInt();
+        }
+        ConfigSetParameter(configVideoParallel, KEY_UPSCALING, M64TYPE_INT, &upscalingValue);
     
-    // deinterlacer
-    int deinterlacerValue = this->deinterlacerComboBox->currentIndex();
-    ConfigSetParameter(configVideoParallel, KEY_DEINTERLACE, M64TYPE_BOOL, &deinterlacerValue);
+        // deinterlacer
+        int deinterlacerValue = this->deinterlacerComboBox->currentIndex();
+        ConfigSetParameter(configVideoParallel, KEY_DEINTERLACE, M64TYPE_BOOL, &deinterlacerValue);
 
-    // downscaler
-    int downscalingValue = this->downscalerComboBox->currentIndex();
-    ConfigSetParameter(configVideoParallel, KEY_DOWNSCALE, M64TYPE_INT, &downscalingValue);
+        // downscaler
+        int downscalingValue = this->downscalerComboBox->currentIndex();
+        ConfigSetParameter(configVideoParallel, KEY_DOWNSCALE, M64TYPE_INT, &downscalingValue);
 
-    // cropOverscan
-    int cropOverscanValue = this->cropOverscanSpinBox->value();
-    ConfigSetParameter(configVideoParallel, KEY_OVERSCANCROP, M64TYPE_INT, &cropOverscanValue);
+        // cropOverscan
+        int cropOverscanValue = this->cropOverscanSpinBox->value();
+        ConfigSetParameter(configVideoParallel, KEY_OVERSCANCROP, M64TYPE_INT, &cropOverscanValue);
 
-    // verticalStretch
-    int verticalStretchValue = this->verticalStretchSpinBox->value();
-    ConfigSetParameter(configVideoParallel, KEY_VERTICAL_STRETCH, M64TYPE_INT, &verticalStretchValue);
+        // verticalStretch
+        int verticalStretchValue = this->verticalStretchSpinBox->value();
+        ConfigSetParameter(configVideoParallel, KEY_VERTICAL_STRETCH, M64TYPE_INT, &verticalStretchValue);
 
-    // checkboxes
-    int superSampledDitherValue = this->superSampledDitherCheckBox->isChecked() ? 1 : 0;
-    int viAaValue = this->viAaCheckBox->isChecked() ? 1 : 0;
-    int viDivotFilterValue = this->viDivotFilterCheckBox->isChecked() ? 1 : 0; 
-    int viDeDitheringValue = this->viDeDitheringCheckBox->isChecked() ? 1 : 0;
-    int nativeTextureLodValue = this->nativeTextureLodCheckBox->isChecked() ? 1 : 0; 
-    int forceWidescreenValue = this->forceWidescreenCheckBox->isChecked() ? 1 : 0; 
-    int supersampledRdramReadsValue = this->supersampledRdramReadsCheckBox->isChecked() ? 1 : 0;
-    int viBilinearFilteringValue = this->viBilinearFilteringCheckBox->isChecked() ? 1 : 0;
-    int viGammaDitherValue = this->viGammaDitherCheckBox->isChecked() ? 1 : 0;
-    int nativeTextRectsValue = this->nativeTextRectsCheckBox->isChecked() ? 1 : 0;
-    int verticalSyncValue = this->verticalSyncCheckBox->isChecked() ? 1 : 0;
-    int synchronizeValue = this->synchronizeCheckBox->isChecked() ? 1 : 0;
+        // checkboxes
+        int superSampledDitherValue = this->superSampledDitherCheckBox->isChecked() ? 1 : 0;
+        int viAaValue = this->viAaCheckBox->isChecked() ? 1 : 0;
+        int viDivotFilterValue = this->viDivotFilterCheckBox->isChecked() ? 1 : 0; 
+        int viDeDitheringValue = this->viDeDitheringCheckBox->isChecked() ? 1 : 0;
+        int nativeTextureLodValue = this->nativeTextureLodCheckBox->isChecked() ? 1 : 0; 
+        int forceWidescreenValue = this->forceWidescreenCheckBox->isChecked() ? 1 : 0; 
+        int supersampledRdramReadsValue = this->supersampledRdramReadsCheckBox->isChecked() ? 1 : 0;
+        int viBilinearFilteringValue = this->viBilinearFilteringCheckBox->isChecked() ? 1 : 0;
+        int viGammaDitherValue = this->viGammaDitherCheckBox->isChecked() ? 1 : 0;
+        int nativeTextRectsValue = this->nativeTextRectsCheckBox->isChecked() ? 1 : 0;
+        int verticalSyncValue = this->verticalSyncCheckBox->isChecked() ? 1 : 0;
+        int synchronizeValue = this->synchronizeCheckBox->isChecked() ? 1 : 0;
 
-    ConfigSetParameter(configVideoParallel, KEY_SSDITHER, M64TYPE_BOOL, &superSampledDitherValue);
-    ConfigSetParameter(configVideoParallel, KEY_AA, M64TYPE_BOOL, &viAaValue);
-    ConfigSetParameter(configVideoParallel, KEY_DIVOT, M64TYPE_BOOL, &viDivotFilterValue);
-    ConfigSetParameter(configVideoParallel, KEY_VIDITHER, M64TYPE_BOOL, &viDeDitheringValue);
-    ConfigSetParameter(configVideoParallel, KEY_NATIVETEXTLOD, M64TYPE_BOOL, &nativeTextureLodValue);
-    ConfigSetParameter(configVideoParallel, KEY_WIDESCREEN, M64TYPE_BOOL, &forceWidescreenValue);
-    ConfigSetParameter(configVideoParallel, KEY_SSREADBACKS, M64TYPE_BOOL, &supersampledRdramReadsValue);
-    ConfigSetParameter(configVideoParallel, KEY_VIBILERP, M64TYPE_BOOL, &viBilinearFilteringValue);
-    ConfigSetParameter(configVideoParallel, KEY_GAMMADITHER, M64TYPE_BOOL, &viGammaDitherValue);
-    ConfigSetParameter(configVideoParallel, KEY_NATIVETEXTRECT, M64TYPE_BOOL, &nativeTextRectsValue);
-    ConfigSetParameter(configVideoParallel, KEY_VSYNC, M64TYPE_BOOL, &verticalSyncValue);
-    ConfigSetParameter(configVideoParallel, KEY_SYNCHRONOUS, M64TYPE_BOOL, &synchronizeValue);
+        ConfigSetParameter(configVideoParallel, KEY_SSDITHER, M64TYPE_BOOL, &superSampledDitherValue);
+        ConfigSetParameter(configVideoParallel, KEY_AA, M64TYPE_BOOL, &viAaValue);
+        ConfigSetParameter(configVideoParallel, KEY_DIVOT, M64TYPE_BOOL, &viDivotFilterValue);
+        ConfigSetParameter(configVideoParallel, KEY_VIDITHER, M64TYPE_BOOL, &viDeDitheringValue);
+        ConfigSetParameter(configVideoParallel, KEY_NATIVETEXTLOD, M64TYPE_BOOL, &nativeTextureLodValue);
+        ConfigSetParameter(configVideoParallel, KEY_WIDESCREEN, M64TYPE_BOOL, &forceWidescreenValue);
+        ConfigSetParameter(configVideoParallel, KEY_SSREADBACKS, M64TYPE_BOOL, &supersampledRdramReadsValue);
+        ConfigSetParameter(configVideoParallel, KEY_VIBILERP, M64TYPE_BOOL, &viBilinearFilteringValue);
+        ConfigSetParameter(configVideoParallel, KEY_GAMMADITHER, M64TYPE_BOOL, &viGammaDitherValue);
+        ConfigSetParameter(configVideoParallel, KEY_NATIVETEXTRECT, M64TYPE_BOOL, &nativeTextRectsValue);
+        ConfigSetParameter(configVideoParallel, KEY_VSYNC, M64TYPE_BOOL, &verticalSyncValue);
+        ConfigSetParameter(configVideoParallel, KEY_SYNCHRONOUS, M64TYPE_BOOL, &synchronizeValue);
 
-    ConfigSaveSection("Video-Parallel");
+        ConfigSaveSection("Video-Parallel");
+    }
+    else if (pushButton == defaultButton)
+    {
+        this->screenSizeComboBox->setCurrentText("640 x 480");
+        this->resolutionUpscaleComboBox->setCurrentText("None");
+        this->deinterlacerComboBox->setCurrentIndex(0);
+        this->downscalerComboBox->setCurrentIndex(0);
+        this->cropOverscanSpinBox->setValue(0);
+        this->verticalStretchSpinBox->setValue(0);
+
+        this->superSampledDitherCheckBox->setChecked(true);
+        this->viAaCheckBox->setChecked(true);
+        this->viDivotFilterCheckBox->setChecked(true);
+        this->viDeDitheringCheckBox->setChecked(true);
+        this->nativeTextureLodCheckBox->setChecked(false);
+        this->forceWidescreenCheckBox->setChecked(false);
+        this->supersampledRdramReadsCheckBox->setChecked(false);
+        this->viBilinearFilteringCheckBox->setChecked(true);
+        this->viGammaDitherCheckBox->setChecked(true);
+        this->nativeTextRectsCheckBox->setChecked(true);
+        this->verticalSyncCheckBox->setChecked(false);
+        this->synchronizeCheckBox->setChecked(true);
+    }
 }
