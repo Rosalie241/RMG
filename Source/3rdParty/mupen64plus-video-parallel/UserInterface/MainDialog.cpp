@@ -12,6 +12,8 @@
 #include "m64p_config.h"
 #include "../gfx_m64p.h"
 
+#include <QRegularExpression>
+
 using namespace UserInterface;
 
 MainDialog::MainDialog(QWidget* parent) : QDialog(parent)
@@ -21,6 +23,11 @@ MainDialog::MainDialog(QWidget* parent) : QDialog(parent)
     // set screen size combobox
     int width  = ConfigGetParamInt(configVideoParallel, KEY_SCREEN_WIDTH);
     int height = ConfigGetParamInt(configVideoParallel, KEY_SCREEN_HEIGHT);
+
+    // taken from GLideN64's GLideNUI
+    QRegularExpression windowedRegExp("([3-9][0-9]{2}|[1-7][0-9]{3}) ?x ?([2-9][0-9]{2}|[1-3][0-9]{3})");
+    QValidator *windowedValidator = new QRegularExpressionValidator(windowedRegExp, this);
+    this->screenSizeComboBox->setValidator(windowedValidator);
 
     QString resolutionString = QString::number(width) + " x " + QString::number(height);
 

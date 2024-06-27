@@ -34,6 +34,9 @@
            </item>
            <item>
             <widget class="QComboBox" name="screenSizeComboBox">
+             <property name="editable">
+              <bool>true</bool>
+             </property>
              <item>
               <property name="text">
                <string>320 x 240</string>
