@@ -22,6 +22,33 @@
 
 using namespace UserInterface::Dialog;
 
+//
+// Local Enums
+//
+
+enum class SettingsDialogTab
+{
+    InterfaceGeneral    = 0,
+    InterfaceEmulation  = 1,
+    InterfaceRomBrowser = 2,
+    InterfaceLog = 3,
+    InterfaceOSD = 4,
+    Hotkey     = 5,
+    Core       = 6,
+    Game       = 7,
+    GameCore   = 8,
+    GamePlugin = 9,
+    Plugin     = 10,
+    Directory  = 11,
+    N64DD      = 12,
+    Invalid    = 13
+};
+
+
+//
+// Exported Functions
+//
+
 SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 {
     this->setupUi(this);
@@ -115,47 +142,53 @@ int SettingsDialog::currentIndex(void)
 
 void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
 {
-    switch (stackedWidgetIndex)
+    if (stackedWidgetIndex < 0 || 
+        stackedWidgetIndex > (int)SettingsDialogTab::Invalid)
+    {
+        return;
+    }
+
+    switch ((SettingsDialogTab)stackedWidgetIndex)
     {
     default:
         break;
-    case 0:
+    case SettingsDialogTab::InterfaceGeneral:
+        this->loadDefaultInterfaceGeneralSettings();
+        break;
+    case SettingsDialogTab::InterfaceEmulation:
         this->loadDefaultInterfaceEmulationSettings();
         break;
-    case 1:
+    case SettingsDialogTab::InterfaceRomBrowser:
         this->loadDefaultInterfaceRomBrowserSettings();
         break;
-    case 2:
+    case SettingsDialogTab::InterfaceLog:
         this->loadDefaultInterfaceLogSettings();
         break;
-    case 3:
+    case SettingsDialogTab::InterfaceOSD:
         this->loadDefaultInterfaceOSDSettings();
         break;
-    case 4:
-        this->loadDefaultInterfaceMiscSettings();
-        break;
-    case 5:
+    case SettingsDialogTab::Hotkey:
         this->loadDefaultHotkeySettings();
         break;
-    case 6:
+    case SettingsDialogTab::Core:
         this->loadDefaultCoreSettings();
         break;
-    case 7:
+    case SettingsDialogTab::Game:
         this->loadDefaultGameSettings();
         break;
-    case 8:
+    case SettingsDialogTab::GameCore:
         this->loadDefaultGameCoreSettings();
         break;
-    case 9:
+    case SettingsDialogTab::GamePlugin:
         this->loadDefaultGamePluginSettings();
         break;
-    case 10:
+    case SettingsDialogTab::Plugin:
         this->loadDefaultPluginSettings();
         break;
-    case 11:
+    case SettingsDialogTab::Directory:
         this->loadDefaultDirectorySettings();
         break;
-    case 12:
+    case SettingsDialogTab::N64DD:
         this->loadDefault64DDSettings();
         break;
     }
@@ -163,47 +196,53 @@ void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
 
 void SettingsDialog::loadSettings(int stackedWidgetIndex)
 {
-    switch (stackedWidgetIndex)
+    if (stackedWidgetIndex < 0 || 
+        stackedWidgetIndex > (int)SettingsDialogTab::Invalid)
+    {
+        return;
+    }
+
+    switch ((SettingsDialogTab)stackedWidgetIndex)
     {
     default:
         break;
-    case 0:
+    case SettingsDialogTab::InterfaceGeneral:
+        this->loadInterfaceGeneralSettings();
+        break;
+    case SettingsDialogTab::InterfaceEmulation:
         this->loadInterfaceEmulationSettings();
         break;
-    case 1:
+    case SettingsDialogTab::InterfaceRomBrowser:
         this->loadInterfaceRomBrowserSettings();
         break;
-    case 2:
+    case SettingsDialogTab::InterfaceLog:
         this->loadInterfaceLogSettings();
         break;
-    case 3:
+    case SettingsDialogTab::InterfaceOSD:
         this->loadInterfaceOSDSettings();
         break;
-    case 4:
-        this->loadInterfaceMiscSettings();
-        break;
-    case 5:
+    case SettingsDialogTab::Hotkey:
         this->loadHotkeySettings();
         break;
-    case 6:
+    case SettingsDialogTab::Core:
         this->loadCoreSettings();
         break;
-    case 7:
+    case SettingsDialogTab::Game:
         this->loadGameSettings();
         break;
-    case 8:
+    case SettingsDialogTab::GameCore:
         this->loadGameCoreSettings();
         break;
-    case 9:
+    case SettingsDialogTab::GamePlugin:
         this->loadGamePluginSettings();
         break;
-    case 10:
+    case SettingsDialogTab::Plugin:
         this->loadPluginSettings();
         break;
-    case 11:
+    case SettingsDialogTab::Directory:
         this->loadDirectorySettings();
         break;
-    case 12:
+    case SettingsDialogTab::N64DD:
         this->load64DDSettings();
         break;
     }
@@ -400,6 +439,34 @@ void SettingsDialog::loadHotkeySettings(void)
     this->commonHotkeySettings(SettingsDialogAction::LoadSettings);
 }
 
+void SettingsDialog::loadInterfaceGeneralSettings(void)
+{
+    // find stylesheets and add them to the UI
+    QString directory;
+    directory = QString::fromStdString(CoreGetSharedDataDirectory().string());
+    directory += "/Styles/";
+
+    QStringList filter;
+    filter << "*.qss";
+
+    QDirIterator stylesDirectoryIter(directory, filter, QDir::Files, QDirIterator::NoIteratorFlags);
+    while (stylesDirectoryIter.hasNext())
+    {
+        QFileInfo fileInfo(stylesDirectoryIter.next());
+        this->themeComboBox->addItem(fileInfo.fileName());
+    }
+
+    // select currently chosen theme in UI
+    this->themeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_Theme)));
+    this->iconThemeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_IconTheme)));
+#ifdef UPDATER
+    this->checkForUpdatesCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_CheckForUpdates));
+#endif // UPDATER
+#ifdef DISCORD_RPC
+    this->discordRpcCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_DiscordRpc));
+#endif // DISCORD_RPC
+}
+
 void SettingsDialog::loadInterfaceEmulationSettings(void)
 {
     this->pauseEmulationOnFocusCheckbox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_PauseEmulationOnFocusLoss));
@@ -445,33 +512,6 @@ void SettingsDialog::loadInterfaceOSDSettings(void)
     }
 }
 
-void SettingsDialog::loadInterfaceMiscSettings(void)
-{
-    // find stylesheets and add them to the UI
-    QString directory;
-    directory = QString::fromStdString(CoreGetSharedDataDirectory().string());
-    directory += "/Styles/";
-
-    QStringList filter;
-    filter << "*.qss";
-
-    QDirIterator stylesDirectoryIter(directory, filter, QDir::Files, QDirIterator::NoIteratorFlags);
-    while (stylesDirectoryIter.hasNext())
-    {
-        QFileInfo fileInfo(stylesDirectoryIter.next());
-        this->themeComboBox->addItem(fileInfo.fileName());
-    }
-
-    // select currently chosen theme in UI
-    this->themeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_Theme)));
-    this->iconThemeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_IconTheme)));
-#ifdef UPDATER
-    this->checkForUpdatesCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_CheckForUpdates));
-#endif // UPDATER
-#ifdef DISCORD_RPC
-    this->discordRpcCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_DiscordRpc));
-#endif // DISCORD_RPC
-}
 
 void SettingsDialog::loadDefaultCoreSettings(void)
 {
@@ -584,6 +624,18 @@ void SettingsDialog::loadDefaultHotkeySettings(void)
     this->commonHotkeySettings(SettingsDialogAction::LoadDefaultSettings);
 }
 
+void SettingsDialog::loadDefaultInterfaceGeneralSettings(void)
+{
+    this->themeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::GUI_Theme)));
+    this->iconThemeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::GUI_IconTheme)));
+#ifdef UPDATER
+    this->checkForUpdatesCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_CheckForUpdates));
+#endif // UPDATER
+#ifdef DISCORD_RPC
+    this->discordRpcCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_DiscordRpc));
+#endif // DISCORD_RPC
+}
+
 void SettingsDialog::loadDefaultInterfaceEmulationSettings(void)
 {
     this->pauseEmulationOnFocusCheckbox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_PauseEmulationOnFocusLoss));
@@ -629,17 +681,6 @@ void SettingsDialog::loadDefaultInterfaceOSDSettings(void)
     }
 }
 
-void SettingsDialog::loadDefaultInterfaceMiscSettings(void)
-{
-    this->themeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::GUI_Theme)));
-    this->iconThemeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::GUI_IconTheme)));
-#ifdef UPDATER
-    this->checkForUpdatesCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_CheckForUpdates));
-#endif // UPDATER
-#ifdef DISCORD_RPC
-    this->discordRpcCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_DiscordRpc));
-#endif // DISCORD_RPC
-}
 
 void SettingsDialog::saveSettings(void)
 {
@@ -656,11 +697,11 @@ void SettingsDialog::saveSettings(void)
     this->saveDirectorySettings();
     this->save64DDSettings();
     this->saveHotkeySettings();
+    this->saveInterfaceGeneralSettings();
     this->saveInterfaceEmulationSettings();
     this->saveInterfaceRomBrowserSettings();
     this->saveInterfaceLogSettings();
     this->saveInterfaceOSDSettings();
-    this->saveInterfaceMiscSettings();
     CoreSettingsSave();
 }
 
@@ -812,6 +853,18 @@ void SettingsDialog::saveHotkeySettings(void)
     this->commonHotkeySettings(SettingsDialogAction::SaveSettings);
 }
 
+void SettingsDialog::saveInterfaceGeneralSettings(void)
+{
+    CoreSettingsSetValue(SettingsID::GUI_Theme, this->themeComboBox->currentText().toStdString());
+    CoreSettingsSetValue(SettingsID::GUI_IconTheme, this->iconThemeComboBox->currentText().toStdString());
+#ifdef UPDATER
+    CoreSettingsSetValue(SettingsID::GUI_CheckForUpdates, this->checkForUpdatesCheckBox->isChecked());
+#endif // UPDATER
+#ifdef DISCORD_RPC
+    CoreSettingsSetValue(SettingsID::GUI_DiscordRpc, this->discordRpcCheckBox->isChecked());
+#endif // DISCORD_RPC
+}
+
 void SettingsDialog::saveInterfaceEmulationSettings(void)
 {
     CoreSettingsSetValue(SettingsID::GUI_HideCursorInEmulation, this->hideCursorCheckBox->isChecked());
@@ -852,18 +905,6 @@ void SettingsDialog::saveInterfaceOSDSettings(void)
                                                                                       this->currentTextColor.blue(),
                                                                                       this->currentTextColor.alpha()
                                                                                     }));
-}
-
-void SettingsDialog::saveInterfaceMiscSettings(void)
-{
-    CoreSettingsSetValue(SettingsID::GUI_Theme, this->themeComboBox->currentText().toStdString());
-    CoreSettingsSetValue(SettingsID::GUI_IconTheme, this->iconThemeComboBox->currentText().toStdString());
-#ifdef UPDATER
-    CoreSettingsSetValue(SettingsID::GUI_CheckForUpdates, this->checkForUpdatesCheckBox->isChecked());
-#endif // UPDATER
-#ifdef DISCORD_RPC
-    CoreSettingsSetValue(SettingsID::GUI_DiscordRpc, this->discordRpcCheckBox->isChecked());
-#endif // DISCORD_RPC
 }
 
 void SettingsDialog::commonHotkeySettings(SettingsDialogAction action)

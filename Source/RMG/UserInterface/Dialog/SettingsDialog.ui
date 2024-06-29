@@ -51,6 +51,142 @@
              <property name="currentIndex">
               <number>0</number>
              </property>
+             <widget class="QWidget" name="tab_3">
+              <attribute name="title">
+               <string>General</string>
+              </attribute>
+              <layout class="QVBoxLayout" name="verticalLayout_7">
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_13">
+                 <item>
+                  <widget class="QLabel" name="label_12">
+                   <property name="text">
+                    <string>Theme</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="themeComboBox">
+                   <item>
+                    <property name="text">
+                     <string>Native</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Fusion</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Fusion Dark</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_14">
+                 <item>
+                  <widget class="QLabel" name="label_13">
+                   <property name="text">
+                    <string>Icon Theme</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="iconThemeComboBox">
+                   <item>
+                    <property name="text">
+                     <string>Automatic</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>White</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Black</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="checkForUpdatesCheckBox">
+                 <property name="text">
+                  <string>Check For Updates</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="discordRpcCheckBox">
+                 <property name="text">
+                  <string>Discord Rich Presence</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="verticalSpacer_6">
+                 <property name="orientation">
+                  <enum>Qt::Orientation::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>449</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="emulationInfoLayout_5">
+                 <item>
+                  <widget class="QLabel" name="infoIconLabel_7">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="pixmap">
+                    <pixmap>:/newPrefix/Resource/Info.ico</pixmap>
+                   </property>
+                   <property name="wordWrap">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_91">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="midLineWidth">
+                    <number>1</number>
+                   </property>
+                   <property name="text">
+                    <string>Changes will be applied on next application run</string>
+                   </property>
+                   <property name="textFormat">
+                    <enum>Qt::TextFormat::PlainText</enum>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
              <widget class="QWidget" name="tab">
               <attribute name="title">
                <string>Emulation</string>
@@ -454,142 +590,6 @@
                    </property>
                    <property name="text">
                     <string>The On-Screen Display will only work with OpenGL video plugins</string>
-                   </property>
-                   <property name="textFormat">
-                    <enum>Qt::TextFormat::PlainText</enum>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </widget>
-             <widget class="QWidget" name="tab_3">
-              <attribute name="title">
-               <string>Miscellaneous</string>
-              </attribute>
-              <layout class="QVBoxLayout" name="verticalLayout_7">
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_13">
-                 <item>
-                  <widget class="QLabel" name="label_12">
-                   <property name="text">
-                    <string>Theme</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QComboBox" name="themeComboBox">
-                   <item>
-                    <property name="text">
-                     <string>Native</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Fusion</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Fusion Dark</string>
-                    </property>
-                   </item>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_14">
-                 <item>
-                  <widget class="QLabel" name="label_13">
-                   <property name="text">
-                    <string>Icon Theme</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QComboBox" name="iconThemeComboBox">
-                   <item>
-                    <property name="text">
-                     <string>Automatic</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>White</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Black</string>
-                    </property>
-                   </item>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="checkForUpdatesCheckBox">
-                 <property name="text">
-                  <string>Check For Updates</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="discordRpcCheckBox">
-                 <property name="text">
-                  <string>Discord Rich Presence</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <spacer name="verticalSpacer_6">
-                 <property name="orientation">
-                  <enum>Qt::Orientation::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>449</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="emulationInfoLayout_5">
-                 <item>
-                  <widget class="QLabel" name="infoIconLabel_7">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="pixmap">
-                    <pixmap>:/newPrefix/Resource/Info.ico</pixmap>
-                   </property>
-                   <property name="wordWrap">
-                    <bool>false</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="label_91">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="midLineWidth">
-                    <number>1</number>
-                   </property>
-                   <property name="text">
-                    <string>Changes will be applied on next application run</string>
                    </property>
                    <property name="textFormat">
                     <enum>Qt::TextFormat::PlainText</enum>
