@@ -288,9 +288,24 @@ void SettingsDialog::loadGamePluginSettings(void)
     SettingsID settingsId[] = {SettingsID::Game_RSP_Plugin, SettingsID::Game_GFX_Plugin, 
                                     SettingsID::Game_AUDIO_Plugin, SettingsID::Game_INPUT_Plugin};
     bool pluginFound[] = {false, false, false, false};
+    QString pluginFileNames[4];
+    QString pluginFileName;
+    QString pluginName;
 
     QComboBox *comboBox;
     int index = 0;
+
+    for (int i = 0; i < 4; i++)
+    {
+        pluginFileName = QString::fromStdString(CoreSettingsGetStringValue(settingsId[i], this->gameSection));
+
+        if (!pluginFileName.isEmpty())
+        {
+            // account for full path (<v0.3.5 we used the full path)
+            pluginFileName = QFileInfo(pluginFileName).fileName();
+            pluginFileNames[i] = pluginFileName;
+        }
+    }
 
     for (QComboBox *comboBox : comboBoxArray)
     {
@@ -305,7 +320,7 @@ void SettingsDialog::loadGamePluginSettings(void)
         comboBox = comboBoxArray[index];
         comboBox->addItem(QString::fromStdString(p.Name), QString::fromStdString(p.File));
 
-        if (CoreSettingsGetStringValue(settingsId[index], this->gameSection) == p.File)
+        if (pluginFileName[index] == QString::fromStdString(p.File))
         {
             comboBox->setCurrentText(QString::fromStdString(p.Name));
             pluginFound[index] = true;
@@ -323,8 +338,10 @@ void SettingsDialog::loadGamePluginSettings(void)
 
         if (!pluginFound[i])
         {
-            comboBox->addItem("", "");
-            comboBox->setCurrentText("");
+            pluginName = pluginFileNames[i] + " (not found)";
+
+            comboBox->addItem(pluginName, pluginFileNames[i]);
+            comboBox->setCurrentText(pluginName);
         }
     }
 }
