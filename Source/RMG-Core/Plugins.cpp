@@ -199,8 +199,7 @@ bool apply_plugin_settings(std::string pluginSettings[4])
     {
         pluginType = (CorePluginType)(i + 1);
         settingValue = get_plugin_path(pluginType, pluginSettings[i]);
-        if (settingValue.empty() ||
-            !std::filesystem::is_regular_file(settingValue))
+        if (settingValue.empty())
         { // skip invalid setting value
             continue;
         }
@@ -228,6 +227,16 @@ bool apply_plugin_settings(std::string pluginSettings[4])
 
                 // reset plugin
                 plugin->Unhook();
+            }
+
+            // ensure library file exists
+            if (!std::filesystem::is_regular_file(settingValue))
+            {
+                // force a re-load next time,
+                // because we've unhooked
+                // the existing one
+                l_PluginFiles[i].clear();
+                continue;
             }
 
             // attempt to open the library
