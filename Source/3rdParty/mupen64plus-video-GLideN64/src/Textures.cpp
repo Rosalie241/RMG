@@ -1179,8 +1179,8 @@ bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & 
 			height--;
 	} else {
 		const gDPTile * pTile = gSP.textureTile[_tile];
-		int tile_width = pTile->lrs - pTile->uls + 1;
-		int tile_height = pTile->lrt - pTile->ult + 1;
+		int tile_width = ((pTile->lrs - pTile->uls) & 0x03FF) + 1;
+		int tile_height = ((pTile->lrt - pTile->ult) & 0x03FF) + 1;
 
 		int mask_width = (pTile->masks == 0) ? (tile_width) : (1 << pTile->masks);
 		int mask_height = (pTile->maskt == 0) ? (tile_height) : (1 << pTile->maskt);
@@ -1226,8 +1226,10 @@ bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & 
 	GHQTexInfo ghqTexInfo;
 	// TODO: fix problem with zero texture dimensions on GLideNHQ side.
 	auto hirestexFound = txfilter_hirestex(_pTexture->crc, _ricecrc, palette, N64FormatSize(_pTexture->format, _pTexture->size), &ghqTexInfo);
-	if (!hirestexFound && _strongcrc != 0U) {
+	if (!hirestexFound) {
 		// Texture with RiceCRC was not found. Try alternative CRC.
+		if (_strongcrc == 0U)
+			_strongcrc = txfilter_checksum_strong(addr, width, height, _pTexture->size, bpl, paladdr);
 		hirestexFound = txfilter_hirestex(_pTexture->crc, _strongcrc, palette, N64FormatSize(_pTexture->format, _pTexture->size), &ghqTexInfo);
 	}
 	if (hirestexFound && ghqTexInfo.width != 0 && ghqTexInfo.height != 0) {

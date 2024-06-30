@@ -224,10 +224,10 @@ void GraphicsDrawer::updateScissor(FrameBuffer * _pBuffer) const
 
 void GraphicsDrawer::_updateViewport(const FrameBuffer* _pBuffer, const f32 scale) const
 {
-	s32 X, Y, WIDTH, HEIGHT;
+	s32 X = 0, Y = 0, WIDTH, HEIGHT;
 	f32 scaleX, scaleY;
+	const FrameBuffer* pCurrentBuffer = _pBuffer != nullptr ? _pBuffer : frameBufferList().getCurrent();
 	if (scale == 0.0f) {
-		const FrameBuffer* pCurrentBuffer = _pBuffer != nullptr ? _pBuffer : frameBufferList().getCurrent();
 		if (pCurrentBuffer != nullptr) {
 			scaleX = scaleY = pCurrentBuffer->m_scale;
 		} else {
@@ -237,8 +237,10 @@ void GraphicsDrawer::_updateViewport(const FrameBuffer* _pBuffer, const f32 scal
 	} else {
 		scaleX = scaleY = scale;
 	}
-	X = 0;
-	Y = 0;
+	if (pCurrentBuffer != nullptr) {
+		X = roundup(pCurrentBuffer->m_originX, scaleX);
+		Y = roundup(pCurrentBuffer->m_originY, scaleY);
+	}
 	WIDTH = roundup(SCREEN_SIZE_DIM, scaleX);
 	HEIGHT = roundup(SCREEN_SIZE_DIM, scaleY);
 	gfxContext.setViewport(X, Y, WIDTH, HEIGHT);

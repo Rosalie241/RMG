@@ -72,6 +72,7 @@ struct gSPInfo
 		f32 i_xyz[12][3];
 		f32 pos_xyzw[12][4];
 		f32 ca[12], la[12], qa[12];
+		bool is_point[12];
 	} lights;
 
 	struct
@@ -179,6 +180,7 @@ void gSPCullDisplayList( u32 v0, u32 vn );
 void gSPPopMatrix( u32 param );
 void gSPPopMatrixN( u32 param, u32 num );
 void gSPSegment( s32 seg, s32 base );
+void gSPRelSegment(s32 seg, s32 base);
 void gSPClipRatio( u32 ratio );
 void gSPInsertMatrix( u32 where, u32 num );
 void gSPModifyVertex(u32 _vtx, u32 _where, u32 _val );
