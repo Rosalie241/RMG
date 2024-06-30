@@ -11,6 +11,7 @@ enum class SettingsID
     GUI_ResumeEmulationOnFocus,
     GUI_AutomaticFullscreen,
     GUI_ConfirmDragDrop,
+    GUI_OpenGLES,
     GUI_ShowVerboseLogMessages,
     GUI_OnScreenDisplayEnabled,
     GUI_OnScreenDisplayLocation,
