@@ -436,7 +436,14 @@ void MainWindow::updateUI(bool inEmulation, bool isPaused)
 
         if (this->ui_VidExtRenderMode == VidExtRenderMode::OpenGL)
         {
-            this->ui_StatusBar_RenderModeLabel->setText("OpenGL");
+            if (QSurfaceFormat::defaultFormat().renderableType() == QSurfaceFormat::OpenGLES)
+            {
+                this->ui_StatusBar_RenderModeLabel->setText("OpenGL ES");
+            }
+            else
+            {
+                this->ui_StatusBar_RenderModeLabel->setText("OpenGL");
+            }
             this->ui_Widgets->setCurrentWidget(this->ui_Widget_OpenGL->GetWidget());
         }
         else if (this->ui_VidExtRenderMode == VidExtRenderMode::Vulkan)
@@ -2113,6 +2120,25 @@ void MainWindow::on_VidExt_Init(VidExtRenderMode renderMode)
 {
     this->ui_VidExtRenderMode   = renderMode;
     this->ui_VidExtForceSetMode = true;
+
+    if (CoreSettingsGetBoolValue(SettingsID::GUI_OpenGLES))
+    {
+        QSurfaceFormat format = QSurfaceFormat::defaultFormat();
+        format.setSwapInterval(0);
+        format.setMajorVersion(2);
+        format.setMinorVersion(0);
+        format.setRenderableType(QSurfaceFormat::OpenGLES);
+        QSurfaceFormat::setDefaultFormat(format);
+    }
+    else
+    {
+        QSurfaceFormat format = QSurfaceFormat::defaultFormat();
+        format.setSwapInterval(0);
+        format.setMajorVersion(3);
+        format.setMinorVersion(3);
+        format.setRenderableType(QSurfaceFormat::OpenGL);
+        QSurfaceFormat::setDefaultFormat(format);
+    }
 
     if (renderMode == VidExtRenderMode::OpenGL)
     {

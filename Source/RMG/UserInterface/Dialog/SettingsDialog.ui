@@ -235,6 +235,31 @@
                 </widget>
                </item>
                <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_17">
+                 <item>
+                  <widget class="QLabel" name="label_6">
+                   <property name="text">
+                    <string>OpenGL Type</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="openglTypeComboBox">
+                   <item>
+                    <property name="text">
+                     <string>OpenGL</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>OpenGL ES</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_2">
                  <item>
                   <widget class="QLabel" name="label">

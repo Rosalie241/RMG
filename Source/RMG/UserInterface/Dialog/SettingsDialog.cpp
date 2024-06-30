@@ -476,6 +476,7 @@ void SettingsDialog::loadInterfaceEmulationSettings(void)
     this->automaticFullscreenCheckbox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_AutomaticFullscreen));
     this->confirmDragDropCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_ConfirmDragDrop));
     this->statusBarMessageDurationSpinBox->setValue(CoreSettingsGetIntValue(SettingsID::GUI_StatusbarMessageDuration));
+    this->openglTypeComboBox->setCurrentIndex(CoreSettingsGetBoolValue(SettingsID::GUI_OpenGLES));
 }
 
 void SettingsDialog::loadInterfaceRomBrowserSettings(void)
@@ -645,6 +646,7 @@ void SettingsDialog::loadDefaultInterfaceEmulationSettings(void)
     this->automaticFullscreenCheckbox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_AutomaticFullscreen));
     this->confirmDragDropCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_ConfirmDragDrop));
     this->statusBarMessageDurationSpinBox->setValue(CoreSettingsGetDefaultIntValue(SettingsID::GUI_StatusbarMessageDuration));
+    this->openglTypeComboBox->setCurrentIndex(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_OpenGLES));
 }
 
 void SettingsDialog::loadDefaultInterfaceRomBrowserSettings(void)
@@ -874,6 +876,7 @@ void SettingsDialog::saveInterfaceEmulationSettings(void)
     CoreSettingsSetValue(SettingsID::GUI_AutomaticFullscreen, this->automaticFullscreenCheckbox->isChecked());
     CoreSettingsSetValue(SettingsID::GUI_ConfirmDragDrop, this->confirmDragDropCheckBox->isChecked());
     CoreSettingsSetValue(SettingsID::GUI_StatusbarMessageDuration, this->statusBarMessageDurationSpinBox->value());
+    CoreSettingsSetValue(SettingsID::GUI_OpenGLES, this->openglTypeComboBox->currentIndex() == 1);
 }
 
 void SettingsDialog::saveInterfaceRomBrowserSettings(void)
