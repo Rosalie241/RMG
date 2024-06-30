@@ -168,6 +168,7 @@ int main(int argc, char **argv)
     QCommandLineOption debugMessagesOption({"d", "debug-messages"}, "Prints debug callback messages to stdout");
     QCommandLineOption fullscreenOption({"f", "fullscreen"}, "Launches ROM in fullscreen mode");
     QCommandLineOption noGuiOption({"n", "nogui"}, "Hides GUI elements (menubar, toolbar, statusbar)");
+    QCommandLineOption glesOption({"g", "gles"}, "Forces usage of OpenGL ES");
     QCommandLineOption quitAfterEmulationOption({"q", "quit-after-emulation"}, "Quits RMG when emulation has finished");
     QCommandLineOption loadStateSlot("load-state-slot", "Loads save state slot when launching the ROM", "Slot Number");
     QCommandLineOption diskOption("disk", "64DD Disk to open ROM in combination with", "64DD Disk");
@@ -181,6 +182,7 @@ int main(int argc, char **argv)
     parser.addOption(debugMessagesOption);
     parser.addOption(fullscreenOption);
     parser.addOption(noGuiOption);
+    parser.addOption(glesOption);
     parser.addOption(quitAfterEmulationOption);
     parser.addOption(loadStateSlot);
     parser.addOption(diskOption);
@@ -212,6 +214,17 @@ int main(int argc, char **argv)
         CoreSetSharedDataPathOverride(sharedDataPathOverride.toStdString());
     }
 #endif // PORTABLE_INSTALL
+
+    // set OpenGL ES surface format before initializing
+    if (parser.isSet(glesOption))
+    {
+        QSurfaceFormat format = QSurfaceFormat::defaultFormat();
+        format.setSwapInterval(0);
+        format.setMajorVersion(2);
+        format.setMinorVersion(0);
+        format.setRenderableType(QSurfaceFormat::OpenGLES);
+        QSurfaceFormat::setDefaultFormat(format);
+    }
 
     // print debug callbacks to stdout if needed
     CoreSetPrintDebugCallback(parser.isSet(debugMessagesOption));
