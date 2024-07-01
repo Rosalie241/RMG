@@ -119,7 +119,7 @@
                <item>
                 <widget class="QCheckBox" name="checkForUpdatesCheckBox">
                  <property name="text">
-                  <string>Check For Updates</string>
+                  <string>Check for updates</string>
                  </property>
                 </widget>
                </item>
@@ -195,42 +195,42 @@
                <item>
                 <widget class="QCheckBox" name="hideCursorCheckBox">
                  <property name="text">
-                  <string>Hide Cursor During Emulation</string>
+                  <string>Hide cursor during emulation</string>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QCheckBox" name="hideCursorFullscreenCheckBox">
                  <property name="text">
-                  <string>Hide Cursor During Fullscreen Emulation</string>
+                  <string>Hide cursor during fullscreen emulation</string>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QCheckBox" name="pauseEmulationOnFocusCheckbox">
                  <property name="text">
-                  <string>Pause Emulation On Focus Loss</string>
+                  <string>Pause emulation on focus loss</string>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QCheckBox" name="resumeEmulationOnFocusCheckBox">
                  <property name="text">
-                  <string>Resume Emulation On Focus Gain</string>
+                  <string>Resume emulation on focus gain</string>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QCheckBox" name="automaticFullscreenCheckbox">
                  <property name="text">
-                  <string>Automatically Switch To Fullscreen On Emulation Start</string>
+                  <string>Automatically switch to fullscreen on emulation start</string>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QCheckBox" name="confirmDragDropCheckBox">
                  <property name="text">
-                  <string>Ask For Confirmation During Drag And Drop</string>
+                  <string>Ask for confirmation during drag and drop</string>
                  </property>
                 </widget>
                </item>
@@ -239,7 +239,7 @@
                  <item>
                   <widget class="QLabel" name="label_6">
                    <property name="text">
-                    <string>OpenGL Type</string>
+                    <string>OpenGL type</string>
                    </property>
                   </widget>
                  </item>
@@ -264,7 +264,7 @@
                  <item>
                   <widget class="QLabel" name="label">
                    <property name="text">
-                    <string>Statusbar Message Duration</string>
+                    <string>Statusbar message duration</string>
                    </property>
                   </widget>
                  </item>
@@ -348,14 +348,14 @@
                <item>
                 <widget class="QCheckBox" name="searchSubDirectoriesCheckbox">
                  <property name="text">
-                  <string>Search Sub-Directories</string>
+                  <string>Search sub-directories</string>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QCheckBox" name="sortRomBrowserResultsCheckBox">
                  <property name="text">
-                  <string>Sort Results After Search</string>
+                  <string>Sort results after search</string>
                  </property>
                 </widget>
                </item>
@@ -403,7 +403,7 @@
                <item>
                 <widget class="QCheckBox" name="showVerboseLogMessagesCheckBox">
                  <property name="text">
-                  <string>Show Verbose Messages</string>
+                  <string>Show verbose messages</string>
                  </property>
                 </widget>
                </item>
@@ -1666,7 +1666,7 @@
              <item>
               <widget class="QLabel" name="label_25">
                <property name="text">
-                <string>Save Filename Format</string>
+                <string>Save filename format</string>
                </property>
               </widget>
              </item>
@@ -1691,7 +1691,7 @@
              <item>
               <widget class="QLabel" name="label_23">
                <property name="text">
-                <string>CPU Emulator</string>
+                <string>CPU emulator</string>
                </property>
               </widget>
              </item>
@@ -1786,7 +1786,7 @@
               <bool>true</bool>
              </property>
              <property name="title">
-              <string>Override Game Specific Settings</string>
+              <string>Override game specific settings</string>
              </property>
              <property name="checkable">
               <bool>true</bool>
@@ -1895,7 +1895,7 @@
            <item>
             <widget class="QCheckBox" name="coreRandomizeTimingCheckBox">
              <property name="text">
-              <string>Randomize PI/SI Interrupt Timing</string>
+              <string>Randomize PI/SI interrupt timing</string>
              </property>
             </widget>
            </item>
@@ -2179,7 +2179,7 @@
                <item>
                 <widget class="QGroupBox" name="gameOverrideCoreSettingsGroupBox">
                  <property name="title">
-                  <string>Override Core Settings</string>
+                  <string>Override core settings</string>
                  </property>
                  <property name="checkable">
                   <bool>true</bool>
