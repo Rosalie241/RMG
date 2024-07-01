@@ -6,7 +6,7 @@
 [subrepo]
 	remote = git@github.com:/Rosalie241/angrylion-rdp-plus.git
 	branch = RMG
-	commit = 96576345c1eacf802e1562d6630f39c5ff3a407f
-	parent = 41ef46b284e2ad5f6b75022fc6f37d16e9abc548
+	commit = 46730f4e594f261bd90232f327cfa44d552ec96c
+	parent = 3d145e2d71cb5374f0d45ab351a744691846cf66
 	method = merge
 	cmdver = 0.4.6
