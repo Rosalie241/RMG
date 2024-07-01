@@ -91,7 +91,7 @@
                  <item>
                   <widget class="QLabel" name="label_13">
                    <property name="text">
-                    <string>Icon Theme</string>
+                    <string>Icon theme</string>
                    </property>
                   </widget>
                  </item>
@@ -364,7 +364,7 @@
                  <item>
                   <widget class="QLabel" name="label_2">
                    <property name="text">
-                    <string>ROM Search Limit</string>
+                    <string>ROM search limit</string>
                    </property>
                   </widget>
                  </item>
@@ -474,7 +474,7 @@
                  <item>
                   <widget class="QLabel" name="label_7">
                    <property name="text">
-                    <string>Vertical Padding</string>
+                    <string>Vertical padding</string>
                    </property>
                   </widget>
                  </item>
@@ -495,7 +495,7 @@
                  <item>
                   <widget class="QLabel" name="label_8">
                    <property name="text">
-                    <string>Horizontal Padding</string>
+                    <string>Horizontal padding</string>
                    </property>
                   </widget>
                  </item>
@@ -516,7 +516,7 @@
                  <item>
                   <widget class="QLabel" name="label_14">
                    <property name="text">
-                    <string>Background Color</string>
+                    <string>Background color</string>
                    </property>
                   </widget>
                  </item>
@@ -534,7 +534,7 @@
                  <item>
                   <widget class="QLabel" name="label_15">
                    <property name="text">
-                    <string>Text Color</string>
+                    <string>Text color</string>
                    </property>
                   </widget>
                  </item>
@@ -2762,7 +2762,7 @@
               <bool>true</bool>
              </property>
              <property name="title">
-              <string>Override &amp;User Directories</string>
+              <string>Override &amp;user directories</string>
              </property>
              <property name="checkable">
               <bool>true</bool>
@@ -2959,7 +2959,7 @@
              <item>
               <widget class="QLabel" name="label_3">
                <property name="text">
-                <string>Disk Save Type</string>
+                <string>Disk save type</string>
                </property>
               </widget>
              </item>
