@@ -16,6 +16,9 @@ using namespace UserInterface::Dialog;
 AboutDialog::AboutDialog(QWidget* parent) : QDialog(parent)
 {
     this->setupUi(this);
-
-    this->versionLabel->setText(QString("RMG %1").arg(QString::fromStdString(CoreGetVersion())));
+    // prepare modified html w/ version
+    QString html = this->textBrowser->toHtml();
+    html.replace("{version}", QString::fromStdString(CoreGetVersion()));
+    // show modified html
+    this->textBrowser->setHtml(html);
 }
