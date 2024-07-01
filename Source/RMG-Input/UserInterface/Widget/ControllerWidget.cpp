@@ -777,7 +777,7 @@ void ControllerWidget::on_removeProfileButton_clicked()
     {
         QMessageBox messageBox(this);
         messageBox.setIcon(QMessageBox::Icon::Warning);
-        messageBox.setText("Are you sure you want to reset the main profile?");
+        messageBox.setText("Are you sure you want to clear the main profile?");
         messageBox.addButton(QMessageBox::Yes);
         messageBox.addButton(QMessageBox::No);
         if (messageBox.exec() == QMessageBox::Yes)

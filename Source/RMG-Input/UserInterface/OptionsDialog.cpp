@@ -108,7 +108,7 @@ void OptionsDialog::on_changeGameboyRomButton_clicked()
 void OptionsDialog::on_changeGameboySaveButton_clicked()
 {
     QString gameBoySave;
-    gameBoySave = QFileDialog::getOpenFileName(this, "", "", "Gameboy SAVE (*.sav *.ram)");
+    gameBoySave = QFileDialog::getOpenFileName(this, "", "", "Gameboy save (*.sav *.ram)");
 
     if (!gameBoySave.isEmpty())
     {
