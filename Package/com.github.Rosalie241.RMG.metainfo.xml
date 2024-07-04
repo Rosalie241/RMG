@@ -29,6 +29,23 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.6.5" date="2024-07-04" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix not showing an error when per-game plugin settings are invalid</li>
+          <li>Fix settings dialog behavior for plugins not being the same for per-game plugin settings</li>
+          <li>Add 'restore defaults' button to configuration GUI of paraLLEl and angrylion-rdp-plus</li>
+          <li>Add 'OpenGL type' option to the settings dialog which allows choosing OpenGL ES</li>
+          <li>Add dynamic OpenGL ES detection to angrylion-rdp-plus</li>
+          <li>Improve screen size selection by making it editable in the configuration GUI of paraLLEl and angrylion-rdp-plus</li>
+          <li>Improve letter casing in settings dialog, RMG-Input and RMG-Audio</li>
+          <li>Improve about dialog</li>
+          <li>Change 'Miscellaneous' tab name to 'General' and change position in settings dialog</li>
+          <li>Update GLideN64 and SDL_GameControllerDB</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.6.4" date="2024-06-25" type="stable">
       <description>
         <p>Changes:</p>
