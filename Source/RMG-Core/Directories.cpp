@@ -246,7 +246,7 @@ std::filesystem::path CoreGetCoreDirectory(void)
         directory = CoreGetLibraryDirectory();
         directory += "/Core";
     }
-#endif // CORE_INSTALL_PREFIX
+#endif // PORTABLE_INSTALL
     return directory.make_preferred();
 }
 
@@ -273,7 +273,7 @@ std::filesystem::path CoreGetPluginDirectory(void)
         directory = CoreGetLibraryDirectory();
         directory += "/Plugin";
     }
-#endif // CORE_INSTALL_PREFIX
+#endif // PORTABLE_INSTALL
     return directory.make_preferred();
 }
 
