@@ -1650,7 +1650,7 @@
            <item>
             <widget class="QCheckBox" name="removeDuplicateHotkeysCheckBox">
              <property name="text">
-              <string>Remove Duplicate Keybindings</string>
+              <string>Remove duplicate keybindings</string>
              </property>
             </widget>
            </item>
