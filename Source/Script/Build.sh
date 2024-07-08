@@ -6,8 +6,8 @@ build_config="${1:-Debug}"
 build_dir="$toplvl_dir/Build/$build_config"
 threads="${2:-$(nproc)}"
 
-if [ "$1" = "--help" ] ||
-    [ "$1" = "-h" ]
+if [[ "$1" = "--help" ]] ||
+    [[ "$1" = "-h" ]]
 then
     echo "$0 [Build Config] [Thread Count]"
     exit
