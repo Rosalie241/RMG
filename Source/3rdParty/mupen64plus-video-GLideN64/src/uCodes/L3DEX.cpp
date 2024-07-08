@@ -13,12 +13,49 @@
 
 void L3DEX_Line3D( u32 w0, u32 w1 )
 {
-	u32 wd = _SHIFTR( w1, 0, 8 );
+	u32 v0 = _SHIFTR(w1, 17, 7);
+	u32 v1 = _SHIFTR(w1, 9, 7);
+	s32 wd = static_cast<s8>(_SHIFTR( w1, 0, 8 ));
+	gSPLine3D( v0, v1, wd, v0 );
+}
 
-	if (wd == 0)
-		gSPLine3D( _SHIFTR( w1, 17, 7 ), _SHIFTR( w1, 9, 7 ), 0 );
-	else
-		gSPLineW3D( _SHIFTR( w1, 17, 7 ), _SHIFTR( w1, 9, 7 ), wd, 0 );
+void L3DEX_Tri1(u32 w0, u32 w1)
+{
+	u32 v0 = _SHIFTR(w1, 17, 7);
+	u32 v1 = _SHIFTR(w1, 9, 7);
+	u32 v2 = _SHIFTR(w1, 1, 7);
+
+	if (v0 != v1)
+		gSPLine3D(v0, v1, 0, v0);
+	if (v1 != v2)
+		gSPLine3D(v1, v2, 0, v0);
+	if (v2 != v0)
+		gSPLine3D(v2, v0, 0, v0);
+}
+
+void L3DEX_Tri2(u32 w0, u32 w1)
+{
+	u32 v00 = _SHIFTR(w0, 17, 7);
+	u32 v01 = _SHIFTR(w0, 9, 7);
+	u32 v02 = _SHIFTR(w0, 1, 7);
+
+	u32 v10 = _SHIFTR(w1, 17, 7);
+	u32 v11 = _SHIFTR(w1, 9, 7);
+	u32 v12 = _SHIFTR(w1, 1, 7);
+
+	if (v00 != v01)
+		gSPLine3D(v00, v01, 0, v00);
+	if (v01 != v02)
+		gSPLine3D(v01, v02, 0, v00);
+	if (v02 != v00)
+		gSPLine3D(v02, v00, 0, v00);
+
+	if (v10 != v11)
+		gSPLine3D(v10, v11, 0, v10);
+	if (v11 != v12)
+		gSPLine3D(v11, v12, 0, v10);
+	if (v12 != v10)
+		gSPLine3D(v12, v10, 0, v10);
 }
 
 void L3DEX_Init()
@@ -41,7 +78,7 @@ void L3DEX_Init()
 	GBI_SetGBI( G_RESERVED3,			F3D_RESERVED3,			F3D_Reserved3 );
 	GBI_SetGBI( G_SPRITE2D_BASE,		F3D_SPRITE2D_BASE,		F3D_Sprite2D_Base );
 
-//	GBI_SetGBI( G_TRI1,					F3D_TRI1,				F3DEX_Tri1 );
+	GBI_SetGBI( G_TRI1,					L3DEX_TRI1,				L3DEX_Tri1 );
 	GBI_SetGBI( G_CULLDL,				F3D_CULLDL,				F3DEX_CullDL );
 	GBI_SetGBI( G_POPMTX,				F3D_POPMTX,				F3D_PopMtx );
 	GBI_SetGBI( G_MOVEWORD,				F3D_MOVEWORD,			F3D_MoveWord );
@@ -51,11 +88,11 @@ void L3DEX_Init()
 	GBI_SetGBI( G_ENDDL,				F3D_ENDDL,				F3D_EndDL );
 	GBI_SetGBI( G_SETGEOMETRYMODE,		F3D_SETGEOMETRYMODE,	F3D_SetGeometryMode );
 	GBI_SetGBI( G_CLEARGEOMETRYMODE,	F3D_CLEARGEOMETRYMODE,	F3D_ClearGeometryMode );
-	GBI_SetGBI( G_LINE3D,				L3D_LINE3D,				L3DEX_Line3D );
+	GBI_SetGBI( G_LINE3D,				L3DEX_LINE3D,				L3DEX_Line3D );
 	GBI_SetGBI( G_RDPHALF_1,			F3D_RDPHALF_1,			F3D_RDPHalf_1 );
 	GBI_SetGBI( G_RDPHALF_2,			F3D_RDPHALF_2,			F3D_RDPHalf_2 );
 	GBI_SetGBI( G_MODIFYVTX,			F3DEX_MODIFYVTX,		F3DEX_ModifyVtx );
-//	GBI_SetGBI( G_TRI2,					F3DEX_TRI2,				F3DEX_Tri2 );
+	GBI_SetGBI( G_TRI2,					L3DEX_TRI2,				L3DEX_Tri2 );
 	GBI_SetGBI( G_BRANCH_Z,				F3DEX_BRANCH_Z,			F3DEX_Branch_Z );
 	GBI_SetGBI(	G_LOAD_UCODE,			F3DEX_LOAD_UCODE,		F3DEX_Load_uCode );
 }

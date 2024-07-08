@@ -13,12 +13,50 @@
 
 void L3DEX2_Line3D( u32 w0, u32 w1 )
 {
-	u32 wd = _SHIFTR( (w0 + 1), 0, 8 );
+	s32 wd = static_cast<s8>(_SHIFTR( w0, 0, 8 ));
+	u32 v0 = _SHIFTR(w0, 17, 7);
+	u32 v1 = _SHIFTR(w0, 9, 7);
+	gSPLine3D( v0, v1, wd, v0 );
+}
 
-	if (wd == 0)
-		gSPLine3D( _SHIFTR( w0, 17, 7 ), _SHIFTR( w0, 9, 7 ), 0 );
-	else
-		gSPLineW3D( _SHIFTR( w0, 17, 7 ), _SHIFTR( w0, 9, 7 ), wd, 0 );
+void L3DEX2_Tri1(u32 w0, u32 w1)
+{
+	s32 wd = static_cast<s8>(_SHIFTR(w1, 24, 8));
+	u32 v0 = _SHIFTR(w0, 17, 7);
+	u32 v1 = _SHIFTR(w0,  9, 7);
+	u32 v2 = _SHIFTR(w0,  1, 7);
+
+	if (v0 != v1)
+		gSPLine3D(v0, v1, wd, v0);
+	if (v1 != v2)
+		gSPLine3D(v1, v2, wd, v0);
+	if (v2 != v0)
+		gSPLine3D(v2, v0, wd, v0);
+}
+
+void L3DEX2_Tri2(u32 w0, u32 w1)
+{
+	s32 wd = static_cast<s8>(_SHIFTR(w1, 24, 8));
+	u32 v0 = _SHIFTR(w0, 17, 7);
+	u32 v1 = _SHIFTR(w0, 9, 7);
+	u32 v2 = _SHIFTR(w0, 1, 7);
+	u32 v3 = _SHIFTR(w1, 17, 7);
+	u32 v4 = _SHIFTR(w1, 9, 7);
+	u32 v5 = _SHIFTR(w1, 1, 7);
+
+	if (v0 != v1)
+		gSPLine3D(v0, v1, wd, v0);
+	if (v1 != v2)
+		gSPLine3D(v1, v2, wd, v0);
+	if (v2 != v0)
+		gSPLine3D(v2, v0, wd, v0);
+
+	if (v3 != v4)
+		gSPLine3D(v3, v4, wd, v3);
+	if (v4 != v5)
+		gSPLine3D(v4, v5, wd, v3);
+	if (v5 != v3)
+		gSPLine3D(v5, v3, wd, v3);
 }
 
 void L3DEX2_Init()
@@ -54,8 +92,8 @@ void L3DEX2_Init()
 	GBI_SetGBI( G_MODIFYVTX,			F3DEX2_MODIFYVTX,			F3DEX_ModifyVtx );
 	GBI_SetGBI(	G_CULLDL,				F3DEX2_CULLDL,				F3DEX_CullDL );
 	GBI_SetGBI( G_BRANCH_Z,				F3DEX2_BRANCH_Z,			F3DEX_Branch_Z );
-//	GBI_SetGBI( G_TRI1,					F3DEX2_TRI1,				F3DEX2_Tri1 );
-//	GBI_SetGBI( G_TRI2,					F3DEX2_TRI2,				F3DEX_Tri2 );
+	GBI_SetGBI( G_TRI1,					L3DEX2_TRI1,				L3DEX2_Tri1 );
+	GBI_SetGBI( G_TRI2,					L3DEX2_TRI2,				L3DEX2_Tri2 );
 //	GBI_SetGBI( G_QUAD,					F3DEX2_QUAD,				F3DEX2_Quad );
 	GBI_SetGBI( G_LINE3D,				L3DEX2_LINE3D,				L3DEX2_Line3D );
 }

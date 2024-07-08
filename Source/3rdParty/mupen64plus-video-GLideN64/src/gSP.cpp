@@ -1972,18 +1972,11 @@ void gSPSetOtherMode_L(u32 _length, u32 _shift, u32 _data)
 	DebugMsg(DEBUG_NORMAL, " result: %08x\n", gDP.otherMode.l);
 }
 
-void gSPLine3D(u32 v0, u32 v1, u32 flag )
+void gSPLine3D(u32 v0, u32 v1, s32 wd, u32 flag )
 {
-	dwnd().getDrawer().drawLine(v0, v1, 1.5f);
+	dwnd().getDrawer().drawLine(v0, v1, 1.5f + wd * 0.5f, flag);
 
-	DebugMsg(DEBUG_NORMAL, "gSPLine3D( %i, %i, %i )\n", v0, v1, flag);
-}
-
-void gSPLineW3D(u32 v0, u32 v1, u32 wd, u32 flag )
-{
-	dwnd().getDrawer().drawLine(v0, v1, 1.5f + wd * 0.5f);
-
-	DebugMsg(DEBUG_NORMAL, "gSPLineW3D( %i, %i, %i, %i )\n", v0, v1, wd, flag);
+	DebugMsg(DEBUG_NORMAL, "gSPLine3D( %i, %i, %i, %i )\n", v0, v1, wd, flag);
 }
 
 void gSPSetStatus(u32 sid, u32 val)

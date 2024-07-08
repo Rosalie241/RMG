@@ -11,12 +11,34 @@
 
 void L3D_Line3D( u32 w0, u32 w1 )
 {
-	u32 wd = _SHIFTR( w1, 0, 8 );
+	s32 wd = static_cast<s8>(_SHIFTR( w1, 0, 8 ));
+	u32 v0 = _SHIFTR(w1, 16, 8) / 10;
+	u32 v1 = _SHIFTR(w1, 8, 8) / 10;
+	u32 flag = _SHIFTR(w1, 24, 8);
+	gSPLine3D( v0, v1, wd, flag == 0 ? v0 : v1 );
+}
 
-	if (wd == 0)
-		gSPLine3D( _SHIFTR( w1, 16, 8 ) / 10, _SHIFTR( w1, 8, 8 ) / 10, _SHIFTR( w1, 24, 8 ) );
-	else
-		gSPLineW3D( _SHIFTR( w1, 16, 8 ) / 10, _SHIFTR( w1, 8, 8 ) / 10, wd, _SHIFTR( w1, 24, 8 ) );
+void L3D_Tri1(u32 w0, u32 w1)
+{
+	u32 v0 = _SHIFTR(w1, 16, 8) / 10;
+	u32 v1 = _SHIFTR(w1,  8, 8) / 10;
+	u32 v2 = _SHIFTR(w0,  0, 8) / 10;
+	u32 flag = _SHIFTR(w1, 24, 8);
+	u32 flatShadeVtx = v0;
+	switch (flag) {
+		case 0x01:
+			flatShadeVtx = v1;
+			break;
+		case 0x02:
+			flatShadeVtx = v2;
+			break;
+	}
+	if (v0 != v1)
+		gSPLine3D(v0, v1, 0, flatShadeVtx);
+	if (v1 != v2)
+		gSPLine3D(v1, v2, 0, flatShadeVtx);
+	if (v2 != v0)
+		gSPLine3D(v2, v0, 0, flatShadeVtx);
 }
 
 void L3D_Init()
@@ -39,7 +61,7 @@ void L3D_Init()
 	GBI_SetGBI( G_RESERVED3,			F3D_RESERVED3,			F3D_Reserved3 );
 	GBI_SetGBI( G_SPRITE2D_BASE,		F3D_SPRITE2D_BASE,		F3D_Sprite2D_Base );
 
-//	GBI_SetGBI( G_TRI1,					F3D_TRI1,				F3D_Tri1 );
+	GBI_SetGBI( G_TRI1,					L3D_TRI1,				L3D_Tri1 );
 	GBI_SetGBI( G_CULLDL,				F3D_CULLDL,				F3D_CullDL );
 	GBI_SetGBI( G_POPMTX,				F3D_POPMTX,				F3D_PopMtx );
 	GBI_SetGBI( G_MOVEWORD,				F3D_MOVEWORD,			F3D_MoveWord );
