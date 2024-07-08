@@ -181,11 +181,12 @@ namespace RT64 {
 
 #   if defined(_WIN32) && !defined(RT64_BUILD_PLUGIN)
         ImGui_ImplWin32_NewFrame();
-#   else
+#   elif defined(RT64_BUILD_PLUGIN)
         // ????????
         // if mupen64plus == true, dont assert....
         ImGuiIO &io = ImGui::GetIO();
         io.DisplaySize = ImVec2((float)window_width, (float)window_height);
+#   else
         //assert(false && "Unimplemented.");
 #   endif
 

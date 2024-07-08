@@ -175,6 +175,29 @@ namespace RT64 {
             return SetupResult::GraphicsDeviceNotFound;
         }
 
+        // Driver workarounds.
+        //
+        // Wireframe artifacts have been reported when using a high-precision color format on RDNA3 GPUs in D3D12. The workaround is to switch to Vulkan if this is the case.
+        bool isRDNA3 = device->getDescription().name.find("AMD Radeon RX 7") != std::string::npos;
+        bool useHDRinD3D12 = (userConfig.graphicsAPI == UserConfiguration::GraphicsAPI::D3D12) && (userConfig.internalColorFormat == UserConfiguration::InternalColorFormat::Automatic) && device->getCapabilities().preferHDR;
+        if (isRDNA3 && useHDRinD3D12) {
+            device.reset();
+            renderInterface.reset();
+            renderInterface = CreateVulkanInterface();
+            if (renderInterface == nullptr) {
+                fprintf(stderr, "Unable to initialize graphics API.\n");
+                return SetupResult::GraphicsAPINotFound;
+            }
+
+            createdGraphicsAPI = UserConfiguration::GraphicsAPI::Vulkan;
+
+            device = renderInterface->createDevice();
+            if (device == nullptr) {
+                fprintf(stderr, "Unable to find compatible graphics device.\n");
+                return SetupResult::GraphicsDeviceNotFound;
+            }
+        }
+
         // Call the init hook if one was attached.
         RenderHookInit *initHook = GetRenderHookInit();
         if (initHook != nullptr) {

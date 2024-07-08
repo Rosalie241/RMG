@@ -2199,6 +2199,11 @@ namespace RT64 {
 #               endif
                     ImGui::NewLine();
 
+                    ImGui::Text("Offline Shaders: %zu", ext.rasterShaderCache->offlineList.entries.size());
+                    ImGui::Text("Specialized Shaders: %u", ext.rasterShaderCache->shaderCount());
+
+                    ImGui::NewLine();
+
                     bool ubershadersOnly = ext.workloadQueue->ubershadersOnly;
                     ImGui::Checkbox("Ubershaders Only", &ubershadersOnly);
                     ext.workloadQueue->ubershadersOnly = ubershadersOnly;
@@ -2363,6 +2368,10 @@ namespace RT64 {
 
     void State::setDitherNoiseStrength(float noiseStrength) {
         extended.ditherNoiseStrength = noiseStrength;
+    }
+    
+    void State::setExtendedRDRAM(bool isExtended) {
+        extended.extendRDRAM = isExtended;
     }
 
     uint8_t *State::fromRDRAM(uint32_t rdramAddress) const {

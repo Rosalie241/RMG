@@ -3406,6 +3406,8 @@ namespace RT64 {
             bool preferOption = preferDeviceTypeScore;
             if (preferOption) {
                 physicalDevice = physicalDevices[i];
+                description.name = std::string(deviceProperties.deviceName);
+                description.driverVersion = deviceProperties.driverVersion;
                 currentDeviceTypeScore = deviceTypeScore;
             }
         }
@@ -3943,6 +3945,10 @@ namespace RT64 {
 
     const RenderDeviceCapabilities &VulkanDevice::getCapabilities() const {
         return capabilities;
+    }
+
+    const RenderDeviceDescription &VulkanDevice::getDescription() const {
+        return description;
     }
     
     RenderSampleCounts VulkanDevice::getSampleCountsSupported(RenderFormat format) const {
