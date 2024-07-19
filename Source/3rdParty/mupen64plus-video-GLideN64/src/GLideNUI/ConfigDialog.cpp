@@ -383,9 +383,9 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 	ui->hiresTexFileStorageCheckBox->setChecked(config.textureFilter.txHiresTextureFileStorage != 0);
 	ui->noTexFileStorageCheckBox->setChecked(config.textureFilter.txNoTextureFileStorage != 0);
 
-	ui->texPackPathLineEdit->setText(QString::fromWCharArray(config.textureFilter.txPath));
-	ui->texCachePathLineEdit->setText(QString::fromWCharArray(config.textureFilter.txCachePath));
-	ui->texDumpPathLineEdit->setText(QString::fromWCharArray(config.textureFilter.txDumpPath));
+	ui->texPackPathLineEdit->setText(QDir::toNativeSeparators(QString::fromWCharArray(config.textureFilter.txPath)));
+	ui->texCachePathLineEdit->setText(QDir::toNativeSeparators(QString::fromWCharArray(config.textureFilter.txCachePath)));
+	ui->texDumpPathLineEdit->setText(QDir::toNativeSeparators(QString::fromWCharArray(config.textureFilter.txDumpPath)));
 
 	ui->textureFilterLimitSpinBox->setValue(config.textureFilter.txHiresVramLimit);
 
@@ -886,7 +886,7 @@ void ConfigDialog::on_texPackPathButton_clicked()
 		ui->texPackPathLineEdit->text(),
 		options);
 	if (!directory.isEmpty())
-		ui->texPackPathLineEdit->setText(directory);
+		ui->texPackPathLineEdit->setText(QDir::toNativeSeparators(directory));
 }
 
 void ConfigDialog::on_texCachePathButton_clicked()
@@ -897,7 +897,7 @@ void ConfigDialog::on_texCachePathButton_clicked()
 		ui->texCachePathLineEdit->text(),
 		options);
 	if (!directory.isEmpty())
-		ui->texCachePathLineEdit->setText(directory);
+		ui->texCachePathLineEdit->setText(QDir::toNativeSeparators(directory));
 }
 
 void ConfigDialog::on_texDumpPathButton_clicked()
@@ -908,7 +908,7 @@ void ConfigDialog::on_texDumpPathButton_clicked()
 		ui->texDumpPathLineEdit->text(),
 		options);
 	if (!directory.isEmpty())
-		ui->texDumpPathLineEdit->setText(directory);
+		ui->texDumpPathLineEdit->setText(QDir::toNativeSeparators(directory));
 }
 
 void ConfigDialog::on_noTexFileStorageCheckBox_toggled(bool checked)
