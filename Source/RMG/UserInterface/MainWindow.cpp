@@ -263,7 +263,8 @@ void MainWindow::configureUI(QApplication* app, bool showUI)
     this->installEventFilter(this->ui_EventFilter);
     this->ui_Widget_Dummy->installEventFilter(this->ui_EventFilter);
 
-    this->ui_WindowTitle = "Rosalie's Mupen GUI (";
+    this->ui_WindowTitle = QCoreApplication::applicationName();
+    this->ui_WindowTitle += " (";
     this->ui_WindowTitle += QString::fromStdString(CoreGetVersion());
     this->ui_WindowTitle += ")";
 
