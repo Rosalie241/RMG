@@ -31,6 +31,9 @@ OptionsDialog::OptionsDialog(QWidget* parent, OptionsDialogSettings settings,
     this->filterEventsForButtonsCheckBox->setChecked(settings.FilterEventsForButtons);
     this->filterEventsForAxisCheckBox->setChecked(settings.FilterEventsForAxis);
 
+    // global settings
+    this->sdlControllerModeComboBox->setCurrentIndex(CoreSettingsGetIntValue(SettingsID::Input_ControllerMode));
+
     if (!CoreIsEmulationRunning() && !CoreIsEmulationPaused())
     {
         this->hideEmulationInfoText();
@@ -85,6 +88,9 @@ void OptionsDialog::accept()
     this->settings.RemoveDuplicateMappings = this->removeDuplicateMappingsCheckbox->isChecked();
     this->settings.FilterEventsForButtons = this->filterEventsForButtonsCheckBox->isChecked();
     this->settings.FilterEventsForAxis = this->filterEventsForAxisCheckBox->isChecked();
+
+    // save global settings now
+    CoreSettingsSetValue(SettingsID::Input_ControllerMode, this->sdlControllerModeComboBox->currentIndex());
 
     QDialog::accept();
 }

@@ -139,12 +139,14 @@ void MainDialog::openInputDevice(QString deviceName, int deviceNum)
         }
     }
 
-    if (SDL_IsGameController(deviceNum) == SDL_TRUE)
+    int controllerMode = CoreSettingsGetIntValue(SettingsID::Input_ControllerMode);
+    if ((controllerMode == 0 && SDL_IsGameController(deviceNum) == SDL_TRUE) ||
+        (controllerMode == 2))
     {
         this->currentJoystick = nullptr;
         this->currentController = SDL_GameControllerOpen(deviceNum);
     }
-    else
+    else if (controllerMode == 0 || controllerMode == 1)
     {
         this->currentJoystick = SDL_JoystickOpen(deviceNum);
         this->currentController = nullptr;
