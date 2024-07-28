@@ -615,6 +615,9 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::Input_Profiles:
         setting = {SETTING_SECTION_INPUT, "Profiles", std::string("")};
         break;
+    case SettingsID::Input_ControllerMode:
+        setting = {SETTING_SECTION_INPUT, "ControllerMode", 0};
+        break;
     case SettingsID::Input_UseProfile:
         setting = {"", "UseProfile"};
         break;

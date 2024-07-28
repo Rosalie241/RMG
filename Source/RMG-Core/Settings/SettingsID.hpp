@@ -199,6 +199,7 @@ enum class SettingsID
 
     // Input Plugin Settings
     Input_Profiles,
+    Input_ControllerMode,
     Input_UseProfile,
     Input_UseGameProfile,
     Input_PluggedIn,
