@@ -44,13 +44,19 @@ Rosalie's Mupen GUI is licensed under the [GNU General Public License v3.0](http
   
 * Portable Fedora
   ```bash
-  sudo dnf install hidapi-devel libsamplerate-devel minizip-compat-devel SDL2-devel freetype-devel mesa-libGL-devel mesa-libGLU-devel zlib-ng-devel binutils-devel speexdsp-devel qt6-qtbase-devel qt6-qtsvg-devel vulkan-devel gcc-c++ nasm git ninja-build
+  sudo dnf install hidapi-devel libsamplerate-devel minizip-compat-devel SDL2-devel freetype-devel mesa-libGL-devel mesa-libGLU-devel pkgconfig zlib-ng-devel binutils-devel speexdsp-devel qt6-qtbase-devel qt6-qtsvg-devel vulkan-devel gcc-c++ nasm git ninja-build
   ./Source/Script/Build.sh Release
   ```
 
-* Arch Linux
+* Portable Arch Linux
   ```bash
-  sudo pacman -S --needed make cmake gcc hidapi freetype2 libpng qt6 sdl2 libsamplerate nasm minizip vulkan-headers git
+  sudo pacman -S --needed make cmake gcc hidapi freetype2 libpng qt6 sdl2 libsamplerate nasm minizip pkgconf vulkan-headers git
+  ./Source/Script/Build.sh Release
+  ```
+
+* Portable OpenSUSE Tumbleweed
+  ```bash
+  sudo zypper install SDL2-devel cmake freetype2-devel gcc gcc-c++ libhidapi-devel libhidapi-hidraw0 libpng16-devel libsamplerate-devel make nasm ninja pkgconf-pkg-config speex-devel vulkan-devel zlib-devel qt6-tools-devel qt6-opengl-devel qt6-widgets-devel qt6-svg-devel minizip-devel git
   ./Source/Script/Build.sh Release
   ```
 
