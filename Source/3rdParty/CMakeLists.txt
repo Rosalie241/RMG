@@ -158,10 +158,11 @@ if (BUILD_INPUT_GCA)
         CONFIGURE_COMMAND ""
         INSTALL_COMMAND ""
 
-        BUILD_COMMAND cargo build --release --features "m64p_compat"
-        BUILD_IN_SOURCE True
+        BUILD_COMMAND cargo build --manifest-path ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-input-gca/Cargo.toml --release --features "m64p_compat" --target-dir=${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-input-gca/target
+        BUILD_IN_SOURCE False
+        BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-input-gca/target/release
 
-        BUILD_BYPRODUCTS ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-input-gca/target/release/${GCA_LIB}
+        BUILD_BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-input-gca/target/release/${GCA_LIB}
     )
 endif(BUILD_INPUT_GCA)
 
