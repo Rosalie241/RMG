@@ -1241,6 +1241,13 @@
         </spacer>
        </item>
        <item>
+        <widget class="QPushButton" name="fullMapButton">
+         <property name="text">
+          <string>Full Map</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="resetButton">
          <property name="text">
           <string>Reset</string>

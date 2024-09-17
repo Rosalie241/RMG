@@ -236,6 +236,7 @@ void ControllerWidget::initializeProfileButtons()
 void ControllerWidget::initializeMiscButtons()
 {
     this->inputDeviceRefreshButton->setIcon(QIcon::fromTheme("refresh-line"));
+    this->fullMapButton->setIcon(QIcon::fromTheme("speed-line"));
     this->resetButton->setIcon(QIcon::fromTheme("restart-line"));
     this->optionsButton->setIcon(QIcon::fromTheme("settings-3-line"));
     this->hotkeysButton->setIcon(QIcon::fromTheme("gamepad-line"));
@@ -383,6 +384,7 @@ void ControllerWidget::setPluggedIn(bool value)
         this->deadZoneGroupBox,
         this->deadZoneSlider,
         this->optionsButton,
+        this->fullMapButton,
         this->resetButton,
         this->hotkeysButton,
     };
@@ -835,6 +837,40 @@ void ControllerWidget::on_removeProfileButton_clicked()
     if (this->onlyLoadGameProfile)
     {
         this->LoadSettings(this->settingsSection);
+    }
+}
+
+void ControllerWidget::on_fullMapButton_clicked()
+{
+    QList<MappingButton*> mappingButtons = this->findChildren<MappingButton*>();
+
+    for(MappingButton *button : mappingButtons)
+    {
+        // Save State
+        std::vector<int> savedType = button->GetInputType();
+        std::vector<int> savedData = button->GetInputData();
+        std::vector<int> savedExtra = button->GetExtraInputData();
+        std::vector<std::string> savedText = button->GetInputText();
+
+        button->Clear();
+        button->click();
+
+        // Wait for countdown to finish (maybe there is a better way?)
+        while(!button->isEnabled())
+        {
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+        }
+
+        // Nothig was pressed
+        if(button->text() == " ")
+        {
+            // Restore State
+            for(uint i = 0; i < savedType.size(); ++i)
+            {
+                button->SetInputData((InputType)savedType[i], savedData[i], savedExtra[i], QString::fromStdString(savedText[i]));
+            }
+            break;
+        }
     }
 }
 

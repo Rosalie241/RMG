@@ -163,6 +163,7 @@ private slots:
     void on_addProfileButton_clicked();
     void on_removeProfileButton_clicked();
 
+    void on_fullMapButton_clicked();
     void on_resetButton_clicked();
     void on_optionsButton_clicked();
     void on_hotkeysButton_clicked();
