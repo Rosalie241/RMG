@@ -23,6 +23,8 @@
 #include <SDL.h>
 #include <iostream>
 
+#include <QTime>
+
 using namespace UserInterface::Widget;
 
 ControllerWidget::ControllerWidget(QWidget* parent, EventFilter* eventFilter) : QWidget(parent)
@@ -871,6 +873,12 @@ void ControllerWidget::on_fullMapButton_clicked()
             }
             break;
         }
+
+        this->disableAllChildren();
+        QTime dieTime= QTime::currentTime().addMSecs(500);
+        while (QTime::currentTime() < dieTime)
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+        this->enableAllChildren();
     }
 }
 
