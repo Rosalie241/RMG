@@ -120,6 +120,7 @@ set(GLideN64_SOURCES
   uCodes/F3DBETA.cpp
   uCodes/F3DDKR.cpp
   uCodes/F3DEX.cpp
+  uCodes/F3DEX095.cpp
   uCodes/F3DAM.cpp
   uCodes/F3DEX2.cpp
   uCodes/F3DEX3.cpp

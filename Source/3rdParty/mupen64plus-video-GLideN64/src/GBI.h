@@ -36,7 +36,8 @@
 #define S2DEX_1_03		27
 #define S2DEX_1_05		28
 #define F3DEX3			29
-#define NONE			30
+#define F3DEX095		30
+#define NONE			31
 
 // Fixed point conversion factors
 #define FIXED2FLOATRECIP1	0.5f

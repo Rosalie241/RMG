@@ -83,7 +83,7 @@ static void writeLight(int off, u32 w)
 		gSPLookAt(w - (sizeof(F3DEX3_LookAtOld) - sizeof(F3DEX3_LookAt)) + sizeof(F3DEX3_LookAt), 1);
 	}
 
-	for (int i = 1; i <= gSP.numLights; i++)
+	for (u32 i = 1; i <= gSP.numLights; i++)
 	{
 		if (_LIGHT_TO_OFFSET(i) == off)
 		{
@@ -115,7 +115,7 @@ void F3DEX3_MoveMem(u32 w0, u32 w1)
 	{
 		const u32 ofs = _SHIFTR(w0, 8, 8) * 8;
 		const u32 len = (1 + _SHIFTR(w0, 19, 5)) * 8;
-		for (int i = 0; i < len; i += 4)
+		for (u32 i = 0; i < len; i += 4)
 		{
 			writeLight(ofs + i, w1 + i);
 		}

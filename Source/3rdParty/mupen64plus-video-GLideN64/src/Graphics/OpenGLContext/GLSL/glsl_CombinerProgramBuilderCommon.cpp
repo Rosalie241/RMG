@@ -1007,8 +1007,8 @@ public:
 			"uniform mediump float uNoiseSeed;						\n"
 			"lowp float snoise()									\n"
 			"{														\n"
-			"  highp vec2 coord = floor(gl_FragCoord.xy/uScreenScale);	\n"
-			"  highp vec3 p3 = vec3(uNoiseSeed, coord);			\n"
+			"  highp vec2 coord = floor(gl_FragCoord.xy/uScreenScale);\n"
+			"  highp vec3 p3 = vec3(uNoiseSeed, coord);				\n"
 			// hash13 from https://www.shadertoy.com/view/4djSRW
 			"  p3 = fract(p3 * .1031);								\n"
 			"  p3 += dot(p3, p3.zyx + 31.32);						\n"
@@ -1068,8 +1068,8 @@ public:
 			m_part +=
 			"  lowp float mult = 1.0;								\n";
 		m_part +=
-			"  highp vec2 coord = floor(mult * (gl_FragCoord.xy/uScreenScale));	\n"
-			"  highp vec3 p3 = vec3(uNoiseSeed, coord);				\n"
+			"  highp vec2 coord = floor(mult * (gl_FragCoord.xy/uScreenScale));\n"
+			"  highp vec3 p3 = vec3(uNoiseSeed, coord);					\n"
 			// hash33 from https://www.shadertoy.com/view/4djSRW
 			"  p3 = fract(p3 * vec3(.1031, .1030, .0973));				\n"
 			"  p3 += dot(p3, p3.yxz+33.33);								\n"
@@ -1087,8 +1087,8 @@ public:
 			"  lowp float mult = 1.0;								\n";
 		m_part +=
 			"														\n"
-			"  highp vec2 coord = floor(mult * (gl_FragCoord.xy/uScreenScale));	\n"
-			"  highp vec3 p3 = vec3(uNoiseSeed, coord);			\n"
+			"  highp vec2 coord = floor(mult * (gl_FragCoord.xy/uScreenScale));\n"
+			"  highp vec3 p3 = vec3(uNoiseSeed, coord);				\n"
 			// hash13 from https://www.shadertoy.com/view/4djSRW
 			"  p3 = fract(p3 * .1031);								\n"
 			"  p3 += dot(p3, p3.zyx + 31.32);						\n"

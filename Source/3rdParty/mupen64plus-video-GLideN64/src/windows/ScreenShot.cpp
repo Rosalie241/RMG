@@ -81,7 +81,8 @@ void SaveScreenshot(const wchar_t * _folder, const char * _name, int _width, int
 	const wchar_t * fileExt = L"png";
 
 	std::wstring folder = _folder;
-	if (folder.size() > 1 && folder[folder.size() - 1] == L'\\') folder.resize(folder.size() - 1);
+	if (folder.size() > 1 && (folder[folder.size() - 1] == L'\\' || folder[folder.size() - 1] == L'/'))
+		folder.resize(folder.size() - 1);
 
 	WIN32_FIND_DATA	FindData = { 0 };
 	HANDLE hFindFile = FindFirstFile(folder.c_str(), &FindData); // Find anything

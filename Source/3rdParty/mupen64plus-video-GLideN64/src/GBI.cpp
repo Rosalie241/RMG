@@ -12,6 +12,7 @@
 #include "RSP.h"
 #include "uCodes/F3D.h"
 #include "uCodes/F3DEX.h"
+#include "uCodes/F3DEX095.h"
 #include "uCodes/F3DEX2.h"
 #include "uCodes/F3DEX3.h"
 #include "uCodes/L3D.h"
@@ -58,7 +59,7 @@ static const
 std::vector<SpecialMicrocodeInfo> specialMicrocodes =
 {
 	{ S2DEX2,		false,	true,	false,	0x02c399dd }, // Animal Forest
-	{ F3DEX,		false,	false,	true,	0x0ace4c3f }, // Mario Kart 64
+	{ F3DEX095,		false,	false,	true,	0x0ace4c3f }, // Mario Kart 64
 	{ F3D,			true,	false,	false,	0x16c3a775 }, // AeroFighters
 	{ F3DEX2CBFD,	true,	true,	false,	0x1b4ace88 }, // Conker's Bad Fur Day
 	{ F3DPD,		true,	true,	false,	0x1c4f7869 }, // Perfect Dark
@@ -209,6 +210,11 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 				F3D_Init();
 				m_hwlSupported = true;
 			break;
+			case F3DEX095:
+				F3DEX095_Init();
+				m_hwlSupported = true;
+				gSP.clipRatio = m_pCurrent->Rej ? 2U : 1U;
+				break;
 			case F3DEX:
 				F3DEX_Init();
 				m_hwlSupported = true;

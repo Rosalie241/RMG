@@ -443,6 +443,9 @@
     <ClCompile Include="..\..\src\uCodes\F3DEX3.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\uCodes\F3DEX095.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h">
@@ -700,7 +703,13 @@
     <ClInclude Include="..\..\src\uCodes\F3DEX.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\uCodes\F3DEX095.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\uCodes\F3DEX2.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\uCodes\F3DEX3.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\uCodes\F3DEX2ACCLAIM.h">
@@ -819,9 +828,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\GLideNHQ\TxFilterExport.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\uCodes\F3DEX3.h">
-      <Filter>Header Files\uCodes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

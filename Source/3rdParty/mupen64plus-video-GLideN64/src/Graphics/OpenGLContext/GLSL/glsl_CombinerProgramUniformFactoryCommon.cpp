@@ -24,7 +24,7 @@ public:
 	void update(bool _force) override
 	{
 		u32 counter = dwnd().getBuffersSwapCount();
-		uNoiseSeed.set(counter & 0xff, _force);
+		uNoiseSeed.set(static_cast<f32>(counter & 0xff), _force);
 	}
 
 private:

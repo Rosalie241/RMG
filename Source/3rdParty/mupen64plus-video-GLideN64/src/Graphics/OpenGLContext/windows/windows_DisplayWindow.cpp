@@ -198,7 +198,7 @@ bool DisplayWindowWindows::_borderlessDevice()
 			m_screenHeight = static_cast<u32>(deviceMode.dmPelsHeight);
 			m_heightOffset = 0;
 			_setBufferSize();
-			return (SetWindowPos(hWnd, NULL, 0, 0, m_screenWidth, m_screenHeight, SWP_NOACTIVATE | SWP_NOZORDER | SWP_SHOWWINDOW) == TRUE);
+			return (SetWindowPos(hWnd, NULL, 0, 0, m_screenWidth + 1, m_screenHeight, SWP_NOACTIVATE | SWP_NOZORDER | SWP_SHOWWINDOW) == TRUE);
 		}
 	}
 
@@ -213,7 +213,7 @@ bool DisplayWindowWindows::_borderlessDevice()
 			m_screenHeight = std::abs(monitors.rcMonitors[i].top - monitors.rcMonitors[i].bottom);
 			m_heightOffset = 0;
 			_setBufferSize();
-			return (SetWindowPos(hWnd, NULL, X, Y, m_screenWidth, m_screenHeight, SWP_NOACTIVATE | SWP_NOZORDER | SWP_SHOWWINDOW) == TRUE);
+			return (SetWindowPos(hWnd, NULL, X, Y, m_screenWidth + 1, m_screenHeight, SWP_NOACTIVATE | SWP_NOZORDER | SWP_SHOWWINDOW) == TRUE);
 		}
 	}
 	return false;

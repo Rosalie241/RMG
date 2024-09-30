@@ -391,6 +391,7 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
     <ClCompile Include="..\..\src\uCodes\F3DBETA.cpp" />
     <ClCompile Include="..\..\src\uCodes\F3DDKR.cpp" />
     <ClCompile Include="..\..\src\uCodes\F3DEX.cpp" />
+    <ClCompile Include="..\..\src\uCodes\F3DEX095.cpp" />
     <ClCompile Include="..\..\src\uCodes\F3DEX2.cpp" />
     <ClCompile Include="..\..\src\uCodes\F3DEX2ACCLAIM.cpp" />
     <ClCompile Include="..\..\src\uCodes\F3DEX2CBFD.cpp" />
@@ -540,6 +541,7 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
     <ClInclude Include="..\..\src\uCodes\F3DBETA.h" />
     <ClInclude Include="..\..\src\uCodes\F3DDKR.h" />
     <ClInclude Include="..\..\src\uCodes\F3DEX.h" />
+    <ClInclude Include="..\..\src\uCodes\F3DEX095.h" />
     <ClInclude Include="..\..\src\uCodes\F3DEX2.h" />
     <ClInclude Include="..\..\src\uCodes\F3DEX2ACCLAIM.h" />
     <ClInclude Include="..\..\src\uCodes\F3DEX2CBFD.h" />

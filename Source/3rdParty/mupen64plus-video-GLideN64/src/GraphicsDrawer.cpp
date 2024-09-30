@@ -238,8 +238,8 @@ void GraphicsDrawer::_updateViewport(const FrameBuffer* _pBuffer, const f32 scal
 		scaleX = scaleY = scale;
 	}
 	if (pCurrentBuffer != nullptr) {
-		X = roundup(pCurrentBuffer->m_originX, scaleX);
-		Y = roundup(pCurrentBuffer->m_originY, scaleY);
+		X = roundup(static_cast<f32>(pCurrentBuffer->m_originX), scaleX);
+		Y = roundup(static_cast<f32>(pCurrentBuffer->m_originY), scaleY);
 	}
 	WIDTH = roundup(SCREEN_SIZE_DIM, scaleX);
 	HEIGHT = roundup(SCREEN_SIZE_DIM, scaleY);
@@ -1077,7 +1077,7 @@ void GraphicsDrawer::drawLine(u32 _v0, u32 _v1, float _width, u32 _flag)
 	m_texrectDrawer.draw();
 	m_statistics.lines++;
 
-	if (!_canDraw())
+	if (!_canDraw() || _width <= 0.0f)
 		return;
 
 	f32 lineWidth = _width;
