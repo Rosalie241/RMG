@@ -29,6 +29,18 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.6.6" date="2024-09-30" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix mupen64plus-core URL in the about dialog</li>
+          <li>Fix GLideN64 not showing native path seperator in the configuration dialog</li>
+          <li>Add 'SDL controller mode' option to the options dialog of RMG-Input</li>
+          <li>Add 'None' option to configuration file of mupen64plus-input-gca (thank you GhostlyDark)</li>
+          <li>Update GLideN64, mupen64plus-core and SDL_GameControllerDB</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.6.5" date="2024-07-04" type="stable">
       <description>
         <p>Changes:</p>
