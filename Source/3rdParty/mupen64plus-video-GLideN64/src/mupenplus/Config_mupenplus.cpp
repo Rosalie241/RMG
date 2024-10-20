@@ -340,6 +340,8 @@ void Config_LoadCustomConfig()
 		ROMname.replace(pos, 1, "%20");
 	for (size_t pos = ROMname.find('\''); pos != std::string::npos; pos = ROMname.find('\'', pos))
 		ROMname.replace(pos, 1, "%27");
+	for (size_t pos = ROMname.find('&'); pos != std::string::npos; pos = ROMname.find('&', pos))
+		ROMname.replace(pos, 1, "%26");
 	std::transform(ROMname.begin(), ROMname.end(), ROMname.begin(), ::toupper);
 	const char* sectionName = ROMname.c_str();
 	m64p_handle fileHandle;
