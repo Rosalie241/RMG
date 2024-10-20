@@ -141,6 +141,14 @@ ifeq ($(OS), OSX)
   endif
 endif
 
+# test for essential build dependencies
+ifeq ($(origin PKG_CONFIG), undefined)
+  PKG_CONFIG = $(CROSS_COMPILE)pkg-config
+  ifeq ($(shell which $(PKG_CONFIG) 2>/dev/null),)
+    $(error $(PKG_CONFIG) not found)
+  endif
+endif
+
 ifeq ($(OS), LINUX)
     HIDAPI_NAME=hidapi-hidraw
 else
@@ -149,9 +157,9 @@ endif
 
 # test for presence of HIDLIB
 ifeq ($(origin HID_CFLAGS) $(origin HID_LDLIBS), undefined undefined)
-  HIDAPI_CONFIG = $(CROSS_COMPILE)pkg-config $(HIDAPI_NAME)
+  HIDAPI_CONFIG = $(PKG_CONFIG) $(HIDAPI_NAME)
   ifeq ($(shell which $(HIDAPI_CONFIG) 2>/dev/null),)
-    HIDAPI_CONFIG = $(CROSS_COMPILE)pkg-config $(HIDAPI_NAME)
+    HIDAPI_CONFIG = $(PKG_CONFIG) $(HIDAPI_NAME)
     ifeq ($(shell which $(HIDAPI_CONFIG) 2>/dev/null),)
       $(error No HIDAPI development libraries found!)
     else
