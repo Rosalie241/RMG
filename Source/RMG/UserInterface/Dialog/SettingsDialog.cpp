@@ -359,7 +359,7 @@ void SettingsDialog::loadGamePluginSettings(void)
         comboBox = comboBoxArray[index];
         comboBox->addItem(QString::fromStdString(p.Name), QString::fromStdString(p.File));
 
-        if (pluginFileName[index] == QString::fromStdString(p.File))
+        if (pluginFileNames[index] == QString::fromStdString(p.File))
         {
             comboBox->setCurrentText(QString::fromStdString(p.Name));
             pluginFound[index] = true;
