@@ -157,17 +157,11 @@ endif
 
 # test for presence of HIDLIB
 ifeq ($(origin HID_CFLAGS) $(origin HID_LDLIBS), undefined undefined)
-  HIDAPI_CONFIG = $(PKG_CONFIG) $(HIDAPI_NAME)
-  ifeq ($(shell which $(HIDAPI_CONFIG) 2>/dev/null),)
-    HIDAPI_CONFIG = $(PKG_CONFIG) $(HIDAPI_NAME)
-    ifeq ($(shell which $(HIDAPI_CONFIG) 2>/dev/null),)
-      $(error No HIDAPI development libraries found!)
-    else
-      $(warning Using HIDAPI libraries)
-    endif
+  ifeq ($(shell $(PKG_CONFIG) --modversion $(HIDAPI_NAME) 2>/dev/null),)
+    $(error No HIDAPI development libraries found!)
   endif
-  HID_CFLAGS  += $(shell $(HIDAPI_CONFIG) --cflags)
-  HID_LDLIBS += $(shell $(HIDAPI_CONFIG) --libs)
+  HID_CFLAGS = $(shell $(PKG_CONFIG) --cflags $(HIDAPI_NAME))
+  HID_LDLIBS = $(shell $(PKG_CONFIG) --libs $(HIDAPI_NAME))
 endif
 CFLAGS += $(HID_CFLAGS)
 LDLIBS += $(HID_LDLIBS)
