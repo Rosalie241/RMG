@@ -98,7 +98,7 @@ OBJDIR = _obj$(POSTFIX)
 # base CFLAGS, LDLIBS, and LDFLAGS
 OPTFLAGS ?= -O3 -flto
 WARNFLAGS ?= -Wall
-CFLAGS += $(OPTFLAGS) $(WARNFLAGS) -ffast-math -fno-strict-aliasing -fvisibility=hidden -I$(SRCDIR) -D_GNU_SOURCE=1
+CFLAGS += $(OPTFLAGS) $(WARNFLAGS) -ffast-math -fvisibility=hidden -I$(SRCDIR) -D_GNU_SOURCE=1
 LDFLAGS += $(SHARED)
 LDLIBS += -lm
 
