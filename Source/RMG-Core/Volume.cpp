@@ -92,7 +92,7 @@ bool CoreDecreaseVolume(void)
     }
     else if (volume < 10)
     {
-        error = "CoreIncreaseVolume Failed: cannot increase volume!";
+        error = "CoreIncreaseVolume Failed: cannot decrease volume!";
         CoreSetError(error);
         return false;
     }
