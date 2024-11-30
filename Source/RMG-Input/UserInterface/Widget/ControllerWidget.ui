@@ -264,7 +264,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>left:</string>
+               <string>Left:</string>
               </property>
              </widget>
             </item>
