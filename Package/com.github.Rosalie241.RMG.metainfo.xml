@@ -29,6 +29,17 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.6.7" date="2024-12-16" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix out of bounds read in game specific plugin settings</li>
+          <li>Fix inconsistent casing for the 'Left:' label in RMG-Input (thank you cursedUs64-git)</li>
+          <li>Fix incorrect error message in RMG-Core</li>
+          <li>Update mupen64plus-video-GLideN64, mupen64plus-core, LZMA SDK and SDL_GameControllerDB</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.6.6" date="2024-09-30" type="stable">
       <description>
         <p>Changes:</p>
