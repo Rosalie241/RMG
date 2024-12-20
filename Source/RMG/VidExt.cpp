@@ -395,7 +395,7 @@ static uint32_t VidExt_GLGetDefaultFramebuffer(void)
     return (*l_OGLWidget)->GetContext()->defaultFramebufferObject();
 }
 
-EXPORT m64p_error CALL VidExt_VK_GetSurface(void** Surface, void* Instance)
+static m64p_error VidExt_VK_GetSurface(void** Surface, void* Instance)
 {
     if (l_RenderMode != M64P_RENDER_VULKAN)
     {
@@ -434,7 +434,7 @@ EXPORT m64p_error CALL VidExt_VK_GetSurface(void** Surface, void* Instance)
     return M64ERR_SUCCESS;
 }
 
-EXPORT m64p_error CALL VidExt_VK_GetInstanceExtensions(const char** Extensions[], uint32_t* NumExtensions)
+static m64p_error VidExt_VK_GetInstanceExtensions(const char** Extensions[], uint32_t* NumExtensions)
 {
     if (l_RenderMode != M64P_RENDER_VULKAN)
     {
