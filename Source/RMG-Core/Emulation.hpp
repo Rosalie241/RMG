@@ -20,7 +20,7 @@ enum class CoreEmulationState
 };
 
 // starts emulation with given ROM
-bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64ddrom);
+bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64ddrom, std::string address = "", int port = -1, int player = -1);
 
 // stops emulation
 bool CoreStopEmulation(void);

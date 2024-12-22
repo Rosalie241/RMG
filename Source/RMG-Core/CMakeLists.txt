@@ -75,6 +75,13 @@ if (DISCORD_RPC)
     add_definitions(-DDISCORD_RPC)
 endif(DISCORD_RPC)
 
+if (NETPLAY)
+    list(APPEND RMG_CORE_SOURCES 
+        Netplay.cpp
+    )
+    add_definitions(-DNETPLAY)
+endif(NETPLAY)
+
 if (PORTABLE_INSTALL)
     add_definitions(-DPORTABLE_INSTALL)
 endif(PORTABLE_INSTALL)

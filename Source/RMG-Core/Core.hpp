@@ -22,6 +22,7 @@
 #include "SaveState.hpp"
 #include "RomHeader.hpp"
 #include "Callback.hpp"
+#include "Netplay.hpp"
 #include "Plugins.hpp"
 #include "Version.hpp"
 #include "Cheats.hpp"
