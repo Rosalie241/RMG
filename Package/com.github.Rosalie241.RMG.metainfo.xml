@@ -29,6 +29,16 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.6.8" date="2024-12-22" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix crash on windows when opening a archive with files with an invalid character sequence</li>
+          <li>Fix video extension function definitions to prevent them from being exported</li>
+          <li>Implement netplay support (thank you loganmc10 for the hosted servers)</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.6.7" date="2024-12-16" type="stable">
       <description>
         <p>Changes:</p>
