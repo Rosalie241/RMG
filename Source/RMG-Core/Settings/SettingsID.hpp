@@ -30,6 +30,10 @@ enum class SettingsID
     GUI_DiscordRpc,
     GUI_Version,
 
+    // Netplay Settings
+    Netplay_Nickname,
+    Netplay_ServerJsonUrl,
+
     // Core Plugin Settings
     Core_GFX_Plugin,
     Core_AUDIO_Plugin,

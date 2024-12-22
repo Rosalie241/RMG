@@ -52,6 +52,7 @@ static std::vector<std::string> l_keyList;
 //
 
 #define SETTING_SECTION_GUI         "Rosalie's Mupen GUI"
+#define SETTING_SECTION_NETPLAY     SETTING_SECTION_GUI  " Netplay"
 #define SETTING_SECTION_CORE        SETTING_SECTION_GUI  " Core"
 #define SETTING_SECTION_OVERLAY     SETTING_SECTION_CORE " Overlay"
 #define SETTING_SECTION_KEYBIND     SETTING_SECTION_GUI  " KeyBindings"
@@ -156,6 +157,14 @@ static l_Setting get_setting(SettingsID settingId)
         break;
     case SettingsID::GUI_Version:
         setting = {SETTING_SECTION_GUI, "Version", CoreGetVersion()};
+        break;
+
+    case SettingsID::Netplay_Nickname:
+        setting = {SETTING_SECTION_NETPLAY, "Nickname", "NetplayUser"};
+        break;
+
+    case SettingsID::Netplay_ServerJsonUrl:
+        setting = {SETTING_SECTION_NETPLAY, "ServerJsonUrl", "https://m64p.s3.amazonaws.com/servers.json"};
         break;
 
     case SettingsID::Core_GFX_Plugin:
