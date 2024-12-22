@@ -196,7 +196,18 @@ static bool read_zip_file(std::filesystem::path file, std::filesystem::path& ext
 
         // make sure file has supported file format,
         // if it does, read it in memory
-        std::filesystem::path fileNamePath(fileName);
+        std::filesystem::path fileNamePath;
+        // Windows sometimes throws an exception when assigning a string to a path
+        // due to being unable to convert the character sequence.
+        // so we have to catch the exception and do nothing
+        try
+        {
+            fileNamePath = fileName;
+        }
+        catch (...)
+        {
+            // ignore exception
+        }
         std::string fileExtension = fileNamePath.has_extension() ? fileNamePath.extension().string() : "";
         fileExtension = to_lower_str(fileExtension);
         if (fileExtension == ".z64" ||
@@ -355,7 +366,18 @@ static bool read_7zip_file(std::filesystem::path file, std::filesystem::path& ex
 
         SzArEx_GetFileNameUtf16(&db, i, fileName);
 
-        std::filesystem::path fileNamePath((char16_t*)fileName);
+        std::filesystem::path fileNamePath;
+        // Windows sometimes throws an exception when assigning a string to a path
+        // due to being unable to convert the character sequence.
+        // so we have to catch the exception and do nothing
+        try
+        {
+            fileNamePath = (char16_t*)fileName;
+        }
+        catch (...)
+        {
+            // ignore exception
+        }
         std::string fileExtension = fileNamePath.has_extension() ? fileNamePath.extension().string() : "";
         fileExtension = to_lower_str(fileExtension);
         if (fileExtension == ".z64" ||
