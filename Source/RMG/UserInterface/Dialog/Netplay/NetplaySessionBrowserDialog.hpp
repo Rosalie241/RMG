@@ -64,6 +64,8 @@ class NetplaySessionBrowserDialog : public QDialog, private Ui::NetplaySessionBr
 
     void on_nickNameLineEdit_textChanged(void);
 
+    void on_buttonBox_clicked(QAbstractButton* button);
+
     void accept(void) Q_DECL_OVERRIDE;
 
 };

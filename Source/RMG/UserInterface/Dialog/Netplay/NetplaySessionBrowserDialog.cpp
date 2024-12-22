@@ -74,6 +74,12 @@ NetplaySessionBrowserDialog::NetplaySessionBrowserDialog(QWidget *parent, QWebSo
     joinButton->setText("Join");
     joinButton->setEnabled(false);
 
+    // change restore defaults button name
+    QPushButton* refreshButton = this->buttonBox->button(QDialogButtonBox::RestoreDefaults);
+    refreshButton->setText("Refresh");
+    refreshButton->setIcon(QIcon());
+    refreshButton->setEnabled(false);
+
     // set validator for nickname
     QRegularExpression re(NETPLAYCOMMON_NICKNAME_REGEX);
     this->nickNameLineEdit->setValidator(new QRegularExpressionValidator(re, this));
@@ -231,6 +237,15 @@ void NetplaySessionBrowserDialog::addSessionData(QString name, QString game, QSt
 
 void NetplaySessionBrowserDialog::on_webSocket_connected(void)
 {
+    if (!this->webSocket->isValid())
+    {
+        return;
+    }
+
+    // clear sessions from the table
+    this->tableWidget->model()->removeRows(0, this->tableWidget->rowCount());
+
+    // request session list from server
     QJsonObject json;
     json.insert("type", "request_get_rooms");
     NetplayCommon::AddCommonJson(json);
@@ -317,13 +332,16 @@ void NetplaySessionBrowserDialog::on_networkAccessManager_Finished(QNetworkReply
 
 void NetplaySessionBrowserDialog::on_serverComboBox_currentIndexChanged(int index)
 {
+    QPushButton* refreshButton = this->buttonBox->button(QDialogButtonBox::RestoreDefaults);
+    refreshButton->setEnabled(index != -1);
+
     if (index == -1)
     {
         return;
     }
 
     // clear sessions from the table
-    this->tableWidget->setRowCount(0);
+    this->tableWidget->model()->removeRows(0, this->tableWidget->rowCount());
 
     QString address = this->serverComboBox->itemData(index).toString();
     this->webSocket->open(QUrl(address));
@@ -337,6 +355,15 @@ void NetplaySessionBrowserDialog::on_tableWidget_currentItemChanged(QTableWidget
 void NetplaySessionBrowserDialog::on_nickNameLineEdit_textChanged()
 {
     this->validateJoinButton();
+}
+
+void NetplaySessionBrowserDialog::on_buttonBox_clicked(QAbstractButton* button)
+{
+    // refresh session list when refresh button has been pressed
+    if (button == this->buttonBox->button(QDialogButtonBox::RestoreDefaults))
+    {
+        this->on_webSocket_connected();
+    }
 }
 
 void NetplaySessionBrowserDialog::accept()
