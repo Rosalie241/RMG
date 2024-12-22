@@ -12,7 +12,10 @@
 #include "RMG-Core/DiscordRpc.hpp"
 #include "RMG-Core/Settings/Settings.hpp"
 #include "UserInterface/Widget/KeybindButton.hpp"
+#include "UserInterface/Dialog/Netplay/NetplayCommon.hpp"
 
+#include <QRegularExpressionValidator>
+#include <QRegularExpression>
 #include <QCryptographicHash>
 #include <QFileDialog>
 #include <QColorDialog>
@@ -33,15 +36,16 @@ enum class SettingsDialogTab
     InterfaceRomBrowser = 2,
     InterfaceLog = 3,
     InterfaceOSD = 4,
-    Hotkey     = 5,
-    Core       = 6,
-    Game       = 7,
-    GameCore   = 8,
-    GamePlugin = 9,
-    Plugin     = 10,
-    Directory  = 11,
-    N64DD      = 12,
-    Invalid    = 13
+    InterfaceNetplay = 5,
+    Hotkey     = 6,
+    Core       = 7,
+    Game       = 8,
+    GameCore   = 9,
+    GamePlugin = 10,
+    Plugin     = 11,
+    Directory  = 12,
+    N64DD      = 13,
+    Invalid    = 14
 };
 
 
@@ -77,7 +81,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 
     pluginList = CoreGetAllPlugins();
 
-    for (int i = 0; i < 14; i++)
+    for (int i = 0; i < (int)SettingsDialogTab::Invalid; i++)
     {
         this->loadSettings(i);
     }
@@ -167,6 +171,9 @@ void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
     case SettingsDialogTab::InterfaceOSD:
         this->loadDefaultInterfaceOSDSettings();
         break;
+    case SettingsDialogTab::InterfaceNetplay:
+        this->loadDefaultInterfaceNetplaySettings();
+        break;
     case SettingsDialogTab::Hotkey:
         this->loadDefaultHotkeySettings();
         break;
@@ -220,6 +227,9 @@ void SettingsDialog::loadSettings(int stackedWidgetIndex)
         break;
     case SettingsDialogTab::InterfaceOSD:
         this->loadInterfaceOSDSettings();
+        break;
+    case SettingsDialogTab::InterfaceNetplay:
+        this->loadInterfaceNetplaySettings();
         break;
     case SettingsDialogTab::Hotkey:
         this->loadHotkeySettings();
@@ -513,6 +523,20 @@ void SettingsDialog::loadInterfaceOSDSettings(void)
     }
 }
 
+void SettingsDialog::loadInterfaceNetplaySettings(void)
+{
+    // TODO: maybe add initialize functions for each tab?
+    static bool initialized = false;
+    if (!initialized)
+    { // set regexp for nickname
+        QRegularExpression re(NETPLAYCOMMON_NICKNAME_REGEX);
+        this->netplayNicknameLineEdit->setValidator(new QRegularExpressionValidator(re, this));
+        initialized = true;
+    }
+
+    this->netplayNicknameLineEdit->setText(QString::fromStdString(CoreSettingsGetStringValue(SettingsID::Netplay_Nickname)));
+    this->netplayServerUrlLineEdit->setText(QString::fromStdString(CoreSettingsGetStringValue(SettingsID::Netplay_ServerJsonUrl)));
+}
 
 void SettingsDialog::loadDefaultCoreSettings(void)
 {
@@ -683,6 +707,11 @@ void SettingsDialog::loadDefaultInterfaceOSDSettings(void)
     }
 }
 
+void SettingsDialog::loadDefaultInterfaceNetplaySettings(void)
+{
+    this->netplayNicknameLineEdit->setText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::Netplay_Nickname)));
+    this->netplayServerUrlLineEdit->setText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::Netplay_ServerJsonUrl)));
+}
 
 void SettingsDialog::saveSettings(void)
 {
@@ -704,6 +733,7 @@ void SettingsDialog::saveSettings(void)
     this->saveInterfaceRomBrowserSettings();
     this->saveInterfaceLogSettings();
     this->saveInterfaceOSDSettings();
+    this->saveInterfaceNetplaySettings();
     CoreSettingsSave();
 }
 
@@ -908,6 +938,12 @@ void SettingsDialog::saveInterfaceOSDSettings(void)
                                                                                       this->currentTextColor.blue(),
                                                                                       this->currentTextColor.alpha()
                                                                                     }));
+}
+
+void SettingsDialog::saveInterfaceNetplaySettings(void)
+{
+    CoreSettingsSetValue(SettingsID::Netplay_Nickname, this->netplayNicknameLineEdit->text().toStdString());
+    CoreSettingsSetValue(SettingsID::Netplay_ServerJsonUrl, this->netplayServerUrlLineEdit->text().toStdString());
 }
 
 void SettingsDialog::commonHotkeySettings(SettingsDialogAction action)

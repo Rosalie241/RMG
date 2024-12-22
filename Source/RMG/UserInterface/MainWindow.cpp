@@ -9,35 +9,51 @@
  */
 #include "MainWindow.hpp"
 
+#include <RMG-Core/Core.hpp>
+
 #include "UserInterface/Dialog/AboutDialog.hpp"
+#include "Dialog/Cheats/CheatsDialog.hpp"
+#include "Dialog/SettingsDialog.hpp"
+#include "Dialog/RomInfoDialog.hpp"
 #ifdef UPDATER
-#include "UserInterface/Dialog/Update/UpdateDialog.hpp"
 #include "UserInterface/Dialog/Update/DownloadUpdateDialog.hpp"
 #include "UserInterface/Dialog/Update/InstallUpdateDialog.hpp"
+#include "UserInterface/Dialog/Update/UpdateDialog.hpp"
 #endif // UPDATER
+#ifdef NETPLAY
+#include "Dialog/Netplay/NetplaySessionBrowserDialog.hpp"
+#include "Dialog/Netplay/CreateNetplaySessionDialog.hpp"
+#include "Dialog/Netplay/NetplaySessionDialog.hpp"
+#endif // NETPLAY
 #include "UserInterface/EventFilter.hpp"
 #include "Utilities/QtKeyToSdl2Key.hpp"
 #include "OnScreenDisplay.hpp"
 #include "Callbacks.hpp"
 #include "VidExt.hpp"
 
-#include <RMG-Core/Core.hpp>
-
+#ifdef UPDATER
+#include <QNetworkAccessManager>
+#include <QJsonDocument>
+#include <QJsonObject>
+#endif // UPDATER
+#ifdef NETPLAY
+#include <QWebSocket>
+#endif // NETPLAY
 #include <QCoreApplication>
 #include <QDesktopServices>
 #include <QGuiApplication>
 #include <QStyleFactory>
+#include <QActionGroup> 
 #include <QFileDialog>
-#include <QMenuBar>
 #include <QMessageBox>
 #include <QMimeData>
 #include <QSettings>
 #include <QStatusBar>
+#include <QMenuBar>
 #include <QString>
-#include <QUrl>
-#include <QActionGroup> 
 #include <QTimer>
 #include <cmath>
+#include <QUrl>
 
 using namespace UserInterface;
 
@@ -77,6 +93,10 @@ bool MainWindow::Init(QApplication* app, bool showUI, bool launchROM)
 #else
     this->action_Help_Update->setVisible(false);
 #endif // UPDATER
+
+#ifndef NETPLAY
+    this->menuNetplay->menuAction()->setVisible(false);
+#endif // NETPLAY
 
     this->initializeEmulationThread();
     this->connectEmulationThreadSignals();
@@ -575,6 +595,24 @@ void MainWindow::connectEmulationThreadSignals(void)
             Qt::BlockingQueuedConnection);
 }
 
+void MainWindow::launchEmulationThread(QString cartRom, QString address, int port, int player)
+{
+    CoreSettingsSave();
+
+    if (this->emulationThread->isRunning())
+    {
+        this->on_Action_System_Shutdown();
+
+        while (this->emulationThread->isRunning())
+        {
+            QCoreApplication::processEvents();
+        }
+    }
+
+    this->emulationThread->SetNetplay(address, port, player);
+    this->launchEmulationThread(cartRom);
+}
+
 void MainWindow::launchEmulationThread(QString cartRom, QString diskRom, bool refreshRomListAfterEmulation, int slot)
 {
     CoreSettingsSave();
@@ -647,25 +685,25 @@ void MainWindow::updateActions(bool inEmulation, bool isPaused)
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_Shutdown));
     this->action_System_Shutdown->setShortcut(QKeySequence(keyBinding));
     this->action_System_Shutdown->setEnabled(inEmulation);
-    this->menuReset->setEnabled(inEmulation);
+    this->menuReset->setEnabled(inEmulation && !CoreHasInitNetplay());
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_SoftReset));
-    this->action_System_SoftReset->setEnabled(inEmulation);
+    this->action_System_SoftReset->setEnabled(inEmulation && !CoreHasInitNetplay());
     this->action_System_SoftReset->setShortcut(QKeySequence(keyBinding));
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_HardReset));
-    this->action_System_HardReset->setEnabled(inEmulation);
+    this->action_System_HardReset->setEnabled(inEmulation && !CoreHasInitNetplay());
     this->action_System_HardReset->setShortcut(QKeySequence(keyBinding));
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_Resume));
     this->action_System_Pause->setChecked(isPaused);
-    this->action_System_Pause->setEnabled(inEmulation);
+    this->action_System_Pause->setEnabled(inEmulation && !CoreHasInitNetplay());
     this->action_System_Pause->setShortcut(QKeySequence(keyBinding));
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_Screenshot));
     this->action_System_Screenshot->setEnabled(inEmulation);
     this->action_System_Screenshot->setShortcut(QKeySequence(keyBinding));
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_LimitFPS));
-    this->action_System_LimitFPS->setEnabled(inEmulation);
+    this->action_System_LimitFPS->setEnabled(inEmulation && !CoreHasInitNetplay());
     this->action_System_LimitFPS->setShortcut(QKeySequence(keyBinding));
     this->action_System_LimitFPS->setChecked(CoreIsSpeedLimiterEnabled());
-    this->menuSpeedFactor->setEnabled(inEmulation);
+    this->menuSpeedFactor->setEnabled(inEmulation && !CoreHasInitNetplay());
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_SaveState));
     this->action_System_SaveState->setEnabled(inEmulation);
     this->action_System_SaveState->setShortcut(QKeySequence(keyBinding));
@@ -673,17 +711,17 @@ void MainWindow::updateActions(bool inEmulation, bool isPaused)
     this->action_System_SaveAs->setEnabled(inEmulation);
     this->action_System_SaveAs->setShortcut(QKeySequence(keyBinding));
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_LoadState));
-    this->action_System_LoadState->setEnabled(inEmulation);
+    this->action_System_LoadState->setEnabled(inEmulation && !CoreHasInitNetplay());
     this->action_System_LoadState->setShortcut(QKeySequence(keyBinding));
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_Load));
-    this->action_System_Load->setEnabled(inEmulation);
+    this->action_System_Load->setEnabled(inEmulation && !CoreHasInitNetplay());
     this->action_System_Load->setShortcut(QKeySequence(keyBinding));
     this->menuCurrent_Save_State->setEnabled(inEmulation);
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_Cheats));
-    this->action_System_Cheats->setEnabled(inEmulation);
+    this->action_System_Cheats->setEnabled(inEmulation && !CoreHasInitNetplay());
     this->action_System_Cheats->setShortcut(QKeySequence(keyBinding));
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_GSButton));
-    this->action_System_GSButton->setEnabled(inEmulation);
+    this->action_System_GSButton->setEnabled(inEmulation && !CoreHasInitNetplay());
     this->action_System_GSButton->setShortcut(QKeySequence(keyBinding));
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_Exit));
     this->action_System_Exit->setShortcut(QKeySequence(keyBinding));
@@ -756,6 +794,9 @@ void MainWindow::updateActions(bool inEmulation, bool isPaused)
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::Keybinding_ViewLog));
     this->action_View_Log->setShortcut(QKeySequence(keyBinding));
     this->action_View_ClearRomCache->setEnabled(!inEmulation);
+
+    this->action_Netplay_CreateSession->setEnabled(!inEmulation);
+    this->action_Netplay_JoinSession->setEnabled(!inEmulation);
 
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_IncreaseVolume));
     this->action_Audio_IncreaseVolume->setShortcut(QKeySequence(keyBinding));
@@ -1083,6 +1124,9 @@ void MainWindow::connectActionSignals(void)
     connect(this->action_View_RefreshRoms, &QAction::triggered, this, &MainWindow::on_Action_View_RefreshRoms);
     connect(this->action_View_ClearRomCache, &QAction::triggered, this, &MainWindow::on_Action_View_ClearRomCache);
     connect(this->action_View_Log, &QAction::triggered, this, &MainWindow::on_Action_View_Log);
+
+    connect(this->action_Netplay_CreateSession, &QAction::triggered, this, &MainWindow::on_Action_Netplay_CreateSession);
+    connect(this->action_Netplay_JoinSession, &QAction::triggered, this, &MainWindow::on_Action_Netplay_JoinSession);
 
     connect(this->action_Help_Github, &QAction::triggered, this, &MainWindow::on_Action_Help_Github);
     connect(this->action_Help_About, &QAction::triggered, this, &MainWindow::on_Action_Help_About);
@@ -1515,6 +1559,11 @@ void MainWindow::on_Action_System_HardReset(void)
 }
 void MainWindow::on_Action_System_Pause(void)
 {
+    if (!this->action_System_Pause->isEnabled())
+    {
+        return;
+    }
+
     bool isPaused = CoreIsEmulationPaused();
 
     bool ret;
@@ -1838,6 +1887,38 @@ void MainWindow::on_Action_View_Log(void)
     this->logDialog.show();
 }
 
+void MainWindow::on_Action_Netplay_CreateSession(void)
+{
+#ifdef NETPLAY
+    QWebSocket webSocket;
+
+    Dialog::CreateNetplaySessionDialog dialog(this, &webSocket, this->ui_Widget_RomBrowser->GetModelData());
+    int ret = dialog.exec();
+    if (ret == QDialog::Accepted)
+    {
+        Dialog::NetplaySessionDialog sessionDialog(this, &webSocket, dialog.GetSessionJson(), dialog.GetSessionFile());
+        connect(&sessionDialog, &Dialog::NetplaySessionDialog::OnPlayGame, this, &MainWindow::on_Netplay_PlayGame);
+        sessionDialog.exec();
+    }
+#endif // NETPLAY
+}
+
+void MainWindow::on_Action_Netplay_JoinSession(void)
+{
+#ifdef NETPLAY
+    QWebSocket webSocket;
+
+    Dialog::NetplaySessionBrowserDialog dialog(this, &webSocket, this->ui_Widget_RomBrowser->GetModelData());
+    int ret = dialog.exec();
+    if (ret == QDialog::Accepted)
+    {
+        Dialog::NetplaySessionDialog sessionDialog(this, &webSocket, dialog.GetSessionJson(), dialog.GetSessionFile());
+        connect(&sessionDialog, &Dialog::NetplaySessionDialog::OnPlayGame, this, &MainWindow::on_Netplay_PlayGame);
+        sessionDialog.exec();
+    }
+#endif // NETPLAY
+}
+
 void MainWindow::on_Action_Help_Github(void)
 {
     QDesktopServices::openUrl(QUrl("https://github.com/Rosalie241/RMG"));
@@ -2115,6 +2196,11 @@ void MainWindow::on_RomBrowser_Cheats(QString file)
     {
         this->ui_Widget_RomBrowser->RefreshRomList();
     }
+}
+
+void MainWindow::on_Netplay_PlayGame(QString file, QString address, int port, int player)
+{
+    this->launchEmulationThread(file, address, port, player);
 }
 
 void MainWindow::on_VidExt_Init(VidExtRenderMode renderMode)

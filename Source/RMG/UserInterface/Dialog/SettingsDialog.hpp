@@ -83,7 +83,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void loadInterfaceRomBrowserSettings(void);
     void loadInterfaceLogSettings(void);
     void loadInterfaceOSDSettings(void);
-    void loadInterfaceStyleSettings(void);
+    void loadInterfaceNetplaySettings(void);
 
     void loadDefaultCoreSettings(void);
     void loadDefaultGameSettings(void);
@@ -98,7 +98,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void loadDefaultInterfaceRomBrowserSettings(void);
     void loadDefaultInterfaceLogSettings(void);
     void loadDefaultInterfaceOSDSettings(void);
-    void loadDefaultInterfaceStyleSettings(void);
+    void loadDefaultInterfaceNetplaySettings(void);
 
     void saveSettings(void);
     void saveCoreSettings(void);
@@ -114,7 +114,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void saveInterfaceRomBrowserSettings(void);
     void saveInterfaceLogSettings(void);
     void saveInterfaceOSDSettings(void);
-    void saveInterfaceStyleSettings(void);
+    void saveInterfaceNetplaySettings(void);
 
     void commonHotkeySettings(SettingsDialogAction);
     void commonPluginSettings(SettingsDialogAction);

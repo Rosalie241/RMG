@@ -23,6 +23,7 @@
   <file alias="icons/black/svg/list-check.svg">Resource/icons/black/svg/list-check.svg</file>
   <file alias="icons/black/svg/pause-line.svg">Resource/icons/black/svg/pause-line.svg</file>
   <file alias="icons/black/svg/play-line.svg">Resource/icons/black/svg/play-line.svg</file>
+  <file alias="icons/black/svg/plug-line.svg">Resource/icons/black/svg/plug-line.svg</file>
   <file alias="icons/black/svg/refresh-line.svg">Resource/icons/black/svg/refresh-line.svg</file>
   <file alias="icons/black/svg/restart-line.svg">Resource/icons/black/svg/restart-line.svg</file>
   <file alias="icons/black/svg/save-3-line.svg">Resource/icons/black/svg/save-3-line.svg</file>
@@ -30,6 +31,7 @@
   <file alias="icons/black/svg/shut-down-line.svg">Resource/icons/black/svg/shut-down-line.svg</file>
   <file alias="icons/black/svg/speed-line.svg">Resource/icons/black/svg/speed-line.svg</file>
   <file alias="icons/black/svg/tools-line.svg">Resource/icons/black/svg/tools-line.svg</file>
+  <file alias="icons/black/svg/server-line.svg">Resource/icons/black/svg/server-line.svg</file>
   <file alias="icons/black/svg/settings-3-line.svg">Resource/icons/black/svg/settings-3-line.svg</file>
   <file alias="icons/black/svg/volume-up-line.svg">Resource/icons/black/svg/volume-up-line.svg</file>
 
@@ -53,6 +55,7 @@
   <file alias="icons/white/svg/list-check.svg">Resource/icons/white/svg/list-check.svg</file>
   <file alias="icons/white/svg/pause-line.svg">Resource/icons/white/svg/pause-line.svg</file>
   <file alias="icons/white/svg/play-line.svg">Resource/icons/white/svg/play-line.svg</file>
+  <file alias="icons/white/svg/plug-line.svg">Resource/icons/white/svg/plug-line.svg</file>
   <file alias="icons/white/svg/refresh-line.svg">Resource/icons/white/svg/refresh-line.svg</file>
   <file alias="icons/white/svg/restart-line.svg">Resource/icons/white/svg/restart-line.svg</file>
   <file alias="icons/white/svg/save-3-line.svg">Resource/icons/white/svg/save-3-line.svg</file>
@@ -60,6 +63,7 @@
   <file alias="icons/white/svg/shut-down-line.svg">Resource/icons/white/svg/shut-down-line.svg</file>
   <file alias="icons/white/svg/speed-line.svg">Resource/icons/white/svg/speed-line.svg</file>
   <file alias="icons/white/svg/tools-line.svg">Resource/icons/white/svg/tools-line.svg</file>
+  <file alias="icons/white/svg/server-line.svg">Resource/icons/white/svg/server-line.svg</file>
   <file alias="icons/white/svg/settings-3-line.svg">Resource/icons/white/svg/settings-3-line.svg</file>
   <file alias="icons/white/svg/volume-up-line.svg">Resource/icons/white/svg/volume-up-line.svg</file>
 </qresource>

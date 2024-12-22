@@ -24,6 +24,7 @@
 #include <QString>
 #include <QTableView>
 #include <QMenu>
+#include <QMap>
 #include <QAction>
 #include <QGridLayout>
 #include <QListWidget>
@@ -52,6 +53,8 @@ class RomBrowserWidget : public QStackedWidget
     void ShowGrid(void);
 
     void SetGridViewUniformSizes(bool value);
+
+    QMap<QString, CoreRomSettings> GetModelData(void);
 
   private:
     Widget::RomBrowserEmptyWidget*    emptyWidget    = nullptr;

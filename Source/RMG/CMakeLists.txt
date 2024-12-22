@@ -28,6 +28,11 @@ if (DRAG_DROP)
     add_definitions(-DDRAG_DROP)
 endif(DRAG_DROP)
 
+if (NETPLAY)
+    find_package(Qt6 COMPONENTS WebSockets REQUIRED)
+    add_definitions(-DNETPLAY)
+endif(NETPLAY)
+
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2)
 
@@ -82,6 +87,20 @@ if (UPDATER)
     )
 endif(UPDATER)
 
+if (NETPLAY)
+    list(APPEND RMG_SOURCES
+        UserInterface/Dialog/Netplay/NetplayCommon.cpp
+        UserInterface/Dialog/Netplay/CreateNetplaySessionDialog.cpp
+        UserInterface/Dialog/Netplay/CreateNetplaySessionDialog.ui
+        UserInterface/Dialog/Netplay/NetplaySessionBrowserDialog.cpp
+        UserInterface/Dialog/Netplay/NetplaySessionBrowserDialog.ui
+        UserInterface/Dialog/Netplay/NetplaySessionDialog.cpp
+        UserInterface/Dialog/Netplay/NetplaySessionDialog.ui
+        UserInterface/Dialog/Netplay/NetplaySessionPasswordDialog.cpp
+        UserInterface/Dialog/Netplay/NetplaySessionPasswordDialog.ui
+    )
+endif(NETPLAY)
+
 set_source_files_properties(${IMGUI_SOURCES} PROPERTIES GENERATED TRUE)
 list(APPEND RMG_SOURCES ${IMGUI_SOURCES})
 
@@ -119,4 +138,8 @@ target_link_libraries(RMG Qt6::Gui Qt6::Widgets)
 if (UPDATER)
     target_link_libraries(RMG Qt6::Network)
 endif(UPDATER)
+
+if (NETPLAY)
+    target_link_libraries(RMG Qt6::WebSockets)
+endif(NETPLAY)
 

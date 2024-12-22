@@ -14,31 +14,22 @@
 #include "EventFilter.hpp"
 #include "Callbacks.hpp"
 
+#include "Widget/RomBrowser/RomBrowserWidget.hpp"
 #include "Widget/Render/DummyWidget.hpp"
 #include "Widget/Render/OGLWidget.hpp"
 #include "Widget/Render/VKWidget.hpp"
-#include "Widget/RomBrowser/RomBrowserWidget.hpp"
 
-#include "Dialog/SettingsDialog.hpp"
-#include "Dialog/Cheats/CheatsDialog.hpp"
-#include "Dialog/RomInfoDialog.hpp"
 #include "Dialog/LogDialog.hpp"
 
-#include <QAction>
-#include <QToolBar>
+#ifdef UPDATER
+#include <QNetworkReply>
+#endif // UPDATER
+#include <QGuiApplication>
+#include <QStackedWidget>
 #include <QCloseEvent>
 #include <QMainWindow>
-#include <QSettings>
 #include <QMessageBox>
-#include <QStackedWidget>
-#include <QGuiApplication>
-
-#ifdef UPDATER
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
-#include <QJsonDocument>
-#include <QJsonObject>
-#endif // UPDATER
+#include <QAction>
 
 #include "ui_MainWindow.h"
 
@@ -140,6 +131,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 
     void initializeEmulationThread(void);
     void connectEmulationThreadSignals(void);
+    void launchEmulationThread(QString cartRom, QString address, int port, int player);
     void launchEmulationThread(QString cartRom, QString diskRom = "", bool refreshRomListAfterEmulation = false, int slot = -1);
 
     QString getSaveStateSlotDateTimeText(QAction* action);
@@ -209,6 +201,9 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     void on_Action_View_ClearRomCache(void);
     void on_Action_View_Log(void);
 
+    void on_Action_Netplay_CreateSession(void);
+    void on_Action_Netplay_JoinSession(void);
+
     void on_Action_Help_Github(void);
     void on_Action_Help_About(void);
     void on_Action_Help_Update(void);
@@ -228,6 +223,8 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     void on_RomBrowser_EditGameSettings(QString file);
     void on_RomBrowser_EditGameInputSettings(QString file);
     void on_RomBrowser_Cheats(QString file);
+
+    void on_Netplay_PlayGame(QString file, QString address, int port, int player);
 
   public slots:
 

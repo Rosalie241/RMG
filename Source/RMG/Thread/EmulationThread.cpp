@@ -38,15 +38,30 @@ void EmulationThread::SetDiskFile(QString file)
     this->disk = file;
 }
 
+void EmulationThread::SetNetplay(QString address, int port, int player)
+{
+    this->address = address;
+    this->port    = port;
+    this->player  = player;
+}
+
 void EmulationThread::run(void)
 {
     emit this->on_Emulation_Started();
 
-    bool ret = CoreStartEmulation(this->rom.toStdU32String(), this->disk.toStdU32String());
+    bool ret = CoreStartEmulation(this->rom.toStdU32String(), this->disk.toStdU32String(), 
+                                  this->address.toStdString(), this->port, this->player);
     if (!ret)
     {
         this->errorMessage = QString::fromStdString(CoreGetError());
     }
+
+    // reset state
+    this->rom.clear();
+    this->disk.clear();
+    this->address.clear();
+    this->port = -1;
+    this->player = -1;
 
     emit this->on_Emulation_Finished(ret);
 }

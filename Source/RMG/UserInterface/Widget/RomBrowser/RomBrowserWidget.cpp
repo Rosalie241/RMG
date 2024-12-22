@@ -335,6 +335,26 @@ void RomBrowserWidget::SetGridViewUniformSizes(bool value)
     this->gridViewWidget->setUniformItemSizes(value);
 }
 
+QMap<QString, CoreRomSettings> RomBrowserWidget::GetModelData(void)
+{
+    QMap<QString, CoreRomSettings> data;
+    QStandardItemModel* model = this->getCurrentModel();
+    RomBrowserModelData modelData;
+
+    if (model == nullptr)
+    {
+        return data;
+    }
+
+    for (int i = 0; i < model->rowCount(); i++)
+    {
+        modelData = model->item(i)->data().value<RomBrowserModelData>();
+        data.insert(modelData.file, modelData.settings);
+    }
+
+    return data;
+}
+
 QStandardItemModel* RomBrowserWidget::getCurrentModel(void)
 {
     QWidget* currentWidget = this->currentWidget();

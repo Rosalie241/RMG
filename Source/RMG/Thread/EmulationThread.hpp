@@ -33,6 +33,7 @@ class EmulationThread : public QThread
 
     void SetRomFile(QString);
     void SetDiskFile(QString);
+    void SetNetplay(QString address, int port, int player);
 
     void run(void) override;
 
@@ -41,6 +42,9 @@ class EmulationThread : public QThread
   private:
     QString rom;
     QString disk;
+    QString address;
+    int port   = -1;
+    int player = -1;
     QString errorMessage;
 
   signals:
