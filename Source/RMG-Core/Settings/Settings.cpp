@@ -162,7 +162,6 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::Netplay_Nickname:
         setting = {SETTING_SECTION_NETPLAY, "Nickname", "NetplayUser"};
         break;
-
     case SettingsID::Netplay_ServerJsonUrl:
         setting = {SETTING_SECTION_NETPLAY, "ServerJsonUrl", "https://m64p.s3.amazonaws.com/servers.json"};
         break;
@@ -532,7 +531,7 @@ static l_Setting get_setting(SettingsID settingId)
         setting = {SETTING_SECTION_ROMBROWSER, "Recursive", true};
         break;
     case SettingsID::RomBrowser_MaxItems:
-        setting = {SETTING_SECTION_ROMBROWSER, "MaxItems", 250};
+        setting = {SETTING_SECTION_ROMBROWSER, "MaxItems", 1024};
         break;
     case SettingsID::RomBrowser_ColumnVisibility:
         setting = {SETTING_SECTION_ROMBROWSER, "ColumnVisibility", std::string("1;1;1;0;0;0;0;0;0;")};
