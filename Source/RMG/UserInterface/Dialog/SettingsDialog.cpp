@@ -9,8 +9,6 @@
  */
 #include "SettingsDialog.hpp"
 #include "OnScreenDisplay.hpp"
-#include "RMG-Core/DiscordRpc.hpp"
-#include "RMG-Core/Settings/Settings.hpp"
 #include "UserInterface/Widget/KeybindButton.hpp"
 #include "UserInterface/Dialog/Netplay/NetplayCommon.hpp"
 
@@ -22,6 +20,8 @@
 #include <QMessageBox>
 #include <QDirIterator>
 #include <QLabel>
+
+#include <RMG-Core/Core.hpp>
 
 using namespace UserInterface::Dialog;
 
