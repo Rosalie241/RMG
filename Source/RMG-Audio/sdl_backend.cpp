@@ -24,8 +24,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "RMG-Core/Settings/Settings.hpp"
-#include "RMG-Core/Settings/SettingsID.hpp"
 #include "circular_buffer.hpp"
 #include "Resamplers/resamplers.hpp"
 #include "main.hpp"
