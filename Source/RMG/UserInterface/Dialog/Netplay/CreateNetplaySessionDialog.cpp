@@ -228,6 +228,7 @@ void CreateNetplaySessionDialog::on_networkAccessManager_Finished(QNetworkReply*
 {
     if (reply->error())
     {
+        this->showErrorMessage("Server Error", "Failed to retrieve server json list: " + reply->errorString());
         reply->deleteLater();
         return;
     }
