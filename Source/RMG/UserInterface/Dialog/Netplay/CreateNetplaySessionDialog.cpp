@@ -264,7 +264,6 @@ void CreateNetplaySessionDialog::on_listWidget_currentRowChanged(int index)
     this->validateCreateButton();
 }
 
-#include <QJsonArray>
 void CreateNetplaySessionDialog::accept()
 {
     if (!this->webSocket->isValid())
