@@ -92,8 +92,15 @@ CreateNetplaySessionDialog::CreateNetplaySessionDialog(QWidget *parent, QWebSock
     for (const NetplayRomData_t& data : romData)
     {
         QListWidgetItem* item = new QListWidgetItem();
+        // generate name for UI
+        QString name = data.GoodName;
+        if (name.endsWith("(unknown rom)") ||
+            name.endsWith("(unknown disk)"))
+        {
+            name = QFileInfo(data.File).fileName();
+        }
         item->setData(Qt::UserRole, QVariant::fromValue(data));
-        item->setText(data.GoodName);
+        item->setText(name);
         this->listWidget->addItem(item);
     }
     this->listWidget->sortItems();
