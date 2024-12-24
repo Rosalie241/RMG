@@ -15,7 +15,7 @@
 #include "m64p/Api.hpp"
 #include "osal/osal_files.hpp"
 #include "Error.hpp"
-#include "Settings/Settings.hpp"
+#include "Settings.hpp"
 
 #ifdef USE_LIBFMT
 #include "../3rdParty/fmt/include/fmt/core.h"

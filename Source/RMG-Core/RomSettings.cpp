@@ -15,7 +15,7 @@
 #include "Error.hpp"
 #include "Rom.hpp"
 
-#include "Settings/Settings.hpp"
+#include "Settings.hpp"
 #include "ConvertStringEncoding.hpp"
 
 //

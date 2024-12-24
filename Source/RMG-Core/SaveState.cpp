@@ -13,7 +13,7 @@
 #include "RomHeader.hpp"
 #include "Error.hpp"
 
-#include "Settings/Settings.hpp"
+#include "Settings.hpp"
 #include "m64p/Api.hpp"
 
 #include <algorithm>
