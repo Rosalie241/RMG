@@ -270,7 +270,7 @@ struct sdl_backend* init_sdl_backend(void)
 
     sdl_backend->input_frequency = CoreSettingsGetIntValue(SettingsID::Audio_DefaultFrequency);
     sdl_backend->swap_channels = CoreSettingsGetBoolValue(SettingsID::Audio_SwapChannels);
-    sdl_backend->audio_sync = CoreSettingsGetBoolValue(SettingsID::Audio_Synchronize);
+    sdl_backend->audio_sync = !CoreHasInitNetplay() && CoreSettingsGetBoolValue(SettingsID::Audio_Synchronize);
     sdl_backend->paused_for_sync = 1;
     sdl_backend->speed_factor = 100;
     sdl_backend->resampler = resampler;
