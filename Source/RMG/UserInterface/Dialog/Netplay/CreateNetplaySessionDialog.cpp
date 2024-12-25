@@ -297,7 +297,6 @@ void CreateNetplaySessionDialog::accept()
     QList<QString> plugins = NetplayCommon::GetPluginNames(romData.MD5);
 
     QJsonObject jsonFeatures;
-    jsonFeatures.insert("cpu_emulator", NetplayCommon::GetCpuEmulator(romData.MD5));
     jsonFeatures.insert("rsp_plugin", plugins[0]);
     jsonFeatures.insert("gfx_plugin", plugins[1]);
 

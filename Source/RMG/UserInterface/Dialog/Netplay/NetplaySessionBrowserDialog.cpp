@@ -400,16 +400,7 @@ void NetplaySessionBrowserDialog::accept()
 
     // ensure features match to what we currently have
     QList<QString> pluginNames = NetplayCommon::GetPluginNames(sessionData.MD5);
-    QString cpuEmulator        = NetplayCommon::GetCpuEmulator(sessionData.MD5);
     QString details;
-    if (sessionData.CpuEmulator != cpuEmulator)
-    {
-        details  = "Expected CPU Emulator: " + NetplayCommon::GetCpuEmulatorName(sessionData.CpuEmulator) + "\n";
-        details += "Current  CPU Emulator: " + NetplayCommon::GetCpuEmulatorName(cpuEmulator);
-        this->showErrorMessage("CPU Emulator Mismatch", details);
-        joinButton->setEnabled(true);
-        return;
-    }
     if (sessionData.RspPlugin != pluginNames[0])
     {
         details  = "Expected RSP Plugin: " + sessionData.RspPlugin + "\n";

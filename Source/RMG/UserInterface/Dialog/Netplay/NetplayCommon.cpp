@@ -32,36 +32,6 @@ void NetplayCommon::AddCommonJson(QJsonObject& json)
     json.insert("netplay_version", 16);
 }
 
-QString NetplayCommon::GetCpuEmulator(QString md5QString)
-{
-    const std::string md5 = md5QString.toStdString();
-    int cpuEmulator = -1;
-    bool overrideCoreSettings = CoreSettingsGetBoolValue(SettingsID::Game_OverrideCoreSettings, md5);
-    if (overrideCoreSettings)
-    {
-        cpuEmulator = CoreSettingsGetIntValue(SettingsID::Game_CPU_Emulator, md5);
-    }
-    else
-    {
-        cpuEmulator = CoreSettingsGetIntValue(SettingsID::CoreOverlay_CPU_Emulator);
-    }
-    return QString::number(cpuEmulator);
-}
-
-QString NetplayCommon::GetCpuEmulatorName(QString cpuEmulator)
-{
-    switch (cpuEmulator.toInt())
-    {
-    default:
-    case 0:
-        return "Pure Interpreter";
-    case 1:
-        return "Cached Interpreter";
-    case 2:
-        return "Dynamic Recompiler";
-    }
-}
-
 QList<QString> NetplayCommon::GetPluginNames(QString md5QString)
 {
     QList<QString> pluginNames(2);
