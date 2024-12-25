@@ -70,6 +70,7 @@ set(RMG_SOURCES
     Thread/RomSearcherThread.cpp
     Thread/EmulationThread.cpp
     Utilities/QtKeyToSdl2Key.cpp
+    Utilities/QtMessageBox.cpp
     OnScreenDisplay.cpp
     Callbacks.cpp
     VidExt.cpp

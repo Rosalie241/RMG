@@ -12,6 +12,8 @@
 #include "AddCheatDialog.hpp"
 #include "ChooseCheatOptionDialog.hpp"
 
+#include "Utilities/QtMessageBox.hpp"
+
 #include <QMessageBox>
 #include <QFileInfo>
 
@@ -20,6 +22,7 @@
 Q_DECLARE_METATYPE(CoreCheat);
 
 using namespace UserInterface::Dialog;
+using namespace Utilities;
 
 CheatsDialog::CheatsDialog(QWidget *parent) : QDialog(parent)
 {
@@ -47,7 +50,7 @@ void CheatsDialog::loadCheats(void)
 
     if (!CoreGetCurrentCheats(cheats))
     {
-        this->showErrorMessage("CoreGetCurrentCheats() Failed", QString::fromStdString(CoreGetError()));
+        QtMessageBox::Error(this, "CoreGetCurrentCheats() Failed", QString::fromStdString(CoreGetError()));
         this->failedToParseCheats = true;
         return;
     }
@@ -190,17 +193,6 @@ QString CheatsDialog::getTreeWidgetItemTextFromCheat(CoreCheat cheat)
     return text;
 }
 
-void CheatsDialog::showErrorMessage(QString error, QString details)
-{
-    QMessageBox msgBox((this->isVisible() ? this : this->parentWidget()));
-    msgBox.setIcon(QMessageBox::Icon::Critical);
-    msgBox.setWindowTitle("Error");
-    msgBox.setText(error);
-    msgBox.setDetailedText(details);
-    msgBox.addButton(QMessageBox::Ok);
-    msgBox.exec();
-}
-
 void CheatsDialog::on_cheatsTreeWidget_itemChanged(QTreeWidgetItem *item, int column)
 {
     if (item == nullptr || item->data(column, Qt::UserRole).isNull())
@@ -311,7 +303,7 @@ void CheatsDialog::on_removeCheatButton_clicked(void)
     // try to remove cheat
     if (!CoreRemoveCheat(cheat))
     {
-        this->showErrorMessage("CoreRemoveCheat() Failed", QString::fromStdString(CoreGetError()));
+        QtMessageBox::Error(this, "CoreRemoveCheat() Failed", QString::fromStdString(CoreGetError()));
         return;
     }
 
@@ -325,7 +317,7 @@ void CheatsDialog::accept(void)
 
     if (!CoreApplyCheats())
     {
-        this->showErrorMessage("CoreApplyCheats() Failed", QString::fromStdString(CoreGetError()));
+        QtMessageBox::Error(this, "CoreApplyCheats() Failed", QString::fromStdString(CoreGetError()));
         return;
     }
 

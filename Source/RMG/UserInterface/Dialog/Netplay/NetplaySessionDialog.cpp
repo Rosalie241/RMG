@@ -9,6 +9,7 @@
  */
 #include "NetplaySessionDialog.hpp"
 #include "NetplayCommon.hpp"
+#include "Utilities/QtMessageBox.hpp"
 
 #include <QJsonDocument>
 #include <QPushButton>
@@ -19,6 +20,7 @@
 #include <RMG-Core/Core.hpp>
 
 using namespace UserInterface::Dialog;
+using namespace Utilities;
 
 NetplaySessionDialog::NetplaySessionDialog(QWidget *parent, QWebSocket* webSocket, QJsonObject sessionJson, QString sessionFile) : QDialog(parent)
 {
@@ -58,17 +60,6 @@ NetplaySessionDialog::~NetplaySessionDialog(void)
 {
 }
 
-void NetplaySessionDialog::showErrorMessage(QString error, QString details)
-{
-    QMessageBox msgBox(this);
-    msgBox.setIcon(QMessageBox::Icon::Critical);
-    msgBox.setWindowTitle("Error");
-    msgBox.setText(error);
-    msgBox.setDetailedText(details);
-    msgBox.addButton(QMessageBox::Ok);
-    msgBox.exec();
-}
-
 void NetplaySessionDialog::on_webSocket_textMessageReceived(QString message)
 {
     QJsonDocument jsonDocument = QJsonDocument::fromJson(message.toUtf8());
@@ -81,7 +72,7 @@ void NetplaySessionDialog::on_webSocket_textMessageReceived(QString message)
         {
             this->listWidget->clear();
             QString name;
-            for (int i = 0; i < 4; ++i)
+            for (int i = 0; i < 4; i++)
             {
                 name = json.value("player_names").toArray().at(i).toString();
                 if (!name.isEmpty())

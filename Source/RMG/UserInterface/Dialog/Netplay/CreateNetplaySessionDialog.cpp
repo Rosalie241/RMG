@@ -9,6 +9,7 @@
  */
 #include "CreateNetplaySessionDialog.hpp"
 #include "NetplayCommon.hpp"
+#include "Utilities/QtMessageBox.hpp"
 
 #include <QRegularExpressionValidator>
 #include <QRegularExpression>
@@ -22,6 +23,7 @@
 #include <RMG-Core/Core.hpp>
 
 using namespace UserInterface::Dialog;
+using namespace Utilities;
 
 //
 // Local Structs
@@ -129,17 +131,6 @@ QString CreateNetplaySessionDialog::GetSessionFile(void)
     return this->sessionFile;
 }
 
-void CreateNetplaySessionDialog::showErrorMessage(QString error, QString details)
-{
-    QMessageBox msgBox(this);
-    msgBox.setIcon(QMessageBox::Icon::Critical);
-    msgBox.setWindowTitle("Error");
-    msgBox.setText(error);
-    msgBox.setDetailedText(details);
-    msgBox.addButton(QMessageBox::Ok);
-    msgBox.exec();
-}
-
 QString CreateNetplaySessionDialog::getGameName(QString goodName, QString file)
 {
     QString gameName = goodName;
@@ -201,7 +192,7 @@ void CreateNetplaySessionDialog::on_webSocket_textMessageReceived(QString messag
         }
         else
         {
-            this->showErrorMessage("Server Error", json.value("message").toString());
+            QtMessageBox::Error(this, "Server Error", json.value("message").toString());
             this->validateCreateButton();
         }
     }
@@ -228,7 +219,7 @@ void CreateNetplaySessionDialog::on_networkAccessManager_Finished(QNetworkReply*
 {
     if (reply->error())
     {
-        this->showErrorMessage("Server Error", "Failed to retrieve server json list: " + reply->errorString());
+        QtMessageBox::Error(this, "Server Error", "Failed to retrieve server json list: " + reply->errorString());
         reply->deleteLater();
         return;
     }
@@ -282,7 +273,7 @@ void CreateNetplaySessionDialog::accept()
 {
     if (!this->webSocket->isValid())
     {
-        this->showErrorMessage("Server Error", "Connection Failed");
+        QtMessageBox::Error(this, "Server Error", "Connection Failed");
         return;
     }
 

@@ -38,8 +38,6 @@ class NetplaySessionDialog : public QDialog, private Ui::NetplaySessionDialog
 
   	QWebSocket* webSocket;
 
-  	void showErrorMessage(QString error, QString details);
-
   private slots:
   	void on_webSocket_textMessageReceived(QString message);
 

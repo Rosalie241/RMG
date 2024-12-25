@@ -43,8 +43,6 @@ class CreateNetplaySessionDialog : public QDialog, private Ui::CreateNetplaySess
   	QJsonObject sessionJson;
     QString sessionFile;
 
-  	void showErrorMessage(QString error, QString details);
-
     QString getGameName(QString goodName, QString file);
 
     bool validate(void);

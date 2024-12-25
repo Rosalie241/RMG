@@ -11,6 +11,7 @@
 #include "UserInterface/NoFocusDelegate.hpp"
 #include "NetplaySessionPasswordDialog.hpp"
 #include "NetplayCommon.hpp"
+#include "Utilities/QtMessageBox.hpp"
 
 #include <QRegularExpressionValidator>
 #include <QRegularExpression>
@@ -25,6 +26,7 @@
 #include <RMG-Core/Core.hpp>
 
 using namespace UserInterface::Dialog;
+using namespace Utilities;
 
 //
 // Local Structs
@@ -135,17 +137,6 @@ QString NetplaySessionBrowserDialog::GetSessionFile(void)
     return this->sessionFile;
 }
 
-void NetplaySessionBrowserDialog::showErrorMessage(QString error, QString details)
-{
-    QMessageBox msgBox(this);
-    msgBox.setIcon(QMessageBox::Icon::Critical);
-    msgBox.setWindowTitle("Error");
-    msgBox.setText(error);
-    msgBox.setDetailedText(details);
-    msgBox.addButton(QMessageBox::Ok);
-    msgBox.exec();
-}
-
 QString NetplaySessionBrowserDialog::showROMDialog(QString name, QString md5)
 {
     QString title = "Open " + name;
@@ -167,7 +158,7 @@ QString NetplaySessionBrowserDialog::showROMDialog(QString name, QString md5)
         {
             QString details = "Expected MD5: " + md5 + "\n";
             details        += "Received MD5: " + QString::fromStdString(romSettings.MD5);
-            this->showErrorMessage("Incorrect ROM Selected", details);
+            QtMessageBox::Error(this, "Incorrect ROM Selected", details);
             return "";
         }
     }
@@ -275,7 +266,7 @@ void NetplaySessionBrowserDialog::on_webSocket_textMessageReceived(QString messa
         }
         else
         {
-            this->showErrorMessage("Server Error", json.value("message").toString());
+            QtMessageBox::Error(this, "Server Error", json.value("message").toString());
         }
     }
     else if (type == "reply_join_room")
@@ -287,7 +278,7 @@ void NetplaySessionBrowserDialog::on_webSocket_textMessageReceived(QString messa
         }
         else
         {
-            this->showErrorMessage("Server Error", json.value("message").toString());
+            QtMessageBox::Error(this, "Server Error", json.value("message").toString());
             this->validateJoinButton();
         }
     }
@@ -370,7 +361,7 @@ void NetplaySessionBrowserDialog::accept()
 {
     if (!this->webSocket->isValid())
     {
-        this->showErrorMessage("Server Error", "Connection Failed");
+        QtMessageBox::Error(this, "Server Error", "Connection Failed");
         return;
     }
 
@@ -405,7 +396,7 @@ void NetplaySessionBrowserDialog::accept()
     {
         details  = "Expected RSP Plugin: " + sessionData.RspPlugin + "\n";
         details += "Current  RSP Plugin: " + pluginNames[0];
-        this->showErrorMessage("RSP Plugin Mismatch", details);
+        QtMessageBox::Error(this, "RSP Plugin Mismatch", details);
         joinButton->setEnabled(true);
         return;
     }
@@ -413,7 +404,7 @@ void NetplaySessionBrowserDialog::accept()
     {
         details  = "Expected GFX Plugin: " + sessionData.GfxPlugin + "\n";
         details += "Current  GFX Plugin: " + pluginNames[1];
-        this->showErrorMessage("GFX Plugin Mismatch", details);
+        QtMessageBox::Error(this, "GFX Plugin Mismatch", details);
         joinButton->setEnabled(true);
         return;
     }

@@ -44,7 +44,6 @@ class NetplaySessionBrowserDialog : public QDialog, private Ui::NetplaySessionBr
     QString sessionFile;
     QMap<QString, CoreRomSettings> romData;
 
-    void showErrorMessage(QString error, QString details);
     QString showROMDialog(QString name, QString md5);
 
     bool validate(void);
