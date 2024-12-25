@@ -92,15 +92,8 @@ CreateNetplaySessionDialog::CreateNetplaySessionDialog(QWidget *parent, QWebSock
     for (const NetplayRomData_t& data : romData)
     {
         QListWidgetItem* item = new QListWidgetItem();
-        // generate name for UI
-        QString name = data.GoodName;
-        if (name.endsWith("(unknown rom)") ||
-            name.endsWith("(unknown disk)"))
-        {
-            name = QFileInfo(data.File).fileName();
-        }
         item->setData(Qt::UserRole, QVariant::fromValue(data));
-        item->setText(name);
+        item->setText(this->getGameName(data.GoodName, data.File));
         this->listWidget->addItem(item);
     }
     this->listWidget->sortItems();
@@ -145,6 +138,19 @@ void CreateNetplaySessionDialog::showErrorMessage(QString error, QString details
     msgBox.setDetailedText(details);
     msgBox.addButton(QMessageBox::Ok);
     msgBox.exec();
+}
+
+QString CreateNetplaySessionDialog::getGameName(QString goodName, QString file)
+{
+    QString gameName = goodName;
+
+    if (gameName.endsWith("(unknown rom)") ||
+        gameName.endsWith("(unknown disk)"))
+    {
+        gameName = QFileInfo(file).fileName();
+    }
+
+    return gameName;
 }
 
 bool CreateNetplaySessionDialog::validate(void)
@@ -301,7 +307,7 @@ void CreateNetplaySessionDialog::accept()
     json.insert("player_name", this->nickNameLineEdit->text());
     json.insert("password", this->passwordLineEdit->text());
     json.insert("MD5", romData.MD5);
-    json.insert("game_name", romData.GoodName);
+    json.insert("game_name", this->getGameName(romData.GoodName, romData.File));
     json.insert("features",  jsonFeatures);
     NetplayCommon::AddCommonJson(json);
 

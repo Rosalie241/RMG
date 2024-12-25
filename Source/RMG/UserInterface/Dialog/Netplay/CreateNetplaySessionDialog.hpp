@@ -45,6 +45,8 @@ class CreateNetplaySessionDialog : public QDialog, private Ui::CreateNetplaySess
 
   	void showErrorMessage(QString error, QString details);
 
+    QString getGameName(QString goodName, QString file);
+
     bool validate(void);
     void validateCreateButton(void);
 
