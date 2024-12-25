@@ -286,10 +286,6 @@ void CreateNetplaySessionDialog::accept()
         return;
     }
 
-    // disable create button while we're processing the request
-    QPushButton* createButton = this->buttonBox->button(QDialogButtonBox::Ok);
-    createButton->setEnabled(false);
-
     QListWidgetItem* item = this->listWidget->currentItem();
     if (item == nullptr)
     {
@@ -297,6 +293,10 @@ void CreateNetplaySessionDialog::accept()
     }
 
     NetplayRomData_t romData = item->data(Qt::UserRole).value<NetplayRomData_t>();
+
+    // disable create button while we're processing the request
+    QPushButton* createButton = this->buttonBox->button(QDialogButtonBox::Ok);
+    createButton->setEnabled(false);
 
     this->sessionFile = romData.File;
 
