@@ -20,6 +20,7 @@
 #include <QPushButton>
 #include <QFileDialog>
 #include <QJsonObject>
+#include <QJsonArray>
 
 #include <RMG-Core/Core.hpp>
 
@@ -188,24 +189,23 @@ void NetplaySessionBrowserDialog::on_webSocket_textMessageReceived(QString messa
     {
         if (json.value("accept").toInt() == 0)
         {
-            this->sessionBrowserWidget->AddSessionData(json.value("room_name").toString(), 
-                                                                json.value("game_name").toString(), 
-                                                                json.value("MD5").toString(), 
-                                                                json.value("protected").toBool(),
-                                                                json.value("port").toInt(),
-                                                                json.value("features").toObject().value("cpu_emulator").toString(),
-                                                                json.value("features").toObject().value("rsp_plugin").toString(),
-                                                                json.value("features").toObject().value("gfx_plugin").toString());
-        }
-        else
-        {
-            QtMessageBox::Error(this, "Server Error", json.value("message").toString());
-        }
-    }
-    else if (type == "reply_get_rooms_done")
-    {
-        if (json.value("accept").toInt() == 0)
-        {
+            QJsonArray  sessions = json.value("rooms").toArray();
+            QJsonObject session;
+            for (int i = 0; i < sessions.size(); i++)
+            {
+                session = sessions.at(i).toObject();
+
+                this->sessionBrowserWidget->AddSessionData(session.value("room_name").toString(), 
+                                                            session.value("game_name").toString(), 
+                                                            session.value("MD5").toString(), 
+                                                            session.value("protected").toBool(),
+                                                            session.value("port").toInt(),
+                                                            session.value("features").toObject().value("cpu_emulator").toString(),
+                                                            session.value("features").toObject().value("rsp_plugin").toString(),
+                                                            session.value("features").toObject().value("gfx_plugin").toString());
+            }
+
+            // we're done refreshing the sessions
             this->sessionBrowserWidget->RefreshDone();
             // enable refresh button when refreshing is done
             QPushButton* refreshButton = this->buttonBox->button(QDialogButtonBox::RestoreDefaults);
@@ -391,11 +391,14 @@ void NetplaySessionBrowserDialog::accept()
     }
 
     QJsonObject json;
+    QJsonObject session;
     json.insert("type", "request_join_room");
-    json.insert("port", sessionData.Port);
     json.insert("player_name", this->nickNameLineEdit->text());
-    json.insert("password", password);
-    json.insert("MD5", QString::fromStdString(md5));
+    session.insert("port", sessionData.Port);
+    session.insert("password", password);
+    session.insert("MD5", QString::fromStdString(md5));
+
+    json.insert("room", session);
     NetplayCommon::AddCommonJson(json);
 
     this->webSocket->sendTextMessage(QJsonDocument(json).toJson());

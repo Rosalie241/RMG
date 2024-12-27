@@ -200,8 +200,6 @@ void CreateNetplaySessionDialog::on_networkAccessManager_Finished(QNetworkReply*
         this->serverComboBox->addItem(jsonServers.at(i), jsonObject.value(jsonServers.at(i)).toString());
     }
 
-    // TODO: custom server support
-    //this->serverComboBox->addItem(QString("Custom"), QString("Custom"));
     reply->deleteLater();
 }
 
@@ -263,13 +261,15 @@ void CreateNetplaySessionDialog::accept()
     jsonFeatures.insert("gfx_plugin", plugins[1]);
 
     QJsonObject json;
+    QJsonObject session;
+    session.insert("room_name", this->sessionNameLineEdit->text());
+    session.insert("password", this->passwordLineEdit->text());
+    session.insert("MD5", romData.MD5);
+    session.insert("game_name", this->getGameName(romData.GoodName, romData.File));
+    session.insert("features",  jsonFeatures);
     json.insert("type", "request_create_room");
-    json.insert("room_name", this->sessionNameLineEdit->text());
     json.insert("player_name", this->nickNameLineEdit->text());
-    json.insert("password", this->passwordLineEdit->text());
-    json.insert("MD5", romData.MD5);
-    json.insert("game_name", this->getGameName(romData.GoodName, romData.File));
-    json.insert("features",  jsonFeatures);
+    json.insert("room", session);
     NetplayCommon::AddCommonJson(json);
 
     this->webSocket->sendTextMessage(QJsonDocument(json).toJson());

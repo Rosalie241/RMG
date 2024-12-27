@@ -26,7 +26,7 @@ class NetplaySessionDialog : public QDialog, private Ui::NetplaySessionDialog
     Q_OBJECT
 
   public:
-    NetplaySessionDialog(QWidget *parent, QWebSocket* webSocket, QJsonObject sessionJson, QString sessionFile);
+    NetplaySessionDialog(QWidget *parent, QWebSocket* webSocket, QJsonObject json, QString sessionFile);
     ~NetplaySessionDialog(void);
 
   private:
