@@ -103,6 +103,9 @@ if (NETPLAY)
         UserInterface/Widget/Netplay/NetplaySessionBrowserLoadingWidget.cpp
         UserInterface/Widget/Netplay/NetplaySessionBrowserEmptyWidget.cpp
         UserInterface/Widget/Netplay/NetplaySessionBrowserEmptyWidget.ui
+        UserInterface/Widget/Netplay/CreateNetplaySessionWidget.cpp
+        UserInterface/Widget/Netplay/CreateNetplaySessionEmptyWidget.cpp
+        UserInterface/Widget/Netplay/CreateNetplaySessionEmptyWidget.ui
     )
 endif(NETPLAY)
 
