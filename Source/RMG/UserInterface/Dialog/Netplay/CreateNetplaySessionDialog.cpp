@@ -16,7 +16,6 @@
 #include <QNetworkDatagram>
 #include <QJsonDocument>
 #include <QPushButton>
-#include <QMessageBox>
 #include <QJsonObject>
 #include <QFileInfo>
 

@@ -10,7 +10,6 @@
 #include "UpdateDialog.hpp"
 #include "DownloadUpdateDialog.hpp"
 
-#include <QMessageBox>
 #include <QFileInfo>
 #include <QPushButton>
 #include <QJsonArray>

@@ -12,7 +12,6 @@
 
 #include <RMG-Core/Core.hpp>
 
-#include <QMessageBox>
 #include <QProcess>
 #include <QDir>
 #include <QTextStream>

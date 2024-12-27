@@ -18,7 +18,6 @@
 #include <QCryptographicHash>
 #include <QFileDialog>
 #include <QColorDialog>
-#include <QMessageBox>
 #include <QDirIterator>
 #include <QLabel>
 

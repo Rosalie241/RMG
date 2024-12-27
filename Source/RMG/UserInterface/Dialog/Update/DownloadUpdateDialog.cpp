@@ -10,7 +10,6 @@
 #include "DownloadUpdateDialog.hpp"
 #include "Utilities/QtMessageBox.hpp"
 
-#include <QMessageBox>
 #include <QFileInfo>
 #include <QPushButton>
 #include <QDesktopServices>

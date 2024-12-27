@@ -20,7 +20,6 @@
 #include <QInputDialog>
 #include <QPushButton>
 #include <QFileDialog>
-#include <QMessageBox>
 #include <QJsonObject>
 
 #include <RMG-Core/Core.hpp>

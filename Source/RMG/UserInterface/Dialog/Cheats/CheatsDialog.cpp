@@ -14,7 +14,6 @@
 
 #include "Utilities/QtMessageBox.hpp"
 
-#include <QMessageBox>
 #include <QFileInfo>
 
 #include <RMG-Core/Core.hpp>
