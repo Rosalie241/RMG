@@ -260,7 +260,7 @@ void NetplaySessionBrowserDialog::on_networkAccessManager_Finished(QNetworkReply
     if (reply->error())
     {
         this->sessionBrowserWidget->Reset();
-        QtMessageBox::Error(this, "Server Error", "Failed to retrieve json server list: " + reply->errorString());
+        QtMessageBox::Error(this, "Server Error", "Failed to retrieve server list json: " + reply->errorString());
         reply->deleteLater();
         return;
     }
