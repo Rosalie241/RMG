@@ -219,6 +219,9 @@
     <ClCompile Include="..\..\src\plugin\dummy_video.c">
       <Filter>plugin</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\plugin\dummy_execution.c">
+      <Filter>plugin</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\plugin\plugin.c">
       <Filter>plugin</Filter>
     </ClCompile>
@@ -534,6 +537,9 @@
       <Filter>plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\plugin\dummy_video.h">
+      <Filter>plugin</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\plugin\dummy_execution.h">
       <Filter>plugin</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\plugin\plugin.h">

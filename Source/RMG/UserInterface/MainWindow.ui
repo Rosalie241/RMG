@@ -181,18 +181,82 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="action_System_StartRom"/>
-   <addaction name="action_System_OpenCombo"/>
+   <addaction name="action_System_StartRom2"/>
+   <addaction name="action_View_RefreshRoms2"/>
    <addaction name="separator"/>
-   <addaction name="action_System_Shutdown"/>
-   <addaction name="action_System_SoftReset"/>
-   <addaction name="action_System_Pause"/>
-   <addaction name="action_System_Screenshot"/>
+   <addaction name="action_Create_Room"/>
+   <addaction name="action_Join_Room"/>
    <addaction name="separator"/>
-   <addaction name="action_View_Fullscreen"/>
+   <addaction name="action_View_Fullscreen2"/>
+   <addaction name="action_System_Screenshot2"/>
    <addaction name="separator"/>
-   <addaction name="action_Settings_Settings"/>
+   <addaction name="action_Settings_Settings2"/>
+   <addaction name="action_Settings_Graphics2"/>
+   <addaction name="action_Settings_Input2"/>
   </widget>
+    <action name="action_View_Fullscreen2">
+   <property name="icon">
+    <iconset theme="fullscreen-mpn">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Fullscreen</string>
+   </property>
+  </action>
+  <action name="action_Settings_Settings2">
+   <property name="icon">
+    <iconset theme="settings-mpn">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Config</string>
+   </property>
+  </action>
+  <action name="action_Settings_Graphics2">
+   <property name="icon">
+    <iconset theme="graphics-mpn">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Graphics</string>
+   </property>
+  </action>
+  <action name="action_Settings_Input2">
+   <property name="icon">
+    <iconset theme="controller-mpn">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Controllers</string>
+   </property>
+  </action>
+  <action name="action_System_Screenshot2">
+   <property name="icon">
+    <iconset theme="screenshot-mpn">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Screenshot</string>
+   </property>
+  </action>
+  <action name="action_System_StartRom2">
+   <property name="icon">
+    <iconset theme="open-mpn">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="action_View_RefreshRoms2">
+   <property name="icon">
+    <iconset theme="refresh-mpn">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Refresh</string>
+   </property>
+  </action>
   <action name="action_System_StartRom">
    <property name="icon">
     <iconset theme="file-line"/>

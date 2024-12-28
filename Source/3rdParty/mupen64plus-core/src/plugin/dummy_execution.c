@@ -67,7 +67,7 @@ void dummyexecution_Input(int Control, BUTTONS * Keys)
 {
 }
 
-void dummyexecution_Frame(void)
+void dummyexecution_Frame(uint32_t frame)
 {
 }
 
@@ -75,34 +75,38 @@ void dummyexecution_Execute(uint32_t pc)
 {
 }
 
-void dummyexecution_Read8(uint32_t addr, uint8_t* value)
+void dummyexecution_ExecuteDone(uint32_t pc)
 {
 }
 
-void dummyexecution_Read16(uint32_t addr, uint16_t* value)
+void dummyexecution_Read8(uint8_t* value, uint32_t pc, uint32_t addr)
 {
 }
 
-void dummyexecution_Read32(uint32_t addr, uint32_t* value)
+void dummyexecution_Read16(uint16_t* value, uint32_t pc, uint32_t addr)
 {
 }
 
-void dummyexecution_Read64(uint32_t addr, uint64_t* value)
+void dummyexecution_Read32(uint32_t* value, uint32_t pc, uint32_t addr)
 {
 }
 
-void dummyexecution_Write8(uint32_t addr, uint8_t* value)
+void dummyexecution_Read64(uint64_t* value, uint32_t pc, uint32_t addr)
 {
 }
 
-void dummyexecution_Write16(uint32_t addr, uint16_t* value)
+void dummyexecution_Write8(uint8_t* value, uint32_t pc, uint32_t addr)
 {
 }
 
-void dummyexecution_Write32(uint32_t addr, uint32_t* value)
+void dummyexecution_Write16(uint16_t* value, uint32_t pc, uint32_t addr)
 {
 }
 
-void dummyexecution_Write64(uint32_t addr, uint64_t* value)
+void dummyexecution_Write32(uint32_t* value, uint32_t pc, uint32_t addr)
+{
+}
+
+void dummyexecution_Write64(uint64_t* value, uint32_t pc, uint32_t addr)
 {
 }

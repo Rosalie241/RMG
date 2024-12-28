@@ -326,7 +326,7 @@ void SettingsDialog::loadGamePluginSettings(void)
                                    this->gameAudioPluginsComboBox, this->gameInputPluginsComboBox,
                                    this->gameExecutionPluginsComboBox};
     SettingsID settingsId[] = {SettingsID::Game_RSP_Plugin, SettingsID::Game_GFX_Plugin, 
-                                    SettingsID::Game_AUDIO_Plugin, SettingsID::Game_INPUT_Plugin, SettingsID:Game_EXECUTION_Plugin};
+                                    SettingsID::Game_AUDIO_Plugin, SettingsID::Game_INPUT_Plugin, SettingsID::Game_EXECUTION_Plugin};
     bool pluginFound[] = {false, false, false, false, false};
     QString pluginFileNames[5];
     QString pluginFileName;
@@ -1104,10 +1104,10 @@ void SettingsDialog::commonPluginSettings(SettingsDialogAction action)
                                     this->audioPluginsComboBox, this->inputPluginsComboBox,
                                     this->executionPluginsComboBox};
     SettingsID settingsIdArray[] = {SettingsID::Core_RSP_Plugin, SettingsID::Core_GFX_Plugin, 
-                                    SettingsID::Core_EXECUTION_Plugin};
-                                    SettingsID::Core_AUDIO_Plugin, SettingsID::Core_INPUT_Plugin, };
+                                    SettingsID::Core_AUDIO_Plugin, SettingsID::Core_INPUT_Plugin, SettingsID::Core_EXECUTION_Plugin};
     bool pluginFound[] = {false, false, false, false, false};
-
+    QString pluginFileNames[5];
+    
     QComboBox *comboBox;
     QString pluginName;
     QString pluginFileName;

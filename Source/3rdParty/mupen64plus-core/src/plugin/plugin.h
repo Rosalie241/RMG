@@ -147,6 +147,8 @@ extern execution_plugin_functions execution;
 
 extern uint8_t execution_addr_mask[1024];
 
+extern void initiate_execution_plugin(void);
+
 inline int execution_addr_masked(uint32_t addr) {
 	return execution_addr_mask[(addr & 0b111111111100000) >> 5] & (1 << ((addr & 0b11100) >> 2));
 }

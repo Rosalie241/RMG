@@ -123,6 +123,7 @@ static const execution_plugin_functions dummy_execution = {
     dummyexecution_Input,
     dummyexecution_Frame,
     dummyexecution_Execute,
+    dummyexecution_ExecuteDone,
     dummyexecution_Read8,
     dummyexecution_Read16,
     dummyexecution_Read32,
@@ -669,7 +670,7 @@ void initiate_execution_plugin(void)
     
     execution_info.window = 0;
     execution_info.rom_name = ROM_HEADER.Name;
-    execution_info.rom_hash = ROM_SETTINGS.MD5;
+    execution_info.rom_hash = (uint8_t*)ROM_SETTINGS.MD5;
     execution_info.addr_mask = execution_addr_mask;
     execution_info.pc = r4300_pc_g;
     execution_info.jump = jump;

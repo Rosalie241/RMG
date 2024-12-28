@@ -197,6 +197,7 @@
     <ClCompile Include="..\..\src\plugin\dummy_input.c" />
     <ClCompile Include="..\..\src\plugin\dummy_rsp.c" />
     <ClCompile Include="..\..\src\plugin\dummy_video.c" />
+    <ClCompile Include="..\..\src\plugin\dummy_execution.c" />
     <ClCompile Include="..\..\src\plugin\plugin.c" />
     <ClCompile Include="..\..\src\device\r4300\cached_interp.c" />
     <ClCompile Include="..\..\src\device\r4300\cp0.c" />
@@ -475,6 +476,7 @@
     <ClInclude Include="..\..\src\osd\osd.h" />
     <ClInclude Include="..\..\src\device\rcp\pi\pi_controller.h" />
     <ClInclude Include="..\..\src\plugin\dummy_audio.h" />
+    <ClInclude Include="..\..\src\plugin\dummy_execution.h" />
     <ClInclude Include="..\..\src\plugin\dummy_input.h" />
     <ClInclude Include="..\..\src\plugin\dummy_rsp.h" />
     <ClInclude Include="..\..\src\plugin\dummy_video.h" />

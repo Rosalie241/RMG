@@ -32,15 +32,16 @@ extern void dummyexecution_StartExecution(EXECUTION_INFO ControlInfo);
 extern int  dummyexecution_RomOpen(void);
 extern void dummyexecution_RomClosed(void);
 extern void dummyexecution_Input(int Control, BUTTONS * Keys);
-extern void dummyexecution_Frame(void);
+extern void dummyexecution_Frame(uint32_t frame);
 extern void dummyexecution_Execute(uint32_t pc);
-extern void dummyexecution_Read8(uint32_t addr, uint8_t* value);
-extern void dummyexecution_Read16(uint32_t addr, uint16_t* value);
-extern void dummyexecution_Read32(uint32_t addr, uint32_t* value);
-extern void dummyexecution_Read64(uint32_t addr, uint64_t* value);
-extern void dummyexecution_Write8(uint32_t addr, uint8_t* value);
-extern void dummyexecution_Write16(uint32_t addr, uint16_t* value);
-extern void dummyexecution_Write32(uint32_t addr, uint32_t* value);
-extern void dummyexecution_Write64(uint32_t addr, uint64_t* value);
+extern void dummyexecution_ExecuteDone(uint32_t pc);
+extern void dummyexecution_Read8(uint8_t* value, uint32_t pc, uint32_t addr);
+extern void dummyexecution_Read16(uint16_t* value, uint32_t pc, uint32_t addr);
+extern void dummyexecution_Read32(uint32_t* value, uint32_t pc, uint32_t addr);
+extern void dummyexecution_Read64(uint64_t* value, uint32_t pc, uint32_t addr);
+extern void dummyexecution_Write8(uint8_t* value, uint32_t pc, uint32_t addr);
+extern void dummyexecution_Write16(uint16_t* value, uint32_t pc, uint32_t addr);
+extern void dummyexecution_Write32(uint32_t* value, uint32_t pc, uint32_t addr);
+extern void dummyexecution_Write64(uint64_t* value, uint32_t pc, uint32_t addr);
 
 #endif /* DUMMY_EXECUTION_H */
