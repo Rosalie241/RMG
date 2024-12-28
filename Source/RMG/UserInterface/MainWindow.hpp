@@ -58,7 +58,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     Widget::RomBrowserWidget *ui_Widget_RomBrowser = nullptr;
     EventFilter *ui_EventFilter                    = nullptr;
     QLabel *ui_StatusBar_Label                     = nullptr;
-    QLabel *ui_StatusBar_RenderModeLabel           = nullptr;
+    QLabel *ui_StatusBar_SpeedLabel                = nullptr;
 
     QByteArray ui_Geometry;
     bool ui_Geometry_Maximized = false;

@@ -92,20 +92,10 @@ static std::filesystem::path get_cheat_file_name(CoreRomHeader romHeader, CoreRo
 {
     std::filesystem::path cheatFileName;
 
-    // fallback to using MD5 as file name when CRC1 & CRC2 & CountryCode are 0
-    if (romHeader.CRC1 == 0 && romHeader.CRC2 == 0 && romHeader.CountryCode == 0)
+    // Check if the good name is available
+    if (!romHeader.Name.empty())
     {
-        // ensure MD5 is a valid length
-        if (romSettings.MD5.size() != 32)
-        { // if it's invalid, return an empty path
-            return std::filesystem::path();
-        }
-
-        cheatFileName = fmt_string("{}.cht", romSettings.MD5);
-    }
-    else
-    { // else use CRC1 & CRC2 & CountryCode
-        cheatFileName = fmt_string("{:08X}-{:08X}-{:02X}.cht", romHeader.CRC1, romHeader.CRC2, romHeader.CountryCode);
+        cheatFileName = std::format("{}.cht", romHeader.Name);
     }
 
     return cheatFileName;

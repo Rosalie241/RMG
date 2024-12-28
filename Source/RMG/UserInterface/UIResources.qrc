@@ -3,6 +3,25 @@
   <file>Resource/RMG.png</file>
   <file>Resource/CoverFallback.png</file>
 
+  <file alias="icons/black/svg/open-mpn.png">Resource/icons/black/svg/open-mpn.png</file>
+  <file alias="icons/white/svg/open-mpn.png">Resource/icons/white/svg/open-mpn.png</file>
+  <file alias="icons/black/svg/refresh-mpn.png">Resource/icons/black/svg/refresh-mpn.png</file>
+  <file alias="icons/white/svg/refresh-mpn.png">Resource/icons/white/svg/refresh-mpn.png</file>
+  <file alias="icons/black/svg/local-play-mpn.png">Resource/icons/black/svg/local-play-mpn.png</file>
+  <file alias="icons/white/svg/local-play-mpn.png">Resource/icons/white/svg/local-play-mpn.png</file>
+  <file alias="icons/black/svg/online-play-mpn.png">Resource/icons/black/svg/online-play-mpn.png</file>
+  <file alias="icons/white/svg/online-play-mpn.png">Resource/icons/white/svg/online-play-mpn.png</file>
+  <file alias="icons/black/svg/screenshot-mpn.png">Resource/icons/black/svg/screenshot-mpn.png</file>
+  <file alias="icons/white/svg/screenshot-mpn.png">Resource/icons/white/svg/screenshot-mpn.png</file>
+  <file alias="icons/black/svg/fullscreen-mpn.png">Resource/icons/black/svg/fullscreen-mpn.png</file>
+  <file alias="icons/white/svg/fullscreen-mpn.png">Resource/icons/white/svg/fullscreen-mpn.png</file>
+  <file alias="icons/black/svg/settings-mpn.png">Resource/icons/black/svg/settings-mpn.png</file>
+  <file alias="icons/white/svg/settings-mpn.png">Resource/icons/white/svg/settings-mpn.png</file>
+  <file alias="icons/black/svg/graphics-mpn.png">Resource/icons/black/svg/graphics-mpn.png</file>
+  <file alias="icons/white/svg/graphics-mpn.png">Resource/icons/white/svg/graphics-mpn.png</file>
+  <file alias="icons/black/svg/controller-mpn.png">Resource/icons/black/svg/controller-mpn.png</file>
+  <file alias="icons/white/svg/controller-mpn.png">Resource/icons/white/svg/controller-mpn.png</file>
+  
   <file alias="icons/black/index.theme">Resource/icons/black/index.theme</file>
   <file alias="icons/black/svg/add-line.svg">Resource/icons/black/svg/add-line.svg</file>
   <file alias="icons/black/svg/brush-line.svg">Resource/icons/black/svg/brush-line.svg</file>

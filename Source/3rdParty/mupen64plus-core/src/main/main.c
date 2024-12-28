@@ -123,6 +123,8 @@ static int   l_TakeScreenshot = 0;       // Tell OSD Rendering callback to take 
 static int   l_SpeedFactor = 100;        // percentage of nominal game speed at which emulator is running
 static int   l_FrameAdvance = 0;         // variable to check if we pause on next frame
 static int   l_MainSpeedLimit = 1;       // insert delay during vi_interrupt to keep speed at real-time
+static int   l_CurrentVI = 0;
+static int   l_LastVITime = -1;
 
 static osd_message_t *l_msgVol = NULL;
 static osd_message_t *l_msgFF = NULL;
@@ -600,6 +602,7 @@ void main_toggle_pause(void)
 
     g_rom_pause = !g_rom_pause;
     l_FrameAdvance = 0;
+    l_LastVITime = -1;
 }
 
 void main_advance_one(void)
@@ -733,6 +736,7 @@ m64p_error main_core_state_query(m64p_core_param param, int *rval)
         case M64CORE_SCREENSHOT_CAPTURED:
         case M64CORE_STATE_LOADCOMPLETE:
         case M64CORE_STATE_SAVECOMPLETE:
+        case M64CORE_SPEED_UPDATE:
             return M64ERR_INPUT_INVALID;
         default:
             return M64ERR_INPUT_INVALID;
@@ -1069,6 +1073,15 @@ void new_vi(void)
     timed_sections_refresh();
 #endif
 
+    execution.frame(l_CurrentVI);
+    if (l_CurrentVI % 30 == 0) {
+        if (l_LastVITime != -1) {
+            StateChanged(M64CORE_SPEED_UPDATE, SDL_GetTicks() - l_LastVITime);
+        }
+        l_LastVITime = SDL_GetTicks();
+    }
+    l_CurrentVI++;
+    
     gs_apply_cheats(&g_cheat_ctx);
 
     apply_speed_limiter();

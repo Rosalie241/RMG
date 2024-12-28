@@ -188,7 +188,7 @@ void MainWindow::initializeUI(bool launchROM)
 
     this->ui_EventFilter = new EventFilter(this);
     this->ui_StatusBar_Label = new QLabel(this);
-    this->ui_StatusBar_RenderModeLabel = new QLabel(this);
+    this->ui_StatusBar_SpeedLabel = new QLabel(this);
 
     // only start refreshing the ROM browser
     // when RMG isn't launched with a ROM 
@@ -262,7 +262,7 @@ void MainWindow::configureUI(QApplication* app, bool showUI)
     this->toolBar->setVisible(this->ui_ShowToolbar);
     this->statusBar()->setVisible(this->ui_ShowStatusbar);
     this->statusBar()->addPermanentWidget(this->ui_StatusBar_Label, 99);
-    this->statusBar()->addPermanentWidget(this->ui_StatusBar_RenderModeLabel, 1);
+    this->statusBar()->addPermanentWidget(this->ui_StatusBar_SpeedLabel, 1);
 
     // set toolbar position according to setting
     int toolbarAreaSetting = CoreSettingsGetIntValue(SettingsID::GUI_ToolbarArea);
@@ -455,34 +455,6 @@ void MainWindow::updateUI(bool inEmulation, bool isPaused)
             this->setWindowTitle(goodName + QString(" - ") + this->ui_WindowTitle);
         }
 
-        if (this->ui_VidExtRenderMode == VidExtRenderMode::OpenGL)
-        {
-            if (QSurfaceFormat::defaultFormat().renderableType() == QSurfaceFormat::OpenGLES)
-            {
-                this->ui_StatusBar_RenderModeLabel->setText("OpenGL ES");
-            }
-            else
-            {
-                this->ui_StatusBar_RenderModeLabel->setText("OpenGL");
-            }
-            this->ui_Widgets->setCurrentWidget(this->ui_Widget_OpenGL->GetWidget());
-        }
-        else if (this->ui_VidExtRenderMode == VidExtRenderMode::Vulkan)
-        {
-            this->ui_StatusBar_RenderModeLabel->setText("Vulkan");
-            this->ui_Widgets->setCurrentWidget(this->ui_Widget_Vulkan->GetWidget());
-        }
-        else
-        {
-            // when the video extension hasn't been initialized correctly
-            // yet, we'll show a dummy widget with a black color pallete
-            // to minimize the flicker that would occur when switching
-            // from the ROM browser to the render widget when you i.e
-            // launch RMG with a ROM on the commandline or drag & drop
-            this->ui_Widgets->setCurrentWidget(this->ui_Widget_Dummy);
-        }
-
-        this->storeGeometry();
     }
     else if (!this->ui_NoSwitchToRomBrowser)
     {
@@ -1091,6 +1063,8 @@ void MainWindow::configureActions(void)
 void MainWindow::connectActionSignals(void)
 {
     connect(this->action_System_StartRom, &QAction::triggered, this, &MainWindow::on_Action_System_OpenRom);
+    connect(this->action_System_StartRom2, &QAction::triggered, this, &MainWindow::on_Action_System_OpenRom);
+    connect(this->action_System_StartRom3, &QAction::triggered, this, &MainWindow::on_Action_System_OpenRom);
     connect(this->action_System_OpenCombo, &QAction::triggered, this, &MainWindow::on_Action_System_OpenCombo);
     connect(this->action_System_Exit, &QAction::triggered, this, &MainWindow::on_Action_System_Exit);
 
@@ -1099,6 +1073,8 @@ void MainWindow::connectActionSignals(void)
     connect(this->action_System_HardReset, &QAction::triggered, this, &MainWindow::on_Action_System_HardReset);
     connect(this->action_System_Pause, &QAction::triggered, this, &MainWindow::on_Action_System_Pause);
     connect(this->action_System_Screenshot, &QAction::triggered, this,
+            &MainWindow::on_Action_System_Screenshot);
+    connect(this->action_System_Screenshot2, &QAction::triggered, this,
             &MainWindow::on_Action_System_Screenshot);
     connect(this->action_System_LimitFPS, &QAction::triggered, this, &MainWindow::on_Action_System_LimitFPS);
     connect(this->action_System_SaveState, &QAction::triggered, this, &MainWindow::on_Action_System_SaveState);
@@ -1109,19 +1085,24 @@ void MainWindow::connectActionSignals(void)
     connect(this->action_System_GSButton, &QAction::triggered, this, &MainWindow::on_Action_System_GSButton);
 
     connect(this->action_Settings_Graphics, &QAction::triggered, this, &MainWindow::on_Action_Settings_Graphics);
+    connect(this->action_Settings_Graphics2, &QAction::triggered, this, &MainWindow::on_Action_Settings_Graphics);
     connect(this->action_Settings_Audio, &QAction::triggered, this, &MainWindow::on_Action_Settings_Audio);
     connect(this->action_Settings_Rsp, &QAction::triggered, this, &MainWindow::on_Action_Settings_Rsp);
     connect(this->action_Settings_Input, &QAction::triggered, this,
             &MainWindow::on_Action_Settings_Input);
+    connect(this->action_Settings_Input2, &QAction::triggered, this,
+            &MainWindow::on_Action_Settings_Input);
     connect(this->action_Settings_Settings, &QAction::triggered, this, &MainWindow::on_Action_Settings_Settings);
-
+    connect(this->action_Settings_Settings2, &QAction::triggered, this, &MainWindow::on_Action_Settings_Settings);
     connect(this->action_View_Toolbar, &QAction::toggled, this, &MainWindow::on_Action_View_Toolbar);
     connect(this->action_View_StatusBar, &QAction::toggled, this, &MainWindow::on_Action_View_StatusBar);
     connect(this->action_View_GameList, &QAction::toggled, this, &MainWindow::on_Action_View_GameList);
     connect(this->action_View_GameGrid, &QAction::toggled, this, &MainWindow::on_Action_View_GameGrid);
     connect(this->action_View_UniformSize, &QAction::toggled, this, &MainWindow::on_Action_View_UniformSize);
     connect(this->action_View_Fullscreen, &QAction::triggered, this, &MainWindow::on_Action_View_Fullscreen);
+    connect(this->action_View_Fullscreen2, &QAction::triggered, this, &MainWindow::on_Action_View_Fullscreen);
     connect(this->action_View_RefreshRoms, &QAction::triggered, this, &MainWindow::on_Action_View_RefreshRoms);
+    connect(this->action_View_RefreshRoms2, &QAction::triggered, this, &MainWindow::on_Action_View_RefreshRoms);
     connect(this->action_View_ClearRomCache, &QAction::triggered, this, &MainWindow::on_Action_View_ClearRomCache);
     connect(this->action_View_Log, &QAction::triggered, this, &MainWindow::on_Action_View_Log);
 
@@ -2686,23 +2667,15 @@ void MainWindow::on_Core_StateCallback(CoreStateCallbackType type, int value)
                 OnScreenDisplaySetMessage("Captured screenshot.");
             }
         } break;
+        case CoreStateCallbackType::SpeedUpdate:
+        {
+            if (value > 0)
+            {
+                std::ostringstream stream;
+                stream << std::fixed << std::setprecision(0) << (30000.0 / value) << " VI/s";
+                std::string result = stream.str();
+                this->ui_StatusBar_SpeedLabel->setText(result.c_str());
+            }
+        } break;
     }
-}
-
-void MainWindow::on_VidExt_Quit(void)
-{
-    if (this->ui_VidExtRenderMode == VidExtRenderMode::OpenGL)
-    {
-        this->ui_Widgets->removeWidget(this->ui_Widget_OpenGL->GetWidget());
-        this->ui_Widget_OpenGL->GetWidget()->deleteLater();
-        this->ui_Widget_OpenGL = nullptr;
-    }
-    else if (this->ui_VidExtRenderMode == VidExtRenderMode::Vulkan)
-    {
-        this->ui_Widgets->removeWidget(this->ui_Widget_Vulkan->GetWidget());
-        this->ui_Widget_Vulkan->GetWidget()->deleteLater();
-        this->ui_Widget_Vulkan = nullptr;
-    }
-
-    this->ui_VidExtRenderMode = VidExtRenderMode::Invalid;
 }
