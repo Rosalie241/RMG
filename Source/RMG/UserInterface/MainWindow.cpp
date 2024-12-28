@@ -298,7 +298,7 @@ void MainWindow::configureTheme(QApplication* app)
     QString fallbackThemeName = QIcon::themeName();
 
     // set theme style
-    QString fallbackStyleSheet = "QTableView { border: none; color: #0096d3; selection-color: #FFFFFF; selection-background-color: #0096d3; }";
+    QString fallbackStyleSheet = "QTableView { border: none; color: #FFA500; selection-color: #FFFFFF; selection-background-color: #FFA500; }";
     this->setStyleSheet(fallbackStyleSheet);
 
     // set application theme

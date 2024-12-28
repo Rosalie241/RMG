@@ -8,7 +8,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "AboutDialog.hpp"
-
+#include <RMG-Core/VersionHash.hpp>
 #include <RMG-Core/Core.hpp>
 
 using namespace UserInterface::Dialog;
@@ -16,9 +16,6 @@ using namespace UserInterface::Dialog;
 AboutDialog::AboutDialog(QWidget* parent) : QDialog(parent)
 {
     this->setupUi(this);
-    // prepare modified html w/ version
-    QString html = this->textBrowser->toHtml();
-    html.replace("{version}", QString::fromStdString(CoreGetVersion()));
-    // show modified html
-    this->textBrowser->setHtml(html);
+
+    this->versionLabel->setText(QString("%1").arg(QString::fromStdString(VERSION_HASH)));
 }
