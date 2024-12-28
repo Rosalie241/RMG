@@ -215,6 +215,7 @@ void NetplaySessionBrowserDialog::on_webSocket_textMessageReceived(QString messa
         }
         else
         {
+            this->sessionBrowserWidget->Reset();
             QtMessageBox::Error(this, "Server Error", json.value("message").toString());
         }
     }
