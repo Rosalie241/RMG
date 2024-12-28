@@ -53,6 +53,7 @@
 #include <QMenuBar>
 #include <QString>
 #include <QTimer>
+#include <QThread>
 #include <cmath>
 #include <QUrl>
 
@@ -611,7 +612,11 @@ void MainWindow::launchEmulationThread(QString cartRom, QString address, int por
     }
 
     this->emulationThread->SetNetplay(address, port, player);
+
+    
     this->launchEmulationThread(cartRom);
+    
+    QThread::sleep(2); // Sleep for 2 seconds before launching the emulation thread
 
     // Convert QJsonArray to QJsonObject
     QJsonObject cheatsObject;

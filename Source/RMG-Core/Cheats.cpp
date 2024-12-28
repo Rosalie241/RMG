@@ -1024,12 +1024,6 @@ bool CoreApplyCheatsNetplay(const std::vector<CoreCheat>& cheats) {
         return false;
     }
 
-    // Fail when clearing cheats fails
-    if (!CoreClearCheats()) {
-        CoreAddCallbackMessage(CoreDebugMessageType::Info, "Failed to clear cheats");
-        return false;
-    }
-
     CoreAddCallbackMessage(CoreDebugMessageType::Info, "Processing cheats...");
 
     for (const CoreCheat& cheat : cheats) {
