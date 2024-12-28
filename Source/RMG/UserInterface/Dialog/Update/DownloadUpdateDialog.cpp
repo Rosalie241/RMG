@@ -8,8 +8,8 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "DownloadUpdateDialog.hpp"
+#include "Utilities/QtMessageBox.hpp"
 
-#include <QMessageBox>
 #include <QFileInfo>
 #include <QPushButton>
 #include <QDesktopServices>
@@ -21,6 +21,7 @@
 #include <QProcess>
 
 using namespace UserInterface::Dialog;
+using namespace Utilities;
 
 DownloadUpdateDialog::DownloadUpdateDialog(QWidget *parent, QUrl url, QString filename) : QDialog(parent)
 {
@@ -52,17 +53,6 @@ QString DownloadUpdateDialog::GetFileName(void)
     return this->filename;
 }
 
-void DownloadUpdateDialog::showErrorMessage(QString error, QString details)
-{
-    QMessageBox msgBox((this->isVisible() ? this : this->parentWidget()));
-    msgBox.setIcon(QMessageBox::Icon::Critical);
-    msgBox.setWindowTitle("Error");
-    msgBox.setText(error);
-    msgBox.setDetailedText(details);
-    msgBox.addButton(QMessageBox::Ok);
-    msgBox.exec();
-}
-
 void DownloadUpdateDialog::on_reply_downloadProgress(qint64 size, qint64 total)
 {
     this->progressBar->setMaximum(total);
@@ -74,7 +64,7 @@ void DownloadUpdateDialog::on_reply_finished(void)
 {
     if (this->reply->error())
     {
-        this->showErrorMessage("Failed to download update file", this->reply->errorString());
+        QtMessageBox::Error(this, "Failed to download update file", this->reply->errorString());
         this->reply->deleteLater();
         this->reject();
         return;
@@ -87,7 +77,7 @@ void DownloadUpdateDialog::on_reply_finished(void)
     temporaryDir.setAutoRemove(false);
     if (!temporaryDir.isValid())
     {
-        this->showErrorMessage("Failed to create temporary directory", "");
+        QtMessageBox::Error(this, "Failed to create temporary directory", "");
         this->reply->deleteLater();
         this->reject();
         return;
@@ -100,7 +90,7 @@ void DownloadUpdateDialog::on_reply_finished(void)
     if (appImageEnv == nullptr ||
         !QFile(appImageEnv).exists()) 
     {
-        this->showErrorMessage("APPIMAGE variable is empty or invalid", "");
+        QtMessageBox::Error(this, "APPIMAGE variable is empty or invalid", "");
         this->reply->deleteLater();
         this->reject();
         return;
@@ -113,7 +103,7 @@ void DownloadUpdateDialog::on_reply_finished(void)
     QFile file(filePath);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
-        this->showErrorMessage("QFile::open() Failed", "");
+        QtMessageBox::Error(this, "QFile::open() Failed", "");
         this->reply->deleteLater();
         this->reject();
         return;
@@ -129,7 +119,7 @@ void DownloadUpdateDialog::on_reply_finished(void)
     int ret = std::rename(filePath.toStdString().c_str(), appImageEnv);
     if (ret != 0)
     {
-        this->showErrorMessage("std::rename() Failed", QString(strerror(errno)));
+        QtMessageBox::Error(this, "std::rename() Failed", QString(strerror(errno)));
         this->reply->deleteLater();
         this->reject();
         return;

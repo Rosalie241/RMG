@@ -62,8 +62,6 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
 
     std::vector<CorePlugin> pluginList;
 
-    void showErrorMessage(QString, QString);
-
     int currentIndex(void);
 
     void restoreDefaults(int);

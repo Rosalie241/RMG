@@ -9,7 +9,6 @@
  */
 #include "ChooseCheatOptionDialog.hpp"
 
-#include <QMessageBox>
 #include <QFileInfo>
 
 #include <RMG-Core/Core.hpp>

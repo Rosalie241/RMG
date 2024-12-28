@@ -32,8 +32,6 @@ class DownloadUpdateDialog : public QDialog, private Ui::DownloadUpdateDialog
     QString temporaryDirectory;
     QString filename;
 
-    void showErrorMessage(QString error, QString details);
-
   public:
     DownloadUpdateDialog(QWidget *parent, QUrl url, QString filename);
     ~DownloadUpdateDialog(void);

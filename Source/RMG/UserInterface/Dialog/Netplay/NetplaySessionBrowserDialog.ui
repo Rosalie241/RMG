@@ -50,33 +50,13 @@
     </layout>
    </item>
    <item>
-    <widget class="QTableWidget" name="tableWidget">
-     <attribute name="horizontalHeaderStretchLastSection">
-      <bool>true</bool>
-     </attribute>
-     <attribute name="verticalHeaderStretchLastSection">
-      <bool>false</bool>
-     </attribute>
-     <column>
-      <property name="text">
-       <string>Name</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Game</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Game MD5</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>Password?</string>
-      </property>
-     </column>
+    <widget class="UserInterface::Widget::NetplaySessionBrowserWidget" name="sessionBrowserWidget">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
     </widget>
    </item>
    <item>
@@ -91,6 +71,14 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>UserInterface::Widget::NetplaySessionBrowserWidget</class>
+   <extends>QStackedWidget</extends>
+   <header>UserInterface/Widget/Netplay/NetplaySessionBrowserWidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>

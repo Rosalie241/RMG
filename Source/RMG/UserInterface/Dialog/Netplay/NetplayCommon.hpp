@@ -11,7 +11,10 @@
 #define NETPLAYCOMMON_HPP
 
 #include <QJsonObject>
+#include <QJsonArray>
 #include <QString>
+
+#include <RMG-Core/m64p/api/m64p_types.h>
 
 namespace NetplayCommon
 {
@@ -22,14 +25,10 @@ namespace NetplayCommon
     // Adds common json emulator and auth info
     void AddCommonJson(QJsonObject& json);
 
-    // Retrieves CPU emulator for MD5
-    QString GetCpuEmulator(QString md5QString);
-
-    // Retrieves CPU emulator name
-    QString GetCpuEmulatorName(QString cpuEmulator);
-
     // Retrieves RSP and GFX plugin names
     QList<QString> GetPluginNames(QString md5QString);
 }
+
+m64p_error loadROM(QString filename);
 
 #endif // NETPLAYCOMMON_HPP

@@ -8,7 +8,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #define CORE_INTERNAL
-#include "Settings/Settings.hpp"
+#include "Settings.hpp"
 #include "MediaLoader.hpp"
 #include "RomSettings.hpp"
 #include "Utils/File.hpp"

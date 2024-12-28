@@ -36,6 +36,7 @@ class NetplaySessionBrowserDialog : public QDialog, private Ui::NetplaySessionBr
 
     QJsonObject GetSessionJson(void);
     QString     GetSessionFile(void);
+    QJsonArray  GetSessionCheats();
 
   private:
   	QWebSocket* webSocket;
@@ -44,23 +45,21 @@ class NetplaySessionBrowserDialog : public QDialog, private Ui::NetplaySessionBr
     QString sessionFile;
     QMap<QString, CoreRomSettings> romData;
 
-    void showErrorMessage(QString error, QString details);
     QString showROMDialog(QString name, QString md5);
 
     bool validate(void);
     void validateJoinButton(void);
 
-    void addSessionData(QString name, QString game, QString md5, bool password, int port, 
-                        QString cpuEmulator, QString rspPlugin, QString gfxPlugin);
-
   private slots:
     void on_webSocket_connected(void);
     void on_webSocket_textMessageReceived(QString message);
+    void on_webSocket_disconnected(void);
+
     void on_broadcastSocket_readyRead(void);
     void on_networkAccessManager_Finished(QNetworkReply* reply);
 
     void on_serverComboBox_currentIndexChanged(int index);
-    void on_tableWidget_currentItemChanged(QTableWidgetItem* current, QTableWidgetItem* previous);
+    void on_sessionBrowserWidget_OnSessionChanged(bool valid);
 
     void on_nickNameLineEdit_textChanged(void);
 

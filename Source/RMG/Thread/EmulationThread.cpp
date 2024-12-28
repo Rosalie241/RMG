@@ -10,6 +10,10 @@
 #include "EmulationThread.hpp"
 #include <RMG-Core/Core.hpp>
 
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QJsonArray>
+
 using namespace Thread;
 
 EmulationThread::EmulationThread(QObject *parent) : QThread(parent)
@@ -69,4 +73,81 @@ void EmulationThread::run(void)
 QString EmulationThread::GetLastError(void)
 {
     return this->errorMessage;
+}
+
+bool validateCheat(const CoreCheat& cheat);
+
+void EmulationThread::ApplyCheatsNetplay(QJsonObject cheats)
+{
+    CoreAddCallbackMessage(CoreDebugMessageType::Info, "Starting ApplyCheats");
+
+    // Log the entire JSON object to verify its structure
+    QJsonDocument cheatsDoc(cheats);
+    QString cheatsObjectString = cheatsDoc.toJson(QJsonDocument::Compact);
+    CoreAddCallbackMessage(CoreDebugMessageType::Info, ("Received cheats: " + cheatsObjectString).toStdString().c_str());
+
+    if (cheats.contains("custom") && cheats.value("custom").isArray()) {
+        QJsonArray customCheatsArray = cheats.value("custom").toArray();
+        CoreAddCallbackMessage(CoreDebugMessageType::Info, "Parsed custom cheats JSON array");
+
+        CoreCheat cheat;
+        cheat.Name = "Netplay";
+
+        for (const QJsonValue &value : customCheatsArray) {
+            QString cheatString = value.toString();
+            CoreAddCallbackMessage(CoreDebugMessageType::Info, ("Processing cheat: " + cheatString).toStdString().c_str());
+            QStringList codeParts = cheatString.split(' '); // Remove '$' and split by space
+
+            // Parse the cheat code and value
+            if (codeParts.size() == 2) {
+                bool addressOk, valueOk;
+                uint32_t address = codeParts[0].toUInt(&addressOk, 16); // Convert address to unsigned int (hex base)
+                uint32_t value = codeParts[1].toUInt(&valueOk, 16); // Convert value to unsigned int (hex base)
+
+                if (addressOk && valueOk) {
+                    CoreCheatCode code;
+                    code.Address = address;
+                    code.Value = value;
+                    code.UseOptions = false; // No options for now
+                    code.OptionIndex = 0;
+                    code.OptionSize = 0;
+                    cheat.CheatCodes.push_back(code);
+                } else {
+                    if (!addressOk) {
+                        CoreAddCallbackMessage(CoreDebugMessageType::Error, ("Invalid address: " + codeParts[0].toStdString()).c_str());
+                    }
+                    if (!valueOk) {
+                        CoreAddCallbackMessage(CoreDebugMessageType::Error, ("Invalid value: " + codeParts[1].toStdString()).c_str());
+                    }
+                }
+            } else {
+                CoreAddCallbackMessage(CoreDebugMessageType::Warning, ("Invalid cheat code format: " + cheatString.toStdString()).c_str());
+            }
+        }
+        // Validate and apply the cheats
+        if (!cheat.CheatCodes.empty()) {
+            std::vector<CoreCheat> cheatsToApply;
+            cheatsToApply.push_back(cheat); // Add the constructed cheat to the vector
+            if (CoreApplyCheatsNetplay(cheatsToApply)) {
+                CoreAddCallbackMessage(CoreDebugMessageType::Info, ("Netplay cheat added with " + QString::number(cheat.CheatCodes.size()) + " codes").toStdString().c_str());
+            } else {
+                CoreAddCallbackMessage(CoreDebugMessageType::Error, "Failed to add Netplay cheat");
+            }
+        } else {
+            CoreAddCallbackMessage(CoreDebugMessageType::Warning, "Netplay cheat not found or has no codes");
+        }
+    } else {
+        CoreAddCallbackMessage(CoreDebugMessageType::Warning, "Invalid custom cheats format: custom cheats array not found");
+    }
+}
+
+// Define the validateCheat function
+bool validateCheat(const CoreCheat& cheat)
+{
+    // Basic validation, add more as needed
+    if (cheat.Name.empty()) {
+        return false;
+    }
+
+    return true;
 }

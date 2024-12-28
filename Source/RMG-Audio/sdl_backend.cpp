@@ -24,8 +24,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "RMG-Core/Settings/Settings.hpp"
-#include "RMG-Core/Settings/SettingsID.hpp"
 #include "circular_buffer.hpp"
 #include "Resamplers/resamplers.hpp"
 #include "main.hpp"
@@ -272,7 +270,7 @@ struct sdl_backend* init_sdl_backend(void)
 
     sdl_backend->input_frequency = CoreSettingsGetIntValue(SettingsID::Audio_DefaultFrequency);
     sdl_backend->swap_channels = CoreSettingsGetBoolValue(SettingsID::Audio_SwapChannels);
-    sdl_backend->audio_sync = CoreSettingsGetBoolValue(SettingsID::Audio_Synchronize);
+    sdl_backend->audio_sync = !CoreHasInitNetplay() && CoreSettingsGetBoolValue(SettingsID::Audio_Synchronize);
     sdl_backend->paused_for_sync = 1;
     sdl_backend->speed_factor = 100;
     sdl_backend->resampler = resampler;

@@ -15,7 +15,8 @@
 #include "m64p/Api.hpp"
 #include "osal/osal_files.hpp"
 #include "Error.hpp"
-#include "Settings/Settings.hpp"
+#include "Settings.hpp"
+#include "Callback.hpp"
 
 #ifdef USE_LIBFMT
 #include "../3rdParty/fmt/include/fmt/core.h"
@@ -1009,6 +1010,56 @@ bool CoreApplyCheats(void)
         l_LoadedCheats.push_back({cheat, cheatOption});
     }
 
+    return true;
+}
+
+bool CoreApplyCheatsNetplay(const std::vector<CoreCheat>& cheats) {
+    std::string error;
+    m64p_error ret;
+
+    CoreAddCallbackMessage(CoreDebugMessageType::Info, "Starting CoreApplyCheatsNetplay");
+
+    if (!m64p::Core.IsHooked()) {
+        CoreAddCallbackMessage(CoreDebugMessageType::Info, "Core is not hooked");
+        return false;
+    }
+
+    CoreAddCallbackMessage(CoreDebugMessageType::Info, "Processing cheats...");
+
+    for (const CoreCheat& cheat : cheats) {
+        CoreAddCallbackMessage(CoreDebugMessageType::Info, "Inside cheat loop");
+
+        if (cheat.CheatCodes.empty()) {
+            CoreAddCallbackMessage(CoreDebugMessageType::Info, ("Cheat " + cheat.Name + " has no codes to apply").c_str());
+            continue;
+        }
+
+        CoreAddCallbackMessage(CoreDebugMessageType::Info, ("Processing cheat: " + cheat.Name).c_str());
+
+        bool skipCheat = false;
+        std::vector<m64p_cheat_code> m64p_cheatCodes;
+
+        for (const CoreCheatCode& code : cheat.CheatCodes) {
+            m64p_cheatCodes.push_back({code.Address, code.Value});
+        }
+
+        if (skipCheat) {
+            continue;
+        }
+
+        ret = m64p::Core.AddCheat(cheat.Name.c_str(), m64p_cheatCodes.data(), m64p_cheatCodes.size());
+        if (ret != M64ERR_SUCCESS) {
+            error = "CoreApplyCheatsNetplay m64p::Core.AddCheat(";
+            error += cheat.Name.c_str();
+            error += ") Failed: ";
+            error += m64p::Core.ErrorMessage(ret);
+            CoreSetError(error);
+            CoreAddCallbackMessage(CoreDebugMessageType::Error, error.c_str());
+            return false;
+        }
+    }
+
+    CoreAddCallbackMessage(CoreDebugMessageType::Info, "All cheats processed successfully");
     return true;
 }
 

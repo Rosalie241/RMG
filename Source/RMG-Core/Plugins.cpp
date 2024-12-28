@@ -14,7 +14,7 @@
 #include "Error.hpp"
 #include "Emulation.hpp"
 #include "RomSettings.hpp"
-#include "Settings/Settings.hpp"
+#include "Settings.hpp"
 
 #include "osal/osal_dynlib.hpp"
 #include "osal/osal_files.hpp"

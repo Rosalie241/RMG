@@ -142,6 +142,9 @@ bool CoreResetCheatOption(CoreCheat cheat);
 // attempts to apply the enabled cheats to the currently opened ROM
 bool CoreApplyCheats(void);
 
+// attempts to apply the enabled cheats to the currently opened ROM dynamically
+bool CoreApplyCheatsNetplay(const std::vector<CoreCheat>& cheats);
+
 // attempts to remove all cheats from the currently opened ROM
 bool CoreClearCheats(void);
 

@@ -31,7 +31,6 @@ set(RMG_CORE_SOURCES
     m64p/PluginApi.cpp
     CachedRomHeaderAndSettings.cpp
     ConvertStringEncoding.cpp
-    Settings/Settings.cpp
     SpeedLimiter.cpp
     SpeedFactor.cpp
     RomSettings.cpp
@@ -43,6 +42,7 @@ set(RMG_CORE_SOURCES
     Emulation.cpp
     SaveState.cpp
     Callback.cpp
+    Settings.cpp
     Plugins.cpp
     Version.cpp
     Cheats.cpp
