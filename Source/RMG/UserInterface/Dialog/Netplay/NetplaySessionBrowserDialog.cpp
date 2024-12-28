@@ -392,12 +392,12 @@ void NetplaySessionBrowserDialog::accept()
 
     QJsonObject json;
     QJsonObject session;
-    json.insert("type", "request_join_room");
-    json.insert("player_name", this->nickNameLineEdit->text());
     session.insert("port", sessionData.Port);
     session.insert("password", password);
     session.insert("MD5", QString::fromStdString(md5));
 
+    json.insert("type", "request_join_room");
+    json.insert("player_name", this->nickNameLineEdit->text());
     json.insert("room", session);
     NetplayCommon::AddCommonJson(json);
 
