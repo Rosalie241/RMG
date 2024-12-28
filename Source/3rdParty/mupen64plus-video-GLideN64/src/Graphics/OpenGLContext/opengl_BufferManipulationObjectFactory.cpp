@@ -282,10 +282,10 @@ struct FramebufferTextureFormatsGLES2 : public graphics::FramebufferTextureForma
 			colorFormatBytes = 2;
 		}
 
-		noiseInternalFormat = graphics::internalcolorFormat::LUMINANCE;
-		noiseFormat = graphics::colorFormat::LUMINANCE;
-		noiseType = GL_UNSIGNED_BYTE;
-		noiseFormatBytes = 1;
+		fontInternalFormat = graphics::internalcolorFormat::LUMINANCE;
+		fontFormat = graphics::colorFormat::LUMINANCE;
+		fontType = GL_UNSIGNED_BYTE;
+		fontFormatBytes = 1;
 	}
 };
 
@@ -339,10 +339,10 @@ struct FramebufferTextureFormatsGLES3 : public graphics::FramebufferTextureForma
 		lutType = GL_UNSIGNED_INT;
 		lutFormatBytes = 4;
 
-		noiseInternalFormat = GL_R8;
-		noiseFormat = GL_RED;
-		noiseType = GL_UNSIGNED_BYTE;
-		noiseFormatBytes = 1;
+		fontInternalFormat = GL_R8;
+		fontFormat = GL_RED;
+		fontType = GL_UNSIGNED_BYTE;
+		fontFormatBytes = 1;
 	}
 };
 
@@ -379,10 +379,10 @@ struct FramebufferTextureFormatsOpenGL : public graphics::FramebufferTextureForm
 		lutType = GL_UNSIGNED_INT;
 		lutFormatBytes = 4;
 
-		noiseInternalFormat = GL_R8;
-		noiseFormat = GL_RED;
-		noiseType = GL_UNSIGNED_BYTE;
-		noiseFormatBytes = 1;
+		fontInternalFormat = GL_R8;
+		fontFormat = GL_RED;
+		fontType = GL_UNSIGNED_BYTE;
+		fontFormatBytes = 1;
 	}
 };
 

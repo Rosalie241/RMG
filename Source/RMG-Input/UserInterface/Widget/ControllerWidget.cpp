@@ -310,7 +310,7 @@ void ControllerWidget::removeDuplicates(MappingButton* button)
             continue;
         }
 
-        for (int i = 0; i < inputType.size(); i++)
+        for (size_t i = 0; i < inputType.size(); i++)
         {
             if (buttonWidget->HasInputData((InputType)inputType.at(i), inputData.at(i), extraInputData.at(i)))
             {
@@ -773,13 +773,11 @@ void ControllerWidget::on_addProfileButton_clicked()
 
 void ControllerWidget::on_removeProfileButton_clicked()
 {
-    bool ret;
-
     if (this->profileComboBox->currentData().toString() == this->settingsSection)
     {
         QMessageBox messageBox(this);
         messageBox.setIcon(QMessageBox::Icon::Warning);
-        messageBox.setText("Are you sure you want to reset the main profile?");
+        messageBox.setText("Are you sure you want to clear the main profile?");
         messageBox.addButton(QMessageBox::Yes);
         messageBox.addButton(QMessageBox::No);
         if (messageBox.exec() == QMessageBox::Yes)
@@ -855,7 +853,11 @@ void ControllerWidget::on_resetButton_clicked()
 
 void ControllerWidget::on_optionsButton_clicked()
 {
-    OptionsDialog dialog(this, this->optionsDialogSettings);
+    bool isKeyboard = this->inputDeviceComboBox->currentData().toInt() == (int)InputDeviceType::Keyboard;
+
+    OptionsDialog dialog(this, this->optionsDialogSettings,
+                         isKeyboard ? nullptr : this->currentJoystick, 
+                         isKeyboard ? nullptr : this->currentController);
     int ret = dialog.exec();
 
     // when saved, store settings for later
@@ -1866,6 +1868,12 @@ void ControllerWidget::SetCurrentJoystickID(SDL_JoystickID joystickId)
 void ControllerWidget::SetIsCurrentJoystickGameController(bool isGameController)
 {
     this->isCurrentJoystickGameController = isGameController;
+}
+
+void ControllerWidget::SetCurrentJoystick(SDL_Joystick* joystick, SDL_GameController* controller)
+{
+    this->currentJoystick   = joystick;
+    this->currentController = controller;
 }
 
 void ControllerWidget::AddUserProfile(QString name, QString section)

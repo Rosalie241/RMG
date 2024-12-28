@@ -65,7 +65,7 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 	add_definitions( -D__MSC__)
 endif()
 
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
     SET(GCC_CPP11_COMPILE_FLAGS "-std=c++0x -Wno-unused-result")
     if ( NOT MINGW )
       SET ( PIC_FLAGS "-fPIC" )

@@ -19,7 +19,7 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 												  const CombinerKey &_key,
 												  UniformGroups &_uniforms) {
 
-	_addNoiseTex(_program, _uniforms);
+	_addNoiseSeed(_program, _uniforms);
 	_addScreenSpaceTriangleInfo(_program, _uniforms);
 	_addRasterInfo(_program, _uniforms);
 	_addViewportInfo(_program, _uniforms);
@@ -71,7 +71,7 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 
 	_addBlendCvg(_program, _uniforms);
 
-	_addDitherMode(_program, _uniforms, _inputs.usesNoise());
+	_addDitherMode(_program, _uniforms);
 
 	_addScreenScale(_program, _uniforms);
 

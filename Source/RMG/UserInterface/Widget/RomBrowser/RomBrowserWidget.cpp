@@ -174,6 +174,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->contextMenu = new QMenu(this);
     this->action_PlayGame = new QAction(this);
     this->action_PlayGameWith = new QAction(this);
+    this->menu_PlayGameWithSlot = new QMenu(this);
     this->action_RefreshRomList = new QAction(this);
     this->action_OpenRomDirectory = new QAction(this);
     this->action_ChangeRomDirectory = new QAction(this);
@@ -192,6 +193,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     // configure context menu contents
     this->action_PlayGame->setText("Play Game");
     this->action_PlayGameWith->setText("Play Game with Disk");
+    this->menu_PlayGameWithSlot->menuAction()->setText("Play Game with State");
     this->action_RefreshRomList->setText("Refresh ROM List");
     this->action_OpenRomDirectory->setText("Open ROM Directory");
     this->action_ChangeRomDirectory->setText("Change ROM Directory...");
@@ -219,6 +221,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     // configure context menu
     this->contextMenu->addAction(this->action_PlayGame);
     this->contextMenu->addAction(this->action_PlayGameWith);
+    this->contextMenu->addMenu(this->menu_PlayGameWithSlot);
     this->contextMenu->addSeparator();
     this->contextMenu->addAction(this->action_RefreshRomList);
     this->contextMenu->addSeparator();
@@ -332,6 +335,26 @@ void RomBrowserWidget::SetGridViewUniformSizes(bool value)
     this->gridViewWidget->setUniformItemSizes(value);
 }
 
+QMap<QString, CoreRomSettings> RomBrowserWidget::GetModelData(void)
+{
+    QMap<QString, CoreRomSettings> data;
+    QStandardItemModel* model = this->getCurrentModel();
+    RomBrowserModelData modelData;
+
+    if (model == nullptr)
+    {
+        return data;
+    }
+
+    for (int i = 0; i < model->rowCount(); i++)
+    {
+        modelData = model->item(i)->data().value<RomBrowserModelData>();
+        data.insert(modelData.file, modelData.settings);
+    }
+
+    return data;
+}
+
 QStandardItemModel* RomBrowserWidget::getCurrentModel(void)
 {
     QWidget* currentWidget = this->currentWidget();
@@ -372,15 +395,15 @@ bool RomBrowserWidget::getCurrentData(RomBrowserModelData& data)
         return false;
     }
 
-    QModelIndex         index = view->currentIndex();
-    QStandardItem*      item  = model->item(index.row(), index.column());
+    QModelIndex    index = view->currentIndex();
+    QStandardItem* item  = model->item(index.row(), 0);
 
     if (item == nullptr)
     {
         return false;
     }
 
-    data  = model->itemData(index).last().value<RomBrowserModelData>();
+    data = item->data().value<RomBrowserModelData>();
     return true;
 }
 
@@ -453,42 +476,34 @@ void RomBrowserWidget::addRomData(QString file, CoreRomType type, CoreRomHeader 
     // internal name
     QStandardItem* listViewItem2 = new QStandardItem();
     listViewItem2->setText(QString::fromStdString(header.Name));
-    listViewItem2->setData(itemData);
     listViewRow.append(listViewItem2);
     // MD5
     QStandardItem* listViewItem3 = new QStandardItem();
     listViewItem3->setText(QString::fromStdString(settings.MD5));
-    listViewItem3->setData(itemData);
     listViewRow.append(listViewItem3);
     // game format
     QStandardItem* listViewItem4 = new QStandardItem();
     listViewItem4->setText(gameFormat);
-    listViewItem4->setData(itemData);
     listViewRow.append(listViewItem4);
     // file name
     QStandardItem* listViewItem5 = new QStandardItem();
     listViewItem5->setText(QFileInfo(file).completeBaseName());
-    listViewItem5->setData(itemData);
     listViewRow.append(listViewItem5);
     // file extension
     QStandardItem* listViewItem6 = new QStandardItem();
     listViewItem6->setText(((QFileInfo(file).suffix()).prepend(".")).toUpper());
-    listViewItem6->setData(itemData);
     listViewRow.append(listViewItem6);
     // file size
     QStandardItem* listViewItem7 = new QStandardItem();
     listViewItem7->setText(fileSizeString);
-    listViewItem7->setData(itemData);
     listViewRow.append(listViewItem7);
     // game i.d.
     QStandardItem* listViewItem8 = new QStandardItem();
     listViewItem8->setText(QString::fromStdString(header.GameID));
-    listViewItem8->setData(itemData);
     listViewRow.append(listViewItem8);
     // region
     QStandardItem* listViewItem9 = new QStandardItem();
     listViewItem9->setText(QString::fromStdString(header.Region));
-    listViewItem9->setData(itemData);
     listViewRow.append(listViewItem9);
     this->listViewModel->appendRow(listViewRow);
 
@@ -600,6 +615,7 @@ void RomBrowserWidget::customContextMenuRequested(QPoint position)
 
     this->action_PlayGame->setEnabled(hasSelection);
     this->action_PlayGameWith->setEnabled(hasSelection);
+    this->menu_PlayGameWithSlot->menuAction()->setEnabled(hasSelection);
     this->action_RomInformation->setEnabled(hasSelection);
     this->action_EditGameSettings->setEnabled(hasSelection);
     this->action_EditGameInputSettings->setEnabled(hasSelection && CorePluginsHasROMConfig(CorePluginType::Input));
@@ -610,6 +626,11 @@ void RomBrowserWidget::customContextMenuRequested(QPoint position)
     this->action_SetCoverImage->setVisible(view == this->gridViewWidget);
     this->action_RemoveCoverImage->setEnabled(hasSelection && !data.coverFile.isEmpty());
     this->action_RemoveCoverImage->setVisible(view == this->gridViewWidget);
+
+    if (hasSelection)
+    {
+        this->generateStateMenu();
+    }
 
     if (hasSelection && data.type == CoreRomType::Disk)
     { // disk selected
@@ -656,6 +677,49 @@ void RomBrowserWidget::generateColumnsMenu(void)
             this->listViewWidget->horizontalHeader()->setSectionHidden(column, !checked);
         });
     }
+}
+
+void RomBrowserWidget::generateStateMenu(void)
+{
+    this->menu_PlayGameWithSlot->clear();
+
+    RomBrowserModelData data;
+
+    if (!this->getCurrentData(data))
+    {
+        return;
+    }
+
+    std::filesystem::path saveStatePath;
+    QString saveStateSlotText;
+
+    for (int i = 0; i < 10; i++)
+    {
+        if (!CoreGetSaveStatePath(data.header, data.settings, i, saveStatePath))
+        {
+            continue;
+        }
+
+        QFileInfo saveStateFileInfo(QString::fromStdWString(saveStatePath.wstring()));
+        if (!saveStatePath.empty() && saveStateFileInfo.exists())
+        {
+            saveStateSlotText = "Slot " + QString::number(i) + " - ";
+            saveStateSlotText += saveStateFileInfo.lastModified().toString("dd/MM/yyyy hh:mm");
+
+            QAction* slotAction = this->menu_PlayGameWithSlot->addAction(saveStateSlotText);
+            connect(slotAction, &QAction::triggered, [=, this]()
+            {
+                QString slotText = slotAction->text().split(" ").at(1);
+                // sometimes the text can contain a '&'
+                // which will make the toInt() function return 0
+                // so strip it out
+                slotText.remove('&');
+                this->on_Action_PlayGameWithSlot(slotText.toInt());
+            });
+        }
+    }
+
+    this->menu_PlayGameWithSlot->setDisabled(this->menu_PlayGameWithSlot->isEmpty());
 }
 
 void RomBrowserWidget::on_listViewWidget_sortIndicatorChanged(int logicalIndex, Qt::SortOrder sortOrder)
@@ -710,7 +774,7 @@ void RomBrowserWidget::on_listViewWidget_sectionMoved(int logicalIndex, int oldV
 {
     std::vector<int> columnOrder = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnOrder);
 
-    for (int i = 0; i < columnOrder.size(); i++)
+    for (size_t i = 0; i < columnOrder.size(); i++)
     {
         columnOrder.at(i) = this->listViewWidget->horizontalHeader()->visualIndex(i);
     }
@@ -755,7 +819,7 @@ void RomBrowserWidget::on_ZoomOut(void)
 void RomBrowserWidget::on_RomBrowserThread_RomsFound(QList<RomSearcherThreadData> data, int index, int count)
 {
     // add every item to our dataset
-    for (int i = 0; i < data.size(); i++)
+    for (qsizetype i = 0; i < data.size(); i++)
     {
         this->addRomData(data[i].File, data[i].Type, data[i].Header, data[i].Settings);
     }
@@ -791,7 +855,7 @@ void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
     }
 
     // update list view's column sizes
-    for (int i = 0; i < columnSizes.size(); i++)
+    for (size_t i = 0; i < columnSizes.size(); i++)
     {
         // set column widths to values specified in config file (or resize to content if not already specified)
         if (columnSizes.at(i) == -1)
@@ -820,7 +884,7 @@ void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
     }
 
     // update list view's column order
-    for (int i = 0; i < columnOrder.size(); i++)
+    for (size_t i = 0; i < columnOrder.size(); i++)
     {
         this->listViewWidget->horizontalHeader()->moveSection(this->listViewWidget->horizontalHeader()->visualIndex(i), columnOrder.at(i));
     }
@@ -839,7 +903,7 @@ void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
     }
 
     // update list view's column visibilities
-    for (int i = 0; i < columnVisibility.size(); i++)
+    for (size_t i = 0; i < columnVisibility.size(); i++)
     {
         if (columnVisibility.at(i) == 0)
         {
@@ -889,6 +953,18 @@ void RomBrowserWidget::on_Action_PlayGameWith(void)
     }
 
     emit this->PlayGameWith(data.type, data.file);
+}
+
+void RomBrowserWidget::on_Action_PlayGameWithSlot(int slot)
+{
+    RomBrowserModelData data;
+
+    if (!this->getCurrentData(data))
+    {
+        return;
+    }
+
+    emit this->PlayGameWithSlot(data.file, slot);
 }
 
 void RomBrowserWidget::on_Action_RefreshRomList(void)
@@ -946,7 +1022,7 @@ void RomBrowserWidget::on_Action_ResetColumnSizes(void)
     this->listViewWidget->resizeColumnsToContents();
     this->listViewWidget->horizontalHeader()->setStretchLastSection(true);
 
-    for (int i = 0; i < columnVisibility.size(); i++)
+    for (size_t i = 0; i < columnVisibility.size(); i++)
     {
         if (columnVisibility.at(i) == 0)
         {

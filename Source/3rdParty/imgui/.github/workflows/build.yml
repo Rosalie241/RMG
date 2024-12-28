@@ -21,7 +21,7 @@ jobs:
       VS_PATH: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\
       MSBUILD_PATH: C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install Dependencies
         shell: powershell
@@ -209,7 +209,7 @@ jobs:
   Linux:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Install Dependencies
       run: |
@@ -402,7 +402,7 @@ jobs:
   MacOS:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Install Dependencies
       run: |
@@ -462,7 +462,7 @@ jobs:
   iOS:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Build example_apple_metal
       run: |
@@ -472,15 +472,15 @@ jobs:
   Emscripten:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Install Dependencies
       run: |
         wget -q https://github.com/emscripten-core/emsdk/archive/master.tar.gz
         tar -xvf master.tar.gz
         emsdk-master/emsdk update
-        emsdk-master/emsdk install 3.1.37
-        emsdk-master/emsdk activate 3.1.37
+        emsdk-master/emsdk install latest
+        emsdk-master/emsdk activate latest
 
     - name: Build example_sdl2_opengl3 with Emscripten
       run: |
@@ -494,12 +494,12 @@ jobs:
         pushd emsdk-master
         source ./emsdk_env.sh
         popd
-        make -C examples/example_emscripten_wgpu
+        make -C examples/example_emscripten_wgpu -f Makefile.emscripten
 
   Android:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Build example_android_opengl3
       run: |

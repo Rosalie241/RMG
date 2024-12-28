@@ -11,31 +11,25 @@
 #define MAINWINDOW_HPP
 
 #include "Thread/EmulationThread.hpp"
-#include "Dialog/SettingsDialog.hpp"
-#include "Dialog/Cheats/CheatsDialog.hpp"
-#include "Dialog/RomInfoDialog.hpp"
-#include "Dialog/LogDialog.hpp"
 #include "EventFilter.hpp"
-#include "Widget/Render/OGLWidget.hpp"
-#include "Widget/Render/VKWidget.hpp"
-#include "Widget/RomBrowser/RomBrowserWidget.hpp"
 #include "Callbacks.hpp"
 
-#include <QAction>
-#include <QToolBar>
-#include <QCloseEvent>
-#include <QMainWindow>
-#include <QSettings>
-#include <QMessageBox>
-#include <QStackedWidget>
-#include <QGuiApplication>
+#include "Widget/RomBrowser/RomBrowserWidget.hpp"
+#include "Widget/Render/DummyWidget.hpp"
+#include "Widget/Render/OGLWidget.hpp"
+#include "Widget/Render/VKWidget.hpp"
+
+#include "Dialog/LogDialog.hpp"
 
 #ifdef UPDATER
-#include <QNetworkAccessManager>
 #include <QNetworkReply>
-#include <QJsonDocument>
-#include <QJsonObject>
 #endif // UPDATER
+#include <QGuiApplication>
+#include <QStackedWidget>
+#include <QCloseEvent>
+#include <QMainWindow>
+#include <QMessageBox>
+#include <QAction>
 
 #include "ui_MainWindow.h"
 
@@ -50,7 +44,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     ~MainWindow(void);
 
     bool Init(QApplication* app, bool showUI, bool launchROM);
-    void OpenROM(QString file, QString disk, bool fullscreen, bool quitAfterEmulation);
+    void OpenROM(QString file, QString disk, bool fullscreen, bool quitAfterEmulation, int stateSlot);
 
   private:
     Thread::EmulationThread *emulationThread = nullptr;
@@ -58,12 +52,12 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     CoreCallbacks* coreCallBacks = nullptr;
 
     QStackedWidget *ui_Widgets                     = nullptr;
-    Widget::OGLWidget *ui_Widget_OpenGL            = nullptr;
-    Widget::VKWidget  *ui_Widget_Vulkan            = nullptr;
+    Widget::DummyWidget *ui_Widget_Dummy           = nullptr;
+    Widget::OGLWidget   *ui_Widget_OpenGL          = nullptr;
+    Widget::VKWidget    *ui_Widget_Vulkan          = nullptr;
     Widget::RomBrowserWidget *ui_Widget_RomBrowser = nullptr;
     EventFilter *ui_EventFilter                    = nullptr;
     QLabel *ui_StatusBar_Label                     = nullptr;
-    //QLabel *ui_StatusBar_RenderModeLabel         = nullptr;
     QLabel *ui_StatusBar_SpeedLabel                = nullptr;
 
     QByteArray ui_Geometry;
@@ -77,8 +71,9 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     bool ui_LaunchInFullscreen   = false;
     bool ui_QuitAfterEmulation   = false;
     bool ui_RefreshRomListAfterEmulation = false;
+    int  ui_LoadSaveStateSlot    = -1;
 
-    VidExtRenderMode ui_VidExtRenderMode = VidExtRenderMode::OpenGL;
+    VidExtRenderMode ui_VidExtRenderMode = VidExtRenderMode::Invalid;
 
     bool ui_ShowUI        = false;
     bool ui_ShowMenubar   = false;
@@ -105,13 +100,16 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 
     bool ui_SilentUpdateCheck = false;
 
-    int ui_TimerId      = 0;
-    int ui_TimerTimeout = 0;
+    int ui_ResetStatusBarTimerId = 0;
+    int ui_StatusBarTimerTimeout = 0;
 
     int ui_FullscreenTimerId = 0;
     int ui_GamesharkButtonTimerId = 0;
     int ui_UpdateSaveStateSlotTimerId = 0;
     int ui_CheckVideoSizeTimerId = 0;
+
+    int ui_LoadSaveStateSlotCounter = 0;
+    int ui_LoadSaveStateSlotTimerId = -1;
 
     QString ui_WindowTitle;
 
@@ -133,7 +131,8 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 
     void initializeEmulationThread(void);
     void connectEmulationThreadSignals(void);
-    void launchEmulationThread(QString cartRom, QString diskRom = "", bool refreshRomListAfterEmulation = false);
+    void launchEmulationThread(QString cartRom, QString address, int port, int player, QJsonArray cheats);
+    void launchEmulationThread(QString cartRom, QString diskRom = "", bool refreshRomListAfterEmulation = false, int slot = -1);
 
     QString getSaveStateSlotDateTimeText(QAction* action);
     QString getSaveStateSlotText(QAction* action, int slot);
@@ -202,6 +201,9 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     void on_Action_View_ClearRomCache(void);
     void on_Action_View_Log(void);
 
+    void on_Action_Netplay_CreateSession(void);
+    void on_Action_Netplay_JoinSession(void);
+
     void on_Action_Help_Github(void);
     void on_Action_Help_About(void);
     void on_Action_Help_Update(void);
@@ -215,11 +217,14 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 
     void on_RomBrowser_PlayGame(QString file);
     void on_RomBrowser_PlayGameWith(CoreRomType type, QString file);
+    void on_RomBrowser_PlayGameWithSlot(QString file, int slot);
     void on_RomBrowser_ChangeRomDirectory(void);
     void on_RomBrowser_RomInformation(QString file);
     void on_RomBrowser_EditGameSettings(QString file);
     void on_RomBrowser_EditGameInputSettings(QString file);
     void on_RomBrowser_Cheats(QString file);
+
+    void on_Netplay_PlayGame(QString file, QString address, int port, int player, QJsonArray cheats);
 
   public slots:
 
@@ -229,8 +234,9 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     void on_VidExt_SetFullscreenMode(int width, int height, int bps, int flags);
     void on_VidExt_ResizeWindow(int width, int height);
     void on_VidExt_ToggleFS(bool fullscreen);
+    void on_VidExt_Quit(void);
 
-    void on_Core_DebugCallback(CoreDebugMessageType type, QString context, QString message);
+    void on_Core_DebugCallback(QList<CoreCallbackMessage> messages);
     void on_Core_StateCallback(CoreStateCallbackType type, int value);
 };
 } // namespace UserInterface

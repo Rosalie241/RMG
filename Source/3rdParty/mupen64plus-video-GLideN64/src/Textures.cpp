@@ -52,9 +52,9 @@ u32 GetCI4IA_RGBA4444(u16 offset, u16 x, u16 i, u8 palette)
 	const u8 color4B = Get4BitPaletteColor(offset, x, i);
 
 	if (x & 1)
-		return IA88_RGBA4444(*(u16*)&TMEM[(0x100 + (palette << 4) + (color4B & 0x0F)) & 0x1FF]);
+		return IA88_RGBA4444(static_cast<u16>(TMEM[(0x100 + (palette << 4) + (color4B & 0x0F)) & 0x1FF] & 0xFFFF));
 	else
-		return IA88_RGBA4444(*(u16*)&TMEM[(0x100 + (palette << 4) + (color4B >> 4)) & 0x1FF]);
+		return IA88_RGBA4444(static_cast<u16>(TMEM[(0x100 + (palette << 4) + (color4B >> 4)) & 0x1FF] & 0xFFFF));
 }
 
 u32 GetCI4IA_RGBA8888(u16 offset, u16 x, u16 i, u8 palette)
@@ -62,9 +62,9 @@ u32 GetCI4IA_RGBA8888(u16 offset, u16 x, u16 i, u8 palette)
 	const u8 color4B = Get4BitPaletteColor(offset, x, i);
 
 	if (x & 1)
-		return IA88_RGBA8888(*(u16*)&TMEM[(0x100 + (palette << 4) + (color4B & 0x0F)) & 0x1FF]);
+		return IA88_RGBA8888(static_cast<u16>(TMEM[(0x100 + (palette << 4) + (color4B & 0x0F)) & 0x1FF] & 0xFFFF));
 	else
-		return IA88_RGBA8888(*(u16*)&TMEM[(0x100 + (palette << 4) + (color4B >> 4)) & 0x1FF]);
+		return IA88_RGBA8888(static_cast<u16>(TMEM[(0x100 + (palette << 4) + (color4B >> 4)) & 0x1FF] & 0xFFFF));
 }
 
 u32 GetCI4RGBA_RGBA5551(u16 offset, u16 x, u16 i, u8 palette)
@@ -72,9 +72,9 @@ u32 GetCI4RGBA_RGBA5551(u16 offset, u16 x, u16 i, u8 palette)
 	const u8 color4B = Get4BitPaletteColor(offset, x, i);
 
 	if (x & 1)
-		return RGBA5551_RGBA5551(*(u16*)&TMEM[(0x100 + (palette << 4) + (color4B & 0x0F)) & 0x1FF]);
+		return RGBA5551_RGBA5551(static_cast<u16>(TMEM[(0x100 + (palette << 4) + (color4B & 0x0F)) & 0x1FF] & 0xFFFF));
 	else
-		return RGBA5551_RGBA5551(*(u16*)&TMEM[(0x100 + (palette << 4) + (color4B >> 4)) & 0x1FF]);
+		return RGBA5551_RGBA5551(static_cast<u16>(TMEM[(0x100 + (palette << 4) + (color4B >> 4)) & 0x1FF] & 0xFFFF));
 }
 
 u32 GetCI4RGBA_RGBA8888(u16 offset, u16 x, u16 i, u8 palette)
@@ -82,9 +82,9 @@ u32 GetCI4RGBA_RGBA8888(u16 offset, u16 x, u16 i, u8 palette)
 	const u8 color4B = Get4BitPaletteColor(offset, x, i);
 
 	if (x & 1)
-		return RGBA5551_RGBA8888(*(u16*)&TMEM[(0x100 + (palette << 4) + (color4B & 0x0F)) & 0x1FF]);
+		return RGBA5551_RGBA8888(static_cast<u16>(TMEM[(0x100 + (palette << 4) + (color4B & 0x0F)) & 0x1FF] & 0xFFFF));
 	else
-		return RGBA5551_RGBA8888(*(u16*)&TMEM[(0x100 + (palette << 4) + (color4B >> 4)) & 0x1FF]);
+		return RGBA5551_RGBA8888(static_cast<u16>(TMEM[(0x100 + (palette << 4) + (color4B >> 4)) & 0x1FF] & 0xFFFF));
 }
 
 u32 GetIA31_RGBA8888(u16 offset, u16 x, u16 i, u8 palette)
@@ -120,25 +120,25 @@ inline u8 Get8BitPaletteColor(u16 offset, u16 x, u16 i)
 u32 GetCI8IA_RGBA4444(u16 offset, u16 x, u16 i, u8 palette)
 {
 	const u8 color = Get8BitPaletteColor(offset, x, i);
-	return IA88_RGBA4444(*(u16*)&TMEM[(0x100 + color) & 0x1FF]);
+	return IA88_RGBA4444(static_cast<u16>(TMEM[(0x100 + color) & 0x1FF] & 0xFFFF));
 }
 
 u32 GetCI8IA_RGBA8888(u16 offset, u16 x, u16 i, u8 palette)
 {
 	const u8 color = Get8BitPaletteColor(offset, x, i);
-	return IA88_RGBA8888(*(u16*)&TMEM[(0x100 + color) & 0x1FF]);
+	return IA88_RGBA8888(static_cast<u16>(TMEM[(0x100 + color) & 0x1FF] & 0xFFFF));
 }
 
 u32 GetCI8RGBA_RGBA5551(u16 offset, u16 x, u16 i, u8 palette)
 {
 	const u8 color = Get8BitPaletteColor(offset, x, i);
-	return RGBA5551_RGBA5551(*(u16*)&TMEM[(0x100 + color) & 0x1FF]);
+	return RGBA5551_RGBA5551(static_cast<u16>(TMEM[(0x100 + color) & 0x1FF] & 0xFFFF));
 }
 
 u32 GetCI8RGBA_RGBA8888(u16 offset, u16 x, u16 i, u8 palette)
 {
 	const u8 color = Get8BitPaletteColor(offset, x, i);
-	return RGBA5551_RGBA8888(*(u16*)&TMEM[(0x100 + color) & 0x1FF]);
+	return RGBA5551_RGBA8888(static_cast<u16>(TMEM[(0x100 + color) & 0x1FF] & 0xFFFF));
 }
 
 u32 GetIA44_RGBA8888(u16 offset, u16 x, u16 i, u8 palette)
@@ -193,7 +193,7 @@ u32 GetI16_RGBA4444(u16 offset, u16 x, u16 i, u8 palette)
 u32 GetCI16IA_RGBA8888(u16 offset, u16 x, u16 i, u8 palette)
 {
 	const u16 tex = Get16BitColor(offset, x, i);
-	const u16 col = (*(u16*)&TMEM[0x100 + (tex & 0xFF)]);
+	const u16 col = (static_cast<u16>(TMEM[0x100 + (tex & 0xFF)] & 0xFFFF));
 	const u16 c = col >> 8;
 	const u16 a = col & 0xFF;
 	return (a << 24) | (c << 16) | (c << 8) | c;
@@ -202,7 +202,7 @@ u32 GetCI16IA_RGBA8888(u16 offset, u16 x, u16 i, u8 palette)
 u32 GetCI16IA_RGBA4444(u16 offset, u16 x, u16 i, u8 palette)
 {
 	const u16 tex = Get16BitColor(offset, x, i);
-	const u16 col = (*(u16*)&TMEM[0x100 + (tex & 0xFF)]);
+	const u16 col = (static_cast<u16>(TMEM[0x100 + (tex & 0xFF)] & 0xFFFF));
 	const u16 c = col >> 12;
 	const u16 a = col & 0x0F;
 	return (a << 12) | (c << 8) | (c << 4) | c;
@@ -303,9 +303,9 @@ u32 GetCI4IA_RGBA4444_BG(u64 *src, u16 x, u16 i, u8 palette)
 	u8 color4B = ((u8*)src)[(x >> 1) ^ (i << 1)];
 
 	if (x & 1)
-		return IA88_RGBA4444(*(u16*)&TMEM[256 + (palette << 4) + (color4B & 0x0F)]);
+		return IA88_RGBA4444(static_cast<u16>(TMEM[256 + (palette << 4) + (color4B & 0x0F)] & 0xFFFF));
 	else
-		return IA88_RGBA4444(*(u16*)&TMEM[256 + (palette << 4) + (color4B >> 4)]);
+		return IA88_RGBA4444(static_cast<u16>(TMEM[256 + (palette << 4) + (color4B >> 4)] & 0xFFFF));
 }
 
 u32 GetCI4IA_RGBA8888_BG(u64 *src, u16 x, u16 i, u8 palette)
@@ -313,9 +313,9 @@ u32 GetCI4IA_RGBA8888_BG(u64 *src, u16 x, u16 i, u8 palette)
 	u8 color4B = ((u8*)src)[(x >> 1) ^ (i << 1)];
 
 	if (x & 1)
-		return IA88_RGBA8888(*(u16*)&TMEM[256 + (palette << 4) + (color4B & 0x0F)]);
+		return IA88_RGBA8888(static_cast<u16>(TMEM[256 + (palette << 4) + (color4B & 0x0F)] & 0xFFFF));
 	else
-		return IA88_RGBA8888(*(u16*)&TMEM[256 + (palette << 4) + (color4B >> 4)]);
+		return IA88_RGBA8888(static_cast<u16>(TMEM[256 + (palette << 4) + (color4B >> 4)] & 0xFFFF));
 }
 
 u32 GetCI4RGBA_RGBA5551_BG(u64 *src, u16 x, u16 i, u8 palette)
@@ -323,9 +323,9 @@ u32 GetCI4RGBA_RGBA5551_BG(u64 *src, u16 x, u16 i, u8 palette)
 	u8 color4B = ((u8*)src)[(x >> 1) ^ (i << 1)];
 
 	if (x & 1)
-		return RGBA5551_RGBA5551(*(u16*)&TMEM[256 + (palette << 4) + (color4B & 0x0F)]);
+		return RGBA5551_RGBA5551(static_cast<u16>(TMEM[256 + (palette << 4) + (color4B & 0x0F)] & 0xFFFF));
 	else
-		return RGBA5551_RGBA5551(*(u16*)&TMEM[256 + (palette << 4) + (color4B >> 4)]);
+		return RGBA5551_RGBA5551(static_cast<u16>(TMEM[256 + (palette << 4) + (color4B >> 4)] & 0xFFFF));
 }
 
 u32 GetCI4RGBA_RGBA8888_BG(u64 *src, u16 x, u16 i, u8 palette)
@@ -333,9 +333,9 @@ u32 GetCI4RGBA_RGBA8888_BG(u64 *src, u16 x, u16 i, u8 palette)
 	u8 color4B = ((u8*)src)[(x >> 1) ^ (i << 1)];
 
 	if (x & 1)
-		return RGBA5551_RGBA8888(*(u16*)&TMEM[256 + (palette << 4) + (color4B & 0x0F)]);
+		return RGBA5551_RGBA8888(static_cast<u16>(TMEM[256 + (palette << 4) + (color4B & 0x0F)] & 0xFFFF));
 	else
-		return RGBA5551_RGBA8888(*(u16*)&TMEM[256 + (palette << 4) + (color4B >> 4)]);
+		return RGBA5551_RGBA8888(static_cast<u16>(TMEM[256 + (palette << 4) + (color4B >> 4)] & 0xFFFF));
 }
 
 u32 GetIA31_RGBA8888_BG(u64 *src, u16 x, u16 i, u8 palette)
@@ -368,22 +368,22 @@ u32 GetI4_RGBA4444_BG(u64 *src, u16 x, u16 i, u8 palette)
 
 u32 GetCI8IA_RGBA4444_BG(u64 *src, u16 x, u16 i, u8 palette)
 {
-	return IA88_RGBA4444(*(u16*)&TMEM[256 + ((u8*)src)[x ^ (i << 1)]]);
+	return IA88_RGBA4444(static_cast<u16>(TMEM[256 + ((u8*)src)[x ^ (i << 1)]] & 0xFFFF));
 }
 
 u32 GetCI8IA_RGBA8888_BG(u64 *src, u16 x, u16 i, u8 palette)
 {
-	return IA88_RGBA8888(*(u16*)&TMEM[256 + ((u8*)src)[x ^ (i << 1)]]);
+	return IA88_RGBA8888(static_cast<u16>(TMEM[256 + ((u8*)src)[x ^ (i << 1)]] & 0xFFFF));
 }
 
 u32 GetCI8RGBA_RGBA5551_BG(u64 *src, u16 x, u16 i, u8 palette)
 {
-	return RGBA5551_RGBA5551(*(u16*)&TMEM[256 + ((u8*)src)[x ^ (i << 1)]]);
+	return RGBA5551_RGBA5551(static_cast<u16>(TMEM[256 + ((u8*)src)[x ^ (i << 1)]] & 0xFFFF));
 }
 
 u32 GetCI8RGBA_RGBA8888_BG(u64 *src, u16 x, u16 i, u8 palette)
 {
-	return RGBA5551_RGBA8888(*(u16*)&TMEM[256 + ((u8*)src)[x ^ (i << 1)]]);
+	return RGBA5551_RGBA8888(static_cast<u16>(TMEM[256 + ((u8*)src)[x ^ (i << 1)]] & 0xFFFF));
 }
 
 u32 GetIA44_RGBA8888_BG(u64 *src, u16 x, u16 i, u8 palette)
@@ -429,7 +429,7 @@ u32 GetI16_RGBA4444_BG(u64 *src, u16 x, u16 i, u8 palette)
 u32 GetCI16IA_RGBA8888_BG(u64 *src, u16 x, u16 i, u8 palette)
 {
 	const u16 tex = ((u16*)src)[x^i];
-	const u16 col = (*(u16*)&TMEM[256 + (tex & 0xFF)]);
+	const u16 col = (static_cast<u16>(TMEM[256 + (tex & 0xFF)] & 0xFFFF));
 	const u16 c = col >> 8;
 	const u16 a = col & 0xFF;
 	return (a << 24) | (c << 16) | (c << 8) | c;
@@ -438,7 +438,7 @@ u32 GetCI16IA_RGBA8888_BG(u64 *src, u16 x, u16 i, u8 palette)
 u32 GetCI16IA_RGBA4444_BG(u64 *src, u16 x, u16 i, u8 palette)
 {
 	const u16 tex = ((u16*)src)[x^i];
-	const u16 col = (*(u16*)&TMEM[256 + (tex & 0xFF)]);
+	const u16 col = (static_cast<u16>(TMEM[256 + (tex & 0xFF)] & 0xFFFF));
 	const u16 c = col >> 12;
 	const u16 a = col & 0x0F;
 	return (a << 12) | (c << 8) | (c << 4) | c;
@@ -1151,7 +1151,7 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 	free(pDest);
 }
 
-bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & _ricecrc)
+bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & _ricecrc, u64 & _strongcrc)
 {
 	if (config.textureFilter.txHiresEnable == 0 || !TFH.isInited())
 		return false;
@@ -1179,8 +1179,8 @@ bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & 
 			height--;
 	} else {
 		const gDPTile * pTile = gSP.textureTile[_tile];
-		int tile_width = pTile->lrs - pTile->uls + 1;
-		int tile_height = pTile->lrt - pTile->ult + 1;
+		int tile_width = ((pTile->lrs - pTile->uls) & 0x03FF) + 1;
+		int tile_height = ((pTile->lrt - pTile->ult) & 0x03FF) + 1;
 
 		int mask_width = (pTile->masks == 0) ? (tile_width) : (1 << pTile->masks);
 		int mask_height = (pTile->maskt == 0) ? (tile_height) : (1 << pTile->maskt);
@@ -1221,10 +1221,18 @@ bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & 
 	}
 
 	_ricecrc = txfilter_checksum(addr, width, height, _pTexture->size, bpl, paladdr);
+	if (config.textureFilter.txStrongCRC)
+		_strongcrc = txfilter_checksum_strong(addr, width, height, _pTexture->size, bpl, paladdr);
 	GHQTexInfo ghqTexInfo;
 	// TODO: fix problem with zero texture dimensions on GLideNHQ side.
-	if (txfilter_hirestex(_pTexture->crc, _ricecrc, palette, N64FormatSize(_pTexture->format, _pTexture->size), &ghqTexInfo) &&
-		ghqTexInfo.width != 0 && ghqTexInfo.height != 0) {
+	auto hirestexFound = txfilter_hirestex(_pTexture->crc, _ricecrc, palette, N64FormatSize(_pTexture->format, _pTexture->size), &ghqTexInfo);
+	if (!hirestexFound) {
+		// Texture with RiceCRC was not found. Try alternative CRC.
+		if (_strongcrc == 0U)
+			_strongcrc = txfilter_checksum_strong(addr, width, height, _pTexture->size, bpl, paladdr);
+		hirestexFound = txfilter_hirestex(_pTexture->crc, _strongcrc, palette, N64FormatSize(_pTexture->format, _pTexture->size), &ghqTexInfo);
+	}
+	if (hirestexFound && ghqTexInfo.width != 0 && ghqTexInfo.height != 0) {
 		ghqTexInfo.format = gfxContext.convertInternalTextureFormat(ghqTexInfo.format);
 		Context::InitTextureParams params;
 		params.handle = _pTexture->name;
@@ -1390,7 +1398,8 @@ void doubleTexture(T* pTex, u32 width, u32 height)
 void TextureCache::_loadFast(u32 _tile, CachedTexture *_pTexture)
 {
 	u64 ricecrc = 0;
-	if (_loadHiresTexture(_tile, _pTexture, ricecrc))
+	u64 strongcrc = 0;
+	if (_loadHiresTexture(_tile, _pTexture, ricecrc, strongcrc))
 		return;
 
 	s32 mipLevel = 0;
@@ -1490,10 +1499,15 @@ void TextureCache::_loadFast(u32 _tile, CachedTexture *_pTexture)
 			config.textureFilter.txHiresEnable != 0 &&
 			config.hotkeys.enabledKeys[Config::HotKey::hkTexDump] != 0) ||
 			config.textureFilter.txDump) {
-			txfilter_dmptx((u8*)m_tempTextureHolder.data(), tmptex.width, tmptex.height,
-						   tmptex.width, (u16)u32(glInternalFormat),
-						   N64FormatSize(_pTexture->format, _pTexture->size),
-						   ricecrc);
+				config.textureFilter.txStrongCRC ?
+				txfilter_dmptx_strong((u8*)m_tempTextureHolder.data(), tmptex.width, tmptex.height,
+					tmptex.width, (u16)u32(glInternalFormat),
+					N64FormatSize(_pTexture->format, _pTexture->size),
+					strongcrc) :
+				txfilter_dmptx((u8*)m_tempTextureHolder.data(), tmptex.width, tmptex.height,
+					tmptex.width, (u16)u32(glInternalFormat),
+					N64FormatSize(_pTexture->format, _pTexture->size),
+					ricecrc);
 		}
 
 		bool bLoaded = false;
@@ -1591,7 +1605,8 @@ void TextureCache::_loadFast(u32 _tile, CachedTexture *_pTexture)
 void TextureCache::_loadAccurate(u32 _tile, CachedTexture *_pTexture)
 {
 	u64 ricecrc = 0;
-	if (_loadHiresTexture(_tile, _pTexture, ricecrc))
+	u64 strongcrc = 0;
+	if (_loadHiresTexture(_tile, _pTexture, ricecrc, strongcrc))
 		return;
 
 	bool force32bitFormat = false;
@@ -1666,10 +1681,15 @@ void TextureCache::_loadAccurate(u32 _tile, CachedTexture *_pTexture)
 				config.textureFilter.txHiresEnable != 0 &&
 				config.hotkeys.enabledKeys[Config::HotKey::hkTexDump] != 0) ||
 				config.textureFilter.txDump) {
-				txfilter_dmptx((u8*)(m_tempTextureHolder.data() + texDataOffset), tmptex.width, tmptex.height,
-					tmptex.width, (u16)u32(glInternalFormat),
-					N64FormatSize(_pTexture->format, _pTexture->size),
-					ricecrc);
+				config.textureFilter.txStrongCRC ?
+					txfilter_dmptx_strong((u8*)(m_tempTextureHolder.data() + texDataOffset), tmptex.width, tmptex.height,
+						tmptex.width, (u16)u32(glInternalFormat),
+						N64FormatSize(_pTexture->format, _pTexture->size),
+						strongcrc) :
+					txfilter_dmptx((u8*)(m_tempTextureHolder.data() + texDataOffset), tmptex.width, tmptex.height,
+						tmptex.width, (u16)u32(glInternalFormat),
+						N64FormatSize(_pTexture->format, _pTexture->size),
+						ricecrc);
 			}
 
 			texDataOffset += tmptex.width * tmptex.height;
@@ -1725,7 +1745,12 @@ void TextureCache::_loadAccurate(u32 _tile, CachedTexture *_pTexture)
 			config.textureFilter.txHiresEnable != 0 &&
 			config.hotkeys.enabledKeys[Config::HotKey::hkTexDump] != 0) ||
 			config.textureFilter.txDump) {
-			txfilter_dmptx((u8*)m_tempTextureHolder.data(), tmptex.width, tmptex.height,
+				config.textureFilter.txStrongCRC ?
+				txfilter_dmptx_strong((u8*)m_tempTextureHolder.data(), tmptex.width, tmptex.height,
+					tmptex.width, (u16)u32(glInternalFormat),
+					N64FormatSize(_pTexture->format, _pTexture->size),
+					strongcrc) :
+				txfilter_dmptx((u8*)m_tempTextureHolder.data(), tmptex.width, tmptex.height,
 					tmptex.width, (u16)u32(glInternalFormat),
 					N64FormatSize(_pTexture->format, _pTexture->size),
 					ricecrc);

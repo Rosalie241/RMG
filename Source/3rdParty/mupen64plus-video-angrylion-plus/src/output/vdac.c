@@ -8,11 +8,12 @@
 
 #ifdef GLES
 #include <GLES3/gl3.h>
-#define SHADER_HEADER "#version 300 es\nprecision lowp float;\n"
 #else
 #include "gl_core_3_3.h"
-#define SHADER_HEADER "#version 330 core\n"
 #endif
+
+#define GLES_SHADER_HEADER "#version 300 es\nprecision lowp float;\n"
+#define GL_SHADER_HEADER "#version 330 core\n"
 
 #define TEX_FORMAT GL_RGBA
 #define TEX_TYPE GL_UNSIGNED_BYTE
@@ -218,29 +219,39 @@ void vdac_init(struct n64video_config* config)
     ogl_LoadFunctions();
 #endif
 
-    msg_debug("%s: GL_VERSION='%s'", __FUNCTION__, glGetString(GL_VERSION));
+    const char* gl_version = (const char*)glGetString(GL_VERSION);
+
+#ifndef GLES
+    const int is_gles = strstr(gl_version, "OpenGL ES") != NULL;
+#else
+    const int is_gles = 1;
+#endif
+
+    msg_debug("%s: GL_VERSION='%s'", __FUNCTION__, gl_version);
     msg_debug("%s: GL_VENDOR='%s'", __FUNCTION__, glGetString(GL_VENDOR));
     msg_debug("%s: GL_RENDERER='%s'", __FUNCTION__, glGetString(GL_RENDERER));
     msg_debug("%s: GL_SHADING_LANGUAGE_VERSION='%s'", __FUNCTION__, glGetString(GL_SHADING_LANGUAGE_VERSION));
 
     // shader sources for drawing a clipped full-screen triangle. the geometry
     // is defined by the vertex ID, so a VBO is not required.
-    const GLchar* vert_shader =
-        SHADER_HEADER
+    GLchar vert_shader[256];
+    sprintf(vert_shader, "%s%s", (is_gles ? GLES_SHADER_HEADER : GL_SHADER_HEADER),
         "out vec2 uv;\n"
         "void main(void) {\n"
         "    uv = vec2((gl_VertexID << 1) & 2, gl_VertexID & 2);\n"
         "    gl_Position = vec4(uv * vec2(2.0, -2.0) + vec2(-1.0, 1.0), 0.0, 1.0);\n"
-        "}\n";
+        "}\n"
+    );
 
-    const GLchar* frag_shader =
-        SHADER_HEADER
+    GLchar frag_shader[256];
+    sprintf(frag_shader, "%s%s", (is_gles ? GLES_SHADER_HEADER : GL_SHADER_HEADER),
         "in vec2 uv;\n"
         "layout(location = 0) out vec4 color;\n"
         "uniform sampler2D tex0;\n"
         "void main(void) {\n"
         "    color = texture(tex0, uv);\n"
-        "}\n";
+        "}\n"
+    );
 
     // compile and link OpenGL program
     GLuint vert = gl_shader_compile(GL_VERTEX_SHADER, vert_shader, "alp_screen.vert");

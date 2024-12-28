@@ -34,8 +34,6 @@ void* IntGetProcAddress(const char *name)
 
 void screen_init(struct n64video_config* config)
 {
-    UNUSED(config);
-
     /* Get the core Video Extension function pointers from the library handle */
     CoreVideo_Init = (ptr_VidExt_Init) DLSYM(CoreLibHandle, "VidExt_Init");
     CoreVideo_Quit = (ptr_VidExt_Quit) DLSYM(CoreLibHandle, "VidExt_Quit");
@@ -61,6 +59,8 @@ void screen_init(struct n64video_config* config)
     CoreVideo_GL_SetAttribute(M64P_GL_CONTEXT_MAJOR_VERSION, 3);
     CoreVideo_GL_SetAttribute(M64P_GL_CONTEXT_MINOR_VERSION, 0);
 #endif
+
+    CoreVideo_GL_SetAttribute(M64P_GL_SWAP_CONTROL, config->vi.vsync);
 
     CoreVideo_SetVideoMode(win_width, win_height, 0, win_fullscreen ? M64VIDEO_FULLSCREEN : M64VIDEO_WINDOWED, M64VIDEOFLAG_SUPPORT_RESIZING);
 }

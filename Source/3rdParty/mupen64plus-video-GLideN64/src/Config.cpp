@@ -73,7 +73,11 @@ void Config::resetToDefaults()
 	frameBufferEmulation.copyDepthToRDRAM = cdSoftwareRender;
 	frameBufferEmulation.copyFromRDRAM = 0;
 	frameBufferEmulation.copyAuxToRDRAM = 0;
+#ifdef M64P_GLIDENUI
+	frameBufferEmulation.copyToRDRAM = ctSync;
+#else
 	frameBufferEmulation.copyToRDRAM = ctDoubleBuffer;
+#endif
 	frameBufferEmulation.N64DepthCompare = dcDisable;
 	frameBufferEmulation.forceDepthBufferClear = 0;
 	frameBufferEmulation.aspect = a43;
@@ -103,6 +107,7 @@ void Config::resetToDefaults()
 	textureFilter.txCacheCompression = 1;
 	textureFilter.txSaveCache = 1;
 	textureFilter.txDump = 0;
+	textureFilter.txStrongCRC = 0;
 
 	textureFilter.txEnhancedTextureFileStorage = 0;
 	textureFilter.txHiresTextureFileStorage = 0;
@@ -207,6 +212,8 @@ const char* Config::hotkeyIniName(u32 _idx)
 		return "hkForceGammaCorrection";
 	case Config::HotKey::hkInaccurateTexCords:
 		return "hkInaccurateTexCords";
+	case Config::HotKey::hkStrongCRC:
+		return "hkStrongCRC";
 	}
 	return nullptr;
 }
@@ -245,6 +252,8 @@ const char* Config::enabledHotkeyIniName(u32 _idx)
 		return "hkForceGammaCorrectionEnabled";
 	case Config::HotKey::hkInaccurateTexCords:
 		return "hkInaccurateTexCordsEnabled";
+	case Config::HotKey::hkStrongCRC:
+		return "hkStrongCRCEnabled";
 	}
 	return nullptr;
 }

@@ -9,35 +9,53 @@
  */
 #include "MainWindow.hpp"
 
+#include <RMG-Core/Core.hpp>
+
 #include "UserInterface/Dialog/AboutDialog.hpp"
+#include "Dialog/Cheats/CheatsDialog.hpp"
+#include "Dialog/SettingsDialog.hpp"
+#include "Dialog/RomInfoDialog.hpp"
 #ifdef UPDATER
-#include "UserInterface/Dialog/Update/UpdateDialog.hpp"
 #include "UserInterface/Dialog/Update/DownloadUpdateDialog.hpp"
 #include "UserInterface/Dialog/Update/InstallUpdateDialog.hpp"
+#include "UserInterface/Dialog/Update/UpdateDialog.hpp"
 #endif // UPDATER
+#ifdef NETPLAY
+#include "Dialog/Netplay/NetplaySessionBrowserDialog.hpp"
+#include "Dialog/Netplay/CreateNetplaySessionDialog.hpp"
+#include "Dialog/Netplay/NetplaySessionDialog.hpp"
+
+#endif // NETPLAY
 #include "UserInterface/EventFilter.hpp"
 #include "Utilities/QtKeyToSdl2Key.hpp"
 #include "OnScreenDisplay.hpp"
 #include "Callbacks.hpp"
 #include "VidExt.hpp"
 
-#include <RMG-Core/Core.hpp>
-
+#ifdef UPDATER
+#include <QNetworkAccessManager>
+#include <QJsonDocument>
+#include <QJsonObject>
+#endif // UPDATER
+#ifdef NETPLAY
+#include <QWebSocket>
+#endif // NETPLAY
 #include <QCoreApplication>
 #include <QDesktopServices>
 #include <QGuiApplication>
 #include <QStyleFactory>
+#include <QActionGroup> 
 #include <QFileDialog>
-#include <QMenuBar>
 #include <QMessageBox>
 #include <QMimeData>
 #include <QSettings>
 #include <QStatusBar>
+#include <QMenuBar>
 #include <QString>
-#include <QUrl>
-#include <QActionGroup> 
 #include <QTimer>
+#include <QThread>
 #include <cmath>
+#include <QUrl>
 
 using namespace UserInterface;
 
@@ -78,10 +96,14 @@ bool MainWindow::Init(QApplication* app, bool showUI, bool launchROM)
     this->action_Help_Update->setVisible(false);
 #endif // UPDATER
 
+#ifndef NETPLAY
+    this->menuNetplay->menuAction()->setVisible(false);
+#endif // NETPLAY
+
     this->initializeEmulationThread();
     this->connectEmulationThreadSignals();
 
-    if (!SetupVidExt(this->emulationThread, this, this->ui_Widget_OpenGL, this->ui_Widget_Vulkan))
+    if (!SetupVidExt(this->emulationThread, this, &this->ui_Widget_OpenGL, &this->ui_Widget_Vulkan))
     {
         this->showErrorMessage("SetupVidExt() Failed", QString::fromStdString(CoreGetError()));
         return false;
@@ -109,7 +131,7 @@ bool MainWindow::Init(QApplication* app, bool showUI, bool launchROM)
     return true;
 }
 
-void MainWindow::OpenROM(QString file, QString disk, bool fullscreen, bool quitAfterEmulation)
+void MainWindow::OpenROM(QString file, QString disk, bool fullscreen, bool quitAfterEmulation, int stateSlot)
 {
     this->ui_LaunchInFullscreen = fullscreen;
     this->ui_QuitAfterEmulation = quitAfterEmulation;
@@ -120,7 +142,7 @@ void MainWindow::OpenROM(QString file, QString disk, bool fullscreen, bool quitA
     // state, then the transition will be smoother
     this->updateUI(true, false);
 
-    this->launchEmulationThread(file, disk, true);
+    this->launchEmulationThread(file, disk, true, stateSlot);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -164,11 +186,10 @@ void MainWindow::initializeUI(bool launchROM)
 
     this->ui_Widgets = new QStackedWidget(this);
     this->ui_Widget_RomBrowser = new Widget::RomBrowserWidget(this);
-    this->ui_Widget_OpenGL = new Widget::OGLWidget(this);
-    this->ui_Widget_Vulkan = new Widget::VKWidget(this);
+    this->ui_Widget_Dummy = new Widget::DummyWidget(this);
+
     this->ui_EventFilter = new EventFilter(this);
     this->ui_StatusBar_Label = new QLabel(this);
-    //this->ui_StatusBar_RenderModeLabel = new QLabel(this);
     this->ui_StatusBar_SpeedLabel = new QLabel(this);
 
     // only start refreshing the ROM browser
@@ -183,6 +204,8 @@ void MainWindow::initializeUI(bool launchROM)
             &MainWindow::on_RomBrowser_PlayGame);
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::PlayGameWith, this,
             &MainWindow::on_RomBrowser_PlayGameWith);
+    connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::PlayGameWithSlot, this,
+            &MainWindow::on_RomBrowser_PlayGameWithSlot);
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::EditGameSettings, this,
             &MainWindow::on_RomBrowser_EditGameSettings);
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::EditGameInputSettings, this,
@@ -241,7 +264,6 @@ void MainWindow::configureUI(QApplication* app, bool showUI)
     this->toolBar->setVisible(this->ui_ShowToolbar);
     this->statusBar()->setVisible(this->ui_ShowStatusbar);
     this->statusBar()->addPermanentWidget(this->ui_StatusBar_Label, 99);
-    //this->statusBar()->addPermanentWidget(this->ui_StatusBar_RenderModeLabel, 1);
     this->statusBar()->addPermanentWidget(this->ui_StatusBar_SpeedLabel, 1);
 
     // set toolbar position according to setting
@@ -253,20 +275,18 @@ void MainWindow::configureUI(QApplication* app, bool showUI)
         this->addToolBar(toolbarArea, this->toolBar);
     }
 
-    this->ui_TimerTimeout = CoreSettingsGetIntValue(SettingsID::GUI_StatusbarMessageDuration);
+    this->ui_StatusBarTimerTimeout = CoreSettingsGetIntValue(SettingsID::GUI_StatusbarMessageDuration);
 
     this->ui_Widgets->addWidget(this->ui_Widget_RomBrowser);
-    this->ui_Widgets->addWidget(this->ui_Widget_OpenGL->GetWidget());
-    this->ui_Widgets->addWidget(this->ui_Widget_Vulkan->GetWidget());
-
+    this->ui_Widgets->addWidget(this->ui_Widget_Dummy);
     this->ui_Widgets->setCurrentWidget(this->ui_Widget_RomBrowser);
 
     this->setFocusPolicy(Qt::FocusPolicy::StrongFocus);
     this->installEventFilter(this->ui_EventFilter);
-    this->ui_Widget_OpenGL->installEventFilter(this->ui_EventFilter);
-    this->ui_Widget_Vulkan->installEventFilter(this->ui_EventFilter);
+    this->ui_Widget_Dummy->installEventFilter(this->ui_EventFilter);
 
-    this->ui_WindowTitle = "Rosalie's Mupen GUI (";
+    this->ui_WindowTitle = QCoreApplication::applicationName();
+    this->ui_WindowTitle += " (";
     this->ui_WindowTitle += QString::fromStdString(CoreGetVersion());
     this->ui_WindowTitle += ")";
 
@@ -280,7 +300,7 @@ void MainWindow::configureTheme(QApplication* app)
     QString fallbackThemeName = QIcon::themeName();
 
     // set theme style
-    QString fallbackStyleSheet = "QTableView { border: none; color: #0096d3; selection-color: #FFFFFF; selection-background-color: #0096d3; }";
+    QString fallbackStyleSheet = "QTableView { border: none; color: #FFA500; selection-color: #FFFFFF; selection-background-color: #FFA500; }";
     this->setStyleSheet(fallbackStyleSheet);
 
     // set application theme
@@ -437,18 +457,6 @@ void MainWindow::updateUI(bool inEmulation, bool isPaused)
             this->setWindowTitle(goodName + QString(" - ") + this->ui_WindowTitle);
         }
 
-        if (this->ui_VidExtRenderMode == VidExtRenderMode::OpenGL)
-        {
-            //this->ui_StatusBar_RenderModeLabel->setText("OpenGL");
-            this->ui_Widgets->setCurrentWidget(this->ui_Widget_OpenGL->GetWidget());
-        }
-        else
-        {
-            //this->ui_StatusBar_RenderModeLabel->setText("Vulkan");
-            this->ui_Widgets->setCurrentWidget(this->ui_Widget_Vulkan->GetWidget());
-        }
-
-        this->storeGeometry();
     }
     else if (!this->ui_NoSwitchToRomBrowser)
     {
@@ -464,7 +472,7 @@ void MainWindow::updateUI(bool inEmulation, bool isPaused)
     }
 
     // update timer timeout
-    this->ui_TimerTimeout = CoreSettingsGetIntValue(SettingsID::GUI_StatusbarMessageDuration);
+    this->ui_StatusBarTimerTimeout = CoreSettingsGetIntValue(SettingsID::GUI_StatusbarMessageDuration);
 }
 
 void MainWindow::storeGeometry(void)
@@ -558,9 +566,40 @@ void MainWindow::connectEmulationThreadSignals(void)
             &MainWindow::on_VidExt_ResizeWindow, Qt::BlockingQueuedConnection);
     connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_ToggleFS, this, &MainWindow::on_VidExt_ToggleFS,
             Qt::BlockingQueuedConnection);
+    connect(this->emulationThread, &Thread::EmulationThread::on_VidExt_Quit, this, &MainWindow::on_VidExt_Quit,
+            Qt::BlockingQueuedConnection);
 }
 
-void MainWindow::launchEmulationThread(QString cartRom, QString diskRom, bool refreshRomListAfterEmulation)
+void MainWindow::launchEmulationThread(QString cartRom, QString address, int port, int player, QJsonArray cheats)
+{
+    CoreSettingsSave();
+
+    if (this->emulationThread->isRunning())
+    {
+        this->on_Action_System_Shutdown();
+
+        while (this->emulationThread->isRunning())
+        {
+            QCoreApplication::processEvents();
+        }
+    }
+
+    this->emulationThread->SetNetplay(address, port, player);
+
+    
+    this->launchEmulationThread(cartRom);
+    
+    QThread::sleep(2); // Sleep for 2 seconds before launching the emulation thread
+
+    // Convert QJsonArray to QJsonObject
+    QJsonObject cheatsObject;
+    cheatsObject["custom"] = cheats;  // Wrap the array in an object
+
+    this->emulationThread->ApplyCheatsNetplay(cheatsObject);
+
+}
+
+void MainWindow::launchEmulationThread(QString cartRom, QString diskRom, bool refreshRomListAfterEmulation, int slot)
 {
     CoreSettingsSave();
 
@@ -596,6 +635,13 @@ void MainWindow::launchEmulationThread(QString cartRom, QString diskRom, bool re
         this->ui_LaunchInFullscreen = false;
     }
 
+    this->ui_LoadSaveStateSlotCounter = 0;
+    this->ui_LoadSaveStateSlot = slot;
+    if (slot != -1)
+    {
+        this->ui_LoadSaveStateSlotTimerId = this->startTimer(100);
+    }
+
     this->ui_CheckVideoSizeTimerId = this->startTimer(2000);
 
     this->ui_HideCursorInEmulation = CoreSettingsGetBoolValue(SettingsID::GUI_HideCursorInEmulation);
@@ -606,9 +652,6 @@ void MainWindow::launchEmulationThread(QString cartRom, QString diskRom, bool re
         this->ui_ShowToolbar = CoreSettingsGetBoolValue(SettingsID::GUI_Toolbar);
         this->ui_ShowStatusbar = CoreSettingsGetBoolValue(SettingsID::GUI_StatusBar);
     }
-
-    this->ui_Widget_OpenGL->SetHideCursor(this->ui_HideCursorInEmulation);
-    this->ui_Widget_Vulkan->SetHideCursor(this->ui_HideCursorInEmulation);
 
     this->emulationThread->SetRomFile(cartRom);
     this->emulationThread->SetDiskFile(diskRom);
@@ -628,25 +671,25 @@ void MainWindow::updateActions(bool inEmulation, bool isPaused)
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_Shutdown));
     this->action_System_Shutdown->setShortcut(QKeySequence(keyBinding));
     this->action_System_Shutdown->setEnabled(inEmulation);
-    this->menuReset->setEnabled(inEmulation);
+    this->menuReset->setEnabled(inEmulation && !CoreHasInitNetplay());
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_SoftReset));
-    this->action_System_SoftReset->setEnabled(inEmulation);
+    this->action_System_SoftReset->setEnabled(inEmulation && !CoreHasInitNetplay());
     this->action_System_SoftReset->setShortcut(QKeySequence(keyBinding));
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_HardReset));
-    this->action_System_HardReset->setEnabled(inEmulation);
+    this->action_System_HardReset->setEnabled(inEmulation && !CoreHasInitNetplay());
     this->action_System_HardReset->setShortcut(QKeySequence(keyBinding));
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_Resume));
     this->action_System_Pause->setChecked(isPaused);
-    this->action_System_Pause->setEnabled(inEmulation);
+    this->action_System_Pause->setEnabled(inEmulation && !CoreHasInitNetplay());
     this->action_System_Pause->setShortcut(QKeySequence(keyBinding));
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_Screenshot));
     this->action_System_Screenshot->setEnabled(inEmulation);
     this->action_System_Screenshot->setShortcut(QKeySequence(keyBinding));
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_LimitFPS));
-    this->action_System_LimitFPS->setEnabled(inEmulation);
+    this->action_System_LimitFPS->setEnabled(inEmulation && !CoreHasInitNetplay());
     this->action_System_LimitFPS->setShortcut(QKeySequence(keyBinding));
     this->action_System_LimitFPS->setChecked(CoreIsSpeedLimiterEnabled());
-    this->menuSpeedFactor->setEnabled(inEmulation);
+    this->menuSpeedFactor->setEnabled(inEmulation && !CoreHasInitNetplay());
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_SaveState));
     this->action_System_SaveState->setEnabled(inEmulation);
     this->action_System_SaveState->setShortcut(QKeySequence(keyBinding));
@@ -654,17 +697,17 @@ void MainWindow::updateActions(bool inEmulation, bool isPaused)
     this->action_System_SaveAs->setEnabled(inEmulation);
     this->action_System_SaveAs->setShortcut(QKeySequence(keyBinding));
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_LoadState));
-    this->action_System_LoadState->setEnabled(inEmulation);
+    this->action_System_LoadState->setEnabled(inEmulation && !CoreHasInitNetplay());
     this->action_System_LoadState->setShortcut(QKeySequence(keyBinding));
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_Load));
-    this->action_System_Load->setEnabled(inEmulation);
+    this->action_System_Load->setEnabled(inEmulation && !CoreHasInitNetplay());
     this->action_System_Load->setShortcut(QKeySequence(keyBinding));
     this->menuCurrent_Save_State->setEnabled(inEmulation);
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_Cheats));
-    this->action_System_Cheats->setEnabled(inEmulation);
+    this->action_System_Cheats->setEnabled(inEmulation && !CoreHasInitNetplay());
     this->action_System_Cheats->setShortcut(QKeySequence(keyBinding));
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_GSButton));
-    this->action_System_GSButton->setEnabled(inEmulation);
+    this->action_System_GSButton->setEnabled(inEmulation && !CoreHasInitNetplay());
     this->action_System_GSButton->setShortcut(QKeySequence(keyBinding));
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_Exit));
     this->action_System_Exit->setShortcut(QKeySequence(keyBinding));
@@ -737,6 +780,9 @@ void MainWindow::updateActions(bool inEmulation, bool isPaused)
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::Keybinding_ViewLog));
     this->action_View_Log->setShortcut(QKeySequence(keyBinding));
     this->action_View_ClearRomCache->setEnabled(!inEmulation);
+
+    this->action_Netplay_CreateSession->setEnabled(!inEmulation);
+    this->action_Netplay_JoinSession->setEnabled(!inEmulation);
 
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_IncreaseVolume));
     this->action_Audio_IncreaseVolume->setShortcut(QKeySequence(keyBinding));
@@ -967,8 +1013,12 @@ void MainWindow::configureActions(void)
         {
             if (checked)
             {
-                int factor = speedAction->text().split("%").first().toInt();
-                this->on_Action_System_SpeedFactor(factor);
+                QString factorText = speedAction->text().split("%").first();
+                // sometimes the text can contain a '&'
+                // which will make the toInt() function return 0
+                // so strip it out
+                factorText.remove('&');
+                this->on_Action_System_SpeedFactor(factorText.toInt());
             }
         });
     }
@@ -989,8 +1039,12 @@ void MainWindow::configureActions(void)
         {
             if (checked)
             {
-                int slot = slotAction->text().split(" ").at(1).toInt();
-                this->on_Action_System_CurrentSaveState(slot);
+                QString slotText = slotAction->text().split(" ").at(1);
+                // sometimes the text can contain a '&'
+                // which will make the toInt() function return 0
+                // so strip it out
+                slotText.remove('&');
+                this->on_Action_System_CurrentSaveState(slotText.toInt());
             }
         });
     }
@@ -1023,6 +1077,8 @@ void MainWindow::configureActions(void)
 void MainWindow::connectActionSignals(void)
 {
     connect(this->action_System_StartRom, &QAction::triggered, this, &MainWindow::on_Action_System_OpenRom);
+    connect(this->action_System_StartRom2, &QAction::triggered, this, &MainWindow::on_Action_System_OpenRom);
+    connect(this->action_System_StartRom3, &QAction::triggered, this, &MainWindow::on_Action_System_OpenRom);
     connect(this->action_System_OpenCombo, &QAction::triggered, this, &MainWindow::on_Action_System_OpenCombo);
     connect(this->action_System_Exit, &QAction::triggered, this, &MainWindow::on_Action_System_Exit);
 
@@ -1031,6 +1087,8 @@ void MainWindow::connectActionSignals(void)
     connect(this->action_System_HardReset, &QAction::triggered, this, &MainWindow::on_Action_System_HardReset);
     connect(this->action_System_Pause, &QAction::triggered, this, &MainWindow::on_Action_System_Pause);
     connect(this->action_System_Screenshot, &QAction::triggered, this,
+            &MainWindow::on_Action_System_Screenshot);
+    connect(this->action_System_Screenshot2, &QAction::triggered, this,
             &MainWindow::on_Action_System_Screenshot);
     connect(this->action_System_LimitFPS, &QAction::triggered, this, &MainWindow::on_Action_System_LimitFPS);
     connect(this->action_System_SaveState, &QAction::triggered, this, &MainWindow::on_Action_System_SaveState);
@@ -1041,21 +1099,29 @@ void MainWindow::connectActionSignals(void)
     connect(this->action_System_GSButton, &QAction::triggered, this, &MainWindow::on_Action_System_GSButton);
 
     connect(this->action_Settings_Graphics, &QAction::triggered, this, &MainWindow::on_Action_Settings_Graphics);
+    connect(this->action_Settings_Graphics2, &QAction::triggered, this, &MainWindow::on_Action_Settings_Graphics);
     connect(this->action_Settings_Audio, &QAction::triggered, this, &MainWindow::on_Action_Settings_Audio);
     connect(this->action_Settings_Rsp, &QAction::triggered, this, &MainWindow::on_Action_Settings_Rsp);
     connect(this->action_Settings_Input, &QAction::triggered, this,
             &MainWindow::on_Action_Settings_Input);
+    connect(this->action_Settings_Input2, &QAction::triggered, this,
+            &MainWindow::on_Action_Settings_Input);
     connect(this->action_Settings_Settings, &QAction::triggered, this, &MainWindow::on_Action_Settings_Settings);
-
+    connect(this->action_Settings_Settings2, &QAction::triggered, this, &MainWindow::on_Action_Settings_Settings);
     connect(this->action_View_Toolbar, &QAction::toggled, this, &MainWindow::on_Action_View_Toolbar);
     connect(this->action_View_StatusBar, &QAction::toggled, this, &MainWindow::on_Action_View_StatusBar);
     connect(this->action_View_GameList, &QAction::toggled, this, &MainWindow::on_Action_View_GameList);
     connect(this->action_View_GameGrid, &QAction::toggled, this, &MainWindow::on_Action_View_GameGrid);
     connect(this->action_View_UniformSize, &QAction::toggled, this, &MainWindow::on_Action_View_UniformSize);
     connect(this->action_View_Fullscreen, &QAction::triggered, this, &MainWindow::on_Action_View_Fullscreen);
+    connect(this->action_View_Fullscreen2, &QAction::triggered, this, &MainWindow::on_Action_View_Fullscreen);
     connect(this->action_View_RefreshRoms, &QAction::triggered, this, &MainWindow::on_Action_View_RefreshRoms);
+    connect(this->action_View_RefreshRoms2, &QAction::triggered, this, &MainWindow::on_Action_View_RefreshRoms);
     connect(this->action_View_ClearRomCache, &QAction::triggered, this, &MainWindow::on_Action_View_ClearRomCache);
     connect(this->action_View_Log, &QAction::triggered, this, &MainWindow::on_Action_View_Log);
+
+    connect(this->action_Netplay_CreateSession, &QAction::triggered, this, &MainWindow::on_Action_Netplay_CreateSession);
+    connect(this->action_Netplay_JoinSession, &QAction::triggered, this, &MainWindow::on_Action_Netplay_JoinSession);
 
     connect(this->action_Help_Github, &QAction::triggered, this, &MainWindow::on_Action_Help_Github);
     connect(this->action_Help_About, &QAction::triggered, this, &MainWindow::on_Action_Help_About);
@@ -1111,7 +1177,7 @@ void MainWindow::timerEvent(QTimerEvent *event)
 {
     int timerId = event->timerId();
 
-    if (timerId == this->ui_TimerId)
+    if (timerId == this->ui_ResetStatusBarTimerId)
     {
         this->ui_StatusBar_Label->clear();
     }
@@ -1172,7 +1238,7 @@ void MainWindow::timerEvent(QTimerEvent *event)
             expectedWidth  = this->ui_Widget_OpenGL->GetWidget()->width()  * this->devicePixelRatio();
             expectedHeight = this->ui_Widget_OpenGL->GetWidget()->height() * this->devicePixelRatio();
         }
-        else
+        else if (this->ui_VidExtRenderMode == VidExtRenderMode::Vulkan)
         {
             expectedWidth  = this->ui_Widget_Vulkan->GetWidget()->width()  * this->devicePixelRatio();
             expectedHeight = this->ui_Widget_Vulkan->GetWidget()->height() * this->devicePixelRatio();
@@ -1183,6 +1249,29 @@ void MainWindow::timerEvent(QTimerEvent *event)
         {
             CoreSetVideoSize(expectedWidth, expectedHeight);
         }
+    }
+    else if (timerId == this->ui_LoadSaveStateSlotTimerId)
+    {
+        if (!CoreIsEmulationRunning())
+        {
+            return;
+        }
+
+        if (!CoreSetSaveStateSlot(this->ui_LoadSaveStateSlot) ||
+            !CoreLoadSaveState())
+        {
+            this->ui_LoadSaveStateSlotCounter++;
+            if (this->ui_LoadSaveStateSlotCounter >= 5)
+            { // give up after 5 attempts
+                this->killTimer(this->ui_LoadSaveStateSlotTimerId);
+                this->ui_LoadSaveStateSlotCounter = 0;
+                this->ui_LoadSaveStateSlotTimerId = -1;
+                this->ui_LoadSaveStateSlot        = -1;
+            }
+            return;
+        }
+
+        this->killTimer(this->ui_LoadSaveStateSlotTimerId);
     }
 }
 
@@ -1298,7 +1387,7 @@ void MainWindow::on_networkAccessManager_Finished(QNetworkReply* reply)
     {
         if (!this->ui_SilentUpdateCheck)
         {
-            this->showErrorMessage("Failed to check for updates!", reply->errorString());
+            this->showErrorMessage("Failed to check for updates", reply->errorString());
         }
         reply->deleteLater();
         return;
@@ -1317,7 +1406,7 @@ void MainWindow::on_networkAccessManager_Finished(QNetworkReply* reply)
     {
         if (!this->ui_SilentUpdateCheck)
         {
-            this->showErrorMessage("You're already on the latest version!");
+            this->showErrorMessage("You're already on the latest version");
         }
         return;
     }
@@ -1439,7 +1528,7 @@ void MainWindow::on_Action_System_Shutdown(void)
 
     if (!CoreStopEmulation())
     {
-        this->showErrorMessage("CoreStopEmulation() Failed!", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage("CoreStopEmulation() Failed", QString::fromStdString(CoreGetError()));
     }
 }
 
@@ -1452,7 +1541,7 @@ void MainWindow::on_Action_System_SoftReset(void)
 {
     if (!CoreResetEmulation(false))
     {
-        this->showErrorMessage("CoreResetEmulation() Failed!", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage("CoreResetEmulation() Failed", QString::fromStdString(CoreGetError()));
     }
 }
 
@@ -1460,12 +1549,16 @@ void MainWindow::on_Action_System_HardReset(void)
 {
     if (!CoreResetEmulation(true))
     {
-        this->showErrorMessage("CoreResetEmulation() Failed!", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage("CoreResetEmulation() Failed", QString::fromStdString(CoreGetError()));
     }
 }
 void MainWindow::on_Action_System_Pause(void)
 {
-    bool isRunning = CoreIsEmulationRunning();
+    if (!this->action_System_Pause->isEnabled())
+    {
+        return;
+    }
+
     bool isPaused = CoreIsEmulationPaused();
 
     bool ret;
@@ -1474,12 +1567,12 @@ void MainWindow::on_Action_System_Pause(void)
     if (!isPaused)
     {
         ret = CorePauseEmulation();
-        error = "CorePauseEmulation() Failed!";
+        error = "CorePauseEmulation() Failed";
     }
     else
     {
         ret = CoreResumeEmulation();
-        error = "CoreResumeEmulation() Failed!";
+        error = "CoreResumeEmulation() Failed";
     }
 
     if (!ret)
@@ -1495,7 +1588,7 @@ void MainWindow::on_Action_System_Screenshot(void)
 {
     if (!CoreTakeScreenshot())
     {
-        this->showErrorMessage("CoreTakeScreenshot() Failed!", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage("CoreTakeScreenshot() Failed", QString::fromStdString(CoreGetError()));
     }
 }
 
@@ -1509,7 +1602,7 @@ void MainWindow::on_Action_System_LimitFPS(void)
 
     if (!ret)
     {
-        this->showErrorMessage("CoreSetSpeedLimiterState() Failed!", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage("CoreSetSpeedLimiterState() Failed", QString::fromStdString(CoreGetError()));
     }
 }
 
@@ -1517,7 +1610,7 @@ void MainWindow::on_Action_System_SpeedFactor(int factor)
 {
     if (!CoreSetSpeedFactor(factor))
     {
-        this->showErrorMessage("CoreSetSpeedFactor() Failed!", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage("CoreSetSpeedFactor() Failed", QString::fromStdString(CoreGetError()));
     }
 }
 
@@ -1546,20 +1639,24 @@ void MainWindow::on_Action_System_SaveAs(void)
         this->on_Action_System_Pause();
     }
 
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save State"), "", tr("Save State (*.state);;All Files (*)"));
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save State"), "", tr("Save State (*.state);;Project64 Save State (*.pj);;All Files (*)"));
 
     if (!fileName.isEmpty())
     {
         this->ui_ManuallySavedState = true;
 
-        if (!CoreSaveState(fileName.toStdU32String()))
+        CoreSaveStateType type = fileName.endsWith(".pj") ? 
+                                    CoreSaveStateType::Project64 :
+                                    CoreSaveStateType::Mupen64Plus;
+
+        if (!CoreSaveState(fileName.toStdU32String(), type))
         {
             this->ui_ManuallySavedState = false;
             this->showErrorMessage("CoreSaveState() Failed", QString::fromStdString(CoreGetError()));
         }
         else
         {
-            OnScreenDisplaySetMessage("Saved state to: " + fileName.toStdString());
+            OnScreenDisplaySetMessage("Saved state to: " + QDir::toNativeSeparators(fileName).toStdString());
         }
     }
 
@@ -1608,7 +1705,7 @@ void MainWindow::on_Action_System_Load(void)
         }
         else
         {
-            OnScreenDisplaySetMessage("State loaded from: " + fileName.toStdString());
+            OnScreenDisplaySetMessage("State loaded from: " + QDir::toNativeSeparators(fileName).toStdString());
         }
     }
 
@@ -1620,10 +1717,6 @@ void MainWindow::on_Action_System_Load(void)
 
 void MainWindow::on_Action_System_CurrentSaveState(int slot)
 {
-    QAction* slotAction;
-    QString dateTimeText;
-    std::string message;
-
     if (!CoreSetSaveStateSlot(slot))
     {
         this->showErrorMessage("CoreSetSaveStateSlot() Failed", QString::fromStdString(CoreGetError()));
@@ -1789,6 +1882,39 @@ void MainWindow::on_Action_View_Log(void)
     this->logDialog.show();
 }
 
+void MainWindow::on_Action_Netplay_CreateSession(void)
+{
+#ifdef NETPLAY
+    QWebSocket webSocket;
+
+    Dialog::CreateNetplaySessionDialog dialog(this, &webSocket, this->ui_Widget_RomBrowser->GetModelData());
+    int ret = dialog.exec();
+    if (ret == QDialog::Accepted)
+    {
+        Dialog::NetplaySessionDialog sessionDialog(this, &webSocket, dialog.GetSessionJson(), dialog.GetSessionFile(), QJsonArray());
+        connect(&sessionDialog, &Dialog::NetplaySessionDialog::OnPlayGame, this, &MainWindow::on_Netplay_PlayGame);
+        sessionDialog.exec();
+    }
+#endif // NETPLAY
+}
+
+void MainWindow::on_Action_Netplay_JoinSession(void)
+{
+#ifdef NETPLAY
+    QWebSocket webSocket;
+
+    Dialog::NetplaySessionBrowserDialog dialog(this, &webSocket, this->ui_Widget_RomBrowser->GetModelData());
+    int ret = dialog.exec();
+    if (ret == QDialog::Accepted)
+    {
+        QJsonArray cheats = dialog.GetSessionCheats();  // Retrieve cheats
+        Dialog::NetplaySessionDialog sessionDialog(this, &webSocket, dialog.GetSessionJson(), dialog.GetSessionFile(), cheats);
+        connect(&sessionDialog, &Dialog::NetplaySessionDialog::OnPlayGame, this, &MainWindow::on_Netplay_PlayGame);
+        sessionDialog.exec();
+    }
+#endif // NETPLAY
+}
+
 void MainWindow::on_Action_Help_Github(void)
 {
     QDesktopServices::openUrl(QUrl("https://github.com/Rosalie241/RMG"));
@@ -1809,24 +1935,12 @@ void MainWindow::on_Action_Help_Update(void)
 
 void MainWindow::on_Action_Audio_IncreaseVolume(void)
 {
-    if (!CoreIncreaseVolume())
-    {
-        // It's rather annoying to have an error message pop-up everytime
-        // you use the increase volume hotkey when the volume is already
-        // at 100%, so we'll disable the error message
-        //this->showErrorMessage("CoreIncreaseVolume() Failed", QString::fromStdString(CoreGetError()));
-    }
+    CoreIncreaseVolume();
 }
 
 void MainWindow::on_Action_Audio_DecreaseVolume(void)
 {
-    if (!CoreDecreaseVolume())
-    {
-        // It's rather annoying to have an error message pop-up everytime
-        // you use the decrease volume hotkey when the volume is already
-        // at 0%, so we'll disable the error message
-        //this->showErrorMessage("CoreDecreaseVolume() Failed", QString::fromStdString(CoreGetError()));
-    }
+    CoreDecreaseVolume();
 }
 
 void MainWindow::on_Action_Audio_ToggleVolumeMute(void)
@@ -1922,6 +2036,11 @@ void MainWindow::on_RomBrowser_PlayGameWith(CoreRomType type, QString file)
     }
 
     this->launchEmulationThread(mainRom, otherRom);
+}
+
+void MainWindow::on_RomBrowser_PlayGameWithSlot(QString file, int slot)
+{
+    this->launchEmulationThread(file, "", false, slot);
 }
 
 void MainWindow::on_RomBrowser_ChangeRomDirectory(void)
@@ -2075,10 +2194,52 @@ void MainWindow::on_RomBrowser_Cheats(QString file)
     }
 }
 
+void MainWindow::on_Netplay_PlayGame(QString file, QString address, int port, int player, QJsonArray cheats)
+{
+    this->launchEmulationThread(file, address, port, player, cheats);
+}
+
 void MainWindow::on_VidExt_Init(VidExtRenderMode renderMode)
 {
     this->ui_VidExtRenderMode   = renderMode;
     this->ui_VidExtForceSetMode = true;
+
+    if (CoreSettingsGetBoolValue(SettingsID::GUI_OpenGLES))
+    {
+        QSurfaceFormat format = QSurfaceFormat::defaultFormat();
+        format.setSwapInterval(0);
+        format.setMajorVersion(2);
+        format.setMinorVersion(0);
+        format.setRenderableType(QSurfaceFormat::OpenGLES);
+        QSurfaceFormat::setDefaultFormat(format);
+    }
+    else
+    {
+        QSurfaceFormat format = QSurfaceFormat::defaultFormat();
+        format.setSwapInterval(0);
+        format.setMajorVersion(3);
+        format.setMinorVersion(3);
+        format.setRenderableType(QSurfaceFormat::OpenGL);
+        QSurfaceFormat::setDefaultFormat(format);
+    }
+
+    if (renderMode == VidExtRenderMode::OpenGL)
+    {
+        this->ui_Widget_OpenGL = new Widget::OGLWidget(this);
+        this->ui_Widget_OpenGL->installEventFilter(this->ui_EventFilter);
+        this->ui_Widget_OpenGL->SetHideCursor(this->ui_HideCursorInEmulation);
+
+        this->ui_Widgets->addWidget(this->ui_Widget_OpenGL->GetWidget());
+    }
+    else if (renderMode == VidExtRenderMode::Vulkan)
+    {
+        this->ui_Widget_Vulkan = new Widget::VKWidget(this);
+        this->ui_Widget_Vulkan->installEventFilter(this->ui_EventFilter);
+        this->ui_Widget_Vulkan->SetHideCursor(this->ui_HideCursorInEmulation);
+
+        this->ui_Widgets->addWidget(this->ui_Widget_Vulkan->GetWidget());
+    }
+
     this->updateUI(true, false);
 }
 
@@ -2128,7 +2289,7 @@ void MainWindow::on_VidExt_SetWindowedMode(int width, int height, int bps, int f
         {
             this->ui_Widget_OpenGL->SetHideCursor(false);
         }
-        else
+        else if (this->ui_VidExtRenderMode == VidExtRenderMode::Vulkan)
         {
             this->ui_Widget_Vulkan->SetHideCursor(false);
         }
@@ -2175,7 +2336,7 @@ void MainWindow::on_VidExt_SetFullscreenMode(int width, int height, int bps, int
         {
             this->ui_Widget_OpenGL->SetHideCursor(true);
         }
-        else
+        else if (this->ui_VidExtRenderMode == VidExtRenderMode::Vulkan)
         {
             this->ui_Widget_Vulkan->SetHideCursor(true);
         }
@@ -2278,7 +2439,7 @@ void MainWindow::on_VidExt_ToggleFS(bool fullscreen)
             {
                 this->ui_Widget_OpenGL->SetHideCursor(true);
             }
-            else
+            else if (this->ui_VidExtRenderMode == VidExtRenderMode::Vulkan)
             {
                 this->ui_Widget_Vulkan->SetHideCursor(true);
             }
@@ -2317,7 +2478,7 @@ void MainWindow::on_VidExt_ToggleFS(bool fullscreen)
             {
                 this->ui_Widget_OpenGL->SetHideCursor(false);
             }
-            else
+            else if (this->ui_VidExtRenderMode == VidExtRenderMode::Vulkan)
             {
                 this->ui_Widget_Vulkan->SetHideCursor(false);
             }
@@ -2330,10 +2491,10 @@ void MainWindow::on_VidExt_ToggleFS(bool fullscreen)
     }
 }
 
-void MainWindow::on_Core_DebugCallback(CoreDebugMessageType type, QString context, QString message)
+void MainWindow::on_Core_DebugCallback(QList<CoreCallbackMessage> messages)
 {
-    // pass callback to the log window
-    this->logDialog.AddLogLine(type, context, message);
+    // pass callback messages to the log window
+    this->logDialog.AddMessages(messages);
 
     // only display in statusbar when emulation is running
     if (!this->emulationThread->isRunning())
@@ -2341,32 +2502,33 @@ void MainWindow::on_Core_DebugCallback(CoreDebugMessageType type, QString contex
         return;
     }
 
-    if (!context.startsWith("[CORE]"))
+    // attempt to find last core message
+    CoreCallbackMessage statusbarMessage = {};
+    qsizetype i = messages.size() - 1;
+    for (; i >= 0; i--)
     {
+        if (messages[i].Context.startsWith("[CORE]") &&
+            messages[i].Type != CoreDebugMessageType::Verbose &&
+            !messages[i].Message.startsWith("IS64:"))
+        {
+            statusbarMessage = messages[i];
+            break;
+        }
+    }
+    if (i < 0)
+    { // no wanted core message found
         return;
     }
 
-    // drop verbose messages
-    if (type == CoreDebugMessageType::Verbose)
-    {
-        return;
-    }
-
-    // drop IS64 messages
-    if (message.startsWith("IS64:"))
-    {
-        return;
-    }
-
-    if (type == CoreDebugMessageType::Error)
+    if (statusbarMessage.Type == CoreDebugMessageType::Error)
     {
         // when we've reached 50 of the same error in the same
         // emulation run, we'll stop displaying it
-        if (this->ui_DebugCallbackErrors.count(message) < 50)
+        if (this->ui_DebugCallbackErrors.count(statusbarMessage.Message) < 50)
         {
-            this->showErrorMessage("Core Error", message, false);
+            this->showErrorMessage("Core Error", statusbarMessage.Message, false);
         }
-        this->ui_DebugCallbackErrors.append(message);
+        this->ui_DebugCallbackErrors.append(statusbarMessage.Message);
         return;
     }
 
@@ -2375,14 +2537,14 @@ void MainWindow::on_Core_DebugCallback(CoreDebugMessageType type, QString contex
         return;
     }
 
-    this->ui_StatusBar_Label->setText(message);
+    this->ui_StatusBar_Label->setText(statusbarMessage.Message);
 
     // reset label deletion timer
-    if (this->ui_TimerId != 0)
+    if (this->ui_ResetStatusBarTimerId != 0)
     {
-        this->killTimer(this->ui_TimerId);
+        this->killTimer(this->ui_ResetStatusBarTimerId);
     }
-    this->ui_TimerId = this->startTimer(this->ui_TimerTimeout * 1000);
+    this->ui_ResetStatusBarTimerId = this->startTimer(this->ui_StatusBarTimerTimeout * 1000);
 }
 
 void MainWindow::on_Core_StateCallback(CoreStateCallbackType type, int value)
@@ -2410,6 +2572,11 @@ void MainWindow::on_Core_StateCallback(CoreStateCallbackType type, int value)
             QAction* slotAction  = this->ui_SlotActions[value];
             QString dateTimeText = this->getSaveStateSlotDateTimeText(slotAction);
             std::string message  = "Selected save slot: " + std::to_string(value);
+
+            if (this->ui_LoadSaveStateSlotTimerId != -1)
+            {
+                return;
+            }
 
             // add date and time when available
             if (!dateTimeText.isEmpty())
@@ -2450,7 +2617,28 @@ void MainWindow::on_Core_StateCallback(CoreStateCallbackType type, int value)
         } break;
         case CoreStateCallbackType::SaveStateLoaded:
         {
-            if (value == 0)
+            if (this->ui_LoadSaveStateSlotTimerId != -1 && value == 0)
+            {
+                this->ui_LoadSaveStateSlotCounter++;
+                if (this->ui_LoadSaveStateSlotCounter >= 5)
+                { // give up after 5 attempts
+                    this->showErrorMessage("Failed to load save state");
+                    this->ui_LoadSaveStateSlotCounter = 0;
+                    this->ui_LoadSaveStateSlotTimerId = -1;
+                    this->ui_LoadSaveStateSlot        = -1;
+                }
+                else
+                {
+                    this->ui_LoadSaveStateSlotTimerId = this->startTimer(500);   
+                }
+            }
+            else if (this->ui_LoadSaveStateSlotTimerId != -1 && value != 0)
+            {
+                this->ui_LoadSaveStateSlotCounter = 0;
+                this->ui_LoadSaveStateSlotTimerId = -1;
+                this->ui_LoadSaveStateSlot        = -1;
+            }
+            else if (value == 0)
             {
                 OnScreenDisplaySetMessage("Failed to load save state.");
             }

@@ -98,7 +98,7 @@ OBJDIR = _obj$(POSTFIX)
 # base CFLAGS, LDLIBS, and LDFLAGS
 OPTFLAGS ?= -O3 -flto
 WARNFLAGS ?= -Wall
-CFLAGS += $(OPTFLAGS) $(WARNFLAGS) -ffast-math -fno-strict-aliasing -fvisibility=hidden -I$(SRCDIR) -D_GNU_SOURCE=1
+CFLAGS += $(OPTFLAGS) $(WARNFLAGS) -ffast-math -fvisibility=hidden -I$(SRCDIR) -D_GNU_SOURCE=1
 LDFLAGS += $(SHARED)
 LDLIBS += -lm
 
@@ -141,6 +141,14 @@ ifeq ($(OS), OSX)
   endif
 endif
 
+# test for essential build dependencies
+ifeq ($(origin PKG_CONFIG), undefined)
+  PKG_CONFIG = $(CROSS_COMPILE)pkg-config
+  ifeq ($(shell which $(PKG_CONFIG) 2>/dev/null),)
+    $(error $(PKG_CONFIG) not found)
+  endif
+endif
+
 ifeq ($(OS), LINUX)
     HIDAPI_NAME=hidapi-hidraw
 else
@@ -149,17 +157,11 @@ endif
 
 # test for presence of HIDLIB
 ifeq ($(origin HID_CFLAGS) $(origin HID_LDLIBS), undefined undefined)
-  HIDAPI_CONFIG = $(CROSS_COMPILE)pkg-config $(HIDAPI_NAME)
-  ifeq ($(shell which $(HIDAPI_CONFIG) 2>/dev/null),)
-    HIDAPI_CONFIG = $(CROSS_COMPILE)pkg-config $(HIDAPI_NAME)
-    ifeq ($(shell which $(HIDAPI_CONFIG) 2>/dev/null),)
-      $(error No HIDAPI development libraries found!)
-    else
-      $(warning Using HIDAPI libraries)
-    endif
+  ifeq ($(shell $(PKG_CONFIG) --modversion $(HIDAPI_NAME) 2>/dev/null),)
+    $(error No HIDAPI development libraries found!)
   endif
-  HID_CFLAGS  += $(shell $(HIDAPI_CONFIG) --cflags)
-  HID_LDLIBS += $(shell $(HIDAPI_CONFIG) --libs)
+  HID_CFLAGS = $(shell $(PKG_CONFIG) --cflags $(HIDAPI_NAME))
+  HID_LDLIBS = $(shell $(PKG_CONFIG) --libs $(HIDAPI_NAME))
 endif
 CFLAGS += $(HID_CFLAGS)
 LDLIBS += $(HID_LDLIBS)

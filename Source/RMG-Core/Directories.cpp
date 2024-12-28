@@ -123,34 +123,6 @@ static std::filesystem::path get_var_directory(std::string var, std::string appe
 
     return directory.make_preferred();
 }
-
-static std::filesystem::path get_command_output(std::string command)
-{
-    std::string output;
-    char buf[2048];
-    FILE* pipe = nullptr;
-
-    pipe = popen(command.c_str(), "r");
-    if (pipe == nullptr)
-    {
-        return std::string();
-    }
-
-    while (fgets(buf, sizeof(buf), pipe) != nullptr)
-    {
-        output += buf;
-    }
-
-    pclose(pipe);
-
-    // strip newline
-    if (output.back() == '\n')
-    {
-        output.pop_back();
-    }
-
-    return output;
-}
 #endif // _WIN32
 
 //
@@ -244,9 +216,7 @@ std::filesystem::path CoreGetLibraryDirectory(void)
     }
     else
     {
-        directory = CORE_INSTALL_PREFIX;
-        directory += "/";
-        directory += CORE_INSTALL_LIBDIR;
+        directory = CORE_INSTALL_LIBDIR;
         directory += "/RMG";
     }
 #endif // PORTABLE_INSTALL
@@ -276,7 +246,7 @@ std::filesystem::path CoreGetCoreDirectory(void)
         directory = CoreGetLibraryDirectory();
         directory += "/Core";
     }
-#endif // CORE_INSTALL_PREFIX
+#endif // PORTABLE_INSTALL
     return directory.make_preferred();
 }
 
@@ -303,7 +273,7 @@ std::filesystem::path CoreGetPluginDirectory(void)
         directory = CoreGetLibraryDirectory();
         directory += "/Plugin";
     }
-#endif // CORE_INSTALL_PREFIX
+#endif // PORTABLE_INSTALL
     return directory.make_preferred();
 }
 
@@ -465,9 +435,7 @@ std::filesystem::path CoreGetSharedDataDirectory(void)
     }
     else
     {
-        directory = CORE_INSTALL_PREFIX;
-        directory += "/";
-        directory += CORE_INSTALL_DATADIR;
+        directory = CORE_INSTALL_DATADIR;
         directory += "/RMG";
     }
 #endif // PORTABLE_INSTALL

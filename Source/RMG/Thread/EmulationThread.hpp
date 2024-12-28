@@ -16,8 +16,9 @@
 
 enum class VidExtRenderMode
 {
-    OpenGL,
-    Vulkan
+    OpenGL  = 0,
+    Vulkan  = 1,
+    Invalid = 2
 };
 
 namespace Thread
@@ -32,7 +33,8 @@ class EmulationThread : public QThread
 
     void SetRomFile(QString);
     void SetDiskFile(QString);
-
+    void SetNetplay(QString address, int port, int player);
+    void ApplyCheatsNetplay(QJsonObject cheats);
     void run(void) override;
 
     QString GetLastError(void);
@@ -40,6 +42,9 @@ class EmulationThread : public QThread
   private:
     QString rom;
     QString disk;
+    QString address;
+    int port   = -1;
+    int player = -1;
     QString errorMessage;
 
   signals:

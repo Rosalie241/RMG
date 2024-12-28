@@ -140,7 +140,7 @@ void gSPInverseTransformVector_NEON(float vec[3], float mtx[4][4])
     vec[2] = _mtx.val[0][2];                                              // store vec[2]
 }
 
-void DotProductMax7FullNeon( float v0[3], float v1[7][3], float lights[7][3], float _vtx[3])
+static void DotProductMax7FullNeon( float v0[3], float v1[7][3], float lights[7][3], float _vtx[3])
 {
     // load v1
     float32x4x3_t _v10 = vld3q_f32(v1[0]);               // load 4x3 mtx interleaved
@@ -203,7 +203,7 @@ void DotProductMax7FullNeon( float v0[3], float v1[7][3], float lights[7][3], fl
     _vtx[2] += d20[0];
 }
 
-void DotProductMax4FullNeon( float v0[3], float v1[4][3], float lights[4][3], float vtx[3])
+static void DotProductMax4FullNeon( float v0[3], float v1[4][3], float lights[4][3], float vtx[3])
 {
     float32x4x3_t _v1 = vld3q_f32(v1[0]);               // load 4x3 mtx interleaved
     float32x4x3_t _lights = vld3q_f32(lights[0]);       // load 4x3 mtx interleaved

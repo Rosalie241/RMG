@@ -32,7 +32,7 @@
          <item>
           <spacer name="horizontalSpacer">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
@@ -44,26 +44,26 @@
          </item>
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_3">
-           <item alignment="Qt::AlignHCenter">
+           <item alignment="Qt::AlignmentFlag::AlignHCenter">
             <widget class="QSlider" name="volumeSlider">
              <property name="maximum">
               <number>100</number>
              </property>
              <property name="orientation">
-              <enum>Qt::Vertical</enum>
+              <enum>Qt::Orientation::Vertical</enum>
              </property>
             </widget>
            </item>
            <item>
             <widget class="QLabel" name="volumeLabel">
              <property name="layoutDirection">
-              <enum>Qt::LeftToRight</enum>
+              <enum>Qt::LayoutDirection::LeftToRight</enum>
              </property>
              <property name="text">
               <string>TextLabel</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignCenter</set>
+              <set>Qt::AlignmentFlag::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -79,7 +79,7 @@
          <item>
           <spacer name="horizontalSpacer_2">
            <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+            <enum>Qt::Orientation::Horizontal</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
@@ -103,7 +103,7 @@
          <item>
           <widget class="QLabel" name="label_2">
            <property name="text">
-            <string>Default Frequency</string>
+            <string>Default frequency</string>
            </property>
           </widget>
          </item>
@@ -127,7 +127,7 @@
          <item>
           <widget class="QLabel" name="label_3">
            <property name="text">
-            <string>Primary Buffer Size</string>
+            <string>Primary buffer size</string>
            </property>
           </widget>
          </item>
@@ -151,7 +151,7 @@
          <item>
           <widget class="QLabel" name="label_4">
            <property name="text">
-            <string>Primary Buffer Target</string>
+            <string>Primary buffer target</string>
            </property>
           </widget>
          </item>
@@ -175,7 +175,7 @@
          <item>
           <widget class="QLabel" name="label_5">
            <property name="text">
-            <string>Secondary Buffer Size</string>
+            <string>Secondary buffer size</string>
            </property>
           </widget>
          </item>
@@ -297,21 +297,21 @@
        <item>
         <widget class="QCheckBox" name="swapChannelsCheckBox">
          <property name="text">
-          <string>Swap Left And Right Channel</string>
+          <string>Swap left and right channel</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QCheckBox" name="synchronizeAudioCheckBox">
          <property name="text">
-          <string>Synchronize Audio</string>
+          <string>Synchronize audio</string>
          </property>
         </widget>
        </item>
        <item>
         <spacer name="verticalSpacer">
          <property name="orientation">
-          <enum>Qt::Vertical</enum>
+          <enum>Qt::Orientation::Vertical</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -364,10 +364,10 @@
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::RestoreDefaults</set>
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok|QDialogButtonBox::StandardButton::RestoreDefaults</set>
      </property>
     </widget>
    </item>

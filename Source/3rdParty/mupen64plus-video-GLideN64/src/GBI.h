@@ -35,7 +35,9 @@
 #define F5Indi_Naboo	26
 #define S2DEX_1_03		27
 #define S2DEX_1_05		28
-#define NONE			29
+#define F3DEX3			29
+#define F3DEX095		30
+#define NONE			31
 
 // Fixed point conversion factors
 #define FIXED2FLOATRECIP1	0.5f
@@ -401,6 +403,7 @@ extern u32 G_OBJ_LOADTXTR, G_OBJ_LDTX_SPRITE, G_OBJ_LDTX_RECT, G_OBJ_LDTX_RECT_R
 extern u32 G_RDPHALF_0;
 extern u32 G_PERSPNORM;
 extern u32 G_ZOBJ, G_ZRDPCMD, G_ZWAITSIGNAL, G_ZMTXCAT, G_ZMULT_MPMTX, G_ZLIGHTING;
+extern u32 G_TRISTRIP, G_TRIFAN, G_LIGHTTORDP, G_RELSEGMENT;
 
 #define LIGHT_1	1
 #define LIGHT_2	2
@@ -468,7 +471,7 @@ typedef struct
 
 struct Light
 {
-	u8 pad0, b, g, r;
+	u8 type, b, g, r;
 	u8 pad1, b2, g2, r2;
 	s8 pad2, z, y, x;
 };
@@ -489,6 +492,13 @@ struct MicrocodeInfo
 	bool fast3DPersp = false;
 	bool texturePersp = true;
 	bool combineMatrices = false;
+	struct
+	{
+		// LVP is how microcodes other than F3DEX3 function
+		bool legacyVertexPipeline = true;
+		bool noOcclusionPlane = false;
+		bool branchOnZ = false;
+	} f3dex3;
 };
 
 struct GBIInfo
@@ -509,6 +519,9 @@ struct GBIInfo
 	bool isNegativeY() const { return m_pCurrent != nullptr ? m_pCurrent->negativeY : true; }
 	bool isTexturePersp() const { return m_pCurrent != nullptr ? m_pCurrent->texturePersp: true; }
 	bool isCombineMatrices() const { return m_pCurrent != nullptr ? m_pCurrent->combineMatrices: false; }
+	bool isLegacyVertexPipeline() const { return m_pCurrent != nullptr ? m_pCurrent->f3dex3.legacyVertexPipeline : true; }
+	bool isNoOcclusionPlane() const { return m_pCurrent != nullptr ? m_pCurrent->f3dex3.noOcclusionPlane : false; }
+	bool isBranchOnZ() const { return m_pCurrent != nullptr ? m_pCurrent->f3dex3.branchOnZ : false; }
 
 private:
 	void _flushCommands();

@@ -17,6 +17,7 @@
 #include "Cheats.hpp"
 #include "osal/osal_files.hpp"
 #include "CachedRomHeaderAndSettings.hpp"
+#include "Utils/File.hpp"
 
 // lzma includes
 #include "../3rdParty/lzma/7zTypes.h"
@@ -29,6 +30,7 @@
 
 #include <string>
 #include <unzip.h>
+#include <zlib.h>
 #include <fstream>
 #include <cstdlib>
 #include <cstring>
@@ -90,7 +92,7 @@ static uLong zlib_filefunc_read(voidpf opaque, voidpf stream, void* buf, uLong s
 {
     std::ifstream* fileStream = (std::ifstream*)stream;
     fileStream->read((char*)buf, size);
-    return fileStream->fail() ? 0 : size;
+    return fileStream->fail() ? fileStream->gcount() : size;
 }
 
 static ZPOS64_T zlib_filefunc_tell(voidpf opaque, voidpf stream)
@@ -194,7 +196,18 @@ static bool read_zip_file(std::filesystem::path file, std::filesystem::path& ext
 
         // make sure file has supported file format,
         // if it does, read it in memory
-        std::filesystem::path fileNamePath(fileName);
+        std::filesystem::path fileNamePath;
+        // Windows sometimes throws an exception when assigning a string to a path
+        // due to being unable to convert the character sequence.
+        // so we have to catch the exception and do nothing
+        try
+        {
+            fileNamePath = fileName;
+        }
+        catch (...)
+        {
+            // ignore exception
+        }
         std::string fileExtension = fileNamePath.has_extension() ? fileNamePath.extension().string() : "";
         fileExtension = to_lower_str(fileExtension);
         if (fileExtension == ".z64" ||
@@ -353,7 +366,18 @@ static bool read_7zip_file(std::filesystem::path file, std::filesystem::path& ex
 
         SzArEx_GetFileNameUtf16(&db, i, fileName);
 
-        std::filesystem::path fileNamePath((char16_t*)fileName);
+        std::filesystem::path fileNamePath;
+        // Windows sometimes throws an exception when assigning a string to a path
+        // due to being unable to convert the character sequence.
+        // so we have to catch the exception and do nothing
+        try
+        {
+            fileNamePath = (char16_t*)fileName;
+        }
+        catch (...)
+        {
+            // ignore exception
+        }
         std::string fileExtension = fileNamePath.has_extension() ? fileNamePath.extension().string() : "";
         fileExtension = to_lower_str(fileExtension);
         if (fileExtension == ".z64" ||
@@ -405,66 +429,6 @@ static bool read_7zip_file(std::filesystem::path file, std::filesystem::path& ex
     error = "read_7zip_file Failed: no valid ROMs found in 7zip!";
     CoreSetError(error);
     return false;
-}
-
-static bool read_raw_file(std::filesystem::path file, std::vector<char>& outBuffer)
-{
-    std::string   error;
-    std::ifstream fileStream;
-    int           fileStreamLen;
-
-    // attempt to open file
-    fileStream.open(file, std::ios::binary);
-    if (!fileStream.is_open())
-    {
-        error = "read_raw_file Failed: ";
-        error += "failed to open file: ";
-        error += strerror(errno);
-        error += " (";
-        error += std::to_string(errno);
-        error += ")";
-        CoreSetError(error);
-        return false;
-    }
-
-    // attempt to retrieve file length
-    fileStream.seekg(0, fileStream.end);
-    fileStreamLen = fileStream.tellg();
-    fileStream.seekg(0, fileStream.beg);
-
-    // resize buffer
-    outBuffer.resize(fileStreamLen);
-
-    // read file
-    fileStream.read(outBuffer.data(), fileStreamLen);
-
-    fileStream.close();
-    return true;
-}
-
-static bool write_file(std::filesystem::path file, std::vector<char>& buffer)
-{
-    std::string   error;
-    std::ofstream fileStream;
-
-    // attempt to open file
-    fileStream.open(file, std::ios::binary);
-    if (!fileStream.is_open())
-    {
-        error = "write_file Failed: ";
-        error += "failed to open file: ";
-        error += strerror(errno);
-        error += " (";
-        error += std::to_string(errno);
-        error += ")";
-        CoreSetError(error);
-        return false;
-    }
-
-    // write buffer to file
-    fileStream.write(buffer.data(), buffer.size());
-    fileStream.close();
-    return true;
 }
 
 //
@@ -542,7 +506,7 @@ bool CoreOpenRom(std::filesystem::path file)
             }
 
             // attempt to write temporary file
-            if (!write_file(disk_file, buf))
+            if (!CoreWriteFile(disk_file, buf))
             {
                 return false;
             }
@@ -564,7 +528,7 @@ bool CoreOpenRom(std::filesystem::path file)
     }
     else
     {
-        if (!read_raw_file(file, buf))
+        if (!CoreReadFile(file, buf))
         {
             return false;
         }

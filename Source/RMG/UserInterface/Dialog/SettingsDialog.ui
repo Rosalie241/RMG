@@ -23,7 +23,7 @@
    <item row="1" column="0">
     <layout class="QVBoxLayout" name="verticalLayout">
      <property name="sizeConstraint">
-      <enum>QLayout::SetNoConstraint</enum>
+      <enum>QLayout::SizeConstraint::SetNoConstraint</enum>
      </property>
      <property name="rightMargin">
       <number>0</number>
@@ -34,7 +34,7 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <property name="sizeConstraint">
-        <enum>QLayout::SetNoConstraint</enum>
+        <enum>QLayout::SizeConstraint::SetNoConstraint</enum>
        </property>
        <item>
         <widget class="QTabWidget" name="tabWidget">
@@ -51,6 +51,142 @@
              <property name="currentIndex">
               <number>0</number>
              </property>
+             <widget class="QWidget" name="tab_3">
+              <attribute name="title">
+               <string>General</string>
+              </attribute>
+              <layout class="QVBoxLayout" name="verticalLayout_7">
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_13">
+                 <item>
+                  <widget class="QLabel" name="label_12">
+                   <property name="text">
+                    <string>Theme</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="themeComboBox">
+                   <item>
+                    <property name="text">
+                     <string>Native</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Fusion</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Fusion Dark</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_14">
+                 <item>
+                  <widget class="QLabel" name="label_13">
+                   <property name="text">
+                    <string>Icon theme</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="iconThemeComboBox">
+                   <item>
+                    <property name="text">
+                     <string>Automatic</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>White</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Black</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="checkForUpdatesCheckBox">
+                 <property name="text">
+                  <string>Check for updates</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="discordRpcCheckBox">
+                 <property name="text">
+                  <string>Discord Rich Presence</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="verticalSpacer_6">
+                 <property name="orientation">
+                  <enum>Qt::Orientation::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>449</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="emulationInfoLayout_5">
+                 <item>
+                  <widget class="QLabel" name="infoIconLabel_7">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="pixmap">
+                    <pixmap>:/newPrefix/Resource/Info.ico</pixmap>
+                   </property>
+                   <property name="wordWrap">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_91">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="midLineWidth">
+                    <number>1</number>
+                   </property>
+                   <property name="text">
+                    <string>Changes will be applied on next application run</string>
+                   </property>
+                   <property name="textFormat">
+                    <enum>Qt::TextFormat::PlainText</enum>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
              <widget class="QWidget" name="tab">
               <attribute name="title">
                <string>Emulation</string>
@@ -59,51 +195,76 @@
                <item>
                 <widget class="QCheckBox" name="hideCursorCheckBox">
                  <property name="text">
-                  <string>Hide Cursor During Emulation</string>
+                  <string>Hide cursor during emulation</string>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QCheckBox" name="hideCursorFullscreenCheckBox">
                  <property name="text">
-                  <string>Hide Cursor During Fullscreen Emulation</string>
+                  <string>Hide cursor during fullscreen emulation</string>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QCheckBox" name="pauseEmulationOnFocusCheckbox">
                  <property name="text">
-                  <string>Pause Emulation On Focus Loss</string>
+                  <string>Pause emulation on focus loss</string>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QCheckBox" name="resumeEmulationOnFocusCheckBox">
                  <property name="text">
-                  <string>Resume Emulation On Focus Gain</string>
+                  <string>Resume emulation on focus gain</string>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QCheckBox" name="automaticFullscreenCheckbox">
                  <property name="text">
-                  <string>Automatically Switch To Fullscreen On Emulation Start</string>
+                  <string>Automatically switch to fullscreen on emulation start</string>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QCheckBox" name="confirmDragDropCheckBox">
                  <property name="text">
-                  <string>Ask For Confirmation During Drag And Drop</string>
+                  <string>Ask for confirmation during drag and drop</string>
                  </property>
                 </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_17">
+                 <item>
+                  <widget class="QLabel" name="label_6">
+                   <property name="text">
+                    <string>OpenGL type</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="openglTypeComboBox">
+                   <item>
+                    <property name="text">
+                     <string>OpenGL</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>OpenGL ES</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                </layout>
                </item>
                <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_2">
                  <item>
                   <widget class="QLabel" name="label">
                    <property name="text">
-                    <string>Statusbar Message Duration</string>
+                    <string>Statusbar message duration</string>
                    </property>
                   </widget>
                  </item>
@@ -125,7 +286,7 @@
                <item>
                 <spacer name="verticalSpacer_3">
                  <property name="orientation">
-                  <enum>Qt::Vertical</enum>
+                  <enum>Qt::Orientation::Vertical</enum>
                  </property>
                  <property name="sizeHint" stdset="0">
                   <size>
@@ -171,7 +332,7 @@
                     <string>Changes will be applied on next emulation run</string>
                    </property>
                    <property name="textFormat">
-                    <enum>Qt::PlainText</enum>
+                    <enum>Qt::TextFormat::PlainText</enum>
                    </property>
                   </widget>
                  </item>
@@ -187,14 +348,14 @@
                <item>
                 <widget class="QCheckBox" name="searchSubDirectoriesCheckbox">
                  <property name="text">
-                  <string>Search Sub-Directories</string>
+                  <string>Search sub-directories</string>
                  </property>
                 </widget>
                </item>
                <item>
                 <widget class="QCheckBox" name="sortRomBrowserResultsCheckBox">
                  <property name="text">
-                  <string>Sort Results After Search</string>
+                  <string>Sort results after search</string>
                  </property>
                 </widget>
                </item>
@@ -203,7 +364,7 @@
                  <item>
                   <widget class="QLabel" name="label_2">
                    <property name="text">
-                    <string>ROM Search Limit</string>
+                    <string>ROM search limit</string>
                    </property>
                   </widget>
                  </item>
@@ -222,7 +383,7 @@
                <item>
                 <spacer name="verticalSpacer_5">
                  <property name="orientation">
-                  <enum>Qt::Vertical</enum>
+                  <enum>Qt::Orientation::Vertical</enum>
                  </property>
                  <property name="sizeHint" stdset="0">
                   <size>
@@ -242,14 +403,14 @@
                <item>
                 <widget class="QCheckBox" name="showVerboseLogMessagesCheckBox">
                  <property name="text">
-                  <string>Show Verbose Messages</string>
+                  <string>Show verbose messages</string>
                  </property>
                 </widget>
                </item>
                <item>
                 <spacer name="verticalSpacer_12">
                  <property name="orientation">
-                  <enum>Qt::Vertical</enum>
+                  <enum>Qt::Orientation::Vertical</enum>
                  </property>
                  <property name="sizeHint" stdset="0">
                   <size>
@@ -313,7 +474,7 @@
                  <item>
                   <widget class="QLabel" name="label_7">
                    <property name="text">
-                    <string>Vertical Padding</string>
+                    <string>Vertical padding</string>
                    </property>
                   </widget>
                  </item>
@@ -334,7 +495,7 @@
                  <item>
                   <widget class="QLabel" name="label_8">
                    <property name="text">
-                    <string>Horizontal Padding</string>
+                    <string>Horizontal padding</string>
                    </property>
                   </widget>
                  </item>
@@ -351,24 +512,36 @@
                 </layout>
                </item>
                <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_11">
+                <layout class="QHBoxLayout" name="horizontalLayout_15">
                  <item>
-                  <widget class="QLabel" name="label_10">
+                  <widget class="QLabel" name="label_14">
                    <property name="text">
-                    <string>Opacity</string>
+                    <string>Background color</string>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QDoubleSpinBox" name="osdOpacitySpinBox">
-                   <property name="decimals">
-                    <number>1</number>
+                  <widget class="QPushButton" name="changeBackgroundColorButton">
+                   <property name="text">
+                    <string/>
                    </property>
-                   <property name="maximum">
-                    <double>1.000000000000000</double>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_16">
+                 <item>
+                  <widget class="QLabel" name="label_15">
+                   <property name="text">
+                    <string>Text color</string>
                    </property>
-                   <property name="singleStep">
-                    <double>0.100000000000000</double>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="changeTextColorButton">
+                   <property name="text">
+                    <string/>
                    </property>
                   </widget>
                  </item>
@@ -398,7 +571,7 @@
                <item>
                 <spacer name="verticalSpacer_17">
                  <property name="orientation">
-                  <enum>Qt::Vertical</enum>
+                  <enum>Qt::Orientation::Vertical</enum>
                  </property>
                  <property name="sizeHint" stdset="0">
                   <size>
@@ -444,7 +617,7 @@
                     <string>The On-Screen Display will only work with OpenGL video plugins</string>
                    </property>
                    <property name="textFormat">
-                    <enum>Qt::PlainText</enum>
+                    <enum>Qt::TextFormat::PlainText</enum>
                    </property>
                   </widget>
                  </item>
@@ -452,139 +625,65 @@
                </item>
               </layout>
              </widget>
-             <widget class="QWidget" name="tab_3">
+             <widget class="QWidget" name="tab_7">
               <attribute name="title">
-               <string>Miscellaneous</string>
+               <string>Netplay</string>
               </attribute>
-              <layout class="QVBoxLayout" name="verticalLayout_7">
+              <layout class="QVBoxLayout" name="verticalLayout_25">
                <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_13">
+                <layout class="QHBoxLayout" name="horizontalLayout_18">
                  <item>
-                  <widget class="QLabel" name="label_12">
+                  <widget class="QLabel" name="label_10">
                    <property name="text">
-                    <string>Theme</string>
+                    <string>Nickname</string>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QComboBox" name="themeComboBox">
-                   <item>
-                    <property name="text">
-                     <string>Native</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Fusion</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Fusion Dark</string>
-                    </property>
-                   </item>
+                  <widget class="QLineEdit" name="netplayNicknameLineEdit">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
                   </widget>
                  </item>
                 </layout>
                </item>
                <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_14">
+                <layout class="QHBoxLayout" name="horizontalLayout_19">
                  <item>
-                  <widget class="QLabel" name="label_13">
+                  <widget class="QLabel" name="label_16">
                    <property name="text">
-                    <string>Icon Theme</string>
+                    <string>Server list URL</string>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QComboBox" name="iconThemeComboBox">
-                   <item>
-                    <property name="text">
-                     <string>Automatic</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>White</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Black</string>
-                    </property>
-                   </item>
+                  <widget class="QLineEdit" name="netplayServerUrlLineEdit">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
                   </widget>
                  </item>
                 </layout>
                </item>
                <item>
-                <widget class="QCheckBox" name="checkForUpdatesCheckBox">
-                 <property name="text">
-                  <string>Check For Updates</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QCheckBox" name="discordRpcCheckBox">
-                 <property name="text">
-                  <string>Discord Rich Presence</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <spacer name="verticalSpacer_6">
+                <spacer name="verticalSpacer_19">
                  <property name="orientation">
-                  <enum>Qt::Vertical</enum>
+                  <enum>Qt::Orientation::Vertical</enum>
                  </property>
                  <property name="sizeHint" stdset="0">
                   <size>
                    <width>20</width>
-                   <height>449</height>
+                   <height>435</height>
                   </size>
                  </property>
                 </spacer>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="emulationInfoLayout_5">
-                 <item>
-                  <widget class="QLabel" name="infoIconLabel_7">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="text">
-                    <string/>
-                   </property>
-                   <property name="pixmap">
-                    <pixmap>:/newPrefix/Resource/Info.ico</pixmap>
-                   </property>
-                   <property name="wordWrap">
-                    <bool>false</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="label_91">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="midLineWidth">
-                    <number>1</number>
-                   </property>
-                   <property name="text">
-                    <string>Changes will be applied on next application run</string>
-                   </property>
-                   <property name="textFormat">
-                    <enum>Qt::PlainText</enum>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
                </item>
               </layout>
              </widget>
@@ -600,7 +699,7 @@
            <item>
             <widget class="QScrollArea" name="scrollArea">
              <property name="frameShadow">
-              <enum>QFrame::Plain</enum>
+              <enum>QFrame::Shadow::Plain</enum>
              </property>
              <property name="widgetResizable">
               <bool>true</bool>
@@ -610,8 +709,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>442</width>
-                <height>692</height>
+                <width>444</width>
+                <height>690</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -898,7 +997,7 @@
                    <item>
                     <spacer name="verticalSpacer_14">
                      <property name="orientation">
-                      <enum>Qt::Vertical</enum>
+                      <enum>Qt::Orientation::Vertical</enum>
                      </property>
                      <property name="sizeHint" stdset="0">
                       <size>
@@ -1134,7 +1233,7 @@
                    <item>
                     <spacer name="verticalSpacer_9">
                      <property name="orientation">
-                      <enum>Qt::Vertical</enum>
+                      <enum>Qt::Orientation::Vertical</enum>
                      </property>
                      <property name="sizeHint" stdset="0">
                       <size>
@@ -1334,7 +1433,7 @@
                    <item>
                     <spacer name="verticalSpacer_13">
                      <property name="orientation">
-                      <enum>Qt::Vertical</enum>
+                      <enum>Qt::Orientation::Vertical</enum>
                      </property>
                      <property name="sizeHint" stdset="0">
                       <size>
@@ -1408,7 +1507,7 @@
                    <item>
                     <spacer name="verticalSpacer_18">
                      <property name="orientation">
-                      <enum>Qt::Vertical</enum>
+                      <enum>Qt::Orientation::Vertical</enum>
                      </property>
                      <property name="sizeHint" stdset="0">
                       <size>
@@ -1518,7 +1617,7 @@
                    <item>
                     <spacer name="verticalSpacer_15">
                      <property name="orientation">
-                      <enum>Qt::Vertical</enum>
+                      <enum>Qt::Orientation::Vertical</enum>
                      </property>
                      <property name="sizeHint" stdset="0">
                       <size>
@@ -1592,7 +1691,7 @@
                    <item>
                     <spacer name="verticalSpacer_16">
                      <property name="orientation">
-                      <enum>Qt::Vertical</enum>
+                      <enum>Qt::Orientation::Vertical</enum>
                      </property>
                      <property name="sizeHint" stdset="0">
                       <size>
@@ -1613,7 +1712,7 @@
            <item>
             <widget class="QCheckBox" name="removeDuplicateHotkeysCheckBox">
              <property name="text">
-              <string>Remove Duplicate Keybindings</string>
+              <string>Remove duplicate keybindings</string>
              </property>
             </widget>
            </item>
@@ -1623,13 +1722,38 @@
           <attribute name="title">
            <string>Core</string>
           </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_17">
+          <layout class="QVBoxLayout" name="verticalLayout_24">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_46">
+             <item>
+              <widget class="QLabel" name="label_25">
+               <property name="text">
+                <string>Save filename format</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="coreSaveFilenameFormatComboBox">
+               <item>
+                <property name="text">
+                 <string>Internal ROM Name</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Automatic</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+            </layout>
+           </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_43">
              <item>
               <widget class="QLabel" name="label_23">
                <property name="text">
-                <string>CPU Emulator</string>
+                <string>CPU emulator</string>
                </property>
               </widget>
              </item>
@@ -1655,29 +1779,68 @@
             </layout>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_46">
-             <item>
-              <widget class="QLabel" name="label_25">
-               <property name="text">
-                <string>Save Filename Format</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QComboBox" name="coreSaveFilenameFormatComboBox">
-               <item>
-                <property name="text">
-                 <string>Internal ROM Name</string>
+            <widget class="QGroupBox" name="usePifRomGroupBox">
+             <property name="title">
+              <string>&amp;Use PIF ROM</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_17">
+              <item>
+               <widget class="QGroupBox" name="groupBox_2">
+                <property name="title">
+                 <string>NTSC PIF ROM</string>
                 </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Automatic</string>
+                <layout class="QHBoxLayout" name="horizontalLayout_6">
+                 <item>
+                  <widget class="QLineEdit" name="ntscPifRomLineEdit">
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                   <property name="clearButtonEnabled">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="changeNTSCPifRomButton">
+                   <property name="text">
+                    <string>Change</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QGroupBox" name="groupBox_3">
+                <property name="title">
+                 <string>PAL PIF ROM</string>
                 </property>
-               </item>
-              </widget>
-             </item>
-            </layout>
+                <layout class="QHBoxLayout" name="horizontalLayout_7">
+                 <item>
+                  <widget class="QLineEdit" name="palPifRomLineEdit">
+                   <property name="readOnly">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="changePALPifRomButton">
+                   <property name="text">
+                    <string>Change</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
            </item>
            <item>
             <widget class="QGroupBox" name="coreOverrideGameSettingsGroup">
@@ -1685,7 +1848,7 @@
               <bool>true</bool>
              </property>
              <property name="title">
-              <string>Override Game Specific Settings</string>
+              <string>Override game specific settings</string>
              </property>
              <property name="checkable">
               <bool>true</bool>
@@ -1794,19 +1957,19 @@
            <item>
             <widget class="QCheckBox" name="coreRandomizeTimingCheckBox">
              <property name="text">
-              <string>Randomize PI/SI Interrupt Timing</string>
+              <string>Randomize PI/SI interrupt timing</string>
              </property>
             </widget>
            </item>
            <item>
             <spacer name="verticalSpacer_7">
              <property name="orientation">
-              <enum>Qt::Vertical</enum>
+              <enum>Qt::Orientation::Vertical</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
                <width>20</width>
-               <height>245</height>
+               <height>40</height>
               </size>
              </property>
             </spacer>
@@ -1847,7 +2010,7 @@
                 <string>Changes will be applied on next emulation run</string>
                </property>
                <property name="textFormat">
-                <enum>Qt::PlainText</enum>
+                <enum>Qt::TextFormat::PlainText</enum>
                </property>
               </widget>
              </item>
@@ -2010,6 +2173,31 @@
                 </layout>
                </item>
                <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_11">
+                 <item>
+                  <widget class="QLabel" name="label_5">
+                   <property name="text">
+                    <string>Transfer Pak</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="gameTransferPakComboBox">
+                   <item>
+                    <property name="text">
+                     <string>No</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Yes</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_52">
                  <item>
                   <widget class="QLabel" name="label_55">
@@ -2033,7 +2221,7 @@
                <item>
                 <spacer name="verticalSpacer_8">
                  <property name="orientation">
-                  <enum>Qt::Vertical</enum>
+                  <enum>Qt::Orientation::Vertical</enum>
                  </property>
                  <property name="sizeHint" stdset="0">
                   <size>
@@ -2053,7 +2241,7 @@
                <item>
                 <widget class="QGroupBox" name="gameOverrideCoreSettingsGroupBox">
                  <property name="title">
-                  <string>Override Core Settings</string>
+                  <string>Override core settings</string>
                  </property>
                  <property name="checkable">
                   <bool>true</bool>
@@ -2123,7 +2311,7 @@
                <item>
                 <spacer name="verticalSpacer_4">
                  <property name="orientation">
-                  <enum>Qt::Vertical</enum>
+                  <enum>Qt::Orientation::Vertical</enum>
                  </property>
                  <property name="sizeHint" stdset="0">
                   <size>
@@ -2233,7 +2421,7 @@
                   <string>Reality Signal Processor Plugin</string>
                  </property>
                  <property name="alignment">
-                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                  <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
                  </property>
                  <property name="flat">
                   <bool>false</bool>
@@ -2295,7 +2483,7 @@
                <item>
                 <spacer name="verticalSpacer_10">
                  <property name="orientation">
-                  <enum>Qt::Vertical</enum>
+                  <enum>Qt::Orientation::Vertical</enum>
                  </property>
                  <property name="sizeHint" stdset="0">
                   <size>
@@ -2341,7 +2529,7 @@
                     <string>Make sure to use a LLE RSP plugin (i.e paraLLEl RSP) when using a LLE Video plugin (i.e paraLLEl)</string>
                    </property>
                    <property name="textFormat">
-                    <enum>Qt::PlainText</enum>
+                    <enum>Qt::TextFormat::PlainText</enum>
                    </property>
                    <property name="wordWrap">
                     <bool>true</bool>
@@ -2390,7 +2578,7 @@
                 <string>Changes will be applied on next emulation run</string>
                </property>
                <property name="textFormat">
-                <enum>Qt::PlainText</enum>
+                <enum>Qt::TextFormat::PlainText</enum>
                </property>
               </widget>
              </item>
@@ -2466,7 +2654,7 @@
               <string>Reality Signal Processor Plugin</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignVCenter</set>
              </property>
              <property name="flat">
               <bool>false</bool>
@@ -2519,7 +2707,7 @@
            <item>
             <spacer name="verticalSpacer_11">
              <property name="orientation">
-              <enum>Qt::Vertical</enum>
+              <enum>Qt::Orientation::Vertical</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -2565,7 +2753,7 @@
                 <string>Make sure to use a LLE RSP plugin (i.e paraLLEl RSP) when using a LLE Video plugin (i.e paraLLEl)</string>
                </property>
                <property name="textFormat">
-                <enum>Qt::PlainText</enum>
+                <enum>Qt::TextFormat::PlainText</enum>
                </property>
                <property name="wordWrap">
                 <bool>true</bool>
@@ -2610,7 +2798,7 @@
                 <string>Changes will be applied on next emulation run</string>
                </property>
                <property name="textFormat">
-                <enum>Qt::PlainText</enum>
+                <enum>Qt::TextFormat::PlainText</enum>
                </property>
               </widget>
              </item>
@@ -2698,7 +2886,7 @@
               <bool>true</bool>
              </property>
              <property name="title">
-              <string>Override User Directories</string>
+              <string>Override &amp;user directories</string>
              </property>
              <property name="checkable">
               <bool>true</bool>
@@ -2759,7 +2947,7 @@
            <item>
             <spacer name="verticalSpacer">
              <property name="orientation">
-              <enum>Qt::Vertical</enum>
+              <enum>Qt::Orientation::Vertical</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -2772,7 +2960,7 @@
            <item>
             <layout class="QHBoxLayout" name="emulationInfoLayout_13">
              <property name="sizeConstraint">
-              <enum>QLayout::SetDefaultConstraint</enum>
+              <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
              </property>
              <item>
               <widget class="QLabel" name="infoIconLabel_3">
@@ -2808,7 +2996,7 @@
                 <string>Changes will be applied on next application run</string>
                </property>
                <property name="textFormat">
-                <enum>Qt::PlainText</enum>
+                <enum>Qt::TextFormat::PlainText</enum>
                </property>
               </widget>
              </item>
@@ -2824,7 +3012,7 @@
            <item>
             <widget class="QGroupBox" name="groupBox_32">
              <property name="title">
-              <string>Japanese Retail 64DD IPL ROM path</string>
+              <string>Japanese Retail 64DD IPL ROM</string>
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_88">
               <item>
@@ -2847,7 +3035,7 @@
            <item>
             <widget class="QGroupBox" name="groupBox_33">
              <property name="title">
-              <string>American Retail 64DD IPL ROM path</string>
+              <string>American Retail 64DD IPL ROM</string>
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_90">
               <item>
@@ -2870,7 +3058,7 @@
            <item>
             <widget class="QGroupBox" name="groupBox_34">
              <property name="title">
-              <string>Development 64DD IPL ROM path</string>
+              <string>Development 64DD IPL ROM</string>
              </property>
              <layout class="QHBoxLayout" name="horizontalLayout_91">
               <item>
@@ -2895,7 +3083,7 @@
              <item>
               <widget class="QLabel" name="label_3">
                <property name="text">
-                <string>Disk Save Type</string>
+                <string>Disk save type</string>
                </property>
               </widget>
              </item>
@@ -2918,7 +3106,7 @@
            <item>
             <spacer name="verticalSpacer_2">
              <property name="orientation">
-              <enum>Qt::Vertical</enum>
+              <enum>Qt::Orientation::Vertical</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -2964,7 +3152,7 @@
                 <string>Changes will be applied on next emulation run</string>
                </property>
                <property name="textFormat">
-                <enum>Qt::PlainText</enum>
+                <enum>Qt::TextFormat::PlainText</enum>
                </property>
               </widget>
              </item>
@@ -2979,10 +3167,10 @@
      <item>
       <widget class="QDialogButtonBox" name="buttonBox">
        <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <enum>Qt::Orientation::Horizontal</enum>
        </property>
        <property name="standardButtons">
-        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::RestoreDefaults</set>
+        <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok|QDialogButtonBox::StandardButton::RestoreDefaults</set>
        </property>
       </widget>
      </item>

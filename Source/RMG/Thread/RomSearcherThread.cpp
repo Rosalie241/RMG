@@ -82,7 +82,6 @@ void RomSearcherThread::searchDirectory(QString directory)
     CoreRomHeader   header;
     CoreRomSettings settings;
     bool            ret;
-    int             count = 0;
 
     QList<QString> roms;
     while (romDirIt.hasNext())

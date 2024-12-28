@@ -736,7 +736,7 @@ m64p_error main_core_state_query(m64p_core_param param, int *rval)
         case M64CORE_SCREENSHOT_CAPTURED:
         case M64CORE_STATE_LOADCOMPLETE:
         case M64CORE_STATE_SAVECOMPLETE:
-        case M64CORE_SPEED_UDPATE:
+        case M64CORE_SPEED_UPDATE:
             return M64ERR_INPUT_INVALID;
         default:
             return M64ERR_INPUT_INVALID;
@@ -1074,15 +1074,14 @@ void new_vi(void)
 #endif
 
     execution.frame(l_CurrentVI);
-
     if (l_CurrentVI % 30 == 0) {
         if (l_LastVITime != -1) {
-            StateChanged(M64CORE_SPEED_UDPATE, SDL_GetTicks() - l_LastVITime);
+            StateChanged(M64CORE_SPEED_UPDATE, SDL_GetTicks() - l_LastVITime);
         }
         l_LastVITime = SDL_GetTicks();
     }
     l_CurrentVI++;
-
+    
     gs_apply_cheats(&g_cheat_ctx);
 
     apply_speed_limiter();
@@ -2018,6 +2017,9 @@ m64p_error main_run(void)
     close_file_storage(&mpk);
     close_dd_disk(&dd_disk);
 
+    /* reset pif */
+    close_pif();
+
     if (ConfigGetParamBool(g_CoreConfig, "OnScreenDisplay"))
     {
         osd_exit();
@@ -2064,6 +2066,9 @@ on_gfx_open_failure:
     close_file_storage(&mpk);
     close_dd_disk(&dd_disk);
 
+    /* reset pif */
+    close_pif();
+
     return failure_rval;
 }
 
@@ -2108,8 +2113,11 @@ void main_stop(void)
 
 m64p_error open_pif(const unsigned char* pifimage, unsigned int size)
 {
-    md5_byte_t pif_ntsc_md5[] = {0x49, 0x21, 0xD5, 0xF2, 0x16, 0x5D, 0xEE, 0x6E, 0x24, 0x96, 0xF4, 0x38, 0x8C, 0x4C, 0x81, 0xDA};
-    md5_byte_t pif_pal_md5[]  = {0x2B, 0x6E, 0xEC, 0x58, 0x6F, 0xAA, 0x43, 0xF3, 0x46, 0x23, 0x33, 0xB8, 0x44, 0x83, 0x45, 0x54};
+    md5_byte_t old_pif_ntsc_md5[] = {0x49, 0x21, 0xD5, 0xF2, 0x16, 0x5D, 0xEE, 0x6E, 0x24, 0x96, 0xF4, 0x38, 0x8C, 0x4C, 0x81, 0xDA};
+    md5_byte_t old_pif_pal_md5[]  = {0x2B, 0x6E, 0xEC, 0x58, 0x6F, 0xAA, 0x43, 0xF3, 0x46, 0x23, 0x33, 0xB8, 0x44, 0x83, 0x45, 0x54};
+
+    md5_byte_t pif_ntsc_md5[] = {0x5C, 0x12, 0x4E, 0x79, 0x48, 0xAD, 0xA8, 0x5D, 0xA6, 0x03, 0xA5, 0x22, 0x78, 0x29, 0x40, 0xD0};
+    md5_byte_t pif_pal_md5[]  = {0xD4, 0x23, 0x2D, 0xC9, 0x35, 0xCA, 0xD0, 0x65, 0x0A, 0xC2, 0x66, 0x4D, 0x52, 0x28, 0x1F, 0x3A};
 
     uint32_t *dst32 = mem_base_u32(g_mem_base, MM_PIF_MEM);
     uint32_t *src32 = (uint32_t*) pifimage;
@@ -2120,10 +2128,16 @@ m64p_error open_pif(const unsigned char* pifimage, unsigned int size)
     md5_append(&state, (const md5_byte_t*)pifimage, size);
     md5_finish(&state, digest);
 
-    if (memcmp(digest, pif_ntsc_md5, 16) == 0)
+    if (memcmp(digest, old_pif_ntsc_md5, 16) == 0 ||
+        memcmp(digest, pif_ntsc_md5, 16) == 0)
+    {
         DebugMessage(M64MSG_INFO, "Using NTSC PIF ROM");
-    else if (memcmp(digest, pif_pal_md5, 16) == 0)
+    }
+    else if (memcmp(digest, old_pif_pal_md5, 16) == 0 ||
+             memcmp(digest, pif_pal_md5, 16) == 0)
+    {
         DebugMessage(M64MSG_INFO, "Using PAL PIF ROM");
+    }
     else
     {
         DebugMessage(M64MSG_ERROR, "Invalid PIF ROM");
@@ -2134,5 +2148,11 @@ m64p_error open_pif(const unsigned char* pifimage, unsigned int size)
         *dst32++ = big32(*src32++);
 
     g_start_address = UINT32_C(0xbfc00000);
+    return M64ERR_SUCCESS;
+}
+
+m64p_error close_pif(void)
+{
+    g_start_address = UINT32_C(0xa4000040);
     return M64ERR_SUCCESS;
 }

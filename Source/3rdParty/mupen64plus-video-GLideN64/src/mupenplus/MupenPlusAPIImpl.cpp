@@ -49,12 +49,18 @@ ptr_VidExt_GL_GetDefaultFramebuffer CoreVideo_GL_GetDefaultFramebuffer = nullptr
 
 ptr_PluginGetVersion             CoreGetVersion = nullptr;
 
+void*                            CoreDebugCallbackContext = nullptr;
+ptr_DebugCallback                CoreDebugCallback        = nullptr;
+
 const unsigned int* rdram_size = nullptr;
 
-void(*renderCallback)(int) = nullptr;
+void (*renderCallback)(int) = nullptr;
 
-m64p_error PluginAPI::PluginStartup(m64p_dynlib_handle _CoreLibHandle)
+m64p_error PluginAPI::PluginStartup(m64p_dynlib_handle _CoreLibHandle, void* Context, void (*DebugCallback)(void *, int, const char *))
 {
+	CoreDebugCallbackContext = Context;
+	CoreDebugCallback = DebugCallback;
+
 	ConfigGetSharedDataFilepath = (ptr_ConfigGetSharedDataFilepath)	DLSYM(_CoreLibHandle, "ConfigGetSharedDataFilepath");
 	ConfigGetUserConfigPath = (ptr_ConfigGetUserConfigPath)	DLSYM(_CoreLibHandle, "ConfigGetUserConfigPath");
 	ConfigGetUserCachePath = (ptr_ConfigGetUserCachePath)DLSYM(_CoreLibHandle, "ConfigGetUserCachePath");

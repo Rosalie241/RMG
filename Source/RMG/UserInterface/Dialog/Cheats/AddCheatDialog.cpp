@@ -8,19 +8,18 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "AddCheatDialog.hpp"
+#include "Utilities/QtMessageBox.hpp"
 
-#include <QMessageBox>
 #include <QPushButton>
 #include <QTextBlock>
 #include <QCloseEvent>
 #include <QRegularExpression>
 #include <QFileInfo>
-#include <iostream>
 
 #include <RMG-Core/Core.hpp>
-#include <qpushbutton.h>
 
 using namespace UserInterface::Dialog;
+using namespace Utilities;
 
 AddCheatDialog::AddCheatDialog(QWidget *parent) : QDialog(parent)
 {
@@ -81,21 +80,9 @@ void AddCheatDialog::setPlainTextEditLines(QPlainTextEdit* plainTextEdit, std::v
     plainTextEdit->document()->clearUndoRedoStacks();
 }
 
-void AddCheatDialog::showErrorMessage(QString error, QString details)
-{
-    QMessageBox msgBox(this);
-    msgBox.setIcon(QMessageBox::Icon::Critical);
-    msgBox.setWindowTitle("Error");
-    msgBox.setText(error);
-    msgBox.setDetailedText(details);
-    msgBox.addButton(QMessageBox::Ok);
-    msgBox.exec();
-}
-
 bool AddCheatDialog::validate(void)
 {
-    QTextDocument* document;
-    QStringList    documentLines;
+    QStringList documentLines;
     bool foundOption = false;
     int  optionSize  = -1;
     QRegularExpression hexRegExpr("^[0-9A-F]+$");
@@ -240,7 +227,6 @@ bool AddCheatDialog::getCheat(CoreCheat& cheat)
     QStringList qLines;
     std::vector<std::string> lines;
 
-    QTextDocument* document;
     QString name;
     QString author;
     QString note;
@@ -272,7 +258,7 @@ bool AddCheatDialog::getCheat(CoreCheat& cheat)
 
     if (!CoreParseCheat(lines, cheat))
     {
-        this->showErrorMessage("CoreParseCheat() Failed!", QString::fromStdString(CoreGetError()));
+        QtMessageBox::Error(this, "CoreParseCheat() Failed", QString::fromStdString(CoreGetError()));
         return false;
     }
 
@@ -290,7 +276,7 @@ bool AddCheatDialog::addCheat(void)
 
     if (!CoreAddCheat(cheat))
     {
-        this->showErrorMessage("CoreAddCheat() Failed!", QString::fromStdString(CoreGetError()));
+        QtMessageBox::Error(this, "CoreAddCheat() Failed", QString::fromStdString(CoreGetError()));
         return false;
     }
 
@@ -315,7 +301,7 @@ bool AddCheatDialog::updateCheat(void)
 
     if (!CoreUpdateCheat(this->oldCheat,cheat))
     {
-        this->showErrorMessage("CoreUpdateCheat() Failed!", QString::fromStdString(CoreGetError()));
+        QtMessageBox::Error(this, "CoreUpdateCheat() Failed", QString::fromStdString(CoreGetError()));
         return false;
     }
 
@@ -328,7 +314,7 @@ void AddCheatDialog::accept(void)
 
     if (!this->validate())
     {
-        this->showErrorMessage("Validating Cheat Failed!", "");
+        QtMessageBox::Error(this, "Validating Cheat Failed", "");
         return;
     }
 

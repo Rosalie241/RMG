@@ -1,0 +1,743 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- Copyright 2024 Rosalie Wanders -->
+<component type="desktop-application">
+  <!--Created with jdAppStreamEdit 9.1-->
+  <id>com.github.Rosalie241.RMG</id>
+  <name>Rosalie's Mupen GUI</name>
+  <summary>Play Nintendo 64 games easily</summary>
+  <developer id="com.github.rosalie241">
+    <name>Rosalie</name>
+  </developer>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-only</project_license>
+  <update_contact>rosalie@mailbox.org</update_contact>
+  <description>
+    <p>Rosalie's Mupen GUI is an easy to use yet customizable mupen64plus front-end, allowing you to easily play Nintendo 64 games.</p>
+  </description>
+  <screenshots>
+    <screenshot type="default">
+      <caption>The Rom Browser</caption>
+      <image type="source">https://github.com/Rosalie241/RMG/raw/master/Package/Screenshots/RomBrowser.png</image>
+    </screenshot>
+    <screenshot type="default">
+      <caption>During A Game</caption>
+      <image type="source">https://github.com/Rosalie241/RMG/raw/master/Package/Screenshots/InGame.png</image>
+    </screenshot>
+    <screenshot type="default">
+      <caption>Input Settings</caption>
+      <image type="source">https://github.com/Rosalie241/RMG/raw/master/Package/Screenshots/InputSettings.png</image>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="v0.6.8" date="2024-12-22" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix crash on windows when opening a archive with files with an invalid character sequence</li>
+          <li>Fix video extension function definitions to prevent them from being exported</li>
+          <li>Implement netplay support (thank you loganmc10 for the hosted servers)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.6.7" date="2024-12-16" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix out of bounds read in game specific plugin settings</li>
+          <li>Fix inconsistent casing for the 'Left:' label in RMG-Input (thank you cursedUs64-git)</li>
+          <li>Fix incorrect error message in RMG-Core</li>
+          <li>Update mupen64plus-video-GLideN64, mupen64plus-core, LZMA SDK and SDL_GameControllerDB</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.6.6" date="2024-09-30" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix mupen64plus-core URL in the about dialog</li>
+          <li>Fix GLideN64 not showing native path seperator in the configuration dialog</li>
+          <li>Add 'SDL controller mode' option to the options dialog of RMG-Input</li>
+          <li>Add 'None' option to configuration file of mupen64plus-input-gca (thank you GhostlyDark)</li>
+          <li>Update GLideN64, mupen64plus-core and SDL_GameControllerDB</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.6.5" date="2024-07-04" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix not showing an error when per-game plugin settings are invalid</li>
+          <li>Fix settings dialog behavior for plugins not being the same for per-game plugin settings</li>
+          <li>Add 'restore defaults' button to configuration GUI of paraLLEl and angrylion-rdp-plus</li>
+          <li>Add 'OpenGL type' option to the settings dialog which allows choosing OpenGL ES</li>
+          <li>Add dynamic OpenGL ES detection to angrylion-rdp-plus</li>
+          <li>Improve screen size selection by making it editable in the configuration GUI of paraLLEl and angrylion-rdp-plus</li>
+          <li>Improve letter casing in settings dialog, RMG-Input and RMG-Audio</li>
+          <li>Improve about dialog</li>
+          <li>Change 'Miscellaneous' tab name to 'General' and change position in settings dialog</li>
+          <li>Update GLideN64 and SDL_GameControllerDB</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.6.4" date="2024-06-25" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix soft and hard reset freezing RMG when using parallel-rsp</li>
+          <li>Add 'System Region' to ROM Information dialog</li>
+          <li>Add defaults for the audio hotkey settings</li>
+          <li>Improve settings dialog behavior when having plugins with the same name</li>
+          <li>Improve settings dialog behavior by sorting the plugins</li>
+          <li>Change audio resampler default to "src-linear" in RMG-Audio (thank you Fanatic-64)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.6.3" date="2024-06-24" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix possible memory leak in the cheat dialog</li>
+          <li>Add log messages when initializing OpenGL or Vulkan fails</li>
+          <li>Add PIF ROM settings to the settings dialog</li>
+          <li>Add Transfer Pak setting to the settings dialog</li>
+          <li>Improve settings dialog behavior when a plugin hasn't been found</li>
+          <li>Improve error messages by removing the exclamation mark</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.6.2" date="2024-06-08" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix updater not working on windows with non-portable installs</li>
+          <li>Fix OSD not showing native path separator when saving and loading a state from a file</li>
+          <li>Fix statusbar message not being up-to-date in some cases</li>
+          <li>Fix GLideN64 regression introduced in v0.6.1</li>
+          <li>Fix cmake not making installed libraries executable</li>
+          <li>Add 'Project64 Save State' option when saving a state to a file</li>
+          <li>Revert update to mupen64plus-video-parallel (thank you themaister for looking into the regression)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.6.1" date="2024-06-05" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix vulkan video plugins crashing on second emulation run on some systems</li>
+          <li>Fix log dialog not showing a monospace font on windows</li>
+          <li>Remove settings dialog storing and restoring the window size</li>
+          <li>Add missing vsync option to angrylion-rdp-plus</li>
+          <li>Update imgui, mupen64plus-video-parallel, GLideN64 and SDL_GameControllerDB</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.6.0" date="2024-05-24" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix 7z not being listed in the ROM browser when there are no ROMs found</li>
+          <li>Fix crash in GLideN64 with certain texture packs</li>
+          <li>Fix GLideN64 being able to create a large log file</li>
+          <li>Fix possible freezing by rate limiting callback messages</li>
+          <li>Update mupen64plus-core, angrylion-rdp-plus, GLideN64 and SDL_GameControllerDB</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.5.9" date="2024-05-01" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix parallel-rsp regression introduced in v0.5.8</li>
+          <li>Fix corruption when using GLideN64 and resizing the window</li>
+          <li>Fix changing save state slot always selecting slot 0 on some system configurations</li>
+          <li>Fix changing speed factor always using 0% on some system configurations</li>
+          <li>Add color settings for the OSD in the settings dialog</li>
+          <li>Add 'Test Rumble' button to the options dialog in RMG-Input</li>
+          <li>Add 'Play Game with State' to the context menu of the ROM browser</li>
+          <li>Add '--load-state-slot' commandline option</li>
+          <li>Update cheats and GLideN64</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.5.8" date="2024-03-25" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix incorrect usage of cmake's GNUInstallDirs (thank you OPNA2608)</li>
+          <li>Fix opening zipped ROMs when compiling with minizip-ng instead of minizip</li>
+          <li>Fix RMG with paraLLEl crashing in mesa when using musl libc (thank you orbea and nekopsykose)</li>
+          <li>Update GLideN64, parallel-rsp and SDL_GameControllerDB</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.5.7" date="2024-01-26" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix backwards compatibility with older plugin setting format</li>
+          <li>Add NO_ASM build option to build mupen64plus-core without asm (thank you orbea)</li>
+          <li>Change default screenshot directory on Linux (thank you orbea)</li>
+          <li>Update mupen64plus-core</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.5.6" date="2024-01-23" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix updater for portable installs on windows failing to extract the zip file</li>
+          <li>Fix Load State and View Log having the same default shortcut</li>
+          <li>Fix not being GPL compliant by disabling the building of angrylion-rdp-plus by default (thank you orbea and carmiker)</li>
+          <li>Fix installation not respecting CMAKE_INSTALL_LIBDIR</li>
+          <li>Fix third party projects not respecting CMAKE_C_FLAGS and CMAKE_CXX_FLAGS</li>
+          <li>Fix not all third party projects respecting the RelWithDebInfo configuration properly</li>
+          <li>Fix GLideN64 not installing correctly with the RelWithDebInfo configuration</li>
+          <li>Fix mupen64plus callbacks during initialization not showing up in the log window</li>
+          <li>Add a few GUI logging messages</li>
+          <li>Improve view log dialog behavior with clearing the log</li>
+          <li>Update copyright year in the about dialog (thank you JakobDev)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.5.5" date="2024-01-14" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Add TryExec to desktop file (thank you JakobDev)</li>
+          <li>Update mupen64plus-core, parallel-rsp, mupen64plus-rsp-hle, GLideN64 and SDL_GameControllerDB</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.5.4" date="2023-12-17" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix issue with vulkan video plugins</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.5.3" date="2023-12-17" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix some error messages not being shown when there are a lot of errors</li>
+          <li>Fix cheat dialog not allowing empty lines</li>
+          <li>Fix forward slashes being displayed in paths on windows</li>
+          <li>Fix some timers starting before plugins are ready</li>
+          <li>Improve video size behavior by ensuring the video size matches the window size</li>
+          <li>Update mupen64plus-core, GLideN64 and SDL_GameControllerDB</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.5.2" date="2023-09-06" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix drag and drop not working in the loading screen of the ROM browser</li>
+          <li>Fix ROM browser not refreshing when launching RMG with a ROM specified through the commandline, using drag and drop and then returning to the ROM browser</li>
+          <li>Fix ROM browser refreshing with '--quit-after-emulation' specified through the commandline after a ROM has finished executing causing some extra debug callbacks to be displayed</li>
+          <li>Fix ROMs which have a ROM header name with 20 characters without a 0 byte at the end (fixes a crash on windows)</li>
+          <li>Improve build process by automatically detecting whether 'std::format' is supported or not (if not, use libfmt)</li>
+          <li>Improve message box behavior when there are a lot of errors</li>
+          <li>Improve default directories on windows (it'll now use '%APPDATA%\RMG' unless 'portable.txt' or 'Config\mupen64plus.cfg' exists)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.5.1" date="2023-08-27" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix window title of the windows installer</li>
+          <li>Fix video plugins which use vulkan not working on some Linux distributions</li>
+          <li>Fix 'Edit Game Input Settings' not saving settings when changing certain settings</li>
+          <li>Fix crash when having the RMG-Input configuration GUI open and closing RMG with control+c on Linux</li>
+          <li>Fix 'open_rom(): not a valid ROM image' error showing up sometimes when launching RMG with a ROM specified on the commandline</li>
+          <li>Update mupen64plus-core, GLideN64, paraLLEl and SDL_GameControllerDB</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.5.0" date="2023-08-12" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix AppImage not working on LTS distributions</li>
+          <li>Fix audio issues by reverting the audio changes from v0.4.8</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.4.9" date="2023-08-12" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix crash when opening the per-game settings</li>
+          <li>Add support for using libfmt when the compiler doesn't support std::format</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.4.8" date="2023-08-11" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix undo and redo stack not being cleared in the edit cheat dialog</li>
+          <li>Add hotkeys to increase, decrease and mute the volume (see the new Audio tab in the Hotkeys tab of the settings dialog)</li>
+          <li>Add support for drag and drop (the flatpak has it disabled due to Qt not supporting drag and drop in the file portal yet)</li>
+          <li>Add an implementation selection in RMG-Audio (see the advanced audio settings, the simple implementation might solve some audio issues for some people)</li>
+          <li>Improve loading time duration of the ROM browser (the ROM browser should load faster when ROM entries are in the ROM browser cache)</li>
+          <li>Improve control stick behavior in RMG-Input (thank you kev4cards)</li>
+          <li>Improve cheats and settings code in RMG-Core</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.4.7" date="2023-08-05" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix diagonals not working for joystick hats in RMG-Input</li>
+          <li>Fix visualization of joystick hats in the configuration GUI of RMG-Input</li>
+          <li>Fix "Hide Cursor During Fullscreen Emulation" not working when using a Vulkan video plugin</li>
+          <li>Improve VRU initialization code in RMG-Input</li>
+          <li>Update SDL_GameControllerDB</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.4.6" date="2023-08-04" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix copying a string out-of-bounds in RMG-Core</li>
+          <li>Fix memory leak in GLideN64</li>
+          <li>Add experimental support for wayland on linux (you can enable it by setting RMG_WAYLAND to 1)</li>
+          <li>Add RMG, mupen64plus and n64 keywords to the desktop file (thank you loganmc10)</li>
+          <li>Add joystick hat support to RMG-Input</li>
+          <li>Add native vulkan support (video plugins can now use vulkan natively without having to use OpenGL for presentation)</li>
+          <li>Add current render mode to the status bar (OpenGL or Vulkan)</li>
+          <li>Add information regarding the On-Screen display to the OSD tab of the settings dialog (the OSD will only work with OpenGL video plugins)</li>
+          <li>Improve build process by building with LTO and stripping release binaries</li>
+          <li>Update mupen64plus-video-parallel</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.4.5" date="2023-07-19" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix "Change" buttons in the transfer pak tab of the options dialog of RMG-Input not working since v0.4.2</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.4.4" date="2023-07-17" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix memory leak when using a 64DD disk in an archive</li>
+          <li>Fix fallback of mupen64plus-rsp-hle not working on first run</li>
+          <li>Fix 'Screenshot Captured' OSD message not appearing when using controller hotkeys</li>
+          <li>Fix dynamic recompiler crashing on ARM64 since v0.4.1</li>
+          <li>Add support for joysticks/triggers for hotkeys in RMG-Input</li>
+          <li>Add hotkeys for increasing and decreasing the save state slot in RMG-Input</li>
+          <li>Add hotkeys for switching controller paks in RMG-Input</li>
+          <li>Improve deadzone and sensitivity code in RMG-Input (thank you JaxonWasTaken)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.4.3" date="2023-07-11" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix minor corruption issues when using GLideN64 in Wave Race 64 and Space Station Silicon Valley</li>
+          <li>Fix some potential issues with out of bounds RDRAM reads (thank you loganmc10)</li>
+          <li>Fix ROM browser not updating entries when they've changed in the ROM database</li>
+          <li>Fix mupen64plus-rsp-hle not having a fallback configured (fixes Xeno Crisis not booting with mupen64plus-rsp-hle)</li>
+          <li>Fix Xeno Crisis showing an error message</li>
+          <li>Add Xeno Crisis to the ROM database</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.4.2" date="2023-07-07" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix window behavior issues when saving GLideN64 settings while in-game</li>
+          <li>Add VRU support to RMG-Input</li>
+          <li>Add controller hotkey support to RMG-Input</li>
+          <li>Improve window title by using the ROM filename when the ROM isn't in the database</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.4.1" date="2023-06-19" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix debug callbacks not printing before GUI has been started</li>
+          <li>Fix emulation error being incorrect in some cases</li>
+          <li>Fix user cheat file location (new ones will be placed in the user config directory instead of the user data directory)</li>
+          <li>Fix mupen64plus-input-gca crashing in v0.4.0 due to updating to a broken commit</li>
+          <li>Fix Paper Mario crashing when using the hammer on a specific tree in-game by implementing RDRAM address range 0x0800000-0x03EFFFFF</li>
+          <li>Improve accuracy of the pure and cached interpreter</li>
+          <li>Add *.st* and *.pj* to the file filter when loading a save state from a file</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.4.0" date="2023-05-04" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix updater on windows always installing the desktop icon</li>
+          <li>Fix updater on windows not re-launching RMG after installation</li>
+          <li>Fix the speed limiter toggle and speed factor options not working on linux on some systems</li>
+          <li>Fix the 1080 Snowboarding cheats (thank you Gent)</li>
+          <li>Add support for moving the toolbar (changes to the docked position are persistent across application runs)</li>
+          <li>Update GLideN64 and mupen64plus-input-gca</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.3.9" date="2023-04-06" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix "Don't check for updates again" checkbox appearing when requesting an update check through Help -&gt; Check For Updates</li>
+          <li>Add game format, file name, file extension, file size, game I.D. and game region columns to the list view of the ROM browser which can be toggled in the "Show/Hide Columns" menu of the context menu in the list view of the ROM browser (thank you RetraCarteR)</li>
+          <li>Add "Reset Column Sizes" to context menu of the list view of the ROM browser (thank you RetraCarteR)</li>
+          <li>Add "Analog Stick Sensitivity" setting to RMG-Input (thank you JaxonWasTaken)</li>
+          <li>Add "Save Filename Format" setting to the Core tab of the settings dialog</li>
+          <li>Add "Edit Game Input Settings" to the context menu of the ROM browser</li>
+          <li>Add support for 7z files</li>
+          <li>Add progress status to the loading screen in the ROM browser when loading takes more than 5 seconds</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.3.8" date="2023-02-24" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix RMG not having the correct video size in some cases (i.e on a WM where resizing is not allowed to be done by an application)</li>
+          <li>Fix translations not working in GLideN64</li>
+          <li>Add -n/--nogui commandline option</li>
+          <li>Add -d/--debug-messages commandline option</li>
+          <li>Add hotkeys for graphics, audio, RSP and input settings</li>
+          <li>Add hotkey for viewing the log</li>
+          <li>Add SIGINT and SIGTERM handling on linux</li>
+          <li>Add "Check For Updates" to "View" in the toolbar</li>
+          <li>Add information about LLE plugins in the settings dialog</li>
+          <li>Add support for toggling visibility of columns in the ROM browser list view (thank you RetraCarteR)</li>
+          <li>Add date and time to the save state slot items in "Current Save State" menu in the menubar</li>
+          <li>Add date and time to the OSD when selecting a save state slot</li>
+          <li>Add failure messages to the OSD when loading/saving a save state fails</li>
+          <li>Improve updater behavior by checking for an update on startup with at least an hour in-between checks</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.3.7" date="2023-02-19" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix icons not showing up in some cases when migrating from a version before v0.3.6</li>
+          <li>Fix plugin settings not being loaded properly in the settings dialog when migrating from a version before v0.3.6</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.3.6" date="2023-02-19" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix RMG not using xwayland when using wayland (wayland has lots of issues, can be disabled by building with the "-DFORCE_XCB=OFF" option)</li>
+          <li>Fix some non-fatal mupen64plus errors showing a pop-up</li>
+          <li>Fix window not returning to ROM browser when launching a game through the commandline and the plugins aren't ready</li>
+          <li>Add support for Qt stylesheets (place them in the 'user data directory/Styles' directory with the '.qss' extension, they'll show up in "Themes")</li>
+          <li>Add "Icon Theme" setting</li>
+          <li>Add "Speed Factor" to System menu bar</li>
+          <li>Add support for re-ordering columns in the list view of the ROM browser (thank you RetraCarteR)</li>
+          <li>Add AppImage to github releases (this replaces the old portable linux builds on github releases)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.3.5" date="2023-02-14" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix reset button not working properly in RMG-Input</li>
+          <li>Fix profiles not being deleted properly when clicking on cancel/close in some cases in RMG-Input</li>
+          <li>Fix paraLLEl not logging to the log window</li>
+          <li>Fix paraLLEl's odd window behavior by not saving the window size when emulation ends</li>
+          <li>Fix GLideN64 initializing a noise texture being slow</li>
+          <li>Fix issue where an unbound mapping in RMG-Input would respond to an A controller button press in-game</li>
+          <li>Fix issue where RMG-Input wouldn't save anything but the currently opened profile</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.3.4" date="2023-02-11" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix mapping button size increasing when reloading settings in RMG-Input</li>
+          <li>Fix analog stick mapping in-game when having buttons and axis bound in RMG-Input</li>
+          <li>Fix height mismatch of "Profile" and "Input Device" UI elements in RMG-Input</li>
+          <li>Fix updater script not using the correct path seperators on Windows</li>
+          <li>Fix GLideN64's per game settings being overwritten by the updater on windows (or not being updated on linux)</li>
+          <li>Fix "Automatic" input device not opening controller device when clicking on 'Refresh' in RMG-Input</li>
+          <li>Fix game specific profile having unexpected UI behavior in RMG-Input</li>
+          <li>Fix cancel and close button not working correctly in RMG-Input</li>
+          <li>Fix profile saving not working correctly when having the same profile selected for multiple players in RMG-Input</li>
+          <li>Add "Filter Events Based On Joystick Type For Buttons" setting to RMG-Input</li>
+          <li>Add "Filter Events Based On Joystick Type For Axis" setting to RMG-Input</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.3.3" date="2023-02-09" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Remove "Controller Is Plugged In" checkbox in RMG-Input</li>
+          <li>Remove text from 'Remove' button in RMG-Input</li>
+          <li>Add "None" input device to RMG-Input (replacing the "Controller Is Plugged In" checkbox)</li>
+          <li>Add "Automatic" input device to RMG-Input</li>
+          <li>Add support for creating profiles in RMG-Input</li>
+          <li>Add icons to 'Remove', 'Refresh', 'Reset' and 'Options' buttons in RMG-Input</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.3.2" date="2023-02-06" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix ndd/d64 files in zip files not working when the disk file is inside a subdirectory inside the zip file</li>
+          <li>Fix ndd/d64 files in zip files not working correctly on windows</li>
+          <li>Fix controller image in RMG-Input sometimes being stuck when having a trigger bound to a button</li>
+          <li>Fix trigger mapping in RMG-Input</li>
+          <li>Remove "Invert Axis Mapped To LRZ" setting in RMG-Input</li>
+          <li>Add "Sort Results After Search" ROM Browser setting</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.3.1" date="2023-02-04" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix taking a screenshot not working in some cases</li>
+          <li>Fix some games being unable to save due to having an illegal character in the save filename</li>
+          <li>Fix OSD tab crash in GLideN64</li>
+          <li>Fix an issue where the graphics plugin would show the 64DD IPL as ROM name in the settings even after booting a cartridge</li>
+          <li>Fix "Refresh ROM List" in Hotkeys tab in settings dialog not reverting back to defaults when clicking on 'restore defaults'</li>
+          <li>Fix "Remove Duplicate Keybindings" in settings dialog not behaving correctly in some cases</li>
+          <li>Fix fallback application icons not respecting system icon theme on linux</li>
+          <li>Add support for ndd/d64 files in zip files</li>
+          <li>Add support for using the basename of the ROM filename for covers</li>
+          <li>Add support for binding multiple inputs in RMG-Input</li>
+          <li>Improve behavior of window when launching RMG with a ROM using the commandline</li>
+          <li>Improve behavior of error message when emulation fails</li>
+          <li>Improve behavior of hotkey buttons in settings dialog</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.3.0" date="2023-01-23" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix GLideN64 not being able to load texture packs from relative paths</li>
+          <li>Fix "Save State Slot" keybindings not working in fullscreen</li>
+          <li>Fix deadzone percentage being incorrect when set to 0% in RMG-Input</li>
+          <li>Fix low deadzone value not working in RMG-Input (thank you porcino)</li>
+          <li>Fix toolbar being hidden when ending emulation while in fullscreen</li>
+          <li>Fix zip files with japanese characters in the file name not being able to be opened on windows</li>
+          <li>Fix ROM Browser not returning to a maximized state when ending emulation</li>
+          <li>Fix ROM Browser not opening maximized when closing RMG with it maximized</li>
+          <li>Fix window not being able to be maximized during emulation when scaling is enabled</li>
+          <li>Fix read-only ROM files not being able to be opened on linux</li>
+          <li>Remove "Allow Manual Window Resizing" setting due to it being always enabled</li>
+          <li>Remove Styles tab from settings dialog on windows</li>
+          <li>Add "Play Game with Cartridge" to context menu when a 64DD disk is selected in the ROM Browser</li>
+          <li>Add "Open ROM Directory" to context menu in the ROM Browser</li>
+          <li>Add an On-Screen Display (see the OSD tab in the settings dialog for settings)</li>
+          <li>Add Theme setting to settings dialog (see Interface -&gt; Miscellaneous, this is a replacement for the previous Styles settings)</li>
+          <li>Improve error message when opening a zip file fails</li>
+          <li>Improve tab order and naming in settings dialog</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.2.9" date="2023-01-03" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix wrong 64DD Disk extension being listed in empty ROM browser</li>
+          <li>Fix memory corruption when having 64DD Disk files</li>
+          <li>Fix possible crash when render window wasn't visible yet</li>
+          <li>Fix RMG changing the current directory on non-portable installs</li>
+          <li>Remove Qt warning messages (you can view them by setting RMG_SHOW_DEBUG_QT_MESSAGES to 1)</li>
+          <li>Change "Choose ROM Directory" to "Change ROM Directory"</li>
+          <li>Add -q/--quit-after-emulation commandline option</li>
+          <li>Add 2 more icons to menubar menus/items</li>
+          <li>Add "Current Save State" tab to Hotkeys tab in settings dialog (this allows you to use a hotkey to change save state slots)</li>
+          <li>Improve behavior of Hotkeys tab in settings dialog</li>
+          <li>Improve behavior of window when exiting RMG while in-game</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.2.8" date="2023-01-01" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix 'Uniform Size (Grid View)' not being disabled during emulation</li>
+          <li>Fix toolbar not respecting the view setting</li>
+          <li>Fix being stuck at the loading screen when having more ROMs than the ROM search limit</li>
+          <li>Improve error message when opening a ROM fails</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.2.7" date="2022-12-29" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix core error not showing when the statusbar was hidden</li>
+          <li>Fix .ndd/.64d not being in the empty ROM Browser widget</li>
+          <li>Fix .jpg/.jpeg files not working on covers on Windows</li>
+          <li>Fix updater script not copying subdirectories on Windows (for portable installs)</li>
+          <li>Fix 64DD Disks which required the development IPL not working</li>
+          <li>Fix 64DD Disks showing the wrong internal ROM name (this fix requires clearing the ROM cache)</li>
+          <li>Fix cover filenames allowing invalid characters (they will now be replaced by _)</li>
+          <li>Add more icons to View menu in the menu bar</li>
+          <li>Add 'Uniform Size (Grid View)' to View menu in the menu bar</li>
+          <li>Add smooth scrolling to List View and Grid View</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.2.6" date="2022-12-28" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix default save state/game directory being incorrect on first run (on non-portable installs)</li>
+          <li>Fix angrylion-rdp-plus not loading settings correctly</li>
+          <li>Fix cheat settings not moving over when renaming a cheat</li>
+          <li>Remove fullscreen resolution combobox from GLideN64 because it did nothing</li>
+          <li>Remove File menu from menu bar</li>
+          <li>Implement disk support without requiring a cartridge</li>
+          <li>Add toolbar</li>
+          <li>Add View menu to menu bar</li>
+          <li>Add Grid view to ROM browser</li>
+          <li>Add icons to all menu bar items</li>
+          <li>Add log dialog</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.2.5" date="2022-12-14" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix incorrect controller being selected in RMG-Input when having 2 controllers with the same name</li>
+          <li>Fix some UI elements being enabled while the 'Controller Is Plugged In' checkbox is disabled in RMG-Input</li>
+          <li>Fix extra padding being added when having a controller selected and opening RMG-Input</li>
+          <li>Fix creating a new profile in GLideN64</li>
+          <li>Add Z-Trigger visualization in RMG-Input</li>
+          <li>Remove Debugger checkbox in the settings dialog because it did nothing</li>
+          <li>Remove About buttons in the plugin tab of the settings dialog because it did nothing</li>
+          <li>Implement close button on all dialogs</li>
+          <li>Implement custom style support (for Windows only)</li>
+          <li>Implement the ability to remove/reset the main profile in RMG-Input</li>
+          <li>Rename Interface tab in settings dialog to User Interface</li>
+          <li>Migrate to Qt6 (currently the flatpak will remain Qt5)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.2.4" date="2022-12-08" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix Discord Rich Presence breaking when opening the settings dialog</li>
+          <li>Fix install update window not showing</li>
+          <li>Fix 'Limit FPS' not working with new RMG-Audio (this disables the 'synchronize audio' option)</li>
+          <li>Implement support for Japanese characters in the ROM header</li>
+          <li>Implement dynamic buffer sizes in the ROM browser cache (this reduces the ROM browser cache size)</li>
+          <li>Add more cheats from Gent</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.2.3" date="2022-12-05" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Add updater for portable installations</li>
+          <li>Add Discord Rich Presence</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.2.2" date="2022-12-03" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix trivial resampler not being available in RMG-Audio</li>
+          <li>Fix save games/states showing up in multiple patched ROMs based on the same game</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.2.1" date="2022-12-02" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Improve cheat error handling</li>
+          <li>Improve cheat dialog slightly (ok button is now disabled by default)</li>
+          <li>Improve RMG-Audio by using mupen64plus-audio-sdl as base</li>
+          <li>Add iQue cheats from Gent</li>
+          <li>Add CRLF support in cheat files</li>
+          <li>Add 'Remove Duplicate Keybindings' in settings dialog</li>
+          <li>Change maximum ROM browser cache items to 10000</li>
+          <li>Change default ROM browser limit to 250</li>
+          <li>Fix cheat settings being gone after opening the settings dialog in-game</li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.2.0" date="2022-11-29" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix out of bounds read in ROM browser cache</li>
+          <li>Fix --fullscreen not working like expected</li>
+          <li>Fix crash on windows when exiting</li>
+          <li>Implement octagon simulation in RMG-Input (thank you Jaxon)</li>
+          <li>Implement cheat support</li>
+          <li>Add 'Invert Axis Mapped To LRZ' option to RMG-Input</li>
+          <li>Add --disk commandline argument (for opening N64 ROMs with 64DD disk files)</li>
+          <li>Add configuration GUI to angrylion-rdp-plus (thank you GhostlyDark)</li>
+          <li>Remove range setting from RMG-Input </li>
+        </ul>
+      </description>
+    </release>
+    <release version="v0.1.9" date="2022-11-19" type="stable"/>
+    <release version="v0.1.8" date="2022-11-17" type="stable"/>
+    <release version="v0.1.7" date="2022-11-14" type="stable"/>
+    <release version="v0.1.6" date="2022-09-12" type="stable"/>
+    <release version="v0.1.5" date="2022-09-10" type="stable"/>
+    <release version="v0.1.4" date="2022-03-13" type="stable"/>
+    <release version="v0.1.3" date="2022-02-14" type="stable"/>
+    <release version="v0.1.2" date="2022-01-21" type="stable"/>
+    <release version="v0.1.1" date="2022-01-19" type="stable"/>
+    <release version="v0.1.0" date="2022-01-07" type="stable"/>
+    <release version="v0.0.9" date="2021-12-25" type="stable"/>
+    <release version="v0.0.8" date="2021-12-24" type="stable"/>
+    <release version="v0.0.7" date="2021-12-23" type="stable"/>
+    <release version="v0.0.6" date="2021-10-18" type="stable"/>
+    <release version="v0.0.5" date="2021-10-17" type="stable"/>
+    <release version="v0.0.4" date="2021-10-06" type="stable"/>
+    <release version="v0.0.3" date="2021-10-04" type="stable"/>
+    <release version="v0.0.2" date="2021-09-26" type="stable"/>
+  </releases>
+  <url type="homepage">https://github.com/Rosalie241/RMG</url>
+  <url type="bugtracker">https://github.com/Rosalie241/RMG/issues</url>
+  <categories>
+    <category>Game</category>
+    <category>Emulator</category>
+    <category>Qt</category>
+  </categories>
+  <recommends>
+    <control>pointing</control>
+    <control>keyboard</control>
+    <control>gamepad</control>
+  </recommends>
+  <supports>
+    <control>voice</control>
+  </supports>
+  <content_rating type="oars-1.1"/>
+  <launchable type="desktop-id">com.github.Rosalie241.RMG.desktop</launchable>
+  <keywords>
+    <keyword>mupen64plus</keyword>
+    <keyword>RMG</keyword>
+  </keywords>
+</component>

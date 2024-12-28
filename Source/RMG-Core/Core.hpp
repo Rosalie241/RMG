@@ -11,7 +11,6 @@
 #define CORE_HPP
 
 #include "CachedRomHeaderAndSettings.hpp"
-#include "Settings/Settings.hpp"
 #include "SpeedLimiter.hpp"
 #include "SpeedFactor.hpp"
 #include "RomSettings.hpp"
@@ -22,6 +21,8 @@
 #include "SaveState.hpp"
 #include "RomHeader.hpp"
 #include "Callback.hpp"
+#include "Settings.hpp"
+#include "Netplay.hpp"
 #include "Plugins.hpp"
 #include "Version.hpp"
 #include "Cheats.hpp"

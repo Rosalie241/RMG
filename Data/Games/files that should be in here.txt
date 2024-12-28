@@ -1,0 +1,24 @@
+You don't have to have them all, but be sure the ones you DO
+have are the correct region (USA). 
+
+You can use RMG's "Rom Information" MD5 check to confirm
+your ROM is valid. If the number it generates matches this document,
+it is correct (if you can confirm the first few numbers match you're probably fine).
+
+=====================================================================================
+	Main ROMS:
+=====================================================================================
+Mario Party (USA).z64
+8bc2712139fbf0c56c8ea835802c52dc
+
+Mario Party 2 (USA).z64
+04840612a35ece222afdb2dfbf926409
+
+Mario Party 3 (USA).z64
+76a8bbc81bc2060ec99c9645867237cc
+
+=====================================================================================
+	Modded ROMs:
+=====================================================================================
+Mario Party 3 (USA) [Mod-Costume Party v1.1].z64
+55a08d1dbde438cbb14c95e1db0f9006

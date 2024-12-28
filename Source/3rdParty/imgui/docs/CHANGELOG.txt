@@ -5,30 +5,594 @@ This document holds the user-facing changelog that we also use in release notes.
 We generally fold multiple commits pertaining to the same topic as a single entry.
 Changes to backends are also included within the individual .cpp files of each backend.
 
-RELEASE NOTES:          https://github.com/ocornut/imgui/releases
-REPORT ISSUES:          https://github.com/ocornut/imgui/issues
-DISCUSS, ASK QUESTIONS: https://github.com/ocornut/imgui/discussions
-WIKI                    https://github.com/ocornut/imgui/wiki
 FAQ                     https://www.dearimgui.com/faq/
+RELEASE NOTES:          https://github.com/ocornut/imgui/releases
+WIKI                    https://github.com/ocornut/imgui/wiki
+GETTING STARTED         https://github.com/ocornut/imgui/wiki/Getting-Started
+GLOSSARY                https://github.com/ocornut/imgui/wiki/Glossary
+ISSUES & SUPPORT        https://github.com/ocornut/imgui/issues
 
 WHEN TO UPDATE?
 
 - Keeping your copy of Dear ImGui updated regularly is recommended.
-- It is generally safe to sync to the latest commit in master or docking branches
-  The library is fairly stable and regressions tends to be fixed fast when reported.
+- It is generally safe and recommended to sync to the latest commit in 'master' or 'docking'
+  branches. The library is fairly stable and regressions tends to be fixed fast when reported.
 
 HOW TO UPDATE?
 
-- Overwrite every file except imconfig.h (if you have modified it).
-- You may also locally branch to modify imconfig.h and merge latest into your branch.
+- Update submodule or copy/overwrite every file.
+- About imconfig.h:
+  - You may modify your copy of imconfig.h, in this case don't overwrite it.
+  - or you may locally branch to modify imconfig.h and merge/rebase latest.
+  - or you may '#define IMGUI_USER_CONFIG "my_config_file.h"' globally from your build system to
+    specify a custom path for your imconfig.h file and instead not have to modify the default one.
 - Read the `Breaking Changes` section (in imgui.cpp or here in the Changelog).
 - If you have a problem with a missing function/symbols, search for its name in the code, there will likely be a comment about it.
-- If you are dropping this repository in your codebase, please leave the demo and text files in there, they will be useful.
+- If you are copying this repository in your codebase, please leave the demo and documentations files in there, they will be useful.
 - You may diff your previous Changelog with the one you just copied and read that diff.
 - You may enable `IMGUI_DISABLE_OBSOLETE_FUNCTIONS` in imconfig.h to forcefully disable legacy names and symbols.
   Doing it every once in a while is a good way to make sure you are not using obsolete symbols. Dear ImGui is in active development,
   and API updates have been a little more frequent lately. They are documented below and in imgui.cpp and should not affect all users.
 - Please report any issue!
+
+-----------------------------------------------------------------------
+ VERSION 1.90.4 (Released 2024-02-22)
+-----------------------------------------------------------------------
+
+Decorated log and release notes: https://github.com/ocornut/imgui/releases/tag/v1.90.4
+
+Other changes:
+
+- Nav: Fixed SetKeyboardFocusHere() or programmatic tabbing API from not working on
+  windows with the ImGuiWindowFlags_NoNavInputs flag (regression in 1.90.2, which
+  among other things broke imgui_memory_editor).
+- Menus, Popups: Fixed an issue where hovering a parent-menu upward would
+  erroneously close the window. (#7325, #7287, #7063)
+- Popups: Fixed resizable popup minimum size being too small. Standardized minimum
+  size logic. (#7329).
+- Modals: Temporary changes of ImGuiCol_ModalWindowDimBg are properly handled by
+  BeginPopupModal(). (#7340)
+- Tables: Angled headers: fixed support for multi-line labels. (#6917)
+- Tables: Angled headers: various fixes to accurately handle CellPadding changes. (#6917)
+- Tables: Angled headers: properly registers horizontal component of angled headers
+  for auto-resizing of columns. (#6917)
+- Tables: Angled headers: fixed TableAngledHeadersRow() incorrect background fill
+  drawn too low, particularly visible with tables that have no scrolling. (#6917)
+- ProgressBar: Fixed a minor tesselation issue when rendering rounded progress bars,
+  where in some situations the rounded section wouldn't follow regular tesselation rules.
+- Debug Tools: Item Picker: Promoted ImGui::DebugStartItemPicker() to public API. (#2673)
+- Debug Tools: Item Picker: Menu entry visible in Demo->Tools but greyed out unless
+  io.ConfigDebugIsDebuggerPresent is set. (#2673)
+- Misc: Added optional alpha multiplier parameter to GetColorU32(ImU32) variant.
+- Demo: Custom Rendering: better demonstrate PathArcTo(), PathBezierQuadraticCurveTo(),
+  PathBezierCubicCurveTo(), PathStroke(), PathFillConvex() functions.
+
+
+-----------------------------------------------------------------------
+ VERSION 1.90.3 (Released 2024-02-14)
+-----------------------------------------------------------------------
+
+Decorated log and release notes: https://github.com/ocornut/imgui/releases/tag/v1.90.3
+
+Breaking changes:
+
+- Backends: SDL2: Removed obsolete ImGui_ImplSDL2_NewFrame(SDL_Window*) signature which
+  was obsoleted in 1.84. Calling ImGui_ImplSDL2_NewFrame() is fine.
+- Backends: Vulkan: Moved RenderPass parameter from ImGui_ImplVulkan_Init() function to
+  ImGui_ImplVulkan_InitInfo structure. Not required when using dynamic rendering. (#7308) [@shawnhatori]
+- Backends: Vulkan: Using dynamic rendering now require filling the PipelineRenderingCreateInfo
+  structure in ImGui_ImplVulkan_InitInfo, allowing to configure color/depth/stencil formats.
+  Removed ColorAttachmentFormat field previously provided for dynamic rendering.
+  (#7166, #6855, #5446, #5037) [@shawnhatori]
+
+Other changes:
+
+- Menus, Popups: Fixed menus and popups with ChildWindow flag erroneously not displaying
+  a scrollbar when contents is over parent viewport size. (#7287, #7063) [@ZingBallyhoo]
+- Backends: SDL2, SDL3: Handle gamepad disconnection + fixed increasing gamepad reference
+  counter continuously. Added support for multiple simultaneous gamepads.
+  Added ImGui_ImplSDL2_SetGamepadMode()) function to select whether to automatically pick
+  first available gamepad, all gamepads, or specific gamepads.
+  (#3884, #6559, #6890, #7180) [@ocornut, @lethal-guitar, @wn2000, @bog-dan-ro]
+- Backends: SDL3: Fixed gamepad handling. (#7180) [@bog-dan-ro]
+- Backends: SDLRenderer3: query newly added SDL_RenderViewportSet() to not restore
+  a wrong viewport if none was initially set.
+- Backends: DirectX9: Using RGBA format when allowed by the driver to avoid CPU side
+  conversion. (#6575) [@Demonese]
+- Internals: Fixed ImFileOpen not working before context is created, preventing creation
+  of a font atlas before main context creation. (#7314, #7315) [@PathogenDavid, @ocornut]
+
+
+-----------------------------------------------------------------------
+ VERSION 1.90.2 (Released 2024-02-09)
+-----------------------------------------------------------------------
+
+Decorated log and release notes: https://github.com/ocornut/imgui/releases/tag/v1.90.2
+
+Breaking changes:
+
+- Commented out ImGuiIO::ImeWindowHandle obsoleted in 1.87 in favor of writing
+  to 'void* ImGuiViewport::PlatformHandleRaw'.
+- Backends: WebGPU: ImGui_ImplWGPU_Init() now takes a ImGui_ImplWGPU_InitInfo structure
+  instead of variety of parameters, allowing for easier further changes. (#7240)
+
+Other changes:
+
+- Nav: keyboard/gamepad activation mark widgets as held to give better visual feedback.
+- Nav: tweak to logic marking navigated item as hovered when using keyboard, allowing
+  the hover highlight to stay even while another item is activated.
+- Nav: Fixed SetKeyboardFocusHere() not working when current nav focus is in different scope,
+  regression from 1.90.1 related to code scoping Tab presses to local scope. (#7226) [@bratpilz]
+- Nav: Fixed pressing Escape while in a child window with _NavFlattened flag. (#7237)
+- Nav: Improve handling of Alt key to toggle menu so that key ownership may be claimed on
+  individual left/right alt key without interfering with the other.
+- Nav, Menus: Fixed click on a BeginMenu() followed by right-arrow from making the child menu
+  reopen and flicker (using ImGuiPopupFlags_NoReopen).
+- Nav: ImGuiWindowFlags_NoNavInputs is tested during scoring so NavFlattened windows can use it.
+- Popups: OpenPopup(): added ImGuiPopupFlags_NoReopen flag to specifically not close and reopen
+  a popup when it is already open. (#1497, #1533)
+  (Note that this differs from specific handling we already have in place for the case of calling
+  OpenPopup() repeatedly every frame: we already didn't reopen in that specific situation, otherwise
+  the effect would be very disastrous in term of confusion, as reopening would steal focus).
+- Popups: Slight change to popup closing logic (e.g. after focusing another window) which skipped
+  over popups that are also child windows.
+- Combo: Fixed not reusing windows optimally when used inside a popup stack.
+- Debug Tools: Metrics: Fixed debug break in SetShortcutRouting() not handling ImGuiMod_Shortcut redirect.
+- Debug Tools: Metrics: Improved Monitors and Viewports minimap display. Highlight on hover.
+- Debug Tools: Debug Log: Added "Input Routing" logging.
+- Debug Tools: Added "nop" to IM_DEBUG_BREAK macro on GCC to work around GDB bug (#7266) [@Peter0x44]
+- Backends: Vulkan: Fixed vkAcquireNextImageKHR() validation errors in VulkanSDK 1.3.275 by
+  allocating one extra semaphore than in-flight frames. (#7236) [@mklefrancois]
+- Backends: Vulkan: Fixed vkMapMemory() calls unnecessarily using full buffer size. (#3957)
+- Backends: Vulkan: Fixed handling of ImGui_ImplVulkan_InitInfo::MinAllocationSize field. (#7189, #4238)
+- Backends: WebGPU: Added ImGui_ImplWGPU_InitInfo::PipelineMultisampleState. (#7240)
+- Backends: WebGPU: Filling all WGPUDepthStencilState fields explicitly as a recent Dawn
+  update stopped setting default values. (#7232) [@GrigoryGraborenko]
+- Backends: WebGPU: Fixed pipeline layout leak. (#7245) [@rajveermalviya]
+- Backends: OpenGL3: Backup and restore GL_PIXEL_UNPACK_BUFFER. (#7253)
+- Internals: Many improvements related to yet unpublicized shortcut routing and input ownership systems.
+- Internals: InputText: Added internal helpers to force reload of user-buf when active. (#2890) [@kudaba, @ocornut]
+  Often requested in some form (#6962, #5219, #3290, #4627, #5054, #3878, #2881, #1506, #1216, #968),
+  and useful for interactive completion/suggestions popups (#2057, #718)
+
+
+-----------------------------------------------------------------------
+ VERSION 1.90.1 (Released 2024-01-10)
+-----------------------------------------------------------------------
+
+Decorated log and release notes: https://github.com/ocornut/imgui/releases/tag/v1.90.1
+
+Breaking changes:
+
+- imgui_freetype: commented out ImGuiFreeType::BuildFontAtlas() obsoleted in 1.81.
+  Prefer using #define IMGUI_ENABLE_FREETYPE or see commented code for manual calls.
+- Removed CalcListClipping() marked obsolete in 1.86. (#3841)
+  Prefer using ImGuiListClipper which can return non-contiguous ranges.
+- Internals, Columns: commented out legacy ImGuiColumnsFlags_XXX symbols redirecting
+  to ImGuiOldColumnsFlags_XXX, obsoleted from imgui_internal.h in 1.80.
+- Commented out obsolete ImGuiKey_KeyPadEnter redirection to ImGuiKey_KeypadEnter. (#2625, #7143)
+
+Other changes:
+
+- Windows:
+  - BeginChild(): Fixed auto-resizing erroneously limiting size to host viewport
+    minus padding. There are no limit to a child width/height. (#7063) [@Devyre]
+  - BeginChild(): Resize borders rendered even when ImGuiWindowFlags_NoBackground
+    is specified. (#1710, #7194)
+  - Fixed some auto-resizing path using style.WindowMinSize.x (instead of x/y)
+    for both axises since 1.90. (#7106) [@n0bodysec]
+  - Scrolling: internal scrolling value is rounded instead of truncated, as a way to reduce
+    speed asymmetry when (incorrectly) attempting to scroll by non-integer amount. (#6677)
+- Navigation (Keyboard/gamepad):
+  - Nav, IO: SetNextFrameWantCaptureKeyboard(false) calls are not overridden back to true when
+    navigation is enabled. SetNextFrameWantCaptureKeyboard() is always higher priority. (#6997)
+  - Nav: Activation can also be performed with Keypad Enter. (#5606)
+- Drag and Drop:
+  - Fixed drop target highlight on items temporarily pushing a widened clip rect
+    (namely Selectables and Treenodes using SpanAllColumn flag) so the highlight properly covers
+    all columns. (#7049, #4281, #3272)
+- InputText:
+  - InputTextMultiline: Fixed Tab character input not repeating (1.89.4 regression).
+  - InputTextMultiline: Tabbing through a multi-line text editor which allows Tab character inputs
+    (using the ImGuiInputTextFlags_AllowTabInput flag) doesn't automatically activate it, in order
+    to allow passing through multiple widgets easily. (#3092, #5759, #787)
+- Drags, Sliders, Inputs:
+  - DragScalarN, SliderScalarN, InputScalarN: Fixed incorrect pushes into ItemWidth
+    stack when number of components is 1. [#7095] [@Nahor]
+  - Drags, Sliders, Inputs: removed all attempts to filter non-numerical characters during text
+    editing. Invalid inputs not applied to value, visibly reverted after validation. (#6810, #7096)
+  - Drags, Sliders, Inputs: removal of filter means that "nan" and "inf" values may be input. (#7096)
+  - DragScalarN, SliderScalarN, InputScalarN, PushMultiItemsWidths: improve multi-components
+    width computation to better distribute the error. (#7120, #7121) [@Nahor]
+- Menus:
+  - Tweaked hover slack logic, adding an extra timeout to avoid situations where a slow vertical
+    movements toward another parent BeginMenu() can keep the wrong child menu open. (#6671, #6926)
+- Color Editors:
+  - ColorEdit: Layout tweaks for very small sizes. (#7120, #7121)
+  - ColorPicker: Fixed saturation/value cursor radius not scaling properly.
+- Tabs: Added ImGuiTabItemFlags_NoAssumedClosure to enable app to react on closure attempt,
+  without having to draw an unsaved document marker (ImGuiTabItemFlags_UnsavedDocument sets
+  _NoAssumedClosure automatically). (#7084)
+- Debug Tools:
+  - Added io.ConfigDebugIsDebuggerPresent option. When enabled, this adds buttons in various
+    locations of Metrics/Debugger to manually request a debugger break:
+    - Request a debug break in a Begin() call.
+    - Request a debug break in a ItemAdd() call via debug log and hovering 0xXXXXXX identifiers.
+    - Request a debug break in a BeginTable() call.
+    - Request a debug break in a SetShortcutRouting()/Shortcut() call. [Internal]
+  - Metrics: Reorganize Tools menu.
+  - Added DebugFlashStyleColor() to identify a style color. Added to Style Editor.
+  - Debug Log: Hide its own clipper log to reduce noise in the output. (#5855)
+  - Debug Log: Clicking any filter with SHIFT held enables it for 2 frames only,
+    making it easier when dealing with spammy logs. (#5855)
+- Settings: Fixed an issue marking settings as dirty when merely clicking on a border or resize
+  grip without moving it.
+- Misc: Added IMGUI_USER_H_FILENAME to change the path included when using
+  IMGUI_INCLUDE_IMGUI_USER_H. (#7039) [@bryceberger]
+- Misc: Rework debug display of texture id in Metrics window to avoid compile-error when
+  ImTextureID is defined to be larger than 64-bits. (#7090)
+- Misc: Added extra courtesy ==/!= operators when IMGUI_DEFINE_MATH_OPERATORS is defined.
+- Misc: Fixed text functions fast-path for handling "%s" and "%.*s" to handle null pointers gracefully,
+  like most printf implementations. (#7016, #3466, #6846) [@codefrog2002]
+- Misc: Renamed some defines in imstb_textedit.h to avoid conflicts when using unity/jumbo builds
+  on a codebase where another copy of the library is used.
+- Misc: During shutdown, check that io.BackendPlatformUserData and io.BackendRendererUserData are NULL
+  in order to catch cases where backend was not shut down. (#7175)
+- Misc: Reworked Issue Template to a shinier and better form. (#5927) [@Panquesito7, @PathogenDavid, @ocornut]
+- Backends:
+  - GLFW, Emscripten: Added ImGui_ImplGlfw_InstallEmscriptenCanvasResizeCallback() to
+    register canvas selector and auto-resize GLFW window. (#6751) [@Traveller23, @ypujante]
+  - GLFW: Fixed Windows specific hooks to use Unicode version of WndProc even when
+    compiling in MBCS mode. (#7174) [@kimidaisuki22]
+  - OpenGL3: Update GL3W based imgui_impl_opengl3_loader.h to load libGL.so variants in
+    case of missing symlink. Fix 1.90 regression for some distros. (#6983)
+  - Vulkan: Fixed mismatching allocator passed to vkCreateCommandPool() vs
+    vkDestroyCommandPool(). (#7075) [@FoonTheRaccoon]
+  - Vulkan: Added MinAllocationSize field in ImGui_ImplVulkan_InitInfo to workaround zealous
+    "best practice" validation layer. (#7189, #4238) [@philae-ael]
+  - Vulkan: Stopped creating command pools with VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT
+    as we don't reset them.
+  - WebGPU: Fixed wgpuRenderPassEncoderSetScissorRect() crash when rendering modal window's
+    dimming layer, which has an unclipped value in ImDrawCmd::ClipRect. (#7191) [@aparis69]
+- Examples:
+  - Examples: GLFW+Emscripten: Fixed examples not consistently resizing according to host canvas.
+    (#6751) [@Traveller23, @ypujante]
+  - Examples: SDL3: Minor fixes following recent SDL3 in-progress development.
+
+
+-----------------------------------------------------------------------
+ VERSION 1.90.0 (Released 2023-11-15)
+-----------------------------------------------------------------------
+
+Decorated log and release notes: https://github.com/ocornut/imgui/releases/tag/v1.90
+
+Breaking changes:
+
+ - BeginChild(): Upgraded 'bool border = false' parameter to 'ImGuiChildFlags flags = 0'.
+   Added ImGuiChildFlags_Border value. As with our prior "bool-to-flags" API updates,
+   the ImGuiChildFlags_Border value is guaranteed to be == true forever to ensure a
+   smoother transition, meaning all existing calls will still work.
+   If you want to neatly transition your call sites:
+      Before:  BeginChild("Name", size, true)
+      After:   BeginChild("Name", size, ImGuiChildFlags_Border)
+      Before:  BeginChild("Name", size, false)
+      After:   BeginChild("Name", size) or BeginChild("Name", 0) or BeginChild("Name", size, ImGuiChildFlags_None)
+   Existing code will still work as 'ImGuiChildFlags_Border == true', but you are encouraged to update call sites.
+ - BeginChild(): Added child-flag ImGuiChildFlags_AlwaysUseWindowPadding as a replacement for
+   the window-flag ImGuiWindowFlags_AlwaysUseWindowPadding: the feature only ever made sense
+   for use with BeginChild() anyhow, passing it to Begin() had no effect. Now that we accept
+   child-flags we are moving it there. (#462)
+      Before:  BeginChild("Name", size, 0, ImGuiWindowFlags_AlwaysUseWindowPadding);
+      After:   BeginChild("Name", size, ImGuiChildFlags_AlwaysUseWindowPadding, 0);
+   Kept inline redirection enum (will obsolete later) so existing code will work.
+ - BeginChildFrame()/EndChildFrame(): removed functions in favor of using BeginChild() with
+   the ImGuiChildFlags_FrameStyle flag. Kept inline redirection function (will obsolete).
+   Those functions were merely PushStyle/PopStyle helpers and custom versions are easy to create.
+   (The removal isn't so much motivated by needing to add the feature in BeginChild(), but by the
+   necessity to avoid BeginChildFrame() signature mismatching BeginChild() signature and features.)
+ - Debug Tools: Renamed ShowStackToolWindow() ("Stack Tool") to ShowIDStackToolWindow() ("ID Stack Tool"),
+   as earlier name was misleading. Kept inline redirection function. (#4631)
+ - IO: Removed io.MetricsActiveAllocations introduced in 1.63, was displayed in Metrics and unlikely to
+   be accessed by end-user. Value still visible in the UI and easily to recompute from a delta.
+ - Defining IMGUI_DISABLE_OBSOLETE_FUNCTIONS now automatically defines IMGUI_DISABLE_OBSOLETE_KEYIO. (#4921)
+ - Removed IM_OFFSETOF() macro in favor of using offsetof() available in C++11. Kept redirection define. (#4537)
+ - ListBox, Combo: Changed signature of "name getter" callback in old one-liner ListBox()/Combo() apis.
+   Before:
+      getter type:   bool (*getter)(void* user_data, int idx, const char** out_text)
+      function:      bool Combo(const char* label, int* current_item, bool (*getter)(void* user_data, int idx, const char** out_text), ...);
+      function:      bool ListBox(const char* label, int* current_item, bool (*getting)(void* user_data, int idx, const char** out_text), ...);
+   After:
+      getter type:   const char* (*getter)(void* user_data, int idx)
+      function:      bool Combo(const char* label, int* current_item, const char* (*getter)(void* user_data, int idx), ...);
+      function:      bool ListBox(const char* label, int* current_item, const char* (*getter)(void* user_data, int idx), ...);
+   Old type was unnecessarily complex and harder to wrap in e.g. a lambda. Kept inline redirection function (will obsolete).
+ - Commented out obsolete redirecting enums/functions that were marked obsolete two years ago:
+   - GetWindowContentRegionWidth() -> use GetWindowContentRegionMax().x - GetWindowContentRegionMin().x.
+     Consider that generally 'GetContentRegionAvail().x' is often more correct and more useful.
+   - ImDrawCornerFlags_XXX         -> use ImDrawFlags_RoundCornersXXX names.
+     Read 1.82 changelog for details + grep commented names in sources.
+   - Commented out runtime support for hardcoded ~0 or 0x01..0x0F rounding flags values for
+     AddRect()/AddRectFilled()/PathRect()/AddImageRounded(). -> Use ImDrawFlags_RoundCornersXXX flags.
+     Read 1.82 changelog for details.
+ - Backends: Vulkan: Removed parameter from ImGui_ImplVulkan_CreateFontsTexture(): backend now creates its own
+   command-buffer to upload fonts. Removed ImGui_ImplVulkan_DestroyFontUploadObjects() which is now unnecessary.
+   No need to call ImGui_ImplVulkan_CreateFontsTexture() as it is done automatically in ImGui_ImplVulkan_NewFrame().
+   You can call ImGui_ImplVulkan_CreateFontsTexture() manually if you need to reload the font atlas texture.
+   (#6943, #6715, #6327, #3743, #4618)
+
+Other changes:
+
+- Windows:
+  - BeginChild(): Added ImGuiChildFlags_ResizeX and ImGuiChildFlags_ResizeY to allow resizing
+    child windows from the bottom/right border (toward layout direction). Resized child windows
+    settings are saved and persistent in .ini file. (#1710)
+  - BeginChild(): Added ImGuiChildFlags_Border as a replacement for 'bool border = true' parameter.
+  - BeginChild(): Added ImGuiChildFlags_AutoResizeX and ImGuiChildFlags_AutoResizeY to auto-resize
+    on one axis, while generally providing a size on the other axis. (#1666, #1395, #1496, #1710)
+    e.g. BeginChild("name", {-FLT_MIN, 0.0f}, ImGuiChildFlags_AutoResizeY);
+    - Size is only reevaluated if the child window is within visible boundaries or just appearing.
+      This allows coarse clipping to be performed and auto-resizing childs to return false when
+      hidden because of being scrolled out.
+    - Combining this with also specifying ImGuiChildFlags_AlwaysAutoResize disables
+      this optimization, meaning child contents will never be clipped (not recommended).
+    - Please be considerate that child are full windows and carry significant overhead:
+      combining auto-resizing for both axises to create a non-scrolling child to merely draw
+      a border would be better more optimally using BeginGroup(). (see #1496)
+      (until we come up with new helpers for framed groups and work-rect adjustments).
+  - BeginChild(): made it possible to use SetNextWindowSizeConstraints() rectangle, often
+    useful when ImGuiChildFlags_AutoResizeX or ImGuiChildFlags_AutoResizeY. (#1666, #1395, #1496)
+    Custom constraint callback are not supported with child window.
+  - BeginChild(): Added ImGuiChildFlags_FrameStyle as a replacement for BeginChildFrame(),
+    use it to make child window use FrameBg, FrameRounding, FrameBorderSize, FramePadding
+    instead of ChildBg, ChildRounding, ChildBorderSize, WindowPadding.
+  - Popups: clarified meaning of 'p_open != NULL' in BeginPopupModal() + set back user value
+    to false when popup is closed in ways other than clicking the close button. (#6900)
+  - Double-clicking lower-left resize grip auto-resize (like lower-right one).
+  - Double-clicking bottom or right window border auto-resize on a singles axis.
+  - Use relative mouse movement for border resize when the border geometry has moved
+    (e.g. resizing a child window triggering parent scroll) in order to avoid resizing
+    feedback loops. Unless manually mouse-wheeling while border resizing. (#1710)
+- Separators:
+  - Altered end-points to use more standard boundaries. (#205, #4787, #1643)
+    Left position is always current cursor X position, right position is always work-rect
+    rightmost edge. It effectively means that:
+    - A separator in the root of a window will end up a little more distant from edges
+      than previously (essentially following WindowPadding instead of clipping edges).
+    - A separator inside a table cell end up a little distance from edges instead of
+      touching them (essentially following CellPadding instead of clipping edges).
+    - Matches tree indentation (was not the case before).
+    - Matches SeparatorText(). (#1643)
+    - Makes things correct inside groups without specific/hard-coded handling. (#205)
+  - Support legacy behavior when used inside old Columns(), as we favored that idiom back then,
+    only different is left position follows indentation level, to match calling a Separator()
+    inside or outside Columns().
+- Tooltips:
+  - Made using SetItemTooltip()/IsItemHovered(ImGuiHoveredFlags_ForTooltip) defaults to
+    activate tooltips on disabled items. This is done by adding ImGuiHoveredFlags_AllowWhenDisabled
+    to the default value of style.HoverFlagsForTooltipMouse/HoverFlagsForTooltipNav. (#1485)
+  - Made is possible to combine ImGuiHoveredFlags_ForTooltip with a ImGuiHoveredFlags_DelayXXX
+    override. (#1485)
+- Drag and Drop:
+  - Reworked drop target highlight: reduce rectangle to its visible portion, and then expand
+    slightly. A full rectangle is always visible and it may protrude slightly. (#4281, #3272)
+  - Fixed submitting a tooltip from drop target location when using AcceptDragDropPayload()
+    with ImGuiDragDropFlags_AcceptNoPreviewTooltip and submitting a tooltip manually.
+- Tables:
+  - Added angled headers support. You need to set ImGuiTableColumnFlags_AngledHeader on selected
+    columns and call TableAngledHeadersRow(). Added style.TableAngledHeadersAngle style option. (#6917)
+  - Added ImGuiTableFlags_HighlightHoveredColumn flag, currently highlighting column header.
+  - Fixed an edge-case when no columns are visible + table scrollbar is visible + user
+    code is always testing return value of TableSetColumnIndex() to coarse clip. With an active
+    clipper it would have asserted. Without a clipper, the scrollbar range would be wrong.
+  - Request user to submit contents when outer host-window is requesting auto-resize,
+    so a scrolling table can contribute to initial window size. (#6510)
+  - Fixed subtle drawing overlap between borders in some situations.
+  - Fixed bottom-most and right-most outer border offset by one. (#6765, #3752) [@v-ein]
+  - Fixed top-most and left-most outer border overlapping inner clip-rect when scrolling. (#6765)
+  - Fixed top-most outer border being drawn with both TableBorderLight and TableBorderStrong
+    in some situations, causing the earlier to be visible underneath when alpha is not 1.0f.
+  - Fixed right-clicking right-most section (past right-most column) from highlighting a column.
+  - Fixed an issue with ScrollX enabled where an extraneous draw command would be created.
+- Menus:
+  - Menus: Fixed a bug where activating an item in a child-menu and dragging mouse over the
+    parent-menu would erroneously close the child-menu. (Regression from 1.88). (#6869)
+  - MenuBar: Fixed an issue where layouting an item in the menu-bar would erroneously
+    register contents size in a way that would affect the scrolling layer.
+    Was most often noticeable when using an horizontal scrollbar. (#6789)
+- InputText:
+  - InputTextMultiline: Fixed a crash pressing Down on last empty line of a multi-line buffer.
+    (regression from 1.89.2, only happened in some states). (#6783, #6000)
+  - InputTextMultiline: Fixed Tabbing cycle leading to a situation where Enter key wouldn't
+    be accepted by the widget when navigation highlight is visible. (#6802, #3092, #5759, #787)
+- Nav: Tabbing always enable nav highlight when ImGuiConfigFlags_NavEnableKeyboard is set.
+  Previously was inconsistent and only enabled when stepping through a non-input item.
+  (#6802, #3092, #5759, #787)
+- TreeNode: Added ImGuiTreeNodeFlags_SpanAllColumns for use in tables. (#3151, #3565, #2451, #2438)
+- TabBar: Fixed position of unsaved document marker (ImGuiTabItemFlags_UnsavedDocument) which was
+  accidentally offset in 1.89.9. (#6862) [@alektron]
+- ColorPicker4(): Fixed ImGuiColorEditFlags_NoTooltip not being forwarded to individual DragFloat3
+  sub-widgets which have a visible color preview when ImGuiColorEditFlags_NoSidePreview is also set. (#6957)
+- BeginGroup(): Fixed a bug pushing line lower extent too far down when called after a call
+  to SameLine() followed by manual cursor manipulation.
+- BeginCombo(): Added ImGuiComboFlags_WidthFitPreview flag. (#6881) [@mpv-enjoyer]
+- BeginListBox(): Fixed not consuming SetNextWindowXXX() data when returning false.
+- Fonts:
+  - Argument 'float size_pixels' passed to AddFontXXX() functions is now rounded to lowest integer.
+    This is because our layout/font system currently doesn't fully support non-integer sizes. Until
+    it does, this has been a common pitfall leading to more or less subtle issues. (#3164, #3309, #6800)
+  - Better assert during load when passing truncated font data or wrong data size. (#6822)
+  - Ensure calling AddFontXXX function doesn't invalidates ImFont's ConfigData pointers
+    prior to building again. (#6825)
+  - Added ImFontConfig::RasterizerDensity field to increase texture size of rendered glyphs
+    without altering other metrics. Among other things, this makes it easier to have zooming code
+    swapping between 2 fonts (e.g. a 100% and a 400% fonts) depending on current scale. (#6925) [@thedmd]
+    Important: if you increase this it is expected that you would render the font with a scale of
+    similar value or magnitude. Merely increasing this without increasing scale may lower quality.
+  - imgui_freetype: Added support for RasterizerDensity. (#6925) [@thedmd]
+  - imgui_freetype: Fixed a warning and leak in IMGUI_ENABLE_FREETYPE_LUNASVG support. (#6842, #6591)
+- Inputs: Added IsKeyChordPressed() helper function e.g. IsKeyChordPressed(ImGuiMod_Ctrl | ImGuiKey_S).
+  (note that ImGuiMod_Shortcut may be used as an alias for Cmd on OSX and Ctrl on other systems).
+- Misc: Most text functions also treat "%.*s" (along with "%s") specially to bypass formatting. (#3466, #6846)
+- IO: Add extra keys to ImGuiKey enum: ImGuiKey_F13 to ImGuiKey_F24. (#6891, #4921)
+- IO: Add extra keys to ImGuiKey enum: ImGuiKey_AppBack, ImGuiKey_AppForward. (#4921)
+- IO: Setting io.WantSetMousePos ignores incoming MousePos events. (#6837, #228) [@bertaye]
+- Debug Tools: Metrics: Added log of recent alloc/free calls.
+- Debug Tools: Metrics: Added "Show groups rectangles" in tools.
+- ImDrawList: Added AddEllipse(), AddEllipseFilled(), PathEllipticalArcTo(). (#2743) [@Doohl]
+- ImVector: Added find_index() helper.
+- Demo: Added "Drag and Drop -> Tooltip at target location" demo.
+- Demo: Added "Layout -> Child Windows -> Manual-resize" demo. (#1710)
+- Demo: Added "Layout -> Child Windows -> Auto-resize with constraints" demo. (#1666, #1395, #1496, #1710)
+- Demo: Partly fixed "Examples -> Constrained-resizing window" custom constrains demo. (#6210) [@cfillion]
+- Backends: Vulkan: Removed parameter from ImGui_ImplVulkan_CreateFontsTexture(): backend now creates its own
+  command-buffer to upload fonts. Removed ImGui_ImplVulkan_DestroyFontUploadObjects() which is now unnecessary.
+  No need to call ImGui_ImplVulkan_CreateFontsTexture() as it is done automatically in ImGui_ImplVulkan_NewFrame().
+  You can call ImGui_ImplVulkan_CreateFontsTexture() manually if you need to reload font atlas texture.
+  Fixed leaks, and added ImGui_ImplVulkan_DestroyFontsTexture() (probably no need to call this directly).
+  (#6943, #6715, #6327, #3743, #4618)
+  [@helynranta, @thomasherzog, @guybrush77, @albin-johansson, @MiroKaku, @benbatya-fb, @ocornut]
+- Backends: GLFW: Clear emscripten's MouseWheel callback before shutdown. (#6790, #6096, #4019) [@halx99]
+- Backends: GLFW: Added support for F13 to F24 function keys. (#6891)
+- Backends: SDL2, SDL3: Added support for F13 to F24 function keys, AppBack, AppForward. (#6891)
+- Backends: SDL3: Updates for recent API changes. (#7000, #6974)
+- Backends: Win32: Added support for F13 to F24 function keys, AppBack, AppForward. (#6891)
+- Backends: Win32: Added support for keyboard codepage conversion for when application
+  is compiled in MBCS mode and using a non-Unicode window. (#6785, #6782, #5725, #5961) [@sneakyevil]
+- Backends: Win32: Synthesize key-down event on key-up for VK_SNAPSHOT / ImGuiKey_PrintScreen as Windows
+  doesn't emit it (same behavior as GLFW/SDL). (#6859) [@thedmd, @SuperWangKai]
+- Backends: OpenGL3: rename symbols in our internal loader so that LTO compilation with another
+  copy of gl3w becomes possible. (#6875, #6668, #4445) [@nicolasnoble]
+- Backends: OpenGL3: Update GL3W based imgui_impl_opengl3_loader.h to load "libGL.so" instead
+  of "libGL.so.1", accommodating for NetBSD systems having only "libGL.so.3" available. (#6983)
+- Backends: OSX: Added support for F13 to F20 function keys. Support mapping F13 to PrintScreen. (#6891)
+- Examples: GLFW+Vulkan, SDL+Vulkan: Simplified and removed code due to backend improvements.
+- Internals: Renamed ImFloor() to ImTrunc(). Renamed ImFloorSigned() to ImFloor(). (#6861)
+
+
+-----------------------------------------------------------------------
+ VERSION 1.89.9 (Released 2023-09-04)
+-----------------------------------------------------------------------
+
+Decorated log and release notes: https://github.com/ocornut/imgui/releases/tag/v1.89.9
+
+Breaking changes:
+
+- Clipper: Renamed IncludeRangeByIndices(), also called ForceDisplayRangeByIndices()
+  before 1.89.6, to IncludeItemsByIndex(). Kept inline redirection function. (#6424, #3841)
+
+Other changes:
+
+- Tables: Made it possible to use SameLine(0,0) after TableNextColumn() or
+  TableSetColumnIndex() in order to reuse line pos/height from previous cell. (#3740)
+- Tables: Made it possible to change style.CellPadding.y between rows. (#3740)
+- Nav, TreeNode: Pressing Left with ImGuiTreeNodeFlags_NavLeftJumpsBackHere now goes
+  through proper navigation logic: honor scrolling and selection. (#1079, #1131)
+- Sliders: Fixed an integer overflow and div-by-zero in SliderInt() when
+  v_max=INT_MAX (#6675, #6679) [@jbarthelmes]
+- Windows: Layout of Close/Collapse buttons uses style.ItemInnerSpacing.x between items,
+  stopped incorrectly using FramePadding in a way where hit-boxes could overlap when
+  setting large values. (#6749)
+- TabBar, Style: added style.TabBarBorderSize and associated ImGuiStyleVar_TabBarBorderSize.
+  Tweaked rendering of that separator to allow thicker values. (#6820, #4859, #5022, #5239)
+- InputFloat, SliderFloat, DragFloat: always turn both '.' and ',' into the current decimal
+  point character when using Decimal/Scientific character filter. (#6719, #2278) [@adamsepp]
+- ColorEdit, ColorPicker: Manipulating options popup don't mark item as edited. (#6722)
+  (Note that they may still be marked as Active/Hovered.)
+- Clipper: Added IncludeItemByIndex() helper to include a single item. (#6424, #3841)
+- Clipper: Fixed a bug if attempt to force-include a range which matches an already
+  included range, clipper would end earlier. (#3841)
+- ImDrawData: Fixed an issue where TotalVtxCount/TotalIdxCount does not match the sum
+  of individual ImDrawList's buffer sizes when a dimming/modal background is rendered. (#6716)
+- ImDrawList: Automatically calling ChannelsMerge() if not done after a split.
+- ImDrawList: Fixed OOB access in _CalcCircleAutoSegmentCount when passing excessively
+  large radius to AddCircle(). (#6657, #5317) [@EggsyCRO, @jdpatdiscord]
+- IO: Exposed io.PlatformLocaleDecimalPoint to configure decimal point ('.' or ',') for
+  languages needing it. Should ideally be set to the value of '*localeconv()->decimal_point'
+  but our backends don't do it yet. (#6719, #2278)
+- IO: Fixed io.AddMousePosEvent() and io.AddMouseButtonEvent() writing MouseSource to
+  wrong union section. Was semantically incorrect and accidentally had no side-effects
+  with default compiler alignment settings. (#6727) [@RickHuang2001]
+- Misc: Made multiple calls to Render() during the same frame early out faster.
+- Debug Tools: Metrics: Fixed "Drawlists" section and per-viewport equivalent
+  appearing empty (regression in 1.89.8).
+- Demo: Reorganized "Examples" menu.
+- Demo: Tables: Demonstrate using SameLine() between cells. (#3740)
+- Demo: Tables: Demonstrate altering CellPadding.y between rows. (#3740)
+- Demo: Custom Rendering: Demonstrate out-of-order rendering using ImDrawListSplitter.
+- Backends: SDL2,SDL3: added ImGui_ImplSDL2_InitForOther()/ImGui_ImplSDL3_InitForOther()
+  for consistency (matching GLFW backend) and as most initialization paths don't actually
+  need to care about rendering backend.
+- Examples: Emscripten+WebGPU: Fixed WGPUInstance creation process + use preferred
+  framebuffer format. (#6640, #6748) [@smileorigin]
+
+
+-----------------------------------------------------------------------
+ VERSION 1.89.8 (Released 2023-08-01)
+-----------------------------------------------------------------------
+
+Decorated log and release notes: https://github.com/ocornut/imgui/releases/tag/v1.89.8
+
+Breaking changes:
+
+- IO: Obsoleted io.ClearInputCharacters() (added in 1.47) as it now ambiguous
+  and often incorrect/misleading considering the existence of a higher-level
+  input queue. This is automatically cleared by io.ClearInputsKeys(). (#4921)
+- ImDrawData: CmdLists[] array is now owned, changed from 'ImDrawList**' to
+  'ImVector<ImDrawList*>'. Majority of users shouldn't be affected, but you
+  cannot compare to NULL nor reassign manually anymore.
+  Instead use AddDrawList(). Allocation count are identical. (#6406, #4879, #1878)
+
+Other changes:
+
+- Fonts: ImFontConfig::OversampleH now defaults to 2 instead of 3, since the
+  quality increase is largely minimal.
+- Fonts, imgui_freetype: Added support to render OpenType SVG fonts using lunasvg.
+  Requires enabling IMGUI_ENABLE_FREETYPE_LUNASVG along with IMGUI_ENABLE_FREETYPE,
+  and providing headers/libraries for lunasvg. (#6591, #6607) [@sakiodre]
+- ImDrawData: CmdLists[] array is now an ImVector<> owned by ImDrawData rather
+  than a pointer to internal state.
+  - This makes it easier for user to create their own or append to an existing draw data.
+    Added a ImDrawData::AddDrawList() helper function to do that. (#6406, #4879, #1878)
+  - This makes it easier to perform a deep-swap instead of a deep-copy, as array
+    ownership is now clear. (#6597, #6475, #6167, #5776, #5109, #4763, #3515, #1860)
+  - Syntax and allocation count are otherwise identical.
+- Fixed CTRL+Tab dimming background assert when target window has a callback
+  in the last ImDrawCmd. (#4857, #5937)
+- IsItemHovered: Fixed ImGuiHoveredFlags_ForTooltip for Keyboard/Gamepad navigation,
+  got broken prior to 1.89.7 due to an unrelated change making flags conflict. (#6622, #1485)
+- InputText: Fixed a case where deactivation frame would write to underlying
+  buffer or call CallbackResize although unnecessary, in a frame where the
+  return value was false.
+- Tables: fixed GetContentRegionAvail().y report not taking account of lower cell
+  padding or of using ImGuiTableFlags_NoHostExtendY. Not taking it into account
+  would make the idiom of creating vertically bottom-aligned content (e.g. a child
+  window) inside a table make the parent window erroneously have a scrollbar. (#6619)
+- Tables: fixed calculation of multi-instance shared decoration/scrollbar width of
+  scrolling tables, to avoid flickering width variation when resizing down a table
+  hosting a child window. (#5920, #6619)
+- Scrollbar: layout needs to take account of window border size, so a border size
+  will slightly reduce scrollbar size. Generally we tried to make it that window
+  border size has no incidence on layout but this can't work with thick borders. (#2522)
+- IO: Added io.ClearEventsQueue() to clear incoming inputs events. (#4921)
+  May be useful in conjunction with io.ClearInputsKeys() if you need to clear
+  both current inputs state and queued events (e.g. when using blocking native
+  dialogs such as Windows's ::MessageBox() or ::GetOpenFileName()).
+- IO: Changed io.ClearInputsKeys() specs to also clear current frame character buffer
+  (what now obsoleted io.ClearInputCharacters() did), as this is effectively the
+  desirable behavior.
+- Misc: Added IMGUI_DISABLE_STB_SPRINTF_IMPLEMENTATION config macro to disable
+  stb_sprintf implementation when using IMGUI_USE_STB_SPRINTF. (#6626) [@septag]
+- Misc: Avoid stb_textedit.h reincluding string.h while in a namespace, which
+  messes up with building with Clang Modules. (#6653, #4791) [@JohelEGP]
+- Demo: Better showcase use of SetNextItemAllowOverlap(). (#6574, #6512, #3909, #517)
+- Demo: Showcase a few more InputText() flags.
+- Backends: Made all backends sources files support global IMGUI_DISABLE. (#6601)
+- Backends: GLFW: Revert ignoring mouse data on GLFW_CURSOR_DISABLED as it can be used
+  differently. User may set ImGuiConfigFlags_NoMouse if desired. (#5625, #6609) [@scorpion-26]
+- Backends: WebGPU: Update for changes in Dawn. (#6602, #6188) [@williamhCode]
+- Examples: Vulkan: Creating minimal descriptor pools to fit only what is needed by
+  example. (#6642) [@SaschaWillem]
+
 
 -----------------------------------------------------------------------
  VERSION 1.89.7 (Released 2023-07-04)
@@ -48,6 +612,11 @@ Breaking changes:
     legacy 'SetItemAllowOverlap()' call (public API) + ImGuiButtonFlags_AllowOverlap (internal).
   - Obsoleted 'SetItemAllowOverlap()': it didn't and couldn't work reliably since 1.89 (2022-11-15),
     and relied on ambiguously defined design. Use 'SetNextItemAllowOverlap()' before item instead.
+  - Selectable, TreeNode: When using ImGuiSelectableFlags_AllowOverlap/ImGuiTreeNodeFlags_AllowOverlap
+    and holding item held, overlapping widgets won't appear as hovered. (#6512, #3909)
+    While this fixes a common small visual issue, it also means that calling IsItemHovered()
+    after a non-reactive elements - e.g. Text() - overlapping an active one may fail if you don't
+    use IsItemHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem). (#6610)
   - Renamed 'ImGuiTreeNodeFlags_AllowItemOverlap' to 'ImGuiTreeNodeFlags_AllowOverlap'.
   - Renamed 'ImGuiSelectableFlags_AllowItemOverlap' to 'ImGuiSelectableFlags_AllowOverlap'
   - Kept redirecting enums (will obsolete).
@@ -83,8 +652,6 @@ Other changes:
   - Fixed first frame of an overlap highlighting underlying item if previous frame didn't hover anything.
   - IsItemHovered: Changed to return false when querying an item using AllowOverlap mode which
     is being overlapped. Added ImGuiHoveredFlags_AllowWhenOverlappedByItem to opt-out. (#6512, #3909, #517)
-  - Selectable, TreeNode: When using ImGuiSelectableFlags_AllowOverlap/ImGuiTreeNodeFlags_AllowOverlap
-    and holding item held, overlapping widgets won't appear as hovered. (#6512, #3909)
 - IsWindowHovered: Added support for ImGuiHoveredFlags_Stationary.
 - IsWindowHovered, IsItemHovered: Assert when passed any unsupported flags.
 - Tables: Fixed a regression in 1.89.6 leading to the first column of tables with either
@@ -1202,7 +1769,7 @@ Breaking Changes:
 - Commented out redirecting functions/enums names that were marked obsolete in 1.67 and 1.69 (March 2019):
   - ImGui::GetOverlayDrawList() -> use ImGui::GetForegroundDrawList()
   - ImFont::GlyphRangesBuilder  -> use ImFontGlyphRangesBuilder
-- Backends: OpenGL3: added a third source file "imgui_impl_opengl3_loader.h". [@rokups]
+- Backends: OpenGL3: added a third source file "imgui_impl_opengl3_loader.h". (#4445) [@rokups]
 - Backends: GLFW: backend now uses glfwSetCursorEnterCallback(). (#3751, #4377, #2445)
 - Backends: GLFW: backend now uses glfwSetWindowFocusCallback(). (#4388) [@thedmd]
   - If calling ImGui_ImplGlfw_InitXXX with install_callbacks=true: this is already done for you.
@@ -1291,7 +1858,7 @@ Other Changes:
   about building on 32-bit systems. (#4225) [@kingofthebongo2008]
 - Backends: OpenGL3: Embed our own minimal GL headers/loader (imgui_impl_opengl3_loader.h) based on gl3w.
   Reduces the frequent issues and confusion coming from having to support multiple loaders and requiring users to use and
-  initialize the same loader as the backend. [@rokups]
+  initialize the same loader as the backend. (#4445) [@rokups]
   Removed support for gl3w, glew, glad, glad2, glbinding2, glbinding3 (all now unnecessary).
 - Backends: OpenGL3: Handle GL_CLIP_ORIGIN on <4.5 contexts if "GL_ARB_clip_control" extension is detected. (#4170, #3998)
 - Backends: OpenGL3: Destroy vertex/fragment shader objects right after they are linked into main shader. (#4244) [@Crowbarous]

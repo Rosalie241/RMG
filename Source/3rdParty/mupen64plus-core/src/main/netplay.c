@@ -312,11 +312,8 @@ static int netplay_ensure_valid(uint8_t control_id)
     if (l_udpChannel == -1)
         return 0;
 
-#if SDL_VERSION_ATLEAST(2,0,0)
     SDL_Thread* thread = SDL_CreateThread(netplay_require_response, "Netplay key request", &control_id);
-#else
-    SDL_Thread* thread = SDL_CreateThread(netplay_require_response, &control_id);
-#endif
+
     while (!check_valid(control_id, l_cin_compats[control_id].netplay_count) && l_udpChannel != -1)
         netplay_process();
     int success;
@@ -584,6 +581,9 @@ void netplay_read_registration(struct controller_input_compat* cin_compats)
     {
         reg_id = SDLNet_Read32(&input_data[curr]);
         curr += 4;
+
+        Controls[i].Type = CONT_TYPE_STANDARD; //make sure VRU is disabled
+
         if (reg_id == 0) //No one registered to control this player
         {
             Controls[i].Present = 0;

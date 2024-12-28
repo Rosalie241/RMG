@@ -15,7 +15,7 @@ jobs:
       - name: Install Packages
         run: |
           sudo add-apt-repository ppa:okirby/qt6-backports --yes
-          sudo apt-get -y install cmake ninja-build libhidapi-dev libsamplerate0-dev libspeex-dev libminizip-dev libsdl2-dev libfreetype6-dev libgl1-mesa-dev libglu1-mesa-dev pkg-config zlib1g-dev binutils-dev libspeexdsp-dev qt6-base-dev libqt6svg6-dev libvulkan-dev build-essential nasm git zip appstream
+          sudo apt-get -y install cmake ninja-build libhidapi-dev libsamplerate0-dev libspeex-dev libminizip-dev libsdl2-dev libsdl2-net-dev libfreetype6-dev libgl1-mesa-dev libglu1-mesa-dev pkg-config zlib1g-dev binutils-dev libspeexdsp-dev qt6-base-dev libqt6svg6-dev libqt6websockets6-dev libvulkan-dev build-essential nasm git zip appstream
       - name: Prepare Environment
         run: |
           echo "GIT_REVISION=$(git describe --tags --always)" >> $GITHUB_ENV
@@ -67,6 +67,7 @@ jobs:
             mingw-w64-x86_64-freetype
             mingw-w64-x86_64-libpng
             mingw-w64-x86_64-SDL2
+            mingw-w64-x86_64-SDL2_net
             mingw-w64-x86_64-qt6
             mingw-w64-x86_64-SDL2
             mingw-w64-x86_64-hidapi
@@ -74,6 +75,7 @@ jobs:
             mingw-w64-x86_64-libsamplerate
             mingw-w64-x86_64-nasm
             mingw-w64-x86_64-minizip
+            mingw-w64-x86_64-vulkan-headers
             git
       - name: Prepare Environment
         run: |

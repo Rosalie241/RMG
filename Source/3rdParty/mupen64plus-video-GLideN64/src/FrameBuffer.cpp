@@ -918,6 +918,10 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		wnd.getDrawer().clearDepthBuffer();
 	}
 
+	if ((config.generalEmulation.hacks & hack_subscreen) != 0u &&
+		_format == G_IM_FMT_I && _size == G_IM_SIZ_8b)
+		gDP.m_subscreen = gDP.otherMode._u64 == 0x00000cf00f0a0004;
+
 	m_pCurrent->m_isDepthBuffer = _address == gDP.depthImageAddress;
 	m_pCurrent->m_isPauseScreen = m_pCurrent->m_isOBScreen = false;
 	m_pCurrent->m_copied = false;

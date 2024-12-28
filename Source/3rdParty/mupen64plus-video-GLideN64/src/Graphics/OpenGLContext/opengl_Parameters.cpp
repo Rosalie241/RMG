@@ -71,11 +71,10 @@ namespace graphics {
 
 	namespace textureIndices {
 		TextureUnitParam Tex[2] = { 0U, 1U };
-		TextureUnitParam NoiseTex(2U);
-		TextureUnitParam DepthTex(3U);
-		TextureUnitParam ZLUTTex(4U);
-		TextureUnitParam PaletteTex(5U);
-		TextureUnitParam MSTex[2] = { 6U, 7U };
+		TextureUnitParam DepthTex(2U);
+		TextureUnitParam ZLUTTex(3U);
+		TextureUnitParam PaletteTex(4U);
+		TextureUnitParam MSTex[2] = { 5U, 6U };
 	}
 
 	namespace textureImageUnits {

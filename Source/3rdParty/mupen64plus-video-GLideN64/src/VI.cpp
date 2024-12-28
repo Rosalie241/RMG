@@ -15,6 +15,7 @@
 #include "DebugDump.h"
 #include "osal_keys.h"
 #include "DisplayWindow.h"
+#include "TextureFilterHandler.h"
 #include "GLideNHQ/TxFilterExport.h"
 #include <Graphics/Context.h>
 
@@ -131,6 +132,14 @@ static void checkHotkeys()
 		/* Turn on texture dump */
 		if (osal_is_key_pressed(config.hotkeys.enabledKeys[Config::hkTexDump], 0x0001))
 			textureCache().toggleDumpTex();
+
+		if (osal_is_key_pressed(config.hotkeys.enabledKeys[Config::hkStrongCRC], 0x0001)) {
+			if (config.textureFilter.txStrongCRC == 0)
+				dwnd().getDrawer().showMessage("Enable strong CRC for textures dump\n", Milliseconds(750));
+			else
+				dwnd().getDrawer().showMessage("Disable strong CRC for textures dump\n", Milliseconds(750));
+			config.textureFilter.txStrongCRC = !config.textureFilter.txStrongCRC;
+		}
 	}
 
 	if (osal_is_key_pressed(config.hotkeys.enabledKeys[Config::hkTexCoordBounds], 0x0001)) {

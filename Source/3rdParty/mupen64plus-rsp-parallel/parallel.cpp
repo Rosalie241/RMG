@@ -12,29 +12,6 @@
 #define RSP_PARALLEL_VERSION 0x0101
 #define RSP_PLUGIN_API_VERSION 0x020000
 
-static void (*l_DebugCallback)(void *, int, const char *) = NULL;
-static void *l_DebugCallContext = NULL;
-
-
-#define ATTR_FMT(fmtpos, attrpos) __attribute__ ((format (printf, fmtpos, attrpos)))
-static void DebugMessage(int level, const char *message, ...) ATTR_FMT(2, 3);
-
-void DebugMessage(int level, const char *message, ...)
-{
-    char msgbuf[1024];
-    va_list args;
-
-    if (l_DebugCallback == NULL)
-        return;
-
-    va_start(args, message);
-    vsprintf(msgbuf, message, args);
-
-    (*l_DebugCallback)(l_DebugCallContext, level, msgbuf);
-
-    va_end(args);
-}
-
 namespace RSP
 {
 RSP_INFO rsp;
@@ -76,7 +53,7 @@ extern "C"
 
 	EXPORT unsigned int CALL DoRspCycles(unsigned int cycles)
 	{
-		if (*RSP::rsp.SP_STATUS_REG & SP_STATUS_HALT)
+		if (*RSP::rsp.SP_STATUS_REG & (SP_STATUS_HALT | SP_STATUS_BROKE))
 			return 0;
 
 		// We don't know if Mupen from the outside invalidated our IMEM.
@@ -107,6 +84,8 @@ extern "C"
 			return cycles;
 		else if (*RSP::cpu.get_state().cp0.irq & 1)
 			RSP::rsp.CheckInterrupts();
+		else if (*RSP::rsp.SP_STATUS_REG & SP_STATUS_HALT)
+			return cycles;
 		else if (*RSP::rsp.SP_SEMAPHORE_REG != 0) // Semaphore lock fixes.
 		{
 		}
@@ -189,9 +168,6 @@ extern "C"
 	EXPORT m64p_error CALL PluginStartup(m64p_dynlib_handle CoreLibHandle, void *Context,
 									 void (*DebugCallback)(void *, int, const char *))
 	{
-		/* first thing is to set the callback function for debug info */
-		l_DebugCallback = DebugCallback;
-		l_DebugCallContext = Context;
 		return M64ERR_SUCCESS;
 	}
 

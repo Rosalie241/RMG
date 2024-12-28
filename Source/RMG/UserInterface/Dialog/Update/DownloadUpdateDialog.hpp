@@ -16,7 +16,6 @@
 #include <QNetworkReply>
 
 #include <RMG-Core/Core.hpp>
-#include <qglobal.h>
 
 #include "ui_DownloadUpdateDialog.h"
 
@@ -32,8 +31,6 @@ class DownloadUpdateDialog : public QDialog, private Ui::DownloadUpdateDialog
     QNetworkReply *reply;
     QString temporaryDirectory;
     QString filename;
-
-    void showErrorMessage(QString error, QString details);
 
   public:
     DownloadUpdateDialog(QWidget *parent, QUrl url, QString filename);

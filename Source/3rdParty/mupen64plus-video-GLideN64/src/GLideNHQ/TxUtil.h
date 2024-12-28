@@ -43,14 +43,16 @@ private:
 						  uint32* crc32, uint32* cimax);
 	static boolean RiceCRC32_CI8(const uint8* src, int width, int height, int rowStride,
 						  uint32* crc32, uint32* cimax);
+	static uint32 StrongCRC32(const uint8* src, int width, int height, int size, int rowStride);
+	static boolean StrongCRC32_CI4(const uint8* src, int width, int height, int rowStride,
+		uint32* crc32, uint32* cimax);
+	static boolean StrongCRC32_CI8(const uint8* src, int width, int height, int rowStride,
+		uint32* crc32, uint32* cimax);
 public:
 	static int sizeofTx(int width, int height, ColorFormat format);
 	static uint32 checksumTx(uint8 *data, int width, int height, ColorFormat format);
-#if 0 /* unused */
-	static uint32 chkAlpha(uint32* src, int width, int height);
-#endif
-	static uint32 checksum(uint8 *src, int width, int height, int size, int rowStride);
 	static uint64 checksum64(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette);
+	static uint64 checksum64strong(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette);
 	static uint32 getNumberofProcessors();
 };
 

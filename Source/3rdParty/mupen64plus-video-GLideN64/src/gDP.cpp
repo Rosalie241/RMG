@@ -441,7 +441,7 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _width, u32 _bytes)
 		break;
 	}
 
-	for (u32 nTile = gSP.texture.tile; nTile < 6; ++nTile) {
+	for (u32 nTile = 0; nTile < 6; ++nTile) {
 		if (gDP.tiles[nTile].tmem == gDP.loadTile->tmem) {
 			gDPTile & curTile = gDP.tiles[nTile];
 			curTile.textureMode = gDP.loadTile->textureMode;

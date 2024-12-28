@@ -305,65 +305,70 @@ static void load_settings(void)
             profile->SensitivityValue = 100;
         }
 
+#define LOAD_INPUT_MAPPING(mapping, setting) \
+        load_inputmapping_settings(&profile->mapping, section, SettingsID::setting##_Name, SettingsID::setting##_InputType, SettingsID::setting##_Data, SettingsID::setting##_ExtraData)
+
         // load inputmapping settings
-        load_inputmapping_settings(&profile->Button_A, section, SettingsID::Input_A_Name, SettingsID::Input_A_InputType, SettingsID::Input_A_Data, SettingsID::Input_A_ExtraData);
-        load_inputmapping_settings(&profile->Button_B, section, SettingsID::Input_B_Name, SettingsID::Input_B_InputType, SettingsID::Input_B_Data, SettingsID::Input_B_ExtraData);
-        load_inputmapping_settings(&profile->Button_Start, section, SettingsID::Input_Start_Name, SettingsID::Input_Start_InputType, SettingsID::Input_Start_Data, SettingsID::Input_Start_ExtraData);
-        load_inputmapping_settings(&profile->Button_DpadUp, section, SettingsID::Input_DpadUp_Name, SettingsID::Input_DpadUp_InputType, SettingsID::Input_DpadUp_Data, SettingsID::Input_DpadUp_ExtraData);
-        load_inputmapping_settings(&profile->Button_DpadDown, section, SettingsID::Input_DpadDown_Name, SettingsID::Input_DpadDown_InputType, SettingsID::Input_DpadDown_Data, SettingsID::Input_DpadDown_ExtraData);
-        load_inputmapping_settings(&profile->Button_DpadLeft, section, SettingsID::Input_DpadLeft_Name, SettingsID::Input_DpadLeft_InputType, SettingsID::Input_DpadLeft_Data, SettingsID::Input_DpadLeft_ExtraData);
-        load_inputmapping_settings(&profile->Button_DpadRight, section, SettingsID::Input_DpadRight_Name, SettingsID::Input_DpadRight_InputType, SettingsID::Input_DpadRight_Data, SettingsID::Input_DpadRight_ExtraData);
-        load_inputmapping_settings(&profile->Button_CButtonUp, section, SettingsID::Input_CButtonUp_Name, SettingsID::Input_CButtonUp_InputType, SettingsID::Input_CButtonUp_Data, SettingsID::Input_CButtonUp_ExtraData);
-        load_inputmapping_settings(&profile->Button_CButtonDown, section, SettingsID::Input_CButtonDown_Name, SettingsID::Input_CButtonDown_InputType, SettingsID::Input_CButtonDown_Data, SettingsID::Input_CButtonDown_ExtraData);
-        load_inputmapping_settings(&profile->Button_CButtonLeft, section, SettingsID::Input_CButtonLeft_Name, SettingsID::Input_CButtonLeft_InputType, SettingsID::Input_CButtonLeft_Data, SettingsID::Input_CButtonLeft_ExtraData);
-        load_inputmapping_settings(&profile->Button_CButtonRight, section, SettingsID::Input_CButtonRight_Name, SettingsID::Input_CButtonRight_InputType, SettingsID::Input_CButtonRight_Data, SettingsID::Input_CButtonRight_ExtraData);
-        load_inputmapping_settings(&profile->Button_LeftTrigger, section, SettingsID::Input_LeftTrigger_Name, SettingsID::Input_LeftTrigger_InputType, SettingsID::Input_LeftTrigger_Data, SettingsID::Input_LeftTrigger_ExtraData);
-        load_inputmapping_settings(&profile->Button_RightTrigger, section, SettingsID::Input_RightTrigger_Name, SettingsID::Input_RightTrigger_InputType, SettingsID::Input_RightTrigger_Data, SettingsID::Input_RightTrigger_ExtraData);
-        load_inputmapping_settings(&profile->Button_ZTrigger, section, SettingsID::Input_ZTrigger_Name, SettingsID::Input_ZTrigger_InputType, SettingsID::Input_ZTrigger_Data, SettingsID::Input_ZTrigger_ExtraData);
-        load_inputmapping_settings(&profile->AnalogStick_Up, section, SettingsID::Input_AnalogStickUp_Name, SettingsID::Input_AnalogStickUp_InputType, SettingsID::Input_AnalogStickUp_Data, SettingsID::Input_AnalogStickUp_ExtraData);
-        load_inputmapping_settings(&profile->AnalogStick_Down, section, SettingsID::Input_AnalogStickDown_Name, SettingsID::Input_AnalogStickDown_InputType, SettingsID::Input_AnalogStickDown_Data, SettingsID::Input_AnalogStickDown_ExtraData);
-        load_inputmapping_settings(&profile->AnalogStick_Left, section, SettingsID::Input_AnalogStickLeft_Name, SettingsID::Input_AnalogStickLeft_InputType, SettingsID::Input_AnalogStickLeft_Data, SettingsID::Input_AnalogStickLeft_ExtraData);
-        load_inputmapping_settings(&profile->AnalogStick_Right, section, SettingsID::Input_AnalogStickRight_Name, SettingsID::Input_AnalogStickRight_InputType, SettingsID::Input_AnalogStickRight_Data, SettingsID::Input_AnalogStickRight_ExtraData);
+        LOAD_INPUT_MAPPING(Button_A,            Input_A);
+        LOAD_INPUT_MAPPING(Button_B,            Input_B);
+        LOAD_INPUT_MAPPING(Button_Start,        Input_Start);
+        LOAD_INPUT_MAPPING(Button_DpadUp,       Input_DpadUp);
+        LOAD_INPUT_MAPPING(Button_DpadDown,     Input_DpadDown);
+        LOAD_INPUT_MAPPING(Button_DpadLeft,     Input_DpadLeft);
+        LOAD_INPUT_MAPPING(Button_DpadRight,    Input_DpadRight);
+        LOAD_INPUT_MAPPING(Button_CButtonUp,    Input_CButtonUp);
+        LOAD_INPUT_MAPPING(Button_CButtonDown,  Input_CButtonDown);
+        LOAD_INPUT_MAPPING(Button_CButtonLeft,  Input_CButtonLeft);
+        LOAD_INPUT_MAPPING(Button_CButtonRight, Input_CButtonRight);
+        LOAD_INPUT_MAPPING(Button_LeftTrigger,  Input_LeftTrigger);
+        LOAD_INPUT_MAPPING(Button_RightTrigger, Input_RightTrigger);
+        LOAD_INPUT_MAPPING(Button_ZTrigger,     Input_ZTrigger);
+        LOAD_INPUT_MAPPING(AnalogStick_Up,      Input_AnalogStickUp);
+        LOAD_INPUT_MAPPING(AnalogStick_Down,    Input_AnalogStickDown);
+        LOAD_INPUT_MAPPING(AnalogStick_Left,    Input_AnalogStickLeft);
+        LOAD_INPUT_MAPPING(AnalogStick_Right,   Input_AnalogStickRight);
 
         // load hotkeys settings
-        load_inputmapping_settings(&profile->Hotkey_Shutdown, section, SettingsID::Input_Hotkey_Shutdown_Name, SettingsID::Input_Hotkey_Shutdown_InputType, SettingsID::Input_Hotkey_Shutdown_Data, SettingsID::Input_Hotkey_Shutdown_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_Exit, section, SettingsID::Input_Hotkey_Exit_Name, SettingsID::Input_Hotkey_Exit_InputType, SettingsID::Input_Hotkey_Exit_Data, SettingsID::Input_Hotkey_Exit_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_SoftReset, section, SettingsID::Input_Hotkey_SoftReset_Name, SettingsID::Input_Hotkey_SoftReset_InputType, SettingsID::Input_Hotkey_SoftReset_Data, SettingsID::Input_Hotkey_SoftReset_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_HardReset, section, SettingsID::Input_Hotkey_HardReset_Name, SettingsID::Input_Hotkey_HardReset_InputType, SettingsID::Input_Hotkey_HardReset_Data, SettingsID::Input_Hotkey_HardReset_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_Resume, section, SettingsID::Input_Hotkey_Resume_Name, SettingsID::Input_Hotkey_Resume_InputType, SettingsID::Input_Hotkey_Resume_Data, SettingsID::Input_Hotkey_Resume_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_Screenshot, section, SettingsID::Input_Hotkey_Screenshot_Name, SettingsID::Input_Hotkey_Screenshot_InputType, SettingsID::Input_Hotkey_Screenshot_Data, SettingsID::Input_Hotkey_Screenshot_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_LimitFPS, section, SettingsID::Input_Hotkey_LimitFPS_Name, SettingsID::Input_Hotkey_LimitFPS_InputType, SettingsID::Input_Hotkey_LimitFPS_Data, SettingsID::Input_Hotkey_LimitFPS_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_SpeedFactor25, section, SettingsID::Input_Hotkey_SpeedFactor25_Name, SettingsID::Input_Hotkey_SpeedFactor25_InputType, SettingsID::Input_Hotkey_SpeedFactor25_Data, SettingsID::Input_Hotkey_SpeedFactor25_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_SpeedFactor50, section, SettingsID::Input_Hotkey_SpeedFactor50_Name, SettingsID::Input_Hotkey_SpeedFactor50_InputType, SettingsID::Input_Hotkey_SpeedFactor50_Data, SettingsID::Input_Hotkey_SpeedFactor50_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_SpeedFactor75, section, SettingsID::Input_Hotkey_SpeedFactor75_Name, SettingsID::Input_Hotkey_SpeedFactor75_InputType, SettingsID::Input_Hotkey_SpeedFactor75_Data, SettingsID::Input_Hotkey_SpeedFactor75_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_SpeedFactor100, section, SettingsID::Input_Hotkey_SpeedFactor100_Name, SettingsID::Input_Hotkey_SpeedFactor100_InputType, SettingsID::Input_Hotkey_SpeedFactor100_Data, SettingsID::Input_Hotkey_SpeedFactor100_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_SpeedFactor125, section, SettingsID::Input_Hotkey_SpeedFactor125_Name, SettingsID::Input_Hotkey_SpeedFactor125_InputType, SettingsID::Input_Hotkey_SpeedFactor125_Data, SettingsID::Input_Hotkey_SpeedFactor125_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_SpeedFactor150, section, SettingsID::Input_Hotkey_SpeedFactor150_Name, SettingsID::Input_Hotkey_SpeedFactor150_InputType, SettingsID::Input_Hotkey_SpeedFactor150_Data, SettingsID::Input_Hotkey_SpeedFactor150_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_SpeedFactor175, section, SettingsID::Input_Hotkey_SpeedFactor175_Name, SettingsID::Input_Hotkey_SpeedFactor175_InputType, SettingsID::Input_Hotkey_SpeedFactor175_Data, SettingsID::Input_Hotkey_SpeedFactor175_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_SpeedFactor200, section, SettingsID::Input_Hotkey_SpeedFactor200_Name, SettingsID::Input_Hotkey_SpeedFactor200_InputType, SettingsID::Input_Hotkey_SpeedFactor200_Data, SettingsID::Input_Hotkey_SpeedFactor200_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_SpeedFactor225, section, SettingsID::Input_Hotkey_SpeedFactor225_Name, SettingsID::Input_Hotkey_SpeedFactor225_InputType, SettingsID::Input_Hotkey_SpeedFactor225_Data, SettingsID::Input_Hotkey_SpeedFactor225_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_SpeedFactor250, section, SettingsID::Input_Hotkey_SpeedFactor250_Name, SettingsID::Input_Hotkey_SpeedFactor250_InputType, SettingsID::Input_Hotkey_SpeedFactor250_Data, SettingsID::Input_Hotkey_SpeedFactor250_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_SpeedFactor275, section, SettingsID::Input_Hotkey_SpeedFactor275_Name, SettingsID::Input_Hotkey_SpeedFactor275_InputType, SettingsID::Input_Hotkey_SpeedFactor275_Data, SettingsID::Input_Hotkey_SpeedFactor275_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_SpeedFactor300, section, SettingsID::Input_Hotkey_SpeedFactor300_Name, SettingsID::Input_Hotkey_SpeedFactor300_InputType, SettingsID::Input_Hotkey_SpeedFactor300_Data, SettingsID::Input_Hotkey_SpeedFactor300_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_SaveState, section, SettingsID::Input_Hotkey_SaveState_Name, SettingsID::Input_Hotkey_SaveState_InputType, SettingsID::Input_Hotkey_SaveState_Data, SettingsID::Input_Hotkey_SaveState_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_LoadState, section, SettingsID::Input_Hotkey_LoadState_Name, SettingsID::Input_Hotkey_LoadState_InputType, SettingsID::Input_Hotkey_LoadState_Data, SettingsID::Input_Hotkey_LoadState_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_GSButton, section, SettingsID::Input_Hotkey_GSButton_Name, SettingsID::Input_Hotkey_GSButton_InputType, SettingsID::Input_Hotkey_GSButton_Data, SettingsID::Input_Hotkey_GSButton_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_SaveStateSlot0, section, SettingsID::Input_Hotkey_SaveStateSlot0_Name, SettingsID::Input_Hotkey_SaveStateSlot0_InputType, SettingsID::Input_Hotkey_SaveStateSlot0_Data, SettingsID::Input_Hotkey_SaveStateSlot0_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_SaveStateSlot1, section, SettingsID::Input_Hotkey_SaveStateSlot1_Name, SettingsID::Input_Hotkey_SaveStateSlot1_InputType, SettingsID::Input_Hotkey_SaveStateSlot1_Data, SettingsID::Input_Hotkey_SaveStateSlot1_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_SaveStateSlot2, section, SettingsID::Input_Hotkey_SaveStateSlot2_Name, SettingsID::Input_Hotkey_SaveStateSlot2_InputType, SettingsID::Input_Hotkey_SaveStateSlot2_Data, SettingsID::Input_Hotkey_SaveStateSlot2_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_SaveStateSlot3, section, SettingsID::Input_Hotkey_SaveStateSlot3_Name, SettingsID::Input_Hotkey_SaveStateSlot3_InputType, SettingsID::Input_Hotkey_SaveStateSlot3_Data, SettingsID::Input_Hotkey_SaveStateSlot3_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_SaveStateSlot4, section, SettingsID::Input_Hotkey_SaveStateSlot4_Name, SettingsID::Input_Hotkey_SaveStateSlot4_InputType, SettingsID::Input_Hotkey_SaveStateSlot4_Data, SettingsID::Input_Hotkey_SaveStateSlot4_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_SaveStateSlot5, section, SettingsID::Input_Hotkey_SaveStateSlot5_Name, SettingsID::Input_Hotkey_SaveStateSlot5_InputType, SettingsID::Input_Hotkey_SaveStateSlot5_Data, SettingsID::Input_Hotkey_SaveStateSlot5_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_SaveStateSlot6, section, SettingsID::Input_Hotkey_SaveStateSlot6_Name, SettingsID::Input_Hotkey_SaveStateSlot6_InputType, SettingsID::Input_Hotkey_SaveStateSlot6_Data, SettingsID::Input_Hotkey_SaveStateSlot6_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_SaveStateSlot7, section, SettingsID::Input_Hotkey_SaveStateSlot7_Name, SettingsID::Input_Hotkey_SaveStateSlot7_InputType, SettingsID::Input_Hotkey_SaveStateSlot7_Data, SettingsID::Input_Hotkey_SaveStateSlot7_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_SaveStateSlot8, section, SettingsID::Input_Hotkey_SaveStateSlot8_Name, SettingsID::Input_Hotkey_SaveStateSlot8_InputType, SettingsID::Input_Hotkey_SaveStateSlot8_Data, SettingsID::Input_Hotkey_SaveStateSlot8_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_SaveStateSlot9, section, SettingsID::Input_Hotkey_SaveStateSlot9_Name, SettingsID::Input_Hotkey_SaveStateSlot9_InputType, SettingsID::Input_Hotkey_SaveStateSlot9_Data, SettingsID::Input_Hotkey_SaveStateSlot9_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_IncreaseSaveStateSlot, section, SettingsID::Input_Hotkey_IncreaseSaveStateSlot_Name, SettingsID::Input_Hotkey_IncreaseSaveStateSlot_InputType, SettingsID::Input_Hotkey_IncreaseSaveStateSlot_Data, SettingsID::Input_Hotkey_IncreaseSaveStateSlot_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_DecreaseSaveStateSlot, section, SettingsID::Input_Hotkey_DecreaseSaveStateSlot_Name, SettingsID::Input_Hotkey_DecreaseSaveStateSlot_InputType, SettingsID::Input_Hotkey_DecreaseSaveStateSlot_Data, SettingsID::Input_Hotkey_DecreaseSaveStateSlot_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_MemoryPak, section, SettingsID::Input_Hotkey_MemoryPak_Name, SettingsID::Input_Hotkey_MemoryPak_InputType, SettingsID::Input_Hotkey_MemoryPak_Data, SettingsID::Input_Hotkey_MemoryPak_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_RumblePak, section, SettingsID::Input_Hotkey_RumblePak_Name, SettingsID::Input_Hotkey_RumblePak_InputType, SettingsID::Input_Hotkey_RumblePak_Data, SettingsID::Input_Hotkey_RumblePak_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_NoPak, section, SettingsID::Input_Hotkey_NoPak_Name, SettingsID::Input_Hotkey_NoPak_InputType, SettingsID::Input_Hotkey_NoPak_Data, SettingsID::Input_Hotkey_NoPak_ExtraData);
-        load_inputmapping_settings(&profile->Hotkey_Fullscreen, section, SettingsID::Input_Hotkey_Fullscreen_Name, SettingsID::Input_Hotkey_Fullscreen_InputType, SettingsID::Input_Hotkey_Fullscreen_Data, SettingsID::Input_Hotkey_Fullscreen_ExtraData);
+        LOAD_INPUT_MAPPING(Hotkey_Shutdown,       Input_Hotkey_Shutdown);
+        LOAD_INPUT_MAPPING(Hotkey_Exit,           Input_Hotkey_Exit);
+        LOAD_INPUT_MAPPING(Hotkey_SoftReset,      Input_Hotkey_SoftReset);
+        LOAD_INPUT_MAPPING(Hotkey_HardReset,      Input_Hotkey_HardReset);
+        LOAD_INPUT_MAPPING(Hotkey_Resume,         Input_Hotkey_Resume);
+        LOAD_INPUT_MAPPING(Hotkey_Screenshot,     Input_Hotkey_Screenshot);
+        LOAD_INPUT_MAPPING(Hotkey_LimitFPS,       Input_Hotkey_LimitFPS);
+        LOAD_INPUT_MAPPING(Hotkey_SpeedFactor25,  Input_Hotkey_SpeedFactor25);
+        LOAD_INPUT_MAPPING(Hotkey_SpeedFactor50,  Input_Hotkey_SpeedFactor50);
+        LOAD_INPUT_MAPPING(Hotkey_SpeedFactor75,  Input_Hotkey_SpeedFactor75);
+        LOAD_INPUT_MAPPING(Hotkey_SpeedFactor100, Input_Hotkey_SpeedFactor100);
+        LOAD_INPUT_MAPPING(Hotkey_SpeedFactor125, Input_Hotkey_SpeedFactor125);
+        LOAD_INPUT_MAPPING(Hotkey_SpeedFactor150, Input_Hotkey_SpeedFactor150);
+        LOAD_INPUT_MAPPING(Hotkey_SpeedFactor175, Input_Hotkey_SpeedFactor175);
+        LOAD_INPUT_MAPPING(Hotkey_SpeedFactor200, Input_Hotkey_SpeedFactor200);
+        LOAD_INPUT_MAPPING(Hotkey_SpeedFactor225, Input_Hotkey_SpeedFactor225);
+        LOAD_INPUT_MAPPING(Hotkey_SpeedFactor250, Input_Hotkey_SpeedFactor250);
+        LOAD_INPUT_MAPPING(Hotkey_SpeedFactor275, Input_Hotkey_SpeedFactor275);
+        LOAD_INPUT_MAPPING(Hotkey_SpeedFactor300, Input_Hotkey_SpeedFactor300);
+        LOAD_INPUT_MAPPING(Hotkey_SaveState,      Input_Hotkey_SaveState);
+        LOAD_INPUT_MAPPING(Hotkey_LoadState,      Input_Hotkey_LoadState);
+        LOAD_INPUT_MAPPING(Hotkey_GSButton,       Input_Hotkey_GSButton);
+        LOAD_INPUT_MAPPING(Hotkey_SaveStateSlot0, Input_Hotkey_SaveStateSlot0);
+        LOAD_INPUT_MAPPING(Hotkey_SaveStateSlot1, Input_Hotkey_SaveStateSlot1);
+        LOAD_INPUT_MAPPING(Hotkey_SaveStateSlot2, Input_Hotkey_SaveStateSlot2);
+        LOAD_INPUT_MAPPING(Hotkey_SaveStateSlot3, Input_Hotkey_SaveStateSlot3);
+        LOAD_INPUT_MAPPING(Hotkey_SaveStateSlot4, Input_Hotkey_SaveStateSlot4);
+        LOAD_INPUT_MAPPING(Hotkey_SaveStateSlot5, Input_Hotkey_SaveStateSlot5);
+        LOAD_INPUT_MAPPING(Hotkey_SaveStateSlot6, Input_Hotkey_SaveStateSlot6);
+        LOAD_INPUT_MAPPING(Hotkey_SaveStateSlot7, Input_Hotkey_SaveStateSlot7);
+        LOAD_INPUT_MAPPING(Hotkey_SaveStateSlot8, Input_Hotkey_SaveStateSlot8);
+        LOAD_INPUT_MAPPING(Hotkey_SaveStateSlot9, Input_Hotkey_SaveStateSlot9);
+        LOAD_INPUT_MAPPING(Hotkey_IncreaseSaveStateSlot, Input_Hotkey_IncreaseSaveStateSlot);
+        LOAD_INPUT_MAPPING(Hotkey_DecreaseSaveStateSlot, Input_Hotkey_DecreaseSaveStateSlot);
+        LOAD_INPUT_MAPPING(Hotkey_MemoryPak,  Input_Hotkey_MemoryPak);
+        LOAD_INPUT_MAPPING(Hotkey_RumblePak,  Input_Hotkey_RumblePak);
+        LOAD_INPUT_MAPPING(Hotkey_NoPak,      Input_Hotkey_NoPak);
+        LOAD_INPUT_MAPPING(Hotkey_Fullscreen, Input_Hotkey_Fullscreen);
+
+#undef LOAD_INPUT_MAPPING
     }
 }
 

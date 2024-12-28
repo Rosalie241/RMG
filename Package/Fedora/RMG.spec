@@ -1,5 +1,5 @@
 Name:    RMG       
-Version: 0.5.7
+Version: 0.6.8
 Release: %autorelease
 Summary: Rosalie's Mupen GUI 
 
@@ -15,6 +15,7 @@ BuildRequires: hidapi-devel
 BuildRequires: libsamplerate-devel
 BuildRequires: minizip-compat-devel
 BuildRequires: SDL2-devel
+BuildRequires: SDL2_net-devel
 BuildRequires: freetype-devel
 BuildRequires: mesa-libGL-devel
 BuildRequires: mesa-libGLU-devel
@@ -23,15 +24,18 @@ BuildRequires: binutils-devel
 BuildRequires: speexdsp-devel
 BuildRequires: qt6-qtbase-devel
 BuildRequires: qt6-qtsvg-devel
+BuildRequires: qt6-qtwebsockets-devel
 BuildRequires: libxkbcommon-devel
 
 Requires: hidapi
 Requires: SDL2
+Requires: SDL2_net
 Requires: zlib-ng
 Requires: libsamplerate
 Requires: speexdsp
 Requires: qt6-qtbase
 Requires: qt6-qtsvg
+Requires: qt6-qtwebsockets
 
 %description
 Rosalie's Mupen GUI is a free and open-source mupen64plus front-end written in C++
@@ -45,9 +49,6 @@ Rosalie's Mupen GUI is a free and open-source mupen64plus front-end written in C
 
 %install
 %cmake_install
-chmod +x %{buildroot}/usr/lib64/RMG/*.so
-chmod +x %{buildroot}/usr/lib64/RMG/*/*.so
-chmod +x %{buildroot}/usr/lib64/RMG/*/*/*.so
 
 %files
 /usr/bin/RMG
@@ -56,7 +57,7 @@ chmod +x %{buildroot}/usr/lib64/RMG/*/*/*.so
 /usr/share/RMG/
 /usr/share/applications/com.github.Rosalie241.RMG.desktop
 /usr/share/icons/hicolor/scalable/apps/com.github.Rosalie241.RMG.svg
-/usr/share/metainfo/com.github.Rosalie241.RMG.appdata.xml
+/usr/share/metainfo/com.github.Rosalie241.RMG.metainfo.xml
 
 %changelog
 %autochangelog

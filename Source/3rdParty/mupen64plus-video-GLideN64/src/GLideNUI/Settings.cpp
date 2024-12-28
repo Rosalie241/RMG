@@ -103,6 +103,7 @@ void _loadSettings(QSettings & settings)
 	config.textureFilter.txHiresEnable = settings.value("txHiresEnable", config.textureFilter.txHiresEnable).toInt();
 	config.textureFilter.txHiresFullAlphaChannel = settings.value("txHiresFullAlphaChannel", config.textureFilter.txHiresFullAlphaChannel).toInt();
 	config.textureFilter.txHresAltCRC = settings.value("txHresAltCRC", config.textureFilter.txHresAltCRC).toInt();
+	config.textureFilter.txStrongCRC = settings.value("txStrongCRC", config.textureFilter.txStrongCRC).toInt();
 	config.textureFilter.txForce16bpp = settings.value("txForce16bpp", config.textureFilter.txForce16bpp).toInt();
 	config.textureFilter.txCacheCompression = settings.value("txCacheCompression", config.textureFilter.txCacheCompression).toInt();
 	config.textureFilter.txSaveCache = settings.value("txSaveCache", config.textureFilter.txSaveCache).toInt();
@@ -252,6 +253,7 @@ void _writeSettingsToFile(const QString & filename)
 	settings.setValue("txHiresEnable", config.textureFilter.txHiresEnable);
 	settings.setValue("txHiresFullAlphaChannel", config.textureFilter.txHiresFullAlphaChannel);
 	settings.setValue("txHresAltCRC", config.textureFilter.txHresAltCRC);
+	settings.setValue("txStrongCRC", config.textureFilter.txStrongCRC);
 	settings.setValue("txForce16bpp", config.textureFilter.txForce16bpp);
 	settings.setValue("txCacheCompression", config.textureFilter.txCacheCompression);
 	settings.setValue("txSaveCache", config.textureFilter.txSaveCache);
@@ -550,6 +552,7 @@ void saveCustomRomSettings(const QString & _strIniFolder, const QString & _strSh
 	WriteCustomSetting(textureFilter, txHiresEnable);
 	WriteCustomSetting(textureFilter, txHiresFullAlphaChannel);
 	WriteCustomSetting(textureFilter, txHresAltCRC);
+	WriteCustomSetting(textureFilter, txStrongCRC);
 	WriteCustomSetting(textureFilter, txForce16bpp);
 	WriteCustomSetting(textureFilter, txCacheCompression);
 	WriteCustomSetting(textureFilter, txSaveCache);

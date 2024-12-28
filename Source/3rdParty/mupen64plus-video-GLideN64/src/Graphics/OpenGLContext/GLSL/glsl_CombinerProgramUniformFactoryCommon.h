@@ -100,7 +100,7 @@ public:
 	CombinerProgramUniformFactoryCommon(const opengl::GLInfo & _glInfo);
 
 private:
-	void _addNoiseTex(GLuint _program, UniformGroups &_uniforms) const override;
+	void _addNoiseSeed(GLuint _program, UniformGroups &_uniforms) const override;
 
 	void _addScreenSpaceTriangleInfo(GLuint _program, UniformGroups &_uniforms) const override;
 
@@ -130,7 +130,7 @@ private:
 
 	void _addBlendCvg(GLuint _program, UniformGroups &_uniforms) const override;
 
-	void _addDitherMode(GLuint _program, UniformGroups &_uniforms, bool _usesNoise) const override;
+	void _addDitherMode(GLuint _program, UniformGroups &_uniforms) const override;
 
 	void _addScreenScale(GLuint _program, UniformGroups &_uniforms) const override;
 

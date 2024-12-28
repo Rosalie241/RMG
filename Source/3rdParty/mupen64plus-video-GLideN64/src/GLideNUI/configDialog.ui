@@ -168,7 +168,7 @@
             <item>
              <widget class="QFrame" name="aspectFrame">
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This setting adjusts the aspect ratio of the video output. All N64 games support &lt;span style=&quot; font-weight:600;&quot;&gt;4:3&lt;/span&gt;. Some games support &lt;span style=&quot; font-weight:600;&quot;&gt;16:9&lt;/span&gt; within game settings. Use &lt;span style=&quot; font-weight:600;&quot;&gt;Stretch&lt;/span&gt; to fill the screen without pillar or letterboxing.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Try to adjust game to fit&lt;/span&gt; tries to adjust the viewing space to fit without stretching. Many games work well adjusted, but some don't.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This setting adjusts the aspect ratio of the video output. All N64 games support &lt;span style=&quot; font-weight:600;&quot;&gt;4:3&lt;/span&gt;. Some games support &lt;span style=&quot; font-weight:600;&quot;&gt;16:9&lt;/span&gt; within game settings. Use &lt;span style=&quot; font-weight:600;&quot;&gt;Stretch&lt;/span&gt; to fill the screen without pillar or letterboxing.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Try to adjust 4:3 game to fit&lt;/span&gt; (also known as &quot;widescreen hack&quot;) tries to adjust the viewing space to fit a game designed for 4:3 without stretching. Many games work well adjusted, but some don't.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Try to adjust 16:9 game to fit&lt;/span&gt; (also known as &quot;ultrawidescreen hack&quot;) tries to adjust the viewing space to fit a game designed for 16:9 without stretching. Many games work well adjusted, but some don't. For games offering native 16:9 options, this is generally preferable for ultrawide aspect ratios as it'll lead to fewer rendering issues.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_22">
                <property name="spacing">
@@ -212,7 +212,12 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string extracomment="This option activates a widescreen hack. The language &quot;Try to&quot; implies it may it may not work and the language &quot;adjust game&quot; implies the emulation will be inaccurate.">Try to adjust game to fit</string>
+                   <string extracomment="This option activates a widescreen hack. The language &quot;Try to&quot; implies it may it may not work and the language &quot;adjust 4:3 game&quot; implies the emulation will be inaccurate.">Try to adjust 4:3 game to fit</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string extracomment="This option activates a widescreen hack. The language &quot;Try to&quot; implies it may it may not work and the language &quot;adjust 16:9 game&quot; implies the emulation will be inaccurate.">Try to adjust 16:9 game to fit</string>
                   </property>
                  </item>
                 </widget>
@@ -2670,6 +2675,16 @@
                  </property>
                  <property name="text">
                   <string>Alternative CRC calculation (for old Rice Video packs)</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="strongCRCCheckBox">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option enables alternative, strong CRC method instead of RiceCRC for texture dump. If you find some textures not dumped, try checking this option.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Mostly unchecked, unless RiceCRC fails&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string>Strong CRC calculation (when RiceCRC fails)</string>
                  </property>
                 </widget>
                </item>

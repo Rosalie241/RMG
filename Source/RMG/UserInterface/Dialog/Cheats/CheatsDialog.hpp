@@ -41,8 +41,6 @@ class CheatsDialog : public QDialog, private Ui::CheatsDialog
 
     QString getTreeWidgetItemTextFromCheat(CoreCheat cheat);
 
-    void showErrorMessage(QString error, QString details);
-
   private slots:
     void on_cheatsTreeWidget_itemChanged(QTreeWidgetItem *item, int column);
     void on_cheatsTreeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);

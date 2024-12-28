@@ -13,6 +13,12 @@
 #include <cstdint>
 #include <string>
 
+enum class CoreSystemType
+{
+    NTSC = 0,
+    PAL  = 1
+};
+
 struct CoreRomHeader
 {
     uint32_t    CRC1;
@@ -21,6 +27,8 @@ struct CoreRomHeader
     std::string Name;
     std::string GameID;
     std::string Region;
+
+    CoreSystemType SystemType;
 };
 
 // retrieves the currently opened ROM header

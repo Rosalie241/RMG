@@ -117,6 +117,7 @@ void MainDialog::openInputDevice(QString deviceName, int deviceNum)
         this->currentDeviceName = "";
         this->currentDeviceNum  = deviceNum;
         controllerWidget->SetCurrentJoystickID(this->currentDeviceNum);
+        controllerWidget->SetCurrentJoystick(nullptr, nullptr);
         return;
     }
 
@@ -133,16 +134,19 @@ void MainDialog::openInputDevice(QString deviceName, int deviceNum)
             this->currentDeviceName = "";
             this->currentDeviceNum  = (int)InputDeviceType::Keyboard;
             controllerWidget->SetCurrentJoystickID(this->currentDeviceNum);
+            controllerWidget->SetCurrentJoystick(nullptr, nullptr);
             return;
         }
     }
 
-    if (SDL_IsGameController(deviceNum) == SDL_TRUE)
+    int controllerMode = CoreSettingsGetIntValue(SettingsID::Input_ControllerMode);
+    if ((controllerMode == 0 && SDL_IsGameController(deviceNum) == SDL_TRUE) ||
+        (controllerMode == 2))
     {
         this->currentJoystick = nullptr;
         this->currentController = SDL_GameControllerOpen(deviceNum);
     }
-    else
+    else if (controllerMode == 0 || controllerMode == 1)
     {
         this->currentJoystick = SDL_JoystickOpen(deviceNum);
         this->currentController = nullptr;
@@ -152,6 +156,7 @@ void MainDialog::openInputDevice(QString deviceName, int deviceNum)
     joystickId = SDL_JoystickGetDeviceInstanceID(deviceNum);
     controllerWidget->SetCurrentJoystickID(joystickId);
     controllerWidget->SetIsCurrentJoystickGameController(currentController != nullptr);
+    controllerWidget->SetCurrentJoystick(this->currentJoystick, this->currentController);
 }
 
 void MainDialog::closeInputDevice()

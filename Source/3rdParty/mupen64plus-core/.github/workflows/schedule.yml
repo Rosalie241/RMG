@@ -1,0 +1,165 @@
+name: Core - Scheduled
+
+on:
+  schedule:
+    - cron: '55 14 21 * *'
+
+jobs:
+
+  Linux:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - cc: GCC
+            arch: x64
+          - cc: GCC
+            arch: x86
+          - cc: Clang
+            arch: x64
+          - cc: Clang
+            arch: x86
+    name: Linux / ${{ matrix.cc }} / ${{ matrix.arch }}
+    runs-on: ubuntu-22.04
+    if: github.repository == 'mupen64plus/mupen64plus-core'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get build dependencies and arrange the environment
+        run: |
+          export C_CLANG_SUFFIX="-15" C_GCC_SUFFIX="-12"
+          export BUILD_DEPS="libfreetype6-dev libgl1-mesa-dev libglu1-mesa-dev libpng-dev libsdl1.2-dev libsdl2-dev libvulkan-dev zlib1g-dev"
+          ./.github/workflows/scripts/ci_install_ubuntu_deps.sh ${{ matrix.arch }} ${{ matrix.cc }}
+      - name: Build and related stuff, backup binaries
+        run: |
+          export C_CLANG_SUFFIX="-15" C_GCC_SUFFIX="-12"
+          export PATH="$(pwd)/.github/workflows/scripts:${PATH}"
+          export CONFIG_OVERRIDE="ACCURATE_FPU=1 NEW_DYNAREC=1 SDL_CONFIG="sdl-config""
+          ci_build.sh ${{ matrix.arch }} ${{ matrix.cc }}
+          export CONFIG_OVERRIDE="ACCURATE_FPU=1 NEW_DYNAREC=1 SDL_CONFIG="sdl2-config""
+          ci_build.sh ${{ matrix.arch }} ${{ matrix.cc }}
+          export CONFIG_OVERRIDE="ACCURATE_FPU=0 NEW_DYNAREC=0 SDL_CONFIG="sdl-config" POSTFIX="-old""
+          ci_build.sh ${{ matrix.arch }} ${{ matrix.cc }}
+          export CONFIG_OVERRIDE="ACCURATE_FPU=0 NEW_DYNAREC=0 SDL_CONFIG="sdl2-config" POSTFIX="-old""
+          ci_build.sh ${{ matrix.arch }} ${{ matrix.cc }} makepkg
+      - name: Upload artifact
+        if: matrix.cc == 'GCC'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PKG_NAME }}
+          path: pkg/*.tar.gz
+
+  MSYS2:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - cc: GCC
+            arch: x64
+            cross: x86_64
+            env: MINGW64
+          - cc: GCC
+            arch: x86
+            cross: i686
+            env: MINGW32
+    name: Windows / MSYS2 ${{ matrix.cc }} / ${{ matrix.arch }}
+    runs-on: windows-2022
+    if: github.repository == 'mupen64plus/mupen64plus-core'
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: ${{ matrix.env }}
+          update: true
+          install: >-
+            git
+            libtool
+            make
+            mingw-w64-${{ matrix.cross }}-gcc
+            mingw-w64-${{ matrix.cross }}-toolchain
+            mingw-w64-${{ matrix.cross }}-freetype
+            mingw-w64-${{ matrix.cross }}-libpng
+            mingw-w64-${{ matrix.cross }}-nasm
+            mingw-w64-${{ matrix.cross }}-ntldd
+            mingw-w64-${{ matrix.cross }}-SDL2
+            mingw-w64-${{ matrix.cross }}-vulkan-headers
+            mingw-w64-${{ matrix.cross }}-zlib
+      - name: Build and related stuff, backup binaries
+        run: |
+          export PATH="$(pwd)/.github/workflows/scripts:${PATH}"
+          export CONFIG_OVERRIDE="ACCURATE_FPU=1 NEW_DYNAREC=1"
+          ci_build.sh ${{ matrix.arch }} ${{ matrix.cc }}
+          export CONFIG_OVERRIDE="ACCURATE_FPU=0 NEW_DYNAREC=0 POSTFIX="-old""
+          ci_build.sh ${{ matrix.arch }} ${{ matrix.cc }}
+      - name: Backup dependencies, etc...
+        run: |
+          ./.github/workflows/scripts/ci_backup_mingw_deps.sh ${{ matrix.env }}
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PKG_NAME }}
+          path: pkg/*
+
+  MSVC:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - toolset: v143
+            arch: x64
+            vs: 2022
+          - toolset: v141_xp
+            arch: x86
+            vs: 2019
+    name: Windows / MSVC with ${{ matrix.toolset }} / ${{ matrix.arch }}
+    runs-on: windows-${{ matrix.vs }}
+    if: github.repository == 'mupen64plus/mupen64plus-core'
+    defaults:
+      run:
+        shell: cmd
+    steps:
+      - uses: actions/checkout@v4
+      - uses: microsoft/setup-msbuild@v2
+      - name: Build and related stuff, backup binaries
+        run: |
+          set PATH=%CD%\.github\workflows\scripts;%PATH%
+          set TOOLSET=${{ matrix.toolset }}
+          call ci_msvc_build.cmd ${{ matrix.arch }}
+          ci_msvc_build.cmd ${{ matrix.arch }} newdyn
+      - name: Backup dependencies, etc...
+        run: |
+          .\.github\workflows\scripts\ci_backup_msvc_deps.cmd ${{ matrix.arch }} freetype.dll libpng16.dll SDL2.dll SDL2_net.dll zlib.dll
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PKG_NAME }}
+          path: pkg/*
+
+  Nightly-build:
+    runs-on: ubuntu-latest
+    if: github.ref_name == 'master'
+    needs: [Linux, MSYS2, MSVC]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: binaries
+      - name: Get some tools
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install hashdeep
+      - name: Creating new artifacts and update nightly-build
+        run: |
+          ./.github/workflows/scripts/ci_nightly_artifacts.sh
+      - name: Nightly-build
+        uses: ncipollo/release-action@v1
+        with:
+          prerelease: true
+          allowUpdates: true
+          removeArtifacts: true
+          replacesArtifacts: false
+          tag: nightly-build
+          artifacts: pkg/*

@@ -10,11 +10,19 @@
 #ifndef RMG_CALLBACKS_HPP
 #define RMG_CALLBACKS_HPP
 
+#include <QList>
 #include <QObject>
 
 #include <RMG-Core/Core.hpp>
 
 #include <string>
+
+struct CoreCallbackMessage
+{
+    CoreDebugMessageType Type;
+    QString              Context;
+    QString              Message;
+};
 
 class CoreCallbacks : public QObject
 {
@@ -29,12 +37,18 @@ public:
 
     void LoadSettings(void);
 
+protected:
+    void timerEvent(QTimerEvent *event) Q_DECL_OVERRIDE;
+
 private:
     static void coreDebugCallback(CoreDebugMessageType type, std::string context, std::string message);
     static void coreStateCallback(CoreStateCallbackType type, int value);
 
+
+    int callbackTimerId = -1;
+
 signals:
-    void OnCoreDebugCallback(CoreDebugMessageType type, QString context, QString message);
+    void OnCoreDebugCallback(QList<CoreCallbackMessage> callbackMessages);
     void OnCoreStateCallback(CoreStateCallbackType type, int value);
 };
 

@@ -9,16 +9,50 @@
  */
 #include "SettingsDialog.hpp"
 #include "OnScreenDisplay.hpp"
-#include "RMG-Core/DiscordRpc.hpp"
-#include "RMG-Core/Settings/Settings.hpp"
 #include "UserInterface/Widget/KeybindButton.hpp"
+#include "UserInterface/Dialog/Netplay/NetplayCommon.hpp"
+#include "Utilities/QtMessageBox.hpp"
 
+#include <QRegularExpressionValidator>
+#include <QRegularExpression>
+#include <QCryptographicHash>
 #include <QFileDialog>
-#include <QMessageBox>
+#include <QColorDialog>
 #include <QDirIterator>
 #include <QLabel>
 
+#include <RMG-Core/Core.hpp>
+
 using namespace UserInterface::Dialog;
+using namespace Utilities;
+
+//
+// Local Enums
+//
+
+enum class SettingsDialogTab
+{
+    InterfaceGeneral    = 0,
+    InterfaceEmulation  = 1,
+    InterfaceRomBrowser = 2,
+    InterfaceLog = 3,
+    InterfaceOSD = 4,
+    InterfaceNetplay = 5,
+    Hotkey     = 6,
+    Core       = 7,
+    Game       = 8,
+    GameCore   = 9,
+    GamePlugin = 10,
+    Plugin     = 11,
+    Directory  = 12,
+    N64DD      = 13,
+    Invalid    = 14
+};
+
+
+//
+// Exported Functions
+//
 
 SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 {
@@ -48,7 +82,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 
     pluginList = CoreGetAllPlugins();
 
-    for (int i = 0; i < 14; i++)
+    for (int i = 0; i < (int)SettingsDialogTab::Invalid; i++)
     {
         this->loadSettings(i);
     }
@@ -63,23 +97,10 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
 #ifndef DISCORD_RPC
     this->discordRpcCheckBox->setHidden(true);
 #endif // !DISCORD_RPC
-
-    int width = CoreSettingsGetIntValue(SettingsID::GUI_SettingsDialogWidth);
-    int height = CoreSettingsGetIntValue(SettingsID::GUI_SettingsDialogHeight);
-
-    if (width != 0 && height != 0)
-    {
-        // center current dialog
-        this->setGeometry(
-            QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, QSize(width, height), parent->geometry()));
-    }
 }
 
 SettingsDialog::~SettingsDialog(void)
 {
-    CoreSettingsSetValue(SettingsID::GUI_SettingsDialogWidth, this->size().width());
-    CoreSettingsSetValue(SettingsID::GUI_SettingsDialogHeight, this->size().height());
-    CoreSettingsSave();
 }
 
 void SettingsDialog::ShowGameTab(void)
@@ -115,47 +136,56 @@ int SettingsDialog::currentIndex(void)
 
 void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
 {
-    switch (stackedWidgetIndex)
+    if (stackedWidgetIndex < 0 || 
+        stackedWidgetIndex > (int)SettingsDialogTab::Invalid)
+    {
+        return;
+    }
+
+    switch ((SettingsDialogTab)stackedWidgetIndex)
     {
     default:
         break;
-    case 0:
+    case SettingsDialogTab::InterfaceGeneral:
+        this->loadDefaultInterfaceGeneralSettings();
+        break;
+    case SettingsDialogTab::InterfaceEmulation:
         this->loadDefaultInterfaceEmulationSettings();
         break;
-    case 1:
+    case SettingsDialogTab::InterfaceRomBrowser:
         this->loadDefaultInterfaceRomBrowserSettings();
         break;
-    case 2:
+    case SettingsDialogTab::InterfaceLog:
         this->loadDefaultInterfaceLogSettings();
         break;
-    case 3:
+    case SettingsDialogTab::InterfaceOSD:
         this->loadDefaultInterfaceOSDSettings();
         break;
-    case 4:
-        this->loadDefaultInterfaceMiscSettings();
+    case SettingsDialogTab::InterfaceNetplay:
+        this->loadDefaultInterfaceNetplaySettings();
         break;
-    case 5:
+    case SettingsDialogTab::Hotkey:
         this->loadDefaultHotkeySettings();
         break;
-    case 6:
+    case SettingsDialogTab::Core:
         this->loadDefaultCoreSettings();
         break;
-    case 7:
+    case SettingsDialogTab::Game:
         this->loadDefaultGameSettings();
         break;
-    case 8:
+    case SettingsDialogTab::GameCore:
         this->loadDefaultGameCoreSettings();
         break;
-    case 9:
+    case SettingsDialogTab::GamePlugin:
         this->loadDefaultGamePluginSettings();
         break;
-    case 10:
+    case SettingsDialogTab::Plugin:
         this->loadDefaultPluginSettings();
         break;
-    case 11:
+    case SettingsDialogTab::Directory:
         this->loadDefaultDirectorySettings();
         break;
-    case 12:
+    case SettingsDialogTab::N64DD:
         this->loadDefault64DDSettings();
         break;
     }
@@ -163,47 +193,56 @@ void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
 
 void SettingsDialog::loadSettings(int stackedWidgetIndex)
 {
-    switch (stackedWidgetIndex)
+    if (stackedWidgetIndex < 0 || 
+        stackedWidgetIndex > (int)SettingsDialogTab::Invalid)
+    {
+        return;
+    }
+
+    switch ((SettingsDialogTab)stackedWidgetIndex)
     {
     default:
         break;
-    case 0:
+    case SettingsDialogTab::InterfaceGeneral:
+        this->loadInterfaceGeneralSettings();
+        break;
+    case SettingsDialogTab::InterfaceEmulation:
         this->loadInterfaceEmulationSettings();
         break;
-    case 1:
+    case SettingsDialogTab::InterfaceRomBrowser:
         this->loadInterfaceRomBrowserSettings();
         break;
-    case 2:
+    case SettingsDialogTab::InterfaceLog:
         this->loadInterfaceLogSettings();
         break;
-    case 3:
+    case SettingsDialogTab::InterfaceOSD:
         this->loadInterfaceOSDSettings();
         break;
-    case 4:
-        this->loadInterfaceMiscSettings();
+    case SettingsDialogTab::InterfaceNetplay:
+        this->loadInterfaceNetplaySettings();
         break;
-    case 5:
+    case SettingsDialogTab::Hotkey:
         this->loadHotkeySettings();
         break;
-    case 6:
+    case SettingsDialogTab::Core:
         this->loadCoreSettings();
         break;
-    case 7:
+    case SettingsDialogTab::Game:
         this->loadGameSettings();
         break;
-    case 8:
+    case SettingsDialogTab::GameCore:
         this->loadGameCoreSettings();
         break;
-    case 9:
+    case SettingsDialogTab::GamePlugin:
         this->loadGamePluginSettings();
         break;
-    case 10:
+    case SettingsDialogTab::Plugin:
         this->loadPluginSettings();
         break;
-    case 11:
+    case SettingsDialogTab::Directory:
         this->loadDirectorySettings();
         break;
-    case 12:
+    case SettingsDialogTab::N64DD:
         this->load64DDSettings();
         break;
     }
@@ -217,6 +256,9 @@ void SettingsDialog::loadCoreSettings(void)
     int saveFilenameFormat = 0;
     int siDmaDuration = -1;
     bool randomizeInterrupt = true;
+    bool usePIFROM = false;
+    QString ntscPifROM;
+    QString palPifRom;
     bool overrideGameSettings = false;
 
     disableExtraMem = CoreSettingsGetBoolValue(SettingsID::CoreOverlay_DisableExtraMem);
@@ -225,11 +267,18 @@ void SettingsDialog::loadCoreSettings(void)
     saveFilenameFormat = CoreSettingsGetIntValue(SettingsID::CoreOverLay_SaveFileNameFormat);
     siDmaDuration = CoreSettingsGetIntValue(SettingsID::CoreOverlay_SiDmaDuration);
     randomizeInterrupt = CoreSettingsGetBoolValue(SettingsID::CoreOverlay_RandomizeInterrupt);
+    usePIFROM = CoreSettingsGetBoolValue(SettingsID::Core_PIF_Use);
+    ntscPifROM = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::Core_PIF_NTSC));
+    palPifRom = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::Core_PIF_PAL));;
     overrideGameSettings = CoreSettingsGetBoolValue(SettingsID::Core_OverrideGameSpecificSettings);
 
     this->coreCpuEmulatorComboBox->setCurrentIndex(cpuEmulator);
     this->coreSaveFilenameFormatComboBox->setCurrentIndex(saveFilenameFormat);
     this->coreRandomizeTimingCheckBox->setChecked(randomizeInterrupt);
+
+    this->usePifRomGroupBox->setChecked(usePIFROM);
+    this->ntscPifRomLineEdit->setText(ntscPifROM);
+    this->palPifRomLineEdit->setText(palPifRom);
 
     this->coreOverrideGameSettingsGroup->setChecked(overrideGameSettings);
 
@@ -251,6 +300,7 @@ void SettingsDialog::loadGameSettings(void)
     this->gameMemorySizeComboBox->setCurrentIndex(!this->currentGameSettings.DisableExtraMem);
     this->gameSaveTypeComboBox->setCurrentIndex(this->currentGameSettings.SaveType);
     this->gameCounterFactorComboBox->setCurrentIndex(this->currentGameSettings.CountPerOp - 1);
+    this->gameTransferPakComboBox->setCurrentIndex(this->currentGameSettings.TransferPak);
     this->gameSiDmaDurationSpinBox->setValue(this->currentGameSettings.SiDMADuration);
 }
 
@@ -276,12 +326,26 @@ void SettingsDialog::loadGamePluginSettings(void)
                                    this->gameAudioPluginsComboBox, this->gameInputPluginsComboBox,
                                    this->gameExecutionPluginsComboBox};
     SettingsID settingsId[] = {SettingsID::Game_RSP_Plugin, SettingsID::Game_GFX_Plugin, 
-                                    SettingsID::Game_AUDIO_Plugin, SettingsID::Game_INPUT_Plugin,
-                                    SettingsID::Game_EXECUTION_Plugin};
+                                    SettingsID::Game_AUDIO_Plugin, SettingsID::Game_INPUT_Plugin, SettingsID:Game_EXECUTION_Plugin};
     bool pluginFound[] = {false, false, false, false, false};
+    QString pluginFileNames[5];
+    QString pluginFileName;
+    QString pluginName;
 
     QComboBox *comboBox;
     int index = 0;
+
+    for (int i = 0; i < 4; i++)
+    {
+        pluginFileName = QString::fromStdString(CoreSettingsGetStringValue(settingsId[i], this->gameSection));
+
+        if (!pluginFileName.isEmpty())
+        {
+            // account for full path (<v0.3.5 we used the full path)
+            pluginFileName = QFileInfo(pluginFileName).fileName();
+            pluginFileNames[i] = pluginFileName;
+        }
+    }
 
     for (QComboBox *comboBox : comboBoxArray)
     {
@@ -296,7 +360,7 @@ void SettingsDialog::loadGamePluginSettings(void)
         comboBox = comboBoxArray[index];
         comboBox->addItem(QString::fromStdString(p.Name), QString::fromStdString(p.File));
 
-        if (CoreSettingsGetStringValue(settingsId[index], this->gameSection) == p.File)
+        if (pluginFileNames[index] == QString::fromStdString(p.File))
         {
             comboBox->setCurrentText(QString::fromStdString(p.Name));
             pluginFound[index] = true;
@@ -314,8 +378,10 @@ void SettingsDialog::loadGamePluginSettings(void)
 
         if (!pluginFound[i])
         {
-            comboBox->addItem("", "");
-            comboBox->setCurrentText("");
+            pluginName = pluginFileNames[i] + " (not found)";
+
+            comboBox->addItem(pluginName, pluginFileNames[i]);
+            comboBox->setCurrentText(pluginName);
         }
     }
 }
@@ -374,40 +440,7 @@ void SettingsDialog::loadHotkeySettings(void)
     this->commonHotkeySettings(SettingsDialogAction::LoadSettings);
 }
 
-void SettingsDialog::loadInterfaceEmulationSettings(void)
-{
-    this->pauseEmulationOnFocusCheckbox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_PauseEmulationOnFocusLoss));
-    this->resumeEmulationOnFocusCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_ResumeEmulationOnFocus));
-    this->hideCursorCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_HideCursorInEmulation));
-    this->hideCursorFullscreenCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_HideCursorInFullscreenEmulation));
-    this->automaticFullscreenCheckbox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_AutomaticFullscreen));
-    this->confirmDragDropCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_ConfirmDragDrop));
-    this->statusBarMessageDurationSpinBox->setValue(CoreSettingsGetIntValue(SettingsID::GUI_StatusbarMessageDuration));
-}
-
-void SettingsDialog::loadInterfaceRomBrowserSettings(void)
-{
-    this->searchSubDirectoriesCheckbox->setChecked(CoreSettingsGetBoolValue(SettingsID::RomBrowser_Recursive));
-    this->sortRomBrowserResultsCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::RomBrowser_SortAfterSearch));
-    this->romSearchLimitSpinBox->setValue(CoreSettingsGetIntValue(SettingsID::RomBrowser_MaxItems));
-}
-
-void SettingsDialog::loadInterfaceLogSettings(void)
-{
-    this->showVerboseLogMessagesCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_ShowVerboseLogMessages));
-}
-
-void SettingsDialog::loadInterfaceOSDSettings(void)
-{
-    this->osdEnabledCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_OnScreenDisplayEnabled));
-    this->osdLocationComboBox->setCurrentIndex(CoreSettingsGetIntValue(SettingsID::GUI_OnScreenDisplayLocation));
-    this->osdVerticalPaddingSpinBox->setValue(CoreSettingsGetIntValue(SettingsID::GUI_OnScreenDisplayPaddingY));
-    this->osdHorizontalPaddingSpinBox->setValue(CoreSettingsGetIntValue(SettingsID::GUI_OnScreenDisplayPaddingX));
-    this->osdOpacitySpinBox->setValue(CoreSettingsGetFloatValue(SettingsID::GUI_OnScreenDisplayOpacity));
-    this->osdDurationSpinBox->setValue(CoreSettingsGetIntValue(SettingsID::GUI_OnScreenDisplayDuration));
-}
-
-void SettingsDialog::loadInterfaceMiscSettings(void)
+void SettingsDialog::loadInterfaceGeneralSettings(void)
 {
     // find stylesheets and add them to the UI
     QString directory;
@@ -435,6 +468,67 @@ void SettingsDialog::loadInterfaceMiscSettings(void)
 #endif // DISCORD_RPC
 }
 
+void SettingsDialog::loadInterfaceEmulationSettings(void)
+{
+    this->pauseEmulationOnFocusCheckbox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_PauseEmulationOnFocusLoss));
+    this->resumeEmulationOnFocusCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_ResumeEmulationOnFocus));
+    this->hideCursorCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_HideCursorInEmulation));
+    this->hideCursorFullscreenCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_HideCursorInFullscreenEmulation));
+    this->automaticFullscreenCheckbox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_AutomaticFullscreen));
+    this->confirmDragDropCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_ConfirmDragDrop));
+    this->statusBarMessageDurationSpinBox->setValue(CoreSettingsGetIntValue(SettingsID::GUI_StatusbarMessageDuration));
+    this->openglTypeComboBox->setCurrentIndex(CoreSettingsGetBoolValue(SettingsID::GUI_OpenGLES));
+}
+
+void SettingsDialog::loadInterfaceRomBrowserSettings(void)
+{
+    this->searchSubDirectoriesCheckbox->setChecked(CoreSettingsGetBoolValue(SettingsID::RomBrowser_Recursive));
+    this->sortRomBrowserResultsCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::RomBrowser_SortAfterSearch));
+    this->romSearchLimitSpinBox->setValue(CoreSettingsGetIntValue(SettingsID::RomBrowser_MaxItems));
+}
+
+void SettingsDialog::loadInterfaceLogSettings(void)
+{
+    this->showVerboseLogMessagesCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_ShowVerboseLogMessages));
+}
+
+void SettingsDialog::loadInterfaceOSDSettings(void)
+{
+    this->osdEnabledCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_OnScreenDisplayEnabled));
+    this->osdLocationComboBox->setCurrentIndex(CoreSettingsGetIntValue(SettingsID::GUI_OnScreenDisplayLocation));
+    this->osdVerticalPaddingSpinBox->setValue(CoreSettingsGetIntValue(SettingsID::GUI_OnScreenDisplayPaddingY));
+    this->osdHorizontalPaddingSpinBox->setValue(CoreSettingsGetIntValue(SettingsID::GUI_OnScreenDisplayPaddingX));
+    this->osdDurationSpinBox->setValue(CoreSettingsGetIntValue(SettingsID::GUI_OnScreenDisplayDuration));
+
+    std::vector<int> backgroundColor = CoreSettingsGetIntListValue(SettingsID::GUI_OnScreenDisplayBackgroundColor);
+    std::vector<int> textColor = CoreSettingsGetIntListValue(SettingsID::GUI_OnScreenDisplayTextColor);
+    if (backgroundColor.size() == 4)
+    {
+        this->currentBackgroundColor = QColor(backgroundColor.at(0), backgroundColor.at(1), backgroundColor.at(2), backgroundColor.at(3));
+        this->chooseColor(this->changeBackgroundColorButton, &this->currentBackgroundColor, true);
+    }
+    if (textColor.size() == 4)
+    {
+        this->currentTextColor = QColor(textColor.at(0), textColor.at(1), textColor.at(2), textColor.at(3));
+        this->chooseColor(this->changeTextColorButton, &this->currentTextColor, true);
+    }
+}
+
+void SettingsDialog::loadInterfaceNetplaySettings(void)
+{
+    // TODO: maybe add initialize functions for each tab?
+    static bool initialized = false;
+    if (!initialized)
+    { // set regexp for nickname
+        QRegularExpression re(NETPLAYCOMMON_NICKNAME_REGEX);
+        this->netplayNicknameLineEdit->setValidator(new QRegularExpressionValidator(re, this));
+        initialized = true;
+    }
+
+    this->netplayNicknameLineEdit->setText(QString::fromStdString(CoreSettingsGetStringValue(SettingsID::Netplay_Nickname)));
+    this->netplayServerUrlLineEdit->setText(QString::fromStdString(CoreSettingsGetStringValue(SettingsID::Netplay_ServerJsonUrl)));
+}
+
 void SettingsDialog::loadDefaultCoreSettings(void)
 {
     bool disableExtraMem = false;
@@ -443,6 +537,9 @@ void SettingsDialog::loadDefaultCoreSettings(void)
     int saveFilenameFormat = 0;
     int siDmaDuration = -1;
     bool randomizeInterrupt = true;
+    bool usePIFROM;
+    QString ntscPifROM;
+    QString palPifRom;
     bool overrideGameSettings;
 
     disableExtraMem = CoreSettingsGetDefaultBoolValue(SettingsID::CoreOverlay_DisableExtraMem);
@@ -451,11 +548,18 @@ void SettingsDialog::loadDefaultCoreSettings(void)
     siDmaDuration = CoreSettingsGetDefaultIntValue(SettingsID::CoreOverlay_SiDmaDuration);
     saveFilenameFormat = CoreSettingsGetDefaultIntValue(SettingsID::CoreOverLay_SaveFileNameFormat);
     randomizeInterrupt = CoreSettingsGetDefaultBoolValue(SettingsID::CoreOverlay_RandomizeInterrupt);
+    usePIFROM = CoreSettingsGetDefaultBoolValue(SettingsID::Core_PIF_Use);
+    ntscPifROM = QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::Core_PIF_NTSC));
+    palPifRom = QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::Core_PIF_PAL));;
     overrideGameSettings = CoreSettingsGetDefaultBoolValue(SettingsID::Core_OverrideGameSpecificSettings);
 
     this->coreCpuEmulatorComboBox->setCurrentIndex(cpuEmulator);
     this->coreSaveFilenameFormatComboBox->setCurrentIndex(saveFilenameFormat);
     this->coreRandomizeTimingCheckBox->setChecked(randomizeInterrupt);
+
+    this->usePifRomGroupBox->setChecked(usePIFROM);
+    this->ntscPifRomLineEdit->setText(ntscPifROM);
+    this->palPifRomLineEdit->setText(palPifRom);
 
     this->coreOverrideGameSettingsGroup->setChecked(overrideGameSettings);
 
@@ -477,6 +581,7 @@ void SettingsDialog::loadDefaultGameSettings(void)
     this->gameMemorySizeComboBox->setCurrentIndex(!this->defaultGameSettings.DisableExtraMem);
     this->gameSaveTypeComboBox->setCurrentIndex(this->defaultGameSettings.SaveType);
     this->gameCounterFactorComboBox->setCurrentIndex(this->defaultGameSettings.CountPerOp - 1);
+    this->gameTransferPakComboBox->setCurrentIndex(this->defaultGameSettings.TransferPak);
     this->gameSiDmaDurationSpinBox->setValue(this->defaultGameSettings.SiDMADuration);
 }
 
@@ -536,6 +641,18 @@ void SettingsDialog::loadDefaultHotkeySettings(void)
     this->commonHotkeySettings(SettingsDialogAction::LoadDefaultSettings);
 }
 
+void SettingsDialog::loadDefaultInterfaceGeneralSettings(void)
+{
+    this->themeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::GUI_Theme)));
+    this->iconThemeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::GUI_IconTheme)));
+#ifdef UPDATER
+    this->checkForUpdatesCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_CheckForUpdates));
+#endif // UPDATER
+#ifdef DISCORD_RPC
+    this->discordRpcCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_DiscordRpc));
+#endif // DISCORD_RPC
+}
+
 void SettingsDialog::loadDefaultInterfaceEmulationSettings(void)
 {
     this->pauseEmulationOnFocusCheckbox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_PauseEmulationOnFocusLoss));
@@ -545,6 +662,7 @@ void SettingsDialog::loadDefaultInterfaceEmulationSettings(void)
     this->automaticFullscreenCheckbox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_AutomaticFullscreen));
     this->confirmDragDropCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_ConfirmDragDrop));
     this->statusBarMessageDurationSpinBox->setValue(CoreSettingsGetDefaultIntValue(SettingsID::GUI_StatusbarMessageDuration));
+    this->openglTypeComboBox->setCurrentIndex(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_OpenGLES));
 }
 
 void SettingsDialog::loadDefaultInterfaceRomBrowserSettings(void)
@@ -565,20 +683,26 @@ void SettingsDialog::loadDefaultInterfaceOSDSettings(void)
     this->osdLocationComboBox->setCurrentIndex(CoreSettingsGetDefaultIntValue(SettingsID::GUI_OnScreenDisplayLocation));
     this->osdVerticalPaddingSpinBox->setValue(CoreSettingsGetDefaultIntValue(SettingsID::GUI_OnScreenDisplayPaddingY));
     this->osdHorizontalPaddingSpinBox->setValue(CoreSettingsGetDefaultIntValue(SettingsID::GUI_OnScreenDisplayPaddingX));
-    this->osdOpacitySpinBox->setValue(CoreSettingsGetDefaultFloatValue(SettingsID::GUI_OnScreenDisplayOpacity));
     this->osdDurationSpinBox->setValue(CoreSettingsGetDefaultIntValue(SettingsID::GUI_OnScreenDisplayDuration));
+
+    std::vector<int> backgroundColor = CoreSettingsGetDefaultIntListValue(SettingsID::GUI_OnScreenDisplayBackgroundColor);
+    std::vector<int> textColor = CoreSettingsGetDefaultIntListValue(SettingsID::GUI_OnScreenDisplayTextColor);
+    if (backgroundColor.size() == 4)
+    {
+        this->currentBackgroundColor = QColor(backgroundColor.at(0), backgroundColor.at(1), backgroundColor.at(2), backgroundColor.at(3));
+        this->chooseColor(this->changeBackgroundColorButton, &this->currentBackgroundColor, true);
+    }
+    if (textColor.size() == 4)
+    {
+        this->currentTextColor = QColor(textColor.at(0), textColor.at(1), textColor.at(2), textColor.at(3));
+        this->chooseColor(this->changeTextColorButton, &this->currentTextColor, true);
+    }
 }
 
-void SettingsDialog::loadDefaultInterfaceMiscSettings(void)
+void SettingsDialog::loadDefaultInterfaceNetplaySettings(void)
 {
-    this->themeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::GUI_Theme)));
-    this->iconThemeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::GUI_IconTheme)));
-#ifdef UPDATER
-    this->checkForUpdatesCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_CheckForUpdates));
-#endif // UPDATER
-#ifdef DISCORD_RPC
-    this->discordRpcCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_DiscordRpc));
-#endif // DISCORD_RPC
+    this->netplayNicknameLineEdit->setText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::Netplay_Nickname)));
+    this->netplayServerUrlLineEdit->setText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::Netplay_ServerJsonUrl)));
 }
 
 void SettingsDialog::saveSettings(void)
@@ -596,11 +720,13 @@ void SettingsDialog::saveSettings(void)
     this->saveDirectorySettings();
     this->save64DDSettings();
     this->saveHotkeySettings();
+    this->saveInterfaceGeneralSettings();
     this->saveInterfaceEmulationSettings();
     this->saveInterfaceRomBrowserSettings();
     this->saveInterfaceLogSettings();
     this->saveInterfaceOSDSettings();
-    this->saveInterfaceMiscSettings();
+    this->saveInterfaceNetplaySettings();
+    CoreSettingsSave();
 }
 
 void SettingsDialog::saveCoreSettings(void)
@@ -611,13 +737,17 @@ void SettingsDialog::saveCoreSettings(void)
     int saveFilenameFormat = this->coreSaveFilenameFormatComboBox->currentIndex();
     int siDmaDuration = this->coreSiDmaDurationSpinBox->value();
     bool randomizeInterrupt = this->coreRandomizeTimingCheckBox->isChecked();
-    //bool debugger = this->coreDebuggerCheckBox->isChecked();
+    bool usePIF = this->usePifRomGroupBox->isChecked();
+    QString ntscPifROM = this->ntscPifRomLineEdit->text();
+    QString palPifROM = this->palPifRomLineEdit->text();
     bool overrideGameSettings = this->coreOverrideGameSettingsGroup->isChecked();
 
     CoreSettingsSetValue(SettingsID::CoreOverlay_CPU_Emulator, cpuEmulator);
     CoreSettingsSetValue(SettingsID::CoreOverLay_SaveFileNameFormat, saveFilenameFormat);
     CoreSettingsSetValue(SettingsID::CoreOverlay_RandomizeInterrupt, randomizeInterrupt);
-    //CoreSettingsSetValue(SettingsID::CoreOverlay_EnableDebugger, debugger);
+    CoreSettingsSetValue(SettingsID::Core_PIF_Use, usePIF);
+    CoreSettingsSetValue(SettingsID::Core_PIF_NTSC, ntscPifROM.toStdString());
+    CoreSettingsSetValue(SettingsID::Core_PIF_PAL, palPifROM.toStdString());
     CoreSettingsSetValue(SettingsID::Core_OverrideGameSpecificSettings, overrideGameSettings);
 
     if (!overrideGameSettings)
@@ -637,14 +767,17 @@ void SettingsDialog::saveGameSettings(void)
     bool disableExtraMem = this->gameMemorySizeComboBox->currentIndex() == 0;
     int saveType = this->gameSaveTypeComboBox->currentIndex();
     int countPerOp = this->gameCounterFactorComboBox->currentIndex() + 1;
+    bool transferPak = this->gameTransferPakComboBox->currentIndex() != 0;
     int siDmaDuration = this->gameSiDmaDurationSpinBox->value();
 
     if ((this->defaultGameSettings.DisableExtraMem != disableExtraMem) ||
         (this->defaultGameSettings.SaveType != saveType) ||
         (this->defaultGameSettings.CountPerOp != countPerOp) ||
+        (this->defaultGameSettings.TransferPak != transferPak) ||
         (this->defaultGameSettings.SiDMADuration != siDmaDuration))
     {
         CoreSettingsSetValue(SettingsID::Game_OverrideSettings, this->gameSection, true);
+        CoreSettingsSetValue(SettingsID::Game_TransferPak, this->gameSection, transferPak);
         CoreSettingsSetValue(SettingsID::Game_DisableExtraMem, this->gameSection, disableExtraMem);
         CoreSettingsSetValue(SettingsID::Game_SaveType, this->gameSection, saveType);
         CoreSettingsSetValue(SettingsID::Game_CountPerOp, this->gameSection, countPerOp);
@@ -747,6 +880,18 @@ void SettingsDialog::saveHotkeySettings(void)
     this->commonHotkeySettings(SettingsDialogAction::SaveSettings);
 }
 
+void SettingsDialog::saveInterfaceGeneralSettings(void)
+{
+    CoreSettingsSetValue(SettingsID::GUI_Theme, this->themeComboBox->currentText().toStdString());
+    CoreSettingsSetValue(SettingsID::GUI_IconTheme, this->iconThemeComboBox->currentText().toStdString());
+#ifdef UPDATER
+    CoreSettingsSetValue(SettingsID::GUI_CheckForUpdates, this->checkForUpdatesCheckBox->isChecked());
+#endif // UPDATER
+#ifdef DISCORD_RPC
+    CoreSettingsSetValue(SettingsID::GUI_DiscordRpc, this->discordRpcCheckBox->isChecked());
+#endif // DISCORD_RPC
+}
+
 void SettingsDialog::saveInterfaceEmulationSettings(void)
 {
     CoreSettingsSetValue(SettingsID::GUI_HideCursorInEmulation, this->hideCursorCheckBox->isChecked());
@@ -756,6 +901,7 @@ void SettingsDialog::saveInterfaceEmulationSettings(void)
     CoreSettingsSetValue(SettingsID::GUI_AutomaticFullscreen, this->automaticFullscreenCheckbox->isChecked());
     CoreSettingsSetValue(SettingsID::GUI_ConfirmDragDrop, this->confirmDragDropCheckBox->isChecked());
     CoreSettingsSetValue(SettingsID::GUI_StatusbarMessageDuration, this->statusBarMessageDurationSpinBox->value());
+    CoreSettingsSetValue(SettingsID::GUI_OpenGLES, this->openglTypeComboBox->currentIndex() == 1);
 }
 
 void SettingsDialog::saveInterfaceRomBrowserSettings(void)
@@ -776,20 +922,23 @@ void SettingsDialog::saveInterfaceOSDSettings(void)
     CoreSettingsSetValue(SettingsID::GUI_OnScreenDisplayLocation, this->osdLocationComboBox->currentIndex());
     CoreSettingsSetValue(SettingsID::GUI_OnScreenDisplayPaddingY, this->osdVerticalPaddingSpinBox->value());
     CoreSettingsSetValue(SettingsID::GUI_OnScreenDisplayPaddingX, this->osdHorizontalPaddingSpinBox->value());
-    CoreSettingsSetValue(SettingsID::GUI_OnScreenDisplayOpacity, (float)this->osdOpacitySpinBox->value());
     CoreSettingsSetValue(SettingsID::GUI_OnScreenDisplayDuration, this->osdDurationSpinBox->value());
+    CoreSettingsSetValue(SettingsID::GUI_OnScreenDisplayBackgroundColor, std::vector<int>({ this->currentBackgroundColor.red(),
+                                                                                            this->currentBackgroundColor.green(),
+                                                                                            this->currentBackgroundColor.blue(),
+                                                                                            this->currentBackgroundColor.alpha()
+                                                                                           }));
+    CoreSettingsSetValue(SettingsID::GUI_OnScreenDisplayTextColor, std::vector<int>({ this->currentTextColor.red(),
+                                                                                      this->currentTextColor.green(),
+                                                                                      this->currentTextColor.blue(),
+                                                                                      this->currentTextColor.alpha()
+                                                                                    }));
 }
 
-void SettingsDialog::saveInterfaceMiscSettings(void)
+void SettingsDialog::saveInterfaceNetplaySettings(void)
 {
-    CoreSettingsSetValue(SettingsID::GUI_Theme, this->themeComboBox->currentText().toStdString());
-    CoreSettingsSetValue(SettingsID::GUI_IconTheme, this->iconThemeComboBox->currentText().toStdString());
-#ifdef UPDATER
-    CoreSettingsSetValue(SettingsID::GUI_CheckForUpdates, this->checkForUpdatesCheckBox->isChecked());
-#endif // UPDATER
-#ifdef DISCORD_RPC
-    CoreSettingsSetValue(SettingsID::GUI_DiscordRpc, this->discordRpcCheckBox->isChecked());
-#endif // DISCORD_RPC
+    CoreSettingsSetValue(SettingsID::Netplay_Nickname, this->netplayNicknameLineEdit->text().toStdString());
+    CoreSettingsSetValue(SettingsID::Netplay_ServerJsonUrl, this->netplayServerUrlLineEdit->text().toStdString());
 }
 
 void SettingsDialog::commonHotkeySettings(SettingsDialogAction action)
@@ -955,11 +1104,12 @@ void SettingsDialog::commonPluginSettings(SettingsDialogAction action)
                                     this->audioPluginsComboBox, this->inputPluginsComboBox,
                                     this->executionPluginsComboBox};
     SettingsID settingsIdArray[] = {SettingsID::Core_RSP_Plugin, SettingsID::Core_GFX_Plugin, 
-                                    SettingsID::Core_AUDIO_Plugin, SettingsID::Core_INPUT_Plugin,
                                     SettingsID::Core_EXECUTION_Plugin};
+                                    SettingsID::Core_AUDIO_Plugin, SettingsID::Core_INPUT_Plugin, };
     bool pluginFound[] = {false, false, false, false, false};
 
     QComboBox *comboBox;
+    QString pluginName;
     QString pluginFileName;
     int index = 0;
 
@@ -969,23 +1119,30 @@ void SettingsDialog::commonPluginSettings(SettingsDialogAction action)
         c->clear();
     }
 
+    for (int i = 0; i < 4; i++)
+    {
+        pluginFileName = action == SettingsDialogAction::LoadSettings ? 
+                            QString::fromStdString(CoreSettingsGetStringValue(settingsIdArray[i])) :
+                            QString::fromStdString(CoreSettingsGetDefaultStringValue(settingsIdArray[i]));
+
+        // account for full path (<v0.3.5 we used the full path)
+        pluginFileName = QFileInfo(pluginFileName).fileName();
+        
+        pluginFileNames[i] = pluginFileName;
+    }
+
     for (const auto &p : this->pluginList)
     {
         index = ((int)p.Type - 1);
         comboBox = comboBoxArray[index];
+        pluginFileName = pluginFileNames[index];
+        pluginName = QString::fromStdString(p.Name);
 
-        pluginFileName = action == SettingsDialogAction::LoadSettings ? 
-                            QString::fromStdString(CoreSettingsGetStringValue(settingsIdArray[index])) :
-                            QString::fromStdString(CoreSettingsGetDefaultStringValue(settingsIdArray[index]));
-
-        // account for full path (<v0.3.5 we used the full path)
-        pluginFileName = QFileInfo(pluginFileName).fileName();
-
-        comboBox->addItem(QString::fromStdString(p.Name), QString::fromStdString(p.File));
+        comboBox->addItem(pluginName, QString::fromStdString(p.File));
 
         if (pluginFileName == QString::fromStdString(p.File))
         {
-            comboBox->setCurrentText(QString::fromStdString(p.Name));
+            comboBox->setCurrentText(pluginName);
             pluginFound[index] = true;
         }
     }
@@ -995,8 +1152,32 @@ void SettingsDialog::commonPluginSettings(SettingsDialogAction action)
         comboBox = comboBoxArray[i];
         if (!pluginFound[i])
         {
-            comboBox->addItem("", "");
-            comboBox->setCurrentText("");
+            pluginName = pluginFileNames[i] + " (not found)";
+
+            comboBox->addItem(pluginName, pluginFileNames[i]);
+            comboBox->setCurrentText(pluginName);
+        }
+        else
+        { // find duplicates and append filename
+            for (int i = 0; i < comboBox->count(); i++)
+            {
+                pluginName = comboBox->itemText(i);
+                bool foundDuplicate = false;
+                for (int x = i + 1; x < comboBox->count(); x++)
+                {
+                    if (comboBox->itemText(x) == pluginName)
+                    {
+                        pluginFileName = QFileInfo(comboBox->itemData(x).toString()).fileName();
+                        comboBox->setItemText(x, pluginName + " (" + pluginFileName + ")");
+                        foundDuplicate = true;
+                    }
+                }
+                if (foundDuplicate)
+                {
+                    pluginFileName = QFileInfo(comboBox->itemData(i).toString()).fileName();
+                    comboBox->setItemText(i, pluginName + " (" + pluginFileName + ")");
+                }
+            }
         }
     }
 }
@@ -1048,17 +1229,60 @@ void SettingsDialog::chooseDirectory(QLineEdit *lineEdit)
     lineEdit->setText(QDir::toNativeSeparators(dir));
 }
 
-void SettingsDialog::chooseIPLRom(QLineEdit *lineEdit)
+void SettingsDialog::chooseFile(QLineEdit *lineEdit, QString filter, QString md5)
 {
     QString file;
 
-    file = QFileDialog::getOpenFileName(this, "", "", "IPL ROMs (*.n64 *.v64 *.z64)");
+    file = QFileDialog::getOpenFileName(this, "", "", filter);
     if (file.isEmpty())
     {
         return;
     }
 
+    if (!md5.isEmpty())
+    {
+        QFile qFile(file);
+        if (!qFile.open(QFile::ReadOnly))
+        {
+            QtMessageBox::Error(this, "Failed to open file", "QFile::open() Failed");
+            return;
+        }
+
+        QCryptographicHash hash(QCryptographicHash::Algorithm::Md5);
+        if (hash.addData(&qFile))
+        {
+            QString md5Hash = QString(hash.result().toHex());
+            if (md5Hash != md5)
+            {
+                QtMessageBox::Error(this, "MD5 mismatch", "Expected file with MD5: \"" + md5 + "\"");
+                return;
+            }
+        }
+    }
+
     lineEdit->setText(QDir::toNativeSeparators(file));
+}
+
+void SettingsDialog::chooseColor(QPushButton *pushButton, QColor *initialColor, bool skipChoice)
+{
+    QColor color = QColor::Invalid;
+
+    if (skipChoice)
+    {
+        color = *initialColor;
+    }
+    else
+    {
+        color = QColorDialog::getColor(*initialColor, this, "", QColorDialog::ColorDialogOption::ShowAlphaChannel);
+    }
+
+    if (!color.isValid())
+    {
+        return;
+    }
+
+    pushButton->setStyleSheet("background-color: " + color.name());
+    *initialColor = color;
 }
 
 bool SettingsDialog::applyPluginSettings(void)
@@ -1070,13 +1294,7 @@ bool SettingsDialog::applyPluginSettings(void)
     {
         if (!CoreApplyPluginSettings())
         {
-            QMessageBox msgBox(this);
-            msgBox.setIcon(QMessageBox::Icon::Critical);
-            msgBox.setWindowTitle("Error");
-            msgBox.setText("CoreApplyPluginSettings() Failed");
-            msgBox.setDetailedText(QString::fromStdString(CoreGetError()));
-            msgBox.addButton(QMessageBox::Ok);
-            msgBox.exec();
+            QtMessageBox::Error(this, "CoreApplyPluginSettings() Failed", QString::fromStdString(CoreGetError()));
             return false;
         }
     }
@@ -1177,17 +1395,27 @@ void SettingsDialog::on_changeUserCacheDirButton_clicked(void)
 
 void SettingsDialog::on_changeJapaneseIPLRomPathButton_clicked(void)
 {
-    this->chooseIPLRom(this->japaneseIPLRomLineEdit);
+    this->chooseFile(this->japaneseIPLRomLineEdit, "IPL ROMs (*.n64 *.v64 *.z64)");
 }
 
 void SettingsDialog::on_changeAmericanIPLRomPathButton_clicked(void)
 {
-    this->chooseIPLRom(this->americanIPLRomLineEdit);
+    this->chooseFile(this->americanIPLRomLineEdit, "IPL ROMs (*.n64 *.v64 *.z64)");
 }
 
 void SettingsDialog::on_changeDevelopmentIPLRomPathButton_clicked(void)
 {
-    this->chooseIPLRom(this->developmentIPLRomLineEdit);
+    this->chooseFile(this->developmentIPLRomLineEdit, "IPL ROMs (*.n64 *.v64 *.z64)");
+}
+
+void SettingsDialog::on_changeBackgroundColorButton_clicked(void)
+{
+    this->chooseColor(this->changeBackgroundColorButton, &this->currentBackgroundColor);
+}
+
+void SettingsDialog::on_changeTextColorButton_clicked(void)
+{
+    this->chooseColor(this->changeTextColorButton, &this->currentTextColor);
 }
 
 void SettingsDialog::on_KeybindButton_KeybindingChanged(KeybindButton* button)
@@ -1327,4 +1555,21 @@ void SettingsDialog::on_KeybindButton_Clicked(KeybindButton* button)
 
     // notify button
     this->currentKeybindButton->SetSecondsLeft(5);
+}
+
+void SettingsDialog::on_coreCpuEmulatorComboBox_currentIndexChanged(int index)
+{
+    // hide PIF ROM options when using dynamic recompiler
+    // because the dynarec crashes when using a PIF ROM
+    this->usePifRomGroupBox->setVisible(index != 2);
+}
+
+void SettingsDialog::on_changeNTSCPifRomButton_clicked(void)
+{
+    this->chooseFile(this->ntscPifRomLineEdit, "PIF ROMs (*.rom)", "5c124e7948ada85da603a522782940d0");
+}
+
+void SettingsDialog::on_changePALPifRomButton_clicked(void)
+{
+    this->chooseFile(this->palPifRomLineEdit, "PIF ROMs (*.rom)", "d4232dc935cad0650ac2664d52281f3a");
 }

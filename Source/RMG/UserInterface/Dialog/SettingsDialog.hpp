@@ -19,6 +19,7 @@
 #include <QTreeWidget>
 #include <QWidget>
 #include <QMutex>
+#include <QColor>
 
 #include <RMG-Core/Core.hpp>
 
@@ -56,6 +57,9 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     int             keybindButtonTimeLeft = 5;
     KeybindButton*  currentKeybindButton  = nullptr;
 
+    QColor currentBackgroundColor;
+    QColor currentTextColor;
+
     std::vector<CorePlugin> pluginList;
 
     int currentIndex(void);
@@ -72,12 +76,12 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void loadDirectorySettings(void);
     void load64DDSettings(void);
     void loadHotkeySettings(void);
+    void loadInterfaceGeneralSettings(void);
     void loadInterfaceEmulationSettings(void);
     void loadInterfaceRomBrowserSettings(void);
     void loadInterfaceLogSettings(void);
     void loadInterfaceOSDSettings(void);
-    void loadInterfaceStyleSettings(void);
-    void loadInterfaceMiscSettings(void);
+    void loadInterfaceNetplaySettings(void);
 
     void loadDefaultCoreSettings(void);
     void loadDefaultGameSettings(void);
@@ -87,12 +91,12 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void loadDefaultDirectorySettings(void);
     void loadDefault64DDSettings(void);
     void loadDefaultHotkeySettings(void);
+    void loadDefaultInterfaceGeneralSettings(void);
     void loadDefaultInterfaceEmulationSettings(void);
     void loadDefaultInterfaceRomBrowserSettings(void);
     void loadDefaultInterfaceLogSettings(void);
     void loadDefaultInterfaceOSDSettings(void);
-    void loadDefaultInterfaceStyleSettings(void);
-    void loadDefaultInterfaceMiscSettings(void);
+    void loadDefaultInterfaceNetplaySettings(void);
 
     void saveSettings(void);
     void saveCoreSettings(void);
@@ -103,12 +107,12 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void saveDirectorySettings(void);
     void save64DDSettings(void);
     void saveHotkeySettings(void);
+    void saveInterfaceGeneralSettings(void);
     void saveInterfaceEmulationSettings(void);
     void saveInterfaceRomBrowserSettings(void);
     void saveInterfaceLogSettings(void);
     void saveInterfaceOSDSettings(void);
-    void saveInterfaceStyleSettings(void);
-    void saveInterfaceMiscSettings(void);
+    void saveInterfaceNetplaySettings(void);
 
     void commonHotkeySettings(SettingsDialogAction);
     void commonPluginSettings(SettingsDialogAction);
@@ -117,7 +121,8 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void hideEmulationInfoText(void);
 
     void chooseDirectory(QLineEdit *);
-    void chooseIPLRom(QLineEdit *);
+    void chooseFile(QLineEdit *, QString filter = "", QString md5 = "");
+    void chooseColor(QPushButton *, QColor *, bool skipChoice = false);
 
     bool applyPluginSettings(void);
 
@@ -138,9 +143,16 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void on_changeAmericanIPLRomPathButton_clicked(void);
     void on_changeDevelopmentIPLRomPathButton_clicked(void);
 
+    void on_changeBackgroundColorButton_clicked(void);
+    void on_changeTextColorButton_clicked(void);
+
     void on_KeybindButton_KeybindingChanged(KeybindButton* button);
     void on_KeybindButton_Clicked(KeybindButton* button);
 
+    void on_coreCpuEmulatorComboBox_currentIndexChanged(int);
+
+    void on_changeNTSCPifRomButton_clicked(void);
+    void on_changePALPifRomButton_clicked(void);
   public:
     SettingsDialog(QWidget *parent);
     ~SettingsDialog(void);

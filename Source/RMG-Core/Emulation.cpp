@@ -7,12 +7,16 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-#include "Settings/Settings.hpp"
+#define CORE_INTERNAL
+#include "Settings.hpp"
 #include "MediaLoader.hpp"
 #include "RomSettings.hpp"
+#include "Utils/File.hpp"
 #include "Emulation.hpp"
+#include "RomHeader.hpp"
 #include "m64p/Api.hpp"
 #include "Plugins.hpp"
+#include "Netplay.hpp"
 #include "Cheats.hpp"
 #include "Error.hpp"
 #include "Rom.hpp"
@@ -84,14 +88,70 @@ static void apply_game_coresettings_overlay(void)
     CoreSettingsSetValue(SettingsID::Core_CountPerOpDenomPot, CoreSettingsGetIntValue(SettingsID::Game_CountPerOpDenomPot, section));
 }
 
+static void apply_pif_rom_settings(void)
+{
+    CoreRomHeader romHeader;
+    std::string error;
+    m64p_error ret;
+    int cpuEmulator;
+    bool usePifROM;
+
+    // when we fail to retrieve the rom settings, return
+    if (!CoreGetCurrentRomHeader(romHeader))
+    {
+        return;
+    }
+
+    // when we're using the dynarec, return
+    cpuEmulator = CoreSettingsGetIntValue(SettingsID::Core_CPU_Emulator);
+    if (cpuEmulator >= 2)
+    {
+        return;
+    }
+
+    usePifROM = CoreSettingsGetBoolValue(SettingsID::Core_PIF_Use);
+    if (!usePifROM)
+    {
+        return;
+    }
+
+    const SettingsID settingsIds[] =
+    {
+        SettingsID::Core_PIF_NTSC,
+        SettingsID::Core_PIF_PAL,
+    };
+
+    std::string rom = CoreSettingsGetStringValue(settingsIds[(int)romHeader.SystemType]);
+    if (!std::filesystem::is_regular_file(rom))
+    {
+        return;
+    }
+
+    std::vector<char> buffer;
+    if (!CoreReadFile(rom, buffer))
+    {
+        return;
+    }
+
+    ret = m64p::Core.DoCommand(M64CMD_PIF_OPEN, buffer.size(), buffer.data());
+    if (ret != M64ERR_SUCCESS)
+    {
+        error = "open_pif_rom m64p::Core.DoCommand(M64CMD_PIF_OPEN) Failed: ";
+        error += m64p::Core.ErrorMessage(ret);
+        CoreSetError(error);
+    }
+}
+
 //
 // Exported Functions
 //
 
-bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64ddrom)
+bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64ddrom, 
+    std::string address, int port, int player)
 {
     std::string error;
-    m64p_error  ret;
+    m64p_error  m64p_ret;
+    bool        netplay_ret = false;
     CoreRomType type;
 
     if (!CoreOpenRom(n64rom))
@@ -120,12 +180,16 @@ bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64d
         return false;
     }
 
-    if (!CoreApplyCheats())
+    // TODO: add support for cheats during netplay
+    if (!address.empty())
     {
-        CoreDetachPlugins();
-        CoreApplyPluginSettings();
-        CoreCloseRom();
-        return false;
+        if (!CoreApplyCheats())
+        {
+            CoreDetachPlugins();
+            CoreApplyPluginSettings();
+            CoreCloseRom();
+            return false;
+        }
     }
 
     if (!CoreGetRomType(type))
@@ -149,16 +213,42 @@ bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64d
     // apply game core settings overrides
     apply_game_coresettings_overlay();
 
+    // apply pif rom settings
+    apply_pif_rom_settings();
+
 #ifdef DISCORD_RPC
     CoreDiscordRpcUpdate(true);
 #endif // DISCORD_RPC
 
-    ret = m64p::Core.DoCommand(M64CMD_EXECUTE, 0, nullptr);
-    if (ret != M64ERR_SUCCESS)
+#ifdef NETPLAY
+    if (!address.empty())
     {
-        error = "CoreStartEmulation m64p::Core.DoCommand(M64CMD_EXECUTE) Failed: ";
-        error += m64p::Core.ErrorMessage(ret);
+        netplay_ret = CoreInitNetplay(address, port, player);
+        if (!netplay_ret)
+        {
+            m64p_ret = M64ERR_SYSTEM_FAIL;
+        }
     }
+#endif // NETPLAY
+
+    // only start emulation when initializing netplay
+    // is successful or if there's no netplay requested
+    if (address.empty() || netplay_ret)
+    {
+        m64p_ret = m64p::Core.DoCommand(M64CMD_EXECUTE, 0, nullptr);
+        if (m64p_ret != M64ERR_SUCCESS)
+        {
+            error = "CoreStartEmulation m64p::Core.DoCommand(M64CMD_EXECUTE) Failed: ";
+            error += m64p::Core.ErrorMessage(m64p_ret);
+        }
+    }
+
+#ifdef NETPLAY
+    if (!address.empty() && netplay_ret)
+    {
+        CoreShutdownNetplay();
+    }
+#endif // NETPLAY
 
     CoreClearCheats();
     CoreDetachPlugins();
@@ -174,12 +264,15 @@ bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64d
     CoreDiscordRpcUpdate(false);
 #endif // DISCORD_RPC
 
-    // we need to set the emulation error last,
-    // to prevent the other functions from
-    // overriding the emulation error
-    CoreSetError(error);
+    if (address.empty() || netplay_ret)
+    {
+        // we need to set the emulation error last,
+        // to prevent the other functions from
+        // overriding the emulation error
+        CoreSetError(error);
+    }
 
-    return ret == M64ERR_SUCCESS;
+    return m64p_ret == M64ERR_SUCCESS;
 }
 
 bool CoreStopEmulation(void)

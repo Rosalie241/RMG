@@ -31,26 +31,24 @@
    </property>
    <widget class="QMenu" name="menuSystem">
     <property name="title">
-     <string>System</string>
+     <string>S&amp;ystem</string>
     </property>
     <widget class="QMenu" name="menuReset">
      <property name="title">
-      <string>Reset</string>
+      <string>&amp;Reset</string>
      </property>
      <property name="icon">
-      <iconset theme="restart-line">
-       <normaloff>.</normaloff>.</iconset>
+      <iconset theme="restart-line"/>
      </property>
      <addaction name="action_System_SoftReset"/>
      <addaction name="action_System_HardReset"/>
     </widget>
     <widget class="QMenu" name="menuCurrent_Save_State">
      <property name="title">
-      <string>Current Save State</string>
+      <string>&amp;Current Save State</string>
      </property>
      <property name="icon">
-      <iconset theme="save-3-line">
-       <normaloff>.</normaloff>.</iconset>
+      <iconset theme="save-3-line"/>
      </property>
      <addaction name="actionSlot_0"/>
      <addaction name="actionSlot_1"/>
@@ -68,11 +66,10 @@
       <bool>true</bool>
      </property>
      <property name="title">
-      <string>Speed Factor</string>
+      <string>Speed &amp;Factor</string>
      </property>
      <property name="icon">
-      <iconset theme="speed-line">
-       <normaloff>.</normaloff>.</iconset>
+      <iconset theme="speed-line"/>
      </property>
      <addaction name="actionSpeed25"/>
      <addaction name="actionSpeed50"/>
@@ -87,8 +84,8 @@
      <addaction name="actionSpeed275"/>
      <addaction name="actionSpeed300"/>
     </widget>
-    <addaction name="action_System_StartRom"/>
-    <addaction name="action_System_OpenCombo"/>
+    <addaction name="action_System_StartRom2"/>
+    <addaction name="action_View_RefreshRoms2"/>
     <addaction name="separator"/>
     <addaction name="action_System_Shutdown"/>
     <addaction name="menuReset"/>
@@ -113,7 +110,7 @@
    </widget>
    <widget class="QMenu" name="menuSettings">
     <property name="title">
-     <string>Settings</string>
+     <string>Setti&amp;ngs</string>
     </property>
     <addaction name="action_Settings_Graphics"/>
     <addaction name="action_Settings_Audio"/>
@@ -143,7 +140,7 @@
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>Help</string>
+     <string>He&amp;lp</string>
     </property>
     <addaction name="action_Help_Github"/>
     <addaction name="separator"/>
@@ -151,9 +148,17 @@
     <addaction name="separator"/>
     <addaction name="action_Help_About"/>
    </widget>
+   <widget class="QMenu" name="menuNetplay">
+    <property name="title">
+     <string>Netplay</string>
+    </property>
+    <addaction name="action_Netplay_CreateSession"/>
+    <addaction name="action_Netplay_JoinSession"/>
+   </widget>
    <addaction name="menuSystem"/>
    <addaction name="menuSettings"/>
    <addaction name="menuView"/>
+   <addaction name="menuNetplay"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -165,7 +170,7 @@
     <bool>true</bool>
    </property>
    <property name="toolButtonStyle">
-    <enum>Qt::ToolButtonTextUnderIcon</enum>
+    <enum>Qt::ToolButtonStyle::ToolButtonTextUnderIcon</enum>
    </property>
    <property name="floatable">
     <bool>false</bool>
@@ -190,47 +195,42 @@
   </widget>
   <action name="action_System_StartRom">
    <property name="icon">
-    <iconset theme="file-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="file-line"/>
    </property>
    <property name="text">
-    <string>Start ROM</string>
+    <string>&amp;Start ROM</string>
    </property>
   </action>
   <action name="action_System_OpenCombo">
    <property name="icon">
-    <iconset theme="file-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="file-line"/>
    </property>
    <property name="text">
-    <string>Start Combo</string>
+    <string>Start Co&amp;mbo</string>
    </property>
   </action>
   <action name="action_System_Shutdown">
    <property name="icon">
-    <iconset theme="shut-down-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="shut-down-line"/>
    </property>
    <property name="text">
-    <string>Shutdown</string>
+    <string>S&amp;hutdown</string>
    </property>
   </action>
   <action name="action_System_SoftReset">
    <property name="icon">
-    <iconset theme="restart-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="restart-line"/>
    </property>
    <property name="text">
-    <string>Soft Reset</string>
+    <string>&amp;Soft Reset</string>
    </property>
   </action>
   <action name="action_System_HardReset">
    <property name="icon">
-    <iconset theme="restart-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="restart-line"/>
    </property>
    <property name="text">
-    <string>Hard Reset</string>
+    <string>&amp;Hard Reset</string>
    </property>
   </action>
   <action name="action_System_Pause">
@@ -238,20 +238,18 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset theme="pause-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="pause-line"/>
    </property>
    <property name="text">
-    <string>Pause</string>
+    <string>&amp;Pause</string>
    </property>
   </action>
   <action name="action_System_Screenshot">
    <property name="icon">
-    <iconset theme="screenshot-2-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="screenshot-2-line"/>
    </property>
    <property name="text">
-    <string>Screenshot</string>
+    <string>Scree&amp;nshot</string>
    </property>
   </action>
   <action name="action_System_LimitFPS">
@@ -259,26 +257,23 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset theme="speed-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="speed-line"/>
    </property>
    <property name="text">
-    <string>Limit FPS</string>
+    <string>&amp;Limit FPS</string>
    </property>
   </action>
   <action name="action_System_SaveState">
    <property name="icon">
-    <iconset theme="save-3-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="save-3-line"/>
    </property>
    <property name="text">
-    <string>Save State</string>
+    <string>Sa&amp;ve State</string>
    </property>
   </action>
   <action name="action_System_SaveAs">
    <property name="icon">
-    <iconset theme="save-3-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="save-3-line"/>
    </property>
    <property name="text">
     <string>Save As...</string>
@@ -286,20 +281,18 @@
   </action>
   <action name="action_System_LoadState">
    <property name="icon">
-    <iconset theme="folder-open-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="folder-open-line"/>
    </property>
    <property name="text">
-    <string>Load State</string>
+    <string>L&amp;oad State</string>
    </property>
   </action>
   <action name="action_System_Load">
    <property name="icon">
-    <iconset theme="folder-open-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="folder-open-line"/>
    </property>
    <property name="text">
-    <string>Load...</string>
+    <string>Loa&amp;d...</string>
    </property>
   </action>
   <action name="actionSlot_0">
@@ -307,7 +300,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Slot 0</string>
+    <string>&amp;Slot 0</string>
    </property>
   </action>
   <action name="actionSlot_1">
@@ -315,7 +308,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Slot 1</string>
+    <string>Slot &amp;1</string>
    </property>
   </action>
   <action name="actionSlot_2">
@@ -323,7 +316,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Slot 2</string>
+    <string>Slot &amp;2</string>
    </property>
   </action>
   <action name="actionSlot_3">
@@ -331,7 +324,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Slot 3</string>
+    <string>Slot &amp;3</string>
    </property>
   </action>
   <action name="actionSlot_4">
@@ -339,7 +332,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Slot 4</string>
+    <string>Slot &amp;4</string>
    </property>
   </action>
   <action name="actionSlot_5">
@@ -347,7 +340,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Slot 5</string>
+    <string>Slot &amp;5</string>
    </property>
   </action>
   <action name="actionSlot_6">
@@ -355,7 +348,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Slot 6</string>
+    <string>Slot &amp;6</string>
    </property>
   </action>
   <action name="actionSlot_7">
@@ -363,7 +356,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Slot 7</string>
+    <string>Slot &amp;7</string>
    </property>
   </action>
   <action name="actionSlot_8">
@@ -371,7 +364,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Slot 8</string>
+    <string>Slot &amp;8</string>
    </property>
   </action>
   <action name="actionSlot_9">
@@ -379,13 +372,12 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Slot 9</string>
+    <string>Slot &amp;9</string>
    </property>
   </action>
   <action name="action_System_Cheats">
    <property name="icon">
-    <iconset theme="code-box-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="code-box-line"/>
    </property>
    <property name="text">
     <string>Cheats...</string>
@@ -393,92 +385,82 @@
   </action>
   <action name="action_System_GSButton">
    <property name="icon">
-    <iconset theme="checkbox-blank-circle-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="checkbox-blank-circle-line"/>
    </property>
    <property name="text">
-    <string>GS Button</string>
+    <string>&amp;GS Button</string>
    </property>
   </action>
   <action name="action_System_Exit">
    <property name="icon">
-    <iconset theme="door-open-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="door-open-line"/>
    </property>
    <property name="text">
-    <string>Exit</string>
+    <string>&amp;Exit</string>
    </property>
   </action>
   <action name="action_Settings_Graphics">
    <property name="icon">
-    <iconset theme="brush-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="brush-line"/>
    </property>
    <property name="text">
-    <string>Graphics</string>
+    <string>&amp;Graphics</string>
    </property>
   </action>
   <action name="action_Settings_Input">
    <property name="icon">
-    <iconset theme="gamepad-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="gamepad-line"/>
    </property>
    <property name="text">
-    <string>Input</string>
+    <string>&amp;Input</string>
    </property>
   </action>
   <action name="action_Settings_Rsp">
    <property name="icon">
-    <iconset theme="settings-3-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="settings-3-line"/>
    </property>
    <property name="text">
-    <string>RSP</string>
+    <string>&amp;RSP</string>
    </property>
   </action>
   <action name="action_Settings_Audio">
    <property name="icon">
-    <iconset theme="volume-up-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="volume-up-line"/>
    </property>
    <property name="text">
-    <string>Audio</string>
+    <string>&amp;Audio</string>
    </property>
   </action>
   <action name="action_Settings_Settings">
    <property name="icon">
-    <iconset theme="settings-3-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="settings-3-line"/>
    </property>
    <property name="text">
-    <string>Settings</string>
+    <string>&amp;Settings</string>
    </property>
   </action>
   <action name="action_View_Fullscreen">
    <property name="icon">
-    <iconset theme="fullscreen-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="fullscreen-line"/>
    </property>
    <property name="text">
-    <string>Fullscreen</string>
+    <string>&amp;Fullscreen</string>
    </property>
   </action>
   <action name="action_Help_Github">
    <property name="icon">
-    <iconset theme="github-fill">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="github-fill"/>
    </property>
    <property name="text">
-    <string>Github Repository</string>
+    <string>&amp;Github Repository</string>
    </property>
   </action>
   <action name="action_Help_About">
    <property name="icon">
-    <iconset theme="information-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="information-line"/>
    </property>
    <property name="text">
-    <string>About RMG</string>
+    <string>&amp;About RMG</string>
    </property>
   </action>
   <action name="action_View_Toolbar">
@@ -486,11 +468,10 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset theme="tools-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="tools-line"/>
    </property>
    <property name="text">
-    <string>Toolbar</string>
+    <string>&amp;Toolbar</string>
    </property>
   </action>
   <action name="action_View_StatusBar">
@@ -498,56 +479,50 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset theme="information-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="information-line"/>
    </property>
    <property name="text">
-    <string>Status Bar</string>
+    <string>&amp;Status Bar</string>
    </property>
   </action>
   <action name="action_View_GameList">
    <property name="icon">
-    <iconset theme="list-check">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="list-check"/>
    </property>
    <property name="text">
-    <string>Game List</string>
+    <string>&amp;Game List</string>
    </property>
   </action>
   <action name="action_View_GameGrid">
    <property name="icon">
-    <iconset theme="function-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="function-line"/>
    </property>
    <property name="text">
-    <string>Game Grid</string>
+    <string>Ga&amp;me Grid</string>
    </property>
   </action>
   <action name="action_View_RefreshRoms">
    <property name="icon">
-    <iconset theme="refresh-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="refresh-line"/>
    </property>
    <property name="text">
-    <string>Refresh ROMs</string>
+    <string>&amp;Refresh ROMs</string>
    </property>
   </action>
   <action name="action_View_Log">
    <property name="icon">
-    <iconset theme="file-list-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="file-list-line"/>
    </property>
    <property name="text">
-    <string>Log</string>
+    <string>&amp;Log</string>
    </property>
   </action>
   <action name="action_View_ClearRomCache">
    <property name="icon">
-    <iconset theme="delete-bin-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="delete-bin-line"/>
    </property>
    <property name="text">
-    <string>Clear ROM Cache</string>
+    <string>&amp;Clear ROM Cache</string>
    </property>
   </action>
   <action name="action_View_UniformSize">
@@ -555,11 +530,10 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset theme="function-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="function-line"/>
    </property>
    <property name="text">
-    <string>Uniform Size (Grid View)</string>
+    <string>&amp;Uniform Size (Grid View)</string>
    </property>
   </action>
   <action name="actionSpeed25">
@@ -567,17 +541,17 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>25%</string>
+    <string>&amp;25%</string>
    </property>
   </action>
   <action name="actionSpeed50">
    <property name="text">
-    <string>50%</string>
+    <string>&amp;50%</string>
    </property>
   </action>
   <action name="actionSpeed100">
    <property name="text">
-    <string>100%</string>
+    <string>&amp;100%</string>
    </property>
   </action>
   <action name="actionSpeed125">
@@ -592,12 +566,12 @@
   </action>
   <action name="actionSpeed200">
    <property name="text">
-    <string>200%</string>
+    <string>2&amp;00%</string>
    </property>
   </action>
   <action name="actionSpeed75">
    <property name="text">
-    <string>75%</string>
+    <string>&amp;75%</string>
    </property>
   </action>
   <action name="actionSpeed175">
@@ -622,16 +596,31 @@
   </action>
   <action name="actionSpeed300">
    <property name="text">
-    <string>300%</string>
+    <string>&amp;300%</string>
    </property>
   </action>
   <action name="action_Help_Update">
    <property name="icon">
-    <iconset theme="download-line">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="download-line"/>
    </property>
    <property name="text">
-    <string>Check For Updates</string>
+    <string>&amp;Check For Updates</string>
+   </property>
+  </action>
+  <action name="action_Netplay_CreateSession">
+   <property name="icon">
+    <iconset theme="server-line"/>
+   </property>
+   <property name="text">
+    <string>&amp;Create Session</string>
+   </property>
+  </action>
+  <action name="action_Netplay_JoinSession">
+   <property name="icon">
+    <iconset theme="plug-line"/>
+   </property>
+   <property name="text">
+    <string>&amp;Join Session</string>
    </property>
   </action>
  </widget>

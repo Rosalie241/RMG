@@ -11,6 +11,8 @@
 
 #include <RMG-Core/VidExt.hpp>
 #include <RMG-Core/m64p/Api.hpp>
+#include <RMG-Core/Core.hpp>
+
 #include "OnScreenDisplay.hpp"
 
 #include <QApplication>
@@ -23,13 +25,13 @@
 // Local Variables
 //
 
-static Thread::EmulationThread* l_EmuThread            = nullptr;
-static UserInterface::MainWindow* l_MainWindow         = nullptr;
-static UserInterface::Widget::OGLWidget* l_OGLWidget   = nullptr;
-static UserInterface::Widget::VKWidget* l_VulkanWidget = nullptr;
-static QThread* l_RenderThread                         = nullptr;
-static bool l_OpenGLInitialized                        = false;
-static bool l_OsdInitialized                           = false;
+static Thread::EmulationThread* l_EmuThread             = nullptr;
+static UserInterface::MainWindow* l_MainWindow          = nullptr;
+static UserInterface::Widget::OGLWidget** l_OGLWidget   = nullptr;
+static UserInterface::Widget::VKWidget** l_VulkanWidget = nullptr;
+static QThread* l_RenderThread                          = nullptr;
+static bool l_OpenGLInitialized                         = false;
+static bool l_OsdInitialized                            = false;
 static QSurfaceFormat l_SurfaceFormat;
 static m64p_render_mode l_RenderMode;
 
@@ -45,18 +47,20 @@ static bool VidExt_OglSetup(void)
 {
     l_EmuThread->on_VidExt_SetupOGL(l_SurfaceFormat, QThread::currentThread());
 
-    while (!l_OGLWidget->isVisible())
+    while (!(*l_OGLWidget)->isVisible())
     {
         continue;
     }
 
-    if (!l_OGLWidget->GetContext()->isValid())
+    if (!(*l_OGLWidget)->GetContext()->isValid())
     {
+        CoreAddCallbackMessage(CoreDebugMessageType::Error, "Failed to retrieve valid OpenGL context");
         return false;
     }
 
-    if (!l_OGLWidget->GetContext()->makeCurrent(l_OGLWidget))
+    if (!(*l_OGLWidget)->GetContext()->makeCurrent((*l_OGLWidget)))
     {
+        CoreAddCallbackMessage(CoreDebugMessageType::Error, "Failed to make OpenGL context current");
         return false;
     }
 
@@ -75,9 +79,17 @@ static m64p_error VidExt_InitWithRenderMode(m64p_render_mode RenderMode)
         l_SurfaceFormat.setOption(QSurfaceFormat::DeprecatedFunctions, 1);
         l_SurfaceFormat.setDepthBufferSize(24);
         l_SurfaceFormat.setProfile(QSurfaceFormat::CompatibilityProfile);
-        l_SurfaceFormat.setMajorVersion(3);
-        l_SurfaceFormat.setMinorVersion(3);
         l_SurfaceFormat.setSwapInterval(0);
+        if (l_SurfaceFormat.renderableType() != QSurfaceFormat::OpenGLES)
+        {
+            l_SurfaceFormat.setMajorVersion(3);
+            l_SurfaceFormat.setMinorVersion(3);
+        }
+        else
+        {
+            l_SurfaceFormat.setMajorVersion(2);
+            l_SurfaceFormat.setMinorVersion(0);
+        }
     }
 
     l_EmuThread->on_VidExt_Init(RenderMode == M64P_RENDER_OPENGL ? VidExtRenderMode::OpenGL : VidExtRenderMode::Vulkan);
@@ -97,13 +109,13 @@ static m64p_error VidExt_Quit(void)
     if (l_RenderMode == M64P_RENDER_OPENGL)
     {
         // move OpenGL context back to the GUI thread
-        l_OGLWidget->MoveContextToThread(QApplication::instance()->thread());
+        (*l_OGLWidget)->MoveContextToThread(QApplication::instance()->thread());
     }
     else
     {
         // remove vulkan instance from widget
         // and destroy the instance
-        l_VulkanWidget->setVulkanInstance(nullptr);
+        (*l_VulkanWidget)->setVulkanInstance(nullptr);
         if (l_VulkanInstance.isValid())
         {
             l_VulkanInstance.destroy();
@@ -145,6 +157,7 @@ static m64p_error VidExt_SetMode(int Width, int Height, int BitsPerPixel, int Sc
         {
             if (!OnScreenDisplayInit())
             {
+                CoreAddCallbackMessage(CoreDebugMessageType::Error, "Failed to initialize OSD");
                 return M64ERR_SYSTEM_FAIL;
             }
 
@@ -182,7 +195,7 @@ static m64p_function VidExt_GLGetProc(const char *Proc)
         return nullptr;
     }
 
-    return l_OGLWidget->GetContext()->getProcAddress(Proc);
+    return (*l_OGLWidget)->GetContext()->getProcAddress(Proc);
 }
 
 static m64p_error VidExt_GLSetAttr(m64p_GLattr Attr, int Value)
@@ -217,8 +230,8 @@ static m64p_error VidExt_GLSetAttr(m64p_GLattr Attr, int Value)
     case M64P_GL_ALPHA_SIZE:
         l_SurfaceFormat.setAlphaBufferSize(Value);
         break;
-    case M64P_GL_SWAP_CONTROL:
-        l_SurfaceFormat.setSwapInterval(Value);
+    case M64P_GL_SWAP_CONTROL: // vsync should be disabled during netplay
+        l_SurfaceFormat.setSwapInterval((!CoreHasInitNetplay() && Value) ? 1 : 0);
         break;
     case M64P_GL_MULTISAMPLEBUFFERS:
         break;
@@ -332,8 +345,8 @@ static m64p_error VidExt_GLSwapBuf(void)
 
     OnScreenDisplayRender();
 
-    l_OGLWidget->GetContext()->swapBuffers(l_OGLWidget);
-    l_OGLWidget->GetContext()->makeCurrent(l_OGLWidget);
+    (*l_OGLWidget)->GetContext()->swapBuffers((*l_OGLWidget));
+    (*l_OGLWidget)->GetContext()->makeCurrent((*l_OGLWidget));
 
     return M64ERR_SUCCESS;
 }
@@ -379,10 +392,10 @@ static uint32_t VidExt_GLGetDefaultFramebuffer(void)
         return 0;
     }
 
-    return l_OGLWidget->GetContext()->defaultFramebufferObject();
+    return (*l_OGLWidget)->GetContext()->defaultFramebufferObject();
 }
 
-EXPORT m64p_error CALL VidExt_VK_GetSurface(void** Surface, void* Instance)
+static m64p_error VidExt_VK_GetSurface(void** Surface, void* Instance)
 {
     if (l_RenderMode != M64P_RENDER_VULKAN)
     {
@@ -403,15 +416,17 @@ EXPORT m64p_error CALL VidExt_VK_GetSurface(void** Surface, void* Instance)
         l_VulkanInstance.setVkInstance((VkInstance)Instance);
         if (!l_VulkanInstance.create())
         {
+            CoreAddCallbackMessage(CoreDebugMessageType::Error, "Failed to create vulkan instance");
             return M64ERR_SYSTEM_FAIL;
         }
-        l_VulkanWidget->setVulkanInstance(&l_VulkanInstance);
+        (*l_VulkanWidget)->setVulkanInstance(&l_VulkanInstance);
     }
 
     // attempt to retrieve vulkan surface for window
-    VkSurfaceKHR vulkanSurface = QVulkanInstance::surfaceForWindow(l_VulkanWidget);
+    VkSurfaceKHR vulkanSurface = QVulkanInstance::surfaceForWindow((*l_VulkanWidget));
     if (vulkanSurface == VK_NULL_HANDLE)
     {
+        CoreAddCallbackMessage(CoreDebugMessageType::Error, "Failed to retrieve vulkan surface for window");
         return M64ERR_SYSTEM_FAIL;
     }
 
@@ -419,7 +434,7 @@ EXPORT m64p_error CALL VidExt_VK_GetSurface(void** Surface, void* Instance)
     return M64ERR_SUCCESS;
 }
 
-EXPORT m64p_error CALL VidExt_VK_GetInstanceExtensions(const char** Extensions[], uint32_t* NumExtensions)
+static m64p_error VidExt_VK_GetInstanceExtensions(const char** Extensions[], uint32_t* NumExtensions)
 {
     if (l_RenderMode != M64P_RENDER_VULKAN)
     {
@@ -445,7 +460,7 @@ EXPORT m64p_error CALL VidExt_VK_GetInstanceExtensions(const char** Extensions[]
 //
 
 bool SetupVidExt(Thread::EmulationThread* emuThread, UserInterface::MainWindow* mainWindow, 
-    UserInterface::Widget::OGLWidget* oglWidget, UserInterface::Widget::VKWidget* vulkanWidget)
+    UserInterface::Widget::OGLWidget** oglWidget, UserInterface::Widget::VKWidget** vulkanWidget)
 {
     l_EmuThread    = emuThread;
     l_MainWindow   = mainWindow;

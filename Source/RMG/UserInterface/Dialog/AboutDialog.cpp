@@ -8,7 +8,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "AboutDialog.hpp"
-
+#include <RMG-Core/VersionHash.hpp>
 #include <RMG-Core/Core.hpp>
 
 using namespace UserInterface::Dialog;
@@ -17,5 +17,5 @@ AboutDialog::AboutDialog(QWidget* parent) : QDialog(parent)
 {
     this->setupUi(this);
 
-    this->versionLabel->setText(QString("RMG %1").arg(QString::fromStdString(CoreGetVersion())));
+    this->versionLabel->setText(QString("%1").arg(QString::fromStdString(VERSION_HASH)));
 }

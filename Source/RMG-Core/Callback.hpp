@@ -46,7 +46,7 @@ enum class CoreStateCallbackType
     SaveStateLoaded,
     SaveStateSaved,
     ScreenshotCaptured,
-    SpeedUpdate,
+    SpeedUpdate
 };
 
 // attempts to setup callbacks with the provided functions

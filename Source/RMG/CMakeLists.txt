@@ -5,7 +5,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt6 COMPONENTS Gui Widgets Core OpenGL REQUIRED)
+find_package(Qt6 COMPONENTS Gui Widgets Core REQUIRED)
 
 if (PORTABLE_INSTALL)
     add_definitions(-DPORTABLE_INSTALL)
@@ -28,6 +28,11 @@ if (DRAG_DROP)
     add_definitions(-DDRAG_DROP)
 endif(DRAG_DROP)
 
+if (NETPLAY)
+    find_package(Qt6 COMPONENTS WebSockets REQUIRED)
+    add_definitions(-DNETPLAY)
+endif(NETPLAY)
+
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2)
 
@@ -40,6 +45,7 @@ set(RMG_SOURCES
     UserInterface/Widget/RomBrowser/RomBrowserLoadingWidget.cpp
     UserInterface/Widget/RomBrowser/RomBrowserEmptyWidget.cpp
     UserInterface/Widget/RomBrowser/RomBrowserEmptyWidget.ui
+    UserInterface/Widget/Render/DummyWidget.cpp
     UserInterface/Widget/Render/OGLWidget.cpp
     UserInterface/Widget/Render/VKWidget.cpp
     UserInterface/Widget/KeybindButton.cpp
@@ -64,6 +70,7 @@ set(RMG_SOURCES
     Thread/RomSearcherThread.cpp
     Thread/EmulationThread.cpp
     Utilities/QtKeyToSdl2Key.cpp
+    Utilities/QtMessageBox.cpp
     OnScreenDisplay.cpp
     Callbacks.cpp
     VidExt.cpp
@@ -80,6 +87,27 @@ if (UPDATER)
         UserInterface/Dialog/Update/InstallUpdateDialog.ui
     )
 endif(UPDATER)
+
+if (NETPLAY)
+    list(APPEND RMG_SOURCES
+        UserInterface/Dialog/Netplay/NetplayCommon.cpp
+        UserInterface/Dialog/Netplay/CreateNetplaySessionDialog.cpp
+        UserInterface/Dialog/Netplay/CreateNetplaySessionDialog.ui
+        UserInterface/Dialog/Netplay/NetplaySessionBrowserDialog.cpp
+        UserInterface/Dialog/Netplay/NetplaySessionBrowserDialog.ui
+        UserInterface/Dialog/Netplay/NetplaySessionDialog.cpp
+        UserInterface/Dialog/Netplay/NetplaySessionDialog.ui
+        UserInterface/Dialog/Netplay/NetplaySessionPasswordDialog.cpp
+        UserInterface/Dialog/Netplay/NetplaySessionPasswordDialog.ui
+        UserInterface/Widget/Netplay/NetplaySessionBrowserWidget.cpp
+        UserInterface/Widget/Netplay/NetplaySessionBrowserLoadingWidget.cpp
+        UserInterface/Widget/Netplay/NetplaySessionBrowserEmptyWidget.cpp
+        UserInterface/Widget/Netplay/NetplaySessionBrowserEmptyWidget.ui
+        UserInterface/Widget/Netplay/CreateNetplaySessionWidget.cpp
+        UserInterface/Widget/Netplay/CreateNetplaySessionEmptyWidget.cpp
+        UserInterface/Widget/Netplay/CreateNetplaySessionEmptyWidget.ui
+    )
+endif(NETPLAY)
 
 set_source_files_properties(${IMGUI_SOURCES} PROPERTIES GENERATED TRUE)
 list(APPEND RMG_SOURCES ${IMGUI_SOURCES})
@@ -113,9 +141,13 @@ target_include_directories(RMG PRIVATE
     ${IMGUI_DIR}
 )
 
-target_link_libraries(RMG Qt6::Gui Qt6::Widgets Qt6::OpenGL)
+target_link_libraries(RMG Qt6::Gui Qt6::Widgets)
 
 if (UPDATER)
     target_link_libraries(RMG Qt6::Network)
 endif(UPDATER)
+
+if (NETPLAY)
+    target_link_libraries(RMG Qt6::WebSockets)
+endif(NETPLAY)
 

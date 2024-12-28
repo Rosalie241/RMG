@@ -16,6 +16,6 @@
 #include <Thread/EmulationThread.hpp>
 
 bool SetupVidExt(Thread::EmulationThread* emuThread, UserInterface::MainWindow* mainWindow, 
-    UserInterface::Widget::OGLWidget* oglWidget, UserInterface::Widget::VKWidget* vulkanWidget);
+    UserInterface::Widget::OGLWidget** oglWidget, UserInterface::Widget::VKWidget** vulkanWidget);
 
 #endif // RMG_VIDEXT_HPP

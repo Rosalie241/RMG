@@ -105,6 +105,8 @@ QString ConfigDialog::_hotkeyDescription(quint32 _idx) const
 		return tr("Toggle force gamma correction");
 	case Config::HotKey::hkInaccurateTexCords:
 		return tr("Toggle inaccurate texture coordinates");
+	case Config::HotKey::hkStrongCRC:
+		return tr("Toggle strong CRC for textures dump");
 	}
 	return tr("Unknown hotkey");
 }
@@ -330,8 +332,11 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 	case Config::a169:
 		ui->aspectComboBox->setCurrentIndex(1);
 		break;
-	case Config::aAdjust:
+	case Config::aAdjust43:
 		ui->aspectComboBox->setCurrentIndex(3);
+		break;
+	case Config::aAdjust169:
+		ui->aspectComboBox->setCurrentIndex(4);
 		break;
 	}
 
@@ -370,6 +375,7 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 	ui->texturePackGroupBox->setChecked(config.textureFilter.txHiresEnable != 0);
 	ui->alphaChannelCheckBox->setChecked(config.textureFilter.txHiresFullAlphaChannel != 0);
 	ui->alternativeCRCCheckBox->setChecked(config.textureFilter.txHresAltCRC != 0);
+	ui->strongCRCCheckBox->setChecked(config.textureFilter.txStrongCRC != 0);
 	ui->force16bppCheckBox->setChecked(config.textureFilter.txForce16bpp != 0);
 	ui->compressCacheCheckBox->setChecked(config.textureFilter.txCacheCompression != 0);
 	ui->saveTextureCacheCheckBox->setChecked(config.textureFilter.txSaveCache != 0);
@@ -377,9 +383,9 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 	ui->hiresTexFileStorageCheckBox->setChecked(config.textureFilter.txHiresTextureFileStorage != 0);
 	ui->noTexFileStorageCheckBox->setChecked(config.textureFilter.txNoTextureFileStorage != 0);
 
-	ui->texPackPathLineEdit->setText(QString::fromWCharArray(config.textureFilter.txPath));
-	ui->texCachePathLineEdit->setText(QString::fromWCharArray(config.textureFilter.txCachePath));
-	ui->texDumpPathLineEdit->setText(QString::fromWCharArray(config.textureFilter.txDumpPath));
+	ui->texPackPathLineEdit->setText(QDir::toNativeSeparators(QString::fromWCharArray(config.textureFilter.txPath)));
+	ui->texCachePathLineEdit->setText(QDir::toNativeSeparators(QString::fromWCharArray(config.textureFilter.txCachePath)));
+	ui->texDumpPathLineEdit->setText(QDir::toNativeSeparators(QString::fromWCharArray(config.textureFilter.txDumpPath)));
 
 	ui->textureFilterLimitSpinBox->setValue(config.textureFilter.txHiresVramLimit);
 
@@ -649,7 +655,9 @@ void ConfigDialog::accept(bool justSave) {
 	else if (ui->aspectComboBox->currentIndex() == 1)
 		config.frameBufferEmulation.aspect = Config::a169;
 	else if (ui->aspectComboBox->currentIndex() == 3)
-		config.frameBufferEmulation.aspect = Config::aAdjust;
+		config.frameBufferEmulation.aspect = Config::aAdjust43;
+	else if (ui->aspectComboBox->currentIndex() == 4)
+		config.frameBufferEmulation.aspect = Config::aAdjust169;
 
 	if (ui->factor0xRadioButton->isChecked())
 		config.frameBufferEmulation.nativeResFactor = 0;
@@ -684,6 +692,7 @@ void ConfigDialog::accept(bool justSave) {
 	config.textureFilter.txHiresEnable = ui->texturePackGroupBox->isChecked() ? 1 : 0;
 	config.textureFilter.txHiresFullAlphaChannel = ui->alphaChannelCheckBox->isChecked() ? 1 : 0;
 	config.textureFilter.txHresAltCRC = ui->alternativeCRCCheckBox->isChecked() ? 1 : 0;
+	config.textureFilter.txStrongCRC = ui->strongCRCCheckBox->isChecked() ? 1 : 0;
 
 	config.textureFilter.txCacheCompression = ui->compressCacheCheckBox->isChecked() ? 1 : 0;
 	config.textureFilter.txForce16bpp = ui->force16bppCheckBox->isChecked() ? 1 : 0;
@@ -877,7 +886,7 @@ void ConfigDialog::on_texPackPathButton_clicked()
 		ui->texPackPathLineEdit->text(),
 		options);
 	if (!directory.isEmpty())
-		ui->texPackPathLineEdit->setText(directory);
+		ui->texPackPathLineEdit->setText(QDir::toNativeSeparators(directory));
 }
 
 void ConfigDialog::on_texCachePathButton_clicked()
@@ -888,7 +897,7 @@ void ConfigDialog::on_texCachePathButton_clicked()
 		ui->texCachePathLineEdit->text(),
 		options);
 	if (!directory.isEmpty())
-		ui->texCachePathLineEdit->setText(directory);
+		ui->texCachePathLineEdit->setText(QDir::toNativeSeparators(directory));
 }
 
 void ConfigDialog::on_texDumpPathButton_clicked()
@@ -899,7 +908,7 @@ void ConfigDialog::on_texDumpPathButton_clicked()
 		ui->texDumpPathLineEdit->text(),
 		options);
 	if (!directory.isEmpty())
-		ui->texDumpPathLineEdit->setText(directory);
+		ui->texDumpPathLineEdit->setText(QDir::toNativeSeparators(directory));
 }
 
 void ConfigDialog::on_noTexFileStorageCheckBox_toggled(bool checked)
@@ -1016,17 +1025,19 @@ void ConfigDialog::on_tabWidget_currentChanged(int tab)
 		ui->tabWidget->setCursor(QCursor(Qt::WaitCursor));
 
 		QMap<QString, QStringList> internalFontList;
-		QString fontDir = QStandardPaths::locate(QStandardPaths::FontsLocation, QString(), QStandardPaths::LocateDirectory);
 		QStringList fontFilter;
 		fontFilter << "*.ttf";
-		QDirIterator fontIt(fontDir, fontFilter, QDir::Files, QDirIterator::Subdirectories);
-		while (fontIt.hasNext()) {
-			QString font = fontIt.next();
-			int id = QFontDatabase::addApplicationFont(font);
-			QStringList fontListFamilies = QFontDatabase::applicationFontFamilies(id);
-			if (!fontListFamilies.isEmpty()) {
-				QString fontListFamily = fontListFamilies.at(0);
-				internalFontList[fontListFamily].append(font);
+		QStringList fontDirs = QStandardPaths::locateAll(QStandardPaths::FontsLocation, QString(), QStandardPaths::LocateDirectory);
+		for (const QString& fontDir : fontDirs) {
+			QDirIterator fontIt(fontDir, fontFilter, QDir::Files, QDirIterator::Subdirectories);
+			while (fontIt.hasNext()) {
+				QString font = fontIt.next();
+				int id = QFontDatabase::addApplicationFont(font);
+				QStringList fontListFamilies = QFontDatabase::applicationFontFamilies(id);
+				if (!fontListFamilies.isEmpty()) {
+					QString fontListFamily = fontListFamilies.at(0);
+					internalFontList[fontListFamily].append(font);
+				}
 			}
 		}
 

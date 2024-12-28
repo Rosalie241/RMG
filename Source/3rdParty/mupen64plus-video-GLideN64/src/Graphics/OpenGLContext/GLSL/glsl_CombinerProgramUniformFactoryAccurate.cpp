@@ -317,7 +317,6 @@ public:
 			uTexWrap[t].set(aTexWrap[t][0], aTexWrap[t][1], _force);
 			uTexClamp[t].set(aTexClamp[t][0], aTexClamp[t][1], _force);
 			uTexWrapEn[t].set(aTexWrapEn[t][0], aTexWrapEn[t][1], _force);
-			uTexWrapEn[t].set(aTexWrapEn[t][0], aTexWrapEn[t][1], _force);
 			uTexClampEn[t].set(aTexClampEn[t][0], aTexClampEn[t][1], _force);
 			uTexMirrorEn[t].set(aTexMirrorEn[t][0], aTexMirrorEn[t][1], _force);
 			uTexSize[t].set(aTexSize[t][0], aTexSize[t][1], _force);

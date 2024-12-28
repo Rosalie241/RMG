@@ -24,6 +24,7 @@
 #include <QString>
 #include <QTableView>
 #include <QMenu>
+#include <QMap>
 #include <QAction>
 #include <QGridLayout>
 #include <QListWidget>
@@ -52,6 +53,8 @@ class RomBrowserWidget : public QStackedWidget
     void ShowGrid(void);
 
     void SetGridViewUniformSizes(bool value);
+
+    QMap<QString, CoreRomSettings> GetModelData(void);
 
   private:
     Widget::RomBrowserEmptyWidget*    emptyWidget    = nullptr;
@@ -88,6 +91,7 @@ class RomBrowserWidget : public QStackedWidget
     QAction* action_SetCoverImage;
     QAction* action_RemoveCoverImage;
 
+    QMenu*   menu_PlayGameWithSlot;
     QMenu*   menu_Columns;
     QAction* action_ColumnsMenuEntry;
 
@@ -110,6 +114,7 @@ class RomBrowserWidget : public QStackedWidget
     void on_DoubleClicked(const QModelIndex& index);
     void customContextMenuRequested(QPoint position);
     void generateColumnsMenu(void);
+    void generateStateMenu(void);
 
     void on_listViewWidget_sortIndicatorChanged(int logicalIndex, Qt::SortOrder sortOrder);
     void on_listViewWidget_sectionResized(int logicalIndex, int oldWidth, int newWidth);
@@ -126,6 +131,7 @@ class RomBrowserWidget : public QStackedWidget
 
     void on_Action_PlayGame(void);
     void on_Action_PlayGameWith(void);
+    void on_Action_PlayGameWithSlot(int);
     void on_Action_RefreshRomList(void);
     void on_Action_OpenRomDirectory(void);
     void on_Action_ChangeRomDirectory(void);
@@ -140,6 +146,7 @@ class RomBrowserWidget : public QStackedWidget
   signals:
     void PlayGame(QString);
     void PlayGameWith(CoreRomType, QString);
+    void PlayGameWithSlot(QString, int);
     void EditGameSettings(QString);
     void EditGameInputSettings(QString);
     void Cheats(QString);

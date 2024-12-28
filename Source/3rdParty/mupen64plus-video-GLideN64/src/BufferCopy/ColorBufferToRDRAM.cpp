@@ -214,9 +214,10 @@ void ColorBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress, bool _sync)
 		u32 *ptr_src = (u32*)pPixels;
 		u16 *ptr_dst = (u16*)(RDRAM + _startAddress);
 		m_blueNoiseIdx++;
-		if ((config.generalEmulation.hacks & hack_subscreen) != 0u && height == 1u)
+		if (gDP.m_subscreen) {
 			copyWhiteToRDRAM(m_pCurFrameBuffer);
-		else
+			gDP.m_subscreen = false;
+		} else
 			writeToRdram<u32, u16>(ptr_src, ptr_dst, &ColorBufferToRDRAM::_RGBAtoRGBA16, dummyTester<u32>, 1, width, height, numPixels, _startAddress, m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_size);
 	} else if (m_pCurFrameBuffer->m_size == G_IM_SIZ_8b) {
 		u8 *ptr_src = (u8*)pPixels;

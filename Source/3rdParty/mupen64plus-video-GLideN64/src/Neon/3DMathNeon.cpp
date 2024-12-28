@@ -134,7 +134,7 @@ void InverseTransformVectorNormalize(float src[3], float dst[3], float mtx[4][4]
     dst[2] = product[2];
 }
 
-void InverseTransformVectorNormalize4(float src[4][3], float dst[4][3], float mtx[4][4])
+static void InverseTransformVectorNormalize4(float src[4][3], float dst[4][3], float mtx[4][4])
 {
     // Load mtx
     float32x4x4_t _mtx = vld4q_f32(mtx[0]);
@@ -216,7 +216,7 @@ void InverseTransformVectorNormalize4(float src[4][3], float dst[4][3], float mt
     dst[3][2] = product.val[3][2];
 }
 
-void InverseTransformVectorNormalize7(float src[4][3], float dst[4][3], float mtx[4][4])
+static void InverseTransformVectorNormalize7(float src[4][3], float dst[4][3], float mtx[4][4])
 {
     // Load mtx
     float32x4x4_t _mtx = vld4q_f32(mtx[0]);

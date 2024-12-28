@@ -158,10 +158,11 @@ if (BUILD_INPUT_GCA)
         CONFIGURE_COMMAND ""
         INSTALL_COMMAND ""
 
-        BUILD_COMMAND cargo build --release --features "m64p_compat"
-        BUILD_IN_SOURCE True
+        BUILD_COMMAND cargo build --manifest-path ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-input-gca/Cargo.toml --release --features "m64p_compat" --target-dir=${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-input-gca/target
+        BUILD_IN_SOURCE False
+        BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-input-gca/target/release
 
-        BUILD_BYPRODUCTS ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-input-gca/target/release/${GCA_LIB}
+        BUILD_BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-input-gca/target/release/${GCA_LIB}
     )
 endif(BUILD_INPUT_GCA)
 
@@ -320,7 +321,8 @@ if (USE_ANGRYLION)
 endif(USE_ANGRYLION)
 
 ExternalProject_Get_property(mupen64plus-video-GLideN64 BUILD_BYPRODUCTS)
-set(MUPEN64PLUS_PLUGIN_GFX_GLIDEN64 ${BUILD_BYPRODUCTS} ${GLIDENUI_TRANSLATIONS} ${GLIDEN64_CUSTOM_INI} PARENT_SCOPE)
+set(MUPEN64PLUS_PLUGIN_GFX_GLIDEN64 ${BUILD_BYPRODUCTS} PARENT_SCOPE)
+set(MUPEN64PLUS_PLUGIN_GFX_GLIDEN64_DATA ${GLIDENUI_TRANSLATIONS} ${GLIDEN64_CUSTOM_INI} PARENT_SCOPE)
 
 ExternalProject_Get_property(mupen64plus-video-parallel BUILD_BYPRODUCTS)
 set(MUPEN64PLUS_PLUGIN_GFX_PARALLEL ${BUILD_BYPRODUCTS} PARENT_SCOPE)

@@ -31,17 +31,18 @@ set(RMG_CORE_SOURCES
     m64p/PluginApi.cpp
     CachedRomHeaderAndSettings.cpp
     ConvertStringEncoding.cpp
-    Settings/Settings.cpp
     SpeedLimiter.cpp
     SpeedFactor.cpp
     RomSettings.cpp
     Directories.cpp
     MediaLoader.cpp
     Screenshot.cpp
+    Utils/File.cpp
     RomHeader.cpp
     Emulation.cpp
     SaveState.cpp
     Callback.cpp
+    Settings.cpp
     Plugins.cpp
     Version.cpp
     Cheats.cpp
@@ -73,6 +74,13 @@ if (DISCORD_RPC)
     )
     add_definitions(-DDISCORD_RPC)
 endif(DISCORD_RPC)
+
+if (NETPLAY)
+    list(APPEND RMG_CORE_SOURCES 
+        Netplay.cpp
+    )
+    add_definitions(-DNETPLAY)
+endif(NETPLAY)
 
 if (PORTABLE_INSTALL)
     add_definitions(-DPORTABLE_INSTALL)

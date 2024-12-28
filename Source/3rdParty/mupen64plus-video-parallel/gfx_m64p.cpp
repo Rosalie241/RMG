@@ -50,6 +50,7 @@ ptr_ConfigSetDefaultBool ConfigSetDefaultBool = NULL;
 ptr_ConfigGetParamInt ConfigGetParamInt = NULL;
 ptr_ConfigGetParamBool ConfigGetParamBool = NULL;
 ptr_ConfigSetParameter ConfigSetParameter = NULL;
+ptr_ConfigReceiveNetplayConfig ConfigReceiveNetplayConfig = NULL;
 
 static bool vk_initialized;
 static bool warn_hle;
@@ -169,6 +170,7 @@ EXPORT m64p_error CALL PluginStartup(m64p_dynlib_handle _CoreLibHandle, void *Co
     ConfigGetParamInt = (ptr_ConfigGetParamInt)DLSYM(CoreLibHandle, "ConfigGetParamInt");
     ConfigGetParamBool = (ptr_ConfigGetParamBool)DLSYM(CoreLibHandle, "ConfigGetParamBool");
     ConfigSetParameter = (ptr_ConfigSetParameter)DLSYM(CoreLibHandle, "ConfigSetParameter");
+    ConfigReceiveNetplayConfig = (ptr_ConfigReceiveNetplayConfig)DLSYM(CoreLibHandle, "ConfigReceiveNetplayConfig");
 
     ConfigOpenSection("Video-Parallel", &configVideoParallel);
     ConfigSetDefaultInt(configVideoParallel, KEY_UPSCALING, 1, "Amount of rescaling: 1=None, 2=2x, 4=4x, 8=8x");
@@ -310,6 +312,15 @@ EXPORT int CALL RomOpen(void)
     vk_vertical_stretch = ConfigGetParamInt(configVideoParallel, KEY_VERTICAL_STRETCH);
 
     vk_synchronous = ConfigGetParamBool(configVideoParallel, KEY_SYNCHRONOUS);
+
+    m64p_error netplay_init = ConfigReceiveNetplayConfig(NULL, 0);
+    if (netplay_init != M64ERR_NOT_INIT)
+    {
+        DebugMessage(M64MSG_INFO, "Netplay enabled, disabling vsync");
+        vk_synchronous = 1; // force synchronous rdp during netplay
+        window_vsync   = 0; // force disable vsync during netplay
+        vk_ssreadbacks = 0; // can cause desyncs
+    }
 
     plugin_init();
 

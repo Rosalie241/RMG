@@ -13,7 +13,7 @@
 #include "RomHeader.hpp"
 #include "Error.hpp"
 
-#include "Settings/Settings.hpp"
+#include "Settings.hpp"
 #include "m64p/Api.hpp"
 
 #include <algorithm>
@@ -25,7 +25,7 @@
 // replaces all occurences of any chars in replace with c inside str
 static void str_replace_chars(std::string& str, const std::string replace, const char c)
 {
-    for (uint32_t i = 0; i < str.size(); i++)
+    for (size_t i = 0; i < str.size(); i++)
     {
         char str_char = str.at(i);
         if (replace.find(str_char) != std::string::npos)
@@ -124,25 +124,14 @@ bool CoreDecreaseSaveStateSlot(void)
     return CoreSetSaveStateSlot(slot - 1);
 }
 
-bool CoreGetSaveStatePath(int slot, std::filesystem::path& path)
+bool CoreGetSaveStatePath(CoreRomHeader header, CoreRomSettings settings, int slot, std::filesystem::path& path)
 {
     // TODO: this should probably be an API function
     // in mupen64plus-core instead
-
     std::filesystem::path saveStatePath;
     std::filesystem::path oldSaveStatePath;
     std::string saveStateFileName;
     std::filesystem::path saveStateExtension;
-    CoreRomHeader romHeader;
-    CoreRomSettings romSettings;
-
-    // attempt to retrieve the current
-    // rom header and settings
-    if (!CoreGetCurrentRomHeader(romHeader) ||
-        !CoreGetCurrentRomSettings(romSettings))
-    {
-        return false;
-    }
 
     // retrieve save state directory
     saveStatePath = CoreGetSaveStateDirectory();
@@ -154,7 +143,7 @@ bool CoreGetSaveStatePath(int slot, std::filesystem::path& path)
 
     // construct old save state path
     oldSaveStatePath = saveStatePath;
-    oldSaveStatePath += romSettings.GoodName;
+    oldSaveStatePath += settings.GoodName;
     oldSaveStatePath += saveStateExtension;
 
     // use old filename if it exists
@@ -168,32 +157,32 @@ bool CoreGetSaveStatePath(int slot, std::filesystem::path& path)
     int format = CoreSettingsGetIntValue(SettingsID::Core_SaveFileNameFormat);
     if (format == 0)
     {
-        saveStatePath += romHeader.Name;
+        saveStatePath += header.Name;
         saveStatePath += saveStateExtension;
     }
     else
     {
-        if (romSettings.GoodName.find("(unknown rom)") == std::string::npos)
+        if (settings.GoodName.find("(unknown rom)") == std::string::npos)
         {
-            if (romSettings.GoodName.size() < 32)
+            if (settings.GoodName.size() < 32)
             {
-                saveStatePath += romSettings.GoodName;
+                saveStatePath += settings.GoodName;
             }
             else
             {
-                saveStatePath += romSettings.GoodName.substr(0, 32);
+                saveStatePath += settings.GoodName.substr(0, 32);
             }
         }
-        else if (!romHeader.Name.empty())
+        else if (!header.Name.empty())
         {
-            saveStatePath += romHeader.Name;
+            saveStatePath += header.Name;
         }
         else
         {
             saveStatePath += "unknown";
         }
         saveStatePath += "-";
-        saveStatePath += romSettings.MD5.substr(0, 8);
+        saveStatePath += settings.MD5.substr(0, 8);
         saveStatePath += saveStateExtension;
     }
 
@@ -208,6 +197,22 @@ bool CoreGetSaveStatePath(int slot, std::filesystem::path& path)
 
     path = saveStatePath;
     return true;
+}
+
+bool CoreGetSaveStatePath(int slot, std::filesystem::path& path)
+{
+    CoreRomHeader romHeader;
+    CoreRomSettings romSettings;
+
+    // attempt to retrieve the current
+    // rom header and settings
+    if (!CoreGetCurrentRomHeader(romHeader) ||
+        !CoreGetCurrentRomSettings(romSettings))
+    {
+        return false;
+    }
+
+    return CoreGetSaveStatePath(romHeader, romSettings, slot, path);
 }
 
 bool CoreSaveState(void)
@@ -231,7 +236,7 @@ bool CoreSaveState(void)
     return ret == M64ERR_SUCCESS;
 }
 
-bool CoreSaveState(std::filesystem::path file)
+bool CoreSaveState(std::filesystem::path file, CoreSaveStateType type)
 {
     std::string error;
     m64p_error ret;
@@ -241,7 +246,7 @@ bool CoreSaveState(std::filesystem::path file)
         return false;
     }
 
-    ret = m64p::Core.DoCommand(M64CMD_STATE_SAVE, 1, (void*)file.string().c_str());
+    ret = m64p::Core.DoCommand(M64CMD_STATE_SAVE, (int)type, (void*)file.string().c_str());
     if (ret != M64ERR_SUCCESS)
     {
         error = "CoreSaveState: m64p::Core.DoCommand(M64CMD_STATE_SAVE) Failed: ";

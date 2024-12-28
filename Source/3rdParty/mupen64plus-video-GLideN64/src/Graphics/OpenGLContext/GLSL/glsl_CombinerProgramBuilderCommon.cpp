@@ -1003,26 +1003,18 @@ class ShaderNoise : public ShaderPart
 public:
 	ShaderNoise(const opengl::GLInfo & _glinfo)
 	{
-		if (_glinfo.isGLES2) {
-			m_part =
-				"uniform sampler2D uTexNoise;							\n"
-				"lowp float snoise()									\n"
-				"{														\n"
-				"  mediump vec2 texSize = vec2(640.0, 580.0);			\n"
-				"  mediump vec2 coord = gl_FragCoord.xy/uScreenScale/texSize;	\n"
-				"  return texture2D(uTexNoise, coord).r;				\n"
-				"}														\n"
-				;
-		} else {
-			m_part =
-				"uniform sampler2D uTexNoise;							\n"
-				"lowp float snoise()									\n"
-				"{														\n"
-				"  ivec2 coord = ivec2(gl_FragCoord.xy/uScreenScale);	\n"
-				"  return texelFetch(uTexNoise, coord, 0).r;			\n"
-				"}														\n"
-				;
-		}
+		m_part =
+			"uniform mediump float uNoiseSeed;						\n"
+			"lowp float snoise()									\n"
+			"{														\n"
+			"  highp vec2 coord = floor(gl_FragCoord.xy/uScreenScale);\n"
+			"  highp vec3 p3 = vec3(uNoiseSeed, coord);				\n"
+			// hash13 from https://www.shadertoy.com/view/4djSRW
+			"  p3 = fract(p3 * .1031);								\n"
+			"  p3 += dot(p3, p3.zyx + 31.32);						\n"
+			"  return fract((p3.x + p3.y) * p3.z);					\n"
+			"}														\n"
+			;
 	}
 };
 
@@ -1067,7 +1059,6 @@ public:
 			"}															\n"
 			"lowp vec3 snoiseRGB()									\n"
 			"{														\n"
-			"  mediump vec2 texSize = vec2(640.0, 580.0);			\n"
 			;
 		if (config.generalEmulation.enableHiresNoiseDithering != 0)
 			// multiplier for higher res noise effect
@@ -1077,19 +1068,15 @@ public:
 			m_part +=
 			"  lowp float mult = 1.0;								\n";
 		m_part +=
-			"	mediump vec2 coordR = mult * ((gl_FragCoord.xy)/uScreenScale/texSize);\n"
-			"	mediump vec2 coordG = mult * ((gl_FragCoord.xy + vec2( 0.0, texSize.y / 2.0 ))/uScreenScale/texSize);\n"
-			"	mediump vec2 coordB = mult * ((gl_FragCoord.xy + vec2( texSize.x / 2.0,  0.0))/uScreenScale/texSize);\n"
-			// Only red channel of noise texture contains noise.
-			"  lowp float r = texture(uTexNoise,coordR).r;			\n"
-			"  lowp float g = texture(uTexNoise,coordG).r;			\n"
-			"  lowp float b = texture(uTexNoise,coordB).r;			\n"
-			"														\n"
-			"  return vec3(r,g,b);									\n"
-			"}														\n"
+			"  highp vec2 coord = floor(mult * (gl_FragCoord.xy/uScreenScale));\n"
+			"  highp vec3 p3 = vec3(uNoiseSeed, coord);					\n"
+			// hash33 from https://www.shadertoy.com/view/4djSRW
+			"  p3 = fract(p3 * vec3(.1031, .1030, .0973));				\n"
+			"  p3 += dot(p3, p3.yxz+33.33);								\n"
+			"  return fract((p3.xxy + p3.yxx)*p3.zyx);					\n"
+			"}															\n"
 			"lowp float snoiseA()									\n"
 			"{														\n"
-			"  mediump vec2 texSize = vec2(640.0, 580.0);			\n"
 			;
 		if (config.generalEmulation.enableHiresNoiseDithering != 0)
 			// multiplier for higher res noise effect
@@ -1100,10 +1087,12 @@ public:
 			"  lowp float mult = 1.0;								\n";
 		m_part +=
 			"														\n"
-			"	mediump vec2 coord = mult * ((gl_FragCoord.xy)/uScreenScale/texSize);\n"
-			"														\n"
-			// Only red channel of noise texture contains noise.
-			"  return texture(uTexNoise,coord).r;					\n"
+			"  highp vec2 coord = floor(mult * (gl_FragCoord.xy/uScreenScale));\n"
+			"  highp vec3 p3 = vec3(uNoiseSeed, coord);				\n"
+			// hash13 from https://www.shadertoy.com/view/4djSRW
+			"  p3 = fract(p3 * .1031);								\n"
+			"  p3 += dot(p3, p3.zyx + 31.32);						\n"
+			"  return fract((p3.x + p3.y) * p3.z);					\n"
 			"}														\n"
 			;
 	}

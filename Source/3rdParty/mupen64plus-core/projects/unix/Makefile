@@ -159,7 +159,7 @@ SUBDIR = ../../subprojects
 # base CFLAGS, LDLIBS, and LDFLAGS
 OPTFLAGS ?= -O3 -flto
 WARNFLAGS ?= -Wall
-CFLAGS += -fno-strict-aliasing -fvisibility=hidden -I$(SRCDIR) -I$(SRCDIR)/asm_defines -DM64P_PARALLEL
+CFLAGS += -fvisibility=hidden -I$(SRCDIR) -I$(SRCDIR)/asm_defines -DM64P_PARALLEL
 CXXFLAGS += -fvisibility-inlines-hidden
 LDLIBS +=  -lm
 
@@ -236,9 +236,9 @@ ifeq ($(OS), OSX)
   CXXFLAGS += '-stdlib=libc++'
   ifeq ($(CPU), X86)
     ifeq ($(ARCH_DETECTED), 64BITS)
-      CFLAGS += -pipe -arch x86_64 -mmacosx-version-min=10.7 -isysroot $(OSX_SDK_PATH)
+      CFLAGS += -pipe -arch x86_64 -mmacosx-version-min=10.9 -isysroot $(OSX_SDK_PATH)
     else
-      CFLAGS += -pipe -mmmx -msse -arch i686 -mmacosx-version-min=10.7 -isysroot $(OSX_SDK_PATH)
+      CFLAGS += -pipe -mmmx -msse -arch i686 -mmacosx-version-min=10.9 -isysroot $(OSX_SDK_PATH)
       ifneq ($(PROFILE), 1)
         CFLAGS += -fomit-frame-pointer
       endif
@@ -351,26 +351,18 @@ endif
 
 # test for presence of SDL
 ifeq ($(origin SDL_CFLAGS) $(origin SDL_LDLIBS), undefined undefined)
-  SDL_CONFIG = $(CROSS_COMPILE)sdl2-config
-  ifeq ($(shell which $(SDL_CONFIG) 2>/dev/null),)
-    SDL_CONFIG = $(CROSS_COMPILE)sdl-config
-    ifeq ($(shell which $(SDL_CONFIG) 2>/dev/null),)
-      $(error No SDL development libraries found!)
-    else
-      ifeq ($(NETPLAY), 1)
-        SDL_LDLIBS += -lSDL_net
-      endif
-      # SDL1 doesn't support vulkan
-      VULKAN = 0
-      $(warning Using SDL 1.2 libraries)
-    endif
-  else
-    ifeq ($(NETPLAY), 1)
-      SDL_LDLIBS += -lSDL2_net
-    endif
+  ifeq ($(shell $(PKG_CONFIG) --modversion sdl2 2>/dev/null),)
+    $(error No SDL2 development libraries found!)
   endif
-  SDL_CFLAGS  += $(shell $(SDL_CONFIG) --cflags)
-  SDL_LDLIBS += $(shell $(SDL_CONFIG) --libs)
+  ifeq ($(NETPLAY), 1)
+    ifeq ($(shell $(PKG_CONFIG) --modversion SDL2_net 2>/dev/null),)
+      $(error No SDL2_net development libraries found!)
+    endif
+    SDL_CFLAGS += $(shell $(PKG_CONFIG) --cflags SDL2_net)
+    SDL_LDLIBS += $(shell $(PKG_CONFIG) --libs SDL2_net)
+  endif
+  SDL_CFLAGS += $(shell $(PKG_CONFIG) --cflags sdl2)
+  SDL_LDLIBS += $(shell $(PKG_CONFIG) --libs sdl2)
 endif
 CFLAGS += $(SDL_CFLAGS)
 LDLIBS += $(SDL_LDLIBS)
@@ -797,7 +789,7 @@ targets:
 	@echo "    VULKAN=0       == Disable vulkan support for the default video extension implementation"
 	@echo "    POSTFIX=name   == String added to the name of the the build (default: '')"
 	@echo "  Install Options:"
-	@echo "    PREFIX=path    == install/uninstall prefix (default: /usr/local/)"
+	@echo "    PREFIX=path    == install/uninstall prefix (default: /usr/local)"
 	@echo "    SHAREDIR=path  == path to install shared data files (default: PREFIX/share/mupen64plus)"
 	@echo "    LIBDIR=path    == path to install core library (default: PREFIX/lib)"
 	@echo "    INCDIR=path    == path to install core header files (default: PREFIX/include/mupen64plus)"
@@ -834,7 +826,7 @@ uninstall:
 	$(RM) "$(DESTDIR)$(SHAREDIR)/mupencheat.txt"
 
 clean:
-	$(RM) -r $(TARGET) $(SONAME) _obj $(OBJDIR) $(SRCDIR)/asm_defines/asm_defines_*
+	$(RM) -r _obj $(OBJDIR) $(TARGET) $(SONAME) $(SRCDIR)/asm_defines/asm_defines_*.h
 
 # build dependency files
 CFLAGS += -MD -MP

@@ -15,7 +15,8 @@
 #include "m64p/Api.hpp"
 #include "osal/osal_files.hpp"
 #include "Error.hpp"
-#include "Settings/Settings.hpp"
+#include "Settings.hpp"
+#include "Callback.hpp"
 
 #ifdef USE_LIBFMT
 #include "../3rdParty/fmt/include/fmt/core.h"
@@ -92,20 +93,10 @@ static std::filesystem::path get_cheat_file_name(CoreRomHeader romHeader, CoreRo
 {
     std::filesystem::path cheatFileName;
 
-    // fallback to using MD5 as file name when CRC1 & CRC2 & CountryCode are 0
-    if (romHeader.CRC1 == 0 && romHeader.CRC2 == 0 && romHeader.CountryCode == 0)
+    // Check if the good name is available
+    if (!romHeader.Name.empty())
     {
-        // ensure MD5 is a valid length
-        if (romSettings.MD5.size() != 32)
-        { // if it's invalid, return an empty path
-            return std::filesystem::path();
-        }
-
-        cheatFileName = fmt_string("{}.cht", romSettings.MD5);
-    }
-    else
-    { // else use CRC1 & CRC2 & CountryCode
-        cheatFileName = fmt_string("{:08X}-{:08X}-{:02X}.cht", romHeader.CRC1, romHeader.CRC2, romHeader.CountryCode);
+        cheatFileName = std::format("{}.cht", romHeader.Name);
     }
 
     return cheatFileName;
@@ -183,7 +174,7 @@ static std::string join_split_string(const std::vector<std::string>& splitStr, c
     std::string joinedString;
     std::string element;
     int skippedElements = 0;
-    for (uint32_t i = 0; i < splitStr.size(); i++)
+    for (size_t i = 0; i < splitStr.size(); i++)
     {
         // allow for skipping elements
         if (skippedElements++ < skip)
@@ -209,7 +200,7 @@ static bool parse_cheat(const std::vector<std::string>& lines, int startIndex, C
 {
     std::string error;
     std::string line;
-    for (uint32_t i = startIndex; i < lines.size(); i++)
+    for (size_t i = startIndex; i < lines.size(); i++)
     {
         line = lines.at(i);
 
@@ -348,7 +339,7 @@ static bool parse_cheat_file(const std::vector<std::string>& lines, CoreCheatFil
     bool readHeader = false;
     bool readHeaderName = false;
 
-    for (uint32_t index = 0; index < lines.size(); index++)
+    for (size_t index = 0; index < lines.size(); index++)
     {
         line = lines.at(index);
 
@@ -1009,6 +1000,56 @@ bool CoreApplyCheats(void)
         l_LoadedCheats.push_back({cheat, cheatOption});
     }
 
+    return true;
+}
+
+bool CoreApplyCheatsNetplay(const std::vector<CoreCheat>& cheats) {
+    std::string error;
+    m64p_error ret;
+
+    CoreAddCallbackMessage(CoreDebugMessageType::Info, "Starting CoreApplyCheatsNetplay");
+
+    if (!m64p::Core.IsHooked()) {
+        CoreAddCallbackMessage(CoreDebugMessageType::Info, "Core is not hooked");
+        return false;
+    }
+
+    CoreAddCallbackMessage(CoreDebugMessageType::Info, "Processing cheats...");
+
+    for (const CoreCheat& cheat : cheats) {
+        CoreAddCallbackMessage(CoreDebugMessageType::Info, "Inside cheat loop");
+
+        if (cheat.CheatCodes.empty()) {
+            CoreAddCallbackMessage(CoreDebugMessageType::Info, ("Cheat " + cheat.Name + " has no codes to apply").c_str());
+            continue;
+        }
+
+        CoreAddCallbackMessage(CoreDebugMessageType::Info, ("Processing cheat: " + cheat.Name).c_str());
+
+        bool skipCheat = false;
+        std::vector<m64p_cheat_code> m64p_cheatCodes;
+
+        for (const CoreCheatCode& code : cheat.CheatCodes) {
+            m64p_cheatCodes.push_back({code.Address, code.Value});
+        }
+
+        if (skipCheat) {
+            continue;
+        }
+
+        ret = m64p::Core.AddCheat(cheat.Name.c_str(), m64p_cheatCodes.data(), m64p_cheatCodes.size());
+        if (ret != M64ERR_SUCCESS) {
+            error = "CoreApplyCheatsNetplay m64p::Core.AddCheat(";
+            error += cheat.Name.c_str();
+            error += ") Failed: ";
+            error += m64p::Core.ErrorMessage(ret);
+            CoreSetError(error);
+            CoreAddCallbackMessage(CoreDebugMessageType::Error, error.c_str());
+            return false;
+        }
+    }
+
+    CoreAddCallbackMessage(CoreDebugMessageType::Info, "All cheats processed successfully");
     return true;
 }
 

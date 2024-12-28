@@ -78,6 +78,7 @@ pub enum N64Button {
     CRight,
     CDown,
     CUp,
+    None,
 }
 
 impl N64Button {
@@ -97,6 +98,7 @@ impl N64Button {
             N64Button::CRight => 0x0100,
             N64Button::CDown => 0x0400,
             N64Button::CUp => 0x0800,
+            N64Button::None => 0x0000,
         }
     }
 }

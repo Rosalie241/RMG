@@ -11,7 +11,6 @@
 #include "Performance.h"
 #include "TextureFilterHandler.h"
 #include "PostProcessor.h"
-#include "NoiseTexture.h"
 #include "ZlutTexture.h"
 #include "PaletteTexture.h"
 #include "TextDrawer.h"
@@ -225,10 +224,10 @@ void GraphicsDrawer::updateScissor(FrameBuffer * _pBuffer) const
 
 void GraphicsDrawer::_updateViewport(const FrameBuffer* _pBuffer, const f32 scale) const
 {
-	s32 X, Y, WIDTH, HEIGHT;
+	s32 X = 0, Y = 0, WIDTH, HEIGHT;
 	f32 scaleX, scaleY;
+	const FrameBuffer* pCurrentBuffer = _pBuffer != nullptr ? _pBuffer : frameBufferList().getCurrent();
 	if (scale == 0.0f) {
-		const FrameBuffer* pCurrentBuffer = _pBuffer != nullptr ? _pBuffer : frameBufferList().getCurrent();
 		if (pCurrentBuffer != nullptr) {
 			scaleX = scaleY = pCurrentBuffer->m_scale;
 		} else {
@@ -238,8 +237,10 @@ void GraphicsDrawer::_updateViewport(const FrameBuffer* _pBuffer, const f32 scal
 	} else {
 		scaleX = scaleY = scale;
 	}
-	X = 0;
-	Y = 0;
+	if (pCurrentBuffer != nullptr) {
+		X = roundup(static_cast<f32>(pCurrentBuffer->m_originX), scaleX);
+		Y = roundup(static_cast<f32>(pCurrentBuffer->m_originY), scaleY);
+	}
 	WIDTH = roundup(SCREEN_SIZE_DIM, scaleX);
 	HEIGHT = roundup(SCREEN_SIZE_DIM, scaleY);
 	gfxContext.setViewport(X, Y, WIDTH, HEIGHT);
@@ -983,47 +984,59 @@ void GraphicsDrawer::drawDMATriangles(u32 _numVtx)
 	dropRenderState();
 }
 
-void GraphicsDrawer::_drawThickLine(u32 _v0, u32 _v1, float _width)
+static void correctLineVerticesColor(SPVertex _vertexBuf[2], SPVertex& _v0)
 {
+	auto copyColors = [](f32 const* src, f32* dst1, f32* dst2)
+	{
+		for (u32 i = 0; i < 4; ++i)
+			dst1[i] = dst2[i] = src[i];
+	};
+
+	auto convertNormalsToColors = [](f32 const* normals, f32* dst)
+	{
+		// Line3D* microcodes have no lighting code
+		// Original colors are stored in vertex normals, which need to be converted back to colors.
+		for (u32 i = 0; i < 3; ++i) {
+			f32 color = normals[i] * 0.5f;
+			if (color < 0.0f)
+				color += 1.0f;
+			dst[i] = color;
+		}
+	};
+
+	SPVertex & vtx1 = _vertexBuf[0];
+	SPVertex & vtx2 = _vertexBuf[1];
 	if ((gSP.geometryMode & G_LIGHTING) == 0) {
 		if ((gSP.geometryMode & G_SHADE) == 0) {
-			SPVertex & vtx1 = triangles.vertices[_v0];
-			vtx1.flat_r = gDP.primColor.r;
-			vtx1.flat_g = gDP.primColor.g;
-			vtx1.flat_b = gDP.primColor.b;
-			vtx1.flat_a = gDP.primColor.a;
-			SPVertex & vtx2 = triangles.vertices[_v1];
-			vtx2.flat_r = gDP.primColor.r;
-			vtx2.flat_g = gDP.primColor.g;
-			vtx2.flat_b = gDP.primColor.b;
-			vtx2.flat_a = gDP.primColor.a;
-		}
-		else if ((gSP.geometryMode & G_SHADING_SMOOTH) == 0) {
+			copyColors(&gDP.primColor.r, &vtx1.r, &vtx1.flat_r);
+			copyColors(&gDP.primColor.r, &vtx2.r, &vtx2.flat_r);
+		} else if ((gSP.geometryMode & G_SHADING_SMOOTH) == 0) {
 			// Flat shading
-			SPVertex & vtx0 = triangles.vertices[_v0 + ((RSP.w1 >> 24) & 3)];
-			SPVertex & vtx1 = triangles.vertices[_v0];
-			vtx1.r = vtx1.flat_r = vtx0.r;
-			vtx1.g = vtx1.flat_g = vtx0.g;
-			vtx1.b = vtx1.flat_b = vtx0.b;
-			vtx1.a = vtx1.flat_a = vtx0.a;
-			SPVertex & vtx2 = triangles.vertices[_v1];
-			vtx2.r = vtx2.flat_r = vtx0.r;
-			vtx2.g = vtx2.flat_g = vtx0.g;
-			vtx2.b = vtx2.flat_b = vtx0.b;
-			vtx2.a = vtx2.flat_a = vtx0.a;
+			copyColors(&_v0.r, &vtx1.r, &vtx1.flat_r);
+			copyColors(&_v0.r, &vtx2.r, &vtx2.flat_r);
 		}
 	}
+	else {
+		convertNormalsToColors(&vtx1.nx, &vtx1.r);
+		convertNormalsToColors(&vtx2.nx, &vtx2.r);
+	}
+}
+
+void GraphicsDrawer::_drawThickLine(u32 _v0, u32 _v1, float _width, u32 _flag)
+{
+	SPVertex vertexBuf[2] = { triangles.vertices[_v0], triangles.vertices[_v1] };
+	correctLineVerticesColor(vertexBuf, triangles.vertices[_flag]);
 
 	setDMAVerticesSize(4);
 	SPVertex * pVtx = getDMAVerticesData();
 	const f32 ySign = GBI.isNegativeY() ? -1.0f : 1.0f;
-	pVtx[0] = triangles.vertices[_v0];
+	pVtx[0] = vertexBuf[0];
 	pVtx[0].x = pVtx[0].x / pVtx[0].w * gSP.viewport.vscale[0] + gSP.viewport.vtrans[0];
 	pVtx[0].y = ySign * pVtx[0].y / pVtx[0].w * gSP.viewport.vscale[1] + gSP.viewport.vtrans[1];
 	pVtx[0].z = pVtx[0].z / pVtx[0].w;
 	pVtx[1] = pVtx[0];
 
-	pVtx[2] = triangles.vertices[_v1];
+	pVtx[2] = vertexBuf[1];
 	pVtx[2].x = pVtx[2].x / pVtx[2].w * gSP.viewport.vscale[0] + gSP.viewport.vtrans[0];
 	pVtx[2].y = ySign * pVtx[2].y / pVtx[2].w * gSP.viewport.vscale[1] + gSP.viewport.vtrans[1];
 	pVtx[2].z = pVtx[2].z / pVtx[2].w;
@@ -1059,12 +1072,12 @@ void GraphicsDrawer::_drawThickLine(u32 _v0, u32 _v1, float _width)
 	drawScreenSpaceTriangle(4);
 }
 
-void GraphicsDrawer::drawLine(u32 _v0, u32 _v1, float _width)
+void GraphicsDrawer::drawLine(u32 _v0, u32 _v1, float _width, u32 _flag)
 {
 	m_texrectDrawer.draw();
 	m_statistics.lines++;
 
-	if (!_canDraw())
+	if (!_canDraw() || _width <= 0.0f)
 		return;
 
 	f32 lineWidth = _width;
@@ -1072,8 +1085,9 @@ void GraphicsDrawer::drawLine(u32 _v0, u32 _v1, float _width)
 		lineWidth *= dwnd().getScaleX();
 	else
 		lineWidth *= config.frameBufferEmulation.nativeResFactor;
+
 	if (lineWidth > m_maxLineWidth) {
-		_drawThickLine(_v0, _v1, _width * 0.5f);
+		_drawThickLine(_v0, _v1, _width * 0.5f, _flag);
 		return;
 	}
 
@@ -1088,6 +1102,8 @@ void GraphicsDrawer::drawLine(u32 _v0, u32 _v1, float _width)
 		_updateViewport();
 
 	SPVertex vertexBuf[2] = { triangles.vertices[_v0], triangles.vertices[_v1] };
+	correctLineVerticesColor(vertexBuf, triangles.vertices[_flag]);
+
 	gfxContext.drawLine(lineWidth, vertexBuf);
 	dropRenderState();
 }
@@ -1959,7 +1975,6 @@ void GraphicsDrawer::_initData()
 	TFH.init();
 	PostProcessor::get().init();
 	g_zlutTexture.init();
-	g_noiseTexture.init();
 	g_paletteTexture.init();
 	perf.reset();
 	FBInfo::fbInfo.reset();
@@ -1983,7 +1998,6 @@ void GraphicsDrawer::_destroyData()
 	m_texrectDrawer.destroy();
 	g_paletteTexture.destroy();
 	g_zlutTexture.destroy();
-	g_noiseTexture.destroy();
 	PostProcessor::get().destroy();
 	if (TFH.optionsChanged())
 		TFH.shutdown();

@@ -59,7 +59,6 @@ set(GLideN64_SOURCES
   gSP.cpp
   Log.cpp
   N64.cpp
-  NoiseTexture.cpp
   PaletteTexture.cpp
   Performance.cpp
   PostProcessor.cpp
@@ -121,8 +120,10 @@ set(GLideN64_SOURCES
   uCodes/F3DBETA.cpp
   uCodes/F3DDKR.cpp
   uCodes/F3DEX.cpp
+  uCodes/F3DEX095.cpp
   uCodes/F3DAM.cpp
   uCodes/F3DEX2.cpp
+  uCodes/F3DEX3.cpp
   uCodes/F3DEX2ACCLAIM.cpp
   uCodes/F3DEX2CBFD.cpp
   uCodes/F3DZEX2.cpp
@@ -192,8 +193,8 @@ if( NOT CMAKE_BUILD_TYPE)
         set( CMAKE_BUILD_TYPE Release)
 endif( NOT CMAKE_BUILD_TYPE)
 
-if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "MinSizeRel" 
-    OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "MinSizeRel" OR
+   CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
         set(GLIDEN64_BUILD_TYPE Release)
 elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(GLIDEN64_BUILD_TYPE Debug)
@@ -521,7 +522,7 @@ else(EGL)
   endif(NOT OPENGL_FOUND)
 endif(EGL)
 
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
   #check for compiler version
   execute_process(COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE G++_VERSION)
   if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND G++_VERSION VERSION_LESS 4.8)

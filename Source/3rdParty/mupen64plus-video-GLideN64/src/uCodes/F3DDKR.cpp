@@ -62,7 +62,8 @@ void F3DJFG_DMA_Vtx(u32 w0, u32 w1)
 
 void F3DDKR_DMA_Tri(u32 w0, u32 w1)
 {
-	gSPDMATriangles( w1, _SHIFTR( w0, 4, 12 ) );
+	gSP.texture.on = _SHIFTR(w0, 16, 4);
+	gSPDMATriangles(w1, _SHIFTR(w0, 20, 4) + 1);
 	gSP.vertexi = 0;
 }
 

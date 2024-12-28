@@ -369,7 +369,6 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
       <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_wtl'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\N64.cpp" />
-    <ClCompile Include="..\..\src\NoiseTexture.cpp" />
     <ClCompile Include="..\..\src\PaletteTexture.cpp" />
     <ClCompile Include="..\..\src\Performance.cpp" />
     <ClCompile Include="..\..\src\PostProcessor.cpp" />
@@ -392,9 +391,11 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
     <ClCompile Include="..\..\src\uCodes\F3DBETA.cpp" />
     <ClCompile Include="..\..\src\uCodes\F3DDKR.cpp" />
     <ClCompile Include="..\..\src\uCodes\F3DEX.cpp" />
+    <ClCompile Include="..\..\src\uCodes\F3DEX095.cpp" />
     <ClCompile Include="..\..\src\uCodes\F3DEX2.cpp" />
     <ClCompile Include="..\..\src\uCodes\F3DEX2ACCLAIM.cpp" />
     <ClCompile Include="..\..\src\uCodes\F3DEX2CBFD.cpp" />
+    <ClCompile Include="..\..\src\uCodes\F3DEX3.cpp" />
     <ClCompile Include="..\..\src\uCodes\F3DZEX2.cpp" />
     <ClCompile Include="..\..\src\uCodes\F3DFLX2.cpp" />
     <ClCompile Include="..\..\src\uCodes\F3DGOLDEN.cpp" />
@@ -520,7 +521,6 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
       <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_wtl'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\src\N64.h" />
-    <ClInclude Include="..\..\src\NoiseTexture.h" />
     <ClInclude Include="..\..\src\PaletteTexture.h" />
     <ClInclude Include="..\..\src\Performance.h" />
     <ClInclude Include="..\..\src\Platform.h" />
@@ -541,9 +541,11 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
     <ClInclude Include="..\..\src\uCodes\F3DBETA.h" />
     <ClInclude Include="..\..\src\uCodes\F3DDKR.h" />
     <ClInclude Include="..\..\src\uCodes\F3DEX.h" />
+    <ClInclude Include="..\..\src\uCodes\F3DEX095.h" />
     <ClInclude Include="..\..\src\uCodes\F3DEX2.h" />
     <ClInclude Include="..\..\src\uCodes\F3DEX2ACCLAIM.h" />
     <ClInclude Include="..\..\src\uCodes\F3DEX2CBFD.h" />
+    <ClInclude Include="..\..\src\uCodes\F3DEX3.h" />
     <ClInclude Include="..\..\src\uCodes\F3DZEX2.h" />
     <ClInclude Include="..\..\src\uCodes\F3DFLX2.h" />
     <ClInclude Include="..\..\src\uCodes\F3DGOLDEN.h" />

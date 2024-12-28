@@ -27,14 +27,10 @@ extern "C"
 		if (rt)
 			rsp->sr[rt] = res;
 
-			// CFG_MEND_SEMAPHORE_LOCK == 0 by default,
-			// so don't bother implementing semaphores.
-			// It makes Mario Golf run terribly for some reason.
-
 #ifdef PARALLEL_INTEGRATION
-		// WAIT_FOR_CPU_HOST. From CXD4.
 		if (rd == CP0_REGISTER_SP_STATUS)
 		{
+			// Might be waiting for the CPU to set a signal bit on the STATUS register. Increment timeout
 			RSP::MFC0_count[rt] += 1;
 			if (RSP::MFC0_count[rt] >= RSP::SP_STATUS_TIMEOUT)
 			{
@@ -44,10 +40,37 @@ extern "C"
 		}
 #endif
 
+#if 0 // FIXME: this is broken with upstream mupen64plus-core
+		if (rd == CP0_REGISTER_SP_SEMAPHORE)
+		{
+			if (*rsp->cp0.cr[CP0_REGISTER_SP_SEMAPHORE])
+			{
+#ifdef PARALLEL_INTEGRATION
+				RSP::MFC0_count[rt] += 8; // Almost certainly waiting on the CPU. Timeout faster.
+				if (RSP::MFC0_count[rt] >= RSP::SP_STATUS_TIMEOUT)
+				{
+					*RSP::rsp.SP_STATUS_REG |= SP_STATUS_HALT;
+					return MODE_CHECK_FLAGS;
+				}
+#endif
+			}
+			else
+				*rsp->cp0.cr[CP0_REGISTER_SP_SEMAPHORE] = 1;
+		}
+#endif
+
 		//if (rd == 4) // SP_STATUS_REG
 		//   fprintf(stderr, "READING STATUS REG!\n");
 
 		return MODE_CONTINUE;
+	}
+
+#define RSP_HANDLE_STATUS_WRITE(flag) \
+	switch (rt & (SP_SET_##flag | SP_CLR_##flag)) \
+	{ \
+		case SP_SET_##flag: status |= SP_STATUS_##flag; break; \
+		case SP_CLR_##flag: status &= ~SP_STATUS_##flag; break; \
+		default: break; \
 	}
 
 	static inline int rsp_status_write(RSP::CPUState *rsp, uint32_t rt)
@@ -56,68 +79,27 @@ extern "C"
 
 		uint32_t status = *rsp->cp0.cr[CP0_REGISTER_SP_STATUS];
 
-		if (rt & SP_CLR_HALT)
-			status &= ~SP_STATUS_HALT;
-		else if (rt & SP_SET_HALT)
-			status |= SP_STATUS_HALT;
+		RSP_HANDLE_STATUS_WRITE(HALT)
+		RSP_HANDLE_STATUS_WRITE(SSTEP)
+		RSP_HANDLE_STATUS_WRITE(INTR_BREAK)
+		RSP_HANDLE_STATUS_WRITE(SIG0)
+		RSP_HANDLE_STATUS_WRITE(SIG1)
+		RSP_HANDLE_STATUS_WRITE(SIG2)
+		RSP_HANDLE_STATUS_WRITE(SIG3)
+		RSP_HANDLE_STATUS_WRITE(SIG4)
+		RSP_HANDLE_STATUS_WRITE(SIG5)
+		RSP_HANDLE_STATUS_WRITE(SIG6)
+		RSP_HANDLE_STATUS_WRITE(SIG7)
+
+		switch (rt & (SP_SET_INTR | SP_CLR_INTR))
+		{
+			case SP_SET_INTR: *rsp->cp0.irq |= 1; break;
+			case SP_CLR_INTR: *rsp->cp0.irq &= ~1; break;
+			default: break;
+		}
 
 		if (rt & SP_CLR_BROKE)
 			status &= ~SP_STATUS_BROKE;
-
-		if (rt & SP_CLR_INTR)
-			*rsp->cp0.irq &= ~1;
-		else if (rt & SP_SET_INTR)
-			*rsp->cp0.irq |= 1;
-
-		if (rt & SP_CLR_SSTEP)
-			status &= ~SP_STATUS_SSTEP;
-		else if (rt & SP_SET_SSTEP)
-			status |= SP_STATUS_SSTEP;
-
-		if (rt & SP_CLR_INTR_BREAK)
-			status &= ~SP_STATUS_INTR_BREAK;
-		else if (rt & SP_SET_INTR_BREAK)
-			status |= SP_STATUS_INTR_BREAK;
-
-		if (rt & SP_CLR_SIG0)
-			status &= ~SP_STATUS_SIG0;
-		else if (rt & SP_SET_SIG0)
-			status |= SP_STATUS_SIG0;
-
-		if (rt & SP_CLR_SIG1)
-			status &= ~SP_STATUS_SIG1;
-		else if (rt & SP_SET_SIG1)
-			status |= SP_STATUS_SIG1;
-
-		if (rt & SP_CLR_SIG2)
-			status &= ~SP_STATUS_SIG2;
-		else if (rt & SP_SET_SIG2)
-			status |= SP_STATUS_SIG2;
-
-		if (rt & SP_CLR_SIG3)
-			status &= ~SP_STATUS_SIG3;
-		else if (rt & SP_SET_SIG3)
-			status |= SP_STATUS_SIG3;
-
-		if (rt & SP_CLR_SIG4)
-			status &= ~SP_STATUS_SIG4;
-		else if (rt & SP_SET_SIG4)
-			status |= SP_STATUS_SIG4;
-
-		if (rt & SP_CLR_SIG5)
-			status &= ~SP_STATUS_SIG5;
-		else if (rt & SP_SET_SIG5)
-			status |= SP_STATUS_SIG5;
-
-		if (rt & SP_CLR_SIG6)
-			status &= ~SP_STATUS_SIG6;
-		else if (rt & SP_SET_SIG6)
-			status |= SP_STATUS_SIG6;
-
-		if (rt & SP_CLR_SIG7)
-			status &= ~SP_STATUS_SIG7;
-		else if (rt & SP_SET_SIG7)
-			status |= SP_STATUS_SIG7;
 
 		*rsp->cp0.cr[CP0_REGISTER_SP_STATUS] = status;
 		return ((*rsp->cp0.irq & 1) || (status & SP_STATUS_HALT)) ? MODE_CHECK_FLAGS : MODE_CONTINUE;
@@ -178,6 +160,7 @@ extern "C"
 
 		*rsp->cp0.cr[CP0_REGISTER_DMA_DRAM] = source;
 		*rsp->cp0.cr[CP0_REGISTER_DMA_CACHE] = dest;
+		*rsp->cp0.cr[CP0_REGISTER_DMA_READ_LENGTH] = 0xff8;
 
 #ifdef INTENSE_DEBUG
 		log_rsp_mem_parallel();
@@ -231,6 +214,7 @@ extern "C"
 
 		*rsp->cp0.cr[CP0_REGISTER_DMA_CACHE] = source;
 		*rsp->cp0.cr[CP0_REGISTER_DMA_DRAM] = dest;
+		*rsp->cp0.cr[CP0_REGISTER_DMA_WRITE_LENGTH] = 0xff8;
 #ifdef INTENSE_DEBUG
 		log_rsp_mem_parallel();
 #endif
@@ -269,9 +253,9 @@ extern "C"
 		case CP0_REGISTER_SP_STATUS:
 			return rsp_status_write(rsp, val);
 
-		case CP0_REGISTER_SP_RESERVED:
-			// CXD4 forces this to 0.
-			*rsp->cp0.cr[CP0_REGISTER_SP_RESERVED] = 0;
+		case CP0_REGISTER_SP_SEMAPHORE:
+			// Any write to the semaphore register, regardless of value, sets it to 0 for the next read
+			*rsp->cp0.cr[CP0_REGISTER_SP_SEMAPHORE] = 0;
 			break;
 
 		case CP0_REGISTER_CMD_START:

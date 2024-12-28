@@ -5,7 +5,6 @@
 #include <Graphics/Context.h>
 
 #include <Textures.h>
-#include <NoiseTexture.h>
 #include <FrameBuffer.h>
 #include <DisplayWindow.h>
 #include <RSP.h>
@@ -15,20 +14,21 @@ namespace {
 using namespace glsl;
 /*---------------UniformGroup-------------*/
 
-class UNoiseTex : public UniformGroup
+class UNoiseSeed : public UniformGroup
 {
 public:
-	UNoiseTex(GLuint _program) {
-		LocateUniform(uTexNoise);
+	UNoiseSeed(GLuint _program) {
+		LocateUniform(uNoiseSeed);
 	}
 
 	void update(bool _force) override
 	{
-		uTexNoise.set(int(graphics::textureIndices::NoiseTex), _force);
+		u32 counter = dwnd().getBuffersSwapCount();
+		uNoiseSeed.set(static_cast<f32>(counter & 0xff), _force);
 	}
 
 private:
-	iUniform uTexNoise;
+	fUniform uNoiseSeed;
 };
 
 class UDepthTex : public UniformGroup
@@ -323,8 +323,7 @@ private:
 class UDitherMode : public UniformGroup
 {
 public:
-	UDitherMode(GLuint _program, bool _usesNoise)
-	: m_usesNoise(_usesNoise)
+	UDitherMode(GLuint _program)
 	{
 		LocateUniform(uAlphaCompareMode);
 		LocateUniform(uAlphaDitherMode);
@@ -343,18 +342,12 @@ public:
 			uAlphaDitherMode.set(0, _force);
 			uColorDitherMode.set(0, _force);
 		}
-
-		bool updateNoiseTex = m_usesNoise;
-		updateNoiseTex |= (gDP.otherMode.cycleType < G_CYC_COPY) && (gDP.otherMode.colorDither == G_CD_NOISE || gDP.otherMode.alphaDither == G_AD_NOISE || gDP.otherMode.alphaCompare == G_AC_DITHER);
-		if (updateNoiseTex)
-			g_noiseTexture.update();
 	}
 
 private:
 	iUniform uAlphaCompareMode;
 	iUniform uAlphaDitherMode;
 	iUniform uColorDitherMode;
-	bool m_usesNoise;
 };
 
 class UScreenScale : public UniformGroup
@@ -770,9 +763,9 @@ private:
 /*---------------CombinerProgramUniformFactoryCommon-------------*/
 namespace glsl {
 
-void CombinerProgramUniformFactoryCommon::_addNoiseTex(GLuint _program, UniformGroups &_uniforms) const
+void CombinerProgramUniformFactoryCommon::_addNoiseSeed(GLuint _program, UniformGroups &_uniforms) const
 {
-	_uniforms.emplace_back(new UNoiseTex(_program));
+	_uniforms.emplace_back(new UNoiseSeed(_program));
 }
 
 void CombinerProgramUniformFactoryCommon::_addScreenSpaceTriangleInfo(GLuint _program, UniformGroups &_uniforms) const
@@ -845,9 +838,9 @@ void CombinerProgramUniformFactoryCommon::_addBlendCvg(GLuint _program, UniformG
 	_uniforms.emplace_back(new UBlendCvg(_program));
 }
 
-void CombinerProgramUniformFactoryCommon::_addDitherMode(GLuint _program, UniformGroups &_uniforms, bool _usesNoise) const
+void CombinerProgramUniformFactoryCommon::_addDitherMode(GLuint _program, UniformGroups &_uniforms) const
 {
-	_uniforms.emplace_back(new UDitherMode(_program, _usesNoise));
+	_uniforms.emplace_back(new UDitherMode(_program));
 }
 
 void CombinerProgramUniformFactoryCommon::_addScreenScale(GLuint _program, UniformGroups &_uniforms) const

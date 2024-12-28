@@ -6,41 +6,29 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>369</width>
-    <height>290</height>
+    <width>600</width>
+    <height>400</height>
    </rect>
   </property>
-  <property name="sizePolicy">
-   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-    <horstretch>0</horstretch>
-    <verstretch>0</verstretch>
-   </sizepolicy>
-  </property>
   <property name="windowTitle">
-   <string>About RMG</string>
+   <string>About Mupen MPN</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="sizeConstraint">
-    <enum>QLayout::SetDefaultConstraint</enum>
-   </property>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="logoLayout">
      <item>
-      <widget class="QLabel" name="label">
-       <property name="minimumSize">
-        <size>
-         <width>64</width>
-         <height>64</height>
-        </size>
-       </property>
+      <widget class="QLabel" name="logoLabel">
        <property name="maximumSize">
         <size>
-         <width>64</width>
-         <height>64</height>
+         <width>128</width>
+         <height>128</height>
         </size>
        </property>
-       <property name="text">
-        <string notr="true"/>
+       <property name="minimumSize">
+        <size>
+         <width>128</width>
+         <height>128</height>
+        </size>
        </property>
        <property name="pixmap">
         <pixmap resource="../UIResources.qrc">:/Resource/RMG.png</pixmap>
@@ -56,19 +44,35 @@
     </layout>
    </item>
    <item>
+    <widget class="QLabel" name="titleLabel">
+     <property name="text">
+      <string>Mupen MPN</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font-size: 28px; font-weight: bold;</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QLabel" name="versionLabel">
      <property name="text">
-      <string notr="true">RMG {version}</string>
+      <string>placeholder</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
      </property>
+     <property name="styleSheet">
+      <string notr="true">font-size: 18px;</string>
+     </property>
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="label_2">
+    <widget class="QLabel" name="disclaimerLabel">
      <property name="text">
-      <string>An easy to use &amp; cross-platform mupen64plus front-end written in C++ &amp; Qt</string>
+      <string>Mupen-MPN is a free and open-source Nintendo 64 emulator. This software should not be used to play games you do not legally own.</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -79,56 +83,32 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="label_3">
+    <widget class="QLabel" name="authorLabel">
      <property name="text">
-      <string>This program is licensed under GPLv3</string>
+      <string>Core Contributors:
+- Rosalie: RMG Developer
+- Logan: Simple64 Netcode Developer
+- The mupen64plus Team
+
+MPN Contributors:
+- Tabitha: Mupen MPN Developer
+- Lave: MPN Founder
+- Rain: Cheat Codes
+- Airsolan: Cheat Codes
+- gamemasterplc: Cheat Codes
+
+FunnyBirdMan:
+The late co-founder of MPN, who contributed greatly to the community.</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="label_4">
-     <property name="text">
-      <string>Copyright © 2020-2024 Rosalie Wanders</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Ok</set>
      </property>
     </widget>
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="../UIResources.qrc"/>
- </resources>
- <connections>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>AboutDialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>190</x>
-     <y>283</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>190</x>
-     <y>153</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>
