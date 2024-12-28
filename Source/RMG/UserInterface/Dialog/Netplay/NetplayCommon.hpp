@@ -14,6 +14,8 @@
 #include <QJsonArray>
 #include <QString>
 
+#include <RMG-Core/m64p/api/m64p_types.h>
+
 namespace NetplayCommon
 {
     #define NETPLAYCOMMON_SESSION_REGEX "[a-zA-Z0-9 ]+"
@@ -26,5 +28,7 @@ namespace NetplayCommon
     // Retrieves RSP and GFX plugin names
     QList<QString> GetPluginNames(QString md5QString);
 }
+
+m64p_error loadROM(QString filename);
 
 #endif // NETPLAYCOMMON_HPP

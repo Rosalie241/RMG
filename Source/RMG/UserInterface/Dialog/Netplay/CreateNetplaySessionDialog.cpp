@@ -9,6 +9,8 @@
  */
 #include "CreateNetplaySessionDialog.hpp"
 #include "NetplayCommon.hpp"
+
+#include "NetplayCommon.hpp"
 #include "Utilities/QtMessageBox.hpp"
 
 #include <QRegularExpressionValidator>
@@ -21,6 +23,7 @@
 #include <QJsonArray>
 
 #include <RMG-Core/Core.hpp>
+#include <RMG-Core/m64p/Api.hpp>
 
 using namespace UserInterface::Dialog;
 using namespace Utilities;
@@ -254,32 +257,41 @@ void CreateNetplaySessionDialog::accept()
     createButton->setEnabled(false);
 
     this->sessionFile = romData.File;
+    if (!this->sessionFile.isNull())
+    {
+        if (loadROM(this->sessionFile) == M64ERR_SUCCESS)
+        {
+            QList<QString> plugins = NetplayCommon::GetPluginNames(romData.MD5);
 
-    QList<QString> plugins = NetplayCommon::GetPluginNames(romData.MD5);
+            QJsonObject jsonFeatures;
+            jsonFeatures.insert("rsp_plugin", plugins[0]);
+            jsonFeatures.insert("gfx_plugin", plugins[1]);
 
-    QJsonObject jsonFeatures;
-    jsonFeatures.insert("rsp_plugin", plugins[0]);
-    jsonFeatures.insert("gfx_plugin", plugins[1]);
+            // Retrieve and format cheats
+            QJsonArray cheatsArray = GetSessionCheats();
+            if (!cheatsArray.isEmpty()) {
+                QJsonDocument cheatsDoc(cheatsArray);
+                QString cheatsArrayString = cheatsDoc.toJson(QJsonDocument::Compact);
+                jsonFeatures.insert("cheats", cheatsArrayString);
+            }
 
-    // Retrieve and format cheats
-    QJsonArray cheatsArray = GetSessionCheats();
-    if (!cheatsArray.isEmpty()) {
-        jsonFeatures.insert("cheats", cheatsArray);
+            m64p::Core.DoCommand(M64CMD_ROM_CLOSE, 0, nullptr);
+
+            QJsonObject json;
+            QJsonObject session;
+            session.insert("room_name", this->sessionNameLineEdit->text());
+            session.insert("password", this->passwordLineEdit->text());
+            session.insert("MD5", romData.MD5);
+            session.insert("game_name", this->getGameName(romData.GoodName, romData.File));
+            session.insert("features", jsonFeatures);
+            json.insert("type", "request_create_room");
+            json.insert("player_name", this->nickNameLineEdit->text());
+            json.insert("room", session);
+            NetplayCommon::AddCommonJson(json);
+
+            this->webSocket->sendTextMessage(QJsonDocument(json).toJson());
+        }
     }
-
-    QJsonObject json;
-    QJsonObject session;
-    session.insert("room_name", this->sessionNameLineEdit->text());
-    session.insert("password", this->passwordLineEdit->text());
-    session.insert("MD5", romData.MD5);
-    session.insert("game_name", this->getGameName(romData.GoodName, romData.File));
-    session.insert("features", jsonFeatures);
-    json.insert("type", "request_create_room");
-    json.insert("player_name", this->nickNameLineEdit->text());
-    json.insert("room", session);
-    NetplayCommon::AddCommonJson(json);
-
-    this->webSocket->sendTextMessage(QJsonDocument(json).toJson());
 }
 
 QJsonArray CreateNetplaySessionDialog::GetSessionCheats()
