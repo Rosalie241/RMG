@@ -29,6 +29,27 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.6.9" date="2024-12-28" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix ROM browser storing multiple copies of the ROM information in memory</li>
+          <li>Fix game names in the Create Netplay Session dialog</li>
+          <li>Fix same CPU emulator setting being enforced during netplay</li>
+          <li>Fix VRU being able to be initialized during netplay</li>
+          <li>Fix enter key not clicking on the 'Send' button in the Netplay Session dialog</li>
+          <li>Fix vsync being able to be enabled during netplay</li>
+          <li>Fix 'Synchronize audio' in RMG-Audio being able to be enabled during netplay</li>
+          <li>Fix OSD tab of GLideN64 not listing all installed fonts on Linux</li>
+          <li>Add more error messages to the netplay dialogs</li>
+          <li>Add loading screen to the Netplay Session Browser dialog</li>
+          <li>Add no sessions screen to the Netplay Session Browser dialog</li>
+          <li>Add no ROMs screen to the Create Netplay Session dialog</li>
+          <li>Change default ROM search limit from 250 to 1024</li>
+          <li>Change 'Server URL' to 'Server list URL' in the settings dialog</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.6.8" date="2024-12-22" type="stable">
       <description>
         <p>Changes:</p>
