@@ -1,12 +1,3 @@
-/*
- * Rosalie's Mupen GUI - https://github.com/Rosalie241/RMG
- *  Copyright (C) 2020 Rosalie Wanders <rosalie@mailbox.org>
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 3.
- *  You should have received a copy of the GNU General Public License
- *  along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
 #include "NetplaySessionDialog.hpp"
 #include "NetplayCommon.hpp"
 #include "Utilities/QtMessageBox.hpp"
@@ -22,18 +13,27 @@
 using namespace UserInterface::Dialog;
 using namespace Utilities;
 
-NetplaySessionDialog::NetplaySessionDialog(QWidget *parent, QWebSocket* webSocket, QJsonObject json, QString sessionFile) : QDialog(parent)
+NetplaySessionDialog::NetplaySessionDialog(QWidget *parent, QWebSocket* webSocket, QJsonObject json, QString sessionFile, QJsonArray cheats) : QDialog(parent)
 {
     this->setupUi(this);
 
     this->webSocket = webSocket;
-
+    this->cheats = cheats;
+    
     QJsonObject session = json.value("room").toObject();
 
     this->nickName    = json.value("player_name").toString();
     this->sessionPort = session.value("port").toInt();
     this->sessionName = session.value("room_name").toString();
     this->sessionFile = sessionFile;
+
+    // Store cheats
+    QJsonObject featuresObject = session.value("features").toObject();
+    QString cheatsString = featuresObject.value("cheats").toString();
+    QJsonDocument cheatsDoc = QJsonDocument::fromJson(cheatsString.toUtf8());
+    if (cheatsDoc.isArray()) {
+        this->cheats = cheatsDoc.array();
+    }
 
     this->sessionNameLineEdit->setText(this->sessionName);
     this->gameNameLineEdit->setText(session.value("game_name").toString());
@@ -105,7 +105,7 @@ void NetplaySessionDialog::on_webSocket_textMessageReceived(QString message)
     }
     else if (type == "reply_begin_game")
     {
-        emit OnPlayGame(this->sessionFile, this->webSocket->peerAddress().toString(), this->sessionPort, this->sessionNumber);
+        emit OnPlayGame(this->sessionFile, this->webSocket->peerAddress().toString(), this->sessionPort, this->sessionNumber, this->cheats);
         QDialog::accept();
     }
     else if (type == "reply_motd")

@@ -24,6 +24,7 @@
 #include "Dialog/Netplay/NetplaySessionBrowserDialog.hpp"
 #include "Dialog/Netplay/CreateNetplaySessionDialog.hpp"
 #include "Dialog/Netplay/NetplaySessionDialog.hpp"
+
 #endif // NETPLAY
 #include "UserInterface/EventFilter.hpp"
 #include "Utilities/QtKeyToSdl2Key.hpp"
@@ -595,7 +596,7 @@ void MainWindow::connectEmulationThreadSignals(void)
             Qt::BlockingQueuedConnection);
 }
 
-void MainWindow::launchEmulationThread(QString cartRom, QString address, int port, int player)
+void MainWindow::launchEmulationThread(QString cartRom, QString address, int port, int player, QJsonArray cheats)
 {
     CoreSettingsSave();
 
@@ -611,6 +612,13 @@ void MainWindow::launchEmulationThread(QString cartRom, QString address, int por
 
     this->emulationThread->SetNetplay(address, port, player);
     this->launchEmulationThread(cartRom);
+
+    // Convert QJsonArray to QJsonObject
+    QJsonObject cheatsObject;
+    cheatsObject["custom"] = cheats;  // Wrap the array in an object
+
+    this->emulationThread->ApplyCheatsNetplay(cheatsObject);
+
 }
 
 void MainWindow::launchEmulationThread(QString cartRom, QString diskRom, bool refreshRomListAfterEmulation, int slot)
@@ -1896,7 +1904,7 @@ void MainWindow::on_Action_Netplay_CreateSession(void)
     int ret = dialog.exec();
     if (ret == QDialog::Accepted)
     {
-        Dialog::NetplaySessionDialog sessionDialog(this, &webSocket, dialog.GetSessionJson(), dialog.GetSessionFile());
+        Dialog::NetplaySessionDialog sessionDialog(this, &webSocket, dialog.GetSessionJson(), dialog.GetSessionFile(), QJsonArray());
         connect(&sessionDialog, &Dialog::NetplaySessionDialog::OnPlayGame, this, &MainWindow::on_Netplay_PlayGame);
         sessionDialog.exec();
     }
@@ -1912,7 +1920,8 @@ void MainWindow::on_Action_Netplay_JoinSession(void)
     int ret = dialog.exec();
     if (ret == QDialog::Accepted)
     {
-        Dialog::NetplaySessionDialog sessionDialog(this, &webSocket, dialog.GetSessionJson(), dialog.GetSessionFile());
+        QJsonArray cheats = dialog.GetSessionCheats();  // Retrieve cheats
+        Dialog::NetplaySessionDialog sessionDialog(this, &webSocket, dialog.GetSessionJson(), dialog.GetSessionFile(), cheats);
         connect(&sessionDialog, &Dialog::NetplaySessionDialog::OnPlayGame, this, &MainWindow::on_Netplay_PlayGame);
         sessionDialog.exec();
     }
@@ -2198,9 +2207,9 @@ void MainWindow::on_RomBrowser_Cheats(QString file)
     }
 }
 
-void MainWindow::on_Netplay_PlayGame(QString file, QString address, int port, int player)
+void MainWindow::on_Netplay_PlayGame(QString file, QString address, int port, int player, QJsonArray cheats)
 {
-    this->launchEmulationThread(file, address, port, player);
+    this->launchEmulationThread(file, address, port, player, cheats);
 }
 
 void MainWindow::on_VidExt_Init(VidExtRenderMode renderMode)

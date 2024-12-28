@@ -18,6 +18,7 @@
 #include <QPushButton>
 #include <QJsonObject>
 #include <QFileInfo>
+#include <QJsonArray>
 
 #include <RMG-Core/Core.hpp>
 
@@ -248,7 +249,7 @@ void CreateNetplaySessionDialog::accept()
         return;
     }
 
-    // disable create button while we're processing the request
+    // Disable create button while processing the request
     QPushButton* createButton = this->buttonBox->button(QDialogButtonBox::Ok);
     createButton->setEnabled(false);
 
@@ -260,17 +261,64 @@ void CreateNetplaySessionDialog::accept()
     jsonFeatures.insert("rsp_plugin", plugins[0]);
     jsonFeatures.insert("gfx_plugin", plugins[1]);
 
+    // Retrieve and format cheats
+    QJsonArray cheatsArray = GetSessionCheats();
+    if (!cheatsArray.isEmpty()) {
+        jsonFeatures.insert("cheats", cheatsArray);
+    }
+
     QJsonObject json;
     QJsonObject session;
     session.insert("room_name", this->sessionNameLineEdit->text());
     session.insert("password", this->passwordLineEdit->text());
     session.insert("MD5", romData.MD5);
     session.insert("game_name", this->getGameName(romData.GoodName, romData.File));
-    session.insert("features",  jsonFeatures);
+    session.insert("features", jsonFeatures);
     json.insert("type", "request_create_room");
     json.insert("player_name", this->nickNameLineEdit->text());
     json.insert("room", session);
     NetplayCommon::AddCommonJson(json);
 
     this->webSocket->sendTextMessage(QJsonDocument(json).toJson());
+}
+
+QJsonArray CreateNetplaySessionDialog::GetSessionCheats()
+{
+    std::vector<CoreCheat> coreCheats;
+    QJsonArray cheatsArray;
+
+    if (CoreGetCurrentCheats(coreCheats)) {
+        for (const auto& cheat : coreCheats) {
+            if (CoreIsCheatEnabled(cheat)) {
+                for (const auto& code : cheat.CheatCodes) {
+                    QString codeStr = FormatCheatCode(cheat, code);
+                    if (!codeStr.isEmpty()) {
+                        cheatsArray.append(codeStr);
+                    }
+                }
+            }
+        }
+    }
+
+    return cheatsArray;
+}
+
+QString CreateNetplaySessionDialog::FormatCheatCode(const CoreCheat& cheat, const CoreCheatCode& code)
+{
+    QString codeStr;
+    if (code.UseOptions) {
+        CoreCheatOption currentOption;
+        if (CoreGetCheatOption(cheat, currentOption)) {
+            QString codeValueString = QString("%1").arg(code.Value, 4, 16, QChar('0')).toUpper();
+            QString optionValueString = QString("%1").arg(currentOption.Value, code.OptionSize * 2, 16, QChar('0')).toUpper();
+
+            if (optionValueString.size() == code.OptionSize * 2) {
+                codeValueString.replace(code.OptionIndex * 2, code.OptionSize * 2, optionValueString);
+                codeStr = QString("%1 %2").arg(code.Address, 8, 16, QChar('0')).arg(codeValueString).toUpper();
+            }
+        }
+    } else {
+        codeStr = QString("%1 %2").arg(code.Address, 8, 16, QChar('0')).arg(code.Value, 4, 16, QChar('0')).toUpper();
+    }
+    return codeStr;
 }

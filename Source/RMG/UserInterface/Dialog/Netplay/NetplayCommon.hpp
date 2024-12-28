@@ -11,6 +11,7 @@
 #define NETPLAYCOMMON_HPP
 
 #include <QJsonObject>
+#include <QJsonArray>
 #include <QString>
 
 namespace NetplayCommon

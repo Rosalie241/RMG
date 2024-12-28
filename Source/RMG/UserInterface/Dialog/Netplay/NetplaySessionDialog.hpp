@@ -14,6 +14,7 @@
 #include <QWebSocket>
 #include <QDialog>
 #include <QString>
+#include <QJsonArray>
 
 #include "ui_NetplaySessionDialog.h"
 
@@ -26,7 +27,7 @@ class NetplaySessionDialog : public QDialog, private Ui::NetplaySessionDialog
     Q_OBJECT
 
   public:
-    NetplaySessionDialog(QWidget *parent, QWebSocket* webSocket, QJsonObject json, QString sessionFile);
+    NetplaySessionDialog(QWidget *parent, QWebSocket* webSocket, QJsonObject json, QString sessionFile, QJsonArray cheats);
     ~NetplaySessionDialog(void);
 
   private:
@@ -37,6 +38,7 @@ class NetplaySessionDialog : public QDialog, private Ui::NetplaySessionDialog
     int sessionNumber = -1;
 
   	QWebSocket* webSocket;
+    QJsonArray cheats; 
 
   private slots:
   	void on_webSocket_textMessageReceived(QString message);
@@ -47,7 +49,7 @@ class NetplaySessionDialog : public QDialog, private Ui::NetplaySessionDialog
   	void accept(void) Q_DECL_OVERRIDE;
 
   signals:
-    void OnPlayGame(QString file, QString address, int port, int player);
+    void OnPlayGame(QString file, QString address, int port, int player, QJsonArray cheats);
 };
 } // namespace Dialog
 } // namespace UserInterface
