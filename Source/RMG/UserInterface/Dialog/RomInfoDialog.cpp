@@ -9,7 +9,6 @@
  */
 #include "RomInfoDialog.hpp"
 
-#include <QMessageBox>
 #include <QFileInfo>
 #include <QDir>
 

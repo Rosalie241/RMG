@@ -34,7 +34,6 @@ class InstallUpdateDialog : public QDialog, private Ui::InstallUpdateDialog
 
     void writeAndRunScript(QStringList stringList);
     void launchProcess(QString file, QStringList arguments);
-    void showErrorMessage(QString error, QString details);
 
   protected:
     void timerEvent(QTimerEvent *) Q_DECL_OVERRIDE;

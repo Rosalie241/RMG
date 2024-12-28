@@ -9,7 +9,6 @@
  */
 #include "LogDialog.hpp"
 
-#include <QMessageBox>
 #include <QFileInfo>
 #include <QFont>
 #include <QIcon>

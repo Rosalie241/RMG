@@ -1,14 +1,6 @@
-/*
- * Rosalie's Mupen GUI - https://github.com/Rosalie241/RMG
- *  Copyright (C) 2020 Rosalie Wanders <rosalie@mailbox.org>
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License version 3.
- *  You should have received a copy of the GNU General Public License
- *  along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
 #include "NetplaySessionDialog.hpp"
 #include "NetplayCommon.hpp"
+#include "Utilities/QtMessageBox.hpp"
 
 #include <QJsonDocument>
 #include <QPushButton>
@@ -19,33 +11,50 @@
 #include <RMG-Core/Core.hpp>
 
 using namespace UserInterface::Dialog;
+using namespace Utilities;
 
-NetplaySessionDialog::NetplaySessionDialog(QWidget *parent, QWebSocket* webSocket, QJsonObject sessionJson, QString sessionFile) : QDialog(parent)
+NetplaySessionDialog::NetplaySessionDialog(QWidget *parent, QWebSocket* webSocket, QJsonObject json, QString sessionFile, QJsonArray cheats) : QDialog(parent)
 {
     this->setupUi(this);
 
     this->webSocket = webSocket;
+    this->cheats = cheats;
+    
+    QJsonObject session = json.value("room").toObject();
 
-    this->nickName    = sessionJson.value("player_name").toString();
-    this->sessionPort = sessionJson.value("port").toInt();
-    this->sessionName = sessionJson.value("room_name").toString();
+    this->nickName    = json.value("player_name").toString();
+    this->sessionPort = session.value("port").toInt();
+    this->sessionName = session.value("room_name").toString();
     this->sessionFile = sessionFile;
 
+    // Store cheats
+    QJsonObject featuresObject = session.value("features").toObject();
+    QString cheatsString = featuresObject.value("cheats").toString();
+    QJsonDocument cheatsDoc = QJsonDocument::fromJson(cheatsString.toUtf8());
+    if (cheatsDoc.isArray()) {
+        this->cheats = cheatsDoc.array();
+    }
+
     this->sessionNameLineEdit->setText(this->sessionName);
-    this->gameNameLineEdit->setText(sessionJson.value("game_name").toString());
+    this->gameNameLineEdit->setText(session.value("game_name").toString());
 
     connect(this->webSocket, &QWebSocket::textMessageReceived, this, &NetplaySessionDialog::on_webSocket_textMessageReceived);
 
+    // reset json objects
+    session = {};
+    json    = {};
+
     // request server motd
-    QJsonObject json;
     json.insert("type", "request_motd");
     json.insert("room_name", this->sessionName);
     NetplayCommon::AddCommonJson(json);
     webSocket->sendTextMessage(QJsonDocument(json).toJson());
 
     // request players
+    json = {};
+    session.insert("port", this->sessionPort);
     json.insert("type", "request_players");
-    json.insert("port", this->sessionPort);
+    json.insert("room", session);
     NetplayCommon::AddCommonJson(json);
     webSocket->sendTextMessage(QJsonDocument(json).toJson());
 
@@ -56,17 +65,6 @@ NetplaySessionDialog::NetplaySessionDialog(QWidget *parent, QWebSocket* webSocke
 
 NetplaySessionDialog::~NetplaySessionDialog(void)
 {
-}
-
-void NetplaySessionDialog::showErrorMessage(QString error, QString details)
-{
-    QMessageBox msgBox(this);
-    msgBox.setIcon(QMessageBox::Icon::Critical);
-    msgBox.setWindowTitle("Error");
-    msgBox.setText(error);
-    msgBox.setDetailedText(details);
-    msgBox.addButton(QMessageBox::Ok);
-    msgBox.exec();
 }
 
 void NetplaySessionDialog::on_webSocket_textMessageReceived(QString message)
@@ -81,9 +79,10 @@ void NetplaySessionDialog::on_webSocket_textMessageReceived(QString message)
         {
             this->listWidget->clear();
             QString name;
-            for (int i = 0; i < 4; ++i)
+            QJsonArray names = json.value("player_names").toArray();
+            for (int i = 0; i < 4; i++)
             {
-                name = json.value("player_names").toArray().at(i).toString();
+                name = names.at(i).toString();
                 if (!name.isEmpty())
                 {
                     this->listWidget->addItem(name);
@@ -106,7 +105,7 @@ void NetplaySessionDialog::on_webSocket_textMessageReceived(QString message)
     }
     else if (type == "reply_begin_game")
     {
-        emit OnPlayGame(this->sessionFile, this->webSocket->peerAddress().toString(), this->sessionPort, this->sessionNumber);
+        emit OnPlayGame(this->sessionFile, this->webSocket->peerAddress().toString(), this->sessionPort, this->sessionNumber, this->cheats);
         QDialog::accept();
     }
     else if (type == "reply_motd")
@@ -120,15 +119,18 @@ void NetplaySessionDialog::on_webSocket_textMessageReceived(QString message)
 void NetplaySessionDialog::on_chatLineEdit_textChanged(QString text)
 {
     this->sendPushButton->setEnabled(!text.isEmpty() && text.size() <= 256);
+    this->sendPushButton->setDefault(this->sendPushButton->isEnabled());
 }
 
 void NetplaySessionDialog::on_sendPushButton_clicked(void)
 {
     QJsonObject json;
+    QJsonObject session;
+    session.insert("port", this->sessionPort);
     json.insert("type", "request_chat_message");
-    json.insert("port", this->sessionPort);
     json.insert("player_name", this->nickName);
     json.insert("message", this->chatLineEdit->text());
+    json.insert("room", session);
     NetplayCommon::AddCommonJson(json);
 
     webSocket->sendTextMessage(QJsonDocument(json).toJson());
@@ -141,8 +143,10 @@ void NetplaySessionDialog::accept()
     startButton->setEnabled(false);
 
     QJsonObject json;
+    QJsonObject session;
+    session.insert("port", this->sessionPort);
     json.insert("type", "request_begin_game");
-    json.insert("port", this->sessionPort);
+    json.insert("room", session);
     NetplayCommon::AddCommonJson(json);
 
     webSocket->sendTextMessage(QJsonDocument(json).toJson());

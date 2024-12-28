@@ -656,7 +656,7 @@
                  <item>
                   <widget class="QLabel" name="label_16">
                    <property name="text">
-                    <string>Server URL</string>
+                    <string>Server list URL</string>
                    </property>
                   </widget>
                  </item>

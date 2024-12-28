@@ -193,16 +193,11 @@ static cheat_t *find_or_create_cheat(struct cheat_ctx* ctx, const char *name)
 /* public functions */
 void cheat_init(struct cheat_ctx* ctx)
 {
-    ctx->mutex = SDL_CreateMutex();
     INIT_LIST_HEAD(&ctx->active_cheats);
 }
 
 void cheat_uninit(struct cheat_ctx* ctx)
 {
-    if (ctx->mutex != NULL) {
-        SDL_DestroyMutex(ctx->mutex);
-    }
-    ctx->mutex = NULL;
 }
 
 void cheat_apply_cheats(struct cheat_ctx* ctx, struct r4300_core* r4300, int entry)
@@ -213,12 +208,6 @@ void cheat_apply_cheats(struct cheat_ctx* ctx, struct r4300_core* r4300, int ent
 
     if (list_empty(&ctx->active_cheats))
         return;
-
-    if (ctx->mutex == NULL || SDL_LockMutex(ctx->mutex) != 0)
-    {
-        DebugMessage(M64MSG_ERROR, "Internal error: failed to lock mutex in cheat_apply_cheats()");
-        return;
-    }
 
     list_for_each_entry_t(cheat, &ctx->active_cheats, cheat_t, list) {
         if (cheat->enabled)
@@ -313,7 +302,6 @@ void cheat_apply_cheats(struct cheat_ctx* ctx, struct r4300_core* r4300, int ent
         }
     }
 
-    SDL_UnlockMutex(ctx->mutex);
 }
 
 
@@ -324,12 +312,6 @@ void cheat_delete_all(struct cheat_ctx* ctx)
 
     if (list_empty(&ctx->active_cheats))
         return;
-
-    if (ctx->mutex == NULL || SDL_LockMutex(ctx->mutex) != 0)
-    {
-        DebugMessage(M64MSG_ERROR, "Internal error: failed to lock mutex in cheat_delete_all()");
-        return;
-    }
 
     list_for_each_entry_safe_t(cheat, safe_cheat, &ctx->active_cheats, cheat_t, list) {
         free(cheat->name);
@@ -342,7 +324,6 @@ void cheat_delete_all(struct cheat_ctx* ctx)
         free(cheat);
     }
 
-    SDL_UnlockMutex(ctx->mutex);
 }
 
 int cheat_set_enabled(struct cheat_ctx* ctx, const char* name, int enabled)
@@ -352,22 +333,16 @@ int cheat_set_enabled(struct cheat_ctx* ctx, const char* name, int enabled)
     if (list_empty(&ctx->active_cheats))
         return 0;
 
-    if (ctx->mutex == NULL || SDL_LockMutex(ctx->mutex) != 0)
-    {
-        DebugMessage(M64MSG_ERROR, "Internal error: failed to lock mutex in cheat_set_enabled()");
-        return 0;
-    }
-
     list_for_each_entry_t(cheat, &ctx->active_cheats, cheat_t, list) {
         if (strcmp(name, cheat->name) == 0)
         {
             cheat->enabled = enabled;
-            SDL_UnlockMutex(ctx->mutex);
+            
             return 1;
         }
     }
 
-    SDL_UnlockMutex(ctx->mutex);
+    
     return 0;
 }
 
@@ -376,17 +351,11 @@ int cheat_add_new(struct cheat_ctx* ctx, const char* name, m64p_cheat_code* code
     cheat_t *cheat;
     int i, j;
 
-    if (ctx->mutex == NULL || SDL_LockMutex(ctx->mutex) != 0)
-    {
-        DebugMessage(M64MSG_ERROR, "Internal error: failed to lock mutex in cheat_add_new()");
-        return 0;
-    }
-
     /* create a new cheat function or erase the codes in an existing cheat function */
     cheat = find_or_create_cheat(ctx, name);
     if (cheat == NULL)
     {
-        SDL_UnlockMutex(ctx->mutex);
+        
         return 0;
     }
 
@@ -426,7 +395,7 @@ int cheat_add_new(struct cheat_ctx* ctx, const char* name, m64p_cheat_code* code
         }
     }
 
-    SDL_UnlockMutex(ctx->mutex);
+    
     return 1;
 }
 

@@ -131,7 +131,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 
     void initializeEmulationThread(void);
     void connectEmulationThreadSignals(void);
-    void launchEmulationThread(QString cartRom, QString address, int port, int player);
+    void launchEmulationThread(QString cartRom, QString address, int port, int player, QJsonArray cheats);
     void launchEmulationThread(QString cartRom, QString diskRom = "", bool refreshRomListAfterEmulation = false, int slot = -1);
 
     QString getSaveStateSlotDateTimeText(QAction* action);
@@ -224,7 +224,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     void on_RomBrowser_EditGameInputSettings(QString file);
     void on_RomBrowser_Cheats(QString file);
 
-    void on_Netplay_PlayGame(QString file, QString address, int port, int player);
+    void on_Netplay_PlayGame(QString file, QString address, int port, int player, QJsonArray cheats);
 
   public slots:
 

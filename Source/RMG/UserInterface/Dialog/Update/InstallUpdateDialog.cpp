@@ -8,15 +8,16 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "InstallUpdateDialog.hpp"
+#include "Utilities/QtMessageBox.hpp"
 
 #include <RMG-Core/Core.hpp>
 
-#include <QMessageBox>
 #include <QProcess>
 #include <QDir>
 #include <QTextStream>
 
 using namespace UserInterface::Dialog;
+using namespace Utilities;
 
 InstallUpdateDialog::InstallUpdateDialog(QWidget *parent, QString installationDirectory, QString temporaryDirectory, QString filename) : QDialog(parent)
 {
@@ -87,7 +88,7 @@ void InstallUpdateDialog::install(void)
     QDir dir(this->temporaryDirectory);
     if (!dir.mkdir("extract"))
     {
-        this->showErrorMessage("QDir::mkdir() Failed", "");
+        QtMessageBox::Error(this, "QDir::mkdir() Failed", "");
         this->reject();
         return;
     }
@@ -98,7 +99,7 @@ void InstallUpdateDialog::install(void)
 
     if (!CoreUnzip(fullFilePath.toStdU32String(), extractDirectory.toStdU32String()))
     {
-        this->showErrorMessage("CoreUnzip() Failed", QString::fromStdString(CoreGetError()));
+        QtMessageBox::Error(this, "CoreUnzip() Failed", QString::fromStdString(CoreGetError()));
         this->reject();
         return;
     }
@@ -139,7 +140,7 @@ void InstallUpdateDialog::writeAndRunScript(QStringList stringList)
     QFile scriptFile(scriptPath);
     if (!scriptFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        this->showErrorMessage("QFile::open() Failed", "");
+        QtMessageBox::Error(this, "QFile::open() Failed", "");
         return;
     }
 
@@ -165,20 +166,8 @@ void InstallUpdateDialog::launchProcess(QString file, QStringList arguments)
     process.startDetached();
 }
 
-void InstallUpdateDialog::showErrorMessage(QString error, QString details)
+void InstallUpdateDialog::timerEvent(QTimerEvent *event)
 {
-    QMessageBox msgBox((this->isVisible() ? this : this->parentWidget()));
-    msgBox.setIcon(QMessageBox::Icon::Critical);
-    msgBox.setWindowTitle("Error");
-    msgBox.setText(error);
-    msgBox.setDetailedText(details);
-    msgBox.addButton(QMessageBox::Ok);
-    msgBox.exec();
-}
-
- void InstallUpdateDialog::timerEvent(QTimerEvent *event)
- {
     this->killTimer(event->timerId());
     this->install();
- }
-
+}

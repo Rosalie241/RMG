@@ -27,8 +27,6 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#include "RMG-Core/Settings/Settings.hpp"
-#include "RMG-Core/Settings/SettingsID.hpp"
 #include "main.hpp"
 
 #include "sdl_backend.hpp"

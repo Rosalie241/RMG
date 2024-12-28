@@ -1025,17 +1025,19 @@ void ConfigDialog::on_tabWidget_currentChanged(int tab)
 		ui->tabWidget->setCursor(QCursor(Qt::WaitCursor));
 
 		QMap<QString, QStringList> internalFontList;
-		QString fontDir = QStandardPaths::locate(QStandardPaths::FontsLocation, QString(), QStandardPaths::LocateDirectory);
 		QStringList fontFilter;
 		fontFilter << "*.ttf";
-		QDirIterator fontIt(fontDir, fontFilter, QDir::Files, QDirIterator::Subdirectories);
-		while (fontIt.hasNext()) {
-			QString font = fontIt.next();
-			int id = QFontDatabase::addApplicationFont(font);
-			QStringList fontListFamilies = QFontDatabase::applicationFontFamilies(id);
-			if (!fontListFamilies.isEmpty()) {
-				QString fontListFamily = fontListFamilies.at(0);
-				internalFontList[fontListFamily].append(font);
+		QStringList fontDirs = QStandardPaths::locateAll(QStandardPaths::FontsLocation, QString(), QStandardPaths::LocateDirectory);
+		for (const QString& fontDir : fontDirs) {
+			QDirIterator fontIt(fontDir, fontFilter, QDir::Files, QDirIterator::Subdirectories);
+			while (fontIt.hasNext()) {
+				QString font = fontIt.next();
+				int id = QFontDatabase::addApplicationFont(font);
+				QStringList fontListFamilies = QFontDatabase::applicationFontFamilies(id);
+				if (!fontListFamilies.isEmpty()) {
+					QString fontListFamily = fontListFamilies.at(0);
+					internalFontList[fontListFamily].append(font);
+				}
 			}
 		}
 

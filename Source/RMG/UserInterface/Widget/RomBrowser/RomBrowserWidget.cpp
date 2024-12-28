@@ -395,15 +395,15 @@ bool RomBrowserWidget::getCurrentData(RomBrowserModelData& data)
         return false;
     }
 
-    QModelIndex         index = view->currentIndex();
-    QStandardItem*      item  = model->item(index.row(), index.column());
+    QModelIndex    index = view->currentIndex();
+    QStandardItem* item  = model->item(index.row(), 0);
 
     if (item == nullptr)
     {
         return false;
     }
 
-    data  = model->itemData(index).last().value<RomBrowserModelData>();
+    data = item->data().value<RomBrowserModelData>();
     return true;
 }
 
@@ -476,42 +476,34 @@ void RomBrowserWidget::addRomData(QString file, CoreRomType type, CoreRomHeader 
     // internal name
     QStandardItem* listViewItem2 = new QStandardItem();
     listViewItem2->setText(QString::fromStdString(header.Name));
-    listViewItem2->setData(itemData);
     listViewRow.append(listViewItem2);
     // MD5
     QStandardItem* listViewItem3 = new QStandardItem();
     listViewItem3->setText(QString::fromStdString(settings.MD5));
-    listViewItem3->setData(itemData);
     listViewRow.append(listViewItem3);
     // game format
     QStandardItem* listViewItem4 = new QStandardItem();
     listViewItem4->setText(gameFormat);
-    listViewItem4->setData(itemData);
     listViewRow.append(listViewItem4);
     // file name
     QStandardItem* listViewItem5 = new QStandardItem();
     listViewItem5->setText(QFileInfo(file).completeBaseName());
-    listViewItem5->setData(itemData);
     listViewRow.append(listViewItem5);
     // file extension
     QStandardItem* listViewItem6 = new QStandardItem();
     listViewItem6->setText(((QFileInfo(file).suffix()).prepend(".")).toUpper());
-    listViewItem6->setData(itemData);
     listViewRow.append(listViewItem6);
     // file size
     QStandardItem* listViewItem7 = new QStandardItem();
     listViewItem7->setText(fileSizeString);
-    listViewItem7->setData(itemData);
     listViewRow.append(listViewItem7);
     // game i.d.
     QStandardItem* listViewItem8 = new QStandardItem();
     listViewItem8->setText(QString::fromStdString(header.GameID));
-    listViewItem8->setData(itemData);
     listViewRow.append(listViewItem8);
     // region
     QStandardItem* listViewItem9 = new QStandardItem();
     listViewItem9->setText(QString::fromStdString(header.Region));
-    listViewItem9->setData(itemData);
     listViewRow.append(listViewItem9);
     this->listViewModel->appendRow(listViewRow);
 
