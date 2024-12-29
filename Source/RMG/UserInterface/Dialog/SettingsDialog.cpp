@@ -90,6 +90,10 @@ SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
     // connect hotkey settings to slot
     this->commonHotkeySettings(SettingsDialogAction::ConnectSignals);
 
+#ifndef NETPLAY
+    this->innerInterfaceTabWidget->setTabVisible((int)SettingsDialogTab::InterfaceNetplay, false);
+#endif // !NETPLAY
+
 #ifndef UPDATER
     this->checkForUpdatesCheckBox->setHidden(true);
 #endif // !UPDATER
