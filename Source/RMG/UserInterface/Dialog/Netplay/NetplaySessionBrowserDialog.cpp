@@ -131,7 +131,7 @@ bool NetplaySessionBrowserDialog::validate(void)
 {
     if (this->nickNameLineEdit->text().isEmpty() ||
         this->nickNameLineEdit->text().contains(' ') ||
-        this->nickNameLineEdit->text().size() > 256)
+        this->nickNameLineEdit->text().size() > 128)
     {
         return false;
     }
