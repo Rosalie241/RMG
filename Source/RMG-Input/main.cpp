@@ -189,6 +189,9 @@ static void *l_DebugCallContext                           = nullptr;
 // keyboard state
 static bool l_KeyboardState[SDL_NUM_SCANCODES];
 
+// config GUI state
+static bool l_IsConfigGuiOpen = false;
+
 //
 // Local Functions
 //
@@ -1076,6 +1079,8 @@ EXPORT m64p_error CALL PluginConfig2(int romConfig)
         return M64ERR_NOT_INIT;
     }
 
+    l_IsConfigGuiOpen = true;
+    
     // close controllers
     close_controllers();
 
@@ -1103,8 +1108,11 @@ EXPORT m64p_error CALL PluginConfig2(int romConfig)
     // reload settings
     load_settings();
 
-    // apply profiles
-    apply_controller_profiles();
+    // apply profiles when we're not in netplay
+    if (!CoreHasInitNetplay())
+    {
+        apply_controller_profiles();
+    }
 
     // apply gameboy settings
     apply_gameboy_settings();
@@ -1112,6 +1120,8 @@ EXPORT m64p_error CALL PluginConfig2(int romConfig)
     // open controllers
     open_controllers();
 
+    l_IsConfigGuiOpen = false;
+    
     return M64ERR_SUCCESS;
 }
 
@@ -1186,7 +1196,7 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
 {
     InputProfile* profile = &l_InputProfiles[Control];
 
-    if (!profile->PluggedIn)
+    if (!profile->PluggedIn || l_IsConfigGuiOpen)
     {
         return;
     }
