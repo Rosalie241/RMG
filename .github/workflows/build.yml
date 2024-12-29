@@ -3,8 +3,11 @@ name: RMG
 on: [push, pull_request]
 
 jobs:
-  Linux:
+  build-linux:
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        cmake_args: [-DDISCORD_RPC=ON -DDRAG_DROP=ON -DNETPLAY=ON -DVRU=ON -DUSE_ANGRYLION=ON, -DDISCORD_RPC=OFF -DDRAG_DROP=OFF -DNETPLAY=OFF -DVRU=OFF -DUSE_ANGRYLION=OFF]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -21,12 +24,20 @@ jobs:
           echo "GIT_REVISION=$(git describe --tags --always)" >> $GITHUB_ENV
       - name: Build RMG (AppImage)
         run: |
-          mkdir Build Build/AppImage Bin/ -p
           export src_dir="$(pwd)"
-          export build_dir="$(pwd)/Build/AppImage"
-          export bin_dir="$(pwd)/Bin/AppImage"
+
+          if [ "${{ matrix.cmake_args }}" == "-DDISCORD_RPC=ON -DDRAG_DROP=ON -DNETPLAY=ON -DVRU=ON -DUSE_ANGRYLION=ON" ]
+          then
+            export build_dir="$(pwd)/Build/AppImage"
+            export bin_dir="$(pwd)/Bin/AppImage"
+          else
+            export build_dir="$(pwd)/Build/$RANDOM"
+            export bin_dir="$(pwd)/Bin/$RANDOM"
+          fi
+          
+          mkdir $build_dir Bin/ -p
           cmake -S "$src_dir" -B "$build_dir" -DCMAKE_BUILD_TYPE="Release" \
-                -DUSE_ANGRYLION=ON \
+                ${{ matrix.cmake_args }} \
                 -DCMAKE_INSTALL_PREFIX="/usr" \
                 -DCMAKE_INSTALL_LIBDIR="lib"  \
                 -DPORTABLE_INSTALL="OFF" \
@@ -36,17 +47,22 @@ jobs:
           cmake --install "$build_dir" --strip --prefix="$bin_dir/usr"
         shell: bash
       - name: Create AppImage
+        if: ${{ matrix.cmake_args == '-DDISCORD_RPC=ON -DDRAG_DROP=ON -DNETPLAY=ON -DVRU=ON -DUSE_ANGRYLION=ON' }}
         run: |
           ./Package/AppImage/Create.sh
         shell: bash
       - name: Upload RMG (AppImage)
+        if: ${{ matrix.cmake_args == '-DDISCORD_RPC=ON -DDRAG_DROP=ON -DNETPLAY=ON -DVRU=ON -DUSE_ANGRYLION=ON' }}
         uses: actions/upload-artifact@v4
         with:
           name: RMG-Portable-Linux64-${{ env.GIT_REVISION }}
           path: Bin/*.AppImage
 
-  Windows:
+  build-windows:
     runs-on: windows-2019
+    strategy:
+      matrix:
+        cmake_args: [-DDISCORD_RPC=ON -DDRAG_DROP=ON -DNETPLAY=ON -DVRU=ON -DUSE_ANGRYLION=ON, -DDISCORD_RPC=OFF -DDRAG_DROP=OFF -DNETPLAY=OFF -DVRU=OFF -DUSE_ANGRYLION=OFF]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -83,19 +99,45 @@ jobs:
           echo "GIT_REVISION=$env:revision" >> $env:GITHUB_ENV
         shell: pwsh
       - name: Build RMG (Portable)
-        run: ./Source/Script/Build.sh Release
+        run: |
+          export src_dir="$(pwd)"
+
+          if [ "${{ matrix.cmake_args }}" == "-DDISCORD_RPC=ON -DDRAG_DROP=ON -DNETPLAY=ON -DVRU=ON -DUSE_ANGRYLION=ON" ]
+          then
+            export build_dir="$(pwd)/Build/Release"
+            export bin_dir="$(pwd)/Bin/Release"
+          else
+            export build_dir="$(pwd)/Build/$RANDOM"
+            export bin_dir="$(pwd)/Bin/$RANDOM"
+          fi
+
+          cmake -S "$src_dir" -B "$build_dir" -DCMAKE_BUILD_TYPE="Release" \
+                ${{ matrix.cmake_args }} \
+                -DPORTABLE_INSTALL=ON -DUPDATER=ON
+
+          cmake --build "$build_dir"
+
+          if [ "${{ matrix.cmake_args }}" == "-DDISCORD_RPC=ON -DDRAG_DROP=ON -DNETPLAY=ON -DVRU=ON -DUSE_ANGRYLION=ON" ]
+          then
+            cmake --install "$build_dir" --strip --prefix="$src_dir"
+            cmake --build "$build_dir" --target=bundle_dependencies
+          fi
         shell: msys2 {0}
       - name: Create Installer
+        if: ${{ matrix.cmake_args == '-DDISCORD_RPC=ON -DDRAG_DROP=ON -DNETPLAY=ON -DVRU=ON -DUSE_ANGRYLION=ON' }}
         run: .\Build\Release\Source\Installer\CreateInstaller.bat
       - name: Configure RMG (Portable)
+        if: ${{ matrix.cmake_args == '-DDISCORD_RPC=ON -DDRAG_DROP=ON -DNETPLAY=ON -DVRU=ON -DUSE_ANGRYLION=ON' }}
         run: touch Bin/Release/portable.txt
         shell: msys2 {0}
       - name: Upload RMG (Portable)
+        if: ${{ matrix.cmake_args == '-DDISCORD_RPC=ON -DDRAG_DROP=ON -DNETPLAY=ON -DVRU=ON -DUSE_ANGRYLION=ON' }}
         uses: actions/upload-artifact@v4
         with:
           name: RMG-Portable-Windows64-${{ env.GIT_REVISION }}
           path: Bin/Release/*
       - name: Upload RMG (Installer)
+        if: ${{ matrix.cmake_args == '-DDISCORD_RPC=ON -DDRAG_DROP=ON -DNETPLAY=ON -DVRU=ON -DUSE_ANGRYLION=ON' }}
         uses: actions/upload-artifact@v4
         with:
           name: RMG-Setup-Windows64-${{ env.GIT_REVISION }}
