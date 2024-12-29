@@ -307,6 +307,11 @@ bool CorePauseEmulation(void)
         return false;
     }
 
+    if (CoreHasInitNetplay())
+    {
+        return false;
+    }
+
     if (!CoreIsEmulationRunning())
     {
         error = "CorePauseEmulation Failed: ";
@@ -332,6 +337,11 @@ bool CoreResumeEmulation(void)
     m64p_error ret;
 
     if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
+
+    if (CoreHasInitNetplay())
     {
         return false;
     }
