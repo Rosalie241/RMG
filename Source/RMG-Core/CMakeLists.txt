@@ -43,6 +43,7 @@ set(RMG_CORE_SOURCES
     SaveState.cpp
     Callback.cpp
     Settings.cpp
+    Netplay.cpp
     Plugins.cpp
     Version.cpp
     Cheats.cpp
@@ -76,9 +77,6 @@ if (DISCORD_RPC)
 endif(DISCORD_RPC)
 
 if (NETPLAY)
-    list(APPEND RMG_CORE_SOURCES 
-        Netplay.cpp
-    )
     add_definitions(-DNETPLAY)
 endif(NETPLAY)
 

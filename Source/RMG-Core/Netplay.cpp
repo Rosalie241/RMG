@@ -29,6 +29,7 @@ static bool l_HasInitNetplay = false;
 
 bool CoreInitNetplay(std::string address, int port, int player)
 {
+#ifdef NETPLAY
     std::string error;
     m64p_error ret;
     uint32_t id = 0;
@@ -76,15 +77,23 @@ bool CoreInitNetplay(std::string address, int port, int player)
 
     l_HasInitNetplay = true;
     return true;
+#else
+    return false;
+#endif // NETPLAY
 }
 
 bool CoreHasInitNetplay(void)
 {
+#ifdef NETPLAY
     return l_HasInitNetplay;
+#else
+    return false;
+#endif // NETPLAY
 }
 
 bool CoreShutdownNetplay(void)
 {
+#ifdef NETPLAY
     std::string error;
     m64p_error ret;
 
@@ -99,4 +108,7 @@ bool CoreShutdownNetplay(void)
 
     l_HasInitNetplay = false;
     return true;
+#else
+    return false;
+#endif // NETPLAY
 }
