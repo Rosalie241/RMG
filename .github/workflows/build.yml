@@ -31,8 +31,8 @@ jobs:
             export build_dir="$(pwd)/Build/AppImage"
             export bin_dir="$(pwd)/Bin/AppImage"
           else
-            export build_dir="$(pwd)/Build/$RANDOM"
-            export bin_dir="$(pwd)/Bin/$RANDOM"
+            export build_dir="$(pwd)/Build/CI"
+            export bin_dir="$(pwd)/Bin/CI"
           fi
           
           mkdir $build_dir Bin/ -p
@@ -105,10 +105,8 @@ jobs:
           if [ "${{ matrix.cmake_args }}" == "-DDISCORD_RPC=ON -DDRAG_DROP=ON -DNETPLAY=ON -DVRU=ON -DUSE_ANGRYLION=ON" ]
           then
             export build_dir="$(pwd)/Build/Release"
-            export bin_dir="$(pwd)/Bin/Release"
           else
-            export build_dir="$(pwd)/Build/$RANDOM"
-            export bin_dir="$(pwd)/Bin/$RANDOM"
+            export build_dir="$(pwd)/Build/CI"
           fi
 
           cmake -S "$src_dir" -B "$build_dir" -DCMAKE_BUILD_TYPE="Release" \
