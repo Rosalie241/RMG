@@ -80,6 +80,7 @@ CreateNetplaySessionDialog::CreateNetplaySessionDialog(QWidget *parent, QWebSock
     {
         QNetworkAccessManager* networkAccessManager = new QNetworkAccessManager(this);
         connect(networkAccessManager, &QNetworkAccessManager::finished, this, &CreateNetplaySessionDialog::on_networkAccessManager_Finished);
+        networkAccessManager->setTransferTimeout(15000);
         networkAccessManager->get(QNetworkRequest(QUrl(serverUrl)));
     }
 }
