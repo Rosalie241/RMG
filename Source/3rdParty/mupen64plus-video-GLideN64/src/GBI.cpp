@@ -60,7 +60,7 @@ static const
 std::vector<SpecialMicrocodeInfo> specialMicrocodes =
 {
     { S2DEX2,       false,  true,   false,  true,   0x02c399dd }, // Animal Forest
-    { F3DEX095,     false,  false,  true,   true,   0x0ace4c3f }, // Mario Kart 64
+    { F3DEX,        false,  false,  true,   true,   0x0ace4c3f }, // Mario Kart 64
     { F3D,          true,   false,  false,  true,   0x16c3a775 }, // AeroFighters
     { F3DEX2CBFD,   true,   true,   false,  true,   0x1b4ace88 }, // Conker's Bad Fur Day
     { F3DPD,        true,   true,   false,  true,   0x1c4f7869 }, // Perfect Dark
