@@ -43,7 +43,8 @@ xvfb-run -a -- ./lib4bin -p -v -r -s -k -e \
 # Prepare sharun
 ./sharun -g
 echo '#!/usr/bin/env sh
-set -e
+[ -f "$APPIMAGE".stylesheet ] && APPIMAGE_QT_THEME="$APPIMAGE.stylesheet"
+[ -f "$APPIMAGE_QT_THEME" ] && set -- "$@" "-stylesheet" "$APPIMAGE_QT_THEME"
 HERE="$(readlink -f "$(dirname "$0")")"
 exec "$HERE/bin/RMG" \
 	--lib-path="$HERE/shared/lib/RMG" \
