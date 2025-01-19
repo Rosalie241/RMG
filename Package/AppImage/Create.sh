@@ -49,6 +49,7 @@ exec "$HERE/bin/RMG" \
 	--plugin-path="$HERE/shared/lib/RMG/Plugin" \
 	--shared-data-path="$HERE/share/RMG" \
 	"${@}"' > ./AppRun
+chmod +x ./AppRun
 
 # make appimage
 cd ..
