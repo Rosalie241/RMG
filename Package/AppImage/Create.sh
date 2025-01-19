@@ -33,6 +33,7 @@ xvfb-run -a -- ./lib4bin -p -v -r -s -k -e \
 	/usr/lib/x86_64-linux-gnu/libEGL* \
 	/usr/lib/x86_64-linux-gnu/libvulkan* \
 	/usr/lib/x86_64-linux-gnu/dri/* \
+	/usr/lib/x86_64-linux-gnu/libssl.so* \
 	/usr/lib/x86_64-linux-gnu/qt6/plugins/iconengines/* \
 	/usr/lib/x86_64-linux-gnu/qt6/plugins/imageformats/* \
 	/usr/lib/x86_64-linux-gnu/qt6/plugins/platforms/* \
