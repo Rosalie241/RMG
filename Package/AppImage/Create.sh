@@ -26,7 +26,8 @@ if [ ! -f "./lib4bin" ]; then
 	chmod +x ./lib4bin
 fi
 
-./lib4bin -p -v -r -s -k ./shared/bin/RMG \
+xvfb-run -a -- ./lib4bin -p -v -r -s -k -e \
+	./shared/bin/RMG \
 	/usr/lib/x86_64-linux-gnu/libGL* \
 	/usr/lib/x86_64-linux-gnu/libEGL* \
 	/usr/lib/x86_64-linux-gnu/dri/* \
