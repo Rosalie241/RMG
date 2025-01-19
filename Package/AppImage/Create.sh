@@ -39,6 +39,7 @@ xvfb-run -a -- ./lib4bin -p -v -r -s -k -e \
 	/usr/lib/x86_64-linux-gnu/qt6/plugins/platformthemes/* \
 	/usr/lib/x86_64-linux-gnu/qt6/plugins/styles/* \
 	/usr/lib/x86_64-linux-gnu/qt6/plugins/xcbglintegrations/* \
+	/usr/lib/x86_64-linux-gnu/qt6/plugins/tls/* \
 	/usr/lib/x86_64-linux-gnu/qt6/plugins/wayland-*/*
 
 # Prepare sharun
