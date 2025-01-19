@@ -28,6 +28,7 @@ fi
 
 xvfb-run -a -- ./lib4bin -p -v -r -s -k -e \
 	./shared/bin/RMG \
+	/usr/lib/x86_64-linux-gnu/libSDL* \
 	/usr/lib/x86_64-linux-gnu/libGL* \
 	/usr/lib/x86_64-linux-gnu/libEGL* \
 	/usr/lib/x86_64-linux-gnu/dri/* \
