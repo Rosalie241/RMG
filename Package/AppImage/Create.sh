@@ -16,6 +16,8 @@ export LD_LIBRARY_PATH="$toplvl_dir/Build/AppImage/Source/RMG-Core" # hack
 
 cd "$bin_dir"
 cp ./usr/share/applications/com.github.Rosalie241.RMG.desktop ./
+cp ./usr/share/icons/hicolor/scalable/apps/com.github.Rosalie241.RMG.svg ./
+ln -s ./com.github.Rosalie241.RMG.svg ./.DirIcon
 mv ./usr/share ./share
 mv ./usr ./shared
 
