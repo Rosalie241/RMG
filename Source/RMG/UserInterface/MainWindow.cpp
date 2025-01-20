@@ -2027,7 +2027,7 @@ void MainWindow::on_RomBrowser_PlayGameWith(CoreRomType type, QString file)
     if (type == CoreRomType::Cartridge)
     { // cartridge
         mainRom = file;
-        otherRom = QFileDialog::getOpenFileName(this, "", "", "N64DD Disk Image (*.ndd *.d64)");
+        otherRom = QFileDialog::getOpenFileName(this, "", "", "N64DD Disk Image (*.ndd *.d64 *.zip *.7z)");
     }
     else
     { // disk
