@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   build-linux:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         cmake_args: [-DDISCORD_RPC=ON -DDRAG_DROP=ON -DNETPLAY=ON -DVRU=ON -DUSE_ANGRYLION=ON, -DDISCORD_RPC=OFF -DDRAG_DROP=OFF -DNETPLAY=OFF -DVRU=OFF -DUSE_ANGRYLION=OFF]
@@ -17,8 +17,9 @@ jobs:
           key: Linux
       - name: Install Packages
         run: |
-          sudo add-apt-repository ppa:okirby/qt6-backports --yes
-          sudo apt-get -y install cmake ninja-build libhidapi-dev libsamplerate0-dev libspeex-dev libminizip-dev libsdl2-dev libsdl2-net-dev libfreetype6-dev libgl1-mesa-dev libglu1-mesa-dev pkg-config zlib1g-dev binutils-dev libspeexdsp-dev qt6-base-dev libqt6svg6-dev libqt6websockets6-dev libvulkan-dev build-essential nasm git zip appstream
+          sudo apt-get -y install cmake ninja-build libhidapi-dev libsamplerate0-dev libspeex-dev libminizip-dev libsdl2-dev libsdl2-net-dev libfreetype6-dev \
+            libgl1-mesa-dev libglu1-mesa-dev pkg-config zlib1g-dev binutils-dev libspeexdsp-dev qt6-base-dev libqt6svg6-dev libqt6websockets6-dev libvulkan-dev \
+            build-essential nasm git zip appstream xvfb qt6ct mesa-vulkan-drivers
       - name: Prepare Environment
         run: |
           echo "GIT_REVISION=$(git describe --tags --always)" >> $GITHUB_ENV
