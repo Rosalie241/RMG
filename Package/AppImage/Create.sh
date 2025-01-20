@@ -4,7 +4,7 @@ set -ex
 script_dir="$(dirname "$0")"
 toplvl_dir="$(realpath "$script_dir/../../")"
 bin_dir="$toplvl_dir/Bin/AppImage" # RMG should be installed here
-UPINFO="gh-releases-zsync|$(echo "$GITHUB_REPOSITORY" | tr '/' '|')|latest|*$ARCH.AppImage.zsync"
+UPINFO="gh-releases-zsync|$(echo "$GITHUB_REPOSITORY" | tr '/' '|')|latest|*.AppImage.zsync"
 LIB4BN="https://raw.githubusercontent.com/VHSgunzo/sharun/refs/heads/main/lib4bin"
 APPIMAGETOOL="https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
 
@@ -14,20 +14,19 @@ export VERSION="$(git describe --tags --always)"
 export OUTPUT="$bin_dir/../RMG-Portable-Linux64-$VERSION.AppImage"
 export LD_LIBRARY_PATH="$toplvl_dir/Build/AppImage/Source/RMG-Core" # hack
 
-cd "$bin_dir"
-cp ./usr/share/applications/com.github.Rosalie241.RMG.desktop ./
-cp ./usr/share/icons/hicolor/scalable/apps/com.github.Rosalie241.RMG.svg ./
-ln -s ./com.github.Rosalie241.RMG.svg ./.DirIcon
-mv ./usr/share ./share
-mv ./usr ./shared
+cp "$bin_dir"/usr/share/applications/com.github.Rosalie241.RMG.desktop "$bin_dir"
+cp "$bin_dir"/usr/share/icons/hicolor/scalable/apps/com.github.Rosalie241.RMG.svg "$bin_dir"
+ln -s ./com.github.Rosalie241.RMG.svg "$bin_dir"/.DirIcon
+mv "$bin_dir"/usr/share "$bin_dir"/share
+mv "$bin_dir"/usr "$bin_dir"/shared
 
 if [ ! -f "./lib4bin" ]; then
-	wget --retry-connrefused --tries=30 "$LIB4BN" -O ./lib4bin
+	curl -L "$LIB4BN" -o ./lib4bin
 	chmod +x ./lib4bin
 fi
 
-xvfb-run -a -- ./lib4bin -p -v -r -s -k -e \
-	./shared/bin/RMG \
+xvfb-run -a -- ./lib4bin --dst-dir "$bin_dir" -p -v -r -s -k -e \
+	"$bin_dir"/shared/bin/RMG \
 	/usr/lib/x86_64-linux-gnu/libSDL* \
 	/usr/lib/x86_64-linux-gnu/libGL* \
 	/usr/lib/x86_64-linux-gnu/libEGL* \
@@ -44,25 +43,15 @@ xvfb-run -a -- ./lib4bin -p -v -r -s -k -e \
 	/usr/lib/x86_64-linux-gnu/qt6/plugins/wayland-*/*
 
 # Prepare sharun
-./sharun -g
-echo '#!/usr/bin/env sh
-[ -f "$APPIMAGE".stylesheet ] && APPIMAGE_QT_THEME="$APPIMAGE.stylesheet"
-[ -f "$APPIMAGE_QT_THEME" ] && set -- "$@" "-stylesheet" "$APPIMAGE_QT_THEME"
-HERE="$(readlink -f "$(dirname "$0")")"
-exec "$HERE/bin/RMG" \
-	--lib-path="$HERE/shared/lib/RMG" \
-	--core-path="$HERE/shared/lib/RMG/Core" \
-	--plugin-path="$HERE/shared/lib/RMG/Plugin" \
-	--shared-data-path="$HERE/share/RMG" \
-	"${@}"' > ./AppRun
-chmod +x ./AppRun
+"$bin_dir"/sharun -g
+cp -v "$script_dir/AppRun" "$bin_dir"
+chmod +x "$bin_dir"/AppRun
 
 # make appimage
-cd ..
 if [ ! -f "./appimagetool" ]; then
-	wget --retry-connrefused --tries=30 "$APPIMAGETOOL" -O ./appimagetool
+	curl -L "$APPIMAGETOOL" -o ./appimagetool
 	chmod +x ./appimagetool
 fi
 ./appimagetool --comp zstd \
 	--mksquashfs-opt -Xcompression-level --mksquashfs-opt 22 \
-	-n -u "$UPINFO" "$PWD"/AppImage "$PWD"/RMG-"$VERSION"-anylinux-"$ARCH".AppImage
+	-n -u "$UPINFO" "$bin_dir" "$OUTPUT"

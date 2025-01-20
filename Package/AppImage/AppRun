@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+[ -f "$APPIMAGE".stylesheet ] && APPIMAGE_QT_THEME="$APPIMAGE.stylesheet"
+[ -f "$APPIMAGE_QT_THEME" ] && set -- "$@" "-stylesheet" "$APPIMAGE_QT_THEME"
+HERE="$(readlink -f "$(dirname "$0")")"
+exec "$HERE/bin/RMG" \
+	--lib-path="$HERE/shared/lib/RMG" \
+	--core-path="$HERE/shared/lib/RMG/Core" \
+	--plugin-path="$HERE/shared/lib/RMG/Plugin" \
+	--shared-data-path="$HERE/share/RMG" \
+	"${@}"
