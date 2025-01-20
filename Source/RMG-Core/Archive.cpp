@@ -12,7 +12,7 @@
 #include "Error.hpp"
 
 #include <fstream>
-#include <algorithm>
+#include <cstring>
 
 // lzma includes
 #include "../3rdParty/lzma/7zTypes.h"
