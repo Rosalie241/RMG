@@ -17,7 +17,6 @@
 #include "Cheats.hpp"
 #include "osal/osal_files.hpp"
 #include "CachedRomHeaderAndSettings.hpp"
-#include "Utils/File.hpp"
 
 // lzma includes
 #include "../3rdParty/lzma/7zTypes.h"
@@ -27,6 +26,7 @@
 #include "../3rdParty/lzma/7zCrc.h"
 #include "../3rdParty/lzma/7zFile.h"
 #include "../3rdParty/lzma/7zVersion.h"
+#include "File.hpp"
 
 #include <string>
 #include <unzip.h>

@@ -11,7 +11,6 @@
 #include "Settings.hpp"
 #include "MediaLoader.hpp"
 #include "RomSettings.hpp"
-#include "Utils/File.hpp"
 #include "Emulation.hpp"
 #include "RomHeader.hpp"
 #include "m64p/Api.hpp"
@@ -19,6 +18,7 @@
 #include "Netplay.hpp"
 #include "Cheats.hpp"
 #include "Error.hpp"
+#include "File.hpp"
 #include "Rom.hpp"
 #ifdef DISCORD_RPC
 #include "DiscordRpc.hpp"

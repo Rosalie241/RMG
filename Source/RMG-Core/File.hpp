@@ -10,8 +10,6 @@
 #ifndef CORE_FILE_HPP
 #define CORE_FILE_HPP
 
-#ifdef CORE_INTERNAL
-
 #include <filesystem>
 #include <vector>
 
@@ -20,8 +18,5 @@ bool CoreReadFile(std::filesystem::path file, std::vector<char>& outBuffer);
 
 // attempts to write the buffer to file
 bool CoreWriteFile(std::filesystem::path file, std::vector<char>& buffer);
-
-
-#endif // CORE_INTERNAL
 
 #endif // CORE_FILE_HPP

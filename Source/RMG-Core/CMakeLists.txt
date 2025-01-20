@@ -37,7 +37,6 @@ set(RMG_CORE_SOURCES
     Directories.cpp
     MediaLoader.cpp
     Screenshot.cpp
-    Utils/File.cpp
     RomHeader.cpp
     Emulation.cpp
     SaveState.cpp
@@ -53,6 +52,7 @@ set(RMG_CORE_SOURCES
     Error.cpp
     Unzip.cpp
     Core.cpp
+    File.cpp
     Key.cpp
     Rom.cpp
 )
