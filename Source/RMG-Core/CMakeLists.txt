@@ -42,6 +42,7 @@ set(RMG_CORE_SOURCES
     SaveState.cpp
     Callback.cpp
     Settings.cpp
+    Archive.cpp
     Netplay.cpp
     Plugins.cpp
     Version.cpp
@@ -51,7 +52,6 @@ set(RMG_CORE_SOURCES
     VidExt.cpp
     Video.cpp
     Error.cpp
-    Unzip.cpp
     Core.cpp
     File.cpp
     Key.cpp
