@@ -76,15 +76,16 @@ void UpdateDialog::accept(void)
     {
         QJsonObject object = value.toObject();
 
-        QString filename = object.value("name").toString().toLower();
-        QString url      = object.value("browser_download_url").toString();
+        QString filename      = object.value("name").toString();
+        QString lowerFilename = filename.toLower();
+        QString url           = object.value("browser_download_url").toString();
 
 #ifdef _WIN32
         if (this->isWin32Setup)
         {
-            if (filename.contains("windows64") &&
-                filename.contains("setup") &&
-                filename.endsWith(".exe"))
+            if (lowerFilename.contains("windows64") &&
+                lowerFilename.contains("setup") &&
+                lowerFilename.endsWith(".exe"))
             {
                 filenameToDownload = filename;
                 urlToDownload = QUrl(url);
@@ -93,9 +94,9 @@ void UpdateDialog::accept(void)
         }
         else
         {
-            if (filename.contains("windows64") &&
-                filename.contains("portable") &&
-                filename.endsWith(".exe"))
+            if (lowerFilename.contains("windows64") &&
+                lowerFilename.contains("portable") &&
+                lowerFilename.endsWith(".exe"))
             {
                 filenameToDownload = filename;
                 urlToDownload = QUrl(url);
@@ -103,9 +104,9 @@ void UpdateDialog::accept(void)
             }
         }
 #else
-        if (filename.contains("linux64") &&
-            filename.contains("portable") &&
-            filename.endsWith(".appimage"))
+        if (lowerFilename.contains("linux64") &&
+            lowerFilename.contains("portable") &&
+            lowerFilename.endsWith(".appimage"))
         {
             filenameToDownload = filename;
             urlToDownload = QUrl(url);
