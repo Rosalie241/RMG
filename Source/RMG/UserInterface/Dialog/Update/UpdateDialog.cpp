@@ -103,8 +103,8 @@ void UpdateDialog::accept(void)
             }
         }
 #else
-        if (filename.contains("Linux64") &&
-            filename.contains("Portable") &&
+        if (filename.contains("linux64") &&
+            filename.contains("portable") &&
             filename.endsWith(".appimage"))
         {
             filenameToDownload = filename;
