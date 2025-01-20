@@ -7,9 +7,13 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-#include "Settings.hpp"
+#include "Directories.hpp"
 #include "MediaLoader.hpp"
+#include "Settings.hpp"
+#include "Archive.hpp"
+#include "String.hpp"
 #include "Error.hpp"
+#include "File.hpp"
 
 #include "m64p/Api.hpp"
 
@@ -20,6 +24,7 @@
 // Local Variables
 //
 
+static bool l_HasExtractedDisk = false;
 static std::filesystem::path l_DdDiskFile;
 static std::filesystem::path l_DdRomFile;
 
@@ -141,10 +146,76 @@ bool CoreSetupMediaLoader(void)
 
 void CoreResetMediaLoader(void)
 {
-    l_DdRomFile = "";
+    // attempt to remove extracted disk file
+    if (l_HasExtractedDisk && !l_DdRomFile.empty())
+    {
+        try
+        {
+            std::filesystem::remove(l_DdDiskFile);
+        }
+        catch (...)
+        {
+        }
+    }
+
+    l_HasExtractedDisk = false;
+    l_DdRomFile  = "";
+    l_DdDiskFile = "";
 }
 
 void CoreMediaLoaderSetDiskFile(std::filesystem::path disk)
 {
+    std::vector<char> buf;
+    std::string file_extension;
+
+    file_extension = disk.has_extension() ? disk.extension().string() : "";
+    file_extension = CoreLowerString(file_extension);
+
+    // extract disk when it's in an archive
+    if (file_extension == ".zip" || 
+        file_extension == ".7z")
+    {
+        std::filesystem::path extracted_file;
+        bool                  is_disk = false;
+
+        if (!CoreReadArchiveFile(disk, extracted_file, is_disk, buf))
+        {
+            return;
+        }
+
+        // do nothing if archive doesn't contain a disk
+        if (!is_disk)
+        {
+            return;
+        }
+
+        disk = CoreGetUserCacheDirectory();
+        disk += "/extracted_disks/";
+        disk += extracted_file.filename();
+
+        // attempt to create extraction directory
+        try
+        {
+            if (!std::filesystem::exists(disk.parent_path()) &&
+                !std::filesystem::create_directory(disk.parent_path()))
+            {
+                throw std::exception();
+            }
+        }
+        catch (...)
+        {
+            return;
+        }
+
+        // attempt to write temporary file
+        if (!CoreWriteFile(disk, buf))
+        {
+            return;
+        }
+
+        l_HasExtractedDisk = true;
+    }
+
+
     l_DdDiskFile = disk;
 }
