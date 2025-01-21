@@ -35,6 +35,7 @@ class NetplaySessionDialog : public QDialog, private Ui::NetplaySessionDialog
     QString sessionName;
     int sessionPort = -1;
     int sessionNumber = -1;
+    bool started = false;
 
   	QWebSocket* webSocket;
 

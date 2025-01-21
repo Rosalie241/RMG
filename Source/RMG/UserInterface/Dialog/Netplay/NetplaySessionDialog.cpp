@@ -94,7 +94,7 @@ void NetplaySessionDialog::on_webSocket_textMessageReceived(QString message)
                     {
                         this->sessionNumber = i + 1;
                     }
-                    if (i == 0)
+                    if (!this->started && i == 0)
                     {
                         QPushButton* startButton = this->buttonBox->button(QDialogButtonBox::Ok);
                         startButton->setEnabled(this->nickName == name);
@@ -109,6 +109,7 @@ void NetplaySessionDialog::on_webSocket_textMessageReceived(QString message)
     }
     else if (type == "reply_begin_game")
     {
+        this->started = true;
         emit OnPlayGame(this->sessionFile, this->webSocket->peerAddress().toString(), this->sessionPort, this->sessionNumber);
     }
     else if (type == "reply_motd")
