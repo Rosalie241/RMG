@@ -349,7 +349,11 @@ QMap<QString, CoreRomSettings> RomBrowserWidget::GetModelData(void)
     for (int i = 0; i < model->rowCount(); i++)
     {
         modelData = model->item(i)->data().value<RomBrowserModelData>();
-        data.insert(modelData.file, modelData.settings);
+        // only add cartridges, 64dd disks aren't supported
+        if (modelData.type == CoreRomType::Cartridge)
+        {
+            data.insert(modelData.file, modelData.settings);
+        }
     }
 
     return data;
