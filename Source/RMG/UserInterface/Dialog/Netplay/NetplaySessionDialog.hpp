@@ -45,6 +45,7 @@ class NetplaySessionDialog : public QDialog, private Ui::NetplaySessionDialog
     void on_sendPushButton_clicked(void);
 
   	void accept(void) Q_DECL_OVERRIDE;
+    void reject(void) Q_DECL_OVERRIDE;
 
   signals:
     void OnPlayGame(QString file, QString address, int port, int player);

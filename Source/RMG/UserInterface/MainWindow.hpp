@@ -19,6 +19,9 @@
 #include "Widget/Render/OGLWidget.hpp"
 #include "Widget/Render/VKWidget.hpp"
 
+#ifdef NETPLAY
+#include "Dialog/Netplay/NetplaySessionDialog.hpp"
+#endif // NETPLAY
 #include "Dialog/LogDialog.hpp"
 
 #ifdef UPDATER
@@ -114,6 +117,9 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     QString ui_WindowTitle;
 
     Dialog::LogDialog logDialog;
+#ifdef NETPLAY
+    Dialog::NetplaySessionDialog* netplaySessionDialog = nullptr;
+#endif // NETPLAY
 
     void closeEvent(QCloseEvent *) Q_DECL_OVERRIDE;
 
@@ -132,7 +138,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     void initializeEmulationThread(void);
     void connectEmulationThreadSignals(void);
     void launchEmulationThread(QString cartRom, QString address, int port, int player);
-    void launchEmulationThread(QString cartRom, QString diskRom = "", bool refreshRomListAfterEmulation = false, int slot = -1);
+    void launchEmulationThread(QString cartRom, QString diskRom = "", bool refreshRomListAfterEmulation = false, int slot = -1, bool netplay = false);
 
     QString getSaveStateSlotDateTimeText(QAction* action);
     QString getSaveStateSlotText(QAction* action, int slot);
@@ -153,6 +159,10 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 #ifdef UPDATER
     void checkForUpdates(bool silent, bool force);
 #endif // UPDATER
+
+#ifdef NETPLAY
+    void showNetplaySessionBrowser(QWebSocket* webSocket, QJsonObject json, QString sessionFile);
+#endif // NETPLAY
   protected:
     void timerEvent(QTimerEvent *event) Q_DECL_OVERRIDE;
 
@@ -225,6 +235,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     void on_RomBrowser_Cheats(QString file);
 
     void on_Netplay_PlayGame(QString file, QString address, int port, int player);
+    void on_NetplaySessionBrowser_rejected(void);
 
   public slots:
 

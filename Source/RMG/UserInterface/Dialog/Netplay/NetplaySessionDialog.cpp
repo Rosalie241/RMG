@@ -65,6 +65,10 @@ NetplaySessionDialog::NetplaySessionDialog(QWidget *parent, QWebSocket* webSocke
 
 NetplaySessionDialog::~NetplaySessionDialog(void)
 {
+    if (this->webSocket->isValid())
+    {
+        this->webSocket->close();
+    }
 }
 
 void NetplaySessionDialog::on_webSocket_textMessageReceived(QString message)
@@ -106,7 +110,6 @@ void NetplaySessionDialog::on_webSocket_textMessageReceived(QString message)
     else if (type == "reply_begin_game")
     {
         emit OnPlayGame(this->sessionFile, this->webSocket->peerAddress().toString(), this->sessionPort, this->sessionNumber);
-        QDialog::accept();
     }
     else if (type == "reply_motd")
     {
@@ -133,7 +136,7 @@ void NetplaySessionDialog::on_sendPushButton_clicked(void)
     json.insert("room", session);
     NetplayCommon::AddCommonJson(json);
 
-    webSocket->sendTextMessage(QJsonDocument(json).toJson());
+    this->webSocket->sendTextMessage(QJsonDocument(json).toJson());
     this->chatLineEdit->clear();
 }
 
@@ -149,5 +152,15 @@ void NetplaySessionDialog::accept()
     json.insert("room", session);
     NetplayCommon::AddCommonJson(json);
 
-    webSocket->sendTextMessage(QJsonDocument(json).toJson());
+    this->webSocket->sendTextMessage(QJsonDocument(json).toJson());
+}
+
+void NetplaySessionDialog::reject(void)
+{
+    if (this->webSocket->isValid())
+    {
+        this->webSocket->close();
+    }
+
+    QDialog::reject();
 }
