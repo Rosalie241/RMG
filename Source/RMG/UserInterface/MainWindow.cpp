@@ -202,6 +202,8 @@ void MainWindow::initializeUI(bool launchROM)
             &MainWindow::on_RomBrowser_PlayGame);
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::PlayGameWith, this,
             &MainWindow::on_RomBrowser_PlayGameWith);
+    connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::PlayGameWithDisk, this,
+            &MainWindow::on_RomBrowser_PlayGameWithDisk);
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::PlayGameWithSlot, this,
             &MainWindow::on_RomBrowser_PlayGameWithSlot);
     connect(this->ui_Widget_RomBrowser, &Widget::RomBrowserWidget::EditGameSettings, this,
@@ -2074,6 +2076,11 @@ void MainWindow::on_RomBrowser_PlayGameWith(CoreRomType type, QString file)
     }
 
     this->launchEmulationThread(mainRom, otherRom);
+}
+
+void MainWindow::on_RomBrowser_PlayGameWithDisk(QString cartridge, QString disk)
+{
+    this->launchEmulationThread(cartridge, disk);
 }
 
 void MainWindow::on_RomBrowser_PlayGameWithSlot(QString file, int slot)

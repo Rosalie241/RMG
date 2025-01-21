@@ -227,6 +227,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 
     void on_RomBrowser_PlayGame(QString file);
     void on_RomBrowser_PlayGameWith(CoreRomType type, QString file);
+    void on_RomBrowser_PlayGameWithDisk(QString cartridge, QString disk);
     void on_RomBrowser_PlayGameWithSlot(QString file, int slot);
     void on_RomBrowser_ChangeRomDirectory(void);
     void on_RomBrowser_RomInformation(QString file);

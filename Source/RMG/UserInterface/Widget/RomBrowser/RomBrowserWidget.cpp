@@ -174,6 +174,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->contextMenu = new QMenu(this);
     this->action_PlayGame = new QAction(this);
     this->action_PlayGameWith = new QAction(this);
+    this->menu_PlayGameWithDisk = new QMenu(this);
     this->menu_PlayGameWithSlot = new QMenu(this);
     this->action_RefreshRomList = new QAction(this);
     this->action_OpenRomDirectory = new QAction(this);
@@ -193,6 +194,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     // configure context menu contents
     this->action_PlayGame->setText("Play Game");
     this->action_PlayGameWith->setText("Play Game with Disk");
+    this->menu_PlayGameWithDisk->menuAction()->setText("Play Game with Disk");
     this->menu_PlayGameWithSlot->menuAction()->setText("Play Game with State");
     this->action_RefreshRomList->setText("Refresh ROM List");
     this->action_OpenRomDirectory->setText("Open ROM Directory");
@@ -207,6 +209,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->action_RemoveCoverImage->setText("Remove Cover Image");
     connect(this->action_PlayGame, &QAction::triggered, this, &RomBrowserWidget::on_Action_PlayGame);
     connect(this->action_PlayGameWith, &QAction::triggered, this, &RomBrowserWidget::on_Action_PlayGameWith);
+    connect(this->menu_PlayGameWithDisk, &QMenu::triggered, this, &RomBrowserWidget::on_Menu_PlayGameWithDisk);
     connect(this->action_RefreshRomList, &QAction::triggered, this, &RomBrowserWidget::on_Action_RefreshRomList);
     connect(this->action_OpenRomDirectory, &QAction::triggered, this, &RomBrowserWidget::on_Action_OpenRomDirectory);
     connect(this->action_ChangeRomDirectory, &QAction::triggered, this, &RomBrowserWidget::on_Action_ChangeRomDirectory);
@@ -221,6 +224,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     // configure context menu
     this->contextMenu->addAction(this->action_PlayGame);
     this->contextMenu->addAction(this->action_PlayGameWith);
+    this->contextMenu->addMenu(this->menu_PlayGameWithDisk);
     this->contextMenu->addMenu(this->menu_PlayGameWithSlot);
     this->contextMenu->addSeparator();
     this->contextMenu->addAction(this->action_RefreshRomList);
@@ -259,6 +263,8 @@ void RomBrowserWidget::RefreshRomList(void)
 {
     this->listViewModel->removeRows(0, this->listViewModel->rowCount());
     this->gridViewModel->removeRows(0, this->gridViewModel->rowCount());
+
+    this->menu_PlayGameWithDisk->clear();
 
     this->coversDirectory = QString::fromStdString(CoreGetUserDataDirectory().string());
     this->coversDirectory += "/Covers";
@@ -362,6 +368,11 @@ QMap<QString, CoreRomSettings> RomBrowserWidget::GetModelData(void)
 QStandardItemModel* RomBrowserWidget::getCurrentModel(void)
 {
     QWidget* currentWidget = this->currentWidget();
+    if (currentWidget == this->loadingWidget)
+    {
+        currentWidget = this->currentViewWidget;
+    }
+
     if (currentWidget == this->listViewWidget)
     {
         return this->listViewModel;
@@ -377,6 +388,11 @@ QStandardItemModel* RomBrowserWidget::getCurrentModel(void)
 QAbstractItemView* RomBrowserWidget::getCurrentModelView(void)
 {
     QWidget* currentWidget = this->currentWidget();
+    if (currentWidget == this->loadingWidget)
+    {
+        currentWidget = this->currentViewWidget;
+    }
+
     if (currentWidget == this->listViewWidget)
     {
         return this->listViewWidget;
@@ -614,11 +630,19 @@ void RomBrowserWidget::customContextMenuRequested(QPoint position)
 
     RomBrowserModelData data;
     bool hasSelection = view->selectionModel()->hasSelection();
+    bool showPlayWithDiskMenu;
 
-    this->getCurrentData(data);
+    if (!this->getCurrentData(data))
+    {
+        return;
+    }
+
+    showPlayWithDiskMenu = data.type == CoreRomType::Cartridge && !this->menu_PlayGameWithDisk->isEmpty();
 
     this->action_PlayGame->setEnabled(hasSelection);
     this->action_PlayGameWith->setEnabled(hasSelection);
+    this->action_PlayGameWith->setVisible(!showPlayWithDiskMenu);
+    this->menu_PlayGameWithDisk->menuAction()->setVisible(showPlayWithDiskMenu);
     this->menu_PlayGameWithSlot->menuAction()->setEnabled(hasSelection);
     this->action_RomInformation->setEnabled(hasSelection);
     this->action_EditGameSettings->setEnabled(hasSelection);
@@ -638,11 +662,11 @@ void RomBrowserWidget::customContextMenuRequested(QPoint position)
 
     if (hasSelection && data.type == CoreRomType::Disk)
     { // disk selected
-        this->action_PlayGameWith->setText("Play Game with Cartridge");
+        this->action_PlayGameWith->setText("Play Game with Cartridge...");
     }
     else
     { // cartridge selected
-        this->action_PlayGameWith->setText("Play Game with Disk");
+        this->action_PlayGameWith->setText("Play Game with Disk...");
     }
 
     if (view == this->listViewWidget)
@@ -680,6 +704,47 @@ void RomBrowserWidget::generateColumnsMenu(void)
         {
             this->listViewWidget->horizontalHeader()->setSectionHidden(column, !checked);
         });
+    }
+}
+
+void RomBrowserWidget::generatePlayWithDiskMenu(void)
+{
+    QAction* playGameWithAction;
+    QStandardItemModel* model = this->getCurrentModel();
+    RomBrowserModelData modelData;
+    int count = 0;
+
+    this->menu_PlayGameWithDisk->clear();
+
+    if (model == nullptr)
+    {
+        return;
+    }
+
+    for (int i = 0; i < model->rowCount(); i++)
+    {
+        modelData = model->item(i)->data().value<RomBrowserModelData>();
+        if (modelData.type == CoreRomType::Disk)
+        {
+            if (count == 0)
+            { // only add 'Browse...' action when there are disks
+                this->menu_PlayGameWithDisk->addAction("Browse...");
+                this->menu_PlayGameWithDisk->addSeparator();
+            }
+
+            playGameWithAction = new QAction(this);
+            playGameWithAction->setText(model->item(i)->text());
+            playGameWithAction->setData(model->item(i)->data());
+            this->menu_PlayGameWithDisk->addAction(playGameWithAction);
+
+            // only add 10 disks to menu,
+            // to prevent an overwhelming amount
+            // of menu items
+            if (count++ >= 10)
+            {
+                return;
+            }
+        }
     }
 }
 
@@ -915,6 +980,11 @@ void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
         }
     }
 
+    // generate 'Play Game with Disk' menu here
+    // instead of when a context menu has been requested,
+    // this should save a lot of otherwise wasted CPU cycles
+    this->generatePlayWithDiskMenu();
+
     // when canceled, we shouldn't switch to the grid/list view
     // because that can cause some flicker, so just return here
     // and don't do anything because a refresh will be triggered
@@ -957,6 +1027,28 @@ void RomBrowserWidget::on_Action_PlayGameWith(void)
     }
 
     emit this->PlayGameWith(data.type, data.file);
+}
+
+void RomBrowserWidget::on_Menu_PlayGameWithDisk(QAction* action)
+{
+    RomBrowserModelData cartridgeData;
+    RomBrowserModelData diskData;
+    bool hasDiskData = !action->data().isNull();
+
+    if (!this->getCurrentData(cartridgeData))
+    {
+        return;
+    }
+
+    if (hasDiskData)
+    {
+        diskData = action->data().value<RomBrowserModelData>();
+        emit this->PlayGameWithDisk(cartridgeData.file, diskData.file);
+    }
+    else
+    {
+        emit this->PlayGameWith(CoreRomType::Cartridge, cartridgeData.file);
+    }
 }
 
 void RomBrowserWidget::on_Action_PlayGameWithSlot(int slot)

@@ -91,6 +91,7 @@ class RomBrowserWidget : public QStackedWidget
     QAction* action_SetCoverImage;
     QAction* action_RemoveCoverImage;
 
+    QMenu*   menu_PlayGameWithDisk;
     QMenu*   menu_PlayGameWithSlot;
     QMenu*   menu_Columns;
     QAction* action_ColumnsMenuEntry;
@@ -114,6 +115,7 @@ class RomBrowserWidget : public QStackedWidget
     void on_DoubleClicked(const QModelIndex& index);
     void customContextMenuRequested(QPoint position);
     void generateColumnsMenu(void);
+    void generatePlayWithDiskMenu(void);
     void generateStateMenu(void);
 
     void on_listViewWidget_sortIndicatorChanged(int logicalIndex, Qt::SortOrder sortOrder);
@@ -131,6 +133,7 @@ class RomBrowserWidget : public QStackedWidget
 
     void on_Action_PlayGame(void);
     void on_Action_PlayGameWith(void);
+    void on_Menu_PlayGameWithDisk(QAction* action);
     void on_Action_PlayGameWithSlot(int);
     void on_Action_RefreshRomList(void);
     void on_Action_OpenRomDirectory(void);
@@ -144,14 +147,15 @@ class RomBrowserWidget : public QStackedWidget
     void on_Action_RemoveCoverImage(void);
 
   signals:
-    void PlayGame(QString);
-    void PlayGameWith(CoreRomType, QString);
-    void PlayGameWithSlot(QString, int);
-    void EditGameSettings(QString);
-    void EditGameInputSettings(QString);
-    void Cheats(QString);
+    void PlayGame(QString file);
+    void PlayGameWith(CoreRomType type, QString file);
+    void PlayGameWithDisk(QString cartridge, QString disk);
+    void PlayGameWithSlot(QString file, int slot);
+    void EditGameSettings(QString file);
+    void EditGameInputSettings(QString file);
+    void Cheats(QString file);
     void ChangeRomDirectory(void);
-    void RomInformation(QString);
+    void RomInformation(QString file);
 
     void FileDropped(QDropEvent* event);
 };
