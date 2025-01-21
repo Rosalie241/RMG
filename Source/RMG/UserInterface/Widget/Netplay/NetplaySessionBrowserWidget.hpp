@@ -55,8 +55,8 @@ class NetplaySessionBrowserWidget : public QStackedWidget
     bool GetCurrentSession(NetplaySessionData& data);
 
   private:
-    Widget::NetplaySessionBrowserEmptyWidget*    emptyWidget   = nullptr;
-    Widget::NetplaySessionBrowserLoadingWidget*  loadingWidget = nullptr;
+    Widget::NetplaySessionBrowserEmptyWidget*   emptyWidget   = nullptr;
+    Widget::NetplaySessionBrowserLoadingWidget* loadingWidget = nullptr;
 
     QTableWidget* tableWidget       = nullptr;
     QWidget*      currentViewWidget = nullptr;
