@@ -615,11 +615,13 @@ void MainWindow::launchEmulationThread(QString cartRom, QString address, int por
 
 void MainWindow::launchEmulationThread(QString cartRom, QString diskRom, bool refreshRomListAfterEmulation, int slot, bool netplay)
 {
+#ifdef NETPLAY
     if (this->netplaySessionDialog != nullptr && !netplay)
     {
         this->showErrorMessage("EmulationThread::run Failed", "Cannot start emulation when netplay session is active");
         return;
     }
+#endif // NETPLAY
 
     CoreSettingsSave();
 
@@ -1998,11 +2000,13 @@ void MainWindow::on_Emulation_Finished(bool ret)
         this->ui_NoSwitchToRomBrowser = false;
     }
 
+#ifdef NETPLAY
     if (this->netplaySessionDialog != nullptr)
     {
         this->netplaySessionDialog->deleteLater();
         this->netplaySessionDialog = nullptr;
     }
+#endif // NETPLAY
 
     if (!this->ui_QuitAfterEmulation &&
         !this->ui_NoSwitchToRomBrowser &&
@@ -2233,6 +2237,7 @@ void MainWindow::on_Netplay_PlayGame(QString file, QString address, int port, in
 
 void MainWindow::on_NetplaySessionBrowser_rejected()
 {
+#ifdef NETPLAY
     bool isRunning = CoreIsEmulationRunning();
     bool isPaused = CoreIsEmulationPaused();
 
@@ -2244,6 +2249,7 @@ void MainWindow::on_NetplaySessionBrowser_rejected()
 
     // force refresh of actions
     this->updateActions(isRunning, isPaused);
+#endif // NETPLAY
 }
 
 void MainWindow::on_VidExt_Init(VidExtRenderMode renderMode)
