@@ -29,6 +29,21 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.7.1" date="2025-01-21" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix RDRAM initialization allowing for libdragon IPL3 to boot</li>
+          <li>Fix AppImage not working on some Linux distributions (thank you Samueru-sama)</li>
+          <li>Fix 64DD disks being shown in the Create Netplay Session dialog</li>
+          <li>Add support for ROMs that are bigger than 64MiB</li>
+          <li>Add support for launching a cartridge + disk combo where the disk is in an archive</li>
+          <li>Add stricter filename validation in the update dialog</li>
+          <li>Improve Netplay Session dialog by keeping it open while in-game</li>
+          <li>Improve 'Play Game with Disk' by turning it into a context menu</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.7.0" date="2025-01-05" type="stable">
       <description>
         <p>Changes:</p>
