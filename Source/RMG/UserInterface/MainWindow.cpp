@@ -803,8 +803,10 @@ void MainWindow::updateActions(bool inEmulation, bool isPaused)
     this->action_View_Log->setShortcut(QKeySequence(keyBinding));
     this->action_View_ClearRomCache->setEnabled(!inEmulation);
 
+#ifdef NETPLAY
     this->action_Netplay_CreateSession->setEnabled(!inEmulation && this->netplaySessionDialog == nullptr);
     this->action_Netplay_JoinSession->setEnabled(!inEmulation && this->netplaySessionDialog == nullptr);
+#endif // NETPLAY
 
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_IncreaseVolume));
     this->action_Audio_IncreaseVolume->setShortcut(QKeySequence(keyBinding));
