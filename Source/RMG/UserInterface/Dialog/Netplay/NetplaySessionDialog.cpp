@@ -87,18 +87,18 @@ void NetplaySessionDialog::on_webSocket_textMessageReceived(QString message)
             for (int i = 0; i < 4; i++)
             {
                 name = names.at(i).toString();
+                this->listWidget->addItem(name);
                 if (!name.isEmpty())
                 {
-                    this->listWidget->addItem(name);
                     if (this->nickName == name)
                     {
                         this->sessionNumber = i + 1;
                     }
-                }
-                if (i == 0)
-                {
-                    QPushButton* startButton = this->buttonBox->button(QDialogButtonBox::Ok);
-                    startButton->setEnabled(this->nickName == name);
+                    if (i == 0)
+                    {
+                        QPushButton* startButton = this->buttonBox->button(QDialogButtonBox::Ok);
+                        startButton->setEnabled(this->nickName == name);
+                    }
                 }
             }
         }
