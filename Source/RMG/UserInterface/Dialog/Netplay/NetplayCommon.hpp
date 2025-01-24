@@ -11,6 +11,7 @@
 #define NETPLAYCOMMON_HPP
 
 #include <QJsonObject>
+#include <QComboBox>
 #include <QString>
 
 namespace NetplayCommon
@@ -24,6 +25,8 @@ namespace NetplayCommon
 
     // Retrieves RSP and GFX plugin names
     QList<QString> GetPluginNames(QString md5QString);
+
+    void RestoreSelectedServer(QComboBox* comboBox);
 }
 
 #endif // NETPLAYCOMMON_HPP

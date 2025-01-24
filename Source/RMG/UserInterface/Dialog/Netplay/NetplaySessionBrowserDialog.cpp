@@ -87,6 +87,12 @@ NetplaySessionBrowserDialog::~NetplaySessionBrowserDialog(void)
     {
         CoreSettingsSetValue(SettingsID::Netplay_Nickname, nickname.toStdString());
     }
+
+    QString server = this->serverComboBox->currentText();
+    if (!server.isEmpty())
+    {
+        CoreSettingsSetValue(SettingsID::Netplay_SelectedServer, server.toStdString());
+    }
 }
 
 QJsonObject NetplaySessionBrowserDialog::GetSessionJson(void)
@@ -255,6 +261,8 @@ void NetplaySessionBrowserDialog::on_broadcastSocket_readyRead(void)
             this->serverComboBox->addItem(servers.at(i), json.value(servers.at(i)).toString());
         }
     }
+
+    NetplayCommon::RestoreSelectedServer(this->serverComboBox);
 }
 
 void NetplaySessionBrowserDialog::on_networkAccessManager_Finished(QNetworkReply* reply)
@@ -277,6 +285,8 @@ void NetplaySessionBrowserDialog::on_networkAccessManager_Finished(QNetworkReply
     }
 
     reply->deleteLater();
+
+    NetplayCommon::RestoreSelectedServer(this->serverComboBox);
 }
 
 void NetplaySessionBrowserDialog::on_serverComboBox_currentIndexChanged(int index)

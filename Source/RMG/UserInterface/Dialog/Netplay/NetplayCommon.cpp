@@ -78,3 +78,18 @@ QList<QString> NetplayCommon::GetPluginNames(QString md5QString)
 
     return pluginNames;
 }
+
+void NetplayCommon::RestoreSelectedServer(QComboBox* comboBox)
+{
+    QString server = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::Netplay_SelectedServer));
+    if (server.isEmpty())
+    {
+        return;
+    }
+
+    int index = comboBox->findText(server);
+    if (index >= 0)
+    {
+        comboBox->setCurrentIndex(index);
+    }
+}
