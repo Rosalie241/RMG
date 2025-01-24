@@ -160,10 +160,13 @@ static l_Setting get_setting(SettingsID settingId)
         break;
 
     case SettingsID::Netplay_Nickname:
-        setting = {SETTING_SECTION_NETPLAY, "Nickname", "NetplayUser"};
+        setting = {SETTING_SECTION_NETPLAY, "Nickname", std::string("NetplayUser")};
         break;
     case SettingsID::Netplay_ServerJsonUrl:
-        setting = {SETTING_SECTION_NETPLAY, "ServerJsonUrl", "https://m64p.s3.amazonaws.com/servers.json"};
+        setting = {SETTING_SECTION_NETPLAY, "ServerJsonUrl", std::string("https://m64p.s3.amazonaws.com/servers.json")};
+        break;
+    case SettingsID::Netplay_SelectedServer:
+        setting = {SETTING_SECTION_NETPLAY, "SelectedServer", std::string("")};
         break;
 
     case SettingsID::Core_GFX_Plugin:
