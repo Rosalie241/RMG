@@ -161,7 +161,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 #endif // UPDATER
 
 #ifdef NETPLAY
-    void showNetplaySessionBrowser(QWebSocket* webSocket, QJsonObject json, QString sessionFile);
+    void showNetplaySessionDialog(QWebSocket* webSocket, QJsonObject json, QString sessionFile);
 #endif // NETPLAY
   protected:
     void timerEvent(QTimerEvent *event) Q_DECL_OVERRIDE;
@@ -236,7 +236,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     void on_RomBrowser_Cheats(QString file);
 
     void on_Netplay_PlayGame(QString file, QString address, int port, int player);
-    void on_NetplaySessionBrowser_rejected(void);
+    void on_NetplaySessionDialog_rejected(void);
 
   public slots:
 

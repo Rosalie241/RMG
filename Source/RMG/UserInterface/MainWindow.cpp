@@ -165,6 +165,13 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
     this->coreCallBacks->Stop();
 
+#ifdef NETPLAY
+    if (this->netplaySessionDialog != nullptr)
+    {
+        this->netplaySessionDialog->close();
+    }
+#endif // NETPLAY
+
     this->logDialog.close();
 
     while (this->emulationThread->isRunning())
@@ -1192,7 +1199,7 @@ void MainWindow::checkForUpdates(bool silent, bool force)
 #endif // UPDATER
 
 #ifdef NETPLAY
-void MainWindow::showNetplaySessionBrowser(QWebSocket* webSocket, QJsonObject json, QString sessionFile)
+void MainWindow::showNetplaySessionDialog(QWebSocket* webSocket, QJsonObject json, QString sessionFile)
 {
     if (this->netplaySessionDialog != nullptr)
     {
@@ -1200,9 +1207,9 @@ void MainWindow::showNetplaySessionBrowser(QWebSocket* webSocket, QJsonObject js
         this->netplaySessionDialog = nullptr;
     }
     
-    this->netplaySessionDialog = new Dialog::NetplaySessionDialog(this, webSocket, json, sessionFile);
+    this->netplaySessionDialog = new Dialog::NetplaySessionDialog(nullptr, webSocket, json, sessionFile);
     connect(this->netplaySessionDialog, &Dialog::NetplaySessionDialog::OnPlayGame, this, &MainWindow::on_Netplay_PlayGame);
-    connect(this->netplaySessionDialog, &Dialog::NetplaySessionDialog::rejected, this, &MainWindow::on_NetplaySessionBrowser_rejected);
+    connect(this->netplaySessionDialog, &Dialog::NetplaySessionDialog::rejected, this, &MainWindow::on_NetplaySessionDialog_rejected);
     this->netplaySessionDialog->show();
 
     // force refresh of actions
@@ -1928,7 +1935,7 @@ void MainWindow::on_Action_Netplay_CreateSession(void)
     int ret = dialog.exec();
     if (ret == QDialog::Accepted)
     {
-        this->showNetplaySessionBrowser(&webSocket, dialog.GetSessionJson(), dialog.GetSessionFile());
+        this->showNetplaySessionDialog(&webSocket, dialog.GetSessionJson(), dialog.GetSessionFile());
     }
 #endif // NETPLAY
 }
@@ -1942,7 +1949,7 @@ void MainWindow::on_Action_Netplay_JoinSession(void)
     int ret = dialog.exec();
     if (ret == QDialog::Accepted)
     {
-        this->showNetplaySessionBrowser(&webSocket, dialog.GetSessionJson(), dialog.GetSessionFile());
+        this->showNetplaySessionDialog(&webSocket, dialog.GetSessionJson(), dialog.GetSessionFile());
     }
 #endif // NETPLAY
 }
@@ -2244,7 +2251,7 @@ void MainWindow::on_Netplay_PlayGame(QString file, QString address, int port, in
     this->launchEmulationThread(file, address, port, player);
 }
 
-void MainWindow::on_NetplaySessionBrowser_rejected()
+void MainWindow::on_NetplaySessionDialog_rejected()
 {
 #ifdef NETPLAY
     bool isRunning = CoreIsEmulationRunning();
