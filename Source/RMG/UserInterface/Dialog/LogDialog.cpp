@@ -19,6 +19,7 @@ LogDialog::LogDialog(QWidget *parent) : QDialog(parent)
 {
     this->setupUi(this);
     this->setWindowIcon(QIcon(":Resource/RMG.png"));
+    this->setWindowFlags(this->windowFlags() | Qt::WindowMinimizeButtonHint);
 
     QFont font("monospace");
 #ifdef _WIN32
