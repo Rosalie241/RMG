@@ -26,6 +26,7 @@ namespace NetplayCommon
     // Retrieves RSP and GFX plugin names
     QList<QString> GetPluginNames(QString md5QString);
 
+    // Restores previously selected server
     void RestoreSelectedServer(QComboBox* comboBox);
 }
 
