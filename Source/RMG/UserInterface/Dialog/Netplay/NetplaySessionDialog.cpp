@@ -110,8 +110,15 @@ void NetplaySessionDialog::on_webSocket_textMessageReceived(QString message)
     }
     else if (type == "reply_begin_game")
     {
-        this->started = true;
-        emit OnPlayGame(this->sessionFile, this->webSocket->peerAddress().toString(), this->sessionPort, this->sessionNumber);
+        if (json.value("accept").toInt() == 0)
+        {
+            this->started = true;
+            emit OnPlayGame(this->sessionFile, this->webSocket->peerAddress().toString(), this->sessionPort, this->sessionNumber);
+        }
+        else
+        {
+            QtMessageBox::Error(this, "Server Error", json.value("message").toString());
+        }
     }
     else if (type == "reply_motd")
     {
