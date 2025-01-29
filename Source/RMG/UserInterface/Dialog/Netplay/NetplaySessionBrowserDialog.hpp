@@ -12,6 +12,7 @@
 
 #include <QTableWidgetItem>
 #include <QNetworkReply>
+#include <QTimerEvent>
 #include <QJsonObject>
 #include <QWebSocket>
 #include <QUdpSocket>
@@ -44,14 +45,20 @@ class NetplaySessionBrowserDialog : public QDialog, private Ui::NetplaySessionBr
     QString sessionFile;
     QMap<QString, CoreRomSettings> romData;
 
+    int pingTimerId = -1;
+
     QString showROMDialog(QString name, QString md5);
 
     bool validate(void);
     void validateJoinButton(void);
 
+  protected:
+    void timerEvent(QTimerEvent *event) Q_DECL_OVERRIDE;
+
   private slots:
     void on_webSocket_connected(void);
     void on_webSocket_textMessageReceived(QString message);
+    void on_webSocket_pong(quint64 elapsedTime, const QByteArray&);
     void on_webSocket_disconnected(void);
 
     void on_broadcastSocket_readyRead(void);

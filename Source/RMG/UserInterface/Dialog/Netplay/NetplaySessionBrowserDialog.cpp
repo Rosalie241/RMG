@@ -40,6 +40,7 @@ NetplaySessionBrowserDialog::NetplaySessionBrowserDialog(QWidget *parent, QWebSo
     connect(this->webSocket, &QWebSocket::connected, this, &NetplaySessionBrowserDialog::on_webSocket_connected);
     connect(this->webSocket, &QWebSocket::disconnected, this, &NetplaySessionBrowserDialog::on_webSocket_disconnected);
     connect(this->webSocket, &QWebSocket::textMessageReceived, this, &NetplaySessionBrowserDialog::on_webSocket_textMessageReceived);
+    connect(this->webSocket, &QWebSocket::pong, this, &NetplaySessionBrowserDialog::on_webSocket_pong);
 
     // copy rom data for later
     this->romData = modelData;
@@ -78,6 +79,8 @@ NetplaySessionBrowserDialog::NetplaySessionBrowserDialog(QWidget *parent, QWebSo
     }
 
     this->validateJoinButton();
+
+    this->pingTimerId = this->startTimer(2000);
 }
 
 NetplaySessionBrowserDialog::~NetplaySessionBrowserDialog(void)
@@ -156,6 +159,17 @@ void NetplaySessionBrowserDialog::validateJoinButton(void)
 {
     QPushButton* joinButton = this->buttonBox->button(QDialogButtonBox::Ok);
     joinButton->setEnabled(this->validate());
+}
+
+void NetplaySessionBrowserDialog::timerEvent(QTimerEvent *event)
+{
+    if (event->timerId() == this->pingTimerId)
+    {
+        if (this->webSocket->isValid())
+        {
+            this->webSocket->ping();
+        }
+    }
 }
 
 void NetplaySessionBrowserDialog::on_webSocket_connected(void)
@@ -241,6 +255,11 @@ void NetplaySessionBrowserDialog::on_webSocket_textMessageReceived(QString messa
     }
 }
 
+void NetplaySessionBrowserDialog::on_webSocket_pong(quint64 elapsedTime, const QByteArray&)
+{
+    this->pingLineEdit->setText(QString::number(elapsedTime) + " ms");
+}
+
 void NetplaySessionBrowserDialog::on_webSocket_disconnected()
 {
     this->sessionBrowserWidget->Reset();
@@ -298,6 +317,8 @@ void NetplaySessionBrowserDialog::on_serverComboBox_currentIndexChanged(int inde
     {
         return;
     }
+
+    this->pingLineEdit->setText("Calculating...");
 
     this->sessionBrowserWidget->StartRefresh();
 
