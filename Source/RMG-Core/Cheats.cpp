@@ -52,6 +52,7 @@ struct l_LoadedCheat
 static CoreCheatFile l_SharedCheatFile;
 static CoreCheatFile l_UserCheatFile;
 static std::vector<l_LoadedCheat> l_LoadedCheats;
+static std::vector<CoreCheat> l_NetplayCheats;
 
 //
 // Local Functions
@@ -1039,6 +1040,84 @@ bool CoreClearCheats(void)
     l_SharedCheatFile = {};
     l_UserCheatFile = {};
     l_LoadedCheats.clear();
+    l_NetplayCheats.clear();
+    return true;
+}
+
+bool CoreSetNetplayCheats(std::vector<CoreCheat> cheats)
+{
+    l_NetplayCheats = cheats;
+    return true;
+}
+
+bool CoreApplyNetplayCheats(void)
+{
+    std::string error;
+    m64p_error ret;
+    std::vector<m64p_cheat_code> m64p_cheatCodes;
+    std::vector<CoreCheat> cheats;
+    CoreCheatOption cheatOption;
+    bool skipCheat = false;
+    int32_t combinedValue;
+
+    if (!m64p::Core.IsHooked())
+    {
+        return false;
+    }
+
+    for (const CoreCheat& cheat : l_NetplayCheats)
+    {
+        skipCheat = false;
+
+        for (const CoreCheatCode& code : cheat.CheatCodes)
+        {
+            if (code.UseOptions)
+            {
+                // make sure an option has been set and is valid
+                if (cheat.CheatOptions.size() != 1)
+                {
+                    skipCheat = true;
+                    break;
+                }
+
+                // make sure retrieving it succeeds
+                cheatOption = cheat.CheatOptions[0];
+
+                // make sure combining the cheat code & option succeeds
+                if (!combine_cheat_code_and_option(code, cheatOption, combinedValue))
+                {
+                    skipCheat = true;
+                    break;
+                }
+
+                m64p_cheatCodes.push_back({code.Address, combinedValue});
+            }
+            else
+            {
+                m64p_cheatCodes.push_back({code.Address, code.Value});
+            }
+        }
+
+        if (skipCheat)
+        {
+            continue;
+        }
+
+        ret = m64p::Core.AddCheat(cheat.Name.c_str(), m64p_cheatCodes.data(), m64p_cheatCodes.size());
+        if (ret != M64ERR_SUCCESS)
+        {
+            error = "CoreApplyNetplayCheats m64p::Core.AddCheat(";
+            error += cheat.Name.c_str();
+            error += ") Failed:";
+            error += m64p::Core.ErrorMessage(ret);
+            CoreSetError(error);
+            return false;
+        }
+
+        // add cheat to loaded cheats
+        l_LoadedCheats.push_back({cheat, cheatOption});
+    }
+
     return true;
 }
 

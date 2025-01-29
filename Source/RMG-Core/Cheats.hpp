@@ -145,6 +145,12 @@ bool CoreApplyCheats(void);
 // attempts to remove all cheats from the currently opened ROM
 bool CoreClearCheats(void);
 
+// attempts to set netplay cheats
+bool CoreSetNetplayCheats(std::vector<CoreCheat> cheats);
+
+// attempts to apply the enabled netplay cheats
+bool CoreApplyNetplayCheats(void);
+
 // attemps to press the gameshark button
 bool CorePressGamesharkButton(bool enabled);
 

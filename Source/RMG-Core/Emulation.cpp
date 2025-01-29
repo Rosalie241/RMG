@@ -180,9 +180,18 @@ bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64d
         return false;
     }
 
-    // TODO: add support for cheats during netplay
     if (!address.empty())
-    {
+    { // netplay cheats
+        if (!CoreApplyNetplayCheats())
+        {
+            CoreDetachPlugins();
+            CoreApplyPluginSettings();
+            CoreCloseRom();
+            return false;
+        }
+    }
+    else
+    { // local cheats
         if (!CoreApplyCheats())
         {
             CoreDetachPlugins();
