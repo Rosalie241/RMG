@@ -11,7 +11,6 @@
 #define CHEATSCOMMONH_HPP
 
 #include <QJsonArray>
-#include <QString>
 
 #include <RMG-Core/Core.hpp>
 
