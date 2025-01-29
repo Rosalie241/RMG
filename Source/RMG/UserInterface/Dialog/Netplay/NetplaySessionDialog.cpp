@@ -68,7 +68,7 @@ NetplaySessionDialog::NetplaySessionDialog(QWidget *parent, QWebSocket* webSocke
 
     QPushButton* cheatsButton = this->buttonBox->button(QDialogButtonBox::RestoreDefaults);
     cheatsButton->setText("Cheats");
-    cheatsButton->setIcon(QIcon());
+    cheatsButton->setIcon(QIcon::fromTheme("code-box-line"));
 }
 
 NetplaySessionDialog::~NetplaySessionDialog(void)
