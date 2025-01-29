@@ -11,9 +11,10 @@
 
 #include "AddCheatDialog.hpp"
 #include "ChooseCheatOptionDialog.hpp"
-
 #include "Utilities/QtMessageBox.hpp"
+#include "CheatsCommon.hpp"
 
+#include <QJsonObject>
 #include <QFileInfo>
 
 #include <RMG-Core/Core.hpp>
@@ -23,9 +24,12 @@ Q_DECLARE_METATYPE(CoreCheat);
 using namespace UserInterface::Dialog;
 using namespace Utilities;
 
-CheatsDialog::CheatsDialog(QWidget *parent) : QDialog(parent)
+CheatsDialog::CheatsDialog(QWidget *parent, bool netplay, QJsonArray cheatsJson) : QDialog(parent)
 {
     qRegisterMetaType<CoreCheat>();
+
+    this->netplay = netplay;
+    this->cheatsJson = cheatsJson;
 
     this->setupUi(this);
     this->loadCheats();
@@ -38,6 +42,11 @@ CheatsDialog::~CheatsDialog(void)
 bool CheatsDialog::HasFailed(void)
 {
     return this->failedToParseCheats;
+}
+
+QJsonArray CheatsDialog::GetJson(void)
+{
+    return this->cheatsJson;
 }
 
 void CheatsDialog::loadCheats(void)
@@ -59,7 +68,7 @@ void CheatsDialog::loadCheats(void)
         QString name = QString::fromStdString(cheat.Name);
         QString section;
         QStringList sections = name.split("\\");
-        bool enabled = CoreIsCheatEnabled(cheat);
+        bool enabled = CheatsCommon::IsCheatEnabled(this->netplay, this->cheatsJson, cheat);
 
         for (int i = 0; i < sections.size(); i++)
         {
@@ -173,7 +182,8 @@ QString CheatsDialog::getTreeWidgetItemTextFromCheat(CoreCheat cheat)
     if (cheat.HasOptions)
     {
         CoreCheatOption cheatOption;
-        if (!CoreHasCheatOptionSet(cheat) || !CoreGetCheatOption(cheat, cheatOption))
+        if (!CheatsCommon::HasCheatOptionSet(this->netplay, this->cheatsJson, cheat) || 
+            !CheatsCommon::GetCheatOption(this->netplay, this->cheatsJson, cheat, cheatOption))
         {
             text = cheatName + " (=> ???? - Not Set)";
         }
@@ -203,7 +213,7 @@ void CheatsDialog::on_cheatsTreeWidget_itemChanged(QTreeWidgetItem *item, int co
     CoreCheat cheat = item->data(column, Qt::UserRole).value<CoreCheat>();
     bool enabled = (item->checkState(column) == Qt::CheckState::Checked);
 
-    if (enabled && cheat.HasOptions && !CoreHasCheatOptionSet(cheat))
+    if (enabled && cheat.HasOptions && !CheatsCommon::HasCheatOptionSet(this->netplay, this->cheatsJson, cheat))
     {
         // ask user to select an option
         this->on_cheatsTreeWidget_itemDoubleClicked(item, column);
@@ -211,14 +221,14 @@ void CheatsDialog::on_cheatsTreeWidget_itemChanged(QTreeWidgetItem *item, int co
         // make sure the user selected an option,
         // if they did then enable the cheat as requested,
         // if not, reset the checkbox
-        if (!CoreHasCheatOptionSet(cheat))
+        if (!CheatsCommon::HasCheatOptionSet(this->netplay, this->cheatsJson, cheat))
         {
             item->setCheckState(0, Qt::CheckState::Unchecked);
             return;
         }
     }
 
-    CoreEnableCheat(cheat, enabled);
+    CheatsCommon::EnableCheat(this->netplay, this->cheatsJson, cheat, enabled);
 }
 
 void CheatsDialog::on_cheatsTreeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
@@ -251,8 +261,11 @@ void CheatsDialog::on_cheatsTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, 
         return;
     }
 
-    Dialog::ChooseCheatOptionDialog dialog(cheat, this);
+    Dialog::ChooseCheatOptionDialog dialog(cheat, this->netplay, this->cheatsJson, this);
     dialog.exec();
+
+    // update json
+    this->cheatsJson = dialog.GetJson();
 
     // re-load cheat options
     item->setText(column, this->getTreeWidgetItemTextFromCheat(cheat));
@@ -312,6 +325,12 @@ void CheatsDialog::on_removeCheatButton_clicked(void)
 
 void CheatsDialog::accept(void)
 {
+    if (this->netplay)
+    {
+        QDialog::accept();
+        return;
+    }
+
     CoreSettingsSave();
 
     if (!CoreApplyCheats())

@@ -10,8 +10,9 @@
 #ifndef CHEATSDIALOG_HPP
 #define CHEATSDIALOG_HPP
 
-#include <QWidget>
+#include <QJsonArray>
 #include <QDialog>
+#include <QWidget>
 
 #include <RMG-Core/Core.hpp>
 
@@ -26,14 +27,18 @@ class CheatsDialog : public QDialog, private Ui::CheatsDialog
     Q_OBJECT
 
   public:
-    CheatsDialog(QWidget *parent);
+    CheatsDialog(QWidget *parent, bool netplay = false, QJsonArray cheatsJson = {});
     ~CheatsDialog(void);
 
     bool HasFailed(void);
+    QJsonArray GetJson(void);
+
 
   private:
     bool needCloseRom = false;
     bool failedToParseCheats = false;
+    bool netplay = false;
+    QJsonArray cheatsJson;
 
     void loadCheats(void);
     

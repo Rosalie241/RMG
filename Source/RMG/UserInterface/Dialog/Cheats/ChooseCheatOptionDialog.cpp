@@ -8,6 +8,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "ChooseCheatOptionDialog.hpp"
+#include "CheatsCommon.hpp"
 
 #include <QFileInfo>
 
@@ -17,17 +18,19 @@ Q_DECLARE_METATYPE(CoreCheatOption);
 
 using namespace UserInterface::Dialog;
 
-ChooseCheatOptionDialog::ChooseCheatOptionDialog(CoreCheat cheat, QWidget *parent) : QDialog(parent)
+ChooseCheatOptionDialog::ChooseCheatOptionDialog(CoreCheat cheat, bool netplay, QJsonArray cheatsJson, QWidget *parent) : QDialog(parent)
 {
     qRegisterMetaType<CoreCheatOption>();
 
     this->setupUi(this);
     this->cheat = cheat;
-
+    this->netplay = netplay;
+    this->cheatsJson = cheatsJson;
+    
     CoreCheatOption setCheatOption;
 
-    bool checkCheatOption = CoreHasCheatOptionSet(cheat) &&
-                            CoreGetCheatOption(cheat, setCheatOption);
+    bool checkCheatOption = CheatsCommon::HasCheatOptionSet(this->netplay, this->cheatsJson, cheat) &&
+                            CheatsCommon::GetCheatOption(this->netplay, this->cheatsJson, cheat, setCheatOption);
 
     for (CoreCheatOption& option : cheat.CheatOptions)
     {
@@ -49,7 +52,11 @@ ChooseCheatOptionDialog::ChooseCheatOptionDialog(CoreCheat cheat, QWidget *paren
 
 ChooseCheatOptionDialog::~ChooseCheatOptionDialog()
 {
+}
 
+QJsonArray ChooseCheatOptionDialog::GetJson(void)
+{
+    return this->cheatsJson;
 }
 
 void ChooseCheatOptionDialog::on_cheatOptionsTreeWidget_itemChanged(QTreeWidgetItem *item, int column)
@@ -70,17 +77,8 @@ void ChooseCheatOptionDialog::on_cheatOptionsTreeWidget_itemChanged(QTreeWidgetI
     }
 }
 
-void ChooseCheatOptionDialog::on_buttonBox_clicked(QAbstractButton *button)
+void ChooseCheatOptionDialog::accept(void)
 {
-    QPushButton *pushButton = (QPushButton *)button;
-    QPushButton *okButton = this->buttonBox->button(QDialogButtonBox::Ok);
-
-    // do nothing when the user didn't press ok
-    if (pushButton != okButton)
-    {
-        return;
-    }
-
     for (int i = 0; i < this->cheatOptionsTreeWidget->topLevelItemCount(); i++)
     {
         QTreeWidgetItem* item = this->cheatOptionsTreeWidget->topLevelItem(i);
@@ -88,8 +86,9 @@ void ChooseCheatOptionDialog::on_buttonBox_clicked(QAbstractButton *button)
         if (item->checkState(0) == Qt::CheckState::Checked)
         {
             CoreCheatOption cheatOption = item->data(0, Qt::UserRole).value<CoreCheatOption>();
-            CoreSetCheatOption(this->cheat, cheatOption);
-            return;
+            CheatsCommon::SetCheatOption(this->netplay, this->cheatsJson, this->cheat, cheatOption);
         }
     }
+
+    QDialog::accept();
 }
