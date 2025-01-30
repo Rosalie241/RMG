@@ -72,6 +72,8 @@ struct InputProfile
 
     // input device information
     std::string DeviceName;
+    std::string DevicePath;
+    std::string DeviceSerial;
     int DeviceNum = -1;
     std::chrono::time_point<std::chrono::high_resolution_clock> LastDeviceCheckTime = std::chrono::high_resolution_clock::now();
 
@@ -294,6 +296,8 @@ static void load_settings(void)
         profile->DeadzoneValue = CoreSettingsGetIntValue(SettingsID::Input_Deadzone, section);
         profile->ControllerPak = (N64ControllerPak)CoreSettingsGetIntValue(SettingsID::Input_Pak, section);
         profile->DeviceName = CoreSettingsGetStringValue(SettingsID::Input_DeviceName, section);
+        profile->DevicePath = CoreSettingsGetStringValue(SettingsID::Input_DevicePath, section);
+        profile->DeviceSerial = CoreSettingsGetStringValue(SettingsID::Input_DeviceSerial, section);
         profile->DeviceNum = CoreSettingsGetIntValue(SettingsID::Input_DeviceNum, section);
         profile->GameboyRom = CoreSettingsGetStringValue(SettingsID::Input_GameboyRom, section);
         profile->GameboySave = CoreSettingsGetStringValue(SettingsID::Input_GameboySave, section);
@@ -564,7 +568,7 @@ static void open_controllers(void)
 
         if (profile->DeviceNum != (int)InputDeviceType::Keyboard)
         {
-            profile->InputDevice.OpenDevice(profile->DeviceName, profile->DeviceNum);
+            profile->InputDevice.OpenDevice(profile->DeviceName, profile->DevicePath, profile->DeviceSerial, profile->DeviceNum);
         }
     }
 }
@@ -1236,7 +1240,7 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
 
             if (!profile->InputDevice.HasOpenDevice() || !profile->InputDevice.IsAttached())
             {
-                profile->InputDevice.OpenDevice(profile->DeviceName, profile->DeviceNum);
+                profile->InputDevice.OpenDevice(profile->DeviceName, profile->DevicePath, profile->DeviceSerial, profile->DeviceNum);
             }
         }
     }

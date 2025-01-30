@@ -40,7 +40,7 @@ private:
     SDLThreadAction currentAction = SDLThreadAction::None;
 
 signals:
-    void OnInputDeviceFound(QString, int);
+    void OnInputDeviceFound(QString name, QString path, QString serial, int number);
     void OnDeviceSearchFinished(void);
 };
 } // namespace Thread

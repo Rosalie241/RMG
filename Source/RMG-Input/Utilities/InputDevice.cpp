@@ -78,7 +78,7 @@ bool InputDevice::HasOpenDevice()
     return this->hasOpenDevice;
 }
 
-void InputDevice::OpenDevice(std::string name, int num)
+void InputDevice::OpenDevice(std::string name, std::string path, std::string serial, int num)
 {
     // wait until SDLThread is done first
     while (this->sdlThread->GetCurrentAction() != SDLThreadAction::None)
@@ -87,8 +87,7 @@ void InputDevice::OpenDevice(std::string name, int num)
     }
 
     this->foundDevicesWithNameMatch.clear();
-    this->desiredDeviceName = name;
-    this->desiredDeviceNum = num;
+    this->desiredDevice = {name, path, serial, num};
     this->isOpeningDevice = true;
 
     // tell SDLThread to query input devices
@@ -117,16 +116,18 @@ bool InputDevice::CloseDevice()
     return true;
 }
 
-void InputDevice::on_SDLThread_DeviceFound(QString name, int number)
+void InputDevice::on_SDLThread_DeviceFound(QString name, QString path, QString serial, int number)
 {
     if ((!this->isOpeningDevice) || 
-        (this->desiredDeviceName != name.toStdString()))
+        (this->desiredDevice.name != name.toStdString()))
     {
         return;
     }
 
     SDLDevice device;
     device.name = name.toStdString();
+    device.path = path.toStdString();
+    device.serial = serial.toStdString();
     device.number = number;
 
     this->foundDevicesWithNameMatch.push_back(device);
@@ -150,18 +151,35 @@ void InputDevice::on_SDLThread_DeviceSearchFinished(void)
 
     // try to find exact match
     SDLDevice device;
-    device.name = this->desiredDeviceName;
-    device.number = this->desiredDeviceNum;
+    bool hasDevice = false;
 
-    auto iter = std::find(this->foundDevicesWithNameMatch.begin(), this->foundDevicesWithNameMatch.end(), device);
+    auto iter = std::find(this->foundDevicesWithNameMatch.begin(), this->foundDevicesWithNameMatch.end(), this->desiredDevice);
     if (iter != this->foundDevicesWithNameMatch.end())
     { // use exact match
         device.name = iter->name;
+        device.path = iter->path;
+        device.serial = iter->serial;
         device.number = iter->number;
     }
     else
-    { // no exact match, use first with name match
-        device = this->foundDevicesWithNameMatch.at(0);
+    { // no exact match, try to find name + serial match first
+        if (!this->desiredDevice.serial.empty())
+        { // only try serial match when it's not empty
+            for (const auto& deviceNameMatch : this->foundDevicesWithNameMatch)
+            {
+                if (deviceNameMatch.serial == this->desiredDevice.serial)
+                {
+                    device = deviceNameMatch;
+                    hasDevice = true;
+                    break;
+                }
+            }
+        }
+
+        if (!hasDevice)
+        { // fallback to name only match
+            device = this->foundDevicesWithNameMatch.at(0);
+        }
     }
 
     this->joystick = SDL_JoystickOpen(device.number);

@@ -243,10 +243,10 @@ void ControllerWidget::initializeMiscButtons()
 
 bool ControllerWidget::isCurrentDeviceKeyboard()
 {
-    int deviceNum = this->inputDeviceComboBox->currentData().toInt();
+    SDLDevice device = this->inputDeviceComboBox->currentData().value<SDLDevice>();
 
-    return deviceNum == (int)InputDeviceType::Automatic ||
-            deviceNum == (int)InputDeviceType::Keyboard;
+    return device.number == (int)InputDeviceType::Automatic ||
+            device.number == (int)InputDeviceType::Keyboard;
 }
 
 bool ControllerWidget::isCurrentDeviceNotFound()
@@ -502,35 +502,30 @@ void ControllerWidget::showErrorMessage(QString text, QString details)
     msgBox.exec();
 }
 
-void ControllerWidget::AddInputDevice(QString deviceName, int deviceNum)
+void ControllerWidget::AddInputDevice(SDLDevice device)
 {
+    QString deviceName =  QString::fromStdString(device.name);
     QString name = deviceName;
 
-    if (deviceNum >= 0)
+    if (device.number >= 0)
     {
         name += " (";
-        name += QString::number(deviceNum);
+        name += QString::number(device.number);
         name += ")";
     }
 
     this->inputDeviceNameList.append(deviceName);
-    this->inputDeviceComboBox->addItem(name, deviceNum);
+    this->inputDeviceComboBox->addItem(name, QVariant::fromValue<SDLDevice>(device));
 }
 
-void ControllerWidget::RemoveInputDevice(QString deviceName, int deviceNum)
+void ControllerWidget::RemoveInputDevice(SDLDevice device)
 {
-    inputDeviceNameList.removeOne(deviceName);
+    inputDeviceNameList.removeOne(QString::fromStdString(device.name));
 
-    for (int i = 0; i < this->inputDeviceComboBox->count(); i++)
+    int index = this->inputDeviceComboBox->findData(QVariant::fromValue<SDLDevice>(device));
+    if (index >= 0)
     {
-        int tmpNum = this->inputDeviceComboBox->itemData(i).toInt();
-        QString tmpName = this->inputDeviceComboBox->itemText(i);
-
-        if (tmpName.contains(deviceName) && deviceNum == tmpNum)
-        {
-            this->inputDeviceComboBox->removeItem(i);
-            break;
-        }
+        this->inputDeviceComboBox->removeItem(index);
     }
 }
 
@@ -562,7 +557,10 @@ void ControllerWidget::CheckInputDeviceSettings(QString sectionQString)
 
     bool isPluggedIn       = CoreSettingsGetBoolValue(SettingsID::Input_PluggedIn, section);
     std::string deviceName = CoreSettingsGetStringValue(SettingsID::Input_DeviceName, section);
+    std::string devicePath = CoreSettingsGetStringValue(SettingsID::Input_DevicePath, section);
+    std::string deviceSerial = CoreSettingsGetStringValue(SettingsID::Input_DeviceSerial, section);
     int deviceNum          = CoreSettingsGetIntValue(SettingsID::Input_DeviceNum, section);
+    SDLDevice device = { deviceName, devicePath, deviceSerial, deviceNum };
 
     // do nothing when input device combobox
     // is empty
@@ -574,8 +572,7 @@ void ControllerWidget::CheckInputDeviceSettings(QString sectionQString)
     // account for old setting
     if (!isPluggedIn && deviceNum != (int)InputDeviceType::None)
     {
-        deviceName = "None";
-        deviceNum  = (int)InputDeviceType::None;
+        device = { "None", "", "", (int)InputDeviceType::None };
     }
 
     // clear (not found) devices first
@@ -587,18 +584,52 @@ void ControllerWidget::CheckInputDeviceSettings(QString sectionQString)
     }
 
     int deviceNameIndex = this->inputDeviceComboBox->findText(QString::fromStdString(deviceName), Qt::MatchFlag::MatchStartsWith);
-    int deviceNumIndex  = this->inputDeviceComboBox->findData(deviceNum);
+    int deviceIndex = -1;
+    int deviceSerialIndex = -1;
+    bool needCompatibility = deviceNum >= 0 && devicePath.empty() && deviceSerial.empty();
 
-    if ((deviceNumIndex != -1) &&
-        (this->inputDeviceComboBox->itemText(deviceNumIndex).startsWith(QString::fromStdString(deviceName))))
+    int count = this->inputDeviceComboBox->count();
+    for (int i = 0; i < count; i++)
+    {
+        SDLDevice otherDevice = this->inputDeviceComboBox->itemData(i).value<SDLDevice>();
+        if (needCompatibility)
+        { // backwards compatibility with <v0.7.2
+            if (device.name == otherDevice.name &&
+                device.number == otherDevice.number)
+            {
+                deviceIndex = i;
+                break;
+            }
+        }
+        else if (device.name == otherDevice.name &&
+                 device.serial == otherDevice.serial)
+        {
+            if (!device.serial.empty())
+            {
+                deviceSerialIndex = i;
+            }
+
+            if (device.path == otherDevice.path)
+            {
+                deviceIndex = i;
+                break;
+            }
+        }
+    }
+
+    if (deviceIndex != -1)
     { // full match
-        this->inputDeviceComboBox->setCurrentIndex(deviceNumIndex);
+        this->inputDeviceComboBox->setCurrentIndex(deviceIndex);
 
         // force-refresh automatic input device
         if (deviceNum == (int)InputDeviceType::Automatic)
         {
-            this->on_inputDeviceComboBox_currentIndexChanged(deviceNumIndex);
+            this->on_inputDeviceComboBox_currentIndexChanged(deviceIndex);
         }
+    }
+    else if (deviceSerialIndex != -1)
+    { // name and serial match
+        this->inputDeviceComboBox->setCurrentIndex(deviceSerialIndex);
     }
     else if (deviceNameIndex != -1)
     { // name only match
@@ -609,7 +640,7 @@ void ControllerWidget::CheckInputDeviceSettings(QString sectionQString)
         QString title = QString::fromStdString(deviceName);
         title += " (not found)";
         this->inputDeviceNameList.append(QString::fromStdString(deviceName));
-        this->inputDeviceComboBox->addItem(title, deviceNum);
+        this->inputDeviceComboBox->addItem(title, QVariant::fromValue<SDLDevice>(device));
         this->inputDeviceComboBox->setCurrentIndex(this->inputDeviceNameList.count() - 1);
     }
 }
@@ -624,19 +655,17 @@ void ControllerWidget::ClearControllerImage()
     this->controllerImageWidget->ClearControllerState();
 }
 
-void ControllerWidget::GetCurrentInputDevice(QString& deviceName, int& deviceNum, bool ignoreDeviceNotFound)
+void ControllerWidget::GetCurrentInputDevice(SDLDevice& device, bool ignoreDeviceNotFound)
 {
     int currentIndex = this->inputDeviceComboBox->currentIndex();
 
     if (this->isCurrentDeviceNotFound() && !ignoreDeviceNotFound)
     {
-        deviceName = "";
-        deviceNum  = -1;
+        device = { "", "", "", -1 };
     }
     else
     {
-        deviceName = this->inputDeviceNameList.at(currentIndex);
-        deviceNum  = this->inputDeviceComboBox->itemData(currentIndex).toInt();
+        device = this->inputDeviceComboBox->itemData(currentIndex).value<SDLDevice>();
     }
 }
 
@@ -691,22 +720,20 @@ void ControllerWidget::on_inputDeviceComboBox_currentIndexChanged(int value)
         return;
     }
 
-    QString deviceName = this->inputDeviceNameList.at(value);
-    int deviceNum      = this->inputDeviceComboBox->itemData(value).toInt();
+    SDLDevice device = this->inputDeviceComboBox->itemData(value).value<SDLDevice>();
 
     this->ClearControllerImage();
 
     if (this->isCurrentDeviceNotFound())
     {
-        deviceName = "";
-        deviceNum  = -1;
+        device = { "", "", "", -1 };
     }
 
     // set plugged in state
-    this->setPluggedIn(deviceNum != (int)InputDeviceType::None &&
-                       deviceNum != (int)InputDeviceType::EmulateVRU);
+    this->setPluggedIn(device.number != (int)InputDeviceType::None &&
+                       device.number != (int)InputDeviceType::EmulateVRU);
 
-    emit this->CurrentInputDeviceChanged(this, deviceName, deviceNum);
+    emit this->CurrentInputDeviceChanged(this, device);
 }
 
 void ControllerWidget::on_inputDeviceRefreshButton_clicked()
@@ -853,7 +880,8 @@ void ControllerWidget::on_resetButton_clicked()
 
 void ControllerWidget::on_optionsButton_clicked()
 {
-    bool isKeyboard = this->inputDeviceComboBox->currentData().toInt() == (int)InputDeviceType::Keyboard;
+    SDLDevice device = this->inputDeviceComboBox->currentData().value<SDLDevice>();
+    bool isKeyboard = device.number == (int)InputDeviceType::Keyboard;
 
     OptionsDialog dialog(this, this->optionsDialogSettings,
                          isKeyboard ? nullptr : this->currentJoystick, 
@@ -1680,6 +1708,8 @@ void ControllerWidget::SaveDefaultSettings()
     CoreSettingsSetValue(SettingsID::Input_PluggedIn, section, false);
     CoreSettingsSetValue(SettingsID::Input_DeviceName, section, std::string("None"));
     CoreSettingsSetValue(SettingsID::Input_DeviceNum, section, (int)InputDeviceType::None);
+    CoreSettingsSetValue(SettingsID::Input_DevicePath, section, std::string(""));
+    CoreSettingsSetValue(SettingsID::Input_DeviceSerial, section, std::string(""));
     CoreSettingsSetValue(SettingsID::Input_Deadzone, section, 9);
     CoreSettingsSetValue(SettingsID::Input_Sensitivity, section, 100);
     CoreSettingsSetValue(SettingsID::Input_Pak, section, 0);
@@ -1760,8 +1790,7 @@ void ControllerWidget::SaveUserProfileSettings()
 
 void ControllerWidget::SaveSettings(QString section)
 {
-    QString deviceName;
-    int     deviceNum;
+    SDLDevice device;
 
     std::string mainSettingsSection = this->settingsSection.toStdString();
     std::string sectionStr          = section.toStdString();
@@ -1790,11 +1819,13 @@ void ControllerWidget::SaveSettings(QString section)
         CoreSettingsSetValue(SettingsID::Input_UseGameProfile, this->gameSection.toStdString(), false);
     }
 
-    this->GetCurrentInputDevice(deviceName, deviceNum, true);
+    this->GetCurrentInputDevice(device, true);
 
     CoreSettingsSetValue(SettingsID::Input_PluggedIn, sectionStr, this->IsPluggedIn());
-    CoreSettingsSetValue(SettingsID::Input_DeviceName, sectionStr, deviceName.toStdString());
-    CoreSettingsSetValue(SettingsID::Input_DeviceNum, sectionStr, deviceNum);
+    CoreSettingsSetValue(SettingsID::Input_DeviceName, sectionStr, device.name);
+    CoreSettingsSetValue(SettingsID::Input_DeviceNum, sectionStr, device.number);
+    CoreSettingsSetValue(SettingsID::Input_DevicePath, sectionStr, device.path);
+    CoreSettingsSetValue(SettingsID::Input_DeviceSerial, sectionStr, device.serial);
     CoreSettingsSetValue(SettingsID::Input_Deadzone, sectionStr, this->deadZoneSlider->value());
     CoreSettingsSetValue(SettingsID::Input_Sensitivity, sectionStr, this->analogStickSensitivitySlider->value());
     CoreSettingsSetValue(SettingsID::Input_Pak, sectionStr, this->optionsDialogSettings.ControllerPak);

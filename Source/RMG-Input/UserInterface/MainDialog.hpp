@@ -11,6 +11,7 @@
 #define MAINDIALOG_HPP
 
 #include <QDialog>
+#include "common.hpp"
 
 #include "ui_MainDialog.h"
 #include "Widget/ControllerWidget.hpp"
@@ -23,39 +24,26 @@ class MainDialog : public QDialog, private Ui::MainDialog
 {
 Q_OBJECT
 private:
-    struct inputDevice_t
-    {
-        QString deviceName;
-        int deviceNum;
-
-        bool operator== (inputDevice_t other) const
-        {
-            return other.deviceNum == deviceNum &&
-                other.deviceName == deviceName;
-        }
-    };
-
     QTimer* inputPollTimer;
     Thread::SDLThread* sdlThread;
 
-    QList<inputDevice_t> oldInputDeviceList;
-    QList<inputDevice_t> inputDeviceList;
+    QList<SDLDevice> oldInputDeviceList;
+    QList<SDLDevice> inputDeviceList;
     bool updatingDeviceList = false;
 
     QList<Widget::ControllerWidget*> controllerWidgets;
     SDL_Joystick* currentJoystick         = nullptr;
     SDL_GameController* currentController = nullptr;
-    QString currentDeviceName;
-    int currentDeviceNum = 0;
+    SDLDevice currentDevice;
 
     int previousTabWidgetIndex = 0;
 
     EventFilter* eventFilter;
 
-    void addInputDevice(QString, int);
-    void removeInputDevice(QString, int);
+    void addInputDevice(SDLDevice device);
+    void removeInputDevice(SDLDevice device);
 
-    void openInputDevice(QString, int);
+    void openInputDevice(SDLDevice device);
     void closeInputDevice();
 
 public:
@@ -65,7 +53,7 @@ public:
 public slots:
     void on_InputPollTimer_triggered();
 
-    void on_ControllerWidget_CurrentInputDeviceChanged(ControllerWidget*, QString, int);
+    void on_ControllerWidget_CurrentInputDeviceChanged(ControllerWidget*, SDLDevice);
     void on_ControllerWidget_RefreshInputDevicesButtonClicked();
 
     void on_ControllerWidget_UserProfileAdded(QString, QString);
@@ -73,7 +61,7 @@ public slots:
 
     void on_tabWidget_currentChanged(int);
 
-    void on_SDLThread_DeviceFound(QString, int);
+    void on_SDLThread_DeviceFound(QString, QString, QString, int);
     void on_SDLThread_DeviceSearchFinished(void);
 
 private slots:

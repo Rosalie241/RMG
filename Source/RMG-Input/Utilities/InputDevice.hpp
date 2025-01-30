@@ -41,8 +41,8 @@ public:
     // returns whether a device has been opened
     bool HasOpenDevice(void);
 
-    // tries to open device with given name & num
-    void OpenDevice(std::string name, int num);
+    // tries to open device with given name, path, serial & num
+    void OpenDevice(std::string name, std::string path, std::string serial, int num);
 
     // returns whether we're still trying to open the device
     bool IsOpeningDevice(void);
@@ -51,18 +51,6 @@ public:
     bool CloseDevice(void);
 
 private:
-    struct SDLDevice
-    {
-        std::string name;
-        int number;
-
-        bool operator== (SDLDevice other)
-        {
-            return other.name == name &&
-                other.number == number;
-        }
-    };
-
     SDL_Joystick*       joystick = nullptr;
     SDL_GameController* gameController = nullptr;
 
@@ -71,13 +59,11 @@ private:
 
     Thread::SDLThread* sdlThread = nullptr;
 
-    std::string desiredDeviceName;
-    int desiredDeviceNum;
-
+    SDLDevice desiredDevice;
     std::vector<SDLDevice> foundDevicesWithNameMatch;
 
 private slots:
-    void on_SDLThread_DeviceFound(QString, int);
+    void on_SDLThread_DeviceFound(QString name, QString path, QString serial, int number);
     void on_SDLThread_DeviceSearchFinished(void);
 };
 } // namespace Utilities

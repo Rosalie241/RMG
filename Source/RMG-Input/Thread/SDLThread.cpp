@@ -63,22 +63,43 @@ void SDLThread::run(void)
                 // force re-fresh joystick list
                 SDL_JoystickUpdate();
 
+                QString name;
+                QString path;
+                QString serial;
+
+                SDL_GameController* controller;
+                SDL_Joystick* joystick;
+
                 for (int i = 0; i < SDL_NumJoysticks(); i++)
                 {
-                    const char* name;
-
                     if (SDL_IsGameController(i))
                     {
-                        name = SDL_GameControllerNameForIndex(i);
+                        controller = SDL_GameControllerOpen(i);
+                        if (controller == nullptr)
+                        { // skip invalid controllers
+                            continue;
+                        }
+                        name = SDL_GameControllerName(controller);
+                        path = SDL_GameControllerPath(controller);
+                        serial = SDL_GameControllerGetSerial(controller);
+                        SDL_GameControllerClose(controller);
                     }
                     else
                     {
-                        name = SDL_JoystickNameForIndex(i);
+                        joystick = SDL_JoystickOpen(i);
+                        if (joystick == nullptr)
+                        { // skip invalid joysticks
+                            continue;
+                        }
+                        name = SDL_JoystickName(joystick);
+                        path = SDL_JoystickPath(joystick);
+                        serial = SDL_JoystickGetSerial(joystick);
+                        SDL_JoystickClose(joystick);
                     }
 
                     if (name != nullptr)
                     {
-                        emit this->OnInputDeviceFound(QString(name), i);
+                        emit this->OnInputDeviceFound(name, path, serial, i);
                     }
                 }
                 this->currentAction = SDLThreadAction::None;
