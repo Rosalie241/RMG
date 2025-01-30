@@ -223,6 +223,8 @@ enum class SettingsID
     Input_DeviceType,
     Input_DeviceName,
     Input_DeviceNum,
+    Input_DevicePath,
+    Input_DeviceSerial,
     Input_Deadzone,
     Input_Sensitivity,
     Input_Pak,
