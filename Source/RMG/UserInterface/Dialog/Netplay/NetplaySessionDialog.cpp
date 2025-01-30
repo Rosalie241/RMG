@@ -255,7 +255,7 @@ void NetplaySessionDialog::on_buttonBox_clicked(QAbstractButton* button)
         QString cheatsJson = this->sessionJson.value("features").toObject().value("cheats").toString();
         QJsonDocument cheatsDocument = QJsonDocument::fromJson(cheatsJson.toUtf8());
 
-        if (!CoreOpenRom(this->sessionFile.toStdString()))
+        if (!CoreOpenRom(this->sessionFile.toStdU32String()))
         {
             QtMessageBox::Error(this, "CoreOpenRom() Failed", QString::fromStdString(CoreGetError()));
             return;
