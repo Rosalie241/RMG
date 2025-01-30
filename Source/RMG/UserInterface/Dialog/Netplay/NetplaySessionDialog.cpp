@@ -70,6 +70,8 @@ NetplaySessionDialog::NetplaySessionDialog(QWidget *parent, QWebSocket* webSocke
     QPushButton* cheatsButton = this->buttonBox->button(QDialogButtonBox::RestoreDefaults);
     cheatsButton->setText("Cheats");
     cheatsButton->setIcon(QIcon::fromTheme("code-box-line"));
+
+    this->updateCheatsTreeWidget();
 }
 
 NetplaySessionDialog::~NetplaySessionDialog(void)
@@ -80,33 +82,62 @@ NetplaySessionDialog::~NetplaySessionDialog(void)
     }
 }
 
-bool NetplaySessionDialog::applyCheats(void)
+bool NetplaySessionDialog::getCheats(std::vector<CoreCheat>& cheats, QJsonArray& cheatsArray)
 {
     QJsonObject session  = this->sessionJson;
     QJsonObject features = session.value("features").toObject();
     QString cheatJson    = features["cheats"].toString();
-    
-    if (!cheatJson.isEmpty())
+
+    if (cheatJson.isEmpty())
     {
-        QJsonDocument cheatDocument = QJsonDocument::fromJson(cheatJson.toUtf8());
-        QJsonArray cheatArray = cheatDocument.array();
-        std::vector<CoreCheat> cheats;
+        return false;
+    }
 
-        if (!CheatsCommon::ParseCheatJson(cheatArray, cheats))
-        {
-            QString error = "Failed to parse cheats json: " + QString(cheatDocument.toJson());
-            QtMessageBox::Error(this, "CheatsCommon::ParseCheatJson() Failed", error);
-            return false;
-        }
+    QJsonDocument cheatDocument = QJsonDocument::fromJson(cheatJson.toUtf8());
+    cheatsArray = cheatDocument.array();
 
-        if (!CoreSetNetplayCheats(cheats))
-        {
-            QtMessageBox::Error(this, "CoreSetNetplayCheats() Failed", QString::fromStdString(CoreGetError()));
-            return false;
-        }
+    if (!CheatsCommon::ParseCheatJson(cheatsArray, cheats))
+    {
+        QString error = "Failed to parse cheats json: " + QString(cheatDocument.toJson());
+        QtMessageBox::Error(this, "CheatsCommon::ParseCheatJson() Failed", error);
+        return false;
     }
 
     return true;
+}
+
+bool NetplaySessionDialog::applyCheats(void)
+{
+    std::vector<CoreCheat> cheats;
+    QJsonArray cheatsArray;
+
+    if (!this->getCheats(cheats, cheatsArray))
+    {
+        return false;
+    }
+
+    if (!CoreSetNetplayCheats(cheats))
+    {
+        QtMessageBox::Error(this, "CoreSetNetplayCheats() Failed", QString::fromStdString(CoreGetError()));
+        return false;
+    }
+
+    return true;
+}
+
+void NetplaySessionDialog::updateCheatsTreeWidget(void)
+{
+    std::vector<CoreCheat> cheats;
+    QJsonArray cheatsArray;
+
+    if (!this->getCheats(cheats, cheatsArray))
+    {
+        // always clear UI on failure
+        this->cheatsTreeWidget->clear();
+        return;
+    }
+
+    CheatsCommon::AddCheatsToTreeWidget(true, cheatsArray, cheats, this->cheatsTreeWidget, true);    
 }
 
 void NetplaySessionDialog::on_webSocket_textMessageReceived(QString message)
@@ -125,7 +156,13 @@ void NetplaySessionDialog::on_webSocket_textMessageReceived(QString message)
             for (int i = 0; i < 4; i++)
             {
                 name = names.at(i).toString();
-                this->listWidget->addItem(name);
+
+                // add read-only item to UI
+                QListWidgetItem* item = new QListWidgetItem();
+                item->setText(name);
+                item->setFlags(item->flags() & ~Qt::ItemIsSelectable);
+                this->listWidget->addItem(item);
+
                 if (!name.isEmpty())
                 {
                     bool nameMatch = this->nickName == name;
@@ -178,6 +215,7 @@ void NetplaySessionDialog::on_webSocket_textMessageReceived(QString message)
         if (json.value("accept").toInt() == 0)
         {
             this->sessionJson = json.value("room").toObject();
+            this->updateCheatsTreeWidget();
         }
         else
         {

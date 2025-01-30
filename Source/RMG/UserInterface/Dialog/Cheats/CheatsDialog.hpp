@@ -41,10 +41,6 @@ class CheatsDialog : public QDialog, private Ui::CheatsDialog
     QJsonArray cheatsJson;
 
     void loadCheats(void);
-    
-    QTreeWidgetItem* findItem(QStringList sections, int size, QString itemText);
-
-    QString getTreeWidgetItemTextFromCheat(CoreCheat cheat);
 
   private slots:
     void on_cheatsTreeWidget_itemChanged(QTreeWidgetItem *item, int column);

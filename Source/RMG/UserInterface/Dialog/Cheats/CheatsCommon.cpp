@@ -292,3 +292,151 @@ bool CheatsCommon::ParseCheatJson(const QJsonArray& json, std::vector<CoreCheat>
 
     return true;
 }
+
+QString CheatsCommon::GetCheatTreeWidgetItemName(bool netplay, QJsonArray& json, const CoreCheat& cheat)
+{
+    QString cheatName = QString::fromStdString(cheat.Name).split('\\').last();
+    QString text;
+
+    if (cheat.HasOptions)
+    {
+        CoreCheatOption cheatOption;
+        if (!CheatsCommon::HasCheatOptionSet(netplay, json, cheat) || 
+            !CheatsCommon::GetCheatOption(netplay, json, cheat, cheatOption))
+        {
+            text = cheatName + " (=> ???? - Not Set)";
+        }
+        else
+        {
+            text = cheatName + " (=> ";
+            text += QString::fromStdString(cheatOption.Name);
+            text += ")";
+        }
+    }
+    else
+    {
+        text = cheatName;
+    }
+
+    return text;
+}
+
+bool CheatsCommon::AddCheatsToTreeWidget(bool netplay, QJsonArray& json, const std::vector<CoreCheat>& cheats, QTreeWidget* cheatsTreeWidget, bool readonly)
+{
+    cheatsTreeWidget->clear();
+
+    for (const CoreCheat& cheat : cheats)
+    {
+        QString name = QString::fromStdString(cheat.Name);
+        QString section;
+        QStringList sections = name.split("\\");
+        bool enabled = CheatsCommon::IsCheatEnabled(netplay, json, cheat);
+
+        for (int i = 0; i < sections.size(); i++)
+        {
+            section = sections.at(i);
+
+            // when item already exists,
+            // we don't need to add it anymore
+            QTreeWidgetItem* foundItem = CheatsCommon::FindTreeWidgetItem(cheatsTreeWidget, sections, i, section);
+            if (foundItem != nullptr)
+            {
+                continue;
+            }
+
+            QTreeWidgetItem* item = new QTreeWidgetItem();
+            item->setText(0, section);
+
+            // if at the last item,
+            // add the cheat as data
+            // and make it a checkbox
+            if (i == (sections.size() - 1))
+            {
+                item->setText(0, CheatsCommon::GetCheatTreeWidgetItemName(netplay, json, cheat));
+                item->setCheckState(0, (enabled ? Qt::CheckState::Checked : Qt::CheckState::Unchecked));
+                item->setData(0, Qt::UserRole, QVariant::fromValue(cheat));
+                if (readonly)
+                {
+                    item->setFlags(item->flags() & ~(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable));
+                }
+            }
+
+            if (i == 0)
+            { 
+                cheatsTreeWidget->addTopLevelItem(item);
+            }
+            else
+            {
+                QTreeWidgetItem* foundParent = CheatsCommon::FindTreeWidgetItem(cheatsTreeWidget, sections, i - 1, sections.at(i - 1));
+                if (foundParent != nullptr)
+                {
+                    foundParent->addChild(item);
+                }
+                else
+                {
+                    delete item;
+                }
+
+                // when the cheat is enabled & we're at the last item,
+                // expand each parent
+                if (i == (sections.size() - 1) && enabled)
+                {
+                    QTreeWidgetItem* parent = foundParent;
+                    while (parent != nullptr)
+                    {
+                        parent->setExpanded(true);
+                        parent = parent->parent();
+                    }
+                }
+            }
+        }
+    }
+
+    cheatsTreeWidget->sortItems(0, Qt::SortOrder::AscendingOrder);
+    return true;
+}
+
+QTreeWidgetItem* CheatsCommon::FindTreeWidgetItem(QTreeWidget* cheatsTreeWidget, QStringList sections, int size, QString itemText)
+{
+    QTreeWidgetItem* parent;
+    bool foundItem = false;
+    QList<QTreeWidgetItem*> foundItems = cheatsTreeWidget->findItems(itemText, Qt::MatchExactly | Qt::MatchRecursive, 0);
+
+    // loop over all the found items,
+    // then loop over all the parents
+    // to make sure they match aswell
+    for (auto& item : foundItems)
+    {
+        parent = item;
+        foundItem = true;
+
+        for (int i = size; i >= 0; i--)
+        {
+            // make sure the parent matches
+            if (parent == nullptr || parent->text(0) != sections.at(i))
+            {
+                foundItem = false;
+                break;
+            }
+
+            // make sure that when there are no sections left,
+            // that there are no more parents either
+            if (i == 0 && parent->parent() != nullptr)
+            {
+                foundItem = false;
+                break;
+            }
+
+            parent = parent->parent();
+        }
+
+        // when we've found the item,
+        // return it
+        if (foundItem)
+        {
+            return item;
+        }
+    }
+
+    return nullptr;
+}

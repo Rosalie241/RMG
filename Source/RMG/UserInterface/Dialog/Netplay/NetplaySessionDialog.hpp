@@ -15,6 +15,8 @@
 #include <QDialog>
 #include <QString>
 
+#include <RMG-Core/Core.hpp>
+
 #include "ui_NetplaySessionDialog.h"
 
 namespace UserInterface
@@ -40,7 +42,9 @@ class NetplaySessionDialog : public QDialog, private Ui::NetplaySessionDialog
 
   	QWebSocket* webSocket;
 
+    bool getCheats(std::vector<CoreCheat>& cheats, QJsonArray& cheatsArray);
     bool applyCheats(void);
+    void updateCheatsTreeWidget(void);
 
   private slots:
   	void on_webSocket_textMessageReceived(QString message);

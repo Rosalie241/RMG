@@ -10,7 +10,9 @@
 #ifndef CHEATSCOMMONH_HPP
 #define CHEATSCOMMONH_HPP
 
+#include <QTreeWidget>
 #include <QJsonArray>
+#include <QString>
 
 #include <RMG-Core/Core.hpp>
 
@@ -33,6 +35,15 @@ namespace CheatsCommon
 
     // Parses json into cheat list
     bool ParseCheatJson(const QJsonArray& json, std::vector<CoreCheat>& cheats);
+
+    // Retrieves tree widget item name from cheat
+    QString GetCheatTreeWidgetItemName(bool netplay, QJsonArray& json, const CoreCheat& cheat);
+
+    // Adds cheats to QTreeWidget
+    bool AddCheatsToTreeWidget(bool netplay, QJsonArray& json, const std::vector<CoreCheat>& cheats, QTreeWidget* cheatsTreeWidget, bool readonly);
+
+    // Attempts to find QTreeWidget item in section
+    QTreeWidgetItem* FindTreeWidgetItem(QTreeWidget* cheatsTreeWidget, QStringList sections, int size, QString itemText);
 }
 
 #endif // CHEATSCOMMONH_HPP
