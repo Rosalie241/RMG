@@ -153,6 +153,7 @@ bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64d
     m64p_error  m64p_ret;
     bool        netplay_ret = false;
     CoreRomType type;
+    bool        netplay = !address.empty();
 
     if (!CoreOpenRom(n64rom))
     {
@@ -180,7 +181,7 @@ bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64d
         return false;
     }
 
-    if (!address.empty())
+    if (netplay)
     { // netplay cheats
         if (!CoreApplyNetplayCheats())
         {
@@ -230,7 +231,7 @@ bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64d
 #endif // DISCORD_RPC
 
 #ifdef NETPLAY
-    if (!address.empty())
+    if (netplay)
     {
         netplay_ret = CoreInitNetplay(address, port, player);
         if (!netplay_ret)
@@ -242,7 +243,7 @@ bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64d
 
     // only start emulation when initializing netplay
     // is successful or if there's no netplay requested
-    if (address.empty() || netplay_ret)
+    if (!netplay || netplay_ret)
     {
         m64p_ret = m64p::Core.DoCommand(M64CMD_EXECUTE, 0, nullptr);
         if (m64p_ret != M64ERR_SUCCESS)
@@ -253,7 +254,7 @@ bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64d
     }
 
 #ifdef NETPLAY
-    if (!address.empty() && netplay_ret)
+    if (netplay && netplay_ret)
     {
         CoreShutdownNetplay();
     }
@@ -273,7 +274,7 @@ bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64d
     CoreDiscordRpcUpdate(false);
 #endif // DISCORD_RPC
 
-    if (address.empty() || netplay_ret)
+    if (!netplay || netplay_ret)
     {
         // we need to set the emulation error last,
         // to prevent the other functions from
