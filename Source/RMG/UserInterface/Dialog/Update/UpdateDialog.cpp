@@ -96,7 +96,7 @@ void UpdateDialog::accept(void)
         {
             if (lowerFilename.contains("windows64") &&
                 lowerFilename.contains("portable") &&
-                lowerFilename.endsWith(".exe"))
+                lowerFilename.endsWith(".zip"))
             {
                 filenameToDownload = filename;
                 urlToDownload = QUrl(url);
