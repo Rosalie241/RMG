@@ -1,0 +1,112 @@
+[3A03E50F-E78D1CA7-C:45]
+Name=GoldenEye 007 (U) [T+Spa2.0_Sogun&IlDucci]
+
+$$Modo Depuración
+Note=Pulsa A o Start para habilitar la opción actualmente seleccionada. Al pulsar Start cuando tengas el control del jugador, abrirá el menú reloj y cerrará el menú de depuración.
+80036FCB 0001
+
+$$Tener Todo\64 personajes en multijugador
+Note=Habilita todos los personajes seleccionables para jugar en multijugador
+8002B197 0040
+
+$$Tener Todo\Objetivos Completados
+80036FD3 0001
+
+$$Todo Desbloqueado\Guardado 1
+Note=Esto desbloquea todos los niveles, etapas, personajes en el modo multijugador y elementos del menú de trucos (habilite Invencible en el menú de trucos para tener salud infinita)
+50002902 0000
+810699EE FFFF
+
+$$Todo Desbloqueado\Guardado 2
+Note=Esto desbloquea todos los niveles, etapas, personajes en el modo multijugador y elementos del menú de trucos (habilite Invencible en el menú de trucos para tener salud infinita)
+50002902 0000
+8106992E FFFF
+
+$$Todo Desbloqueado\Guardado 3
+Note=Esto desbloquea todos los niveles, etapas, personajes en el modo multijugador y elementos del menú de trucos (habilite Invencible en el menú de trucos para tener salud infinita)
+50002902 0000
+81069A4E FFFF
+
+$$Todo Desbloqueado\Guardado 4
+Note=Esto desbloquea todos los niveles, etapas, personajes en el modo multijugador y elementos del menú de trucos (habilite Invencible en el menú de trucos para tener salud infinita)
+50002902 0000
+8106998E FFFF
+
+$$Infinito\Munición (Todos los Niveles)
+80079E3B 0001
+
+$$Tener\Tiempo Infinito 00:00 (Todos los Niveles)
+8004837E 0000
+8004838E 0000
+80048396 0000
+80079A22 0000
+80079F26 0000
+
+$$Infinito\Salud (Todos los Niveles)
+8100C0F4 0801
+8100C0F6 8090
+8100C0F8 AFA4
+8100C0FA 0000
+81060240 0004
+81060242 7600
+81060244 3C02
+81060246 8008
+81060248 8C42
+8106024A 9EE0
+8106024C 3401
+8106024E 3F80
+81060250 A441
+81060252 00DC
+81060254 0800
+81060256 303F
+
+$f
+80048673 0013
+81048678 3FC0
+80048677 00D0
+8004867F 000D
+80048683 000A
+8004868B 0013
+81048690 3FC0
+8004868F 00D0
+80048697 000D
+8004869B 000A
+800486A3 0019
+810486A8 3FC0
+800486A7 00D3
+800486AF 0006
+800486B3 0003
+800486BB 0019
+810486C0 3FC0
+800486BF 00D3
+800486C7 0006
+800486CB 0003
+800486D3 0013
+810486D8 3FC0
+800486D7 00D0
+800486DF 000D
+800486E3 000A
+800486EB 0013
+810486F0 3FC0
+800486EF 00D0
+800486F7 000D
+800486FB 000A
+80048703 0019
+81048708 3FC0
+80048707 00D3
+8004870F 0006
+80048713 0003
+8004871B 0019
+81048720 3FC0
+8004871F 00D3
+80048727 0006
+8004872B 0003
+812AEA50 476F
+812AEA52 6C64
+812AEA54 656E
+812AEA56 2047
+812AEA58 756E
+812AEA5A 2046
+812AEA5C 756E
+802AEA5E 0000
+
