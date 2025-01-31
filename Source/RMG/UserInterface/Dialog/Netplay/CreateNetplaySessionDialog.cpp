@@ -48,7 +48,7 @@ CreateNetplaySessionDialog::CreateNetplaySessionDialog(QWidget *parent, QWebSock
 
     // change ok button name
     QPushButton* createButton = this->buttonBox->button(QDialogButtonBox::Ok);
-    createButton->setText("Create");
+    createButton->setText(tr("Create"));
     createButton->setEnabled(false);
 
     // set validator for nickname
@@ -181,7 +181,7 @@ void CreateNetplaySessionDialog::on_webSocket_textMessageReceived(QString messag
         }
         else
         {
-            QtMessageBox::Error(this, "Server Error", json.value("message").toString());
+            QtMessageBox::Error(this, tr("Server Error"), json.value("message").toString());
             this->validateCreateButton();
         }
     }
@@ -215,7 +215,7 @@ void CreateNetplaySessionDialog::on_networkAccessManager_Finished(QNetworkReply*
 {
     if (reply->error())
     {
-        QtMessageBox::Error(this, "Server Error", "Failed to retrieve server list json: " + reply->errorString());
+        QtMessageBox::Error(this, tr("Server Error"), "Failed to retrieve server list json: " + reply->errorString());
         reply->deleteLater();
         return;
     }
@@ -241,7 +241,7 @@ void CreateNetplaySessionDialog::on_serverComboBox_currentIndexChanged(int index
         return;
     }
 
-    this->pingLineEdit->setText("Calculating...");
+    this->pingLineEdit->setText(tr("Calculating..."));
 
     QString address = this->serverComboBox->itemData(index).toString();
     this->webSocket->open(QUrl(address));
@@ -271,7 +271,7 @@ void CreateNetplaySessionDialog::accept()
 {
     if (!this->webSocket->isValid())
     {
-        QtMessageBox::Error(this, "Server Error", "Connection Failed");
+        QtMessageBox::Error(this, tr("Server Error"), "Connection Failed");
         return;
     }
 

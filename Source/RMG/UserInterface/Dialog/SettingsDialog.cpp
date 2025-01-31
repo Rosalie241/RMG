@@ -353,7 +353,7 @@ void SettingsDialog::loadGamePluginSettings(void)
     for (QComboBox *comboBox : comboBoxArray)
     {
         comboBox->clear();
-        comboBox->addItem("**Use Core Plugin Settings**");
+        comboBox->addItem(tr("**Use Core Plugin Settings**"));
     }
 
     for (const auto &p : this->pluginList)
@@ -381,7 +381,7 @@ void SettingsDialog::loadGamePluginSettings(void)
 
         if (!pluginFound[i])
         {
-            pluginName = pluginFileNames[i] + " (not found)";
+            pluginName = pluginFileNames[i] + tr(" (not found)");
 
             comboBox->addItem(pluginName, pluginFileNames[i]);
             comboBox->setCurrentText(pluginName);
@@ -1150,7 +1150,7 @@ void SettingsDialog::commonPluginSettings(SettingsDialogAction action)
         comboBox = comboBoxArray[i];
         if (!pluginFound[i])
         {
-            pluginName = pluginFileNames[i] + " (not found)";
+            pluginName = pluginFileNames[i] + tr(" (not found)");
 
             comboBox->addItem(pluginName, pluginFileNames[i]);
             comboBox->setCurrentText(pluginName);
@@ -1242,7 +1242,7 @@ void SettingsDialog::chooseFile(QLineEdit *lineEdit, QString filter, QString md5
         QFile qFile(file);
         if (!qFile.open(QFile::ReadOnly))
         {
-            QtMessageBox::Error(this, "Failed to open file", "QFile::open() Failed");
+            QtMessageBox::Error(this, tr("Failed to open file"), "QFile::open() Failed");
             return;
         }
 
@@ -1252,7 +1252,7 @@ void SettingsDialog::chooseFile(QLineEdit *lineEdit, QString filter, QString md5
             QString md5Hash = QString(hash.result().toHex());
             if (md5Hash != md5)
             {
-                QtMessageBox::Error(this, "MD5 mismatch", "Expected file with MD5: \"" + md5 + "\"");
+                QtMessageBox::Error(this, tr("MD5 mismatch"), "Expected file with MD5: \"" + md5 + "\"");
                 return;
             }
         }
@@ -1292,7 +1292,7 @@ bool SettingsDialog::applyPluginSettings(void)
     {
         if (!CoreApplyPluginSettings())
         {
-            QtMessageBox::Error(this, "CoreApplyPluginSettings() Failed", QString::fromStdString(CoreGetError()));
+            QtMessageBox::Error(this, tr("CoreApplyPluginSettings() Failed"), QString::fromStdString(CoreGetError()));
             return false;
         }
     }
@@ -1393,17 +1393,17 @@ void SettingsDialog::on_changeUserCacheDirButton_clicked(void)
 
 void SettingsDialog::on_changeJapaneseIPLRomPathButton_clicked(void)
 {
-    this->chooseFile(this->japaneseIPLRomLineEdit, "IPL ROMs (*.n64 *.v64 *.z64)");
+    this->chooseFile(this->japaneseIPLRomLineEdit, tr("IPL ROMs (*.n64 *.v64 *.z64)"));
 }
 
 void SettingsDialog::on_changeAmericanIPLRomPathButton_clicked(void)
 {
-    this->chooseFile(this->americanIPLRomLineEdit, "IPL ROMs (*.n64 *.v64 *.z64)");
+    this->chooseFile(this->americanIPLRomLineEdit, tr("IPL ROMs (*.n64 *.v64 *.z64)"));
 }
 
 void SettingsDialog::on_changeDevelopmentIPLRomPathButton_clicked(void)
 {
-    this->chooseFile(this->developmentIPLRomLineEdit, "IPL ROMs (*.n64 *.v64 *.z64)");
+    this->chooseFile(this->developmentIPLRomLineEdit, tr("IPL ROMs (*.n64 *.v64 *.z64)"));
 }
 
 void SettingsDialog::on_changeBackgroundColorButton_clicked(void)
@@ -1564,10 +1564,10 @@ void SettingsDialog::on_coreCpuEmulatorComboBox_currentIndexChanged(int index)
 
 void SettingsDialog::on_changeNTSCPifRomButton_clicked(void)
 {
-    this->chooseFile(this->ntscPifRomLineEdit, "PIF ROMs (*.rom)", "5c124e7948ada85da603a522782940d0");
+    this->chooseFile(this->ntscPifRomLineEdit, tr("PIF ROMs (*.rom)"), "5c124e7948ada85da603a522782940d0");
 }
 
 void SettingsDialog::on_changePALPifRomButton_clicked(void)
 {
-    this->chooseFile(this->palPifRomLineEdit, "PIF ROMs (*.rom)", "d4232dc935cad0650ac2664d52281f3a");
+    this->chooseFile(this->palPifRomLineEdit, tr("PIF ROMs (*.rom)"), "d4232dc935cad0650ac2664d52281f3a");
 }

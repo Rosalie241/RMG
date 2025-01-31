@@ -55,7 +55,7 @@ void CheatsDialog::loadCheats(void)
 
     if (!CoreGetCurrentCheats(cheats))
     {
-        QtMessageBox::Error(this, "CoreGetCurrentCheats() Failed", QString::fromStdString(CoreGetError()));
+        QtMessageBox::Error(this, tr("CoreGetCurrentCheats() Failed"), QString::fromStdString(CoreGetError()));
         this->failedToParseCheats = true;
         return;
     }
@@ -176,7 +176,7 @@ void CheatsDialog::on_removeCheatButton_clicked(void)
     // try to remove cheat
     if (!CoreRemoveCheat(cheat))
     {
-        QtMessageBox::Error(this, "CoreRemoveCheat() Failed", QString::fromStdString(CoreGetError()));
+        QtMessageBox::Error(this, tr("CoreRemoveCheat() Failed"), QString::fromStdString(CoreGetError()));
         return;
     }
 
@@ -196,7 +196,7 @@ void CheatsDialog::accept(void)
 
     if (!CoreApplyCheats())
     {
-        QtMessageBox::Error(this, "CoreApplyCheats() Failed", QString::fromStdString(CoreGetError()));
+        QtMessageBox::Error(this, tr("CoreApplyCheats() Failed"), QString::fromStdString(CoreGetError()));
         return;
     }
 

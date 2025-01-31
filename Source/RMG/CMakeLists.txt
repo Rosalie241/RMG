@@ -5,7 +5,12 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt6 COMPONENTS Gui Widgets Core REQUIRED)
+find_package(Qt6 COMPONENTS Gui Widgets Core OpenGL LinguistTools REQUIRED)
+
+file(GLOB TS_FILES "${CMAKE_CURRENT_SOURCE_DIR}/../../Translations/*.ts")
+qt6_add_translations(RMG
+    TS_FILES ${TS_FILES}
+)
 
 if (PORTABLE_INSTALL)
     add_definitions(-DPORTABLE_INSTALL)

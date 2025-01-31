@@ -59,10 +59,10 @@ NetplaySessionBrowserWidget::NetplaySessionBrowserWidget(QWidget* parent) : QSta
 
     // set up table widget's columns
     QStringList labels;
-    labels << "Name";
-    labels << "Game";
-    labels << "Game MD5";
-    labels << "Password?";
+    labels << tr("Name");
+    labels << tr("Game");
+    labels << tr("Game MD5");
+    labels << tr("Password?");
     this->tableWidget->setColumnCount(labels.size());
     this->tableWidget->setHorizontalHeaderLabels(labels);
 

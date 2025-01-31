@@ -28,7 +28,7 @@ DownloadUpdateDialog::DownloadUpdateDialog(QWidget *parent, QUrl url, QString fi
     this->setupUi(this);
 
     this->filename = filename;
-    this->label->setText("Downloading " + filename + "...");
+    this->label->setText(tr("Downloading ") + filename + "...");
 
     QNetworkAccessManager* networkAccessManager = new QNetworkAccessManager(this);
     QNetworkRequest request(url);
@@ -64,7 +64,7 @@ void DownloadUpdateDialog::on_reply_finished(void)
 {
     if (this->reply->error())
     {
-        QtMessageBox::Error(this, "Failed to download update file", this->reply->errorString());
+        QtMessageBox::Error(this, tr("Failed to download update file"), this->reply->errorString());
         this->reply->deleteLater();
         this->reject();
         return;
@@ -77,7 +77,7 @@ void DownloadUpdateDialog::on_reply_finished(void)
     temporaryDir.setAutoRemove(false);
     if (!temporaryDir.isValid())
     {
-        QtMessageBox::Error(this, "Failed to create temporary directory", "");
+        QtMessageBox::Error(this, tr("Failed to create temporary directory"), "");
         this->reply->deleteLater();
         this->reject();
         return;
@@ -90,7 +90,7 @@ void DownloadUpdateDialog::on_reply_finished(void)
     if (appImageEnv == nullptr ||
         !QFile(appImageEnv).exists()) 
     {
-        QtMessageBox::Error(this, "APPIMAGE variable is empty or invalid", "");
+        QtMessageBox::Error(this, tr("APPIMAGE variable is empty or invalid"), "");
         this->reply->deleteLater();
         this->reject();
         return;
@@ -103,7 +103,7 @@ void DownloadUpdateDialog::on_reply_finished(void)
     QFile file(filePath);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
-        QtMessageBox::Error(this, "QFile::open() Failed", "");
+        QtMessageBox::Error(this, tr("QFile::open() Failed"), "");
         this->reply->deleteLater();
         this->reject();
         return;
@@ -119,7 +119,7 @@ void DownloadUpdateDialog::on_reply_finished(void)
     int ret = std::rename(filePath.toStdString().c_str(), appImageEnv);
     if (ret != 0)
     {
-        QtMessageBox::Error(this, "std::rename() Failed", QString(strerror(errno)));
+        QtMessageBox::Error(this, tr("std::rename() Failed"), QString(strerror(errno)));
         this->reply->deleteLater();
         this->reject();
         return;

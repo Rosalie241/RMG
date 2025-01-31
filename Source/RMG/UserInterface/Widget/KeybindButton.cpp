@@ -45,7 +45,7 @@ void KeybindButton::SetSecondsLeft(int seconds)
     else
     {
         QString text;
-        text = "Press key... [";
+        text = tr("Press key... [");
         text += QString::number(seconds);
         text += "]";
         this->setText(text);

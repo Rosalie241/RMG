@@ -59,7 +59,7 @@ NetplaySessionBrowserDialog::NetplaySessionBrowserDialog(QWidget *parent, QWebSo
 
     // change restore defaults button name
     QPushButton* refreshButton = this->buttonBox->button(QDialogButtonBox::RestoreDefaults);
-    refreshButton->setText("Refresh");
+    refreshButton->setText(tr("Refresh"));
     refreshButton->setIcon(QIcon::fromTheme("refresh-line"));
     refreshButton->setEnabled(false);
 

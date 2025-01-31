@@ -23,7 +23,7 @@ RomBrowserLoadingWidget::RomBrowserLoadingWidget(QWidget* parent) : QWidget(pare
     QHBoxLayout* layout = new QHBoxLayout(this);
 
     this->loadingLabel = new QLabel(this);
-    this->loadingLabel->setText("Loading");
+    this->loadingLabel->setText(tr("Loading"));
     this->loadingLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 
     layout->addWidget(loadingLabel);

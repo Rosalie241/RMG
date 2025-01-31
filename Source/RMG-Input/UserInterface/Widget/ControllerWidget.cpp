@@ -252,7 +252,7 @@ bool ControllerWidget::isCurrentDeviceKeyboard()
 bool ControllerWidget::isCurrentDeviceNotFound()
 {
     QString title = this->inputDeviceComboBox->currentText();
-    return title.endsWith("(not found)");
+    return title.endsWith(tr("(not found)"));
 }
 
 void ControllerWidget::disableAllChildren()
@@ -576,7 +576,7 @@ void ControllerWidget::CheckInputDeviceSettings(QString sectionQString)
     }
 
     // clear (not found) devices first
-    int notFoundIndex = this->inputDeviceComboBox->findText("(not found)", Qt::MatchFlag::MatchEndsWith);
+    int notFoundIndex = this->inputDeviceComboBox->findText(tr("(not found)"), Qt::MatchFlag::MatchEndsWith);
     if (notFoundIndex != -1)
     {
         this->inputDeviceNameList.removeAt(notFoundIndex);
@@ -638,7 +638,7 @@ void ControllerWidget::CheckInputDeviceSettings(QString sectionQString)
     else
     { // no match
         QString title = QString::fromStdString(deviceName);
-        title += " (not found)";
+        title += tr(" (not found)");
         this->inputDeviceNameList.append(QString::fromStdString(deviceName));
         this->inputDeviceComboBox->addItem(title, QVariant::fromValue<SDLDevice>(device));
         this->inputDeviceComboBox->setCurrentIndex(this->inputDeviceNameList.count() - 1);
@@ -672,7 +672,7 @@ void ControllerWidget::GetCurrentInputDevice(SDLDevice& device, bool ignoreDevic
 void ControllerWidget::on_deadZoneSlider_valueChanged(int value)
 {
     QString title;
-    title = "Deadzone: ";
+    title = tr("Deadzone: ");
     title += QString::number(value);
     title += "%";
 
@@ -752,7 +752,7 @@ void ControllerWidget::on_addProfileButton_clicked()
 
     // ask user for a new profile name
     QString newProfile = QInputDialog::getText(this,
-            "Create New Profile", "New profile name:", 
+            tr("Create New Profile"), tr("New profile name:"), 
             QLineEdit::Normal, "", 
             nullptr,
             Qt::WindowCloseButtonHint | Qt::WindowTitleHint);
@@ -766,7 +766,7 @@ void ControllerWidget::on_addProfileButton_clicked()
         newProfile.contains('[') ||
         newProfile.contains(']'))
     {
-        this->showErrorMessage("Profile name cannot contain ';','[' or ']'!");
+        this->showErrorMessage(tr("Profile name cannot contain ';','[' or ']'!"));
         return;
     }
 
@@ -774,7 +774,7 @@ void ControllerWidget::on_addProfileButton_clicked()
     profilesIter = std::find(profiles.begin(), profiles.end(), newProfile.toStdString());
     if (profilesIter != profiles.end())
     {
-        this->showErrorMessage("Profile with the same name already exists!");
+        this->showErrorMessage(tr("Profile with the same name already exists!"));
         return;
     }
 
@@ -804,7 +804,7 @@ void ControllerWidget::on_removeProfileButton_clicked()
     {
         QMessageBox messageBox(this);
         messageBox.setIcon(QMessageBox::Icon::Warning);
-        messageBox.setText("Are you sure you want to clear the main profile?");
+        messageBox.setText(tr("Are you sure you want to clear the main profile?"));
         messageBox.addButton(QMessageBox::Yes);
         messageBox.addButton(QMessageBox::No);
         if (messageBox.exec() == QMessageBox::Yes)

@@ -69,13 +69,13 @@ bool MainWindow::Init(QApplication* app, bool showUI, bool launchROM)
 {
     if (!CoreInit())
     {
-        this->showErrorMessage("CoreInit() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage(tr("CoreInit() Failed"), QString::fromStdString(CoreGetError()));
         return false;
     }
 
     if (!CoreApplyPluginSettings())
     {
-        this->showErrorMessage("CoreApplyPluginSettings() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage(tr("CoreApplyPluginSettings() Failed"), QString::fromStdString(CoreGetError()));
     }
 
     this->configureTheme(app);
@@ -103,7 +103,7 @@ bool MainWindow::Init(QApplication* app, bool showUI, bool launchROM)
 
     if (!SetupVidExt(this->emulationThread, this, &this->ui_Widget_OpenGL, &this->ui_Widget_Vulkan))
     {
-        this->showErrorMessage("SetupVidExt() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage(tr("SetupVidExt() Failed"), QString::fromStdString(CoreGetError()));
         return false;
     }
 
@@ -116,7 +116,7 @@ bool MainWindow::Init(QApplication* app, bool showUI, bool launchROM)
 
     if (!this->coreCallBacks->Init())
     {
-        this->showErrorMessage("CoreCallbacks::Init() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage(tr("CoreCallbacks::Init() Failed"), QString::fromStdString(CoreGetError()));
         return false;
     }
 
@@ -427,7 +427,7 @@ void MainWindow::showErrorMessage(QString text, QString details, bool force)
 
     QMessageBox* msgBox = new QMessageBox(this);
     msgBox->setIcon(QMessageBox::Icon::Critical);
-    msgBox->setWindowTitle("Error");
+    msgBox->setWindowTitle(tr("Error"));
     msgBox->setText(text);
     msgBox->setDetailedText(details);
     msgBox->addButton(QMessageBox::Ok);
@@ -627,7 +627,7 @@ void MainWindow::launchEmulationThread(QString cartRom, QString diskRom, bool re
 #ifdef NETPLAY
     if (this->netplaySessionDialog != nullptr && !netplay)
     {
-        this->showErrorMessage("EmulationThread::run Failed", "Cannot start emulation when netplay session is active");
+        this->showErrorMessage(tr("EmulationThread::run Failed"), "Cannot start emulation when netplay session is active");
         return;
     }
 #endif // NETPLAY
@@ -656,7 +656,7 @@ void MainWindow::launchEmulationThread(QString cartRom, QString diskRom, bool re
         this->ui_NoSwitchToRomBrowser = false;
         this->updateUI(false, false);
 
-        this->showErrorMessage("CoreArePluginsReady() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage(tr("CoreArePluginsReady() Failed"), QString::fromStdString(CoreGetError()));
         return;
     }
 
@@ -910,7 +910,7 @@ QString MainWindow::getSaveStateSlotText(QAction* action, int slot)
     QString filePath;
 
     // base text
-    saveStateSlotText = "Slot " + QString::number(slot);
+    saveStateSlotText = tr("Slot ") + QString::number(slot);
 
     // add date and time text when it isnt empty
     dateTimeText = this->getSaveStateSlotDateTimeText(action);
@@ -1366,7 +1366,7 @@ void MainWindow::on_EventFilter_FileDropped(QDropEvent *event)
     if (inEmulation && confirmDragDrop)
     {
         QMessageBox::StandardButton reply = QMessageBox::question(this, "",
-            "Are you sure you want to launch the drag & dropped ROM?",
+            tr("Are you sure you want to launch the drag & dropped ROM?"),
             QMessageBox::Yes | QMessageBox::No);
         if (reply == QMessageBox::No)
         {
@@ -1431,7 +1431,7 @@ void MainWindow::on_networkAccessManager_Finished(QNetworkReply* reply)
     {
         if (!this->ui_SilentUpdateCheck)
         {
-            this->showErrorMessage("Failed to check for updates", reply->errorString());
+            this->showErrorMessage(tr("Failed to check for updates"), reply->errorString());
         }
         reply->deleteLater();
         return;
@@ -1450,7 +1450,7 @@ void MainWindow::on_networkAccessManager_Finished(QNetworkReply* reply)
     {
         if (!this->ui_SilentUpdateCheck)
         {
-            this->showErrorMessage("You're already on the latest version");
+            this->showErrorMessage(tr("You're already on the latest version"));
         }
         return;
     }
@@ -1572,7 +1572,7 @@ void MainWindow::on_Action_System_Shutdown(void)
 
     if (!CoreStopEmulation())
     {
-        this->showErrorMessage("CoreStopEmulation() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage(tr("CoreStopEmulation() Failed"), QString::fromStdString(CoreGetError()));
     }
 }
 
@@ -1585,7 +1585,7 @@ void MainWindow::on_Action_System_SoftReset(void)
 {
     if (!CoreResetEmulation(false))
     {
-        this->showErrorMessage("CoreResetEmulation() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage(tr("CoreResetEmulation() Failed"), QString::fromStdString(CoreGetError()));
     }
 }
 
@@ -1593,7 +1593,7 @@ void MainWindow::on_Action_System_HardReset(void)
 {
     if (!CoreResetEmulation(true))
     {
-        this->showErrorMessage("CoreResetEmulation() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage(tr("CoreResetEmulation() Failed"), QString::fromStdString(CoreGetError()));
     }
 }
 void MainWindow::on_Action_System_Pause(void)
@@ -1611,12 +1611,12 @@ void MainWindow::on_Action_System_Pause(void)
     if (!isPaused)
     {
         ret = CorePauseEmulation();
-        error = "CorePauseEmulation() Failed";
+        error = tr("CorePauseEmulation() Failed");
     }
     else
     {
         ret = CoreResumeEmulation();
-        error = "CoreResumeEmulation() Failed";
+        error = tr("CoreResumeEmulation() Failed");
     }
 
     if (!ret)
@@ -1632,7 +1632,7 @@ void MainWindow::on_Action_System_Screenshot(void)
 {
     if (!CoreTakeScreenshot())
     {
-        this->showErrorMessage("CoreTakeScreenshot() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage(tr("CoreTakeScreenshot() Failed"), QString::fromStdString(CoreGetError()));
     }
 }
 
@@ -1646,7 +1646,7 @@ void MainWindow::on_Action_System_LimitFPS(void)
 
     if (!ret)
     {
-        this->showErrorMessage("CoreSetSpeedLimiterState() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage(tr("CoreSetSpeedLimiterState() Failed"), QString::fromStdString(CoreGetError()));
     }
 }
 
@@ -1654,7 +1654,7 @@ void MainWindow::on_Action_System_SpeedFactor(int factor)
 {
     if (!CoreSetSpeedFactor(factor))
     {
-        this->showErrorMessage("CoreSetSpeedFactor() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage(tr("CoreSetSpeedFactor() Failed"), QString::fromStdString(CoreGetError()));
     }
 }
 
@@ -1665,11 +1665,11 @@ void MainWindow::on_Action_System_SaveState(void)
     if (!CoreSaveState())
     {
         this->ui_ManuallySavedState = false;
-        this->showErrorMessage("CoreSaveState() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage(tr("CoreSaveState() Failed"), QString::fromStdString(CoreGetError()));
     }
     else
     {
-        OnScreenDisplaySetMessage("Saved state to slot: " + std::to_string(CoreGetSaveStateSlot()));
+        OnScreenDisplaySetMessage(tr("Saved state to slot: ") + QString::number(CoreGetSaveStateSlot()));
     }
 }
 
@@ -1696,11 +1696,11 @@ void MainWindow::on_Action_System_SaveAs(void)
         if (!CoreSaveState(fileName.toStdU32String(), type))
         {
             this->ui_ManuallySavedState = false;
-            this->showErrorMessage("CoreSaveState() Failed", QString::fromStdString(CoreGetError()));
+            this->showErrorMessage(tr("CoreSaveState() Failed"), QString::fromStdString(CoreGetError()));
         }
         else
         {
-            OnScreenDisplaySetMessage("Saved state to: " + QDir::toNativeSeparators(fileName).toStdString());
+            OnScreenDisplaySetMessage(tr("Saved state to: ") + QDir::toNativeSeparators(fileName));
         }
     }
 
@@ -1717,11 +1717,11 @@ void MainWindow::on_Action_System_LoadState(void)
     if (!CoreLoadSaveState())
     {
         this->ui_ManuallyLoadedState = false;
-        this->showErrorMessage("CoreLoadSaveState() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage(tr("CoreLoadSaveState() Failed"), QString::fromStdString(CoreGetError()));
     }
     else
     {
-        OnScreenDisplaySetMessage("State loaded from slot: " + std::to_string(CoreGetSaveStateSlot()));
+        OnScreenDisplaySetMessage(tr("State loaded from slot: ") + QString::number(CoreGetSaveStateSlot()));
     }
 }
 
@@ -1745,11 +1745,11 @@ void MainWindow::on_Action_System_Load(void)
         if (!CoreLoadSaveState(fileName.toStdU32String()))
         {
             this->ui_ManuallyLoadedState = false;
-            this->showErrorMessage("CoreLoadSaveState() Failed", QString::fromStdString(CoreGetError()));
+            this->showErrorMessage(tr("CoreLoadSaveState() Failed"), QString::fromStdString(CoreGetError()));
         }
         else
         {
-            OnScreenDisplaySetMessage("State loaded from: " + QDir::toNativeSeparators(fileName).toStdString());
+            OnScreenDisplaySetMessage(tr("State loaded from: ") + QDir::toNativeSeparators(fileName));
         }
     }
 
@@ -1763,7 +1763,7 @@ void MainWindow::on_Action_System_CurrentSaveState(int slot)
 {
     if (!CoreSetSaveStateSlot(slot))
     {
-        this->showErrorMessage("CoreSetSaveStateSlot() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage(tr("CoreSetSaveStateSlot() Failed"), QString::fromStdString(CoreGetError()));
     }
 }
 
@@ -1793,7 +1793,7 @@ void MainWindow::on_Action_System_GSButton(void)
 {
     if (!CorePressGamesharkButton(true))
     {
-        this->showErrorMessage("CorePressGamesharkButton() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage(tr("CorePressGamesharkButton() Failed"), QString::fromStdString(CoreGetError()));
     }
     else
     {
@@ -1901,7 +1901,7 @@ void MainWindow::on_Action_View_Fullscreen(void)
 {
     if (!CoreToggleFullscreen())
     {
-        this->showErrorMessage("CoreToggleFullscreen() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage(tr("CoreToggleFullscreen() Failed"), QString::fromStdString(CoreGetError()));
     }
 }
 
@@ -1917,7 +1917,7 @@ void MainWindow::on_Action_View_ClearRomCache(void)
 {
     if (!CoreClearRomHeaderAndSettingsCache())
     {
-        this->showErrorMessage("CoreClearRomHeaderAndSettingsCache() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage(tr("CoreClearRomHeaderAndSettingsCache() Failed"), QString::fromStdString(CoreGetError()));
     }
 }
 
@@ -1986,7 +1986,7 @@ void MainWindow::on_Action_Audio_ToggleVolumeMute(void)
 {
     if (!CoreToggleMuteVolume())
     {
-        this->showErrorMessage("CoreToggleMuteVolume() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage(tr("CoreToggleMuteVolume() Failed"), QString::fromStdString(CoreGetError()));
     }
 }
 
@@ -2052,7 +2052,7 @@ void MainWindow::on_Emulation_Finished(bool ret)
     // after switching back to the ROM browser
     if (!ret)
     {
-        this->showErrorMessage("EmulationThread::run Failed", this->emulationThread->GetLastError());
+        this->showErrorMessage(tr("EmulationThread::run Failed"), this->emulationThread->GetLastError());
     }
 }
 
@@ -2069,11 +2069,11 @@ void MainWindow::on_RomBrowser_PlayGameWith(CoreRomType type, QString file)
     if (type == CoreRomType::Cartridge)
     { // cartridge
         mainRom = file;
-        otherRom = QFileDialog::getOpenFileName(this, "", "", "N64DD Disk Image (*.ndd *.d64 *.zip *.7z)");
+        otherRom = QFileDialog::getOpenFileName(this, "", "", tr("N64DD Disk Image (*.ndd *.d64 *.zip *.7z)"));
     }
     else
     { // disk
-        mainRom = QFileDialog::getOpenFileName(this, "", "", "N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)");
+        mainRom = QFileDialog::getOpenFileName(this, "", "", tr("N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)"));
         otherRom = file;
     }
 
@@ -2122,25 +2122,25 @@ void MainWindow::on_RomBrowser_RomInformation(QString file)
 
     if (!CoreOpenRom(file.toStdU32String()))
     {
-        this->showErrorMessage("CoreOpenRom() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage(tr("CoreOpenRom() Failed"), QString::fromStdString(CoreGetError()));
         return;
     }
 
     if (!CoreGetCurrentRomHeader(romHeader))
     {
-        this->showErrorMessage("CoreGetCurrentRomHeader() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage(tr("CoreGetCurrentRomHeader() Failed"), QString::fromStdString(CoreGetError()));
         return;
     }
 
     if (!CoreGetCurrentRomSettings(romSettings))
     {
-        this->showErrorMessage("CoreGetCurrentRomSettings() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage(tr("CoreGetCurrentRomSettings() Failed"), QString::fromStdString(CoreGetError()));
         return;
     }
 
     if (!CoreCloseRom())
     {
-        this->showErrorMessage("CoreCloseRom() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage(tr("CoreCloseRom() Failed"), QString::fromStdString(CoreGetError()));
         return;
     }
 
@@ -2163,7 +2163,7 @@ void MainWindow::on_RomBrowser_EditGameSettings(QString file)
 
     if (!CoreOpenRom(file.toStdU32String()))
     {
-        this->showErrorMessage("CoreOpenRom() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage(tr("CoreOpenRom() Failed"), QString::fromStdString(CoreGetError()));
         return;
     }
 
@@ -2176,7 +2176,7 @@ void MainWindow::on_RomBrowser_EditGameSettings(QString file)
 
     if (!CoreCloseRom())
     {
-        this->showErrorMessage("CoreCloseRom() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage(tr("CoreCloseRom() Failed"), QString::fromStdString(CoreGetError()));
         return;
     }
 
@@ -2196,7 +2196,7 @@ void MainWindow::on_RomBrowser_EditGameInputSettings(QString file)
 
     if (!CoreOpenRom(file.toStdU32String()))
     {
-        this->showErrorMessage("CoreOpenRom() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage(tr("CoreOpenRom() Failed"), QString::fromStdString(CoreGetError()));
         return;
     }
 
@@ -2204,7 +2204,7 @@ void MainWindow::on_RomBrowser_EditGameInputSettings(QString file)
 
     if (!CoreCloseRom())
     {
-        this->showErrorMessage("CoreCloseRom() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage(tr("CoreCloseRom() Failed"), QString::fromStdString(CoreGetError()));
         return;
     }
 
@@ -2224,7 +2224,7 @@ void MainWindow::on_RomBrowser_Cheats(QString file)
 
     if (!CoreOpenRom(file.toStdU32String()))
     {
-        this->showErrorMessage("CoreOpenRom() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage(tr("CoreOpenRom() Failed"), QString::fromStdString(CoreGetError()));
         return;
     }
 
@@ -2236,7 +2236,7 @@ void MainWindow::on_RomBrowser_Cheats(QString file)
 
     if (!CoreCloseRom())
     {
-        this->showErrorMessage("CoreCloseRom() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage(tr("CoreCloseRom() Failed"), QString::fromStdString(CoreGetError()));
         return;
     }
 
@@ -2595,7 +2595,7 @@ void MainWindow::on_Core_DebugCallback(QList<CoreCallbackMessage> messages)
         // emulation run, we'll stop displaying it
         if (this->ui_DebugCallbackErrors.count(statusbarMessage.Message) < 50)
         {
-            this->showErrorMessage("Core Error", statusbarMessage.Message, false);
+            this->showErrorMessage(tr("Core Error"), statusbarMessage.Message, false);
         }
         this->ui_DebugCallbackErrors.append(statusbarMessage.Message);
         return;
@@ -2640,7 +2640,7 @@ void MainWindow::on_Core_StateCallback(CoreStateCallbackType type, int value)
         {
             QAction* slotAction  = this->ui_SlotActions[value];
             QString dateTimeText = this->getSaveStateSlotDateTimeText(slotAction);
-            std::string message  = "Selected save slot: " + std::to_string(value);
+            QString message  = tr("Selected save slot: ") + QString::number(value);
 
             if (this->ui_LoadSaveStateSlotTimerId != -1)
             {
@@ -2667,21 +2667,21 @@ void MainWindow::on_Core_StateCallback(CoreStateCallbackType type, int value)
         } break;
         case CoreStateCallbackType::SpeedFactor:
         {
-            OnScreenDisplaySetMessage("Playback speed: " + std::to_string(value) + "%");
+            OnScreenDisplaySetMessage(tr("Playback speed: ") + QString::number(value) + "%");
         } break;
         case CoreStateCallbackType::AudioVolume:
         {
-            OnScreenDisplaySetMessage("Volume: " + std::to_string(value) + "%");
+            OnScreenDisplaySetMessage(tr("Volume: ") + QString::number(value) + "%");
         } break;
         case CoreStateCallbackType::AudioMute:
         {
             if (value == 0)
             {
-                OnScreenDisplaySetMessage("Volume unmuted");
+                OnScreenDisplaySetMessage(tr("Volume unmuted"));
             }
             else
             {
-                OnScreenDisplaySetMessage("Volume muted");
+                OnScreenDisplaySetMessage(tr("Volume muted"));
             }
         } break;
         case CoreStateCallbackType::SaveStateLoaded:
@@ -2691,7 +2691,7 @@ void MainWindow::on_Core_StateCallback(CoreStateCallbackType type, int value)
                 this->ui_LoadSaveStateSlotCounter++;
                 if (this->ui_LoadSaveStateSlotCounter >= 5)
                 { // give up after 5 attempts
-                    this->showErrorMessage("Failed to load save state");
+                    this->showErrorMessage(tr("Failed to load save state"));
                     this->ui_LoadSaveStateSlotCounter = 0;
                     this->ui_LoadSaveStateSlotTimerId = -1;
                     this->ui_LoadSaveStateSlot        = -1;
@@ -2709,11 +2709,11 @@ void MainWindow::on_Core_StateCallback(CoreStateCallbackType type, int value)
             }
             else if (value == 0)
             {
-                OnScreenDisplaySetMessage("Failed to load save state.");
+                OnScreenDisplaySetMessage(tr("Failed to load save state."));
             }
             else if (!this->ui_ManuallyLoadedState)
             {
-                OnScreenDisplaySetMessage("Loaded save state.");
+                OnScreenDisplaySetMessage(tr("Loaded save state."));
             }
 
             this->ui_ManuallyLoadedState = false;
@@ -2722,11 +2722,11 @@ void MainWindow::on_Core_StateCallback(CoreStateCallbackType type, int value)
         {
             if (value == 0)
             {
-                OnScreenDisplaySetMessage("Failed to save state.");
+                OnScreenDisplaySetMessage(tr("Failed to save state."));
             }
             else if (!this->ui_ManuallySavedState)
             {
-                OnScreenDisplaySetMessage("Saved state.");
+                OnScreenDisplaySetMessage(tr("Saved state."));
             }
 
             // refresh savestate slot times in 1 second,
@@ -2744,11 +2744,11 @@ void MainWindow::on_Core_StateCallback(CoreStateCallbackType type, int value)
         {
             if (value == 0)
             {
-                OnScreenDisplaySetMessage("Failed to capture screenshot.");
+                OnScreenDisplaySetMessage(tr("Failed to capture screenshot."));
             }
             else
             {
-                OnScreenDisplaySetMessage("Captured screenshot.");
+                OnScreenDisplaySetMessage(tr("Captured screenshot."));
             }
         } break;
     }

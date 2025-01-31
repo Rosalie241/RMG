@@ -64,11 +64,11 @@ NetplaySessionDialog::NetplaySessionDialog(QWidget *parent, QWebSocket* webSocke
     webSocket->sendTextMessage(QJsonDocument(json).toJson());
 
     QPushButton* startButton = this->buttonBox->button(QDialogButtonBox::Ok);
-    startButton->setText("Start");
+    startButton->setText(tr("Start"));
     startButton->setEnabled(false);
 
     QPushButton* cheatsButton = this->buttonBox->button(QDialogButtonBox::RestoreDefaults);
-    cheatsButton->setText("Cheats");
+    cheatsButton->setText(tr("Cheats"));
     cheatsButton->setIcon(QIcon::fromTheme("code-box-line"));
 
     this->updateCheatsTreeWidget();
@@ -99,7 +99,7 @@ bool NetplaySessionDialog::getCheats(std::vector<CoreCheat>& cheats, QJsonArray&
     if (!CheatsCommon::ParseCheatJson(cheatsArray, cheats))
     {
         QString error = "Failed to parse cheats json: " + QString(cheatDocument.toJson());
-        QtMessageBox::Error(this, "CheatsCommon::ParseCheatJson() Failed", error);
+        QtMessageBox::Error(this, tr("CheatsCommon::ParseCheatJson() Failed"), error);
         return false;
     }
 
@@ -118,7 +118,7 @@ bool NetplaySessionDialog::applyCheats(void)
 
     if (!CoreSetNetplayCheats(cheats))
     {
-        QtMessageBox::Error(this, "CoreSetNetplayCheats() Failed", QString::fromStdString(CoreGetError()));
+        QtMessageBox::Error(this, tr("CoreSetNetplayCheats() Failed"), QString::fromStdString(CoreGetError()));
         return false;
     }
 
@@ -201,7 +201,7 @@ void NetplaySessionDialog::on_webSocket_textMessageReceived(QString message)
             startButton->setEnabled(true);
             cheatsButton->setEnabled(true);
 
-            QtMessageBox::Error(this, "Server Error", json.value("message").toString());
+            QtMessageBox::Error(this, tr("Server Error"), json.value("message").toString());
         }
     }
     else if (type == "reply_motd")
@@ -219,7 +219,7 @@ void NetplaySessionDialog::on_webSocket_textMessageReceived(QString message)
         }
         else
         {
-            QtMessageBox::Error(this, "Server Error", json.value("message").toString());
+            QtMessageBox::Error(this, tr("Server Error"), json.value("message").toString());
         }
     }
 }
@@ -257,7 +257,7 @@ void NetplaySessionDialog::on_buttonBox_clicked(QAbstractButton* button)
 
         if (!CoreOpenRom(this->sessionFile.toStdU32String()))
         {
-            QtMessageBox::Error(this, "CoreOpenRom() Failed", QString::fromStdString(CoreGetError()));
+            QtMessageBox::Error(this, tr("CoreOpenRom() Failed"), QString::fromStdString(CoreGetError()));
             return;
         }
 
@@ -266,7 +266,7 @@ void NetplaySessionDialog::on_buttonBox_clicked(QAbstractButton* button)
 
         if (!CoreCloseRom())
         {
-            QtMessageBox::Error(this, "CoreCloseRom() Failed", QString::fromStdString(CoreGetError()));
+            QtMessageBox::Error(this, tr("CoreCloseRom() Failed"), QString::fromStdString(CoreGetError()));
             return;
         }
 

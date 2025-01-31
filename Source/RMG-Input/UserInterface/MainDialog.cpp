@@ -46,7 +46,7 @@ MainDialog::MainDialog(QWidget* parent, Thread::SDLThread* sdlThread, bool romCo
     {
         Widget::ControllerWidget* widget = new Widget::ControllerWidget(this, this->eventFilter);
         widget->SetOnlyLoadGameProfile(romConfig);
-        widget->SetSettingsSection("Player " + QString::number(i + 1), "Rosalie's Mupen GUI - Input Plugin Profile " + QString::number(i));
+        widget->SetSettingsSection(tr("Player ") + QString::number(i + 1), "Rosalie's Mupen GUI - Input Plugin Profile " + QString::number(i));
         widget->LoadSettings();
         this->tabWidget->widget(i)->layout()->addWidget(widget);
         controllerWidgets.push_back(widget);
@@ -69,12 +69,12 @@ MainDialog::MainDialog(QWidget* parent, Thread::SDLThread* sdlThread, bool romCo
         // so we only have to expose it there
         if (controllerWidget == this->controllerWidgets.last())
         {
-            controllerWidget->AddInputDevice({"Voice Recognition Unit", "", "", (int)InputDeviceType::EmulateVRU});
+            controllerWidget->AddInputDevice({tr("Voice Recognition Unit").toStdString(), "", "", (int)InputDeviceType::EmulateVRU});
         }
 #endif // VRU
-        controllerWidget->AddInputDevice({"None", "", "", (int)InputDeviceType::None});
-        controllerWidget->AddInputDevice({"Automatic", "", "", (int)InputDeviceType::Automatic});
-        controllerWidget->AddInputDevice({"Keyboard", "", "", (int)InputDeviceType::Keyboard});
+        controllerWidget->AddInputDevice({tr("None").toStdString(), "", "", (int)InputDeviceType::None});
+        controllerWidget->AddInputDevice({tr("Automatic").toStdString(), "", "", (int)InputDeviceType::Automatic});
+        controllerWidget->AddInputDevice({tr("Keyboard").toStdString(), "", "", (int)InputDeviceType::Keyboard});
         controllerWidget->SetInitialized(true);
     }
 

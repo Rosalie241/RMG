@@ -116,14 +116,14 @@ bool OnScreenDisplaySetDisplaySize(int width, int height)
     return true;
 }
 
-void OnScreenDisplaySetMessage(std::string message)
+void OnScreenDisplaySetMessage(QString message)
 {
     if (!l_Initialized)
     {
         return;
     }
 
-    l_Message     = message;
+    l_Message     = message.toStdString();
     l_MessageTime = std::chrono::high_resolution_clock::now();
 }
 

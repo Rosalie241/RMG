@@ -10,7 +10,7 @@
 #ifndef RMG_ONSCREENDISPLAY_HPP
 #define RMG_ONSCREENDISPLAY_HPP
 
-#include <string>
+#include <QString>
 
 // attempts to initialize the OSD
 bool OnScreenDisplayInit(void);
@@ -25,7 +25,7 @@ void OnScreenDisplayLoadSettings(void);
 bool OnScreenDisplaySetDisplaySize(int width, int height);
 
 // sets the current message to the OSD
-void OnScreenDisplaySetMessage(std::string message);
+void OnScreenDisplaySetMessage(QString message);
 
 // renders the OSD
 void OnScreenDisplayRender(void);
