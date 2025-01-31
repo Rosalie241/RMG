@@ -28,46 +28,16 @@
 
 void message_handler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
-    QByteArray localMsg = msg.toLocal8Bit();
-    bool showDebugQtMessages = false;
-
-    const char* env = std::getenv("RMG_SHOW_DEBUG_QT_MESSAGES");
-    showDebugQtMessages = env != nullptr && std::string(env) == "1";
-
-    std::string typeString;
-
-    switch (type)
+    // personally I think that there should be a better
+    // way to silence these warnings because I'd rather
+    // not change the names of all custom signal/slot implementations,
+    // it'd cause the code to be very inconsistent naming-wise
+    if (type == QtWarningMsg && msg.startsWith("QMetaObject::connectSlotsByName:"))
     {
-    case QtDebugMsg:
-        if (!showDebugQtMessages)
-        {
-            return;
-        }
-        typeString = "[QT DEBUG] ";
-        break;
-    case QtWarningMsg:
-        if (!showDebugQtMessages)
-        {
-            return;
-        }
-        typeString = "[QT WARNING] ";
-        break;
-    case QtInfoMsg:
-        if (!showDebugQtMessages)
-        {
-            return;
-        }
-        typeString = "[QT INFO] ";
-        break;
-    case QtCriticalMsg:
-        typeString = "[QT CRITICAL] ";
-        break;
-    case QtFatalMsg:
-        typeString = "[QT FATAL] ";
-        break;
+        return;
     }
 
-    std::cerr << typeString << localMsg.constData() << std::endl;
+    std::cerr << msg.toStdString() << std::endl;
 }
 
 void signal_handler(int sig)
