@@ -974,11 +974,6 @@ EXPORT m64p_error CALL PluginStartup(m64p_dynlib_handle CoreLibHandle, void *Con
         return M64ERR_ALREADY_INIT;
     }
 
-    if (!CoreInit(CoreLibHandle))
-    {
-        return M64ERR_SYSTEM_FAIL;
-    }
-
     // setup debug callback
     l_DebugCallback    = DebugCallback;
     l_DebugCallContext = Context;
