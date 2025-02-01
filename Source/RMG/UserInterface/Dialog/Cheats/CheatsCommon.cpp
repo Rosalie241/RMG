@@ -323,6 +323,7 @@ QString CheatsCommon::GetCheatTreeWidgetItemName(bool netplay, QJsonArray& json,
 
 bool CheatsCommon::AddCheatsToTreeWidget(bool netplay, QJsonArray& json, const std::vector<CoreCheat>& cheats, QTreeWidget* cheatsTreeWidget, bool readonly)
 {
+    cheatsTreeWidget->setItemsExpandable(!readonly);
     cheatsTreeWidget->clear();
 
     for (const CoreCheat& cheat : cheats)
