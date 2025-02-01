@@ -47,12 +47,6 @@
 // returns false when failed
 bool CoreInit(void);
 
-#ifdef CORE_PLUGIN
-// initializes the core library for plugins,
-// returns false when failed
-bool CoreInit(m64p_dynlib_handle handle);
-#endif // CORE_PLUGIN
-
 // shuts down the core library
 void CoreShutdown(void);
 

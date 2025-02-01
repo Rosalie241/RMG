@@ -30,7 +30,7 @@ static char l_CoreContextString[20];
 // Local Functions
 //
 
-std::filesystem::path find_core_lib(void)
+static std::filesystem::path find_core_lib(void)
 {
     for (const auto& entry : std::filesystem::recursive_directory_iterator(CoreGetCoreDirectory()))
     {
@@ -45,7 +45,7 @@ std::filesystem::path find_core_lib(void)
     return std::filesystem::path();
 }
 
-bool config_override_user_dirs(void)
+static bool config_override_user_dirs(void)
 {
     std::string error;
     m64p_error  ret;
@@ -167,30 +167,6 @@ bool CoreInit(void)
     CoreDiscordRpcInit();
     CoreDiscordRpcUpdate(false);
 #endif // DISCORD_RPC
-
-    return true;
-}
-
-bool CoreInit(m64p_dynlib_handle handle)
-{
-    std::string error;
-    bool ret = false;
-
-    ret = m64p::Core.IsHooked() || m64p::Core.Hook(handle);
-    if (!ret)
-    {
-        error = m64p::Core.GetLastError();
-        CoreSetError(error);
-        return false;
-    }
-
-    ret = m64p::Config.IsHooked() || m64p::Config.Hook(handle);
-    if (!ret)
-    {
-        error = m64p::Config.GetLastError();
-        CoreSetError(error);
-        return false;
-    }
 
     return true;
 }
