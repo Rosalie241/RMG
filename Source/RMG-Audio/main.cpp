@@ -120,12 +120,6 @@ EXPORT m64p_error CALL PluginStartup(m64p_dynlib_handle CoreLibHandle, void *Con
     l_DebugCallback = DebugCallback;
     l_DebugCallContext = Context;
 
-    /* Init RMG-Core */
-    if (!CoreInit(CoreLibHandle))
-    {
-        return M64ERR_SYSTEM_FAIL;
-    }
-
     // apply volume settings
     LoadVolumeSettings();
 
