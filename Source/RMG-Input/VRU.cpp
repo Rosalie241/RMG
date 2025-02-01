@@ -10,6 +10,7 @@
 #include "main.hpp"
 
 #define M64P_PLUGIN_PROTOTYPES 1
+#include <RMG-Core/m64p/api/m64p_plugin.h>
 #include <RMG-Core/m64p/api/m64p_types.h>
 #include <RMG-Core/osal/osal_dynlib.hpp>
 
