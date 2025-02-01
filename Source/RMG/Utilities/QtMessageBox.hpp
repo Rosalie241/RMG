@@ -17,6 +17,8 @@ namespace Utilities
 {
 namespace QtMessageBox
 {
+	void Info(QWidget* parent, QString text, QString details = "");
+
 	void Error(QWidget* parent, QString text, QString details = "");
 }
 } // namespace Utilities

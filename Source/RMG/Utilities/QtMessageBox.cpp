@@ -9,15 +9,20 @@
  */
 #include "QtMessageBox.hpp"
 
+#include <QAbstractButton>
 #include <QMessageBox>
 
 using namespace Utilities;
 
-void QtMessageBox::Error(QWidget* parent, QString text, QString details)
+//
+// Internal Functions
+//
+
+static void show_messagebox(QMessageBox::Icon icon, QString title, QWidget* parent, QString text, QString details)
 {
     QMessageBox msgBox(parent->isVisible() ? parent : parent->parentWidget());
-    msgBox.setIcon(QMessageBox::Icon::Critical);
-    msgBox.setWindowTitle("Error");
+    msgBox.setIcon(icon);
+    msgBox.setWindowTitle(title);
     msgBox.setText(text);
     msgBox.setDetailedText(details);
     msgBox.addButton(QMessageBox::Ok);
@@ -36,5 +41,19 @@ void QtMessageBox::Error(QWidget* parent, QString text, QString details)
     }
 
     msgBox.exec();
+}
+
+//
+// Exported Functions
+//
+
+void QtMessageBox::Info(QWidget* parent, QString text, QString details)
+{
+    show_messagebox(QMessageBox::Icon::Information, "Information", parent, text, details);
+}
+
+void QtMessageBox::Error(QWidget* parent, QString text, QString details)
+{
+    show_messagebox(QMessageBox::Icon::Critical, "Error", parent, text, details);
 }
 

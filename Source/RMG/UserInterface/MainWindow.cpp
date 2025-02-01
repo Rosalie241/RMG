@@ -27,6 +27,7 @@
 #endif // NETPLAY
 #include "UserInterface/EventFilter.hpp"
 #include "Utilities/QtKeyToSdl2Key.hpp"
+#include "Utilities/QtMessageBox.hpp"
 #include "OnScreenDisplay.hpp"
 #include "Callbacks.hpp"
 #include "VidExt.hpp"
@@ -1464,7 +1465,7 @@ void MainWindow::on_networkAccessManager_Finished(QNetworkReply* reply)
     {
         if (!this->ui_SilentUpdateCheck)
         {
-            this->showErrorMessage("You're already on the latest version");
+            Utilities::QtMessageBox::Info(this, "You're already on the latest version");
         }
         return;
     }
