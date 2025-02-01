@@ -8,27 +8,28 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "main.hpp"
-#define CORE_PLUGIN
-#define M64P_PLUGIN_PROTOTYPES 1
 
-#include <RMG-Core/Core.hpp>
+#define M64P_PLUGIN_PROTOTYPES 1
+#include <RMG-Core/m64p/api/m64p_types.h>
 #include <RMG-Core/osal/osal_dynlib.hpp>
 
-#include <../3rdParty/vosk-api/include/vosk_api.h>
+#include <RMG-Core/Directories.hpp>
+#include <RMG-Core/Archive.hpp>
+#include <RMG-Core/Error.hpp>
 
-#include <iostream>
+#include <3rdParty/vosk-api/include/vosk_api.h>
 
-#include <QByteArray>
 #include <QStringDecoder>
-#include <QStringList>
 #include <QJsonDocument>
-#include <QJsonArray>
 #include <QJsonObject>
+#include <QStringList>
+#include <QByteArray>
+#include <QJsonArray>
 
 #include <SDL.h>
 
-#include "VRU.hpp"
 #include "VRUwords.hpp"
+#include "VRU.hpp"
 
 //
 // Local Enums

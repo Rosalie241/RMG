@@ -10,10 +10,10 @@
 #include "ControllerImageWidget.hpp"
 
 #include <QSvgRenderer>
-#include <algorithm>
-#include <cmath>
-#include <QPainter>
 #include <QResizeEvent>
+#include <algorithm>
+#include <QPainter>
+#include <cmath>
 
 using namespace UserInterface::Widget;
 

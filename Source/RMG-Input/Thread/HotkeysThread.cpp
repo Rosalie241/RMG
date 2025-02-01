@@ -9,7 +9,7 @@
  */
 #include "HotkeysThread.hpp"
 
-#include <RMG-Core/Core.hpp>
+#include <RMG-Core/Emulation.hpp>
 
 using namespace Thread;
 

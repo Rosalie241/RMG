@@ -10,10 +10,6 @@
 #include "HotkeysDialog.hpp"
 #include "common.hpp"
 
-#include <RMG-Core/Core.hpp>
-
-#include <iostream>
-
 using namespace UserInterface;
 
 HotkeysDialog::HotkeysDialog(QWidget* parent, QList<HotkeySettingMapping> hotkeySettingMappings, 

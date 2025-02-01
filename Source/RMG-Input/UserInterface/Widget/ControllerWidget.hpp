@@ -10,21 +10,21 @@
 #ifndef CONTROLLERWIDGET_H
 #define CONTROLLERWIDGET_H
 
-#include "MappingButton.hpp"
 #include "ControllerImageWidget.hpp"
+#include "MappingButton.hpp"
 
-#include "UserInterface/EventFilter.hpp"
 #include "UserInterface/OptionsDialog.hpp"
 #include "UserInterface/HotkeysDialog.hpp"
+#include "UserInterface/EventFilter.hpp"
 
 using namespace UserInterface::Widget;
 
 #include "ui_ControllerWidget.h"
 #include "common.hpp"
 
-#include <RMG-Core/Core.hpp>
-
 #include <SDL.h>
+
+#include <RMG-Core/Settings.hpp>
 
 namespace UserInterface
 {

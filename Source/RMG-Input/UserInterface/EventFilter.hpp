@@ -12,8 +12,8 @@
 
 #include <QFocusEvent>
 #include <QKeyEvent>
-#include <QList>
 #include <QObject>
+#include <QList>
 
 namespace UserInterface
 {

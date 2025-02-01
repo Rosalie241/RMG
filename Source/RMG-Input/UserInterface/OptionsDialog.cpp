@@ -11,9 +11,12 @@
 
 #include <QFileDialog>
 #include <QMessageBox>
-#include <RMG-Core/Core.hpp>
 
 #include <SDL.h>
+
+#include <RMG-Core/Emulation.hpp>
+#include <RMG-Core/Settings.hpp>
+
 
 using namespace UserInterface;
 

@@ -11,17 +11,32 @@
 #define M64P_PLUGIN_PROTOTYPES 1
 #define INPUT_PLUGIN_API_VERSION 0x020100
 
-#include <UserInterface/MainDialog.hpp>
-#include "Thread/SDLThread.hpp"
-#include "Thread/HotkeysThread.hpp"
+#include "UserInterface/MainDialog.hpp"
 #include "Utilities/InputDevice.hpp"
+#include "Thread/HotkeysThread.hpp"
+#include "Thread/SDLThread.hpp"
 #include "common.hpp"
 #include "main.hpp"
 #ifdef VRU
 #include "VRU.hpp"
 #endif // VRU
 
-#include <RMG-Core/Core.hpp>
+#define M64P_PLUGIN_PROTOTYPES 1
+#include <RMG-Core/m64p/api/m64p_common.h>
+#include <RMG-Core/m64p/api/m64p_plugin.h>
+#include <RMG-Core/m64p/api/m64p_custom.h>
+#include <RMG-Core/m64p/api/m64p_types.h>
+
+#include <RMG-Core/SpeedLimiter.hpp>
+#include <RMG-Core/Directories.hpp>
+#include <RMG-Core/SpeedFactor.hpp>
+#include <RMG-Core/Screenshot.hpp>
+#include <RMG-Core/Emulation.hpp>
+#include <RMG-Core/SaveState.hpp>
+#include <RMG-Core/Settings.hpp>
+#include <RMG-Core/Netplay.hpp>
+#include <RMG-Core/Cheats.hpp>
+#include <RMG-Core/Video.hpp>
 
 #include <QGuiApplication>
 #include <QApplication>

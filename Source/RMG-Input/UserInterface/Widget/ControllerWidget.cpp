@@ -12,16 +12,18 @@
 
 #include "common.hpp"
 
+#include <RMG-Core/RomSettings.hpp>
+#include <RMG-Core/RomHeader.hpp>
 #include <RMG-Core/Core.hpp>
 
-#include <QPixmap>
-#include <QPainter>
+#include <QInputDialog>
 #include <QResizeEvent>
 #include <QSvgRenderer>
 #include <QMessageBox>
-#include <QInputDialog>
+#include <QPainter>
+#include <QPixmap>
+
 #include <SDL.h>
-#include <iostream>
 
 using namespace UserInterface::Widget;
 

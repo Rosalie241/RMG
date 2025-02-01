@@ -10,13 +10,14 @@
 #ifndef MAINDIALOG_HPP
 #define MAINDIALOG_HPP
 
-#include <QDialog>
 #include "common.hpp"
+#include <QDialog>
 
-#include "ui_MainDialog.h"
 #include "Widget/ControllerWidget.hpp"
 #include "Thread/SDLThread.hpp"
 #include "EventFilter.hpp"
+
+#include "ui_MainDialog.h"
 
 namespace UserInterface
 {

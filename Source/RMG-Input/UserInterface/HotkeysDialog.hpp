@@ -15,7 +15,7 @@
 
 #include <SDL.h>
 
-#include <RMG-Core/Core.hpp>
+#include <RMG-Core/Settings.hpp>
 
 #include "ui_HotkeysDialog.h"
 

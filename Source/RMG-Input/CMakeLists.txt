@@ -49,9 +49,9 @@ add_library(RMG-Input SHARED ${RMG_INPUT_SOURCES})
 target_link_libraries(RMG-Input RMG-Core ${SDL2_LIBRARIES})
 
 target_include_directories(RMG-Input PRIVATE 
-    ${CMAKE_CURRENT_BINARY_DIR} 
-    ${CMAKE_CURRENT_SOURCE_DIR} 
-    ${CMAKE_CURRENT_SOURCE_DIR}/../ 
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/../
     ${SDL2_INCLUDE_DIRS}
 )
 
