@@ -10,16 +10,16 @@
 #ifndef M64P_MACROS_HPP
 #define M64P_MACROS_HPP
 
-#include "osal/osal_dynlib.hpp"
+#include "Library.hpp"
 
-#define HOOK_FUNC_OPT(handle, prevar, var) this->var = (ptr_##prevar##var)osal_dynlib_sym(handle, #prevar #var);
+#define HOOK_FUNC_OPT(handle, prevar, var) this->var = (ptr_##prevar##var)CoreGetLibrarySymbol(handle, #prevar #var);
 
 #define HOOK_FUNC(handle, prevar, var)                                    \
-    this->var = (ptr_##prevar##var)osal_dynlib_sym(handle, #prevar #var); \
+    this->var = (ptr_##prevar##var)CoreGetLibrarySymbol(handle, #prevar #var); \
     if (this->var == nullptr)                                             \
     {                                                                     \
         this->errorMessage += "Failed to hook \"" #prevar #var "\": ";    \
-        this->errorMessage += osal_dynlib_strerror();                     \
+        this->errorMessage += CoreGetLibraryError();                     \
         return false;                                                     \
     }
 

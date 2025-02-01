@@ -7,25 +7,46 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-#include "osal_dynlib.hpp"
+#include "Library.hpp"
 
-osal_dynlib_lib_handle osal_dynlib_open(std::filesystem::path path)
+#ifndef _WIN32
+#include <dlfcn.h>
+#endif
+
+//
+// Exported Functions
+//
+
+CoreLibraryHandle CoreOpenLibrary(std::filesystem::path path)
 {
+#ifdef _WIN32
     return LoadLibraryW(path.wstring().c_str());
+#else // Linux
+    return dlopen(path.string().c_str(), RTLD_LAZY);
+#endif
 }
 
-osal_dynlib_lib_sym osal_dynlib_sym(osal_dynlib_lib_handle handle, const char* symbol)
+CoreLibrarySymbol CoreGetLibrarySymbol(CoreLibraryHandle handle, const char* symbol)
 {
+#ifdef _WIN32
     return GetProcAddress(handle, symbol);
+#else
+    return dlsym(handle, symbol);
+#endif // Linux
 }
 
-void osal_dynlib_close(osal_dynlib_lib_handle handle)
+void CoreCloseLibrary(CoreLibraryHandle handle)
 {
+#ifdef _WIN32
     FreeLibrary(handle);
+#else
+    dlclose(handle);
+#endif // Linux
 }
 
-std::string osal_dynlib_strerror(void)
+std::string CoreGetLibraryError(void)
 {
+#ifdef _WIN32
     DWORD err = GetLastError();
     LPSTR buf = nullptr;
 
@@ -38,4 +59,7 @@ std::string osal_dynlib_strerror(void)
     LocalFree(buf);
 
     return msg;
+#else // Linux
+    return std::string(dlerror());
+#endif
 }

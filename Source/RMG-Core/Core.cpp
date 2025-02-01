@@ -16,11 +16,11 @@
 #endif // DISCORD_RPC
 #include "Callback.hpp"
 #include "Settings.hpp"
+#include "Library.hpp"
 #include "Plugins.hpp"
 #include "Error.hpp"
 #include "Core.hpp"
 
-#include "osal/osal_dynlib.hpp"
 #include "m64p/Api.hpp"
 #include "m64p/api/version.h"
 
@@ -32,7 +32,7 @@
 // Local Variables
 //
 
-static osal_dynlib_lib_handle l_CoreLibHandle;
+static CoreLibraryHandle l_CoreLibHandle;
 static char l_CoreContextString[20];
 
 //
@@ -45,7 +45,7 @@ static std::filesystem::path find_core_lib(void)
     {
         std::filesystem::path path = entry.path();
         if (path.has_extension() && 
-            path.extension() == OSAL_DYNLIB_LIB_EXT_STR)
+            path.extension() == CORE_LIBRARY_EXT_STR)
         {
             return path;
         }
@@ -104,11 +104,11 @@ bool CoreInit(void)
         return false;
     }
 
-    l_CoreLibHandle = osal_dynlib_open(core_file);
+    l_CoreLibHandle = CoreOpenLibrary(core_file);
     if (l_CoreLibHandle == nullptr)
     {
-        error = "osal_dynlib_open Failed: ";
-        error += osal_dynlib_strerror();
+        error = "CoreOpenLibrary Failed: ";
+        error += CoreGetLibraryError();
         CoreSetError(error);
         return false;
     }
@@ -193,5 +193,5 @@ void CoreShutdown(void)
     m64p::Core.Unhook();
     m64p::Config.Unhook();
 
-    osal_dynlib_close(l_CoreLibHandle);
+    CoreCloseLibrary(l_CoreLibHandle);
 }

@@ -11,8 +11,7 @@
 #include "Directories.hpp"
 #include "RomSettings.hpp"
 #include "RomHeader.hpp"
-
-#include "osal/osal_files.hpp"
+#include "File.hpp"
 
 #include <algorithm>
 #include <cstring>
@@ -54,7 +53,7 @@
 struct l_CacheEntry
 {
     std::filesystem::path fileName;
-    osal_files_file_time  fileTime;
+    uint64_t fileTime;
 
     CoreRomType     type;
     CoreRomHeader   header;
@@ -77,7 +76,7 @@ static std::filesystem::path get_cache_file_name()
     std::filesystem::path file;
 
     file = CoreGetUserCacheDirectory();
-    file += OSAL_FILES_DIR_SEPERATOR_STR;
+    file += CORE_DIR_SEPERATOR_STR;
     file += "RomHeaderAndSettingsCache.cache";
 
     return file;
@@ -85,7 +84,7 @@ static std::filesystem::path get_cache_file_name()
 
 static std::vector<l_CacheEntry>::iterator get_cache_entry_iter(std::filesystem::path file, bool checkFileTime = true)
 {
-    osal_files_file_time fileTime = osal_files_get_file_time(file);
+    uint64_t fileTime = CoreGetFileTime(file);
 
     auto predicate = [file, fileTime, checkFileTime](const auto& entry)
     {
@@ -298,7 +297,7 @@ bool CoreAddCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType t
     }
 
     cacheEntry.fileName = file;
-    cacheEntry.fileTime = osal_files_get_file_time(file);
+    cacheEntry.fileTime = CoreGetFileTime(file);
     cacheEntry.type     = type;
     cacheEntry.header   = header;
     cacheEntry.settings = settings;

@@ -15,7 +15,6 @@
 #include "Cheats.hpp"
 #include "Error.hpp"
 
-#include "osal/osal_files.hpp"
 #include "m64p/Api.hpp"
 
 #ifdef USE_LIBFMT
@@ -118,9 +117,9 @@ static std::filesystem::path get_shared_cheat_file_path(CoreRomHeader romHeader,
     std::filesystem::path cheatFilePath;
 
     cheatFilePath = CoreGetSharedDataDirectory();
-    cheatFilePath += OSAL_FILES_DIR_SEPERATOR_STR;
+    cheatFilePath += CORE_DIR_SEPERATOR_STR;
     cheatFilePath += "Cheats";
-    cheatFilePath += OSAL_FILES_DIR_SEPERATOR_STR;
+    cheatFilePath += CORE_DIR_SEPERATOR_STR;
     cheatFilePath += get_cheat_file_name(romHeader, romSettings);
 
    return cheatFilePath;
@@ -132,15 +131,15 @@ static std::filesystem::path get_user_cheat_file_path(CoreRomHeader romHeader, C
     std::filesystem::path cheatFilePath;
 
     oldCheatFilePath = CoreGetUserDataDirectory();
-    oldCheatFilePath += OSAL_FILES_DIR_SEPERATOR_STR;
+    oldCheatFilePath += CORE_DIR_SEPERATOR_STR;
     oldCheatFilePath += "Cheats-User";
-    oldCheatFilePath += OSAL_FILES_DIR_SEPERATOR_STR;
+    oldCheatFilePath += CORE_DIR_SEPERATOR_STR;
     oldCheatFilePath += get_cheat_file_name(romHeader, romSettings);
 
     cheatFilePath = CoreGetUserConfigDirectory();
-    cheatFilePath += OSAL_FILES_DIR_SEPERATOR_STR;
+    cheatFilePath += CORE_DIR_SEPERATOR_STR;
     cheatFilePath += "Cheats-User";
-    cheatFilePath += OSAL_FILES_DIR_SEPERATOR_STR;
+    cheatFilePath += CORE_DIR_SEPERATOR_STR;
     cheatFilePath += get_cheat_file_name(romHeader, romSettings);
 
     // try to make the user cheats directory

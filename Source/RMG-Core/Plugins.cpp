@@ -13,11 +13,9 @@
 #include "Emulation.hpp"
 #include "Callback.hpp"
 #include "Settings.hpp"
+#include "Library.hpp"
 #include "Plugins.hpp"
 #include "Error.hpp"
-
-#include "osal/osal_dynlib.hpp"
-#include "osal/osal_files.hpp"
 
 #include "m64p/PluginApi.hpp"
 #include "m64p/Api.hpp"
@@ -178,9 +176,9 @@ static std::string get_plugin_path(CorePluginType type, std::string settingsValu
     }
 
     path = pluginPath;
-    path += OSAL_FILES_DIR_SEPERATOR_STR;
+    path += CORE_DIR_SEPERATOR_STR;
     path += typeName;
-    path += OSAL_FILES_DIR_SEPERATOR_STR;
+    path += CORE_DIR_SEPERATOR_STR;
     path += settingsValue;
 
     return path;
@@ -188,12 +186,12 @@ static std::string get_plugin_path(CorePluginType type, std::string settingsValu
 
 static bool apply_plugin_settings(std::string pluginSettings[4])
 {
-    std::string            error;
-    std::string            settingValue;
-    m64p::PluginApi*       plugin;
-    CorePluginType         pluginType;
-    osal_dynlib_lib_handle handle;
-    m64p_error             ret;
+    std::string       error;
+    std::string       settingValue;
+    m64p::PluginApi*  plugin;
+    CorePluginType    pluginType;
+    CoreLibraryHandle handle;
+    m64p_error        ret;
 
     for (int i = 0; i < 4; i++)
     {
@@ -240,11 +238,11 @@ static bool apply_plugin_settings(std::string pluginSettings[4])
             }
 
             // attempt to open the library
-            handle = osal_dynlib_open(settingValue.c_str());
+            handle = CoreOpenLibrary(settingValue.c_str());
             if (handle == nullptr)
             {
-                error = "apply_plugin_settings osal_dynlib_open Failed: ";
-                error += osal_dynlib_strerror();
+                error = "apply_plugin_settings CoreOpenLibrary Failed: ";
+                error += CoreGetLibraryError();
                 CoreSetError(error);
                 return false;
             }
@@ -392,7 +390,7 @@ std::vector<CorePlugin> CoreGetAllPlugins(void)
     std::vector<CorePlugin> plugins;
     std::string             plugin_name;
     CorePluginType          plugin_type;
-    osal_dynlib_lib_handle  handle;
+    CoreLibraryHandle       handle;
     m64p::PluginApi         plugin;
 
     for (const auto& entry : std::filesystem::recursive_directory_iterator(CoreGetPluginDirectory()))
@@ -400,9 +398,9 @@ std::vector<CorePlugin> CoreGetAllPlugins(void)
         std::string path = entry.path().string();
         std::string file = entry.path().filename().string();
         if (!entry.is_directory() &&
-            path.ends_with(OSAL_DYNLIB_LIB_EXT_STR))
+            path.ends_with(CORE_LIBRARY_EXT_STR))
         {
-            handle = osal_dynlib_open(path.c_str());
+            handle = CoreOpenLibrary(path.c_str());
             if (handle == nullptr || !plugin.Hook(handle))
             { // skip invalid libs
                 continue;
@@ -412,7 +410,7 @@ std::vector<CorePlugin> CoreGetAllPlugins(void)
             plugin_type = get_plugin_type(&plugin);
 
             plugin.Unhook();
-            osal_dynlib_close(handle);
+            CoreCloseLibrary(handle);
 
             if (plugin_type == CorePluginType::Invalid)
             { // skip unsupported plugin types

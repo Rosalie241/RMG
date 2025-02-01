@@ -12,10 +12,10 @@
 #define M64P_PLUGIN_PROTOTYPES 1
 #include <RMG-Core/m64p/api/m64p_plugin.h>
 #include <RMG-Core/m64p/api/m64p_types.h>
-#include <RMG-Core/osal/osal_dynlib.hpp>
 
 #include <RMG-Core/Directories.hpp>
 #include <RMG-Core/Archive.hpp>
+#include <RMG-Core/Library.hpp>
 #include <RMG-Core/Error.hpp>
 
 #include <3rdParty/vosk-api/include/vosk_api.h>
@@ -67,7 +67,7 @@ static ptr_vosk_recognizer_final_result         l_vosk_recognizer_final_result =
 static ptr_vosk_set_log_level                   l_vosk_set_log_level = nullptr;
 static ptr_vosk_recognizer_set_max_alternatives l_vosk_recognizer_set_max_alternatives = nullptr;
 
-static osal_dynlib_lib_handle l_VoskLibHandle = nullptr;
+static CoreLibraryHandle l_VoskLibHandle = nullptr;
 
 static VoskModel* l_VoskModel           = nullptr;
 static VoskRecognizer* l_VoskRecognizer = nullptr;
@@ -98,27 +98,27 @@ static bool hook_vosk(void)
 
     std::filesystem::path voskApiPath;
     voskApiPath = CoreGetLibraryDirectory();
-    voskApiPath += "/libvosk" OSAL_DYNLIB_LIB_EXT_STR;
+    voskApiPath += "/libvosk" CORE_LIBRARY_EXT_STR;
 
-    l_VoskLibHandle = osal_dynlib_open(voskApiPath);
+    l_VoskLibHandle = CoreOpenLibrary(voskApiPath);
     if (l_VoskLibHandle == nullptr)
     {
         debugMessage = "VRU: Failed to open library \"";
         debugMessage += voskApiPath.string().c_str();
         debugMessage += "\": ";
-        debugMessage += osal_dynlib_strerror();
+        debugMessage += CoreGetLibraryError();
         PluginDebugMessage(M64MSG_ERROR, debugMessage);
         return false;
     }
 
-    l_vosk_model_new = (ptr_vosk_model_new) osal_dynlib_sym(l_VoskLibHandle, "vosk_model_new");
-    l_vosk_model_free = (ptr_vosk_model_free) osal_dynlib_sym(l_VoskLibHandle, "vosk_model_free");
-    l_vosk_recognizer_new_grm = (ptr_vosk_recognizer_new_grm) osal_dynlib_sym(l_VoskLibHandle, "vosk_recognizer_new_grm");
-    l_vosk_recognizer_free = (ptr_vosk_recognizer_free) osal_dynlib_sym(l_VoskLibHandle, "vosk_recognizer_free");
-    l_vosk_recognizer_accept_waveform = (ptr_vosk_recognizer_accept_waveform) osal_dynlib_sym(l_VoskLibHandle, "vosk_recognizer_accept_waveform");
-    l_vosk_recognizer_final_result = (ptr_vosk_recognizer_final_result) osal_dynlib_sym(l_VoskLibHandle, "vosk_recognizer_final_result");
-    l_vosk_set_log_level = (ptr_vosk_set_log_level) osal_dynlib_sym(l_VoskLibHandle, "vosk_set_log_level");
-    l_vosk_recognizer_set_max_alternatives = (ptr_vosk_recognizer_set_max_alternatives) osal_dynlib_sym(l_VoskLibHandle, "vosk_recognizer_set_max_alternatives");
+    l_vosk_model_new = (ptr_vosk_model_new) CoreGetLibrarySymbol(l_VoskLibHandle, "vosk_model_new");
+    l_vosk_model_free = (ptr_vosk_model_free) CoreGetLibrarySymbol(l_VoskLibHandle, "vosk_model_free");
+    l_vosk_recognizer_new_grm = (ptr_vosk_recognizer_new_grm) CoreGetLibrarySymbol(l_VoskLibHandle, "vosk_recognizer_new_grm");
+    l_vosk_recognizer_free = (ptr_vosk_recognizer_free) CoreGetLibrarySymbol(l_VoskLibHandle, "vosk_recognizer_free");
+    l_vosk_recognizer_accept_waveform = (ptr_vosk_recognizer_accept_waveform) CoreGetLibrarySymbol(l_VoskLibHandle, "vosk_recognizer_accept_waveform");
+    l_vosk_recognizer_final_result = (ptr_vosk_recognizer_final_result) CoreGetLibrarySymbol(l_VoskLibHandle, "vosk_recognizer_final_result");
+    l_vosk_set_log_level = (ptr_vosk_set_log_level) CoreGetLibrarySymbol(l_VoskLibHandle, "vosk_set_log_level");
+    l_vosk_recognizer_set_max_alternatives = (ptr_vosk_recognizer_set_max_alternatives) CoreGetLibrarySymbol(l_VoskLibHandle, "vosk_recognizer_set_max_alternatives");
 
     if (l_vosk_model_new == nullptr ||
         l_vosk_model_free == nullptr ||
@@ -148,7 +148,7 @@ static void unhook_vosk(void)
     l_vosk_set_log_level = nullptr;
     l_vosk_recognizer_set_max_alternatives = nullptr;
 
-    osal_dynlib_close(l_VoskLibHandle);
+    CoreCloseLibrary(l_VoskLibHandle);
 }
 
 static bool setup_vosk_model(void)

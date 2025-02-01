@@ -43,6 +43,7 @@ set(RMG_CORE_SOURCES
     Callback.cpp
     Settings.cpp
     Archive.cpp
+    Library.cpp
     Netplay.cpp
     Plugins.cpp
     Version.cpp
@@ -57,18 +58,6 @@ set(RMG_CORE_SOURCES
     Key.cpp
     Rom.cpp
 )
-
-if (WIN32)
-    list(APPEND RMG_CORE_SOURCES 
-        osal/osal_dynlib_win32.cpp
-        osal/osal_files_win32.cpp
-    )
-else(WIN32)
-    list(APPEND RMG_CORE_SOURCES 
-		osal/osal_dynlib_unix.cpp
-        osal/osal_files_unix.cpp
-    )
-endif(WIN32)
 
 if (DISCORD_RPC)
     list(APPEND RMG_CORE_SOURCES 

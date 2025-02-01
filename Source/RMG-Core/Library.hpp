@@ -7,35 +7,35 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef OSAL_DYNLIB_HPP
-#define OSAL_DYNLIB_HPP
+#ifndef CORE_LIBRARY_HPP
+#define CORE_LIBRARY_HPP
 
-#include <string>
 #include <filesystem>
+#include <string>
 
 #ifdef _WIN32
 #include <windows.h>
-typedef HMODULE osal_dynlib_lib_handle;
-typedef FARPROC osal_dynlib_lib_sym;
-#define OSAL_DYNLIB_LIB_EXT_STR ".dll"
+typedef HMODULE CoreLibraryHandle;
+typedef FARPROC CoreLibrarySymbol;
+#define CORE_LIBRARY_EXT_STR ".dll"
 #else // Unix
-typedef void*   osal_dynlib_lib_handle;
-typedef void*   osal_dynlib_lib_sym;
-#define OSAL_DYNLIB_LIB_EXT_STR ".so"
+typedef void*   CoreLibraryHandle;
+typedef void*   CoreLibrarySymbol;
+#define CORE_LIBRARY_EXT_STR ".so"
 #endif // _WIN32
 
 // returns library handle for given filename,
 // return nullptr when invalid library
-osal_dynlib_lib_handle osal_dynlib_open(std::filesystem::path path);
+CoreLibraryHandle CoreOpenLibrary(std::filesystem::path path);
 
 // retrieves symbol handle for given library 
 // handle, returns nullptr when not found
-osal_dynlib_lib_sym osal_dynlib_sym(osal_dynlib_lib_handle, const char* symbol);
+CoreLibrarySymbol CoreGetLibrarySymbol(CoreLibraryHandle handle, const char* symbol);
 
 // closes library handle
-void osal_dynlib_close(osal_dynlib_lib_handle);
+void CoreCloseLibrary(CoreLibraryHandle);
 
 // returns error message
-std::string osal_dynlib_strerror(void);
+std::string CoreGetLibraryError(void);
 
-#endif // OSAL_DYNLIB_HPP
+#endif // CORE_LIBRARY_HPP

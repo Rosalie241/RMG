@@ -12,6 +12,12 @@
 
 #include <filesystem>
 
+#ifdef _WIN32
+#define CORE_DIR_SEPERATOR_STR "\\"
+#else // Unix
+#define CORE_DIR_SEPERATOR_STR "/"
+#endif // _WIN32
+
 // tries to create the needed directories,
 // returns false when failed
 bool CoreCreateDirectories(void);

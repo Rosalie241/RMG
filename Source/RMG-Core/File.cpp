@@ -14,6 +14,13 @@
 #include <cstring>
 #include <fstream>
 
+#ifdef _WIN32
+#include <windows.h>
+#include <fileapi.h>
+#else
+#include <sys/stat.h>
+#endif
+
 //
 // Exported Functions
 //
@@ -76,4 +83,48 @@ bool CoreWriteFile(std::filesystem::path file, std::vector<char>& buffer)
     fileStream.write(buffer.data(), buffer.size());
     fileStream.close();
     return true;
+}
+
+uint64_t CoreGetFileTime(std::filesystem::path file)
+{
+#ifdef _WIN32
+    BOOL ret;
+    HANDLE file_handle;
+    FILETIME file_time;
+    ULARGE_INTEGER ularge_int;
+
+    file_handle = CreateFileW(file.wstring().c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (file_handle == INVALID_HANDLE_VALUE)
+    {
+        return -1;
+    }
+
+    ret = GetFileTime(file_handle, nullptr, nullptr, &file_time);
+    if (ret != TRUE)
+    {
+        return -1;
+    }
+
+    ret = CloseHandle(file_handle);
+    if (ret != TRUE)
+    {
+        return -1;
+    }
+
+    ularge_int.LowPart  = file_time.dwLowDateTime;
+    ularge_int.HighPart = file_time.dwHighDateTime;
+
+    return ularge_int.QuadPart;
+#else // Linux
+    int ret;
+    struct stat file_stat;
+
+    ret = stat(file.string().c_str(), &file_stat);
+    if (ret != 0)
+    {
+        return -1;
+    }
+
+    return file_stat.st_mtime;
+#endif
 }
