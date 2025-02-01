@@ -63,6 +63,7 @@ public:
 	void DllConfig(HWND _hParent);
 	void GetDllInfo (PLUGIN_INFO * PluginInfo);
 	void ReadScreen(void **_dest, long *_width, long *_height);
+	void GetVideoSize(int32_t* width, int32_t* height);
 
 	void DllAbout(/*HWND _hParent*/);
 

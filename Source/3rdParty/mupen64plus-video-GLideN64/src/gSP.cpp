@@ -248,6 +248,8 @@ void gSPDMAMatrix( u32 matrix, u8 index, u8 multiply )
 		mtx[3][0], mtx[3][1], mtx[3][2], mtx[3][3] );
 }
 
+#define G_F3DEX3_NEW_MAXZ 0x7FFF
+
 void gSPViewport( u32 v )
 {
 	u32 address = RSP_SegmentToPhysical( v );
@@ -267,8 +269,15 @@ void gSPViewport( u32 v )
 	gSP.viewport.vtrans[2] = _FIXED2FLOAT( *(s16*)&RDRAM[address + 14], 10 );// * 0.00097847357f;
 	gSP.viewport.vtrans[3] = *(s16*)&RDRAM[address + 12];
 
-	if (gSP.viewport.vscale[1] < 0.0f && !GBI.isNegativeY())
-		gSP.viewport.vscale[1] = -gSP.viewport.vscale[1];
+	if (gSP.viewport.vscale[1] < 0.0f) {
+		if (!GBI.isNegativeY()) {
+			gSP.viewport.vscale[1] = -gSP.viewport.vscale[1];
+			if (F3DEX3 == GBI.getMicrocodeType()) {
+				gSP.viewport.vscale[2] /= (G_F3DEX3_NEW_MAXZ / 2) / 511.f;
+				gSP.viewport.vtrans[2] /= (G_F3DEX3_NEW_MAXZ / 2) / 511.f;
+			}
+		}
+	}
 
 	gSP.viewport.x		= gSP.viewport.vtrans[0] - gSP.viewport.vscale[0];
 	gSP.viewport.y		= gSP.viewport.vtrans[1] - gSP.viewport.vscale[1];
@@ -314,7 +323,7 @@ void gSPLight( u32 l, s32 n )
 
 	Light *light = (Light*)&RDRAM[addrByte];
 
-	if (n < 9) {
+	if (n < 10) {
 		gSP.lights.rgb[n][R] = _FIXED2FLOATCOLOR(light->r,8);
 		gSP.lights.rgb[n][G] = _FIXED2FLOATCOLOR(light->g,8);
 		gSP.lights.rgb[n][B] = _FIXED2FLOATCOLOR(light->b,8);

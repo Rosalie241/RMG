@@ -312,4 +312,17 @@ void PluginAPI::ReadScreen(void **_dest, long *_width, long *_height)
 	dwnd().readScreen(_dest, _width, _height);
 #endif
 }
+
+void PluginAPI::GetVideoSize(int32_t* width, int32_t* height)
+{
+	if (width)
+	{
+		*width = dwnd().getWidth();
+	}
+	if (height)
+	{
+		*height = dwnd().getHeight();
+	}
+}
+
 #endif

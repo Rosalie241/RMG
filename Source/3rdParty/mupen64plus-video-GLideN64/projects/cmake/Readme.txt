@@ -17,3 +17,4 @@ cmake [-DCMAKE_BUILD_TYPE=Debug] [-DVEC4_OPT=On] [-DCRC_OPT=On] [-DX86_OPT=On] [
 -DANDROID=On - set if targeting an Android device
 -DMESA=On - set to disable Raspberry Pi autodetection
 -DGL_PROFILE=On - set to turn on GL profiling
+-DNO_OSD=On - set to disable OSD text drawing

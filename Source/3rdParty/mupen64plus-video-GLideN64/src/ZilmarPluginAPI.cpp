@@ -60,4 +60,9 @@ EXPORT void CALL DllCrtFree(void* addr)
 	free(addr);
 }
 
+void CALL mge_get_video_size(int32_t* width, int32_t* height)
+{
+	api().GetVideoSize(width, height);
+}
+
 }

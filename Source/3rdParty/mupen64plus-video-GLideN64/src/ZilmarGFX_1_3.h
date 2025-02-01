@@ -20,6 +20,7 @@ the plugin
 #define _GFX_H_INCLUDED__
 
 #if defined(__cplusplus)
+#include <cstdint>
 extern "C" {
 #endif
 
@@ -284,6 +285,15 @@ EXPORT void CALL ReadScreen (void **dest, long *width, long *height);
   Output:   none
  ******************************************************************/
 EXPORT void CALL DllCrtFree(void* addr);
+
+/******************************************************************
+  Function: mge_get_video_size
+  Purpose:  Gets the current video size.
+  Input:    width - Pointer receiving the video width. Can be null.
+		    height - Pointer receiving the video height. Can be null.
+  Output:   none
+ ******************************************************************/
+EXPORT void CALL mge_get_video_size(int32_t* width, int32_t* height);
 
 #if defined(__cplusplus)
 }

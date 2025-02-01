@@ -35,21 +35,7 @@
 
 #define F3DEX3_G_MAX_LIGHTS 9
 
-struct F3DEX3_Ambient
-{
-	u8 pad0, b, g, r;
-	u8 pad1, b2, g2, r2;
-};
-
-struct F3DEX3_Light
-{
-	u8 pad0, b, g, r;
-	u8 pad1, b2, g2, r2;
-	s8 pad2, z, y, x;
-	u8 size, pad3[3];
-};
-
-// Notice how it looks like F3DEX3_Light but the ending so there are 8 bytes of difference
+// Notice how it looks like Light but the ending so there are 8 bytes of difference
 struct F3DEX3_LookAt
 {
 	s8 pad, z, y, x;
@@ -83,7 +69,7 @@ static void writeLight(int off, u32 w)
 		gSPLookAt(w - (sizeof(F3DEX3_LookAtOld) - sizeof(F3DEX3_LookAt)) + sizeof(F3DEX3_LookAt), 1);
 	}
 
-	for (u32 i = 1; i <= gSP.numLights; i++)
+	for (u32 i = 1; i <= gSP.numLights + 1; i++)
 	{
 		if (_LIGHT_TO_OFFSET(i) == off)
 		{
@@ -91,10 +77,6 @@ static void writeLight(int off, u32 w)
 		}
 	}
 
-	if (_LIGHT_TO_OFFSET(gSP.numLights + 1) == off)
-	{
-		// TODO: Write ambient lights
-	}
 	if ((F3DEX3_G_MAX_LIGHTS * 0x10) + 0x18 == off)
 	{
 		// TODO: OcclusionPlane not supported

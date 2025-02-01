@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.10)
 
 option(EGL "Set to ON if targeting an EGL device" ${EGL})
 option(PANDORA "Set to ON if targeting an OpenPandora" ${PANDORA})
@@ -11,6 +11,7 @@ option(VERO4K "Set to ON if targeting a Vero4k" ${VERO4K})
 option(ANDROID "Set to ON if targeting an Android device" ${ANDROID})
 option(GL_PROFILE "Set to ON to turn on GL profiling" ${GL_PROFILE})
 option(DEBUG_DUMP "Set to ON to enable debug dump" ${DEBUG_DUMP})
+option(NO_OSD "Set to ON to disable OSD text drawing" ${NO_OSD})
 
 # run script to generate Revision.h
 set(PATH_REVISION "${CMAKE_CURRENT_BINARY_DIR}/inc/Revision.h")
@@ -402,44 +403,53 @@ if(ANDROID)
            log )
 endif(ANDROID)
 
-if(ANDROID)
-  set( FREETYPE_INCLUDE_DIRS "${ANDROID_LIB_PATH}/freetype/include" )
-elseif(UNIX OR BCMHOST)
-  set( FREETYPE_INCLUDE_DIRS "/usr/include/freetype2/" )
-else(UNIX OR BCMHOST)
-  set( ENV{FREETYPE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../../freetype )
-endif(ANDROID)
+if(NOT NO_OSD)
+  if(ANDROID)
+    set( FREETYPE_INCLUDE_DIRS "${ANDROID_LIB_PATH}/freetype/include" )
+  elseif(UNIX OR BCMHOST)
+    set( FREETYPE_INCLUDE_DIRS "/usr/include/freetype2/" )
+  else(UNIX OR BCMHOST)
+    set( ENV{FREETYPE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../../freetype )
+  endif(ANDROID)
 
-if(ANDROID)
-    add_library( ANDROID_FREETYPE
-            SHARED
-            IMPORTED )
+  if(ANDROID)
+      add_library( ANDROID_FREETYPE
+              SHARED
+              IMPORTED )
 
-    if( GLIDEN64_BUILD_TYPE STREQUAL "Debug")
-        set( BUILD_VARIANT "debug" )
-    else()
-        set( BUILD_VARIANT "release" )
-    endif()
+      if( GLIDEN64_BUILD_TYPE STREQUAL "Debug")
+          set( BUILD_VARIANT "debug" )
+      else()
+          set( BUILD_VARIANT "release" )
+      endif()
 
-    set_target_properties( # Specifies the target library.
-            ANDROID_FREETYPE
+      set_target_properties( # Specifies the target library.
+              ANDROID_FREETYPE
 
-            # Specifies the parameter you want to define.
-            PROPERTIES IMPORTED_LOCATION
+              # Specifies the parameter you want to define.
+              PROPERTIES IMPORTED_LOCATION
 
-            # Provides the path to the library you want to import.
-            ${ANDROID_LIB_PATH}/libs/${BUILD_VARIANT}/${ANDROID_ABI}/libfreetype.so)
-    set(FREETYPE_LIBRARIES ANDROID_FREETYPE)
-else(ANDROID)
-    FIND_PACKAGE( Freetype REQUIRED )
-    # presume a qt build linked to freetype
-    # will be used with mingw
-    if (NOT MUPENPLUSAPI AND MINGW)
-      set(FREETYPE_LIBRARIES "")
-    endif()
-endif(ANDROID)
+              # Provides the path to the library you want to import.
+              ${ANDROID_LIB_PATH}/libs/${BUILD_VARIANT}/${ANDROID_ABI}/libfreetype.so)
+      set(FREETYPE_LIBRARIES ANDROID_FREETYPE)
+  else(ANDROID)
+      FIND_PACKAGE( Freetype REQUIRED )
+      # presume a qt build linked to freetype
+      # will be used with mingw
+      if (NOT MUPENPLUSAPI AND MINGW)
+        set(FREETYPE_LIBRARIES "")
+      endif()
+  endif(ANDROID)
 
-include_directories( ${FREETYPE_INCLUDE_DIRS} )
+  include_directories( ${FREETYPE_INCLUDE_DIRS} )
+else()
+  list(REMOVE_ITEM GLideN64_SOURCES
+    TextDrawer.cpp
+  )
+  list(APPEND GLideN64_SOURCES
+    TextDrawerStub.cpp
+  )
+endif(NOT NO_OSD)
 
 if(VEC4_OPT)
   add_definitions(
