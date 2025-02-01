@@ -5,6 +5,7 @@ toplvl_dir="$(realpath "$script_dir/../../")"
 build_config="${1:-Debug}"
 build_dir="$toplvl_dir/Build/$build_config"
 threads="${2:-$(nproc)}"
+generator="Unix Makefiles"
 
 if [[ "$1" = "--help" ]] ||
     [[ "$1" = "-h" ]]
@@ -13,9 +14,17 @@ then
     exit
 fi
 
+if [[ $(uname -s) = *MINGW64* ]]
+then
+    generator="MSYS Makefiles"
+fi
+
 mkdir -p "$build_dir"
 
-cmake -S "$toplvl_dir" -B "$build_dir" -DCMAKE_BUILD_TYPE="$build_config" -DPORTABLE_INSTALL=ON -DUSE_ANGRYLION=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -G "Ninja"
+cmake -S "$toplvl_dir" -B "$build_dir" \
+    -DCMAKE_BUILD_TYPE="$build_config" \
+    -DPORTABLE_INSTALL=ON -DUSE_ANGRYLION=ON \
+    -G "$generator"
 
 cmake --build "$build_dir" --parallel "$threads"
 
