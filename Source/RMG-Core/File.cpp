@@ -85,7 +85,7 @@ bool CoreWriteFile(std::filesystem::path file, std::vector<char>& buffer)
     return true;
 }
 
-uint64_t CoreGetFileTime(std::filesystem::path file)
+CoreFileTime CoreGetFileTime(std::filesystem::path file)
 {
 #ifdef _WIN32
     BOOL ret;
@@ -96,19 +96,19 @@ uint64_t CoreGetFileTime(std::filesystem::path file)
     file_handle = CreateFileW(file.wstring().c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (file_handle == INVALID_HANDLE_VALUE)
     {
-        return -1;
+        return 0;
     }
 
     ret = GetFileTime(file_handle, nullptr, nullptr, &file_time);
     if (ret != TRUE)
     {
-        return -1;
+        return 0;
     }
 
     ret = CloseHandle(file_handle);
     if (ret != TRUE)
     {
-        return -1;
+        return 0;
     }
 
     ularge_int.LowPart  = file_time.dwLowDateTime;
@@ -122,7 +122,7 @@ uint64_t CoreGetFileTime(std::filesystem::path file)
     ret = stat(file.string().c_str(), &file_stat);
     if (ret != 0)
     {
-        return -1;
+        return 0;
     }
 
     return file_stat.st_mtime;

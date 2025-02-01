@@ -53,7 +53,7 @@
 struct l_CacheEntry
 {
     std::filesystem::path fileName;
-    uint64_t fileTime;
+    CoreFileTime fileTime;
 
     CoreRomType     type;
     CoreRomHeader   header;
@@ -84,7 +84,7 @@ static std::filesystem::path get_cache_file_name()
 
 static std::vector<l_CacheEntry>::iterator get_cache_entry_iter(std::filesystem::path file, bool checkFileTime = true)
 {
-    uint64_t fileTime = CoreGetFileTime(file);
+    CoreFileTime fileTime = CoreGetFileTime(file);
 
     auto predicate = [file, fileTime, checkFileTime](const auto& entry)
     {

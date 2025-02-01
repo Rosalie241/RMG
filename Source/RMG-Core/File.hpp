@@ -13,6 +13,8 @@
 #include <filesystem>
 #include <vector>
 
+typedef uint64_t CoreFileTime;
+
 // attempts to read the file into the buffer
 bool CoreReadFile(std::filesystem::path file, std::vector<char>& outBuffer);
 
@@ -20,6 +22,6 @@ bool CoreReadFile(std::filesystem::path file, std::vector<char>& outBuffer);
 bool CoreWriteFile(std::filesystem::path file, std::vector<char>& buffer);
 
 // attempts to retrieve the file time
-uint64_t CoreGetFileTime(std::filesystem::path file);
+CoreFileTime CoreGetFileTime(std::filesystem::path file);
 
 #endif // CORE_FILE_HPP
