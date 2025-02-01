@@ -146,7 +146,7 @@ bool CoreApplyCheats(void);
 bool CoreClearCheats(void);
 
 // attempts to set netplay cheats
-bool CoreSetNetplayCheats(std::vector<CoreCheat> cheats);
+bool CoreSetNetplayCheats(const std::vector<CoreCheat>& cheats);
 
 // attempts to apply the enabled netplay cheats
 bool CoreApplyNetplayCheats(void);

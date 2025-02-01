@@ -1044,7 +1044,7 @@ bool CoreClearCheats(void)
     return true;
 }
 
-bool CoreSetNetplayCheats(std::vector<CoreCheat> cheats)
+bool CoreSetNetplayCheats(const std::vector<CoreCheat>& cheats)
 {
     l_NetplayCheats = cheats;
     return true;
