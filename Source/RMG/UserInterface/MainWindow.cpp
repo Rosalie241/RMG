@@ -431,6 +431,20 @@ void MainWindow::showErrorMessage(QString text, QString details, bool force)
     msgBox->setText(text);
     msgBox->setDetailedText(details);
     msgBox->addButton(QMessageBox::Ok);
+
+    // expand details by default
+    if (!details.isEmpty())
+    {
+        for (const auto& button : msgBox->buttons())
+        {
+            if (msgBox->buttonRole(button) == QMessageBox::ActionRole)
+            {
+                button->click();
+                break;
+            }
+        }
+    }
+
     msgBox->show();
 
     this->ui_MessageBoxList.append(msgBox);

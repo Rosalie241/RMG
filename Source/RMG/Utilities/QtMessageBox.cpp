@@ -21,6 +21,20 @@ void QtMessageBox::Error(QWidget* parent, QString text, QString details)
     msgBox.setText(text);
     msgBox.setDetailedText(details);
     msgBox.addButton(QMessageBox::Ok);
+
+    // expand details by default
+    if (!details.isEmpty())
+    {
+        for (const auto& button : msgBox.buttons())
+        {
+            if (msgBox.buttonRole(button) == QMessageBox::ActionRole)
+            {
+                button->click();
+                break;
+            }
+        }
+    }
+
     msgBox.exec();
 }
 
