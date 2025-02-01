@@ -8,7 +8,9 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "MainDialog.hpp"
-#include <RMG-Core/Core.hpp>
+
+#include <RMG-Core/Emulation.hpp>
+#include <RMG-Core/Settings.hpp>
 
 using namespace UserInterface;
 

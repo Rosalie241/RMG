@@ -24,13 +24,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "circular_buffer.hpp"
 #include "Resamplers/resamplers.hpp"
+#include "circular_buffer.hpp"
 #include "main.hpp"
 
-#define M64P_PLUGIN_PROTOTYPES 1
-#define CORE_PLUGIN
-#include <RMG-Core/Core.hpp>
+#include <RMG-Core/m64p/api/m64p_types.h>
+
+#include <RMG-Core/Settings.hpp>
+#include <RMG-Core/Netplay.hpp>
 
 /* number of bytes per sample */
 #define N64_SAMPLE_BYTES 4

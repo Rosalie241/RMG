@@ -20,13 +20,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 #include "resamplers.hpp"
-
 #include "main.hpp"
 
 #include <cstring>
 
-#define CORE_PLUGIN
-#include <RMG-Core/Core.hpp>
+#include <RMG-Core/m64p/api/m64p_types.h>
 
 #define ARRAY_SIZE(x) sizeof((x)) / sizeof((x)[0])
 

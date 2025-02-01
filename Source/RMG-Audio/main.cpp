@@ -33,8 +33,11 @@
 #include "Resamplers/resamplers.hpp"
 
 #define M64P_PLUGIN_PROTOTYPES 1
-#define CORE_PLUGIN
-#include <RMG-Core/Core.hpp>
+#include <RMG-Core/m64p/api/m64p_common.h>
+#include <RMG-Core/m64p/api/m64p_plugin.h>
+#include <RMG-Core/m64p/api/m64p_custom.h>
+
+#include <RMG-Core/Settings.hpp>
 
 #include "UserInterface//MainDialog.hpp"
 

@@ -24,8 +24,7 @@
 #include <cstddef>
 #include <cstdint>
 
-#define CORE_PLUGIN
-#include <RMG-Core/Core.hpp>
+#include <RMG-Core/m64p/api/m64p_types.h>
 
 static void* trivial_init_from_id(const char* name)
 {
