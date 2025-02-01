@@ -7,13 +7,13 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-#include "SaveState.hpp"
 #include "Directories.hpp"
 #include "RomSettings.hpp"
 #include "RomHeader.hpp"
+#include "SaveState.hpp"
+#include "Settings.hpp"
 #include "Error.hpp"
 
-#include "Settings.hpp"
 #include "m64p/Api.hpp"
 
 #include <algorithm>

@@ -13,8 +13,8 @@
 #endif // _WIN32
 #include "Netplay.hpp"
 #include "Error.hpp"
-#include "m64p/Api.hpp"
 
+#include "m64p/Api.hpp"
 
 
 //

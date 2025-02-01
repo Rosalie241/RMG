@@ -8,8 +8,8 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "Video.hpp"
-
 #include "Error.hpp"
+
 #include "m64p/Api.hpp"
 
 #include <string>

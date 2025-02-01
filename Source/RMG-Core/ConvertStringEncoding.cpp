@@ -9,12 +9,11 @@
  */
 #define CORE_INTERNAL
 #include "ConvertStringEncoding.hpp"
-
 #include "Error.hpp"
-#include <string.h>
-#include <string>
 
+#include <string.h>
 #include <iconv.h>
+#include <string>
 
 //
 // Exported Functions

@@ -7,8 +7,9 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-#include "Key.hpp"
 #include "Error.hpp"
+#include "Key.hpp"
+
 #include "m64p/Api.hpp"
 
 #include <string>

@@ -11,14 +11,13 @@
 #include "Directories.hpp"
 #include "RomSettings.hpp"
 #include "RomHeader.hpp"
-#include "Error.hpp"
 
 #include "osal/osal_files.hpp"
 
-#include <cstring>
-#include <vector>
-#include <fstream>
 #include <algorithm>
+#include <cstring>
+#include <fstream>
+#include <vector>
 
 #ifdef _WIN32
 #include <Windows.h>

@@ -8,21 +8,23 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #define CORE_INTERNAL
-#include "Settings.hpp"
 #include "MediaLoader.hpp"
 #include "RomSettings.hpp"
 #include "Emulation.hpp"
 #include "RomHeader.hpp"
-#include "m64p/Api.hpp"
-#include "Plugins.hpp"
+#include "Settings.hpp"
 #include "Netplay.hpp"
+#include "Plugins.hpp"
 #include "Cheats.hpp"
 #include "Error.hpp"
 #include "File.hpp"
 #include "Rom.hpp"
+
 #ifdef DISCORD_RPC
 #include "DiscordRpc.hpp"
 #endif // DISCORD_RPC
+
+#include "m64p/Api.hpp"
 
 //
 // Local Functions

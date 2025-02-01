@@ -8,14 +8,15 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #define CORE_INTERNAL
-#include "Cheats.hpp"
-#include "RomHeader.hpp"
-#include "RomSettings.hpp"
 #include "Directories.hpp"
-#include "m64p/Api.hpp"
-#include "osal/osal_files.hpp"
-#include "Error.hpp"
+#include "RomSettings.hpp"
+#include "RomHeader.hpp"
 #include "Settings.hpp"
+#include "Cheats.hpp"
+#include "Error.hpp"
+
+#include "osal/osal_files.hpp"
+#include "m64p/Api.hpp"
 
 #ifdef USE_LIBFMT
 #include "../3rdParty/fmt/include/fmt/core.h"
@@ -30,10 +31,10 @@
 #define fmt_string(...) std::format(__VA_ARGS__)
 #endif // USE_LIBFMT
 
-#include <algorithm>
-#include <sstream>
 #include <filesystem>
+#include <algorithm>
 #include <fstream>
+#include <sstream>
 
 //
 // Local Structs

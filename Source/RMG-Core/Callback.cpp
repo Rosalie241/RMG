@@ -8,8 +8,8 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #define CORE_INTERNAL
-#include "Core.hpp"
 #include "ConvertStringEncoding.hpp"
+#include "Callback.hpp"
 
 #include <iostream>
 

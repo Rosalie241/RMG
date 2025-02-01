@@ -10,39 +10,6 @@
 #ifndef CORE_HPP
 #define CORE_HPP
 
-#include "CachedRomHeaderAndSettings.hpp"
-#include "SpeedLimiter.hpp"
-#include "SpeedFactor.hpp"
-#include "RomSettings.hpp"
-#include "Directories.hpp"
-#include "MediaLoader.hpp"
-#include "Screenshot.hpp"
-#include "Emulation.hpp"
-#include "SaveState.hpp"
-#include "RomHeader.hpp"
-#include "Callback.hpp"
-#include "Settings.hpp"
-#include "Netplay.hpp"
-#include "Plugins.hpp"
-#include "Archive.hpp"
-#include "Version.hpp"
-#include "Cheats.hpp"
-#include "String.hpp"
-#include "Volume.hpp"
-#include "Error.hpp"
-#include "Video.hpp"
-#include "Key.hpp"
-#include "Rom.hpp"
-#ifdef CORE_PLUGIN
-#include "m64p/api/m64p_common.h"
-#include "m64p/api/m64p_custom.h"
-#include "m64p/api/m64p_types.h"
-#include "m64p/api/m64p_config.h"
-#include "m64p/api/m64p_plugin.h"
-#include "m64p/api/version.h"
-#endif // CORE_PLUGIN
-
-
 // initializes the core library,
 // returns false when failed
 bool CoreInit(void);

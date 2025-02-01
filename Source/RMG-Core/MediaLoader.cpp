@@ -17,8 +17,8 @@
 
 #include "m64p/Api.hpp"
 
-#include <cstdint>
 #include <string.h>
+#include <cstdint>
 
 //
 // Local Variables

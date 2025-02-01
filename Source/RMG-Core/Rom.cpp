@@ -8,7 +8,6 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #define CORE_INTERNAL
-#include "Rom.hpp"
 #include "CachedRomHeaderAndSettings.hpp"
 #include "MediaLoader.hpp"
 #include "Directories.hpp"
@@ -19,6 +18,7 @@
 #include "String.hpp"
 #include "Error.hpp"
 #include "File.hpp"
+#include "Rom.hpp"
 
 #include <string>
 #include <cstdlib>

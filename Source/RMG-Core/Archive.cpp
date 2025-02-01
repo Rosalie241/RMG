@@ -11,17 +11,17 @@
 #include "String.hpp"
 #include "Error.hpp"
 
-#include <fstream>
 #include <cstring>
+#include <fstream>
 
 // lzma includes
-#include "../3rdParty/lzma/7zTypes.h"
-#include "../3rdParty/lzma/7z.h"
-#include "../3rdParty/lzma/7zAlloc.h"
-#include "../3rdParty/lzma/7zBuf.h"
-#include "../3rdParty/lzma/7zCrc.h"
-#include "../3rdParty/lzma/7zFile.h"
-#include "../3rdParty/lzma/7zVersion.h"
+#include <3rdParty/lzma/7zVersion.h>
+#include <3rdParty/lzma/7zAlloc.h>
+#include <3rdParty/lzma/7zTypes.h>
+#include <3rdParty/lzma/7zFile.h>
+#include <3rdParty/lzma/7zBuf.h>
+#include <3rdParty/lzma/7zCrc.h>
+#include <3rdParty/lzma/7z.h>
 
 // minizip includes
 #include <unzip.h>

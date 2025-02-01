@@ -7,15 +7,15 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-#include "Settings.hpp"
-#include "DiscordRpc.hpp"
 #include "RomSettings.hpp"
+#include "DiscordRpc.hpp"
 #include "RomHeader.hpp"
+#include "Settings.hpp"
 
-#include <../3rdParty/discord-rpc/include/discord_rpc.h>
+#include <3rdParty/discord-rpc/include/discord_rpc.h>
+#include <algorithm>
 #include <cstring>
 #include <ctime>
-#include <algorithm>
 
 //
 // Exported Functions

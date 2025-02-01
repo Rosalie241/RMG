@@ -8,15 +8,13 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #define CORE_INTERNAL
+#include "ConvertStringEncoding.hpp"
 #include "RomSettings.hpp"
-#include "Emulation.hpp"
-#include "RomHeader.hpp"
-#include "m64p/Api.hpp"
+#include "Settings.hpp"
 #include "Error.hpp"
 #include "Rom.hpp"
 
-#include "Settings.hpp"
-#include "ConvertStringEncoding.hpp"
+#include "m64p/Api.hpp"
 
 //
 // Local Variables

@@ -11,12 +11,13 @@
 
 #include "Directories.hpp"
 #include "Version.hpp"
-#include "m64p/Api.hpp"
 #include "Error.hpp"
+
+#include "m64p/Api.hpp"
 #include "m64p/api/m64p_types.h"
 
-#include <sstream>
 #include <algorithm>
+#include <sstream>
 #include <variant>
 
 //

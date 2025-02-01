@@ -8,9 +8,10 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "Directories.hpp"
-#include "Error.hpp"
-#include "Core.hpp"
+#include "Settings.hpp"
 #include "Config.hpp"
+#include "Error.hpp"
+
 #include "m64p/Api.hpp"
 
 #include <cstdio>

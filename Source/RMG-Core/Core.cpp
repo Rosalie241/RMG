@@ -8,13 +8,22 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #define CORE_INTERNAL
-#include "Core.hpp"
+#include "CachedRomHeaderAndSettings.hpp"
+#include "Directories.hpp"
+#include "MediaLoader.hpp"
 #ifdef DISCORD_RPC
 #include "DiscordRpc.hpp"
 #endif // DISCORD_RPC
+#include "Callback.hpp"
+#include "Settings.hpp"
+#include "Plugins.hpp"
+#include "Error.hpp"
+#include "Core.hpp"
+
 #include "osal/osal_dynlib.hpp"
 #include "m64p/Api.hpp"
 #include "m64p/api/version.h"
+
 #include <filesystem>
 #include <string>
 #include <cstring>

@@ -8,13 +8,13 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #define CORE_INTERNAL
-#include "Plugins.hpp"
-#include "Callback.hpp"
 #include "Directories.hpp"
-#include "Error.hpp"
-#include "Emulation.hpp"
 #include "RomSettings.hpp"
+#include "Emulation.hpp"
+#include "Callback.hpp"
 #include "Settings.hpp"
+#include "Plugins.hpp"
+#include "Error.hpp"
 
 #include "osal/osal_dynlib.hpp"
 #include "osal/osal_files.hpp"
