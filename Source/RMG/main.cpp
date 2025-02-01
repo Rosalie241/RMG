@@ -9,18 +9,20 @@
  */
 #include <UserInterface/MainWindow.hpp>
 
-#include <QApplication>
 #include <QCommandLineParser>
+#include <QApplication>
 #include <QFile>
 #include <QDir>
 
-#include <RMG-Core/Core.hpp>
 #include <iostream>
 #include <cstdlib>
 
 #ifndef _WIN32
 #include <signal.h>
 #endif
+
+#include <RMG-Core/Directories.hpp>
+#include <RMG-Core/Version.hpp>
 
 //
 // Local Functions

@@ -7,21 +7,25 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-#include "SettingsDialog.hpp"
-#include "OnScreenDisplay.hpp"
-#include "UserInterface/Widget/KeybindButton.hpp"
 #include "UserInterface/Dialog/Netplay/NetplayCommon.hpp"
+#include "UserInterface/Widget/KeybindButton.hpp"
 #include "Utilities/QtMessageBox.hpp"
+#include "OnScreenDisplay.hpp"
+#include "SettingsDialog.hpp"
 
 #include <QRegularExpressionValidator>
-#include <QRegularExpression>
 #include <QCryptographicHash>
+#include <QRegularExpression>
 #include <QFileDialog>
 #include <QColorDialog>
 #include <QDirIterator>
 #include <QLabel>
 
-#include <RMG-Core/Core.hpp>
+#include <RMG-Core/Directories.hpp>
+#include <RMG-Core/Emulation.hpp>
+#include <RMG-Core/Settings.hpp>
+#include <RMG-Core/Error.hpp>
+#include <RMG-Core/Rom.hpp>
 
 using namespace UserInterface::Dialog;
 using namespace Utilities;

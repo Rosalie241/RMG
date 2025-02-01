@@ -16,7 +16,7 @@
 #include <QRegularExpression>
 #include <QFileInfo>
 
-#include <RMG-Core/Core.hpp>
+#include <RMG-Core/Error.hpp>
 
 using namespace UserInterface::Dialog;
 using namespace Utilities;

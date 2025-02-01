@@ -19,7 +19,8 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
-#include <RMG-Core/Core.hpp>
+#include <RMG-Core/Error.hpp>
+#include <RMG-Core/Rom.hpp>
 
 using namespace UserInterface::Dialog;
 using namespace Utilities;

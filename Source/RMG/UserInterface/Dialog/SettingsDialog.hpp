@@ -13,15 +13,17 @@
 #include <string>
 #include <vector>
 
-#include <QDialog>
-#include <QHBoxLayout>
 #include <QStandardItemModel>
+#include <QHBoxLayout>
 #include <QTreeWidget>
+#include <QDialog>
 #include <QWidget>
-#include <QMutex>
 #include <QColor>
+#include <QMutex>
 
-#include <RMG-Core/Core.hpp>
+#include <RMG-Core/RomSettings.hpp>
+#include <RMG-Core/RomHeader.hpp>
+#include <RMG-Core/Plugins.hpp>
 
 // needed for KeyBindButton in ui_SettingsDialog
 #include "UserInterface/Widget/KeybindButton.hpp"

@@ -9,15 +9,16 @@
  */
 #include "VidExt.hpp"
 
-#include <RMG-Core/VidExt.hpp>
+#include <RMG-Core/Callback.hpp>
 #include <RMG-Core/m64p/Api.hpp>
-#include <RMG-Core/Core.hpp>
+#include <RMG-Core/Netplay.hpp>
+#include <RMG-Core/VidExt.hpp>
 
 #include "OnScreenDisplay.hpp"
 
-#include <QApplication>
-#include <QOpenGLContext>
 #include <QVulkanInstance>
+#include <QOpenGLContext>
+#include <QApplication>
 #include <QThread>
 #include <QScreen>
 

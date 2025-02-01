@@ -10,10 +10,11 @@
 #ifndef ROMINFODIALOG_HPP
 #define ROMINFODIALOG_HPP
 
+#include <RMG-Core/RomSettings.hpp>
+#include <RMG-Core/RomHeader.hpp>
+
 #include <QWidget>
 #include <QDialog>
-
-#include <RMG-Core/Core.hpp>
 
 #include "ui_RomInfoDialog.h"
 

@@ -9,18 +9,21 @@
  */
 #include "RomBrowserWidget.hpp"
 
-#include <RMG-Core/Core.hpp>
-
-#include <QDir>
-#include <QBoxLayout>
-#include <QGridLayout>
+#include <QDesktopServices>
 #include <QFileDialog>
-#include <QLabel>
+#include <QGridLayout>
+#include <QBoxLayout>
+#include <QScrollBar>
 #include <QPixmap>
+#include <QLabel>
 #include <vector>
 #include <QList>
-#include <QScrollBar>
-#include <QDesktopServices>
+#include <QDir>
+
+#include <RMG-Core/Directories.hpp>
+#include <RMG-Core/SaveState.hpp>
+#include <RMG-Core/Settings.hpp>
+#include <RMG-Core/Plugins.hpp>
 
 using namespace UserInterface::Widget;
 

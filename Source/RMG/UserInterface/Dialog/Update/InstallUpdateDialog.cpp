@@ -10,11 +10,13 @@
 #include "InstallUpdateDialog.hpp"
 #include "Utilities/QtMessageBox.hpp"
 
-#include <RMG-Core/Core.hpp>
-
+#include <QTextStream>
 #include <QProcess>
 #include <QDir>
-#include <QTextStream>
+
+#include <RMG-Core/Directories.hpp>
+#include <RMG-Core/Archive.hpp>
+#include <RMG-Core/Error.hpp>
 
 using namespace UserInterface::Dialog;
 using namespace Utilities;

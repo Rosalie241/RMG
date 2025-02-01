@@ -15,7 +15,7 @@
 #include <QDialog>
 #include <QString>
 
-#include <RMG-Core/Core.hpp>
+#include <RMG-Core/Cheats.hpp>
 
 #include "ui_NetplaySessionDialog.h"
 

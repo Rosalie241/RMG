@@ -8,8 +8,8 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "CreateNetplaySessionDialog.hpp"
-#include "NetplayCommon.hpp"
 #include "Utilities/QtMessageBox.hpp"
+#include "NetplayCommon.hpp"
 
 #include <QRegularExpressionValidator>
 #include <QRegularExpression>
@@ -19,7 +19,7 @@
 #include <QJsonObject>
 #include <QFileInfo>
 
-#include <RMG-Core/Core.hpp>
+#include <RMG-Core/Settings.hpp>
 
 using namespace UserInterface::Dialog;
 using namespace Utilities;

@@ -13,7 +13,7 @@
 #include <QList>
 #include <QObject>
 
-#include <RMG-Core/Core.hpp>
+#include <RMG-Core/Callback.hpp>
 
 #include <string>
 

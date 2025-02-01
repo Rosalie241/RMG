@@ -14,8 +14,6 @@
 #include <QDialog>
 #include <QWidget>
 
-#include <RMG-Core/Core.hpp>
-
 #include "ui_CheatsDialog.h"
 
 namespace UserInterface

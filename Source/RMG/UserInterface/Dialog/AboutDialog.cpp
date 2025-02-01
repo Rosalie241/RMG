@@ -9,7 +9,7 @@
  */
 #include "AboutDialog.hpp"
 
-#include <RMG-Core/Core.hpp>
+#include <RMG-Core/Version.hpp>
 
 using namespace UserInterface::Dialog;
 

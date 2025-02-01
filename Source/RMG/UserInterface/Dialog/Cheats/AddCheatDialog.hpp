@@ -13,7 +13,7 @@
 #include <QWidget>
 #include <QDialog>
 
-#include <RMG-Core/Core.hpp>
+#include <RMG-Core/Cheats.hpp>
 
 #include "ui_AddCheatDialog.h"
 

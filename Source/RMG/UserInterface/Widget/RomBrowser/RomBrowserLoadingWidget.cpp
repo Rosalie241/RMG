@@ -9,12 +9,12 @@
  */
 #include "RomBrowserLoadingWidget.hpp"
 
-#include <QLabel>
+#include <QDragEnterEvent>
+#include <QDragMoveEvent>
 #include <QHBoxLayout>
 #include <QTimerEvent>
-#include <QDragMoveEvent>
-#include <QDragEnterEvent>
 #include <QMimeData>
+#include <QLabel>
 
 using namespace UserInterface::Widget;
 

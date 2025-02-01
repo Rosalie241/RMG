@@ -12,8 +12,6 @@
 
 #include <QFileInfo>
 
-#include <RMG-Core/Core.hpp>
-
 Q_DECLARE_METATYPE(CoreCheatOption);
 
 using namespace UserInterface::Dialog;

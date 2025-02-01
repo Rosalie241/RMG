@@ -13,8 +13,6 @@
 #include <QRegularExpressionValidator>
 #include <QRegularExpression>
 
-#include <RMG-Core/Core.hpp>
-
 using namespace UserInterface::Dialog;
 
 NetplaySessionPasswordDialog::NetplaySessionPasswordDialog(QWidget *parent) : QDialog(parent)

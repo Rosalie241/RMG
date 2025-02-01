@@ -9,8 +9,8 @@
  */
 #include "NetplaySessionBrowserDialog.hpp"
 #include "NetplaySessionPasswordDialog.hpp"
-#include "NetplayCommon.hpp"
 #include "Utilities/QtMessageBox.hpp"
+#include "NetplayCommon.hpp"
 
 #include <QRegularExpressionValidator>
 #include <QRegularExpression>
@@ -22,7 +22,8 @@
 #include <QJsonObject>
 #include <QJsonArray>
 
-#include <RMG-Core/Core.hpp>
+#include <RMG-Core/Settings.hpp>
+#include <RMG-Core/Rom.hpp>
 
 using namespace UserInterface::Dialog;
 using namespace Utilities;

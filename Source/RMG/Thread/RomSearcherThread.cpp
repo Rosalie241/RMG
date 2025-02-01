@@ -8,11 +8,12 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "RomSearcherThread.hpp"
-#include "RMG-Core/Rom.hpp"
 
-#include <QDir>
-#include <QDirIterator>
+#include <RMG-Core/CachedRomHeaderAndSettings.hpp>
+
 #include <QElapsedTimer>
+#include <QDirIterator>
+#include <QDir>
 
 using namespace Thread;
 

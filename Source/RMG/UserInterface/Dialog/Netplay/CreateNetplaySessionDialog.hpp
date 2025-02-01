@@ -20,7 +20,7 @@
 
 #include "ui_CreateNetplaySessionDialog.h"
 
-#include <RMG-Core/Core.hpp>
+#include <RMG-Core/RomSettings.hpp>
 
 namespace UserInterface
 {

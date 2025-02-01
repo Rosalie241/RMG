@@ -9,8 +9,6 @@
  */
 #include "MainWindow.hpp"
 
-#include <RMG-Core/Core.hpp>
-
 #include "UserInterface/Dialog/AboutDialog.hpp"
 #include "Dialog/Cheats/CheatsDialog.hpp"
 #include "Dialog/SettingsDialog.hpp"
@@ -55,6 +53,23 @@
 #include <QTimer>
 #include <cmath>
 #include <QUrl>
+
+#include <RMG-Core/CachedRomHeaderAndSettings.hpp>
+#include <RMG-Core/SpeedLimiter.hpp>
+#include <RMG-Core/Directories.hpp>
+#include <RMG-Core/SpeedFactor.hpp>
+#include <RMG-Core/Screenshot.hpp>
+#include <RMG-Core/Emulation.hpp>
+#include <RMG-Core/SaveState.hpp>
+#include <RMG-Core/Settings.hpp>
+#include <RMG-Core/Netplay.hpp>
+#include <RMG-Core/Version.hpp>
+#include <RMG-Core/Cheats.hpp>
+#include <RMG-Core/Volume.hpp>
+#include <RMG-Core/Error.hpp>
+#include <RMG-Core/Video.hpp>
+#include <RMG-Core/Core.hpp>
+#include <RMG-Core/Key.hpp>
 
 using namespace UserInterface;
 

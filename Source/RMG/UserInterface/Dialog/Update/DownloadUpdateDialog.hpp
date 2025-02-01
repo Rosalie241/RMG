@@ -15,8 +15,6 @@
 #include <QJsonObject>
 #include <QNetworkReply>
 
-#include <RMG-Core/Core.hpp>
-
 #include "ui_DownloadUpdateDialog.h"
 
 namespace UserInterface

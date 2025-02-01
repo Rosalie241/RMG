@@ -9,10 +9,11 @@
  */
 #include "Callbacks.hpp"
 
+#include <RMG-Core/Settings.hpp>
+
 #include <QTimerEvent>
 #include <QMutex>
 
-#include <RMG-Core/Core.hpp>
 
 //
 // Local Variables

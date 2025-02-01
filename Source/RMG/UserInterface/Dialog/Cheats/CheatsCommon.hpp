@@ -14,7 +14,7 @@
 #include <QJsonArray>
 #include <QString>
 
-#include <RMG-Core/Core.hpp>
+#include <RMG-Core/Cheats.hpp>
 
 namespace CheatsCommon
 {

@@ -10,7 +10,8 @@
 #include "OGLWidget.hpp"
 
 #include <QGuiApplication>
-#include <RMG-Core/Core.hpp>
+
+#include <RMG-Core/Video.hpp>
 
 using namespace UserInterface::Widget;
 

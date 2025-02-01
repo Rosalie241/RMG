@@ -11,8 +11,6 @@
 
 #include <QJsonObject>
 
-#include <RMG-Core/Core.hpp>
-
 using namespace CheatsCommon;
 
 //

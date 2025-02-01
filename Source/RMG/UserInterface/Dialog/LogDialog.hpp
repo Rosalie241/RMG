@@ -12,11 +12,11 @@
 
 #include "Callbacks.hpp"
 
-#include <QList>
-#include <QWidget>
 #include <QDialog>
+#include <QWidget>
+#include <QList>
 
-#include <RMG-Core/Core.hpp>
+#include <RMG-Core/Callback.hpp>
 
 #include "ui_LogDialog.h"
 

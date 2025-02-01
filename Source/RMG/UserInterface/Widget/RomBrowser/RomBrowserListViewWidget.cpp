@@ -9,8 +9,8 @@
  */
 #include "RomBrowserListViewWidget.hpp"
 
-#include <QDragMoveEvent>
 #include <QDragEnterEvent>
+#include <QDragMoveEvent>
 #include <QMimeData>
 
 using namespace UserInterface::Widget;

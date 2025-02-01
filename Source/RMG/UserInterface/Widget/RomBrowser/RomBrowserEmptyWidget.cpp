@@ -9,11 +9,11 @@
  */
 #include "RomBrowserEmptyWidget.hpp"
 
-#include <QLabel>
-#include <QHBoxLayout>
-#include <QDragMoveEvent>
 #include <QDragEnterEvent>
+#include <QDragMoveEvent>
+#include <QHBoxLayout>
 #include <QMimeData>
+#include <QLabel>
 
 using namespace UserInterface::Widget;
 

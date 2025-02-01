@@ -10,8 +10,8 @@
 #ifndef ROMBROWSERGRIDVIEWWIDGET_HPP
 #define ROMBROWSERGRIDVIEWWIDGET_HPP
 
-#include <QListView>
 #include <QWheelEvent>
+#include <QListView>
 
 namespace UserInterface
 {

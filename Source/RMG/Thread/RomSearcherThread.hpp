@@ -10,9 +10,12 @@
 #ifndef ROMSEARCHERTHREAD_HPP
 #define ROMSEARCHERTHREAD_HPP
 
+#include <RMG-Core/RomSettings.hpp>
+#include <RMG-Core/RomHeader.hpp>
+#include <RMG-Core/Rom.hpp>
+
 #include <QString>
 #include <QThread>
-#include <RMG-Core/Core.hpp>
 
 struct RomSearcherThreadData
 {

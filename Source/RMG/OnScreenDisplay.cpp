@@ -9,10 +9,10 @@
  */
 #include "OnScreenDisplay.hpp"
 
-#include <RMG-Core/Core.hpp>
+#include <RMG-Core/Settings.hpp>
 
-#include <imgui.h>
 #include <backends/imgui_impl_opengl3.h>
+#include <imgui.h>
 #include <chrono>
 
 //

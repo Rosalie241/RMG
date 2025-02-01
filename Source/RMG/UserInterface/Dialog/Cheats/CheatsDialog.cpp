@@ -9,15 +9,16 @@
  */
 #include "CheatsDialog.hpp"
 
-#include "AddCheatDialog.hpp"
 #include "ChooseCheatOptionDialog.hpp"
 #include "Utilities/QtMessageBox.hpp"
+#include "AddCheatDialog.hpp"
 #include "CheatsCommon.hpp"
 
 #include <QJsonObject>
 #include <QFileInfo>
 
-#include <RMG-Core/Core.hpp>
+#include <RMG-Core/Settings.hpp>
+#include <RMG-Core/Error.hpp>
 
 Q_DECLARE_METATYPE(CoreCheat);
 

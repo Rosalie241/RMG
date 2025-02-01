@@ -8,7 +8,8 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "EmulationThread.hpp"
-#include <RMG-Core/Core.hpp>
+#include <RMG-Core/Emulation.hpp>
+#include <RMG-Core/Error.hpp>
 
 using namespace Thread;
 

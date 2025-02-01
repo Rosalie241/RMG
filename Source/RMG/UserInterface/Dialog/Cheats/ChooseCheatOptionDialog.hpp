@@ -14,7 +14,7 @@
 #include <QDialog>
 #include <QWidget>
 
-#include <RMG-Core/Core.hpp>
+#include <RMG-Core/Cheats.hpp>
 
 #include "ui_ChooseCheatOptionDialog.h"
 

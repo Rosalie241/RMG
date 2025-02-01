@@ -14,7 +14,9 @@
 #include <QFileInfo>
 #include <QDateTime>
 
-#include <RMG-Core/Core.hpp>
+#include <RMG-Core/Settings.hpp>
+#include <RMG-Core/Plugins.hpp>
+#include <RMG-Core/Version.hpp>
 
 using namespace NetplayCommon;
 

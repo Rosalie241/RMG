@@ -11,15 +11,17 @@
 #include "DownloadUpdateDialog.hpp"
 #include "Utilities/QtMessageBox.hpp"
 
-#include <QFileInfo>
-#include <QPushButton>
-#include <QJsonArray>
-#include <QDesktopServices>
 #include <QNetworkAccessManager>
+#include <QDesktopServices>
 #include <QNetworkReply>
 #include <QTemporaryDir>
-#include <QFile>
+#include <QPushButton>
+#include <QJsonArray>
+#include <QFileInfo>
 #include <QProcess>
+#include <QFile>
+
+#include <RMG-Core/Settings.hpp>
 
 using namespace UserInterface::Dialog;
 using namespace Utilities;

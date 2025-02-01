@@ -10,8 +10,8 @@
 #ifndef ROMBROWSERLISTVIEWWIDGET_HPP
 #define ROMBROWSERLISTVIEWWIDGET_HPP
 
-#include <QTableView>
 #include <QWheelEvent>
+#include <QTableView>
 
 namespace UserInterface
 {
