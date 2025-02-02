@@ -101,9 +101,8 @@ void MainDialog::on_buttonBox_clicked(QAbstractButton* button)
     if (pushButton == okButton)
     {
         // screen size
-        QStringList trimmedScreenSize = this->screenSizeComboBox->currentText().remove(' ').split("x");
-        int width  = trimmedScreenSize.at(0).toInt();
-        int height = trimmedScreenSize.at(1).toInt();
+        int width  = this->screenSizeComboBox->currentText().split(" x ").at(0).toInt();
+        int height = this->screenSizeComboBox->currentText().split(" x ").at(1).toInt();
         ConfigSetParameter(configVideoParallel, KEY_SCREEN_WIDTH, M64TYPE_INT, &width);
         ConfigSetParameter(configVideoParallel, KEY_SCREEN_HEIGHT, M64TYPE_INT, &height);
 

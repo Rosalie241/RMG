@@ -287,7 +287,8 @@ void vk_read_screen(unsigned char* dest)
 		image_buffer -= window_width * 4;
 		for (int j = 0; j < window_width; ++j)
 		{
-			switch (image->get_format()) {
+			auto image_format = image->get_format();
+			switch (image_format) {
 				case VK_FORMAT_B8G8R8A8_UNORM:
 					dest[0] = image_buffer[2];
 					dest[1] = image_buffer[1];
@@ -303,7 +304,24 @@ void vk_read_screen(unsigned char* dest)
 					dest[1] = image_buffer[2];
 					dest[2] = image_buffer[1];
 					break;
+				case VK_FORMAT_A2B10G10R10_UNORM_PACK32:
+				{
+					uint32_t pixel = *(uint32_t*) image_buffer;
+					dest[0] = pixel >> 2;
+					dest[1] = pixel >> 12;
+					dest[2] = pixel >> 22;
+					break;
+				}
+				case VK_FORMAT_A2R10G10B10_UNORM_PACK32:
+				{
+					uint32_t pixel = *(uint32_t*) image_buffer;
+					dest[0] = pixel >> 22;
+					dest[1] = pixel >> 12;
+					dest[2] = pixel >> 2;
+					break;
+				}
 				default:
+					LOGE("Encountered unknown image format in vk_read_screen: %d\n", image_format);
 					wsi->get_device().unmap_host_buffer(*buffer, Vulkan::MEMORY_ACCESS_READ_BIT);
 					return;
 			}
@@ -475,7 +493,7 @@ bool vk_init()
 	wsi_platform.reset(new MupenWSIPlatform);
 	wsi->set_platform(wsi_platform.get());
 	wsi->set_present_mode(window_vsync ? Vulkan::PresentMode::SyncToVBlank : Vulkan::PresentMode::UnlockedMaybeTear);
-	wsi->set_backbuffer_srgb(false);
+	wsi->set_backbuffer_format(Vulkan::BackbufferFormat::UNORM);
 	if (!wsi->init_simple(1, handles))
 		return false;
 

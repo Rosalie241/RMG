@@ -25,13 +25,14 @@
 namespace Vulkan
 {
 constexpr unsigned VULKAN_NUM_DESCRIPTOR_SETS = 4;
+constexpr unsigned VULKAN_NUM_DYNAMIC_UBOS = 8; // Vulkan min-spec
 constexpr unsigned VULKAN_NUM_BINDINGS = 32;
 constexpr unsigned VULKAN_NUM_BINDINGS_BINDLESS_VARYING = 16 * 1024;
 constexpr unsigned VULKAN_NUM_ATTACHMENTS = 8;
 constexpr unsigned VULKAN_NUM_VERTEX_ATTRIBS = 16;
 constexpr unsigned VULKAN_NUM_VERTEX_BUFFERS = 4;
 constexpr unsigned VULKAN_PUSH_CONSTANT_SIZE = 128;
-constexpr unsigned VULKAN_MAX_UBO_SIZE = 16 * 1024;
+constexpr unsigned VULKAN_MAX_UBO_SIZE = 64 * 1024;
 constexpr unsigned VULKAN_NUM_USER_SPEC_CONSTANTS = 8;
 constexpr unsigned VULKAN_NUM_INTERNAL_SPEC_CONSTANTS = 4;
 constexpr unsigned VULKAN_NUM_TOTAL_SPEC_CONSTANTS =
