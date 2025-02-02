@@ -7,14 +7,14 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        cmake_args: [-DDISCORD_RPC=ON -DDRAG_DROP=ON -DNETPLAY=ON -DVRU=ON -DUSE_ANGRYLION=ON, -DDISCORD_RPC=OFF -DDRAG_DROP=OFF -DNETPLAY=OFF -DVRU=OFF -DUSE_ANGRYLION=OFF]
+        features: [ ON, OFF ]
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: hendrikmuhs/ccache-action@v1.2
         with:
-          key: Linux
+          key: linux-features-${{ matrix.features }}
       - name: Install Packages
         run: |
           sudo apt-get -y update
@@ -28,40 +28,31 @@ jobs:
       - name: Build RMG (AppImage)
         run: |
           export src_dir="$(pwd)"
-          export threads=$(($(nproc) / 2))
-
-          if [ "$threads" = "0" ]
-          then
-            threads=1
-          fi
-
-          if [ "${{ matrix.cmake_args }}" == "-DDISCORD_RPC=ON -DDRAG_DROP=ON -DNETPLAY=ON -DVRU=ON -DUSE_ANGRYLION=ON" ]
-          then
-            export build_dir="$(pwd)/Build/AppImage"
-            export bin_dir="$(pwd)/Bin/AppImage"
-          else
-            export build_dir="$(pwd)/Build/CI"
-            export bin_dir="$(pwd)/Bin/CI"
-          fi
+          export build_dir="$(pwd)/Build/AppImage"
+          export bin_dir="$(pwd)/Bin/AppImage"
     
           mkdir $build_dir Bin/ -p
           cmake -S "$src_dir" -B "$build_dir" -DCMAKE_BUILD_TYPE="Release" \
-                ${{ matrix.cmake_args }} \
+                -DDISCORD_RPC=${{ matrix.features }} \
+                -DDRAG_DROP=${{ matrix.features }} \
+                -DNETPLAY=${{ matrix.features }} \
+                -DVRU=${{ matrix.features }} \
+                -DUSE_ANGRYLION=${{ matrix.features }} \
                 -DCMAKE_INSTALL_PREFIX="/usr" \
                 -DCMAKE_INSTALL_LIBDIR="lib"  \
                 -DPORTABLE_INSTALL="OFF" \
                 -DUPDATER=ON -DAPPIMAGE_UPDATER=ON \
                 -G "Unix Makefiles"
-          cmake --build "$build_dir" --parallel "$threads"
+          cmake --build "$build_dir" --parallel "$(nproc)"
           cmake --install "$build_dir" --strip --prefix="$bin_dir/usr"
         shell: bash
       - name: Create AppImage
-        if: ${{ matrix.cmake_args == '-DDISCORD_RPC=ON -DDRAG_DROP=ON -DNETPLAY=ON -DVRU=ON -DUSE_ANGRYLION=ON' }}
+        if: ${{ matrix.features == 'ON' }}
         run: |
           ./Package/AppImage/Create.sh
         shell: bash
       - name: Upload RMG (AppImage)
-        if: ${{ matrix.cmake_args == '-DDISCORD_RPC=ON -DDRAG_DROP=ON -DNETPLAY=ON -DVRU=ON -DUSE_ANGRYLION=ON' }}
+        if: ${{ matrix.features == 'ON' }}
         uses: actions/upload-artifact@v4
         with:
           name: RMG-Portable-Linux64-${{ env.GIT_REVISION }}
@@ -71,14 +62,14 @@ jobs:
     runs-on: windows-2019
     strategy:
       matrix:
-        cmake_args: [-DDISCORD_RPC=ON -DDRAG_DROP=ON -DNETPLAY=ON -DVRU=ON -DUSE_ANGRYLION=ON, -DDISCORD_RPC=OFF -DDRAG_DROP=OFF -DNETPLAY=OFF -DVRU=OFF -DUSE_ANGRYLION=OFF]
+        features: [ ON, OFF ]
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: hendrikmuhs/ccache-action@v1.2
         with:
-          key: Windows
+          key: windows-features-${{ matrix.features }}
       - uses: msys2/setup-msys2@v2
         with:
           path-type: inherit
@@ -109,47 +100,39 @@ jobs:
       - name: Build RMG (Portable)
         run: |
           export src_dir="$(pwd)"
-          export threads=$(($(nproc) / 2))
-
-          if [ "$threads" = "0" ]
-          then
-            threads=1
-          fi
-
-          if [ "${{ matrix.cmake_args }}" == "-DDISCORD_RPC=ON -DDRAG_DROP=ON -DNETPLAY=ON -DVRU=ON -DUSE_ANGRYLION=ON" ]
-          then
-            export build_dir="$(pwd)/Build/Release"
-          else
-            export build_dir="$(pwd)/Build/CI"
-          fi
+          export build_dir="$(pwd)/Build/Release"
 
           cmake -S "$src_dir" -B "$build_dir" -DCMAKE_BUILD_TYPE="Release" \
-                ${{ matrix.cmake_args }} \
+                -DDISCORD_RPC=${{ matrix.features }} \
+                -DDRAG_DROP=${{ matrix.features }} \
+                -DNETPLAY=${{ matrix.features }} \
+                -DVRU=${{ matrix.features }} \
+                -DUSE_ANGRYLION=${{ matrix.features }} \
                 -DPORTABLE_INSTALL=ON -DUPDATER=ON -G "MSYS Makefiles"
 
-          cmake --build "$build_dir" --parallel "$threads"
+          cmake --build "$build_dir" --parallel "$(nproc)"
 
-          if [ "${{ matrix.cmake_args }}" == "-DDISCORD_RPC=ON -DDRAG_DROP=ON -DNETPLAY=ON -DVRU=ON -DUSE_ANGRYLION=ON" ]
+          if [ "${{ matrix.features }}" == "ON" ]
           then
             cmake --install "$build_dir" --strip --prefix="$src_dir"
             cmake --build "$build_dir" --target=bundle_dependencies
           fi
         shell: msys2 {0}
       - name: Create Installer
-        if: ${{ matrix.cmake_args == '-DDISCORD_RPC=ON -DDRAG_DROP=ON -DNETPLAY=ON -DVRU=ON -DUSE_ANGRYLION=ON' }}
+        if: ${{ matrix.features == 'ON' }}
         run: .\Build\Release\Source\Installer\CreateInstaller.bat
       - name: Configure RMG (Portable)
-        if: ${{ matrix.cmake_args == '-DDISCORD_RPC=ON -DDRAG_DROP=ON -DNETPLAY=ON -DVRU=ON -DUSE_ANGRYLION=ON' }}
+        if: ${{ matrix.features == 'ON' }}
         run: touch Bin/Release/portable.txt
         shell: msys2 {0}
       - name: Upload RMG (Portable)
-        if: ${{ matrix.cmake_args == '-DDISCORD_RPC=ON -DDRAG_DROP=ON -DNETPLAY=ON -DVRU=ON -DUSE_ANGRYLION=ON' }}
+        if: ${{ matrix.features == 'ON' }}
         uses: actions/upload-artifact@v4
         with:
           name: RMG-Portable-Windows64-${{ env.GIT_REVISION }}
           path: Bin/Release/*
       - name: Upload RMG (Installer)
-        if: ${{ matrix.cmake_args == '-DDISCORD_RPC=ON -DDRAG_DROP=ON -DNETPLAY=ON -DVRU=ON -DUSE_ANGRYLION=ON' }}
+        if: ${{ matrix.features == 'ON' }}
         uses: actions/upload-artifact@v4
         with:
           name: RMG-Setup-Windows64-${{ env.GIT_REVISION }}
