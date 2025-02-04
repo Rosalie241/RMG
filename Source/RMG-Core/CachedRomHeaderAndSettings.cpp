@@ -40,9 +40,9 @@
 #define REGION_LEN 18
 
 #ifdef _WIN32
-#define CACHE_FILE_MAGIC "RMGCoreHeaderAndSettingsCacheWindows_06"
+#define CACHE_FILE_MAGIC "RMGCoreHeaderAndSettingsCacheWindows_07"
 #else // Linux
-#define CACHE_FILE_MAGIC "RMGCoreHeaderAndSettingsCacheLinux_06"
+#define CACHE_FILE_MAGIC "RMGCoreHeaderAndSettingsCacheLinux_07"
 #endif // _WIN32
 #define CACHE_FILE_ITEMS_MAX 10000
 
@@ -159,6 +159,7 @@ void CoreReadRomHeaderAndSettingsCache(void)
         cacheEntry.header.Region = std::string(regionBuf);
         FREAD(cacheEntry.header.CRC1);
         FREAD(cacheEntry.header.CRC2);
+        FREAD(cacheEntry.header.CountryCode);
         // (partial) settings
         FREAD(size);
         FREAD_STR(goodNameBuf, size);
@@ -246,6 +247,7 @@ bool CoreSaveRomHeaderAndSettingsCache(void)
         FWRITE_STR(regionBuf, size);
         FWRITE(cacheEntry.header.CRC1);
         FWRITE(cacheEntry.header.CRC2);
+        FWRITE(cacheEntry.header.CountryCode);
         // (partial) settings
         size = cacheEntry.settings.GoodName.size();
         FWRITE(size);
@@ -336,10 +338,11 @@ bool CoreUpdateCachedRomHeaderAndSettings(std::filesystem::path file)
     if (/* rom type */
         cachedEntry.type != type ||
         /* header */
-        cachedEntry.header.Name   != header.Name   ||
-        cachedEntry.header.Region != header.Region ||
-        cachedEntry.header.CRC1   != header.CRC1   ||
-        cachedEntry.header.CRC2   != header.CRC2   ||
+        cachedEntry.header.Name        != header.Name   ||
+        cachedEntry.header.Region      != header.Region ||
+        cachedEntry.header.CRC1        != header.CRC1   ||
+        cachedEntry.header.CRC2        != header.CRC2   ||
+        cachedEntry.header.CountryCode != header.CountryCode ||
         /* settings */
         cachedEntry.settings.MD5      != settings.MD5 ||
         cachedEntry.settings.GoodName != settings.GoodName)
