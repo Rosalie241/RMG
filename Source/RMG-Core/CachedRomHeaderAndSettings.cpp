@@ -276,7 +276,7 @@ bool CoreGetCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType& 
         ret = CoreOpenRom(file) &&
                 CoreGetRomType(type) &&
                 CoreGetCurrentRomHeader(header) &&
-                CoreGetCurrentRomSettings(settings);
+                CoreGetCurrentDefaultRomSettings(settings);
         // always close ROM
         if (CoreHasRomOpen() && !CoreCloseRom())
         {
