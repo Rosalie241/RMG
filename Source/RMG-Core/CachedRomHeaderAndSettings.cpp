@@ -263,11 +263,6 @@ bool CoreSaveRomHeaderAndSettingsCache(void)
     return true;
 }
 
-bool CoreHasRomHeaderAndSettingsCached(std::filesystem::path file)
-{
-    return get_cache_entry_iter(file) != l_CacheEntries.end();
-}
-
 bool CoreGetCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType& type, CoreRomHeader& header, CoreRomSettings& settings)
 {
     bool ret = false;

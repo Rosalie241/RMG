@@ -25,10 +25,6 @@ void CoreReadRomHeaderAndSettingsCache(void);
 bool CoreSaveRomHeaderAndSettingsCache(void);
 #endif // CORE_INTERNAL
 
-// returns whether rom header & settings have been cached
-// for given filename
-bool CoreHasRomHeaderAndSettingsCached(std::filesystem::path file);
-
 // returns whether retrieving the rom header & settings
 // for given filename succeeds, it also attempts to add
 // an entry if there's no cached entry found
