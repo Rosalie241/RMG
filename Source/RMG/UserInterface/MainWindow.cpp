@@ -2147,30 +2147,13 @@ void MainWindow::on_RomBrowser_RomInformation(QString file)
         this->ui_Widget_RomBrowser->StopRefreshRomList();
     }
 
+    CoreRomType romType;
     CoreRomHeader romHeader;
     CoreRomSettings romSettings;
 
-    if (!CoreOpenRom(file.toStdU32String()))
+    if (!CoreGetCachedRomHeaderAndSettings(file.toStdU32String(), romType, romHeader, romSettings))
     {
-        this->showErrorMessage("CoreOpenRom() Failed", QString::fromStdString(CoreGetError()));
-        return;
-    }
-
-    if (!CoreGetCurrentRomHeader(romHeader))
-    {
-        this->showErrorMessage("CoreGetCurrentRomHeader() Failed", QString::fromStdString(CoreGetError()));
-        return;
-    }
-
-    if (!CoreGetCurrentRomSettings(romSettings))
-    {
-        this->showErrorMessage("CoreGetCurrentRomSettings() Failed", QString::fromStdString(CoreGetError()));
-        return;
-    }
-
-    if (!CoreCloseRom())
-    {
-        this->showErrorMessage("CoreCloseRom() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage("CoreGetCachedRomHeaderAndSettings() Failed", QString::fromStdString(CoreGetError()));
         return;
     }
 
@@ -2252,22 +2235,10 @@ void MainWindow::on_RomBrowser_Cheats(QString file)
         this->ui_Widget_RomBrowser->StopRefreshRomList();
     }
 
-    if (!CoreOpenRom(file.toStdU32String()))
-    {
-        this->showErrorMessage("CoreOpenRom() Failed", QString::fromStdString(CoreGetError()));
-        return;
-    }
-
-    Dialog::CheatsDialog dialog(this);
+    Dialog::CheatsDialog dialog(this, file);
     if (!dialog.HasFailed())
     {
         dialog.exec();
-    }
-
-    if (!CoreCloseRom())
-    {
-        this->showErrorMessage("CoreCloseRom() Failed", QString::fromStdString(CoreGetError()));
-        return;
     }
 
     if (isRefreshingRomList)

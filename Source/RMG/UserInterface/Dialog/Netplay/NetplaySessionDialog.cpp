@@ -138,7 +138,7 @@ void NetplaySessionDialog::updateCheatsTreeWidget(void)
         return;
     }
 
-    CheatsCommon::AddCheatsToTreeWidget(true, cheatsArray, cheats, this->cheatsTreeWidget, true);    
+    CheatsCommon::AddCheatsToTreeWidget(true, cheatsArray, this->sessionFile, cheats, this->cheatsTreeWidget, true);    
 }
 
 void NetplaySessionDialog::on_webSocket_textMessageReceived(QString message)
@@ -256,20 +256,9 @@ void NetplaySessionDialog::on_buttonBox_clicked(QAbstractButton* button)
         QString cheatsJson = this->sessionJson.value("features").toObject().value("cheats").toString();
         QJsonDocument cheatsDocument = QJsonDocument::fromJson(cheatsJson.toUtf8());
 
-        if (!CoreOpenRom(this->sessionFile.toStdU32String()))
-        {
-            QtMessageBox::Error(this, "CoreOpenRom() Failed", QString::fromStdString(CoreGetError()));
-            return;
-        }
-
-        Dialog::CheatsDialog dialog(this, true, cheatsDocument.array());
+        // show cheats dialog to user
+        Dialog::CheatsDialog dialog(this, this->sessionFile, true, cheatsDocument.array());
         dialog.exec();
-
-        if (!CoreCloseRom())
-        {
-            QtMessageBox::Error(this, "CoreCloseRom() Failed", QString::fromStdString(CoreGetError()));
-            return;
-        }
 
         // request an update to the existing session with the new cheats
         cheatsDocument.setArray(dialog.GetJson());

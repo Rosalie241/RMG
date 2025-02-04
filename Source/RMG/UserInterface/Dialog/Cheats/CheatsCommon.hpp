@@ -19,28 +19,28 @@
 namespace CheatsCommon
 {
     // Checks whether cheat is enabled
-    bool IsCheatEnabled(bool netplay, const QJsonArray& json, const CoreCheat& cheat);
+    bool IsCheatEnabled(bool netplay, const QJsonArray& json, QString file, const CoreCheat& cheat);
 
     // Enables Cheat
-    bool EnableCheat(bool netplay, QJsonArray& json, const CoreCheat& cheat, bool enabled);
+    bool EnableCheat(bool netplay, QJsonArray& json, QString file, const CoreCheat& cheat, bool enabled);
 
     // Returns whether cheat has option set
-    bool HasCheatOptionSet(bool netplay, const QJsonArray& json, const CoreCheat& cheat);
+    bool HasCheatOptionSet(bool netplay, const QJsonArray& json, QString file, const CoreCheat& cheat);
 
     // Retrieves cheat option
-    bool GetCheatOption(bool netplay, const QJsonArray& json, const CoreCheat& cheat, CoreCheatOption& option);
+    bool GetCheatOption(bool netplay, const QJsonArray& json, QString file, const CoreCheat& cheat, CoreCheatOption& option);
 
     // Sets cheat option
-    bool SetCheatOption(bool netplay, QJsonArray& json, const CoreCheat& cheat, CoreCheatOption& option);
+    bool SetCheatOption(bool netplay, QJsonArray& json, QString file, const CoreCheat& cheat, CoreCheatOption& option);
 
     // Parses json into cheat list
     bool ParseCheatJson(const QJsonArray& json, std::vector<CoreCheat>& cheats);
 
     // Retrieves tree widget item name from cheat
-    QString GetCheatTreeWidgetItemName(bool netplay, QJsonArray& json, const CoreCheat& cheat);
+    QString GetCheatTreeWidgetItemName(bool netplay, QJsonArray& json, QString file, const CoreCheat& cheat);
 
     // Adds cheats to QTreeWidget
-    bool AddCheatsToTreeWidget(bool netplay, QJsonArray& json, const std::vector<CoreCheat>& cheats, QTreeWidget* cheatsTreeWidget, bool readonly);
+    bool AddCheatsToTreeWidget(bool netplay, QJsonArray& json, QString file, const std::vector<CoreCheat>& cheats, QTreeWidget* cheatsTreeWidget, bool readonly);
 
     // Attempts to find QTreeWidget item in section
     QTreeWidgetItem* FindTreeWidgetItem(QTreeWidget* cheatsTreeWidget, QStringList sections, int size, QString itemText);

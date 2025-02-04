@@ -19,16 +19,18 @@
 
 #include <RMG-Core/Settings.hpp>
 #include <RMG-Core/Error.hpp>
+#include <RMG-Core/Rom.hpp>
 
 Q_DECLARE_METATYPE(CoreCheat);
 
 using namespace UserInterface::Dialog;
 using namespace Utilities;
 
-CheatsDialog::CheatsDialog(QWidget *parent, bool netplay, QJsonArray cheatsJson) : QDialog(parent)
+CheatsDialog::CheatsDialog(QWidget *parent, QString file, bool netplay, QJsonArray cheatsJson) : QDialog(parent)
 {
     qRegisterMetaType<CoreCheat>();
 
+    this->file = file;
     this->netplay = netplay;
     this->cheatsJson = cheatsJson;
 
@@ -54,14 +56,14 @@ void CheatsDialog::loadCheats(void)
 {
     std::vector<CoreCheat> cheats;
 
-    if (!CoreGetCurrentCheats(cheats))
+    if (!CoreGetCurrentCheats(file.toStdU32String(), cheats))
     {
         QtMessageBox::Error(this, "CoreGetCurrentCheats() Failed", QString::fromStdString(CoreGetError()));
         this->failedToParseCheats = true;
         return;
     }
 
-    CheatsCommon::AddCheatsToTreeWidget(this->netplay, this->cheatsJson, cheats, this->cheatsTreeWidget, false);
+    CheatsCommon::AddCheatsToTreeWidget(this->netplay, this->cheatsJson, this->file, cheats, this->cheatsTreeWidget, false);
 }
 
 void CheatsDialog::on_cheatsTreeWidget_itemChanged(QTreeWidgetItem *item, int column)
@@ -75,7 +77,7 @@ void CheatsDialog::on_cheatsTreeWidget_itemChanged(QTreeWidgetItem *item, int co
     CoreCheat cheat = item->data(column, Qt::UserRole).value<CoreCheat>();
     bool enabled = (item->checkState(column) == Qt::CheckState::Checked);
 
-    if (enabled && cheat.HasOptions && !CheatsCommon::HasCheatOptionSet(this->netplay, this->cheatsJson, cheat))
+    if (enabled && cheat.HasOptions && !CheatsCommon::HasCheatOptionSet(this->netplay, this->cheatsJson, this->file, cheat))
     {
         // ask user to select an option
         this->on_cheatsTreeWidget_itemDoubleClicked(item, column);
@@ -83,14 +85,14 @@ void CheatsDialog::on_cheatsTreeWidget_itemChanged(QTreeWidgetItem *item, int co
         // make sure the user selected an option,
         // if they did then enable the cheat as requested,
         // if not, reset the checkbox
-        if (!CheatsCommon::HasCheatOptionSet(this->netplay, this->cheatsJson, cheat))
+        if (!CheatsCommon::HasCheatOptionSet(this->netplay, this->cheatsJson, this->file, cheat))
         {
             item->setCheckState(0, Qt::CheckState::Unchecked);
             return;
         }
     }
 
-    CheatsCommon::EnableCheat(this->netplay, this->cheatsJson, cheat, enabled);
+    CheatsCommon::EnableCheat(this->netplay, this->cheatsJson, this->file, cheat, enabled);
 }
 
 void CheatsDialog::on_cheatsTreeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
@@ -123,19 +125,19 @@ void CheatsDialog::on_cheatsTreeWidget_itemDoubleClicked(QTreeWidgetItem *item, 
         return;
     }
 
-    Dialog::ChooseCheatOptionDialog dialog(cheat, this->netplay, this->cheatsJson, this);
+    Dialog::ChooseCheatOptionDialog dialog(this, this->file, cheat, this->netplay, this->cheatsJson);
     dialog.exec();
 
     // update json
     this->cheatsJson = dialog.GetJson();
 
     // re-load cheat options
-    item->setText(column, CheatsCommon::GetCheatTreeWidgetItemName(this->netplay, this->cheatsJson, cheat));
+    item->setText(column, CheatsCommon::GetCheatTreeWidgetItemName(this->netplay, this->cheatsJson, this->file, cheat));
 }
 
 void CheatsDialog::on_addCheatButton_clicked(void)
 {
-    AddCheatDialog dialog(this);
+    AddCheatDialog dialog(this, this->file);
     dialog.exec();
 
     // re-load cheats
@@ -153,7 +155,7 @@ void CheatsDialog::on_editCheatButton_clicked(void)
 
     CoreCheat cheat = item->data(0, Qt::UserRole).value<CoreCheat>();
 
-    AddCheatDialog dialog(this);
+    AddCheatDialog dialog(this, this->file);
     dialog.SetCheat(cheat);
     int ret = dialog.exec();
     if (ret == QDialog::Accepted)
@@ -175,7 +177,7 @@ void CheatsDialog::on_removeCheatButton_clicked(void)
     CoreCheat cheat = item->data(0, Qt::UserRole).value<CoreCheat>();
 
     // try to remove cheat
-    if (!CoreRemoveCheat(cheat))
+    if (!CoreRemoveCheat(this->file.toStdU32String(), cheat))
     {
         QtMessageBox::Error(this, "CoreRemoveCheat() Failed", QString::fromStdString(CoreGetError()));
         return;
@@ -195,7 +197,7 @@ void CheatsDialog::accept(void)
 
     CoreSettingsSave();
 
-    if (!CoreApplyCheats())
+    if (CoreHasRomOpen() && !CoreApplyCheats())
     {
         QtMessageBox::Error(this, "CoreApplyCheats() Failed", QString::fromStdString(CoreGetError()));
         return;

@@ -39,7 +39,7 @@ static int find_json_cheat(const QJsonArray& json, const CoreCheat& cheat)
 // Exported Function
 //
 
-bool CheatsCommon::IsCheatEnabled(bool netplay, const QJsonArray& json, const CoreCheat& cheat)
+bool CheatsCommon::IsCheatEnabled(bool netplay, const QJsonArray& json, QString file, const CoreCheat& cheat)
 {
     if (netplay)
     {
@@ -48,11 +48,11 @@ bool CheatsCommon::IsCheatEnabled(bool netplay, const QJsonArray& json, const Co
     }
     else
     {
-        return CoreIsCheatEnabled(cheat);
+        return CoreIsCheatEnabled(file.toStdU32String(), cheat);
     }
 }
 
-bool CheatsCommon::EnableCheat(bool netplay, QJsonArray& json, const CoreCheat& cheat, bool enabled)
+bool CheatsCommon::EnableCheat(bool netplay, QJsonArray& json, QString file, const CoreCheat& cheat, bool enabled)
 {
     if (netplay)
     {
@@ -116,11 +116,11 @@ bool CheatsCommon::EnableCheat(bool netplay, QJsonArray& json, const CoreCheat& 
     }
     else
     {
-        return CoreEnableCheat(cheat, enabled);
+        return CoreEnableCheat(file.toStdU32String(), cheat, enabled);
     }
 }
 
-bool CheatsCommon::HasCheatOptionSet(bool netplay, const QJsonArray& json, const CoreCheat& cheat)
+bool CheatsCommon::HasCheatOptionSet(bool netplay, const QJsonArray& json, QString file, const CoreCheat& cheat)
 {
     if (netplay)
     {
@@ -129,11 +129,11 @@ bool CheatsCommon::HasCheatOptionSet(bool netplay, const QJsonArray& json, const
     }
     else
     {
-        return CoreHasCheatOptionSet(cheat);
+        return CoreHasCheatOptionSet(file.toStdU32String(), cheat);
     }
 }
 
-bool CheatsCommon::GetCheatOption(bool netplay, const QJsonArray& json, const CoreCheat& cheat, CoreCheatOption& option)
+bool CheatsCommon::GetCheatOption(bool netplay, const QJsonArray& json, QString file, const CoreCheat& cheat, CoreCheatOption& option)
 {
     if (netplay)
     {
@@ -155,10 +155,10 @@ bool CheatsCommon::GetCheatOption(bool netplay, const QJsonArray& json, const Co
     }
     else
     {
-        return CoreGetCheatOption(cheat, option);
+        return CoreGetCheatOption(file.toStdU32String(), cheat, option);
     }
 }
-bool CheatsCommon::SetCheatOption(bool netplay, QJsonArray& json, const CoreCheat& cheat, CoreCheatOption& option)
+bool CheatsCommon::SetCheatOption(bool netplay, QJsonArray& json, QString file, const CoreCheat& cheat, CoreCheatOption& option)
 {
     if (netplay)
     {
@@ -195,7 +195,7 @@ bool CheatsCommon::SetCheatOption(bool netplay, QJsonArray& json, const CoreChea
     }
     else
     {
-        return CoreGetCheatOption(cheat, option);
+        return CoreGetCheatOption(file.toStdU32String(), cheat, option);
     }
 }
 
@@ -291,7 +291,7 @@ bool CheatsCommon::ParseCheatJson(const QJsonArray& json, std::vector<CoreCheat>
     return true;
 }
 
-QString CheatsCommon::GetCheatTreeWidgetItemName(bool netplay, QJsonArray& json, const CoreCheat& cheat)
+QString CheatsCommon::GetCheatTreeWidgetItemName(bool netplay, QJsonArray& json, QString file, const CoreCheat& cheat)
 {
     QString cheatName = QString::fromStdString(cheat.Name).split('\\').last();
     QString text;
@@ -299,8 +299,8 @@ QString CheatsCommon::GetCheatTreeWidgetItemName(bool netplay, QJsonArray& json,
     if (cheat.HasOptions)
     {
         CoreCheatOption cheatOption;
-        if (!CheatsCommon::HasCheatOptionSet(netplay, json, cheat) || 
-            !CheatsCommon::GetCheatOption(netplay, json, cheat, cheatOption))
+        if (!CheatsCommon::HasCheatOptionSet(netplay, json, file, cheat) || 
+            !CheatsCommon::GetCheatOption(netplay, json, file, cheat, cheatOption))
         {
             text = cheatName + " (=> ???? - Not Set)";
         }
@@ -319,7 +319,7 @@ QString CheatsCommon::GetCheatTreeWidgetItemName(bool netplay, QJsonArray& json,
     return text;
 }
 
-bool CheatsCommon::AddCheatsToTreeWidget(bool netplay, QJsonArray& json, const std::vector<CoreCheat>& cheats, QTreeWidget* cheatsTreeWidget, bool readonly)
+bool CheatsCommon::AddCheatsToTreeWidget(bool netplay, QJsonArray& json, QString file, const std::vector<CoreCheat>& cheats, QTreeWidget* cheatsTreeWidget, bool readonly)
 {
     cheatsTreeWidget->setItemsExpandable(!readonly);
     cheatsTreeWidget->clear();
@@ -329,7 +329,7 @@ bool CheatsCommon::AddCheatsToTreeWidget(bool netplay, QJsonArray& json, const s
         QString name = QString::fromStdString(cheat.Name);
         QString section;
         QStringList sections = name.split("\\");
-        bool enabled = CheatsCommon::IsCheatEnabled(netplay, json, cheat);
+        bool enabled = CheatsCommon::IsCheatEnabled(netplay, json, file, cheat);
 
         for (int i = 0; i < sections.size(); i++)
         {
@@ -351,7 +351,7 @@ bool CheatsCommon::AddCheatsToTreeWidget(bool netplay, QJsonArray& json, const s
             // and make it a checkbox
             if (i == (sections.size() - 1))
             {
-                item->setText(0, CheatsCommon::GetCheatTreeWidgetItemName(netplay, json, cheat));
+                item->setText(0, CheatsCommon::GetCheatTreeWidgetItemName(netplay, json, file, cheat));
                 item->setCheckState(0, (enabled ? Qt::CheckState::Checked : Qt::CheckState::Unchecked));
                 item->setData(0, Qt::UserRole, QVariant::fromValue(cheat));
                 if (readonly)

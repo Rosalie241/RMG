@@ -21,9 +21,11 @@
 using namespace UserInterface::Dialog;
 using namespace Utilities;
 
-AddCheatDialog::AddCheatDialog(QWidget *parent) : QDialog(parent)
+AddCheatDialog::AddCheatDialog(QWidget *parent, QString file) : QDialog(parent)
 {
     this->setupUi(this);
+
+    this->file = file;
 
     this->validateOkButton();
 }
@@ -274,7 +276,7 @@ bool AddCheatDialog::addCheat(void)
         return false;
     }
 
-    if (!CoreAddCheat(cheat))
+    if (!CoreAddCheat(this->file.toStdU32String(), cheat))
     {
         QtMessageBox::Error(this, "CoreAddCheat() Failed", QString::fromStdString(CoreGetError()));
         return false;
@@ -299,7 +301,7 @@ bool AddCheatDialog::updateCheat(void)
         return true;
     }
 
-    if (!CoreUpdateCheat(this->oldCheat,cheat))
+    if (!CoreUpdateCheat(this->file.toStdU32String(), this->oldCheat, cheat))
     {
         QtMessageBox::Error(this, "CoreUpdateCheat() Failed", QString::fromStdString(CoreGetError()));
         return false;
@@ -314,7 +316,7 @@ void AddCheatDialog::accept(void)
 
     if (!this->validate())
     {
-        QtMessageBox::Error(this, "Validating Cheat Failed", "");
+        QtMessageBox::Error(this, "Validating Cheat Failed");
         return;
     }
 

@@ -25,7 +25,7 @@ class CheatsDialog : public QDialog, private Ui::CheatsDialog
     Q_OBJECT
 
   public:
-    CheatsDialog(QWidget *parent, bool netplay = false, QJsonArray cheatsJson = {});
+    CheatsDialog(QWidget *parent, QString file = "", bool netplay = false, QJsonArray cheatsJson = {});
     ~CheatsDialog(void);
 
     bool HasFailed(void);
@@ -37,6 +37,7 @@ class CheatsDialog : public QDialog, private Ui::CheatsDialog
     bool failedToParseCheats = false;
     bool netplay = false;
     QJsonArray cheatsJson;
+    QString file;
 
     void loadCheats(void);
 
