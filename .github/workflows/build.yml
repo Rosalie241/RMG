@@ -38,11 +38,13 @@ jobs:
                 -DNETPLAY=${{ matrix.features }} \
                 -DVRU=${{ matrix.features }} \
                 -DUSE_ANGRYLION=${{ matrix.features }} \
+                -DUPDATER=${{ matrix.features }} \
+                -DAPPIMAGE_UPDATER=${{ matrix.features }} \
+                -DPORTABLE_INSTALL=OFF \
                 -DCMAKE_INSTALL_PREFIX="/usr" \
                 -DCMAKE_INSTALL_LIBDIR="lib"  \
-                -DPORTABLE_INSTALL="OFF" \
-                -DUPDATER=ON -DAPPIMAGE_UPDATER=ON \
                 -G "Unix Makefiles"
+
           cmake --build "$build_dir" --parallel "$(nproc)"
           cmake --install "$build_dir" --strip --prefix="$bin_dir/usr"
         shell: bash
@@ -108,15 +110,13 @@ jobs:
                 -DNETPLAY=${{ matrix.features }} \
                 -DVRU=${{ matrix.features }} \
                 -DUSE_ANGRYLION=${{ matrix.features }} \
-                -DPORTABLE_INSTALL=ON -DUPDATER=ON -G "MSYS Makefiles"
+                -DUPDATER=${{ matrix.features }} \
+                -DPORTABLE_INSTALL=ON \
+                -G "MSYS Makefiles"
 
           cmake --build "$build_dir" --parallel "$(nproc)"
-
-          if [ "${{ matrix.features }}" == "ON" ]
-          then
-            cmake --install "$build_dir" --strip --prefix="$src_dir"
-            cmake --build "$build_dir" --target=bundle_dependencies
-          fi
+          cmake --install "$build_dir" --strip --prefix="$src_dir"
+          cmake --build "$build_dir" --target=bundle_dependencies
         shell: msys2 {0}
       - name: Create Installer
         if: ${{ matrix.features == 'ON' }}
