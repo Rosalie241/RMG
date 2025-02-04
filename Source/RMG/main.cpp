@@ -28,7 +28,7 @@
 // Local Functions
 //
 
-void message_handler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+static void message_handler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
     // personally I think that there should be a better
     // way to silence these warnings because I'd rather
@@ -42,7 +42,7 @@ void message_handler(QtMsgType type, const QMessageLogContext &context, const QS
     std::cerr << msg.toStdString() << std::endl;
 }
 
-void signal_handler(int sig)
+static void signal_handler(int sig)
 {
     QGuiApplication::quit();
 }
