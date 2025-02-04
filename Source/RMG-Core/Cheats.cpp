@@ -467,7 +467,7 @@ static bool write_cheat_file(CoreCheatFile cheatFile, std::filesystem::path path
 
     lines += fmt_string("Name={}\n\n", cheatFile.Name);
 
-    for (CoreCheat& cheat : cheatFile.Cheats)
+    for (const CoreCheat& cheat : cheatFile.Cheats)
     {
         lines += fmt_string("${}\n", cheat.Name);
 
@@ -481,7 +481,7 @@ static bool write_cheat_file(CoreCheatFile cheatFile, std::filesystem::path path
             lines += fmt_string("Note={}\n", cheat.Note);
         }
 
-        for (CoreCheatCode& code : cheat.CheatCodes)
+        for (const CoreCheatCode& code : cheat.CheatCodes)
         {
             if (code.UseOptions)
             {
@@ -500,7 +500,7 @@ static bool write_cheat_file(CoreCheatFile cheatFile, std::filesystem::path path
 
         if (cheat.HasOptions)
         {
-            for (CoreCheatOption& option : cheat.CheatOptions)
+            for (const CoreCheatOption& option : cheat.CheatOptions)
             {
                 lines += fmt_string("{:0{}X} {}\n", option.Value, option.Size, option.Name);
             }
@@ -624,14 +624,14 @@ bool CoreGetCurrentCheats(std::filesystem::path file, std::vector<CoreCheat>& ch
 
     // add shared & user cheats
     // add user cheats first
-    for (CoreCheat& cheat : userCheatFile.Cheats)
+    for (const CoreCheat& cheat : userCheatFile.Cheats)
     {
         cheats.push_back(cheat);
     }
     // add shared cheats
     // and check if any cheats with the same name
     // already exist, if it does, then just skip them
-    for (CoreCheat& cheat : sharedCheatFile.Cheats)
+    for (const CoreCheat& cheat : sharedCheatFile.Cheats)
     {
         auto iter = find_user_cheat_using_name(cheat.Name);
 
@@ -655,7 +655,7 @@ bool CoreParseCheat(const std::vector<std::string>& lines, CoreCheat& cheat)
 
 bool CoreGetCheatLines(CoreCheat cheat, std::vector<std::string>& codeLines, std::vector<std::string>& optionLines)
 {
-    for (CoreCheatCode& code : cheat.CheatCodes)
+    for (const CoreCheatCode& code : cheat.CheatCodes)
     {
         if (code.UseOptions)
         {
@@ -674,7 +674,7 @@ bool CoreGetCheatLines(CoreCheat cheat, std::vector<std::string>& codeLines, std
 
     if (cheat.HasOptions)
     {
-        for (CoreCheatOption& option : cheat.CheatOptions)
+        for (const CoreCheatOption& option : cheat.CheatOptions)
         {
             optionLines.push_back(fmt_string("{:0{}X} {}", option.Value, option.Size, option.Name));
         }
@@ -906,7 +906,7 @@ bool CoreGetCheatOption(std::filesystem::path file, CoreCheat cheat, CoreCheatOp
         return false;
     }
 
-    for (CoreCheatOption& cheatOption : cheat.CheatOptions)
+    for (const CoreCheatOption& cheatOption : cheat.CheatOptions)
     {
         if (cheatOption.Value == (uint32_t)value)
         {
