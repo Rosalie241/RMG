@@ -270,10 +270,33 @@ bool CoreHasRomHeaderAndSettingsCached(std::filesystem::path file)
 
 bool CoreGetCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType& type, CoreRomHeader& header, CoreRomSettings& settings)
 {
+    bool ret = false;
     auto iter = get_cache_entry_iter(file);
     if (iter == l_CacheEntries.end())
     {
-        return false;
+        // when we haven't found a cached entry,
+        // we're gonna attempt to retrieve the
+        // rom header and settings and add it
+        // to the cache
+        ret = CoreOpenRom(file) &&
+                CoreGetRomType(type) &&
+                CoreGetCurrentRomHeader(header) &&
+                CoreGetCurrentRomSettings(settings);
+        // always close ROM
+        if (CoreHasRomOpen() && !CoreCloseRom())
+        {
+            ret = false;
+        }
+        // attempt to add it to the cache, when we've retrieved 
+        // the info successfully
+        if (ret)
+        {
+            return CoreAddCachedRomHeaderAndSettings(file, type, header, settings);
+        }
+        else
+        {
+            return false;
+        }
     }
 
     type     = (*iter).type;
