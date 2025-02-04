@@ -10,9 +10,10 @@
 #ifndef CORE_CHEATS_HPP
 #define CORE_CHEATS_HPP
 
-#include <cstdint>
 #include <string>
 #include <vector>
+#include <cstdint>
+#include <filesystem>
 
 struct CoreCheatCode
 {
@@ -101,7 +102,7 @@ struct CoreCheatFile
 #endif // CORE_INTERNAL
 
 // attempts to retrieve the cheats for the currently opened ROM
-bool CoreGetCurrentCheats(std::vector<CoreCheat>& cheats);
+bool CoreGetCurrentCheats(std::filesystem::path file, std::vector<CoreCheat>& cheats);
 
 // attempts to parse cheat from lines
 bool CoreParseCheat(const std::vector<std::string>& lines, CoreCheat& cheat);
@@ -110,34 +111,34 @@ bool CoreParseCheat(const std::vector<std::string>& lines, CoreCheat& cheat);
 bool CoreGetCheatLines(CoreCheat cheat, std::vector<std::string>& codeLines, std::vector<std::string>& optionLines);
 
 // attempts to add the cheat
-bool CoreAddCheat(CoreCheat cheat);
+bool CoreAddCheat(std::filesystem::path file, CoreCheat cheat);
 
 // attemps to update given cheat
-bool CoreUpdateCheat(CoreCheat oldCheat, CoreCheat newCheat);
+bool CoreUpdateCheat(std::filesystem::path file, CoreCheat oldCheat, CoreCheat newCheat);
 
 // returns whether you can remove the cheat
 bool CoreCanRemoveCheat(CoreCheat cheat);
 
 // attempts to remove the given cheat
-bool CoreRemoveCheat(CoreCheat cheat);
+bool CoreRemoveCheat(std::filesystem::path file, CoreCheat cheat);
 
 // attempt to enable the cheat
-bool CoreEnableCheat(CoreCheat cheat, bool enabled);
+bool CoreEnableCheat(std::filesystem::path file, CoreCheat cheat, bool enabled);
 
 // returns whether cheat is enabled
-bool CoreIsCheatEnabled(CoreCheat cheat);
+bool CoreIsCheatEnabled(std::filesystem::path file, CoreCheat cheat);
 
 // returns whether an option has been set for the given cheat
-bool CoreHasCheatOptionSet(CoreCheat cheat);
+bool CoreHasCheatOptionSet(std::filesystem::path file, CoreCheat cheat);
 
 // attempts to set the cheat's option
-bool CoreSetCheatOption(CoreCheat cheat, CoreCheatOption option);
+bool CoreSetCheatOption(std::filesystem::path file, CoreCheat cheat, CoreCheatOption option);
 
 // attempts to retrieve the currently's set cheat's option
-bool CoreGetCheatOption(CoreCheat cheat, CoreCheatOption& option);
+bool CoreGetCheatOption(std::filesystem::path file, CoreCheat cheat, CoreCheatOption& option);
 
 // attempts to reset the cheat option
-bool CoreResetCheatOption(CoreCheat cheat);
+bool CoreResetCheatOption(std::filesystem::path file, CoreCheat cheat);
 
 // attempts to apply the enabled cheats to the currently opened ROM
 bool CoreApplyCheats(void);

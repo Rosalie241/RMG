@@ -8,12 +8,14 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #define CORE_INTERNAL
+#include "CachedRomHeaderAndSettings.hpp"
 #include "Directories.hpp"
 #include "RomSettings.hpp"
 #include "RomHeader.hpp"
 #include "Settings.hpp"
 #include "Cheats.hpp"
 #include "Error.hpp"
+#include "Rom.hpp"
 
 #include "m64p/Api.hpp"
 
@@ -551,11 +553,30 @@ static std::vector<CoreCheat>::iterator find_user_cheat_using_name(std::string n
     return std::find_if(l_UserCheatFile.Cheats.begin(), l_UserCheatFile.Cheats.end(), predicate);
 }
 
+static bool get_romheader_romsettings(const std::filesystem::path& file, CoreRomHeader& romHeader, CoreRomSettings& romSettings)
+{
+    if (file.empty())
+    {
+        if (!CoreGetCurrentRomHeader(romHeader) ||
+            !CoreGetCurrentRomSettings(romSettings))
+        {
+            return false;
+        }
+    }
+    else
+    {
+        CoreRomType romType;
+        return CoreGetCachedRomHeaderAndSettings(file, romType, romHeader, romSettings);
+    }
+
+    return true;
+}
+
 //
 // Exported Functions
 //
 
-bool CoreGetCurrentCheats(std::vector<CoreCheat>& cheats)
+bool CoreGetCurrentCheats(std::filesystem::path file, std::vector<CoreCheat>& cheats)
 {
     CoreRomHeader romHeader;
     CoreRomSettings romSettings;
@@ -568,8 +589,7 @@ bool CoreGetCurrentCheats(std::vector<CoreCheat>& cheats)
     std::vector<std::string> sharedCheatFilelines;
     std::vector<std::string> userCheatFileLines;
 
-    if (!CoreGetCurrentRomHeader(romHeader) ||
-        !CoreGetCurrentRomSettings(romSettings))
+    if (!get_romheader_romsettings(file, romHeader, romSettings))
     {
         return false;
     }
@@ -663,15 +683,14 @@ bool CoreGetCheatLines(CoreCheat cheat, std::vector<std::string>& codeLines, std
     return true;
 }
 
-bool CoreAddCheat(CoreCheat cheat)
+bool CoreAddCheat(std::filesystem::path file, CoreCheat cheat)
 {
     std::string error;
     CoreRomHeader romHeader;
     CoreRomSettings romSettings;
     std::filesystem::path cheatFilePath;
 
-    if (!CoreGetCurrentRomHeader(romHeader) ||
-        !CoreGetCurrentRomSettings(romSettings))
+    if (!get_romheader_romsettings(file, romHeader, romSettings))
     {
         return false;
     }
@@ -700,15 +719,14 @@ bool CoreAddCheat(CoreCheat cheat)
     return write_cheat_file(l_UserCheatFile, cheatFilePath);
 }
 
-bool CoreUpdateCheat(CoreCheat oldCheat, CoreCheat newCheat)
+bool CoreUpdateCheat(std::filesystem::path file, CoreCheat oldCheat, CoreCheat newCheat)
 {
     CoreRomHeader romHeader;
     CoreRomSettings romSettings;
     std::filesystem::path cheatFilePath;
     CoreCheatOption cheatOption;
 
-    if (!CoreGetCurrentRomHeader(romHeader) ||
-        !CoreGetCurrentRomSettings(romSettings))
+    if (!get_romheader_romsettings(file, romHeader, romSettings))
     {
         return false;
     }
@@ -718,18 +736,18 @@ bool CoreUpdateCheat(CoreCheat oldCheat, CoreCheat newCheat)
     // copy over cheat settings when name has changed
     if (oldCheat.Name != newCheat.Name)
     {
-        CoreEnableCheat(newCheat, CoreIsCheatEnabled(oldCheat));
+        CoreEnableCheat(file, newCheat, CoreIsCheatEnabled(file, oldCheat));
 
         // only set option to new cheat when 
         // retrieving from old one succeeds
-        if (CoreGetCheatOption(oldCheat, cheatOption))
+        if (CoreGetCheatOption(file, oldCheat, cheatOption))
         {
-            CoreSetCheatOption(newCheat, cheatOption);
+            CoreSetCheatOption(file, newCheat, cheatOption);
         }
 
         // reset old cheat settings
-        CoreEnableCheat(oldCheat, false);
-        CoreResetCheatOption(oldCheat);
+        CoreEnableCheat(file, oldCheat, false);
+        CoreResetCheatOption(file, oldCheat);
     }
 
     // try to find old cheat in user cheats,
@@ -755,7 +773,7 @@ bool CoreCanRemoveCheat(CoreCheat cheat)
     return std::find(l_UserCheatFile.Cheats.begin(), l_UserCheatFile.Cheats.end(), cheat) != l_UserCheatFile.Cheats.end();
 }
 
-bool CoreRemoveCheat(CoreCheat cheat)
+bool CoreRemoveCheat(std::filesystem::path file, CoreCheat cheat)
 {
     CoreRomHeader romHeader;
     CoreRomSettings romSettings;
@@ -766,8 +784,7 @@ bool CoreRemoveCheat(CoreCheat cheat)
         return false;
     }
 
-    if (!CoreGetCurrentRomHeader(romHeader) ||
-        !CoreGetCurrentRomSettings(romSettings))
+    if (!get_romheader_romsettings(file, romHeader, romSettings))
     {
         return false;
     }
@@ -784,13 +801,14 @@ bool CoreRemoveCheat(CoreCheat cheat)
     return write_cheat_file(l_UserCheatFile, cheatFilePath);
 }
 
-bool CoreEnableCheat(CoreCheat cheat, bool enabled)
+bool CoreEnableCheat(std::filesystem::path file, CoreCheat cheat, bool enabled)
 {
+    CoreRomHeader   romHeader;
     CoreRomSettings romSettings;
     std::string settingSection;
     std::string settingKey;
 
-    if (!CoreGetCurrentRomSettings(romSettings))
+    if (!get_romheader_romsettings(file, romHeader, romSettings))
     {
         return false;
     }
@@ -807,13 +825,14 @@ bool CoreEnableCheat(CoreCheat cheat, bool enabled)
     return CoreSettingsSetValue(settingSection, settingKey, enabled);
 }
 
-bool CoreIsCheatEnabled(CoreCheat cheat)
+bool CoreIsCheatEnabled(std::filesystem::path file, CoreCheat cheat)
 {
+    CoreRomHeader romHeader;
     CoreRomSettings romSettings;
     std::string settingSection;
     std::string settingKey;
 
-    if (!CoreGetCurrentRomSettings(romSettings))
+    if (!get_romheader_romsettings(file, romHeader, romSettings))
     {
         return false;
     }
@@ -824,13 +843,14 @@ bool CoreIsCheatEnabled(CoreCheat cheat)
     return CoreSettingsGetBoolValue(settingSection, settingKey, false);
 }
 
-bool CoreHasCheatOptionSet(CoreCheat cheat)
+bool CoreHasCheatOptionSet(std::filesystem::path file, CoreCheat cheat)
 {
+    CoreRomHeader romHeader;
     CoreRomSettings romSettings;
     std::string settingSection;
     std::string settingKey;
 
-    if (!CoreGetCurrentRomSettings(romSettings))
+    if (!get_romheader_romsettings(file, romHeader, romSettings))
     {
         return false;
     }
@@ -841,13 +861,14 @@ bool CoreHasCheatOptionSet(CoreCheat cheat)
     return CoreSettingsGetIntValue(settingSection, settingKey, -1) != -1;
 }
 
-bool CoreSetCheatOption(CoreCheat cheat, CoreCheatOption option)
+bool CoreSetCheatOption(std::filesystem::path file, CoreCheat cheat, CoreCheatOption option)
 {
+    CoreRomHeader romHeader;
     CoreRomSettings romSettings;
     std::string settingSection;
     std::string settingKey;
 
-    if (!CoreGetCurrentRomSettings(romSettings))
+    if (!get_romheader_romsettings(file, romHeader, romSettings))
     {
         return false;
     }
@@ -858,8 +879,9 @@ bool CoreSetCheatOption(CoreCheat cheat, CoreCheatOption option)
     return CoreSettingsSetValue(settingSection, settingKey, (int)option.Value);
 }
 
-bool CoreGetCheatOption(CoreCheat cheat, CoreCheatOption& option)
+bool CoreGetCheatOption(std::filesystem::path file, CoreCheat cheat, CoreCheatOption& option)
 {
+    CoreRomHeader romHeader;
     CoreRomSettings romSettings;
     std::string settingSection;
     std::string settingKey;
@@ -870,7 +892,7 @@ bool CoreGetCheatOption(CoreCheat cheat, CoreCheatOption& option)
         return false;
     }
 
-    if (!CoreGetCurrentRomSettings(romSettings))
+    if (!get_romheader_romsettings(file, romHeader, romSettings))
     {
         return false;
     }
@@ -898,8 +920,9 @@ bool CoreGetCheatOption(CoreCheat cheat, CoreCheatOption& option)
     return false;
 }
 
-bool CoreResetCheatOption(CoreCheat cheat)
+bool CoreResetCheatOption(std::filesystem::path file, CoreCheat cheat)
 {
+    CoreRomHeader romHeader;
     CoreRomSettings romSettings;
     std::string settingSection;
     std::string settingKey;
@@ -909,7 +932,7 @@ bool CoreResetCheatOption(CoreCheat cheat)
         return false;
     }
 
-    if (!CoreGetCurrentRomSettings(romSettings))
+    if (!get_romheader_romsettings(file, romHeader, romSettings))
     {
         return false;
     }
@@ -937,7 +960,7 @@ bool CoreApplyCheats(void)
     }
 
     // fail when parsing cheats fails
-    if (!CoreGetCurrentCheats(cheats))
+    if (!CoreGetCurrentCheats("", cheats))
     {
         return false;
     }
@@ -952,7 +975,7 @@ bool CoreApplyCheats(void)
     {
         skipCheat = false;
 
-        if (!CoreIsCheatEnabled(cheat))
+        if (!CoreIsCheatEnabled("", cheat))
         {
             continue;
         }
@@ -962,14 +985,14 @@ bool CoreApplyCheats(void)
             if (code.UseOptions)
             {
                 // make sure an option has been set
-                if (!CoreHasCheatOptionSet(cheat))
+                if (!CoreHasCheatOptionSet("", cheat))
                 {
                     skipCheat = true;
                     break;
                 }
 
                 // make sure retrieving it succeeds
-                if (!CoreGetCheatOption(cheat, cheatOption))
+                if (!CoreGetCheatOption("", cheat, cheatOption))
                 {
                     skipCheat = true;
                     break;
