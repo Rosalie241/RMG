@@ -272,7 +272,6 @@ void RomBrowserWidget::RefreshRomList(void)
     this->coversDirectory = QString::fromStdString(CoreGetUserDataDirectory().string());
     this->coversDirectory += "/Covers";
 
-    this->sortRomResults      = CoreSettingsGetBoolValue(SettingsID::RomBrowser_SortAfterSearch);
     this->listViewSortSection = CoreSettingsGetIntValue(SettingsID::RomBrowser_ListViewSortSection);
     this->listViewSortOrder   = CoreSettingsGetIntValue(SettingsID::RomBrowser_ListViewSortOrder);
 
@@ -903,11 +902,8 @@ void RomBrowserWidget::on_RomBrowserThread_RomsFound(QList<RomSearcherThreadData
 void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
 {
     // sort data
-    if (this->sortRomResults)
-    {
-        this->listViewModel->sort(this->listViewSortSection, (Qt::SortOrder)this->listViewSortOrder);
-        this->gridViewModel->sort(0, Qt::SortOrder::AscendingOrder);
-    }
+    this->listViewModel->sort(this->listViewSortSection, (Qt::SortOrder)this->listViewSortOrder);
+    this->gridViewModel->sort(0, Qt::SortOrder::AscendingOrder);
 
     // retrieve column settings
     std::vector<int> columnSizes = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnSizes);

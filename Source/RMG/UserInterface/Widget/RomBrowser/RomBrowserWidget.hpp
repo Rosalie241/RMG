@@ -69,9 +69,7 @@ class RomBrowserWidget : public QStackedWidget
 
     QElapsedTimer romSearcherTimer;
     Thread::RomSearcherThread* romSearcherThread = nullptr;
-
-    bool sortRomResults = false;
-    
+  
     int listViewSortSection = 0;
     int listViewSortOrder = 0;
 
