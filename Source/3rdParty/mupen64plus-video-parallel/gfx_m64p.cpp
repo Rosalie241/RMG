@@ -38,6 +38,7 @@
 
 #include "m64p_types.h"
 #include "m64p_config.h"
+#include "m64p_plugin.h"
 
 #include <string.h>
 #include <stdint.h>
@@ -65,7 +66,7 @@ void (*render_callback)(int);
 m64p_handle configVideoParallel = NULL;
 
 #define PLUGIN_VERSION 0x000001
-#define VIDEO_PLUGIN_API_VERSION 0x020200
+#define VIDEO_PLUGIN_API_VERSION 0x020201
 #define DP_INTERRUPT 0x20
 
 uint32_t rdram_size;
@@ -286,6 +287,11 @@ EXPORT void CALL ProcessDList(void)
 EXPORT void CALL ProcessRDPList(void)
 {
     vk_process_commands();
+}
+
+EXPORT void CALL FullSync(void)
+{
+    vk_full_sync();
 }
 
 EXPORT int CALL RomOpen(void)
