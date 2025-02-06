@@ -60,9 +60,6 @@ class EmulationThread : public QThread
     void on_VidExt_SetCaption(QString);
     void on_VidExt_ToggleFS(bool);
     void on_VidExt_Quit(void);
-
-    void createOGLWindow(QSurfaceFormat *format, QThread *thread);
-    void resizeMainWindow(int Width, int Height);
 };
 } // namespace Thread
 
