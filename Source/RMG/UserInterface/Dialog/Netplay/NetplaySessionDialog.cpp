@@ -307,6 +307,15 @@ void NetplaySessionDialog::accept()
 
 void NetplaySessionDialog::reject(void)
 {
+    // when we're in-game we should keep
+    // the dialog alive so that the player
+    // can re-open the dialog and continue chatting
+    if (this->started)
+    {
+        this->hide();
+        return;
+    }
+
     if (this->webSocket->isValid())
     {
         this->webSocket->close();

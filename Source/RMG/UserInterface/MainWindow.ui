@@ -154,6 +154,8 @@
     </property>
     <addaction name="action_Netplay_CreateSession"/>
     <addaction name="action_Netplay_JoinSession"/>
+    <addaction name="separator"/>
+    <addaction name="action_Netplay_ViewSession"/>
    </widget>
    <addaction name="menuSystem"/>
    <addaction name="menuSettings"/>
@@ -621,6 +623,14 @@
    </property>
    <property name="text">
     <string>&amp;Join Session</string>
+   </property>
+  </action>
+  <action name="action_Netplay_ViewSession">
+    <property name="icon">
+    <iconset theme="server-line"/>
+   </property>
+   <property name="text">
+    <string>View Session</string>
    </property>
   </action>
  </widget>
