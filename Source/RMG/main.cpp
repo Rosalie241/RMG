@@ -67,16 +67,12 @@ int main(int argc, char **argv)
     // it works on KDE plasma and sway (on 2023-07-26),
     // but i.e doesn't work on GNOME wayland or labwc, 
     // so to compromise the situation, we'll force xwayland
-    // unless RMG_WAYLAND is set to 1, which'll force wayland
+    // unless RMG_ALLOW_WAYLAND is set to 1, which'll allow wayland
     // as qt platform, so users can experiment with the
     // wayland support themselves
-    const char* wayland = std::getenv("RMG_WAYLAND");
-    if (wayland != nullptr &&
-        std::string(wayland) == "1")
-    {
-        setenv("QT_QPA_PLATFORM", "wayland", 1);
-    }
-    else
+    const char* allow_wayland = std::getenv("RMG_ALLOW_WAYLAND");
+    if (allow_wayland == nullptr ||
+        std::string(allow_wayland) != "1")
     {
         setenv("QT_QPA_PLATFORM", "xcb", 1);
     }
