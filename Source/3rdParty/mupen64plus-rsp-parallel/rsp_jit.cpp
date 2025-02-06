@@ -1927,14 +1927,13 @@ ReturnMode CPU::run()
 		{
 		case MODE_BREAK:
 			*state.cp0.cr[CP0_REGISTER_SP_STATUS] |= SP_STATUS_BROKE | SP_STATUS_HALT;
-			if (*state.cp0.cr[CP0_REGISTER_SP_STATUS] & SP_STATUS_INTR_BREAK)
-				*state.cp0.irq |= 1;
 #ifndef PARALLEL_INTEGRATION
 			print_registers();
 #endif
 			return MODE_BREAK;
 
 		case MODE_CHECK_FLAGS:
+		case MODE_EXIT:
 		case MODE_DMA_READ:
 			return static_cast<ReturnMode>(ret);
 
