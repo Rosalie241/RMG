@@ -48,6 +48,31 @@ enum CP0Registers
 	CP0_REGISTER_CMD_TMEM_BUSY = 15,
 };
 
+// CMD_STATUS read bits.
+#define DPC_STATUS_XBUS_DMEM_DMA 0x001
+#define DPC_STATUS_FREEZE 0x002
+#define DPC_STATUS_FLUSH 0x004
+#define DPC_STATUS_START_GCLK 0x008
+#define DPC_STATUS_TMEM_BUSY 0x010
+#define DPC_STATUS_PIPE_BUSY 0x020
+#define DPC_STATUS_CMD_BUSY 0x040
+#define DPC_STATUS_CBUF_READY 0x080
+#define DPC_STATUS_DMA_BUSY 0x100
+#define DPC_STATUS_END_VALID 0x200
+#define DPC_STATUS_START_VALID 0x400
+
+// CMD_STATUS write bits.
+#define DPC_CLR_XBUS_DMEM_DMA 0x001
+#define DPC_SET_XBUS_DMEM_DMA 0x002
+#define DPC_CLR_FREEZE 0x004
+#define DPC_SET_FREEZE 0x008
+#define DPC_CLR_FLUSH 0x010
+#define DPC_SET_FLUSH 0x020
+#define DPC_CLR_TMEM_CTR 0x040
+#define DPC_CLR_PIPE_CTR 0x080
+#define DPC_CLR_CMD_CTR 0x100
+#define DPC_CLR_CLOCK_CTR 0x200
+
 // SP_STATUS read bits.
 #define SP_STATUS_HALT 0x0001
 #define SP_STATUS_BROKE 0x0002
@@ -117,6 +142,9 @@ struct alignas(64) CP2
 struct CPUState
 {
 	uint32_t pc = 0;
+	uint32_t instruction_count = 0;
+	uint32_t last_instruction_type = 0;
+	uint32_t instruction_pipeline = 0;
 	uint32_t dirty_blocks = 0;
 	static_assert(CODE_BLOCKS <= 32, "Code blocks must fit in 32-bit register.");
 
@@ -138,7 +166,14 @@ enum ReturnMode
 	MODE_CONTINUE = 1,
 	MODE_BREAK = 2,
 	MODE_DMA_READ = 3,
-	MODE_CHECK_FLAGS = 4
+	MODE_CHECK_FLAGS = 4,
+	MODE_EXIT = 5
+};
+
+enum InstructionType
+{
+	VU_INSTRUCTION = 0,
+	SU_INSTRUCTION = 1
 };
 
 } // namespace RSP

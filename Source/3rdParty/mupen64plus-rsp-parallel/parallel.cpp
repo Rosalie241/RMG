@@ -20,8 +20,6 @@ RSP::CPU cpu;
 #else
 RSP::JIT::CPU cpu;
 #endif
-short MFC0_count[32];
-int SP_STATUS_TIMEOUT;
 } // namespace RSP
 
 extern "C"
@@ -53,47 +51,33 @@ extern "C"
 
 	EXPORT unsigned int CALL DoRspCycles(unsigned int cycles)
 	{
-		if (*RSP::rsp.SP_STATUS_REG & (SP_STATUS_HALT | SP_STATUS_BROKE))
-			return 0;
-
 		// We don't know if Mupen from the outside invalidated our IMEM.
-		RSP::cpu.invalidate_imem();
+		if (cycles)
+		{
+			RSP::cpu.get_state().last_instruction_type = RSP::VU_INSTRUCTION;
+			RSP::cpu.get_state().instruction_pipeline = 0;
+			RSP::cpu.invalidate_imem();
+		}
 
 		// Run CPU until we either break or we need to fire an IRQ.
 		RSP::cpu.get_state().pc = *RSP::rsp.SP_PC_REG & 0xfff;
+		RSP::cpu.get_state().instruction_count = 0;
 
 #ifdef INTENSE_DEBUG
 		fprintf(stderr, "RUN TASK: %u\n", RSP::cpu.get_state().pc);
 		log_rsp_mem_parallel();
 #endif
 
-		for (auto &count : RSP::MFC0_count)
-			count = 0;
-
 		while (!(*RSP::rsp.SP_STATUS_REG & SP_STATUS_HALT))
 		{
 			auto mode = RSP::cpu.run();
 			if (mode == RSP::MODE_CHECK_FLAGS && (*RSP::cpu.get_state().cp0.irq & 1))
 				break;
+			if (mode == RSP::MODE_EXIT)
+				break;
 		}
 
-		*RSP::rsp.SP_PC_REG = 0x04001000 | (RSP::cpu.get_state().pc & 0xffc);
-
-		// From CXD4.
-		if (*RSP::rsp.SP_STATUS_REG & SP_STATUS_BROKE)
-			return cycles;
-		else if (*RSP::cpu.get_state().cp0.irq & 1)
-			RSP::rsp.CheckInterrupts();
-		else if (*RSP::rsp.SP_STATUS_REG & SP_STATUS_HALT)
-			return cycles;
-		else if (*RSP::rsp.SP_SEMAPHORE_REG != 0) // Semaphore lock fixes.
-		{
-		}
-		else
-			RSP::SP_STATUS_TIMEOUT = 16; // From now on, wait 16 times, not 0x7fff
-
-		// CPU restarts with the correct SIGs.
-		*RSP::rsp.SP_STATUS_REG &= ~SP_STATUS_HALT;
+		*RSP::rsp.SP_PC_REG = (RSP::cpu.get_state().pc & 0xffc);
 
 		return cycles;
 	}
@@ -156,9 +140,6 @@ extern "C"
 
 		*cr[RSP::CP0_REGISTER_SP_STATUS] = SP_STATUS_HALT;
 		RSP::cpu.get_state().cp0.irq = RSP::rsp.MI_INTR_REG;
-
-		// From CXD4.
-		RSP::SP_STATUS_TIMEOUT = 0x7fff;
 
 		RSP::cpu.set_dmem(reinterpret_cast<uint32_t *>(Rsp_Info.DMEM));
 		RSP::cpu.set_imem(reinterpret_cast<uint32_t *>(Rsp_Info.IMEM));
