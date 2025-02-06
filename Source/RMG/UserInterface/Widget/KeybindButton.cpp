@@ -128,7 +128,7 @@ void KeybindButton::mousePressEvent(QMouseEvent *event)
     {
         this->currentText = this->text();
         this->listenForInput = true;
-        emit this->on_KeybindButton_Clicked(this);
+        emit this->Clicked(this);
     }
     else if (event->button() == Qt::RightButton)
     {
@@ -144,6 +144,6 @@ void KeybindButton::focusOutEvent(QFocusEvent *event)
     }
 
     this->setText(this->currentText);
-    emit this->on_KeybindButton_KeybindingChanged(this);
+    emit this->KeybindingChanged(this);
     this->listenForInput = false;
 }

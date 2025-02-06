@@ -1082,8 +1082,8 @@ void SettingsDialog::commonHotkeySettings(SettingsDialogAction action)
         {
         default:
         case SettingsDialogAction::ConnectSignals:
-            connect(keybinding.button, &KeybindButton::on_KeybindButton_KeybindingChanged, this, &SettingsDialog::on_KeybindButton_KeybindingChanged);
-            connect(keybinding.button, &KeybindButton::on_KeybindButton_Clicked, this, &SettingsDialog::on_KeybindButton_Clicked);
+            connect(keybinding.button, &KeybindButton::KeybindingChanged, this, &SettingsDialog::on_KeybindButton_KeybindingChanged);
+            connect(keybinding.button, &KeybindButton::Clicked, this, &SettingsDialog::on_KeybindButton_Clicked);
             break;
         case SettingsDialogAction::LoadSettings:
             keybinding.button->SetText(QString::fromStdString(CoreSettingsGetStringValue(keybinding.settingId)));

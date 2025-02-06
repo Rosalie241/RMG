@@ -41,8 +41,8 @@ private:
     QString GetCurrentText(void);
 
   signals:
-    void on_KeybindButton_KeybindingChanged(KeybindButton* button);
-    void on_KeybindButton_Clicked(KeybindButton* button);
+    void KeybindingChanged(KeybindButton* button);
+    void Clicked(KeybindButton* button);
 
   protected:
     void keyPressEvent(QKeyEvent *);
