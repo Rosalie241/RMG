@@ -227,7 +227,7 @@ void NetplaySessionDialog::on_webSocket_textMessageReceived(QString message)
 
 void NetplaySessionDialog::on_chatLineEdit_textChanged(QString text)
 {
-    this->sendPushButton->setEnabled(!text.isEmpty() && text.size() <= 256);
+    this->sendPushButton->setEnabled(!text.startsWith(' ') && !text.trimmed().isEmpty() && text.size() <= 256);
     this->sendPushButton->setDefault(this->sendPushButton->isEnabled());
 }
 
