@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 #
-# ./BundleDependencies.sh "./Bin/Release/RMG.exe" "./Bin/Release/" "/mingw64/bin"
+# ./BundleDependencies.sh "./Bin/Release/RMG.exe" "./Bin/Release/"
 #
 
 exe="$1"
 bin_dir="$2"
-path="$3"
+path="/$MSYSTEM/bin"
 
 function copyForOBJ() {
     local deps=`objdump.exe -p $1 | grep 'DLL Name:' | sed -e "s/\t*DLL Name: //g"`
@@ -35,7 +35,8 @@ do
 	copyForOBJ "$file"
 done
 
-windeployqt-qt6 --no-translations "$exe"
+windeployqt-qt6 --exclude-plugins qpdf,qwebp,qgif,qjpeg,qtga,qtuiotouchplugin,qglib,qtiff,qmng,qwbmp,qjp2 \
+				--no-translations "$exe"
 
 # needed by Qt at runtime
 cp "$path/libcrypto-3-x64.dll" "$bin_dir/"
