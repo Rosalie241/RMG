@@ -139,6 +139,8 @@ void RSP_ProcessDList()
 		gSP.matrix.modelViewi = 0;
 		gSP.status[0] = gSP.status[1] = gSP.status[2] = gSP.status[3] = 0;
 		gSP.geometryMode = 0U;
+		memset(&gSP.lookat, 0, sizeof(gSPInfo::lookat));
+		gSP.lookat.xyz[0][Y] = gSP.lookat.xyz[1][X] = 1.0f;
 		gSP.changed |= CHANGED_MATRIX | CHANGED_LIGHT | CHANGED_LOOKAT | CHANGED_GEOMETRYMODE;
 		gSP.tri_num = 0;
 		gSP.cbfd.advancedLighting = false;

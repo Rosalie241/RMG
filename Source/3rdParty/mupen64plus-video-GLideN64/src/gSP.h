@@ -77,11 +77,8 @@ struct gSPInfo
 
 	struct
 	{
-		f32 rgb[2][3];
 		f32 xyz[2][3];
 		f32 i_xyz[2][3];
-		f32 pos_xyzw[2][4];
-		f32 ca[2], la[2], qa[2];
 	} lookat;
 
 	u32 numLights;

@@ -265,9 +265,8 @@ void gDPSetFillColor( u32 c )
 	DebugMsg( DEBUG_NORMAL, "gDPSetFillColor( 0x%08X );\n", c );
 }
 
-void gDPGetFillColor(f32 _fillColor[4])
+static void getFillColor(u32 c, f32 _fillColor[4])
 {
-	const u32 c = gDP.fillColor.color;
 	if (gDP.colorImage.size < 3) {
 		_fillColor[0] = _FIXED2FLOATCOLOR( _SHIFTR( c, 11, 5 ), 5 );
 		_fillColor[1] = _FIXED2FLOATCOLOR( _SHIFTR( c,  6, 5 ), 5 );
@@ -279,6 +278,12 @@ void gDPGetFillColor(f32 _fillColor[4])
 		_fillColor[2] = _FIXED2FLOATCOLOR( _SHIFTR( c,  8, 8 ), 8 );
 		_fillColor[3] = _FIXED2FLOATCOLOR( _SHIFTR( c,  0, 8 ), 8 );
 	}
+}
+
+void gDPGetFillColor(f32 _fillColor[4])
+{
+	const u32 c = gDP.fillColor.color;
+	return getFillColor(c, _fillColor);
 }
 
 void gDPSetPrimColor( u32 m, u32 l, u32 r, u32 g, u32 b, u32 a )
@@ -790,6 +795,100 @@ void gDPSetScissor(u32 mode, s16 xh, s16 yh, s16 xl, s16 yl)
 		gDP.scissor.lrx,
 		gDP.scissor.lry );
 #endif
+}
+
+// This performs the same thing action as gDPFillRectangle but explicitly specifying what to overwrite
+void gDPMemset(u32 value, u32 addr, u32 length)
+{
+	u32 uly = 0U, lry = 0U;
+	u32 fillColor = value;
+
+	auto calculateParams = [&](u32 imageAddr, u32 imageSize, u32 imageWidth)
+	{
+		if (imageSize == G_IM_SIZ_16b)
+			fillColor |= value << 16;
+		else if (imageSize == G_IM_SIZ_8b)
+			fillColor |= (value << 24) | (value << 16) | (value << 8);
+		getFillColor(fillColor, &gDP.rectColor.r);
+
+		// Deduce ulx, uly, lrx, lry from addr, size, and colorImageStart
+		// Currently I am assuming a simple letterbox case - top and bottom are not cleared
+		// ulx = 0;
+		// lrx = screenWidth;
+		const u32 lineSize = imageWidth << imageSize >> 1;
+		uly = (addr - imageAddr) / lineSize;
+		lry = uly + length / lineSize;
+	};
+
+	GraphicsDrawer& drawer = dwnd().getDrawer();
+
+	u32 imageWidth = VI.width;
+	u32 imageHeight = VI.height;
+	const u32 depthImageStart = gDP.depthImageAddress;
+	const u32 depthImageEnd = gDP.depthImageAddress + imageWidth * imageHeight * 2;
+	if (depthImageStart <= addr && addr < depthImageEnd) {
+		ValueKeeper<u32> backupColorImageSize(gDP.colorImage.size, G_IM_SIZ_16b);
+		calculateParams(gDP.depthImageAddress, G_IM_SIZ_16b, imageWidth);
+
+		// HACK: this usually replaces gDPSetColorImage for zb so save zb
+		frameBufferList().saveBuffer(gDP.depthImageAddress, (u16)G_IM_FMT_RGBA, (u16)G_IM_SIZ_16b, (u16)imageWidth, false);
+
+		if (config.generalEmulation.enableFragmentDepthWrite == 0)
+			drawer.clearDepthBuffer();
+		else
+			depthBufferList().setCleared(true);
+
+		if (config.generalEmulation.enableFragmentDepthWrite != 0) {
+			// Pretend that we are drawing the rectangle over ZB with fill mode
+			ValueKeeper<u32> backupColorImageAddress(gDP.colorImage.address, gDP.depthImageAddress);
+			ValueKeeper<u32> backupWidth(gDP.colorImage.width, imageWidth);
+			gDPInfo::OtherMode otherMode = gDP.otherMode;
+			otherMode.cycleType = G_CYC_FILL;
+			ValueKeeper<gDPInfo::OtherMode> backupOtherMode(gDP.otherMode, otherMode);
+			drawer.drawRect(0, uly, imageWidth, lry);
+			frameBufferList().setBufferChanged(f32(lry));
+		}
+	}
+	else if (0 == config.frameBufferEmulation.enable) {
+		// FB clear
+		// This heavily assume "niceness" of developers to bind color buffer before memset...
+		imageWidth = gDP.colorImage.width;
+		const u32 colorImageStart = gDP.colorImage.address;
+		const u32 colorImageEnd = gDP.colorImage.address + ((imageWidth * imageHeight) << gDP.colorImage.size >> 1);
+		if (colorImageStart <= addr && addr < colorImageEnd) {
+			calculateParams(gDP.colorImage.address, gDP.colorImage.size, imageWidth);
+			ValueKeeper<u32> backupFillColor(gDP.fillColor.color, fillColor);
+			gDPInfo::OtherMode otherMode = gDP.otherMode;
+			otherMode.cycleType = G_CYC_FILL;
+			ValueKeeper<gDPInfo::OtherMode> backupOtherMode(gDP.otherMode, otherMode);
+			drawer.drawRect(0, uly, imageWidth, lry);
+		}
+	}
+	else if (const auto pBuffer = frameBufferList().findBuffer(addr)) {
+		imageWidth = pBuffer->m_width;
+		calculateParams(pBuffer->m_startAddress, pBuffer->m_size, imageWidth);
+		{
+			ValueKeeper<u32> backupFillColor(gDP.fillColor.color, fillColor);
+			gDPInfo::OtherMode otherMode = gDP.otherMode;
+			otherMode.cycleType = G_CYC_FILL;
+			ValueKeeper<gDPInfo::OtherMode> backupOtherMode(gDP.otherMode, otherMode);
+			const auto backupCurr = frameBufferList().getCurrent();
+			frameBufferList().setCurrent(pBuffer);
+
+			drawer.drawRect(0, uly, imageWidth, lry);
+
+			pBuffer->setBufferClearParams(gDP.fillColor.color, 0, uly, imageWidth, lry);
+			frameBufferList().setBufferChanged(f32(lry));
+			frameBufferList().setCurrent(backupCurr);
+		}
+	}
+
+	// Memset
+	u32* pDest = reinterpret_cast<u32*>(RDRAM + addr);
+	u32 lengthInDwords = length >> 2;
+	for (u32 i = 0; i < lengthInDwords; i++) {
+		pDest[i] = fillColor;
+	}
 }
 
 void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )

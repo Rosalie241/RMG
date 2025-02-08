@@ -170,19 +170,14 @@ endif(BUILD_INPUT_GCA)
 set(GLIDEN64_DIR "${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-video-GLideN64")
 set(GLIDEN64_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-video-GLideN64")
 set(GLIDEN64_CUSTOM_INI "${GLIDEN64_DIR}/ini/GLideN64.custom.ini")
-if (WIN32)
-    set(GLIDEN64_LIB "${GLIDEN64_BUILD_DIR}/mupen64plus-video-GLideN64.${SO_EXT}")
-else(WIN32)
-    # taken from GLideN64's CMakeLists.txt
-    if("${CMAKE_BUILD_TYPE}" STREQUAL "Release" OR
-        "${CMAKE_BUILD_TYPE}" STREQUAL "MinSizeRel" OR
-        "${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo")
-        set(GLIDEN64_BUILD_TYPE Release)
-    elseif("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-        set(GLIDEN64_BUILD_TYPE Debug)
-    endif()
-    set(GLIDEN64_LIB "${GLIDEN64_BUILD_DIR}/plugin/${GLIDEN64_BUILD_TYPE}/mupen64plus-video-GLideN64.${SO_EXT}")
-endif(WIN32)
+# taken from GLideN64's CMakeLists.txt
+if("${CMAKE_BUILD_TYPE}" STREQUAL "Release" OR
+    "${CMAKE_BUILD_TYPE}" STREQUAL "MinSizeRel" OR
+    "${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo")
+    set(GLIDEN64_BUILD_TYPE Release)
+elseif("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+    set(GLIDEN64_BUILD_TYPE Debug)
+endif()
 
 set(GLIDENUI_TRANSLATIONS_LANGS "de;es;fr;it;ja;pl;pt_BR")
 foreach(LANG ${GLIDENUI_TRANSLATIONS_LANGS})
@@ -216,7 +211,7 @@ ExternalProject_Add(mupen64plus-video-GLideN64
     SOURCE_SUBDIR ./src/
     BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-video-GLideN64
 
-    BUILD_BYPRODUCTS ${GLIDEN64_LIB}
+    BUILD_BYPRODUCTS ${GLIDEN64_BUILD_DIR}/plugin/${GLIDEN64_BUILD_TYPE}/mupen64plus-video-GLideN64.${SO_EXT}
 )
 
 ExternalProject_Add(mupen64plus-video-parallel
