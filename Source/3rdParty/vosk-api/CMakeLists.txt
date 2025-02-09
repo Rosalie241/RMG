@@ -3,8 +3,6 @@
 #
 project(vosk-api)
 
-set(VOSK_API_VERSION "0.3.45")
-
 if (WIN32)
     set(VOSK_API_PLATFORM "win64")
     set(SO_EXT "dll")
@@ -18,7 +16,7 @@ else(WIN32)
 endif(WIN32)
 
 set(VOSK_API_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/vosk-${VOSK_API_PLATFORM}-${VOSK_API_VERSION}/libvosk.${SO_EXT}
+    ${CMAKE_CURRENT_SOURCE_DIR}/vosk-${VOSK_API_PLATFORM}/libvosk.${SO_EXT}
 )
 
 add_library(vosk-api IMPORTED SHARED ${VOSK_API_SOURCES})
