@@ -21,6 +21,7 @@
 #include <QDirIterator>
 #include <QLabel>
 
+#include <RMG-Core/CachedRomHeaderAndSettings.hpp>
 #include <RMG-Core/Directories.hpp>
 #include <RMG-Core/Emulation.hpp>
 #include <RMG-Core/Settings.hpp>
@@ -58,17 +59,38 @@ enum class SettingsDialogTab
 // Exported Functions
 //
 
-SettingsDialog::SettingsDialog(QWidget *parent) : QDialog(parent)
+SettingsDialog::SettingsDialog(QWidget *parent, QString file) : QDialog(parent)
 {
     this->setupUi(this);
 
     this->setIconsForEmulationInfoText();
 
-    this->romOpened = CoreHasRomOpen();
-    if (romOpened)
+    // if ROM is open, we should retrieve the current settings,
+    // if it's not opened but we got a filename, try to 
+    // retrieve cached entries
+    if (CoreHasRomOpen())
     {
-        CoreGetCurrentRomSettings(this->currentGameSettings);
-        CoreGetCurrentDefaultRomSettings(this->defaultGameSettings);
+        std::filesystem::path romPath;
+        // only show game tab once retrieving info succeeds
+        this->showGameSettings = CoreGetRomPath(romPath) && 
+                                    CoreGetRomType(this->currentGameType) &&
+                                    CoreGetCurrentRomHeader(this->currentGameHeader) &&
+                                    CoreGetCurrentRomSettings(this->currentGameSettings) && 
+                                    CoreGetCurrentDefaultRomSettings(this->defaultGameSettings);
+        this->currentGameFile = QString::fromStdU32String(romPath.u32string());
+    }
+    else if (!file.isEmpty())
+    {
+        // only show game tab once retrieving cached entry succeeds
+        this->showGameSettings = CoreGetCachedRomHeaderAndSettings(file.toStdU32String(), this->currentGameType, this->currentGameHeader, this->defaultGameSettings, this->currentGameSettings);
+        if (this->showGameSettings)
+        {
+            this->currentGameFile = file;
+        }
+    }
+
+    if (this->showGameSettings)
+    {
         this->gameSection = this->currentGameSettings.MD5;
 
         // no need to show emulation info text,
@@ -712,7 +734,7 @@ void SettingsDialog::loadDefaultInterfaceNetplaySettings(void)
 void SettingsDialog::saveSettings(void)
 {
     this->saveCoreSettings();
-    if (romOpened)
+    if (this->showGameSettings)
     {
         // clean 'game settings'
         CoreSettingsDeleteSection(this->gameSection);
@@ -786,6 +808,18 @@ void SettingsDialog::saveGameSettings(void)
         CoreSettingsSetValue(SettingsID::Game_SaveType, this->gameSection, saveType);
         CoreSettingsSetValue(SettingsID::Game_CountPerOp, this->gameSection, countPerOp);
         CoreSettingsSetValue(SettingsID::Game_SiDmaDuration, this->gameSection, siDmaDuration);
+    }
+
+    // update cache when needed
+    if (!this->currentGameFile.isEmpty())
+    {
+        CoreRomSettings romSettings = this->currentGameSettings;
+        romSettings.SaveType = saveType;
+        romSettings.DisableExtraMem = disableExtraMem;
+        romSettings.CountPerOp = countPerOp;
+        romSettings.TransferPak = transferPak;
+        romSettings.SiDMADuration = siDmaDuration;
+        CoreUpdateCachedRomHeaderAndSettings(this->currentGameFile.toStdU32String(), this->currentGameType, this->currentGameHeader, this->defaultGameSettings, romSettings);
     }
 }
 

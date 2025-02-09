@@ -2162,9 +2162,10 @@ void MainWindow::on_RomBrowser_RomInformation(QString file)
 
     CoreRomType romType;
     CoreRomHeader romHeader;
+    CoreRomSettings romDefaultSettings;
     CoreRomSettings romSettings;
 
-    if (!CoreGetCachedRomHeaderAndSettings(file.toStdU32String(), romType, romHeader, romSettings))
+    if (!CoreGetCachedRomHeaderAndSettings(file.toStdU32String(), romType, romHeader, romDefaultSettings, romSettings))
     {
         this->showErrorMessage("CoreGetCachedRomHeaderAndSettings() Failed", QString::fromStdString(CoreGetError()));
         return;
@@ -2187,24 +2188,12 @@ void MainWindow::on_RomBrowser_EditGameSettings(QString file)
         this->ui_Widget_RomBrowser->StopRefreshRomList();
     }
 
-    if (!CoreOpenRom(file.toStdU32String()))
-    {
-        this->showErrorMessage("CoreOpenRom() Failed", QString::fromStdString(CoreGetError()));
-        return;
-    }
-
-    Dialog::SettingsDialog dialog(this);
+    Dialog::SettingsDialog dialog(this, file);
     dialog.ShowGameTab();
     dialog.exec();
 
     this->updateActions(false, false);
     this->coreCallBacks->LoadSettings();
-
-    if (!CoreCloseRom())
-    {
-        this->showErrorMessage("CoreCloseRom() Failed", QString::fromStdString(CoreGetError()));
-        return;
-    }
 
     if (isRefreshingRomList)
     {
