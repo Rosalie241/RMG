@@ -29,6 +29,30 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.7.3" date="2025-02-09" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix portable windows version not being able to find update file</li>
+          <li>Fix cheat sections being able to be hidden in Netplay Session dialog</li>
+          <li>Fix 'You're already on the latest version' message being shown as an error</li>
+          <li>Fix empty messages being able to be sent in the Netplay Session dialog</li>
+          <li>Fix flicker in the Netplay Session Browser dialog</li>
+          <li>Fix 'Controller pak' typo in the settings dialog</li>
+          <li>Fix potential crashes when using the dynamic recompiler</li>
+          <li>Add cheats for Spanish translation of 007 The world is not enough, Conker's Bad Fur Day and Goldeneye 007 (thank you Pcgaming575)</li>
+          <li>Add 'View Session' to 'Netplay' menu allowing you to re-open the Netplay Session dialog after closing it when in-game</li>
+          <li>Improve message boxes by expanding the details by default</li>
+          <li>Improve windows build by building in an UCRT64 environment</li>
+          <li>Improve cheats dialog, settings dialog and ROM Information dialog opening time by utilizing the ROM browser cache</li>
+          <li>Implement register mirroring</li>
+          <li>Change 'RMG_WAYLAND' variable name to 'RMG_ALLOW_WAYLAND'</li>
+          <li>Remove 'Sort results after search' setting</li>
+          <li>Remove 'RMG_SHOW_DEBUG_QT_MESSAGES' variable</li>
+          <li>Update GLideN64 and paraLLEl</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.7.2" date="2025-01-31" type="stable">
       <description>
         <p>Changes:</p>
