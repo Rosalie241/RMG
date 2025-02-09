@@ -29,6 +29,17 @@ struct CoreRomSettings
     int32_t CountPerOp;
     // SI DMA duration
     int32_t SiDMADuration;
+
+    bool operator==(const CoreRomSettings& other) const
+    {
+        return GoodName == other.GoodName &&
+                MD5 == other.MD5 &&
+                SaveType == other.SaveType &&
+                DisableExtraMem == other.DisableExtraMem &&
+                TransferPak == other.TransferPak &&
+                CountPerOp == other.CountPerOp &&
+                SiDMADuration == other.SiDMADuration;
+    }
 };
 
 // retrieves the currently opened ROM settings

@@ -29,6 +29,17 @@ struct CoreRomHeader
     std::string Region;
 
     CoreSystemType SystemType;
+
+    bool operator==(const CoreRomHeader& other) const
+    {
+        return CRC1 == other.CRC1 &&
+                CRC2 == other.CRC2 &&
+                CountryCode == other.CountryCode &&
+                Name == other.Name &&
+                GameID == other.GameID &&
+                Region == other.Region &&
+                SystemType == other.SystemType;
+    }
 };
 
 // retrieves the currently opened ROM header

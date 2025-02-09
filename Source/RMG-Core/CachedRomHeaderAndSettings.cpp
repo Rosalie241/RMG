@@ -40,9 +40,9 @@
 #define REGION_LEN 18
 
 #ifdef _WIN32
-#define CACHE_FILE_MAGIC "RMGCoreHeaderAndSettingsCacheWindows_07"
+#define CACHE_FILE_MAGIC "RMGCoreHeaderAndSettingsCacheWindows_08"
 #else // Linux
-#define CACHE_FILE_MAGIC "RMGCoreHeaderAndSettingsCacheLinux_07"
+#define CACHE_FILE_MAGIC "RMGCoreHeaderAndSettingsCacheLinux_08"
 #endif // _WIN32
 #define CACHE_FILE_ITEMS_MAX 10000
 
@@ -58,6 +58,7 @@ struct l_CacheEntry
     CoreRomType     type;
     CoreRomHeader   header;
     CoreRomSettings settings;
+    CoreRomSettings defaultSettings;
 };
 
 //
@@ -160,13 +161,28 @@ void CoreReadRomHeaderAndSettingsCache(void)
         FREAD(cacheEntry.header.CRC1);
         FREAD(cacheEntry.header.CRC2);
         FREAD(cacheEntry.header.CountryCode);
-        // (partial) settings
+        FREAD(cacheEntry.header.SystemType);
+        // shared settings
         FREAD(size);
         FREAD_STR(goodNameBuf, size);
         FREAD(size);
         FREAD_STR(md5Buf, size);
+        cacheEntry.defaultSettings.GoodName = std::string(goodNameBuf);
+        cacheEntry.defaultSettings.MD5 = std::string(md5Buf);
         cacheEntry.settings.GoodName = std::string(goodNameBuf);
         cacheEntry.settings.MD5 = std::string(md5Buf);
+        // default settings
+        FREAD(cacheEntry.defaultSettings.SaveType);
+        FREAD(cacheEntry.defaultSettings.DisableExtraMem);
+        FREAD(cacheEntry.defaultSettings.TransferPak);
+        FREAD(cacheEntry.defaultSettings.CountPerOp);
+        FREAD(cacheEntry.defaultSettings.SiDMADuration);
+        // current settings
+        FREAD(cacheEntry.settings.SaveType);
+        FREAD(cacheEntry.settings.DisableExtraMem);
+        FREAD(cacheEntry.settings.TransferPak);
+        FREAD(cacheEntry.settings.CountPerOp);
+        FREAD(cacheEntry.settings.SiDMADuration);
 
         // add to cached entries
         l_CacheEntries.push_back(cacheEntry);
@@ -248,13 +264,26 @@ bool CoreSaveRomHeaderAndSettingsCache(void)
         FWRITE(cacheEntry.header.CRC1);
         FWRITE(cacheEntry.header.CRC2);
         FWRITE(cacheEntry.header.CountryCode);
-        // (partial) settings
+        FWRITE(cacheEntry.header.SystemType);
+        // shared settings
         size = cacheEntry.settings.GoodName.size();
         FWRITE(size);
         FWRITE_STR(goodNameBuf, size);
         size = cacheEntry.settings.MD5.size();
         FWRITE(size);
         FWRITE_STR(md5Buf, size);
+        // default settings
+        FWRITE(cacheEntry.defaultSettings.SaveType);
+        FWRITE(cacheEntry.defaultSettings.DisableExtraMem);
+        FWRITE(cacheEntry.defaultSettings.TransferPak);
+        FWRITE(cacheEntry.defaultSettings.CountPerOp);
+        FWRITE(cacheEntry.defaultSettings.SiDMADuration);
+        // current settings
+        FWRITE(cacheEntry.settings.SaveType);
+        FWRITE(cacheEntry.settings.DisableExtraMem);
+        FWRITE(cacheEntry.settings.TransferPak);
+        FWRITE(cacheEntry.settings.CountPerOp);
+        FWRITE(cacheEntry.settings.SiDMADuration);
     }
 #undef FWRITE
 #undef FWRITE_STR
@@ -263,7 +292,7 @@ bool CoreSaveRomHeaderAndSettingsCache(void)
     return true;
 }
 
-bool CoreGetCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType& type, CoreRomHeader& header, CoreRomSettings& settings)
+bool CoreGetCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType& type, CoreRomHeader& header, CoreRomSettings& defaultSettings, CoreRomSettings& settings)
 {
     bool ret = false;
     auto iter = get_cache_entry_iter(file);
@@ -276,7 +305,8 @@ bool CoreGetCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType& 
         ret = CoreOpenRom(file) &&
                 CoreGetRomType(type) &&
                 CoreGetCurrentRomHeader(header) &&
-                CoreGetCurrentDefaultRomSettings(settings);
+                CoreGetCurrentDefaultRomSettings(defaultSettings) &&
+                CoreGetCurrentRomSettings(settings);
         // always close ROM
         if (CoreHasRomOpen() && !CoreCloseRom())
         {
@@ -286,7 +316,7 @@ bool CoreGetCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType& 
         // the info successfully
         if (ret)
         {
-            return CoreAddCachedRomHeaderAndSettings(file, type, header, settings);
+            return CoreAddCachedRomHeaderAndSettings(file, type, header, defaultSettings, settings);
         }
         else
         {
@@ -297,10 +327,11 @@ bool CoreGetCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType& 
     type     = (*iter).type;
     header   = (*iter).header;
     settings = (*iter).settings;
+    defaultSettings = (*iter).defaultSettings;
     return true;
 }
 
-bool CoreAddCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType type, CoreRomHeader header, CoreRomSettings settings)
+bool CoreAddCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType type, CoreRomHeader header, CoreRomSettings defaultSettings, CoreRomSettings settings)
 {
     l_CacheEntry cacheEntry;
 
@@ -321,17 +352,49 @@ bool CoreAddCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType t
     cacheEntry.type     = type;
     cacheEntry.header   = header;
     cacheEntry.settings = settings;
+    cacheEntry.defaultSettings = defaultSettings;
 
     l_CacheEntries.push_back(cacheEntry);
     l_CacheEntriesChanged = true;
     return true;
 }
 
-bool CoreUpdateCachedRomHeaderAndSettings(std::filesystem::path file)
+bool CoreUpdateCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType type, CoreRomHeader header, CoreRomSettings defaultSettings, CoreRomSettings settings)
 {
     l_CacheEntry cachedEntry;
+
+    // try to find existing entry with same filename,
+    // when not found, do nothing
+    auto iter = get_cache_entry_iter(file, false);
+    if (iter == l_CacheEntries.end())
+    {
+        return true;
+    }
+
+    cachedEntry = (*iter);
+
+    // check if the cached entry needs to be updated,
+    // if it does, then update the entry
+    if (cachedEntry.type != type ||
+        cachedEntry.header != header ||
+        cachedEntry.defaultSettings != defaultSettings ||
+        cachedEntry.settings != settings)
+    {
+        (*iter).type            = type;
+        (*iter).header          = header;
+        (*iter).defaultSettings = defaultSettings;
+        (*iter).settings        = settings;
+        l_CacheEntriesChanged   = true;
+    }
+
+    return true;
+}
+
+bool CoreUpdateCachedRomHeaderAndSettings(std::filesystem::path file)
+{
     CoreRomType type;
     CoreRomHeader header;
+    CoreRomSettings defaultSettings;
     CoreRomSettings settings;
 
     // try to find existing entry with same filename,
@@ -341,38 +404,17 @@ bool CoreUpdateCachedRomHeaderAndSettings(std::filesystem::path file)
     {
         return true;
     }
-    cachedEntry = (*iter);
 
     // attempt to retrieve required information
     if (!CoreGetRomType(type) ||
         !CoreGetCurrentRomHeader(header) ||
-        !CoreGetCurrentDefaultRomSettings(settings))
+        !CoreGetCurrentDefaultRomSettings(defaultSettings) ||
+        !CoreGetCurrentRomSettings(settings))
     {
         return false;
     }
 
-    // check if the cached entry needs to be updated,
-    // if it does, then update the entry
-    if (/* rom type */
-        cachedEntry.type != type ||
-        /* header */
-        cachedEntry.header.Name        != header.Name   ||
-        cachedEntry.header.Region      != header.Region ||
-        cachedEntry.header.CRC1        != header.CRC1   ||
-        cachedEntry.header.CRC2        != header.CRC2   ||
-        cachedEntry.header.CountryCode != header.CountryCode ||
-        /* settings */
-        cachedEntry.settings.MD5      != settings.MD5 ||
-        cachedEntry.settings.GoodName != settings.GoodName)
-    {
-        (*iter).type              = type;
-        (*iter).header            = header;
-        (*iter).settings.MD5      = settings.MD5;
-        (*iter).settings.GoodName = settings.GoodName;
-        l_CacheEntriesChanged     = true;
-    }
-
-    return true;
+    return CoreUpdateCachedRomHeaderAndSettings(file, type, header, defaultSettings, settings);
 }
 
 bool CoreClearRomHeaderAndSettingsCache(void)
