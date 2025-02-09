@@ -126,8 +126,11 @@ void NetplaySessionBrowserWidget::RefreshDone(void)
 {
     if (this->tableWidget->rowCount() == 0)
     {
-        this->setCurrentWidget(this->emptyWidget);
-        return;
+        this->currentViewWidget = this->emptyWidget;
+    }
+    else
+    {
+        this->currentViewWidget = this->tableWidget;
     }
 
     // prevent flicker by forcing the loading screen
@@ -135,11 +138,12 @@ void NetplaySessionBrowserWidget::RefreshDone(void)
     qint64 elapsedTime = this->refreshTimer.elapsed();
     if (elapsedTime < 300)
     {
-        this->startTimer(300 - elapsedTime);
+        this->showViewWidgetTimerId = this->startTimer(300 - elapsedTime);
         return;
     }
 
-    this->setCurrentWidget(this->tableWidget);
+    this->setCurrentWidget(this->currentViewWidget);
+    emit this->OnRefreshDone();
 }
 
 bool NetplaySessionBrowserWidget::IsCurrentSessionValid()
@@ -167,8 +171,14 @@ bool NetplaySessionBrowserWidget::GetCurrentSession(NetplaySessionData& data)
 
 void NetplaySessionBrowserWidget::timerEvent(QTimerEvent *event)
 {
-    this->killTimer(event->timerId());
-    this->setCurrentWidget(this->tableWidget);
+    if (event->timerId() == this->showViewWidgetTimerId)
+    {
+        this->killTimer(this->showViewWidgetTimerId);
+        this->showViewWidgetTimerId = -1;
+
+        this->setCurrentWidget(this->currentViewWidget);
+        emit this->OnRefreshDone();
+    }
 }
 
 void NetplaySessionBrowserWidget::on_tableWidget_currentItemChanged(QTableWidgetItem* current, QTableWidgetItem* previous)

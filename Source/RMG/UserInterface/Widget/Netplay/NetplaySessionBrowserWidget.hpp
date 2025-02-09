@@ -61,6 +61,7 @@ class NetplaySessionBrowserWidget : public QStackedWidget
     QTableWidget* tableWidget       = nullptr;
     QWidget*      currentViewWidget = nullptr;
 
+    int showViewWidgetTimerId = -1;
     QElapsedTimer refreshTimer;
 
   protected:
@@ -70,6 +71,7 @@ class NetplaySessionBrowserWidget : public QStackedWidget
     void on_tableWidget_currentItemChanged(QTableWidgetItem* current, QTableWidgetItem* previous);
 
   signals:
+    void OnRefreshDone(void);
     void OnSessionChanged(bool valid);
 
 };

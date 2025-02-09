@@ -229,11 +229,6 @@ void NetplaySessionBrowserDialog::on_webSocket_textMessageReceived(QString messa
 
             // we're done refreshing the sessions
             this->sessionBrowserWidget->RefreshDone();
-            // enable refresh button when refreshing is done
-            QPushButton* refreshButton = this->buttonBox->button(QDialogButtonBox::RestoreDefaults);
-            refreshButton->setEnabled(true);
-            // re-validate join button after refresh
-            this->validateJoinButton();
         }
         else
         {
@@ -329,6 +324,13 @@ void NetplaySessionBrowserDialog::on_serverComboBox_currentIndexChanged(int inde
 
 void NetplaySessionBrowserDialog::on_sessionBrowserWidget_OnSessionChanged(bool valid)
 {
+    this->validateJoinButton();
+}
+
+void NetplaySessionBrowserDialog::on_sessionBrowserWidget_OnRefreshDone(void)
+{
+    QPushButton* refreshButton = this->buttonBox->button(QDialogButtonBox::RestoreDefaults);
+    refreshButton->setEnabled(true);
     this->validateJoinButton();
 }
 

@@ -66,7 +66,8 @@ class NetplaySessionBrowserDialog : public QDialog, private Ui::NetplaySessionBr
 
     void on_serverComboBox_currentIndexChanged(int index);
     void on_sessionBrowserWidget_OnSessionChanged(bool valid);
-
+    void on_sessionBrowserWidget_OnRefreshDone(void);
+    
     void on_nickNameLineEdit_textChanged(void);
 
     void on_buttonBox_clicked(QAbstractButton* button);
