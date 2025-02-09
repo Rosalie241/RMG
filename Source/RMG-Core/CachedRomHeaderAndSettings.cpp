@@ -292,21 +292,26 @@ bool CoreSaveRomHeaderAndSettingsCache(void)
     return true;
 }
 
-bool CoreGetCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType& type, CoreRomHeader& header, CoreRomSettings& defaultSettings, CoreRomSettings& settings)
+bool CoreGetCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType* type, CoreRomHeader* header, CoreRomSettings* defaultSettings, CoreRomSettings* settings)
 {
     bool ret = false;
     auto iter = get_cache_entry_iter(file);
     if (iter == l_CacheEntries.end())
     {
+        CoreRomType romType;
+        CoreRomHeader romHeader;
+        CoreRomSettings romSettings;
+        CoreRomSettings romDefaultSettings;
+
         // when we haven't found a cached entry,
         // we're gonna attempt to retrieve the
         // rom header and settings and add it
         // to the cache
         ret = CoreOpenRom(file) &&
-                CoreGetRomType(type) &&
-                CoreGetCurrentRomHeader(header) &&
-                CoreGetCurrentDefaultRomSettings(defaultSettings) &&
-                CoreGetCurrentRomSettings(settings);
+                CoreGetRomType(romType) &&
+                CoreGetCurrentRomHeader(romHeader) &&
+                CoreGetCurrentRomSettings(romSettings) &&
+                CoreGetCurrentDefaultRomSettings(romDefaultSettings);
         // always close ROM
         if (CoreHasRomOpen() && !CoreCloseRom())
         {
@@ -316,7 +321,24 @@ bool CoreGetCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType& 
         // the info successfully
         if (ret)
         {
-            return CoreAddCachedRomHeaderAndSettings(file, type, header, defaultSettings, settings);
+            if (type != nullptr)
+            {
+                *type = romType;
+            }
+            if (header != nullptr)
+            {
+                *header = romHeader;
+            }
+            if (settings != nullptr)
+            {
+                *settings = romSettings;
+            }
+            if (defaultSettings != nullptr)
+            {
+                *defaultSettings = romDefaultSettings;
+            }
+
+            return CoreAddCachedRomHeaderAndSettings(file, romType, romHeader, romDefaultSettings, romSettings);
         }
         else
         {
@@ -324,10 +346,22 @@ bool CoreGetCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType& 
         }
     }
 
-    type     = (*iter).type;
-    header   = (*iter).header;
-    settings = (*iter).settings;
-    defaultSettings = (*iter).defaultSettings;
+    if (type != nullptr)
+    {
+        *type = (*iter).type;
+    }
+    if (header != nullptr)
+    {
+        *header = (*iter).header;
+    }
+    if (settings != nullptr)
+    {
+        *settings = (*iter).settings;
+    }
+    if (defaultSettings != nullptr)
+    {
+        *defaultSettings = (*iter).defaultSettings;
+    }
     return true;
 }
 

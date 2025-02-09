@@ -2160,12 +2160,10 @@ void MainWindow::on_RomBrowser_RomInformation(QString file)
         this->ui_Widget_RomBrowser->StopRefreshRomList();
     }
 
-    CoreRomType romType;
     CoreRomHeader romHeader;
-    CoreRomSettings romDefaultSettings;
     CoreRomSettings romSettings;
 
-    if (!CoreGetCachedRomHeaderAndSettings(file.toStdU32String(), romType, romHeader, romDefaultSettings, romSettings))
+    if (!CoreGetCachedRomHeaderAndSettings(file.toStdU32String(), nullptr, &romHeader, nullptr, &romSettings))
     {
         this->showErrorMessage("CoreGetCachedRomHeaderAndSettings() Failed", QString::fromStdString(CoreGetError()));
         return;

@@ -100,7 +100,7 @@ void RomSearcherThread::searchDirectory(QString directory)
     {
         QString file = roms.at(i);
 
-        if (CoreGetCachedRomHeaderAndSettings(file.toStdU32String(), type, header, defaultSettings, settings))
+        if (CoreGetCachedRomHeaderAndSettings(file.toStdU32String(), &type, &header, nullptr, &settings))
         {
             data.push_back(
             {

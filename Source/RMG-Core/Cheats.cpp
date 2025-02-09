@@ -565,9 +565,7 @@ static bool get_romheader_and_romsettings(const std::filesystem::path& file, Cor
     }
     else
     {
-        CoreRomType romType;
-        CoreRomSettings defaultSettings;
-        return CoreGetCachedRomHeaderAndSettings(file, romType, romHeader, defaultSettings, romSettings);
+        return CoreGetCachedRomHeaderAndSettings(file, nullptr, &romHeader, nullptr, &romSettings);
     }
 
     return true;

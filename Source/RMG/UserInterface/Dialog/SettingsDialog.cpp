@@ -82,7 +82,8 @@ SettingsDialog::SettingsDialog(QWidget *parent, QString file) : QDialog(parent)
     else if (!file.isEmpty())
     {
         // only show game tab once retrieving cached entry succeeds
-        this->showGameSettings = CoreGetCachedRomHeaderAndSettings(file.toStdU32String(), this->currentGameType, this->currentGameHeader, this->defaultGameSettings, this->currentGameSettings);
+        this->showGameSettings = CoreGetCachedRomHeaderAndSettings(file.toStdU32String(), &this->currentGameType, 
+                                    &this->currentGameHeader, &this->defaultGameSettings, &this->currentGameSettings);
         if (this->showGameSettings)
         {
             this->currentGameFile = file;
