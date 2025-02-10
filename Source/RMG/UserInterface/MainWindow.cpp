@@ -1526,10 +1526,7 @@ void MainWindow::on_Action_System_OpenRom(void)
         this->on_Action_System_Pause();
     }
 
-    QString romFile;
-
-    romFile = QFileDialog::getOpenFileName(this, "", "", "N64 ROMs & Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)");
-
+    QString romFile = QFileDialog::getOpenFileName(this, "", "", "N64 ROMs & Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)");
     if (romFile.isEmpty())
     {
         if (isRunning && !isPaused)
@@ -1557,10 +1554,7 @@ void MainWindow::on_Action_System_OpenCombo(void)
         this->on_Action_System_Pause();
     }
 
-    QString cartRom, diskRom;
-
-    cartRom = QFileDialog::getOpenFileName(this, "", "", "N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)");
-    
+    QString cartRom = QFileDialog::getOpenFileName(this, "", "", "N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)");
     if (cartRom.isEmpty())
     {
         if (isRunning && !isPaused)
@@ -1571,8 +1565,7 @@ void MainWindow::on_Action_System_OpenCombo(void)
     }
 
 
-    diskRom = QFileDialog::getOpenFileName(this, "", "", "N64DD Disk Image (*.ndd *.d64)");
-
+    QString diskRom = QFileDialog::getOpenFileName(this, "", "", "N64DD Disk Image (*.ndd *.d64)");
     if (diskRom.isEmpty())
     {
         if (isRunning && !isPaused)
@@ -1670,11 +1663,8 @@ void MainWindow::on_Action_System_Screenshot(void)
 
 void MainWindow::on_Action_System_LimitFPS(void)
 {
-    bool enabled, ret;
-
-    enabled = this->action_System_LimitFPS->isChecked();
-
-    ret = CoreSetSpeedLimiterState(enabled);
+    bool enabled = this->action_System_LimitFPS->isChecked();
+    bool ret = CoreSetSpeedLimiterState(enabled);
 
     if (!ret)
     {
@@ -1716,7 +1706,6 @@ void MainWindow::on_Action_System_SaveAs(void)
     }
 
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save State"), "", tr("Save State (*.state);;Project64 Save State (*.pj);;All Files (*)"));
-
     if (!fileName.isEmpty())
     {
         this->ui_ManuallySavedState = true;
@@ -2140,10 +2129,7 @@ void MainWindow::on_RomBrowser_PlayGameWithSlot(QString file, int slot)
 
 void MainWindow::on_RomBrowser_ChangeRomDirectory(void)
 {
-    QString dir;
-
-    dir = QFileDialog::getExistingDirectory(this);
-
+    QString dir = QFileDialog::getExistingDirectory(this);
     if (!dir.isEmpty())
     {
         CoreSettingsSetValue(SettingsID::RomBrowser_Directory, dir.toStdString());
@@ -2154,7 +2140,6 @@ void MainWindow::on_RomBrowser_ChangeRomDirectory(void)
 void MainWindow::on_RomBrowser_RomInformation(QString file)
 {
     bool isRefreshingRomList = this->ui_Widget_RomBrowser->IsRefreshingRomList();
-
     if (isRefreshingRomList)
     {
         this->ui_Widget_RomBrowser->StopRefreshRomList();
