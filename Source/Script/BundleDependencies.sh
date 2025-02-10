@@ -35,7 +35,7 @@ do
 	copyForOBJ "$file"
 done
 
-windeployqt-qt6 --exclude-plugins qpdf,qwebp,qgif,qjpeg,qtga,qtuiotouchplugin,qglib,qtiff,qmng,qwbmp,qjp2 \
+windeployqt-qt6 --exclude-plugins qpdf,qwebp,qgif,qtga,qtuiotouchplugin,qglib,qtiff,qmng,qwbmp \
 				--no-translations "$exe"
 
 # needed by Qt at runtime
