@@ -2045,7 +2045,7 @@ void MainWindow::on_Emulation_Started(void)
     this->ui_DebugCallbackErrors.clear();
 }
 
-void MainWindow::on_Emulation_Finished(bool ret)
+void MainWindow::on_Emulation_Finished(bool ret, QString error)
 {
     if (!ret)
     {
@@ -2095,7 +2095,7 @@ void MainWindow::on_Emulation_Finished(bool ret)
     // after switching back to the ROM browser
     if (!ret)
     {
-        this->showErrorMessage("EmulationThread::run Failed", this->emulationThread->GetLastError());
+        this->showErrorMessage("EmulationThread::run Failed", error);
     }
 }
 

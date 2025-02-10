@@ -224,7 +224,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     void on_Action_Audio_ToggleVolumeMute(void);
 
     void on_Emulation_Started(void);
-    void on_Emulation_Finished(bool ret);
+    void on_Emulation_Finished(bool ret, QString error);
 
     void on_RomBrowser_PlayGame(QString file);
     void on_RomBrowser_PlayGameWith(CoreRomType type, QString file);

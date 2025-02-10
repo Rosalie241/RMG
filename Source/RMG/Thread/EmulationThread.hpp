@@ -10,8 +10,11 @@
 #ifndef EMULATIONTHREAD_HPP
 #define EMULATIONTHREAD_HPP
 
-#include <QString>
+#ifndef _WIN32
+#include <QDBusInterface>
+#endif
 #include <QSurfaceFormat>
+#include <QString>
 #include <QThread>
 
 enum class VidExtRenderMode
@@ -37,19 +40,24 @@ class EmulationThread : public QThread
 
     void run(void) override;
 
-    QString GetLastError(void);
-
   private:
     QString rom;
     QString disk;
     QString address;
     int port   = -1;
     int player = -1;
-    QString errorMessage;
+#ifndef _WIN32
+    uint32_t dbusCookieId = 0;
+    QDBusInterface* dbusInterface = nullptr;
+#endif
+
+    void resetState(void);
+    void inhibitScreensaver(void);
+    void uninhibitScreensaver(void);
 
   signals:
     void on_Emulation_Started(void);
-    void on_Emulation_Finished(bool);
+    void on_Emulation_Finished(bool ret, QString error);
 
     void on_VidExt_SetupOGL(QSurfaceFormat, QThread *);
     void on_VidExt_ResizeWindow(int, int);

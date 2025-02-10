@@ -8,8 +8,16 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "EmulationThread.hpp"
+
 #include <RMG-Core/Emulation.hpp>
 #include <RMG-Core/Error.hpp>
+
+#ifdef _WIN32
+#include <Windows.h>
+#else // Linux
+#include <QDBusConnection>
+#include <QDBusReply>
+#endif
 
 using namespace Thread;
 
@@ -48,26 +56,64 @@ void EmulationThread::SetNetplay(QString address, int port, int player)
 
 void EmulationThread::run(void)
 {
+    this->inhibitScreensaver();
+
     emit this->on_Emulation_Started();
 
     bool ret = CoreStartEmulation(this->rom.toStdU32String(), this->disk.toStdU32String(), 
                                   this->address.toStdString(), this->port, this->player);
-    if (!ret)
-    {
-        this->errorMessage = QString::fromStdString(CoreGetError());
-    }
 
-    // reset state
+    emit this->on_Emulation_Finished(ret, QString::fromStdString(CoreGetError()));
+
+    this->resetState();
+    this->uninhibitScreensaver();
+}
+
+void EmulationThread::resetState(void)
+{
     this->rom.clear();
     this->disk.clear();
     this->address.clear();
-    this->port = -1;
+    this->port   = -1;
     this->player = -1;
-
-    emit this->on_Emulation_Finished(ret);
 }
 
-QString EmulationThread::GetLastError(void)
+void EmulationThread::inhibitScreensaver(void)
 {
-    return this->errorMessage;
+#ifdef _WIN32
+    SetThreadExecutionState(ES_CONTINUOUS | ES_DISPLAY_REQUIRED);
+#else
+    this->dbusCookieId = 0;
+    this->dbusInterface = new QDBusInterface("org.freedesktop.ScreenSaver", "/org/freedesktop/ScreenSaver", "org.freedesktop.ScreenSaver", QDBusConnection::sessionBus());
+    if (!this->dbusInterface->isValid())
+    {
+        return;
+    }
+
+    QDBusReply<uint32_t> dbusReply = this->dbusInterface->call("Inhibit", "RMG", "game");
+    if (dbusReply.isValid())
+    {
+        this->dbusCookieId = dbusReply.value();
+    }
+#endif
+}
+
+void EmulationThread::uninhibitScreensaver(void)
+{
+#ifdef _WIN32
+    SetThreadExecutionState(ES_CONTINUOUS);
+#else
+    if (this->dbusInterface == nullptr)
+    {
+        return;
+    }
+
+    if (this->dbusCookieId != 0)
+    {
+        this->dbusInterface->call("UnInhibit", this->dbusCookieId);
+    }
+
+    this->dbusInterface->deleteLater();
+    this->dbusInterface = nullptr;
+#endif
 }

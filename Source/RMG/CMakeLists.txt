@@ -7,6 +7,10 @@ set(CMAKE_AUTOUIC ON)
 
 find_package(Qt6 COMPONENTS Gui Widgets Core REQUIRED)
 
+if (NOT WIN32)
+    find_package(Qt6 REQUIRED COMPONENTS DBus)
+endif(NOT WIN32)
+
 if (PORTABLE_INSTALL)
     add_definitions(-DPORTABLE_INSTALL)
 endif(PORTABLE_INSTALL)
@@ -143,6 +147,10 @@ target_include_directories(RMG PRIVATE
 )
 
 target_link_libraries(RMG Qt6::Gui Qt6::Widgets)
+
+if (NOT WIN32)
+    target_link_libraries(RMG Qt6::DBus)
+endif(NOT WIN32)
 
 if (UPDATER)
     target_link_libraries(RMG Qt6::Network)
