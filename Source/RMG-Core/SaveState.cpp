@@ -135,7 +135,7 @@ bool CoreGetSaveStatePath(CoreRomHeader header, CoreRomSettings settings, int sl
 
     // retrieve save state directory
     saveStatePath = CoreGetSaveStateDirectory();
-    saveStatePath += "/";
+    saveStatePath += CORE_DIR_SEPERATOR_STR;
 
     // construct extension
     saveStateExtension = ".st";
