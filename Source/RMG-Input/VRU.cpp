@@ -182,7 +182,7 @@ static bool setup_vosk_model(void)
     {
         std::filesystem::path fullFilePath;
         fullFilePath = CoreGetUserDataDirectory();
-        fullFilePath += "/";
+        fullFilePath += CORE_DIR_SEPERATOR_STR;
         fullFilePath += file;
 
         if (!std::filesystem::exists(fullFilePath))
