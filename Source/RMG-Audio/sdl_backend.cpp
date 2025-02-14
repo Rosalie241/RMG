@@ -334,7 +334,7 @@ void sdl_push_samples(struct sdl_backend* sdl_backend, const void* src, size_t s
 
     /* truncate to full samples */
     if (size & 0x3) {
-        DebugMessage(M64MSG_WARNING, "sdl_push_samples: pushing non full samples: %zu bytes !", size);
+        DebugMessage(M64MSG_VERBOSE, "sdl_push_samples: pushing non full samples: %zu bytes !", size);
     }
     size = (size / 4) * 4;
 
@@ -372,7 +372,7 @@ void sdl_push_samples(struct sdl_backend* sdl_backend, const void* src, size_t s
 
     if (size > available)
     {
-        DebugMessage(M64MSG_WARNING, "sdl_push_samples: pushing %zu bytes, but only %zu available !", size, available);
+        DebugMessage(M64MSG_VERBOSE, "sdl_push_samples: pushing %zu bytes, but only %zu available !", size, available);
     }
 }
 
