@@ -254,11 +254,8 @@ void MainWindow::configureUI(QApplication* app, bool showUI)
 {
     this->setCentralWidget(this->ui_Widgets);
 
-    QString geometry;
-    bool maximized;
-
-    geometry = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::RomBrowser_Geometry));
-    maximized = CoreSettingsGetBoolValue(SettingsID::RomBrowser_Maximized);
+    QString geometry = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::RomBrowser_Geometry));
+    bool maximized = CoreSettingsGetBoolValue(SettingsID::RomBrowser_Maximized);
     if (maximized)
     {
         this->showMaximized();
@@ -1392,7 +1389,7 @@ void MainWindow::on_EventFilter_FileDropped(QDropEvent *event)
 
     bool inEmulation     = (this->ui_Widgets->currentIndex() != 0);
     bool confirmDragDrop = CoreSettingsGetBoolValue(SettingsID::GUI_ConfirmDragDrop);
-    bool refreshRomList = false;
+    bool refreshRomList  = false;
     QString file;
 
     if (inEmulation && confirmDragDrop)
@@ -1526,7 +1523,7 @@ void MainWindow::on_Action_System_OpenRom(void)
         this->on_Action_System_Pause();
     }
 
-    QString romFile = QFileDialog::getOpenFileName(this, "", "", "N64 ROMs & Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)");
+    QString romFile = QFileDialog::getOpenFileName(this, tr("Open N64 ROM or 64DD Disk"), "", "N64 ROMs & Disks (*.n64 *.z64 *.v64 *.ndd *.d64 *.zip *.7z)");
     if (romFile.isEmpty())
     {
         if (isRunning && !isPaused)
@@ -1554,7 +1551,7 @@ void MainWindow::on_Action_System_OpenCombo(void)
         this->on_Action_System_Pause();
     }
 
-    QString cartRom = QFileDialog::getOpenFileName(this, "", "", "N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)");
+    QString cartRom = QFileDialog::getOpenFileName(this, tr("Open N64 ROM"), "", "N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)");
     if (cartRom.isEmpty())
     {
         if (isRunning && !isPaused)
@@ -1565,7 +1562,7 @@ void MainWindow::on_Action_System_OpenCombo(void)
     }
 
 
-    QString diskRom = QFileDialog::getOpenFileName(this, "", "", "N64DD Disk Image (*.ndd *.d64)");
+    QString diskRom = QFileDialog::getOpenFileName(this, tr("Open 64DD Disk"), "", "N64DD Disk Image (*.ndd *.d64 *.zip *.7z)");
     if (diskRom.isEmpty())
     {
         if (isRunning && !isPaused)
@@ -1664,9 +1661,8 @@ void MainWindow::on_Action_System_Screenshot(void)
 void MainWindow::on_Action_System_LimitFPS(void)
 {
     bool enabled = this->action_System_LimitFPS->isChecked();
-    bool ret = CoreSetSpeedLimiterState(enabled);
 
-    if (!ret)
+    if (!CoreSetSpeedLimiterState(enabled))
     {
         this->showErrorMessage("CoreSetSpeedLimiterState() Failed", QString::fromStdString(CoreGetError()));
     }
@@ -2101,11 +2097,11 @@ void MainWindow::on_RomBrowser_PlayGameWith(CoreRomType type, QString file)
     if (type == CoreRomType::Cartridge)
     { // cartridge
         mainRom = file;
-        otherRom = QFileDialog::getOpenFileName(this, "", "", "N64DD Disk Image (*.ndd *.d64 *.zip *.7z)");
+        otherRom = QFileDialog::getOpenFileName(this, tr("Open 64DD Disk"), "", "N64DD Disk Image (*.ndd *.d64 *.zip *.7z)");
     }
     else
     { // disk
-        mainRom = QFileDialog::getOpenFileName(this, "", "", "N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)");
+        mainRom = QFileDialog::getOpenFileName(this, tr("Open N64 ROM"), "", "N64 ROMs (*.n64 *.z64 *.v64 *.zip *.7z)");
         otherRom = file;
     }
 
@@ -2129,7 +2125,7 @@ void MainWindow::on_RomBrowser_PlayGameWithSlot(QString file, int slot)
 
 void MainWindow::on_RomBrowser_ChangeRomDirectory(void)
 {
-    QString dir = QFileDialog::getExistingDirectory(this);
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Select ROM Directory"));
     if (!dir.isEmpty())
     {
         CoreSettingsSetValue(SettingsID::RomBrowser_Directory, dir.toStdString());

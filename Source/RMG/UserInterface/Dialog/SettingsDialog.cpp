@@ -1250,11 +1250,9 @@ void SettingsDialog::hideEmulationInfoText(void)
     }
 }
 
-void SettingsDialog::chooseDirectory(QLineEdit *lineEdit)
+void SettingsDialog::chooseDirectory(QLineEdit *lineEdit, QString caption)
 {
-    QString dir;
-
-    dir = QFileDialog::getExistingDirectory(this);
+    QString dir = QFileDialog::getExistingDirectory(this, caption);
     if (dir.isEmpty())
     {
         return;
@@ -1263,11 +1261,9 @@ void SettingsDialog::chooseDirectory(QLineEdit *lineEdit)
     lineEdit->setText(QDir::toNativeSeparators(dir));
 }
 
-void SettingsDialog::chooseFile(QLineEdit *lineEdit, QString filter, QString md5)
+void SettingsDialog::chooseFile(QLineEdit *lineEdit, QString caption, QString filter, QString md5)
 {
-    QString file;
-
-    file = QFileDialog::getOpenFileName(this, "", "", filter);
+    QString file = QFileDialog::getOpenFileName(this, caption, "", filter);
     if (file.isEmpty())
     {
         return;
@@ -1404,42 +1400,42 @@ void SettingsDialog::on_buttonBox_clicked(QAbstractButton *button)
 
 void SettingsDialog::on_changeScreenShotDirButton_clicked(void)
 {
-    this->chooseDirectory(this->screenshotDirLineEdit);
+    this->chooseDirectory(this->screenshotDirLineEdit, tr("Select Screenshot Directory"));
 }
 
 void SettingsDialog::on_changeSaveStateDirButton_clicked(void)
 {
-    this->chooseDirectory(this->saveStateDirLineEdit);
+    this->chooseDirectory(this->saveStateDirLineEdit, tr("Select Save (State) Directory"));
 }
 
 void SettingsDialog::on_changeSaveSramDirButton_clicked(void)
 {
-    this->chooseDirectory(this->saveSramDirLineEdit);
+    this->chooseDirectory(this->saveSramDirLineEdit, tr("Select Save (SRAM) Directory"));
 }
 
 void SettingsDialog::on_changeUserDataDirButton_clicked(void)
 {
-    this->chooseDirectory(this->userDataDirLineEdit);
+    this->chooseDirectory(this->userDataDirLineEdit, tr("Select User Data Directory"));
 }
 
 void SettingsDialog::on_changeUserCacheDirButton_clicked(void)
 {
-    this->chooseDirectory(this->userCacheDirLineEdit);
+    this->chooseDirectory(this->userCacheDirLineEdit, tr("Select User Cache Directory"));
 }
 
 void SettingsDialog::on_changeJapaneseIPLRomPathButton_clicked(void)
 {
-    this->chooseFile(this->japaneseIPLRomLineEdit, "IPL ROMs (*.n64 *.v64 *.z64)");
+    this->chooseFile(this->japaneseIPLRomLineEdit, tr("Open Japanese Retail 64DD IPL"), "IPL ROMs (*.n64)");
 }
 
 void SettingsDialog::on_changeAmericanIPLRomPathButton_clicked(void)
 {
-    this->chooseFile(this->americanIPLRomLineEdit, "IPL ROMs (*.n64 *.v64 *.z64)");
+    this->chooseFile(this->americanIPLRomLineEdit, tr("Open American Retail 64DD IPL"), "IPL ROMs (*.n64)");
 }
 
 void SettingsDialog::on_changeDevelopmentIPLRomPathButton_clicked(void)
 {
-    this->chooseFile(this->developmentIPLRomLineEdit, "IPL ROMs (*.n64 *.v64 *.z64)");
+    this->chooseFile(this->developmentIPLRomLineEdit, tr("Open Japanese Development 64DD IPL"), "IPL ROMs (*.n64)");
 }
 
 void SettingsDialog::on_changeBackgroundColorButton_clicked(void)
@@ -1600,10 +1596,10 @@ void SettingsDialog::on_coreCpuEmulatorComboBox_currentIndexChanged(int index)
 
 void SettingsDialog::on_changeNTSCPifRomButton_clicked(void)
 {
-    this->chooseFile(this->ntscPifRomLineEdit, "PIF ROMs (*.rom)", "5c124e7948ada85da603a522782940d0");
+    this->chooseFile(this->ntscPifRomLineEdit, tr("Open NTSC PIF ROM"), "PIF ROMs (*.rom)", "5c124e7948ada85da603a522782940d0");
 }
 
 void SettingsDialog::on_changePALPifRomButton_clicked(void)
 {
-    this->chooseFile(this->palPifRomLineEdit, "PIF ROMs (*.rom)", "d4232dc935cad0650ac2664d52281f3a");
+    this->chooseFile(this->palPifRomLineEdit, tr("Open PAL PIF ROM"), "PIF ROMs (*.rom)", "d4232dc935cad0650ac2664d52281f3a");
 }

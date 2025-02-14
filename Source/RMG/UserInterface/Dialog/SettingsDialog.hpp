@@ -126,8 +126,8 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void setIconsForEmulationInfoText(void);
     void hideEmulationInfoText(void);
 
-    void chooseDirectory(QLineEdit *);
-    void chooseFile(QLineEdit *, QString filter = "", QString md5 = "");
+    void chooseDirectory(QLineEdit *, QString caption);
+    void chooseFile(QLineEdit *, QString caption, QString filter = "", QString md5 = "");
     void chooseColor(QPushButton *, QColor *, bool skipChoice = false);
 
     bool applyPluginSettings(void);
