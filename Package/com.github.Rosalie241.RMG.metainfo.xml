@@ -29,6 +29,19 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.7.4" date="2025-02-15" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix covers in JPEG format not loading on windows since v0.7.3</li>
+          <li>Fix RMG not inhibiting the screensaver during emulation</li>
+          <li>Fix not having supported archives listed when opening 64DD Disks through 'Open Combo'</li>
+          <li>Fix RMG-Audio spamming the log with sample warnings</li>
+          <li>Add captions to all file and directory dialogs</li>
+          <li>Improve logging when retrieving OpenGL context fails</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.7.3" date="2025-02-09" type="stable">
       <description>
         <p>Changes:</p>
