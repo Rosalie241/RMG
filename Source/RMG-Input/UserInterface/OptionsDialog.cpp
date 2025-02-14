@@ -105,9 +105,7 @@ void OptionsDialog::on_controllerPakComboBox_currentIndexChanged(int index)
 
 void OptionsDialog::on_changeGameboyRomButton_clicked()
 {
-    QString gameBoyRom;
-    gameBoyRom = QFileDialog::getOpenFileName(this, "", "", "Gameboy ROM (*.gb *.gbc)");
-
+    QString gameBoyRom = QFileDialog::getOpenFileName(this, tr("Open Gameboy ROM"), "", "Gameboy ROM (*.gb *.gbc)");
     if (!gameBoyRom.isEmpty())
     {
         this->gameboyRomLineEdit->setText(QDir::toNativeSeparators(gameBoyRom));
@@ -116,9 +114,7 @@ void OptionsDialog::on_changeGameboyRomButton_clicked()
 
 void OptionsDialog::on_changeGameboySaveButton_clicked()
 {
-    QString gameBoySave;
-    gameBoySave = QFileDialog::getOpenFileName(this, "", "", "Gameboy save (*.sav *.ram)");
-
+    QString gameBoySave = QFileDialog::getOpenFileName(this, tr("Open Gameboy Save"), "", "Gameboy save (*.sav *.ram)");
     if (!gameBoySave.isEmpty())
     {
         this->gameboySaveLineEdit->setText(QDir::toNativeSeparators(gameBoySave));
