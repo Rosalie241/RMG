@@ -55,7 +55,14 @@ static bool VidExt_OglSetup(void)
 
     if (!(*l_OGLWidget)->GetContext()->isValid())
     {
-        CoreAddCallbackMessage(CoreDebugMessageType::Error, "Failed to retrieve valid OpenGL context");
+        if (QSurfaceFormat::defaultFormat().renderableType() == QSurfaceFormat::OpenGLES)
+        {
+            CoreAddCallbackMessage(CoreDebugMessageType::Error, "Failed to retrieve valid OpenGL ES context");
+        }
+        else
+        {
+            CoreAddCallbackMessage(CoreDebugMessageType::Error, "Failed to retrieve valid OpenGL context");
+        }
         return false;
     }
 
