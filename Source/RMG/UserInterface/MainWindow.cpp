@@ -375,7 +375,9 @@ void MainWindow::configureTheme(QApplication* app)
     {
         QString themePath;
         themePath = QString::fromStdString(CoreGetSharedDataDirectory().string());
-        themePath += "/Styles/";
+        themePath += CORE_DIR_SEPERATOR_STR;
+        themePath += "Styles";
+        themePath += CORE_DIR_SEPERATOR_STR;
         themePath += theme;
 
         // use Fusion as a base for the stylesheet

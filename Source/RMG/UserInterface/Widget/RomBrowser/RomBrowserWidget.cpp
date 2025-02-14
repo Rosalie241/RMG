@@ -270,7 +270,8 @@ void RomBrowserWidget::RefreshRomList(void)
     this->menu_PlayGameWithDisk->clear();
 
     this->coversDirectory = QString::fromStdString(CoreGetUserDataDirectory().string());
-    this->coversDirectory += "/Covers";
+    this->coversDirectory += CORE_DIR_SEPERATOR_STR;
+    this->coversDirectory += "Covers";
 
     this->listViewSortSection = CoreSettingsGetIntValue(SettingsID::RomBrowser_ListViewSortSection);
     this->listViewSortOrder   = CoreSettingsGetIntValue(SettingsID::RomBrowser_ListViewSortOrder);
@@ -583,7 +584,7 @@ QIcon RomBrowserWidget::getCurrentCover(QString file, CoreRomHeader header, Core
         for (QString ext : { ".png", ".jpg", ".jpeg" })
         {
             QString coverPath = this->coversDirectory;
-            coverPath += "/";
+            coverPath += CORE_DIR_SEPERATOR_STR;
             coverPath += fixedName;
             coverPath += ext;
 
@@ -1159,7 +1160,7 @@ void RomBrowserWidget::on_Action_SetCoverImage(void)
 
     // construct new file name (for the cover)
     QString newFileName = this->coversDirectory;
-    newFileName += "/";
+    newFileName += CORE_DIR_SEPERATOR_STR;
     newFileName += QString::fromStdString(data.settings.MD5);
     newFileName += ".";
     newFileName += sourceFileInfo.suffix();

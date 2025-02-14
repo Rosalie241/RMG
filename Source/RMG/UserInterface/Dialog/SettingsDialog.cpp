@@ -475,7 +475,9 @@ void SettingsDialog::loadInterfaceGeneralSettings(void)
     // find stylesheets and add them to the UI
     QString directory;
     directory = QString::fromStdString(CoreGetSharedDataDirectory().string());
-    directory += "/Styles/";
+    directory += CORE_DIR_SEPERATOR_STR;
+    directory += "Styles";
+    directory += CORE_DIR_SEPERATOR_STR;
 
     QStringList filter;
     filter << "*.qss";
