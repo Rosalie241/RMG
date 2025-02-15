@@ -363,7 +363,7 @@ static bool open_plugin_config(CorePluginType type, bool romConfig)
 
     if (ret != M64ERR_SUCCESS)
     {
-        error = "CorePluginsOpenConfig (";
+        error = "open_plugin_config (";
         error += get_plugin_type_name(type);
         error += ")->";
         error += functionName;
