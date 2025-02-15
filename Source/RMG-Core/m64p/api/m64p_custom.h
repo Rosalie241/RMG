@@ -16,9 +16,9 @@ extern "C" {
  * https://github.com/mupen64plus/mupen64plus-core/pull/774
  * 
 */
-typedef m64p_error (*ptr_PluginConfig)(void);
+typedef m64p_error (*ptr_PluginConfig)(void*);
 #if defined(M64P_PLUGIN_PROTOTYPES) || defined(M64P_CORE_PROTOTYPES)
-EXPORT m64p_error CALL PluginConfig(void);
+EXPORT m64p_error CALL PluginConfig(void*);
 #endif
 
 /* PluginConfig2(int romConfig)
@@ -28,9 +28,9 @@ EXPORT m64p_error CALL PluginConfig(void);
  *
  * romConfig argument determines if it should open the ROM specific config
 */
-typedef m64p_error (*ptr_PluginConfig2)(int);
+typedef m64p_error (*ptr_PluginConfig2)(void*, int);
 #if defined(M64P_PLUGIN_PROTOTYPES) || defined(M64P_CORE_PROTOTYPES)
-EXPORT m64p_error CALL PluginConfig2(int);
+EXPORT m64p_error CALL PluginConfig2(void*, int);
 #endif
 
 /* PluginConfig2HasRomConfig(void)

@@ -301,7 +301,7 @@ static bool apply_plugin_settings(std::string pluginSettings[4])
     return true;
 }
 
-static bool open_plugin_config(CorePluginType type, bool romConfig)
+static bool open_plugin_config(CorePluginType type, void* parent, bool romConfig)
 {
     std::string error;
     m64p_error ret;
@@ -352,12 +352,12 @@ static bool open_plugin_config(CorePluginType type, bool romConfig)
     // has priority
     if (plugin->Config2 != nullptr)
     {
-        ret = plugin->Config2(romConfig ? 1 : 0);
+        ret = plugin->Config2(parent, romConfig ? 1 : 0);
         functionName = "Config2";
     }
     else
     {
-        ret = plugin->Config();
+        ret = plugin->Config(parent);
         functionName = "Config";
     }
 
@@ -502,9 +502,9 @@ bool CorePluginsHasConfig(CorePluginType type)
             plugin->Config2 != nullptr;
 }
 
-bool CorePluginsOpenConfig(CorePluginType type)
+bool CorePluginsOpenConfig(CorePluginType type, void* parent)
 {
-    return open_plugin_config(type, false);
+    return open_plugin_config(type, parent, false);
 }
 
 bool CorePluginsHasROMConfig(CorePluginType type)
@@ -518,9 +518,9 @@ bool CorePluginsHasROMConfig(CorePluginType type)
             plugin->Config2HasRomConfig() > 0;
 }
 
-bool CorePluginsOpenROMConfig(CorePluginType type)
+bool CorePluginsOpenROMConfig(CorePluginType type, void* parent)
 {
-    return open_plugin_config(type, true);
+    return open_plugin_config(type, parent, true);
 }
 
 bool CoreAttachPlugins(void)
