@@ -2190,17 +2190,9 @@ void MainWindow::on_RomBrowser_EditGameInputSettings(QString file)
         this->ui_Widget_RomBrowser->StopRefreshRomList();
     }
 
-    if (!CoreOpenRom(file.toStdU32String()))
+    if (!CorePluginsOpenROMConfig(CorePluginType::Input, (void*)this, file.toStdU32String()))
     {
-        this->showErrorMessage("CoreOpenRom() Failed", QString::fromStdString(CoreGetError()));
-        return;
-    }
-
-    CorePluginsOpenROMConfig(CorePluginType::Input, (void*)this);
-
-    if (!CoreCloseRom())
-    {
-        this->showErrorMessage("CoreCloseRom() Failed", QString::fromStdString(CoreGetError()));
+        this->showErrorMessage("CorePluginsOpenROMConfig() Failed", QString::fromStdString(CoreGetError()));
         return;
     }
 
