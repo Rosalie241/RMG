@@ -10,6 +10,7 @@
 #ifndef CORE_PLUGINS_HPP
 #define CORE_PLUGINS_HPP
 
+#include <filesystem>
 #include <string>
 #include <vector>
 
@@ -58,7 +59,7 @@ bool CorePluginsHasROMConfig(CorePluginType type);
 
 // opens the ROM config GUI for the currently
 // used plugin of given type
-bool CorePluginsOpenROMConfig(CorePluginType type, void* parent = nullptr);
+bool CorePluginsOpenROMConfig(CorePluginType type, void* parent = nullptr, std::filesystem::path file = "");
 
 // attaches all used plugins
 bool CoreAttachPlugins(void);

@@ -8,9 +8,11 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #define CORE_INTERNAL
+#include "CachedRomHeaderAndSettings.hpp"
 #include "Directories.hpp"
 #include "RomSettings.hpp"
 #include "Emulation.hpp"
+#include "RomHeader.hpp"
 #include "Callback.hpp"
 #include "Settings.hpp"
 #include "Library.hpp"
@@ -301,13 +303,15 @@ static bool apply_plugin_settings(std::string pluginSettings[4])
     return true;
 }
 
-static bool open_plugin_config(CorePluginType type, void* parent, bool romConfig)
+static bool open_plugin_config(CorePluginType type, void* parent, bool romConfig, std::filesystem::path file)
 {
     std::string error;
     m64p_error ret;
     bool resumeEmulation = false;
     m64p::PluginApi* plugin;
     std::string functionName;
+    CoreRomHeader romHeader;
+    CoreRomSettings romSettings;
 
     if (!romConfig && !CorePluginsHasConfig(type))
     {
@@ -337,6 +341,15 @@ static bool open_plugin_config(CorePluginType type, void* parent, bool romConfig
         resumeEmulation = CorePauseEmulation();
     }
 
+    if (romConfig && !file.empty())
+    {
+        // try to retrieve cached rom header & settings
+        if (!CoreGetCachedRomHeaderAndSettings(file, nullptr, &romHeader, nullptr, &romSettings))
+        {
+            return false;
+        }
+    }
+
     plugin = get_plugin(type);
     if (plugin == nullptr)
     {
@@ -352,7 +365,7 @@ static bool open_plugin_config(CorePluginType type, void* parent, bool romConfig
     // has priority
     if (plugin->Config2 != nullptr)
     {
-        ret = plugin->Config2(parent, romConfig ? 1 : 0);
+        ret = plugin->Config2(parent, romConfig ? 1 : 0, &romHeader, &romSettings);
         functionName = "Config2";
     }
     else
@@ -504,7 +517,7 @@ bool CorePluginsHasConfig(CorePluginType type)
 
 bool CorePluginsOpenConfig(CorePluginType type, void* parent)
 {
-    return open_plugin_config(type, parent, false);
+    return open_plugin_config(type, parent, false, "");
 }
 
 bool CorePluginsHasROMConfig(CorePluginType type)
@@ -518,9 +531,9 @@ bool CorePluginsHasROMConfig(CorePluginType type)
             plugin->Config2HasRomConfig() > 0;
 }
 
-bool CorePluginsOpenROMConfig(CorePluginType type, void* parent)
+bool CorePluginsOpenROMConfig(CorePluginType type, void* parent, std::filesystem::path file)
 {
-    return open_plugin_config(type, parent, true);
+    return open_plugin_config(type, parent, true, file);
 }
 
 bool CoreAttachPlugins(void)

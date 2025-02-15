@@ -2,6 +2,9 @@
 #define M64P_CUSTOM_H
 
 #ifdef __cplusplus
+#include <RMG-Core/RomSettings.hpp>
+#include <RMG-Core/RomHeader.hpp>
+
 extern "C" {
 #endif
 
@@ -21,6 +24,9 @@ typedef m64p_error (*ptr_PluginConfig)(void*);
 EXPORT m64p_error CALL PluginConfig(void*);
 #endif
 
+#ifdef __cplusplus // we need C++ for the RMG-Core types
+
+
 /* PluginConfig2(int romConfig)
  *
  * This optional function opens a configuration GUI for the plugin
@@ -28,9 +34,9 @@ EXPORT m64p_error CALL PluginConfig(void*);
  *
  * romConfig argument determines if it should open the ROM specific config
 */
-typedef m64p_error (*ptr_PluginConfig2)(void*, int);
+typedef m64p_error (*ptr_PluginConfig2)(void*, int, CoreRomHeader*, CoreRomSettings*);
 #if defined(M64P_PLUGIN_PROTOTYPES) || defined(M64P_CORE_PROTOTYPES)
-EXPORT m64p_error CALL PluginConfig2(void*, int);
+EXPORT m64p_error CALL PluginConfig2(void*, int, CoreRomHeader*, CoreRomSettings*);
 #endif
 
 /* PluginConfig2HasRomConfig(void)
@@ -43,6 +49,8 @@ typedef int (*ptr_PluginConfig2HasRomConfig)(void);
 #if defined(M64P_PLUGIN_PROTOTYPES) || defined(M64P_CORE_PROTOTYPES)
 EXPORT int CALL PluginConfig2HasRomConfig(void);
 #endif
+
+#endif // __cplusplus
 
 #ifdef __cplusplus
 }
