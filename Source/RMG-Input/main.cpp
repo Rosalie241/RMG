@@ -1086,7 +1086,7 @@ void PluginDebugMessage(int level, std::string message)
 // Custom Plugin Functions
 //
 
-EXPORT m64p_error CALL PluginConfig2(int romConfig)
+EXPORT m64p_error CALL PluginConfig2(void* parent, int romConfig)
 {
     if (l_SDLThread == nullptr)
     {
@@ -1100,7 +1100,7 @@ EXPORT m64p_error CALL PluginConfig2(int romConfig)
 
     l_SDLThread->SetAction(SDLThreadAction::SDLPumpEvents);
 
-    UserInterface::MainDialog dialog(nullptr, l_SDLThread, romConfig);
+    UserInterface::MainDialog dialog((QWidget*)parent, l_SDLThread, romConfig);
     dialog.exec();
 
     // when PluginShutdown() is called during PluginConfig2(),
