@@ -19,6 +19,9 @@
 
 #include "ui_MainDialog.h"
 
+#include <RMG-Core/RomSettings.hpp>
+#include <RMG-Core/RomHeader.hpp>
+
 namespace UserInterface
 {
 class MainDialog : public QDialog, private Ui::MainDialog
@@ -48,7 +51,7 @@ private:
     void closeInputDevice();
 
 public:
-    MainDialog(QWidget *parent, Thread::SDLThread*, bool);
+    MainDialog(QWidget *parent, Thread::SDLThread*, bool, CoreRomHeader, CoreRomSettings);
     ~MainDialog(void);
 
 public slots:

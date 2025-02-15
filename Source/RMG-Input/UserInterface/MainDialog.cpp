@@ -20,7 +20,7 @@ Q_DECLARE_METATYPE(SDLDevice);
 
 using namespace UserInterface;
 
-MainDialog::MainDialog(QWidget* parent, Thread::SDLThread* sdlThread, bool romConfig) : QDialog(parent)
+MainDialog::MainDialog(QWidget* parent, Thread::SDLThread* sdlThread, bool romConfig, CoreRomHeader romHeader, CoreRomSettings romSettings) : QDialog(parent)
 {
     qRegisterMetaType<SDLDevice>();
     
@@ -45,7 +45,7 @@ MainDialog::MainDialog(QWidget* parent, Thread::SDLThread* sdlThread, bool romCo
     for (int i = 0; i < this->tabWidget->count(); i++)
     {
         Widget::ControllerWidget* widget = new Widget::ControllerWidget(this, this->eventFilter);
-        widget->SetOnlyLoadGameProfile(romConfig);
+        widget->SetOnlyLoadGameProfile(romConfig, romHeader, romSettings);
         widget->SetSettingsSection("Player " + QString::number(i + 1), "Rosalie's Mupen GUI - Input Plugin Profile " + QString::number(i));
         widget->LoadSettings();
         this->tabWidget->widget(i)->layout()->addWidget(widget);

@@ -24,6 +24,8 @@ using namespace UserInterface::Widget;
 
 #include <SDL.h>
 
+#include <RMG-Core/RomSettings.hpp>
+#include <RMG-Core/RomHeader.hpp>
 #include <RMG-Core/Settings.hpp>
 
 namespace UserInterface
@@ -110,6 +112,8 @@ private:
     int previousProfileComboBoxIndex = -1;
 
     bool onlyLoadGameProfile = false;
+    CoreRomHeader gameRomHeader;
+    CoreRomSettings gameRomSettings;
 
     HotkeysDialog* currentHotkeysDialog = nullptr;
 
@@ -128,7 +132,7 @@ public:
     void GetCurrentInputDevice(SDLDevice& device, bool ignoreDeviceNotFound = false);
     bool IsPluggedIn();
 
-    void SetOnlyLoadGameProfile(bool value);
+    void SetOnlyLoadGameProfile(bool value, CoreRomHeader romHeader, CoreRomSettings romSettings);
 
     void SetSettingsSection(QString profile, QString section);
     void SetInitialized(bool value);

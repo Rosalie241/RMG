@@ -1454,9 +1454,11 @@ bool ControllerWidget::IsPluggedIn()
     return this->inputDeviceComboBox->currentData().toInt() != (int)InputDeviceType::None;
 }
 
-void ControllerWidget::SetOnlyLoadGameProfile(bool value)
+void ControllerWidget::SetOnlyLoadGameProfile(bool value, CoreRomHeader romHeader, CoreRomSettings romSettings)
 {
     this->onlyLoadGameProfile = value;
+    this->gameRomHeader   = romHeader;
+    this->gameRomSettings = romSettings;
 
     // update UI element
     this->addProfileButton->setDisabled(value);
@@ -1496,10 +1498,11 @@ void ControllerWidget::LoadSettings()
     // try to retrieve the current rom's settings & header,
     // if that succeeds, we know we're ingame
     // and then we'll add a game specific profile to the combobox
-    CoreRomSettings romSettings;
-    CoreRomHeader romHeader;
-    if (CoreGetCurrentRomSettings(romSettings) &&
-        CoreGetCurrentRomHeader(romHeader))
+    CoreRomSettings romSettings = this->gameRomSettings;
+    CoreRomHeader romHeader     = this->gameRomHeader;
+    if (this->onlyLoadGameProfile ||
+        (CoreGetCurrentRomSettings(romSettings) &&
+         CoreGetCurrentRomHeader(romHeader)))
     {
         this->gameSection = section + " Game " + QString::fromStdString(romSettings.MD5);
 
