@@ -1823,22 +1823,22 @@ void MainWindow::on_Action_System_GSButton(void)
 
 void MainWindow::on_Action_Settings_Graphics(void)
 {
-    CorePluginsOpenConfig(CorePluginType::Gfx);
+    CorePluginsOpenConfig(CorePluginType::Gfx, (void*)this);
 }
 
 void MainWindow::on_Action_Settings_Audio(void)
 {
-    CorePluginsOpenConfig(CorePluginType::Audio);
+    CorePluginsOpenConfig(CorePluginType::Audio, (void*)this);
 }
 
 void MainWindow::on_Action_Settings_Rsp(void)
 {
-    CorePluginsOpenConfig(CorePluginType::Rsp);
+    CorePluginsOpenConfig(CorePluginType::Rsp, (void*)this);
 }
 
 void MainWindow::on_Action_Settings_Input(void)
 {
-    CorePluginsOpenConfig(CorePluginType::Input);
+    CorePluginsOpenConfig(CorePluginType::Input, (void*)this);
 }
 
 void MainWindow::on_Action_Settings_Settings(void)
@@ -2196,7 +2196,7 @@ void MainWindow::on_RomBrowser_EditGameInputSettings(QString file)
         return;
     }
 
-    CorePluginsOpenROMConfig(CorePluginType::Input);
+    CorePluginsOpenROMConfig(CorePluginType::Input, (void*)this);
 
     if (!CoreCloseRom())
     {
