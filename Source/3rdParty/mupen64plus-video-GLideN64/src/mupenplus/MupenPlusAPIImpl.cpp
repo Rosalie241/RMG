@@ -115,9 +115,9 @@ m64p_error PluginAPI::PluginStartup(m64p_dynlib_handle _CoreLibHandle, void* Con
 }
 
 #ifdef M64P_GLIDENUI
-m64p_error PluginAPI::PluginConfig()
+m64p_error PluginAPI::PluginConfig(void* parent)
 {
-	Config_DoConfig();
+	Config_DoConfig(parent);
 	return M64ERR_SUCCESS;
 }
 #endif // M64P_GLIDENUI

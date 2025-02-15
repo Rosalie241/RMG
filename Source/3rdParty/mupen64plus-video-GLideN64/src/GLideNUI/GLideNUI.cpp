@@ -21,7 +21,7 @@ inline void initMyResource() { Q_INIT_RESOURCE(icon); }
 inline void cleanMyResource() { Q_CLEANUP_RESOURCE(icon); }
 
 static
-int openConfigDialog(const wchar_t * _strFileName, const wchar_t * _strSharedFileName, const char * _romName, unsigned int _maxMSAALevel, float _maxAnisotropy, bool & _accepted)
+int openConfigDialog(void* parent, const wchar_t * _strFileName, const wchar_t * _strSharedFileName, const char * _romName, unsigned int _maxMSAALevel, float _maxAnisotropy, bool & _accepted)
 {
 	cleanMyResource();
 	initMyResource();
@@ -46,12 +46,20 @@ int openConfigDialog(const wchar_t * _strFileName, const wchar_t * _strSharedFil
 	if (translator.load(getTranslationFile(), strSharedIniFileName))
 		pApp->installTranslator(&translator);
 
-	ConfigDialog w(Q_NULLPTR, Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint, _maxMSAALevel, _maxAnisotropy);
+	/* only use parent when we've found an existing qt instance */
+	QWidget* parentWidget = Q_NULLPTR;
+	if (parent && !pQApp)
+		parentWidget = (QWidget*)parent;
+
+	ConfigDialog w(parentWidget, Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint, _maxMSAALevel, _maxAnisotropy);
 
 	w.setIniPath(strIniFileName, strSharedIniFileName);
 	w.setRomName(_romName);
 	w.setTitle();
-	w.show();
+
+	if (pQApp) {
+		w.show();
+	}
 
 	int res = pQApp ? pQApp->exec() : w.exec();
 	_accepted = w.isAccepted();
@@ -78,13 +86,13 @@ int openAboutDialog(const wchar_t * _strFileName)
 	return a.exec();
 }
 
-bool runConfigThread(const wchar_t * _strFileName, const wchar_t * _strSharedFileName, const char * _romName, unsigned int _maxMSAALevel, unsigned int _maxAnisotropy) {
+bool runConfigThread(void* parent, const wchar_t * _strFileName, const wchar_t * _strSharedFileName, const char * _romName, unsigned int _maxMSAALevel, unsigned int _maxAnisotropy) {
 	bool accepted = false;
 #ifdef RUN_DIALOG_IN_THREAD
 	std::thread configThread(openConfigDialog, _strFileName, _strSharedFileName, _maxMSAALevel, std::ref(accepted));
 	configThread.join();
 #else
-	openConfigDialog(_strFileName, _strSharedFileName, _romName, _maxMSAALevel, _maxAnisotropy, accepted);
+	openConfigDialog(parent, _strFileName, _strSharedFileName, _romName, _maxMSAALevel, _maxAnisotropy, accepted);
 #endif
 	return accepted;
 
@@ -100,9 +108,9 @@ int runAboutThread(const wchar_t * _strFileName) {
 	return 0;
 }
 
-EXPORT bool CALL RunConfig(const wchar_t * _strFileName, const wchar_t * _strUserFileName, const char * _romName, unsigned int _maxMSAALevel, unsigned int _maxAnisotropy)
+EXPORT bool CALL RunConfig(void* parent, const wchar_t * _strFileName, const wchar_t * _strUserFileName, const char * _romName, unsigned int _maxMSAALevel, unsigned int _maxAnisotropy)
 {
-	return runConfigThread(_strFileName, _strUserFileName, _romName, _maxMSAALevel, _maxAnisotropy);
+	return runConfigThread(parent, _strFileName, _strUserFileName, _romName, _maxMSAALevel, _maxAnisotropy);
 }
 
 EXPORT int CALL RunAbout(const wchar_t * _strFileName)

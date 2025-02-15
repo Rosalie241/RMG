@@ -79,7 +79,7 @@ public:
 
 	m64p_error PluginStartup(m64p_dynlib_handle _CoreLibHandle, void * Context, void (*DebugCallback)(void *, int, const char *));
 #ifdef M64P_GLIDENUI
-	m64p_error PluginConfig();
+	m64p_error PluginConfig(void* parent);
 #endif // M64P_GLIDENUI
 	m64p_error PluginShutdown();
 	m64p_error PluginGetVersion(

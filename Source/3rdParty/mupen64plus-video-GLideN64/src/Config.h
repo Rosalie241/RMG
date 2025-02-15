@@ -288,7 +288,7 @@ extern Config config;
 
 void Config_LoadConfig();
 #if defined(M64P_GLIDENUI) || !defined(MUPENPLUSAPI)
-void Config_DoConfig(/*HWND hParent*/);
+void Config_DoConfig(void* parent);
 #endif
 
 bool isHWLightingAllowed();
