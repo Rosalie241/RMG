@@ -175,14 +175,14 @@ EXPORT m64p_error CALL PluginGetVersion(m64p_plugin_type *PluginType, int *Plugi
 
 /* ----------- Custom Functions ------------ */
 
-EXPORT m64p_error CALL PluginConfig(void)
+EXPORT m64p_error CALL PluginConfig(void* parent)
 {
     if (!l_PluginInit)
     {
         return M64ERR_NOT_INIT;
     }
 
-    UserInterface::MainDialog dialog(nullptr);
+    UserInterface::MainDialog dialog((QWidget*)parent);
     dialog.exec();
 
     // apply volume settings
