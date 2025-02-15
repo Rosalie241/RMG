@@ -253,14 +253,14 @@ EXPORT m64p_error CALL PluginGetVersion(m64p_plugin_type *PluginType, int *Plugi
 #ifdef CONFIG_GUI
 extern "C"
 {
-    EXPORT m64p_error CALL PluginConfig(void)
+    EXPORT m64p_error CALL PluginConfig(void* parent)
     {
         if (!plugin_initialized)
         {
             return M64ERR_NOT_INIT;
         }
 
-        UserInterface::MainDialog dialog(nullptr);
+        UserInterface::MainDialog dialog((QWidget*)parent);
         dialog.exec();
 
         return M64ERR_SUCCESS;
