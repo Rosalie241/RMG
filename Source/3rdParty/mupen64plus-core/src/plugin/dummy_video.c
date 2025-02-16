@@ -127,6 +127,3 @@ void dummyvideo_ResizeVideoOutput(int width, int height)
 {
 }
 
-void dummyvideo_FullSync(void)
-{
-}
