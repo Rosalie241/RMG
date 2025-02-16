@@ -1440,7 +1440,7 @@ static bool config_key_exists(std::string section, std::string key)
         return false;
     }
 
-    return std::find(l_keyList.begin(), l_keyList.end(), key) != l_keyList.end();;
+    return std::find(l_keyList.begin(), l_keyList.end(), key) != l_keyList.end();
 }
 
 static bool config_option_set(std::string section, std::string key, m64p_type type, void *value)
