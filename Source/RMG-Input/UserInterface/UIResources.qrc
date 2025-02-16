@@ -13,8 +13,8 @@
   <file>Resource/Controller_Pressed_CButtonLeft.svg</file>
   <file>Resource/Controller_Pressed_CButtonRight.svg</file>
   <file>Resource/Controller_Pressed_Start.svg</file>
-  <file>Resource/Controller_Pressed_LeftTrigger.svg</file>
-  <file>Resource/Controller_Pressed_RightTrigger.svg</file>
+  <file>Resource/Controller_Pressed_LeftShoulder.svg</file>
+  <file>Resource/Controller_Pressed_RightShoulder.svg</file>
   <file>Resource/Controller_Pressed_ZTrigger.svg</file>
   <file>Resource/RMG.png</file>
 </qresource>

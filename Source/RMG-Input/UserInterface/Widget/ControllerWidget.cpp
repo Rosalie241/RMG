@@ -59,8 +59,8 @@ ControllerWidget::ControllerWidget(QWidget* parent, EventFilter* eventFilter) : 
         { N64ControllerButton::CButtonDown, this->cbuttonDownButton },
         { N64ControllerButton::CButtonLeft, this->cbuttonLeftButton  },
         { N64ControllerButton::CButtonRight, this->cbuttonRightButton },
-        { N64ControllerButton::LeftTrigger, this->leftTriggerButton },
-        { N64ControllerButton::RightTrigger, this->rightTriggerButton },
+        { N64ControllerButton::LeftShoulder, this->leftShoulderButton },
+        { N64ControllerButton::RightShoulder, this->rightShoulderButton },
         { N64ControllerButton::ZTrigger, this->zTriggerButton }
     });
 
@@ -85,8 +85,8 @@ ControllerWidget::ControllerWidget(QWidget* parent, EventFilter* eventFilter) : 
         { this->cbuttonDownButton, SettingsID::Input_CButtonDown_InputType, SettingsID::Input_CButtonDown_Name, SettingsID::Input_CButtonDown_Data, SettingsID::Input_CButtonDown_ExtraData },
         { this->cbuttonLeftButton, SettingsID::Input_CButtonLeft_InputType, SettingsID::Input_CButtonLeft_Name, SettingsID::Input_CButtonLeft_Data, SettingsID::Input_CButtonLeft_ExtraData },
         { this->cbuttonRightButton, SettingsID::Input_CButtonRight_InputType, SettingsID::Input_CButtonRight_Name, SettingsID::Input_CButtonRight_Data, SettingsID::Input_CButtonRight_ExtraData },
-        { this->leftTriggerButton, SettingsID::Input_LeftTrigger_InputType, SettingsID::Input_LeftTrigger_Name, SettingsID::Input_LeftTrigger_Data, SettingsID::Input_LeftTrigger_ExtraData },
-        { this->rightTriggerButton, SettingsID::Input_RightTrigger_InputType, SettingsID::Input_RightTrigger_Name, SettingsID::Input_RightTrigger_Data, SettingsID::Input_RightTrigger_ExtraData },
+        { this->leftShoulderButton, SettingsID::Input_LeftShoulder_InputType, SettingsID::Input_LeftShoulder_Name, SettingsID::Input_LeftShoulder_Data, SettingsID::Input_LeftShoulder_ExtraData },
+        { this->rightShoulderButton, SettingsID::Input_RightShoulder_InputType, SettingsID::Input_RightShoulder_Name, SettingsID::Input_RightShoulder_Data, SettingsID::Input_RightShoulder_ExtraData },
         { this->zTriggerButton, SettingsID::Input_ZTrigger_InputType, SettingsID::Input_ZTrigger_Name, SettingsID::Input_ZTrigger_Data, SettingsID::Input_ZTrigger_ExtraData },
         { this->analogStickUpButton, SettingsID::Input_AnalogStickUp_InputType, SettingsID::Input_AnalogStickUp_Name, SettingsID::Input_AnalogStickUp_Data, SettingsID::Input_AnalogStickUp_ExtraData },
         { this->analogStickDownButton, SettingsID::Input_AnalogStickDown_InputType, SettingsID::Input_AnalogStickDown_Name, SettingsID::Input_AnalogStickDown_Data, SettingsID::Input_AnalogStickDown_ExtraData },
@@ -154,8 +154,8 @@ ControllerWidget::ControllerWidget(QWidget* parent, EventFilter* eventFilter) : 
         this->cbuttonLeftButton,
         this->cbuttonRightButton,
         // triggers
-        this->leftTriggerButton,
-        this->rightTriggerButton,
+        this->leftShoulderButton,
+        this->rightShoulderButton,
         this->zTriggerButton,
         // buttons
         this->aButton,
@@ -203,8 +203,8 @@ void ControllerWidget::initializeMappingButtons()
         { this->cbuttonLeftButton, this->cbuttonLeftAddButton, this->cbuttonLeftRemoveButton },
         { this->cbuttonRightButton, this->cbuttonRightAddButton, this->cbuttonRightRemoveButton },
         // triggers
-        { this->leftTriggerButton, this->leftTriggerAddButton, this->leftTriggerRemoveButton },
-        { this->rightTriggerButton, this->rightTriggerAddButton, this->rightTriggerRemoveButton },
+        { this->leftShoulderButton, this->leftShoulderAddButton, this->leftShoulderRemoveButton },
+        { this->rightShoulderButton, this->rightShoulderAddButton, this->rightShoulderRemoveButton },
         { this->zTriggerButton, this->zTriggerAddButton, this->zTriggerRemoveButton },
         // buttons
         { this->aButton, this->aAddButton, this->aRemoveButton },
@@ -373,8 +373,8 @@ void ControllerWidget::setPluggedIn(bool value)
         this->cbuttonRightButton, this->cbuttonRightAddButton, this->cbuttonRightRemoveButton,
         // triggers
         this->analogStickGroupBox,
-        this->leftTriggerButton, this->leftTriggerAddButton, this->leftTriggerRemoveButton,
-        this->rightTriggerButton, this->rightTriggerAddButton, this->rightTriggerRemoveButton,
+        this->leftShoulderButton, this->leftShoulderAddButton, this->leftShoulderRemoveButton,
+        this->rightShoulderButton, this->rightShoulderAddButton, this->rightShoulderRemoveButton,
         this->zTriggerButton, this->zTriggerAddButton, this->zTriggerRemoveButton,
         // buttons
         this->buttonsGroupBox,

@@ -111,8 +111,8 @@ struct InputProfile
     InputMapping Button_CButtonDown;
     InputMapping Button_CButtonLeft;
     InputMapping Button_CButtonRight;
-    InputMapping Button_LeftTrigger;
-    InputMapping Button_RightTrigger;
+    InputMapping Button_LeftShoulder;
+    InputMapping Button_RightShoulder;
     InputMapping Button_ZTrigger;
 
     // analog stick
@@ -342,8 +342,8 @@ static void load_settings(void)
         LOAD_INPUT_MAPPING(Button_CButtonDown,  Input_CButtonDown);
         LOAD_INPUT_MAPPING(Button_CButtonLeft,  Input_CButtonLeft);
         LOAD_INPUT_MAPPING(Button_CButtonRight, Input_CButtonRight);
-        LOAD_INPUT_MAPPING(Button_LeftTrigger,  Input_LeftTrigger);
-        LOAD_INPUT_MAPPING(Button_RightTrigger, Input_RightTrigger);
+        LOAD_INPUT_MAPPING(Button_LeftShoulder,  Input_LeftShoulder);
+        LOAD_INPUT_MAPPING(Button_RightShoulder, Input_RightShoulder);
         LOAD_INPUT_MAPPING(Button_ZTrigger,     Input_ZTrigger);
         LOAD_INPUT_MAPPING(AnalogStick_Up,      Input_AnalogStickUp);
         LOAD_INPUT_MAPPING(AnalogStick_Down,    Input_AnalogStickDown);
@@ -1274,8 +1274,8 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
     Keys->D_CBUTTON    = get_button_state(profile, &profile->Button_CButtonDown);
     Keys->L_CBUTTON    = get_button_state(profile, &profile->Button_CButtonLeft);
     Keys->R_CBUTTON    = get_button_state(profile, &profile->Button_CButtonRight);
-    Keys->L_TRIG       = get_button_state(profile, &profile->Button_LeftTrigger);
-    Keys->R_TRIG       = get_button_state(profile, &profile->Button_RightTrigger);
+    Keys->L_TRIG       = get_button_state(profile, &profile->Button_LeftShoulder);
+    Keys->R_TRIG       = get_button_state(profile, &profile->Button_RightShoulder);
     Keys->Z_TRIG       = get_button_state(profile, &profile->Button_ZTrigger);
 
     double inputX = 0, inputY = 0;

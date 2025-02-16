@@ -132,8 +132,8 @@ void ControllerImageWidget::paintEvent(QPaintEvent *event)
         { N64ControllerButton::CButtonDown, ":Resource/Controller_Pressed_CButtonDown.svg" },
         { N64ControllerButton::CButtonLeft, ":Resource/Controller_Pressed_CButtonLeft.svg" },
         { N64ControllerButton::CButtonRight, ":Resource/Controller_Pressed_CButtonRight.svg" },
-        { N64ControllerButton::LeftTrigger, ":Resource/Controller_Pressed_LeftTrigger.svg" },
-        { N64ControllerButton::RightTrigger, ":Resource/Controller_Pressed_RightTrigger.svg" },
+        { N64ControllerButton::LeftShoulder, ":Resource/Controller_Pressed_LeftShoulder.svg" },
+        { N64ControllerButton::RightShoulder, ":Resource/Controller_Pressed_RightShoulder.svg" },
         { N64ControllerButton::ZTrigger, ":Resource/Controller_Pressed_ZTrigger.svg" }
     };
 

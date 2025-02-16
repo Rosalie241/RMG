@@ -27,8 +27,8 @@ enum class N64ControllerButton
     CButtonDown,
     CButtonLeft,
     CButtonRight,
-    LeftTrigger,
-    RightTrigger,
+    LeftShoulder,
+    RightShoulder,
     ZTrigger,
     Invalid
 };
