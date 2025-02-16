@@ -706,7 +706,7 @@ static double get_axis_state(InputProfile* profile, const InputMapping* inputMap
         {
             case InputType::GamepadButton:
             {
-                button_state |= SDL_GameControllerGetButton(profile->InputDevice.GetGameControllerHandle(), (SDL_GameControllerButton)data);;
+                button_state |= SDL_GameControllerGetButton(profile->InputDevice.GetGameControllerHandle(), (SDL_GameControllerButton)data);
             } break;
             case InputType::GamepadAxis:
             {
@@ -721,7 +721,7 @@ static double get_axis_state(InputProfile* profile, const InputMapping* inputMap
             } break;
             case InputType::JoystickButton:
             {
-                button_state |= SDL_JoystickGetButton(profile->InputDevice.GetJoystickHandle(), data);;
+                button_state |= SDL_JoystickGetButton(profile->InputDevice.GetJoystickHandle(), data);
             } break;
             case InputType::JoystickHat:
             {
