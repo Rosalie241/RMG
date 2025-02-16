@@ -29,6 +29,19 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.7.5" date="2025-02-16" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix incorrect error message in RMG-Core</li>
+          <li>Fix possible crash on Windows (thank you Thirteen1355 for assisting with debugging)</li>
+          <li>Fix missing space between 'L-Shoulder' and 'R-Shoulder' in RMG-Input</li>
+          <li>Fix 'L-Trigger' and 'R-Trigger' names by changing it to 'L-Shoulder' and 'R-Shoulder' in RMG-Input</li>
+          <li>Improve opening time of 'Edit Game Input Settings' by utilizing the ROM browser cache</li>
+          <li>Improve configuration dialogs from plugins by setting the parent window</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.7.4" date="2025-02-15" type="stable">
       <description>
         <p>Changes:</p>
