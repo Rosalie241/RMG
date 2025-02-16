@@ -32,10 +32,6 @@ bool vk_divot_filter, vk_gamma_dither;
 bool vk_vi_aa, vk_vi_scale, vk_dither_filter;
 bool vk_interlacing;
 
-static uint64_t rdp_sync_signal;
-static uint64_t last_frame_counter;
-static uint64_t frame_counter;
-
 static const unsigned cmd_len_lut[64] = {
 	1, 1, 1, 1, 1, 1, 1, 1, 4, 6, 12, 14, 12, 14, 20, 22,
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,  1,  1,  1,  1,  1,
@@ -267,7 +263,6 @@ void vk_rasterize()
 	render_frame(device);
 	(*render_callback)(1);
 	wsi->end_frame();
-	frame_counter++;
 	wsi->begin_frame();
 }
 
@@ -473,13 +468,6 @@ void vk_resize()
 	platform->do_resize();
 }
 
-
-void vk_full_sync()
-{
-	if (vk_synchronous && rdp_sync_signal)
-		processor->wait_for_timeline(rdp_sync_signal);
-}
-
 void vk_destroy()
 {
 	if (wsi)
@@ -572,8 +560,5 @@ bool vk_init()
 	processor->set_quirks(quirks);
 
 	wsi->begin_frame();
-
-	last_frame_counter = 0;
-	frame_counter = 0;
 	return true;
 }
