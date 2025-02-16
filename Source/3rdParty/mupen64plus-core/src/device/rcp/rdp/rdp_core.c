@@ -42,7 +42,6 @@ static void update_dpc_status(struct rdp_core* dp, uint32_t w)
 
         if (dp->do_on_unfreeze & DELAY_DP_INT)
         {
-            gfx.fullSync();
             dp->mi->r4300->cp0.interrupt_unsafe_state &= ~INTR_UNSAFE_RDP;
 
             signal_rcp_interrupt(dp->mi, MI_INTR_DP);
@@ -195,8 +194,6 @@ void write_dps_regs(void* opaque, uint32_t address, uint32_t value, uint32_t mas
 void rdp_interrupt_event(void* opaque)
 {
     struct rdp_core* dp = (struct rdp_core*)opaque;
-
-    gfx.fullSync();
 
     dp->mi->r4300->cp0.interrupt_unsafe_state &= ~INTR_UNSAFE_RDP;
     raise_rcp_interrupt(dp->mi, MI_INTR_DP);
