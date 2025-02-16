@@ -21,11 +21,19 @@ LogDialog::LogDialog(QWidget *parent) : QDialog(parent)
     this->setWindowIcon(QIcon(":Resource/RMG.png"));
     this->setWindowFlags(this->windowFlags() | Qt::WindowMinimizeButtonHint);
 
-    QFont font("monospace");
+    try
+    { // for some reason on Windows 10 for some users, 
+      // ->setFont() will crash in DwriteCreateFactory,
+      // so catch the exception and do nothing
+        QFont font("monospace");
 #ifdef _WIN32
-    font.setStyleHint(QFont::TypeWriter);
+        font.setStyleHint(QFont::TypeWriter);
 #endif
-    this->plainTextEdit->setFont(font);
+        this->plainTextEdit->setFont(font);
+    }
+    catch (...)
+    {
+    }
 }
 
 LogDialog::~LogDialog(void)
