@@ -807,28 +807,28 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::Input_CButtonRight_ExtraData:
         setting = {"", "CButtonRight_ExtraData"};
         break;
-    case SettingsID::Input_LeftTrigger_InputType:
+    case SettingsID::Input_LeftShoulder_InputType:
         setting = {"", "LeftTrigger_InputType"};
         break;
-    case SettingsID::Input_LeftTrigger_Name:
+    case SettingsID::Input_LeftShoulder_Name:
         setting = {"", "LeftTrigger_Name"};
         break;
-    case SettingsID::Input_LeftTrigger_Data:
+    case SettingsID::Input_LeftShoulder_Data:
         setting = {"", "LeftTrigger_Data"};
         break;
-    case SettingsID::Input_LeftTrigger_ExtraData:
+    case SettingsID::Input_LeftShoulder_ExtraData:
         setting = {"", "LeftTrigger_ExtraData"};
         break;
-    case SettingsID::Input_RightTrigger_InputType:
+    case SettingsID::Input_RightShoulder_InputType:
         setting = {"", "RightTrigger_InputType"};
         break;
-    case SettingsID::Input_RightTrigger_Name:
+    case SettingsID::Input_RightShoulder_Name:
         setting = {"", "RightTrigger_Name"};
         break;
-    case SettingsID::Input_RightTrigger_Data:
+    case SettingsID::Input_RightShoulder_Data:
         setting = {"", "RightTrigger_Data"};
         break;
-    case SettingsID::Input_RightTrigger_ExtraData:
+    case SettingsID::Input_RightShoulder_ExtraData:
         setting = {"", "RightTrigger_ExtraData"};
         break;
     case SettingsID::Input_ZTrigger_InputType:
