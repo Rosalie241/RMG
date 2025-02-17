@@ -464,7 +464,8 @@ void vk_resize()
 
 void vk_destroy()
 {
-	wsi->end_frame();
+	if (wsi)
+		wsi->end_frame();
 
 	processor.reset();
 	wsi.reset();
@@ -495,7 +496,10 @@ bool vk_init()
 	wsi->set_present_mode(window_vsync ? Vulkan::PresentMode::SyncToVBlank : Vulkan::PresentMode::UnlockedMaybeTear);
 	wsi->set_backbuffer_format(Vulkan::BackbufferFormat::UNORM);
 	if (!wsi->init_simple(1, handles))
+	{
+		vk_destroy();
 		return false;
+	}
 
 	uintptr_t aligned_rdram = reinterpret_cast<uintptr_t>(gfx.RDRAM);
 	uintptr_t offset = 0;
@@ -507,6 +511,7 @@ bool vk_init()
 
 		if (offset)
 		{
+			vk_destroy();
 			return false;
 		}
 		aligned_rdram -= offset;
@@ -539,7 +544,7 @@ bool vk_init()
 											 offset, rdram_size, rdram_size / 2, flags));
 	if (!processor->device_is_supported())
 	{
-		processor.reset();
+		vk_destroy();
 		return false;
 	}
 
