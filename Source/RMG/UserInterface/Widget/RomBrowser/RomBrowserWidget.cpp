@@ -177,8 +177,8 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->contextMenu = new QMenu(this);
     this->action_PlayGame = new QAction(this);
     this->action_PlayGameWith = new QAction(this);
-    this->menu_PlayGameWithDisk = new QMenu(this);
-    this->menu_PlayGameWithSlot = new QMenu(this);
+    this->menu_PlayGameWithDisk = new QMenu(this->contextMenu);
+    this->menu_PlayGameWithSlot = new QMenu(this->contextMenu);
     this->action_RefreshRomList = new QAction(this);
     this->action_OpenRomDirectory = new QAction(this);
     this->action_ChangeRomDirectory = new QAction(this);
@@ -191,7 +191,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     this->action_RemoveCoverImage = new QAction(this);
 
     // define columns menu and its contents
-    this->menu_Columns = new QMenu(this);
+    this->menu_Columns = new QMenu(this->contextMenu);
     this->action_ColumnsMenuEntry = new QAction(this);
 
     // configure context menu contents
