@@ -189,5 +189,5 @@ void InputDevice::on_SDLThread_DeviceSearchFinished(void)
     }
 
     this->isOpeningDevice = false;
-    this->hasOpenDevice = this->joystick != nullptr || this->gameController == nullptr;
+    this->hasOpenDevice = this->joystick != nullptr || this->gameController != nullptr;
 }
