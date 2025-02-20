@@ -1232,6 +1232,7 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
     }
 #endif // VRU
 
+#if 0 // TODO: fix hotplug support
     // check if device has been disconnected,
     // if it has, try to open it again,
     // only do this every 2 seconds to prevent lag
@@ -1254,6 +1255,7 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
             }
         }
     }
+#endif
 
     // when we've matched a hotkey,
     // we don't need to check anything
