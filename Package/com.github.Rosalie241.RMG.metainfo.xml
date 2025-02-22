@@ -29,6 +29,15 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.7.6" date="2025-02-22" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix possible crash in parallel when vulkan initialization fails</li>
+          <li>Remove support for hotplugging controllers while in-game in RMG-Input</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.7.5" date="2025-02-16" type="stable">
       <description>
         <p>Changes:</p>

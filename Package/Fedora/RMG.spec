@@ -1,5 +1,5 @@
 Name:    RMG       
-Version: 0.7.5
+Version: 0.7.6
 Release: %autorelease
 Summary: Rosalie's Mupen GUI 
 
