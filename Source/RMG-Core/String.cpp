@@ -22,7 +22,7 @@ std::string CoreLowerString(std::string str)
     std::transform(resultString.begin(), resultString.end(), resultString.begin(), 
         [](unsigned char c)
         { 
-            return std::tolower(c); 
+            return (c >= 'A' && c <= 'Z') ? (c + 'a' - 'A') : c;
         }
     );
 
