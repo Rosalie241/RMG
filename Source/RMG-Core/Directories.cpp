@@ -42,6 +42,8 @@ static std::filesystem::path get_exe_directory(void)
     static std::filesystem::path directory;
 #ifdef _WIN32
     wchar_t buffer[MAX_PATH] = {0};
+#else
+    std::error_code errorCode;
 #endif // _WIN32
 
     if (!directory.empty())
@@ -57,13 +59,10 @@ static std::filesystem::path get_exe_directory(void)
     }
     directory = std::filesystem::path(buffer).parent_path();
 #else // _WIN32
-    try
+    directory =  std::filesystem::canonical("/proc/self/exe", errorCode).parent_path();
+    if (errorCode)
     {
-        directory =  std::filesystem::canonical("/proc/self/exe").parent_path();
-    }
-    catch (...)
-    { // fail silently and fallback to current path
-        std::cerr << "get_exe_directory: std::filesystem::canonical(\"/proc/self/exe\") threw an exception!" << std::endl;
+        std::cerr << "get_exe_directory: std::filesystem::canonical(\"/proc/self/exe\") failed: " << errorCode.message() << std::endl;
         std::terminate();
     }
 #endif // _WIN32
@@ -133,6 +132,7 @@ static std::filesystem::path get_var_directory(std::string var, std::string appe
 bool CoreCreateDirectories(void)
 {
     std::string error;
+    std::error_code errorCode;
 
     std::filesystem::path directories[] = 
     {
@@ -151,15 +151,13 @@ bool CoreCreateDirectories(void)
 
     for (const std::filesystem::path& directory : directories)
     {
-        try
-        {
-            std::filesystem::create_directories(directory);
-        }
-        catch (...)
+        if (!std::filesystem::is_directory(directory) &&
+            !std::filesystem::create_directories(directory, errorCode))
         {
             error = "CoreCreateDirectories Failed: cannot create the '";
             error += directory.string();
-            error += "' directory!";
+            error += "' directory: ";
+            error += errorCode.message();
             CoreSetError(error);
             return false;
         }

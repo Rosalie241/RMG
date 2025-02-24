@@ -146,16 +146,12 @@ bool CoreSetupMediaLoader(void)
 
 void CoreResetMediaLoader(void)
 {
+    std::error_code errorCode;
+
     // attempt to remove extracted disk file
     if (l_HasExtractedDisk && !l_DdRomFile.empty())
     {
-        try
-        {
-            std::filesystem::remove(l_DdDiskFile);
-        }
-        catch (...)
-        {
-        }
+        std::filesystem::remove(l_DdDiskFile, errorCode);
     }
 
     l_HasExtractedDisk = false;
@@ -165,6 +161,7 @@ void CoreResetMediaLoader(void)
 
 void CoreMediaLoaderSetDiskFile(std::filesystem::path disk)
 {
+    std::error_code error_code;
     std::vector<char> buf;
     std::string file_extension;
 
@@ -190,19 +187,14 @@ void CoreMediaLoaderSetDiskFile(std::filesystem::path disk)
         }
 
         disk = CoreGetUserCacheDirectory();
-        disk += "/extracted_disks/";
+        disk += CORE_DIR_SEPERATOR_STR;
+        disk += "extracted_disks";
+        disk += CORE_DIR_SEPERATOR_STR;
         disk += extracted_file.filename();
 
         // attempt to create extraction directory
-        try
-        {
-            if (!std::filesystem::exists(disk.parent_path()) &&
-                !std::filesystem::create_directory(disk.parent_path()))
-            {
-                throw std::exception();
-            }
-        }
-        catch (...)
+        if (!std::filesystem::is_directory(disk.parent_path(), error_code) &&
+            !std::filesystem::create_directory(disk.parent_path(), error_code))
         {
             return;
         }

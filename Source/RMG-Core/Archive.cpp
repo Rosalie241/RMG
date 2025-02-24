@@ -436,6 +436,7 @@ bool CoreUnzip(std::filesystem::path file, std::filesystem::path path)
     std::string error;
     std::filesystem::path targetPath;
     std::filesystem::path fileNamePath;
+    std::error_code errorCode;
 
     unzFile           zipFile;
     unz_global_info   zipInfo;
@@ -491,20 +492,14 @@ bool CoreUnzip(std::filesystem::path file, std::filesystem::path path)
         if (fileNamePath.has_filename() &&
             fileNamePath.has_parent_path())
         { // create parent directories
-            try
-            {
-                if (!std::filesystem::is_directory(targetPath.parent_path()) && 
-                    !std::filesystem::create_directories(targetPath.parent_path()))
-                {
-                    throw std::exception();
-                }
-            }
-            catch (...)
+            if (!std::filesystem::is_directory(targetPath.parent_path(), errorCode) && 
+                !std::filesystem::create_directories(targetPath.parent_path(), errorCode))
             {
                 unzClose(zipFile);
                 error = "CoreUnzip: std::filesystem::create_directory(";
                 error += targetPath.string();
-                error += ") Failed!";
+                error += ") Failed: ";
+                error += errorCode.message();
                 CoreSetError(error);
                 return false;
             }

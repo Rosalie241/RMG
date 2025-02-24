@@ -131,6 +131,7 @@ static std::filesystem::path get_user_cheat_file_path(CoreRomHeader romHeader, C
 {
     std::filesystem::path oldCheatFilePath;
     std::filesystem::path cheatFilePath;
+    std::error_code errorCode;
 
     oldCheatFilePath = CoreGetUserDataDirectory();
     oldCheatFilePath += CORE_DIR_SEPERATOR_STR;
@@ -146,16 +147,9 @@ static std::filesystem::path get_user_cheat_file_path(CoreRomHeader romHeader, C
 
     // try to make the user cheats directory
     // if it doesn't exist yet
-    try
+    if (!std::filesystem::is_directory(cheatFilePath.parent_path(), errorCode))
     {
-        if (!std::filesystem::is_directory(cheatFilePath.parent_path()))
-        {
-            std::filesystem::create_directory(cheatFilePath.parent_path());
-        }
-    }
-    catch (...)
-    {
-        // we'll fail later...
+        std::filesystem::create_directory(cheatFilePath.parent_path(), errorCode);
     }
 
     // keep compatability with <v0.4.1
