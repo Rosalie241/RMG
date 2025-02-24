@@ -28,3 +28,11 @@ std::string CoreLowerString(std::string str)
 
     return resultString;
 }
+
+bool CoreStringToInt(std::string str, int32_t& num)
+{
+    char* endptr;
+    num = (int32_t)std::strtol(str.c_str(), &endptr, 10);
+    return errno != ERANGE && endptr == (str.c_str() + str.size());
+}
+

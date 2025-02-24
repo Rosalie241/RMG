@@ -10,6 +10,7 @@
 #include "Settings.hpp"
 
 #include "Directories.hpp"
+#include "String.hpp"
 #include "Version.hpp"
 #include "Error.hpp"
 
@@ -1578,18 +1579,18 @@ static bool string_to_int_list(std::string string, std::vector<int>& intList)
     // and append list with each item
     std::stringstream value_str_stream(string);
     std::string tmp_str;
+    int num;
+
     while (std::getline(value_str_stream, tmp_str, ';'))
     {
-        try
+        if (!CoreStringToInt(tmp_str, num))
         {
-            intList.emplace_back(std::stoi(tmp_str));
-        }
-        catch (...)
-        {
-            error = "string_to_int_list: std::stroi threw an exception!";
+            error = "string_to_int_list: failed to parse string into integer!";
             CoreSetError(error);
             return false;
         }
+
+        intList.emplace_back(num);
     }
 
     return true;

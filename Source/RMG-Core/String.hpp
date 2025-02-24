@@ -15,4 +15,7 @@
 // returns lowercase string
 std::string CoreLowerString(std::string str);
 
+// attempts to parse int32_t from string
+bool CoreStringToInt(std::string str, int32_t& num);
+
 #endif // CORE_STRING_HPP
