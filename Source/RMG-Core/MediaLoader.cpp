@@ -73,33 +73,13 @@ static char* medialoader_get_dd_rom(void*)
 
 static char* medialoader_get_gb_cart_ram(void*, int index)
 {
-    std::filesystem::path gameBoyRom;
+    std::filesystem::path gameBoySave;
     SettingsID settingIds[] =
     {
         SettingsID::Core_Gameboy_P1_Save,
         SettingsID::Core_Gameboy_P2_Save,
         SettingsID::Core_Gameboy_P3_Save,
         SettingsID::Core_Gameboy_P4_Save,
-    };
-
-    gameBoyRom = CoreSettingsGetStringValue(settingIds[index]);
-    if (gameBoyRom.empty())
-    {
-        return nullptr;
-    }
-
-    return strdup(gameBoyRom.string().c_str());
-}
-
-static char* mediaLoader_get_gb_cart_rom(void*, int index)
-{
-    std::filesystem::path gameBoySave;
-    SettingsID settingIds[] =
-    {
-        SettingsID::Core_Gameboy_P1_Rom,
-        SettingsID::Core_Gameboy_P2_Rom,
-        SettingsID::Core_Gameboy_P3_Rom,
-        SettingsID::Core_Gameboy_P4_Rom,
     };
 
     gameBoySave = CoreSettingsGetStringValue(settingIds[index]);
@@ -109,6 +89,26 @@ static char* mediaLoader_get_gb_cart_rom(void*, int index)
     }
 
     return strdup(gameBoySave.string().c_str());
+}
+
+static char* mediaLoader_get_gb_cart_rom(void*, int index)
+{
+    std::filesystem::path gameBoyRom;
+    SettingsID settingIds[] =
+    {
+        SettingsID::Core_Gameboy_P1_Rom,
+        SettingsID::Core_Gameboy_P2_Rom,
+        SettingsID::Core_Gameboy_P3_Rom,
+        SettingsID::Core_Gameboy_P4_Rom,
+    };
+
+    gameBoyRom = CoreSettingsGetStringValue(settingIds[index]);
+    if (gameBoyRom.empty())
+    {
+        return nullptr;
+    }
+
+    return strdup(gameBoyRom.string().c_str());
 }
 
 //
