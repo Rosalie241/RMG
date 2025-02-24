@@ -10,6 +10,7 @@
 #ifndef CORE_STRING_HPP
 #define CORE_STRING_HPP
 
+#include <cstdint>
 #include <string>
 
 // returns lowercase string
