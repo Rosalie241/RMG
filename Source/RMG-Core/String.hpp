@@ -10,13 +10,12 @@
 #ifndef CORE_STRING_HPP
 #define CORE_STRING_HPP
 
-#include <cstdint>
 #include <string>
 
 // returns lowercase string
 std::string CoreLowerString(std::string str);
 
 // attempts to parse int32_t from string
-bool CoreStringToInt(std::string str, int32_t& num);
+bool CoreStringToInt(std::string str, int& num);
 
 #endif // CORE_STRING_HPP
