@@ -54,7 +54,7 @@ enum gbcart_extra_devices
 /* various helper functions for ram, rom, or MBC uses */
 
 
-static void read_rom(const void* rom_storage, const struct storage_backend_interface* irom_storage, uint16_t address, uint8_t* data, size_t size)
+static void read_rom(const void* rom_storage, const struct storage_backend_interface* irom_storage, uint32_t address, uint8_t* data, size_t size)
 {
     assert(size > 0);
 
@@ -68,14 +68,14 @@ static void read_rom(const void* rom_storage, const struct storage_backend_inter
 }
 
 
-static void read_ram(const void* ram_storage, const struct storage_backend_interface* iram_storage, unsigned int enabled, uint16_t address, uint8_t* data, size_t size, uint8_t mask)
+static void read_ram(const void* ram_storage, const struct storage_backend_interface* iram_storage, unsigned int enabled, uint32_t address, uint8_t* data, size_t size, uint8_t mask)
 {
     size_t i;
     assert(size > 0);
 
     /* RAM has to be enabled before use */
     if (!enabled) {
-        DebugMessage(M64MSG_WARNING, "Trying to read from non enabled GB RAM %04x", address);
+        DebugMessage(M64MSG_WARNING, "read_ram Trying to read from non enabled GB RAM %04x", address);
         memset(data, 0xff, size);
         return;
     }
@@ -240,7 +240,7 @@ static int write_gb_cart_mbc1(struct gb_cart* gb_cart, uint16_t address, const u
     /* 0x2000-0x3fff: ROM bank select (low 5 bits) */
     case (0x2000 >> 13):
         bank = value & 0x1f;
-        gb_cart->rom_bank = (gb_cart->rom_bank & ~UINT8_C(0x1f)) | ((bank == 0) ? 1 : bank);
+        gb_cart->rom_bank = (gb_cart->rom_bank & ~UINT8_C(0x1f)) | (bank == 0) ? 1 : bank;
         DebugMessage(M64MSG_VERBOSE, "MBC1 set rom bank %02x", gb_cart->rom_bank);
         break;
 
@@ -345,25 +345,32 @@ static int write_gb_cart_mbc2(struct gb_cart* gb_cart, uint16_t address, const u
     return 0;
 }
 
-
-static int read_gb_cart_mbc3(struct gb_cart* gb_cart, uint16_t address, uint8_t* data, size_t size)
+static int read_gb_cart_mbc3(struct gb_cart* gb_cart,
+                             uint16_t address,
+                             uint8_t* dst,
+                             size_t size)
 {
-    switch(address >> 13)
+
+    if (address < 0x4000)
     {
-    /* 0x0000-0x3fff: ROM bank 00 */
-    case (0x0000 >> 13):
-    case (0x2000 >> 13):
-        read_rom(gb_cart->rom_storage, gb_cart->irom_storage, address, data, size);
-        break;
+        /* Bank 0 (0x0000 - 0x3FFF) */
+        uint32_t banked_address = address & 0x3FFF;  /* same as just address, but & 0x3FFF is explicit */
+        
+        read_rom(gb_cart->rom_storage, gb_cart->irom_storage, banked_address, dst, size);
 
-    /* 0x4000-0x7fff: ROM bank 01-7f */
-    case (0x4000 >> 13):
-    case (0x6000 >> 13):
-        read_rom(gb_cart->rom_storage, gb_cart->irom_storage, (address - 0x4000) + (gb_cart->rom_bank * 0x4000), data, size);
-        break;
-
-    /* 0xa000-0xbfff: RAM bank 00-07 or RTC register 08-0c */
-    case (0xa000 >> 13):
+        //DebugMessage(M64MSG_VERBOSE, "MBC3 read from ROM bank 0: %04x", address);
+    }
+    else if (address < 0x8000)
+    {
+        /* Switched ROM bank (0x4000 - 0x7FFF) */
+        size_t banked_address = (size_t)((uint32_t)address - 0x4000)
+                              + (gb_cart->rom_bank * 0x4000);
+        read_rom(gb_cart->rom_storage, gb_cart->irom_storage, banked_address, dst, size);
+        //DebugMessage(M64MSG_VERBOSE, "MBC3 read from ROM bank %02x: %04x", gb_cart->rom_bank, address);
+    }
+    else if (address >= 0xA000 && address < 0xC000)
+    {
+        
         switch(gb_cart->ram_bank)
         {
         /* RAM banks */
@@ -375,8 +382,12 @@ static int read_gb_cart_mbc3(struct gb_cart* gb_cart, uint16_t address, uint8_t*
         case 0x05:
         case 0x06:
         case 0x07:
-            read_ram(gb_cart->ram_storage, gb_cart->iram_storage, gb_cart->ram_enable, (address - 0xa000) + (gb_cart->ram_bank * 0x2000), data, size, UINT8_C(0xff));
+        {
+            size_t banked_address = (size_t)((uint32_t)address - 0xA000)
+                                + (gb_cart->ram_bank * 0x2000);
+            read_ram(gb_cart->ram_storage, gb_cart->iram_storage, gb_cart->ram_enable, banked_address, dst, size, UINT8_C(0xff));
             break;
+        }
 
         /* RTC registers */
         case 0x08:
@@ -387,68 +398,78 @@ static int read_gb_cart_mbc3(struct gb_cart* gb_cart, uint16_t address, uint8_t*
             /* RAM has to be enabled before use */
             if (!gb_cart->ram_enable) {
                 DebugMessage(M64MSG_WARNING, "Trying to read from non enabled GB RAM %04x", address);
-                memset(data, 0xff, size);
+                memset(dst, 0xff, size);
                 break;
             }
-
             if (!(gb_cart->extra_devices & GED_RTC)) {
                 DebugMessage(M64MSG_WARNING, "Trying to read from absent RTC %04x", address);
-                memset(data, 0xff, size);
+                memset(dst, 0xff, size);
                 break;
             }
 
-            memset(data, read_mbc3_rtc_regs(&gb_cart->rtc, gb_cart->ram_bank - 0x08), size);
+            memset(dst, read_mbc3_rtc_regs(&gb_cart->rtc, gb_cart->ram_bank - 0x08), size);
             break;
 
         default:
             DebugMessage(M64MSG_WARNING, "Unknown device mapped in RAM/RTC space: %04x", address);
         }
-        break;
-
-    default:
-        DebugMessage(M64MSG_WARNING, "Invalid cart read (MBC3): %04x", address);
+    }
+    else
+    {
+        /* The Rust code does a panic!("Unsupported read address {:x}", address); */
+        DebugMessage(M64MSG_WARNING, "Unsupported read address %04x", address);
     }
 
     return 0;
 }
 
-static int write_gb_cart_mbc3(struct gb_cart* gb_cart, uint16_t address, const uint8_t* data, size_t size)
+
+static int write_gb_cart_mbc3(struct gb_cart* gb_cart,
+                              uint16_t address,
+                              const uint8_t* src,
+                              size_t size)
 {
-    uint8_t bank;
-    uint8_t value = data[size-1];
+    if (size == 0) {
+        /* Nothing to write, just return */
+        return 0;
+    }
 
-    switch(address >> 13)
+    uint8_t value = src[size - 1];
+
+    if (address < 0x2000)
     {
-    /* 0x0000-0x1fff: RAM/RTC enable */
-    case (0x0000 >> 13):
+        /* Enable or disable RAM */
         set_ram_enable(gb_cart, value);
-        break;
-
-    /* 0x2000-0x3fff: ROM bank select */
-    case (0x2000 >> 13):
-        bank = value & 0x7f;
-        gb_cart->rom_bank = (bank == 0) ? 1 : bank;
-        DebugMessage(M64MSG_VERBOSE, "MBC3 set rom bank %02x", gb_cart->rom_bank);
-        break;
-
-    /* 0x4000-0x5fff: RAM bank / RTC register select */
-    case (0x4000 >> 13):
-        gb_cart->ram_bank = value;
+    }
+    else if (address < 0x4000)
+    {
+        /* Select ROM bank (0x01..0x7F) */
+        uint8_t bank = value & 0x7F;
+        gb_cart->rom_bank = bank;
+        if (gb_cart->rom_bank == 0) {
+            gb_cart->rom_bank = 1;
+        }
+        DebugMessage(M64MSG_VERBOSE, "MBC3 set rom bank %02x addr %04x", gb_cart->rom_bank, address);
+    }
+    else if (address < 0x6000)
+    {
+        /* Select RAM bank or RTC register */
+        gb_cart->ram_bank = (value & 0x0F);
         DebugMessage(M64MSG_VERBOSE, "MBC3 set ram bank %02x", gb_cart->ram_bank);
-        break;
-
-    /* 0x6000-0x7fff: latch clock registers */
-    case (0x6000 >> 13):
+    }
+    else if (address < 0x8000)
+    {
+        /* RTC latch (not implemented here) */
+        /* The Rust code simply does nothing. */
         if (!(gb_cart->extra_devices & GED_RTC)) {
             DebugMessage(M64MSG_WARNING, "Trying to latch to absent RTC %04x", address);
-            break;
         }
-
-        latch_mbc3_rtc_regs(&gb_cart->rtc, value);
-        break;
-
-    /* 0xa000-0xbfff: RAM bank 00-07 or RTC register 08-0c */
-    case (0xa000 >> 13):
+        else
+            latch_mbc3_rtc_regs(&gb_cart->rtc, value);
+    }
+    else if (address >= 0xA000 && address < 0xC000)
+    {
+        DebugMessage(M64MSG_VERBOSE, "MBC3 write to RAM: %04x <- %02x (bank %02x)", address, value, gb_cart->ram_bank);
         switch(gb_cart->ram_bank)
         {
         /* RAM banks */
@@ -460,7 +481,7 @@ static int write_gb_cart_mbc3(struct gb_cart* gb_cart, uint16_t address, const u
         case 0x05:
         case 0x06:
         case 0x07:
-            write_ram(gb_cart->ram_storage, gb_cart->iram_storage, gb_cart->ram_enable, (address - 0xa000) + (gb_cart->ram_bank * 0x2000), data, size, UINT8_C(0xff));
+            write_ram(gb_cart->ram_storage, gb_cart->iram_storage, gb_cart->ram_enable, (address - 0xa000) + (gb_cart->ram_bank * 0x2000), src, size, UINT8_C(0xff));
             break;
 
         /* RTC registers */
@@ -469,11 +490,11 @@ static int write_gb_cart_mbc3(struct gb_cart* gb_cart, uint16_t address, const u
         case 0x0a:
         case 0x0b:
         case 0x0c:
-            /* RAM has to be enabled before use */
-            if (!gb_cart->ram_enable) {
-                DebugMessage(M64MSG_WARNING, "Trying to write to non enabled GB RAM %04x", address);
-                break;
-            }
+        /* RAM has to be enabled before use */
+        if (!gb_cart->ram_enable) {
+            DebugMessage(M64MSG_WARNING, "Trying to write to non enabled GB RAM %04x", address);
+            break;
+        }
 
             if (!(gb_cart->extra_devices & GED_RTC)) {
                 DebugMessage(M64MSG_WARNING, "Trying to write to absent RTC %04x", address);
@@ -486,14 +507,17 @@ static int write_gb_cart_mbc3(struct gb_cart* gb_cart, uint16_t address, const u
         default:
             DebugMessage(M64MSG_WARNING, "Unknwown device mapped in RAM/RTC space: %04x", address);
         }
-        break;
-
-    default:
-        DebugMessage(M64MSG_WARNING, "Invalid cart write (MBC3): %04x", address);
+        
+    }
+    else
+    {
+        /* The Rust code does panic!("Unsupported write address {:x}", address); */
+        DebugMessage(M64MSG_WARNING, "Unsupported write address %04x", address);
     }
 
     return 0;
 }
+
 
 static int read_gb_cart_mbc5(struct gb_cart* gb_cart, uint16_t address, uint8_t* data, size_t size)
 {
@@ -1116,4 +1140,5 @@ int write_gb_cart(struct gb_cart* gb_cart, uint16_t address, const uint8_t* data
 {
     return gb_cart->write_gb_cart(gb_cart, address, data, size);
 }
+
 

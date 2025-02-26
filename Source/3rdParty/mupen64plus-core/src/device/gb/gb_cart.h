@@ -56,6 +56,7 @@ struct gb_cart
     void* ram_storage;
     const struct storage_backend_interface* iram_storage;
 
+    unsigned int enabled;
     unsigned int rom_bank;
     unsigned int ram_bank;
 

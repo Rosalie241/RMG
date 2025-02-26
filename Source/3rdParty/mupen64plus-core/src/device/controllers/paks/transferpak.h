@@ -40,6 +40,7 @@ struct transferpak
     unsigned int bank;
     unsigned int access_mode;
     unsigned int access_mode_changed;
+    unsigned int reset_state;
 
     struct gb_cart* gb_cart;
 };
