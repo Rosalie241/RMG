@@ -405,11 +405,21 @@ std::filesystem::path CoreGetDefaultScreenshotDirectory(void)
 
 std::filesystem::path CoreGetUserDataDirectory(void)
 {
+    if (!m64p::Config.IsHooked())
+    {
+        return std::filesystem::path();
+    }
+    
     return std::filesystem::path(m64p::Config.GetUserDataPath());
 }
 
 std::filesystem::path CoreGetUserCacheDirectory(void)
 {
+    if (!m64p::Config.IsHooked())
+    {
+        return std::filesystem::path();
+    }
+
     return std::filesystem::path(m64p::Config.GetUserCachePath());
 }
 
