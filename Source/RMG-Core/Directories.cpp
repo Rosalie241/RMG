@@ -14,10 +14,11 @@
 
 #include "m64p/Api.hpp"
 
-#include <cstdio>
-#include <cstdlib>
-#include <iostream>
 #include <filesystem>
+#include <iostream>
+#include <optional>
+#include <cstdlib>
+#include <cstdio>
 #ifdef _WIN32
 #include <Windows.h>
 #include <shlobj.h>
@@ -134,7 +135,7 @@ bool CoreCreateDirectories(void)
     std::string error;
     std::error_code errorCode;
 
-    std::filesystem::path directories[] = 
+    const std::filesystem::path directories[] = 
     {
 #ifdef PORTABLE_INSTALL
         CoreGetCoreDirectory(),
@@ -169,12 +170,11 @@ bool CoreCreateDirectories(void)
 bool CoreGetPortableDirectoryMode(void)
 {
 #ifdef PORTABLE_INSTALL
-    static bool portable_set = false;
-    static bool is_portable  = false;
+    static std::optional<bool> portable;
 
-    if (portable_set)
+    if (portable.has_value())
     {
-        return is_portable;
+        return portable.value();
     }
 
     std::filesystem::path exeDirectory;
@@ -187,10 +187,9 @@ bool CoreGetPortableDirectoryMode(void)
     portableFile      = exeDirectory;
     portableFile      += "/portable.txt";
 
-    is_portable  = std::filesystem::is_regular_file(portableFile) ||
-                    std::filesystem::is_regular_file(configFile);
-    portable_set = true;
-    return is_portable;
+    portable = std::filesystem::is_regular_file(portableFile) ||
+               std::filesystem::is_regular_file(configFile);
+    return portable.value();
 #else // Linux install
     return false;
 #endif // PORTABLE_INSTALL
