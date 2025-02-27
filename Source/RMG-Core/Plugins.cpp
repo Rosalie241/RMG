@@ -25,14 +25,21 @@
 #include <filesystem>
 #include <algorithm>
 #include <cstring>
+#include <array>
+
+//
+// Local Defines
+//
+
+#define NUM_PLUGIN_TYPES 4
 
 //
 // Local Variables
 //
 
-static m64p::PluginApi l_Plugins[(int)CorePluginType::Input];
-static std::string     l_PluginFiles[(int)CorePluginType::Input];
-static char l_PluginContext[(int)CorePluginType::Input][20];
+static m64p::PluginApi l_Plugins[NUM_PLUGIN_TYPES];
+static std::string     l_PluginFiles[NUM_PLUGIN_TYPES];
+static char l_PluginContext[NUM_PLUGIN_TYPES][20];
 
 //
 // Local Functions
@@ -60,7 +67,8 @@ static CorePluginType get_plugin_type(m64p::PluginApi* plugin)
         return CorePluginType::Invalid;
     }
 
-    if (m64p_type < 1 || m64p_type > 4)
+    if (m64p_type < (int)CorePluginType::Rsp || 
+        m64p_type > (int)CorePluginType::Input)
     {
         return CorePluginType::Invalid;
     }
@@ -68,7 +76,7 @@ static CorePluginType get_plugin_type(m64p::PluginApi* plugin)
     return (CorePluginType)m64p_type;
 }
 
-static std::string get_plugin_name(m64p::PluginApi* plugin, std::string filename)
+static std::string get_plugin_name(m64p::PluginApi* plugin, const std::string& filename)
 {
     m64p_error ret;
     const char* name = nullptr;
@@ -186,7 +194,7 @@ static std::string get_plugin_path(CorePluginType type, std::string settingsValu
     return path;
 }
 
-static bool apply_plugin_settings(std::string pluginSettings[4])
+static bool apply_plugin_settings(const std::array<std::string, 4>& pluginSettings)
 {
     std::string       error;
     std::string       settingValue;
@@ -195,7 +203,7 @@ static bool apply_plugin_settings(std::string pluginSettings[4])
     CoreLibraryHandle handle;
     m64p_error        ret;
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < NUM_PLUGIN_TYPES; i++)
     {
         pluginType = (CorePluginType)(i + 1);
         settingValue = get_plugin_path(pluginType, pluginSettings[i]);
@@ -445,7 +453,7 @@ std::vector<CorePlugin> CoreGetAllPlugins(void)
 
 bool CoreApplyPluginSettings(void)
 {
-    std::string settings[] = 
+    const std::array<std::string, 4> settings = 
     {
         CoreSettingsGetStringValue(SettingsID::Core_RSP_Plugin),
         CoreSettingsGetStringValue(SettingsID::Core_GFX_Plugin),
@@ -458,14 +466,14 @@ bool CoreApplyPluginSettings(void)
 
 bool CoreApplyRomPluginSettings(void)
 {
-    CoreRomSettings          romSettings;
+    CoreRomSettings romSettings;
 
     if (!CoreGetCurrentDefaultRomSettings(romSettings))
     {
         return false;
     }
 
-    std::string settings[] =
+    const std::array<std::string, 4> settings =
     {
         CoreSettingsGetStringValue(SettingsID::Game_RSP_Plugin, romSettings.MD5),
         CoreSettingsGetStringValue(SettingsID::Game_GFX_Plugin, romSettings.MD5),
@@ -480,7 +488,7 @@ bool CoreArePluginsReady(void)
 {
     std::string error;
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < NUM_PLUGIN_TYPES; i++)
     {
         if (!l_Plugins[i].IsHooked())
         {
@@ -540,7 +548,7 @@ bool CoreAttachPlugins(void)
 {
     std::string error;
     m64p_error ret;
-    m64p_plugin_type plugin_types[] =
+    const m64p_plugin_type plugin_types[] =
     {
         M64PLUGIN_GFX,
         M64PLUGIN_AUDIO,
@@ -553,7 +561,7 @@ bool CoreAttachPlugins(void)
         return false;
     }
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < NUM_PLUGIN_TYPES; i++)
     {
         ret = m64p::Core.AttachPlugin(plugin_types[i], get_plugin((CorePluginType)plugin_types[i])->GetHandle());
         if (ret != M64ERR_SUCCESS)
@@ -580,7 +588,7 @@ bool CoreDetachPlugins(void)
         return false;
     }
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < NUM_PLUGIN_TYPES; i++)
     {
         ret = m64p::Core.DetachPlugin((m64p_plugin_type)(i + 1));
         if (ret != M64ERR_SUCCESS)
@@ -603,7 +611,7 @@ bool CorePluginsShutdown(void)
     m64p::PluginApi* plugin;
     m64p_error       ret;
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < NUM_PLUGIN_TYPES; i++)
     {
         plugin = &l_Plugins[i];
 
