@@ -17,7 +17,7 @@
 // Exported Functions
 //
 
-CoreLibraryHandle CoreOpenLibrary(std::filesystem::path path)
+CORE_EXPORT CoreLibraryHandle CoreOpenLibrary(std::filesystem::path path)
 {
 #ifdef _WIN32
     return LoadLibraryW(path.wstring().c_str());
@@ -26,7 +26,7 @@ CoreLibraryHandle CoreOpenLibrary(std::filesystem::path path)
 #endif
 }
 
-CoreLibrarySymbol CoreGetLibrarySymbol(CoreLibraryHandle handle, const char* symbol)
+CORE_EXPORT CoreLibrarySymbol CoreGetLibrarySymbol(CoreLibraryHandle handle, const char* symbol)
 {
 #ifdef _WIN32
     return GetProcAddress(handle, symbol);
@@ -35,7 +35,7 @@ CoreLibrarySymbol CoreGetLibrarySymbol(CoreLibraryHandle handle, const char* sym
 #endif // Linux
 }
 
-void CoreCloseLibrary(CoreLibraryHandle handle)
+CORE_EXPORT void CoreCloseLibrary(CoreLibraryHandle handle)
 {
 #ifdef _WIN32
     FreeLibrary(handle);
@@ -44,7 +44,7 @@ void CoreCloseLibrary(CoreLibraryHandle handle)
 #endif // Linux
 }
 
-std::string CoreGetLibraryError(void)
+CORE_EXPORT std::string CoreGetLibraryError(void)
 {
 #ifdef _WIN32
     DWORD err = GetLastError();

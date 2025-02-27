@@ -8,8 +8,10 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #define CORE_INTERNAL
-#include "Error.hpp"
 #include "File.hpp"
+
+#include "Library.hpp"
+#include "Error.hpp"
 
 #include <cstring>
 #include <fstream>
@@ -25,7 +27,7 @@
 // Exported Functions
 //
 
-bool CoreReadFile(std::filesystem::path file, std::vector<char>& outBuffer)
+CORE_EXPORT bool CoreReadFile(std::filesystem::path file, std::vector<char>& outBuffer)
 {
     std::string   error;
     std::ifstream fileStream;
@@ -60,7 +62,7 @@ bool CoreReadFile(std::filesystem::path file, std::vector<char>& outBuffer)
     return true;
 }
 
-bool CoreWriteFile(std::filesystem::path file, std::vector<char>& buffer)
+CORE_EXPORT bool CoreWriteFile(std::filesystem::path file, std::vector<char>& buffer)
 {
     std::string   error;
     std::ofstream fileStream;
@@ -85,7 +87,7 @@ bool CoreWriteFile(std::filesystem::path file, std::vector<char>& buffer)
     return true;
 }
 
-CoreFileTime CoreGetFileTime(std::filesystem::path file)
+CORE_EXPORT CoreFileTime CoreGetFileTime(std::filesystem::path file)
 {
 #ifdef _WIN32
     BOOL ret;

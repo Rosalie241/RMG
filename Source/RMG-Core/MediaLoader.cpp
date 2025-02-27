@@ -7,10 +7,12 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+#define CORE_INTERNAL
 #include "Directories.hpp"
 #include "MediaLoader.hpp"
 #include "Settings.hpp"
 #include "Archive.hpp"
+#include "Library.hpp"
 #include "String.hpp"
 #include "Error.hpp"
 #include "File.hpp"
@@ -115,7 +117,7 @@ static char* mediaLoader_get_gb_cart_rom(void*, int index)
 // Exported Functions
 //
 
-bool CoreSetupMediaLoader(void)
+CORE_EXPORT bool CoreSetupMediaLoader(void)
 {
     std::string error;
     m64p_error  ret;
@@ -144,7 +146,7 @@ bool CoreSetupMediaLoader(void)
     return ret == M64ERR_SUCCESS;
 }
 
-void CoreResetMediaLoader(void)
+CORE_EXPORT void CoreResetMediaLoader(void)
 {
     std::error_code errorCode;
 
@@ -159,7 +161,7 @@ void CoreResetMediaLoader(void)
     l_DdDiskFile = "";
 }
 
-void CoreMediaLoaderSetDiskFile(std::filesystem::path disk)
+CORE_EXPORT void CoreMediaLoaderSetDiskFile(std::filesystem::path disk)
 {
     std::error_code error_code;
     std::vector<char> buf;

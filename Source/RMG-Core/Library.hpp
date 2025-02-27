@@ -18,10 +18,12 @@
 typedef HMODULE CoreLibraryHandle;
 typedef FARPROC CoreLibrarySymbol;
 #define CORE_LIBRARY_EXT_STR ".dll"
+#define CORE_EXPORT __declspec(dllexport)
 #else // Unix
 typedef void*   CoreLibraryHandle;
 typedef void*   CoreLibrarySymbol;
 #define CORE_LIBRARY_EXT_STR ".so"
+#define CORE_EXPORT __attribute__((visibility("default")))
 #endif // _WIN32
 
 // returns library handle for given filename,

@@ -10,6 +10,7 @@
 #define CORE_INTERNAL
 #include "ConvertStringEncoding.hpp"
 #include "Callback.hpp"
+#include "Library.hpp"
 
 #include <iostream>
 
@@ -82,7 +83,7 @@ void CoreStateCallback(void* context, m64p_core_param param, int value)
 // Exported Functions
 //
 
-bool CoreSetupCallbacks(std::function<void(enum CoreDebugMessageType, std::string, std::string)> debugCallbackFunc,
+CORE_EXPORT bool CoreSetupCallbacks(std::function<void(enum CoreDebugMessageType, std::string, std::string)> debugCallbackFunc,
                         std::function<void(enum CoreStateCallbackType, int)> stateCallbackFunc)
 {
     l_DebugCallbackFunc = debugCallbackFunc;
@@ -99,12 +100,12 @@ bool CoreSetupCallbacks(std::function<void(enum CoreDebugMessageType, std::strin
     return true;
 }
 
-void CoreSetPrintDebugCallback(bool enabled)
+CORE_EXPORT void CoreSetPrintDebugCallback(bool enabled)
 {
     l_PrintCallbacks = enabled;
 }
 
-void CoreAddCallbackMessage(CoreDebugMessageType type, std::string message)
+CORE_EXPORT void CoreAddCallbackMessage(CoreDebugMessageType type, std::string message)
 {
     CoreDebugCallback((void*)"[GUI]   ", (int)type, message.c_str());
 }

@@ -7,7 +7,9 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+#define CORE_INTERNAL
 #include "SpeedFactor.hpp"
+#include "Library.hpp"
 #include "Error.hpp"
 
 #include "m64p/Api.hpp"
@@ -18,7 +20,7 @@
 // Exported Functions
 //
 
-int CoreGetSpeedFactor(void)
+CORE_EXPORT int CoreGetSpeedFactor(void)
 {
     std::string error;
     m64p_error ret;
@@ -40,7 +42,7 @@ int CoreGetSpeedFactor(void)
     return value;
 }
 
-bool CoreSetSpeedFactor(int factor)
+CORE_EXPORT bool CoreSetSpeedFactor(int factor)
 {
     std::string error;
     m64p_error ret;

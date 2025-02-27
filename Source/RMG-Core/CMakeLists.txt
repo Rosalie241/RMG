@@ -5,12 +5,6 @@ project(RMG-Core)
 
 set(CMAKE_CXX_STANDARD 20)
 
-# RMG-Core needs LTO disabled for windows
-# else linking fails
-if (WIN32)
-    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION OFF)
-endif(WIN32)
-
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SDL2 REQUIRED sdl2)
 pkg_check_modules(MINIZIP REQUIRED minizip)
@@ -107,3 +101,5 @@ target_include_directories(RMG-Core PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../3rdParty/fmt/include/
     ${MINIZIP_INCLUDE_DIRS}
 )
+
+set_target_properties(RMG-Core PROPERTIES CXX_VISIBILITY_PRESET hidden)

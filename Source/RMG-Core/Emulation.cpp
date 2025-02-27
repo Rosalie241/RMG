@@ -13,6 +13,7 @@
 #include "Emulation.hpp"
 #include "RomHeader.hpp"
 #include "Settings.hpp"
+#include "Library.hpp"
 #include "Netplay.hpp"
 #include "Plugins.hpp"
 #include "Cheats.hpp"
@@ -148,7 +149,7 @@ static void apply_pif_rom_settings(void)
 // Exported Functions
 //
 
-bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64ddrom, 
+CORE_EXPORT bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64ddrom, 
     std::string address, int port, int player)
 {
     std::string error;
@@ -287,7 +288,7 @@ bool CoreStartEmulation(std::filesystem::path n64rom, std::filesystem::path n64d
     return m64p_ret == M64ERR_SUCCESS;
 }
 
-bool CoreStopEmulation(void)
+CORE_EXPORT bool CoreStopEmulation(void)
 {
     std::string error;
     m64p_error ret;
@@ -309,7 +310,7 @@ bool CoreStopEmulation(void)
     return ret == M64ERR_SUCCESS;
 }
 
-bool CorePauseEmulation(void)
+CORE_EXPORT bool CorePauseEmulation(void)
 {
     std::string error;
     m64p_error ret;
@@ -343,7 +344,7 @@ bool CorePauseEmulation(void)
     return ret == M64ERR_SUCCESS;
 }
 
-bool CoreResumeEmulation(void)
+CORE_EXPORT bool CoreResumeEmulation(void)
 {
     std::string error;
     m64p_error ret;
@@ -377,7 +378,7 @@ bool CoreResumeEmulation(void)
     return ret == M64ERR_SUCCESS;
 }
 
-bool CoreResetEmulation(bool hard)
+CORE_EXPORT bool CoreResetEmulation(bool hard)
 {
     std::string error;
     m64p_error ret;
@@ -414,13 +415,13 @@ bool CoreResetEmulation(bool hard)
     return ret == M64ERR_SUCCESS;
 }
 
-bool CoreIsEmulationRunning(void)
+CORE_EXPORT bool CoreIsEmulationRunning(void)
 {
     m64p_emu_state state = M64EMU_STOPPED;
     return get_emulation_state(&state) && state == M64EMU_RUNNING;
 }
 
-bool CoreIsEmulationPaused(void)
+CORE_EXPORT bool CoreIsEmulationPaused(void)
 {
     m64p_emu_state state = M64EMU_STOPPED;
     return get_emulation_state(&state) && state == M64EMU_PAUSED;

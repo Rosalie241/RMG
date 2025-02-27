@@ -11,6 +11,7 @@
 #include "ConvertStringEncoding.hpp"
 #include "RomSettings.hpp"
 #include "Settings.hpp"
+#include "Library.hpp"
 #include "Error.hpp"
 #include "Rom.hpp"
 
@@ -27,7 +28,7 @@ static bool            l_HasDefaultRomSettings = false;
 // Exported Functions
 //
 
-bool CoreGetCurrentRomSettings(CoreRomSettings& settings)
+CORE_EXPORT bool CoreGetCurrentRomSettings(CoreRomSettings& settings)
 {
     std::string       error;
     m64p_error        ret;
@@ -57,7 +58,7 @@ bool CoreGetCurrentRomSettings(CoreRomSettings& settings)
     return true;
 }
 
-bool CoreStoreCurrentDefaultRomSettings(void)
+CORE_EXPORT bool CoreStoreCurrentDefaultRomSettings(void)
 {
     CoreRomSettings settings;
 
@@ -71,13 +72,13 @@ bool CoreStoreCurrentDefaultRomSettings(void)
     return true;
 }
 
-bool CoreClearCurrentDefaultRomSettings(void)
+CORE_EXPORT bool CoreClearCurrentDefaultRomSettings(void)
 {
     l_HasDefaultRomSettings = false;
     return true;
 }
 
-bool CoreGetCurrentDefaultRomSettings(CoreRomSettings& settings)
+CORE_EXPORT bool CoreGetCurrentDefaultRomSettings(CoreRomSettings& settings)
 {
     std::string error;
 
@@ -93,7 +94,7 @@ bool CoreGetCurrentDefaultRomSettings(CoreRomSettings& settings)
     return true;
 }
 
-bool CoreApplyRomSettings(CoreRomSettings settings)
+CORE_EXPORT bool CoreApplyRomSettings(CoreRomSettings settings)
 {
     std::string       error;
     m64p_error        ret;
@@ -143,7 +144,7 @@ bool CoreApplyRomSettings(CoreRomSettings settings)
     return ret == M64ERR_SUCCESS;
 }
 
-bool CoreApplyRomSettingsOverlay(void)
+CORE_EXPORT bool CoreApplyRomSettingsOverlay(void)
 {
     CoreRomSettings settings;
 

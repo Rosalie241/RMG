@@ -7,7 +7,9 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+#define CORE_INTERNAL
 #include "SpeedLimiter.hpp"
+#include "Library.hpp"
 #include "Error.hpp"
 
 #include "m64p/Api.hpp"
@@ -18,7 +20,7 @@
 // Exported Functions
 //
 
-bool CoreIsSpeedLimiterEnabled(void)
+CORE_EXPORT bool CoreIsSpeedLimiterEnabled(void)
 {
     std::string error;
     m64p_error ret;
@@ -40,7 +42,7 @@ bool CoreIsSpeedLimiterEnabled(void)
     return value;
 }
 
-bool CoreSetSpeedLimiterState(bool enabled)
+CORE_EXPORT bool CoreSetSpeedLimiterState(bool enabled)
 {
     std::string error;
     m64p_error ret;

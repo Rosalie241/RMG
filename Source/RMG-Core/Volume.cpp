@@ -7,7 +7,10 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+#define CORE_INTERNAL
 #include "Volume.hpp"
+
+#include "Library.hpp"
 #include "Error.hpp"
 
 #include "m64p/Api.hpp"
@@ -16,7 +19,7 @@
 // Exported Functions
 //
 
-int CoreGetVolume(void)
+CORE_EXPORT int CoreGetVolume(void)
 {
     std::string error;
     m64p_error ret;
@@ -38,7 +41,7 @@ int CoreGetVolume(void)
     return volume;
 }
 
-bool CoreSetVolume(int value)
+CORE_EXPORT bool CoreSetVolume(int value)
 {
     std::string error;
     m64p_error ret;
@@ -60,7 +63,7 @@ bool CoreSetVolume(int value)
     return ret == M64ERR_SUCCESS;
 }
 
-bool CoreIncreaseVolume(void)
+CORE_EXPORT bool CoreIncreaseVolume(void)
 {
     std::string error;
     int volume = 0;
@@ -80,7 +83,7 @@ bool CoreIncreaseVolume(void)
     return CoreSetVolume(volume + 10);
 }
 
-bool CoreDecreaseVolume(void)
+CORE_EXPORT bool CoreDecreaseVolume(void)
 {
     std::string error;
     int volume = 0;
@@ -100,7 +103,7 @@ bool CoreDecreaseVolume(void)
     return CoreSetVolume(volume - 10);
 }
 
-bool CoreToggleMuteVolume(void)
+CORE_EXPORT bool CoreToggleMuteVolume(void)
 {
     std::string error;
     m64p_error ret;

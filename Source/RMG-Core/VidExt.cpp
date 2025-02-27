@@ -7,7 +7,10 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+#define CORE_INTERNAL
 #include "VidExt.hpp"
+
+#include "Library.hpp"
 #include "Error.hpp"
 
 #include "m64p/Api.hpp"
@@ -18,7 +21,7 @@
 // Exported Functions
 //
 
-bool CoreSetupVidExt(m64p_video_extension_functions functions)
+CORE_EXPORT bool CoreSetupVidExt(m64p_video_extension_functions functions)
 {
     std::string error;
     m64p_error ret;

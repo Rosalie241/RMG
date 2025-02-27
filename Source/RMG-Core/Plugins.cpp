@@ -403,7 +403,7 @@ static bool open_plugin_config(CorePluginType type, void* parent, bool romConfig
 // Exported Functions
 //
 
-std::vector<CorePlugin> CoreGetAllPlugins(void)
+CORE_EXPORT std::vector<CorePlugin> CoreGetAllPlugins(void)
 {
     std::vector<CorePlugin> plugins;
     std::string             plugin_name;
@@ -448,7 +448,7 @@ std::vector<CorePlugin> CoreGetAllPlugins(void)
     return plugins;
 }
 
-bool CoreApplyPluginSettings(void)
+CORE_EXPORT bool CoreApplyPluginSettings(void)
 {
     const std::array<std::string, 4> settings = 
     {
@@ -461,7 +461,7 @@ bool CoreApplyPluginSettings(void)
     return apply_plugin_settings(settings);
 }
 
-bool CoreApplyRomPluginSettings(void)
+CORE_EXPORT bool CoreApplyRomPluginSettings(void)
 {
     CoreRomSettings romSettings;
 
@@ -481,7 +481,7 @@ bool CoreApplyRomPluginSettings(void)
     return apply_plugin_settings(settings);
 }
 
-bool CoreArePluginsReady(void)
+CORE_EXPORT bool CoreArePluginsReady(void)
 {
     std::string error;
 
@@ -501,7 +501,7 @@ bool CoreArePluginsReady(void)
     return true;
 }
 
-bool CorePluginsHasConfig(CorePluginType type)
+CORE_EXPORT bool CorePluginsHasConfig(CorePluginType type)
 {
     std::string error;
     m64p::PluginApi* plugin;
@@ -520,12 +520,12 @@ bool CorePluginsHasConfig(CorePluginType type)
             plugin->Config2 != nullptr;
 }
 
-bool CorePluginsOpenConfig(CorePluginType type, void* parent)
+CORE_EXPORT bool CorePluginsOpenConfig(CorePluginType type, void* parent)
 {
     return open_plugin_config(type, parent, false, "");
 }
 
-bool CorePluginsHasROMConfig(CorePluginType type)
+CORE_EXPORT bool CorePluginsHasROMConfig(CorePluginType type)
 {
     m64p::PluginApi* plugin;
 
@@ -536,12 +536,12 @@ bool CorePluginsHasROMConfig(CorePluginType type)
             plugin->Config2HasRomConfig() > 0;
 }
 
-bool CorePluginsOpenROMConfig(CorePluginType type, void* parent, std::filesystem::path file)
+CORE_EXPORT bool CorePluginsOpenROMConfig(CorePluginType type, void* parent, std::filesystem::path file)
 {
     return open_plugin_config(type, parent, true, file);
 }
 
-bool CoreAttachPlugins(void)
+CORE_EXPORT bool CoreAttachPlugins(void)
 {
     std::string error;
     m64p_error ret;
@@ -575,7 +575,7 @@ bool CoreAttachPlugins(void)
     return ret == M64ERR_SUCCESS;
 }
 
-bool CoreDetachPlugins(void)
+CORE_EXPORT bool CoreDetachPlugins(void)
 {
     std::string error;
     m64p_error ret;
@@ -602,7 +602,7 @@ bool CoreDetachPlugins(void)
     return ret == M64ERR_SUCCESS;
 }
 
-bool CorePluginsShutdown(void)
+CORE_EXPORT bool CorePluginsShutdown(void)
 {
     std::string      error;
     m64p::PluginApi* plugin;

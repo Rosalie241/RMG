@@ -14,6 +14,7 @@
 #include "RomSettings.hpp"
 #include "m64p/Api.hpp"
 #include "Archive.hpp"
+#include "Library.hpp"
 #include "Cheats.hpp"
 #include "String.hpp"
 #include "Error.hpp"
@@ -38,7 +39,7 @@ static std::filesystem::path l_RomPath;
 // Exported Functions
 //
 
-bool CoreOpenRom(std::filesystem::path file)
+CORE_EXPORT bool CoreOpenRom(std::filesystem::path file)
 {
     std::string error;
     std::error_code error_code;
@@ -159,12 +160,12 @@ bool CoreOpenRom(std::filesystem::path file)
     return l_HasRomOpen;
 }
 
-bool CoreHasRomOpen(void)
+CORE_EXPORT bool CoreHasRomOpen(void)
 {
     return l_HasRomOpen;
 }
 
-bool CoreGetRomType(CoreRomType& type)
+CORE_EXPORT bool CoreGetRomType(CoreRomType& type)
 {
     std::string error;
 
@@ -180,7 +181,7 @@ bool CoreGetRomType(CoreRomType& type)
     return true;
 }
 
-bool CoreGetRomPath(std::filesystem::path& path)
+CORE_EXPORT bool CoreGetRomPath(std::filesystem::path& path)
 {
     std::string error;
 
@@ -196,7 +197,7 @@ bool CoreGetRomPath(std::filesystem::path& path)
     return true;
 }
 
-bool CoreCloseRom(void)
+CORE_EXPORT bool CoreCloseRom(void)
 {
     std::string error;
     std::error_code errorCode;

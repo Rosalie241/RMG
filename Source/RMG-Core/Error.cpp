@@ -9,6 +9,8 @@
  */
 #include "Error.hpp"
 
+#include "Library.hpp"
+
 //
 // Local Variables
 //
@@ -24,7 +26,7 @@ void CoreSetError(std::string error)
     l_ErrorMessage = error;
 }
 
-std::string CoreGetError(void)
+CORE_EXPORT std::string CoreGetError(void)
 {
     return l_ErrorMessage;
 }

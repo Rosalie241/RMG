@@ -7,11 +7,13 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+#define CORE_INTERNAL
 #include "Directories.hpp"
 #include "RomSettings.hpp"
 #include "RomHeader.hpp"
 #include "SaveState.hpp"
 #include "Settings.hpp"
+#include "Library.hpp"
 #include "Error.hpp"
 
 #include "m64p/Api.hpp"
@@ -39,7 +41,7 @@ static void str_replace_chars(std::string& str, const std::string replace, const
 // Exported Functions
 //
 
-bool CoreSetSaveStateSlot(int slot)
+CORE_EXPORT bool CoreSetSaveStateSlot(int slot)
 {
     std::string error;
     m64p_error ret;
@@ -60,7 +62,7 @@ bool CoreSetSaveStateSlot(int slot)
     return ret == M64ERR_SUCCESS;
 }
 
-int CoreGetSaveStateSlot(void)
+CORE_EXPORT int CoreGetSaveStateSlot(void)
 {
     std::string error;
     m64p_error ret;
@@ -82,7 +84,7 @@ int CoreGetSaveStateSlot(void)
     return slot;
 }
 
-bool CoreIncreaseSaveStateSlot(void)
+CORE_EXPORT bool CoreIncreaseSaveStateSlot(void)
 {
     std::string error;
     int slot;
@@ -103,7 +105,7 @@ bool CoreIncreaseSaveStateSlot(void)
     return CoreSetSaveStateSlot(slot + 1);
 }
 
-bool CoreDecreaseSaveStateSlot(void)
+CORE_EXPORT bool CoreDecreaseSaveStateSlot(void)
 {
     std::string error;
     int slot;
@@ -124,7 +126,7 @@ bool CoreDecreaseSaveStateSlot(void)
     return CoreSetSaveStateSlot(slot - 1);
 }
 
-bool CoreGetSaveStatePath(CoreRomHeader header, CoreRomSettings settings, int slot, std::filesystem::path& path)
+CORE_EXPORT bool CoreGetSaveStatePath(CoreRomHeader header, CoreRomSettings settings, int slot, std::filesystem::path& path)
 {
     // TODO: this should probably be an API function
     // in mupen64plus-core instead
@@ -199,7 +201,7 @@ bool CoreGetSaveStatePath(CoreRomHeader header, CoreRomSettings settings, int sl
     return true;
 }
 
-bool CoreGetSaveStatePath(int slot, std::filesystem::path& path)
+CORE_EXPORT bool CoreGetSaveStatePath(int slot, std::filesystem::path& path)
 {
     CoreRomHeader romHeader;
     CoreRomSettings romSettings;
@@ -215,7 +217,7 @@ bool CoreGetSaveStatePath(int slot, std::filesystem::path& path)
     return CoreGetSaveStatePath(romHeader, romSettings, slot, path);
 }
 
-bool CoreSaveState(void)
+CORE_EXPORT bool CoreSaveState(void)
 {
     std::string error;
     m64p_error ret;
@@ -236,7 +238,7 @@ bool CoreSaveState(void)
     return ret == M64ERR_SUCCESS;
 }
 
-bool CoreSaveState(std::filesystem::path file, CoreSaveStateType type)
+CORE_EXPORT bool CoreSaveState(std::filesystem::path file, CoreSaveStateType type)
 {
     std::string error;
     m64p_error ret;
@@ -257,7 +259,7 @@ bool CoreSaveState(std::filesystem::path file, CoreSaveStateType type)
     return ret == M64ERR_SUCCESS;
 }
 
-bool CoreLoadSaveState(void)
+CORE_EXPORT bool CoreLoadSaveState(void)
 {
     std::string error;
     m64p_error ret;
@@ -278,7 +280,7 @@ bool CoreLoadSaveState(void)
     return ret == M64ERR_SUCCESS;
 }
 
-bool CoreLoadSaveState(std::filesystem::path file)
+CORE_EXPORT bool CoreLoadSaveState(std::filesystem::path file)
 {
     std::string error;
     m64p_error ret;

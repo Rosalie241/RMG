@@ -8,13 +8,14 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "Version.hpp"
+#include "Library.hpp"
 #include "Config.hpp"
 
 //
 // Exported Functions
 //
 
-std::string CoreGetVersion(void)
+CORE_EXPORT std::string CoreGetVersion(void)
 {
     return std::string(CORE_VERSION);
 }

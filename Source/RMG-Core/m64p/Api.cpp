@@ -8,9 +8,10 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "Api.hpp"
+#include "Library.hpp"
 
 namespace m64p
 {
-m64p::CoreApi Core;
-m64p::ConfigApi Config;
+CORE_EXPORT m64p::CoreApi Core;
+CORE_EXPORT m64p::ConfigApi Config;
 } // namespace m64p

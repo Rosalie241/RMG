@@ -86,7 +86,7 @@ static bool config_override_user_dirs(void)
 // Exported Functions
 //
 
-bool CoreInit(void)
+CORE_EXPORT bool CoreInit(void)
 {
     std::string           error;
     std::filesystem::path core_file;
@@ -180,7 +180,7 @@ bool CoreInit(void)
     return true;
 }
 
-void CoreShutdown(void)
+CORE_EXPORT void CoreShutdown(void)
 {
     CorePluginsShutdown();
 

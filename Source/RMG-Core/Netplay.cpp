@@ -7,11 +7,13 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+#define CORE_INTERNAL
 #ifdef _WIN32
 #define _CRT_RAND_S
 #include <cstdlib>
 #endif // _WIN32
 #include "Netplay.hpp"
+#include "Library.hpp"
 #include "Error.hpp"
 
 #include "m64p/Api.hpp"
@@ -27,7 +29,7 @@ static bool l_HasInitNetplay = false;
 // Exported Functions
 //
 
-bool CoreInitNetplay(std::string address, int port, int player)
+CORE_EXPORT bool CoreInitNetplay(std::string address, int port, int player)
 {
 #ifdef NETPLAY
     std::string error;
@@ -82,7 +84,7 @@ bool CoreInitNetplay(std::string address, int port, int player)
 #endif // NETPLAY
 }
 
-bool CoreHasInitNetplay(void)
+CORE_EXPORT bool CoreHasInitNetplay(void)
 {
 #ifdef NETPLAY
     return l_HasInitNetplay;
@@ -91,7 +93,7 @@ bool CoreHasInitNetplay(void)
 #endif // NETPLAY
 }
 
-bool CoreShutdownNetplay(void)
+CORE_EXPORT bool CoreShutdownNetplay(void)
 {
 #ifdef NETPLAY
     std::string error;

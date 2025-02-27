@@ -7,8 +7,10 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+#define CORE_INTERNAL
 #include "Directories.hpp"
 #include "Settings.hpp"
+#include "Library.hpp"
 #include "Config.hpp"
 #include "Error.hpp"
 
@@ -130,7 +132,7 @@ static std::filesystem::path get_var_directory(std::string var, std::string appe
 // Exported Functions
 //
 
-bool CoreCreateDirectories(void)
+CORE_EXPORT bool CoreCreateDirectories(void)
 {
     std::string error;
     std::error_code errorCode;
@@ -167,7 +169,7 @@ bool CoreCreateDirectories(void)
     return true;
 }
 
-bool CoreGetPortableDirectoryMode(void)
+CORE_EXPORT bool CoreGetPortableDirectoryMode(void)
 {
 #ifdef PORTABLE_INSTALL
     static std::optional<bool> portable;
@@ -195,7 +197,7 @@ bool CoreGetPortableDirectoryMode(void)
 #endif // PORTABLE_INSTALL
 }
 
-std::filesystem::path CoreGetLibraryDirectory(void)
+CORE_EXPORT std::filesystem::path CoreGetLibraryDirectory(void)
 {
     std::filesystem::path directory;
 #ifdef PORTABLE_INSTALL
@@ -221,7 +223,7 @@ std::filesystem::path CoreGetLibraryDirectory(void)
     return directory.make_preferred();
 }
 
-std::filesystem::path CoreGetCoreDirectory(void)
+CORE_EXPORT std::filesystem::path CoreGetCoreDirectory(void)
 {
     std::filesystem::path directory;
 #ifdef PORTABLE_INSTALL
@@ -248,7 +250,7 @@ std::filesystem::path CoreGetCoreDirectory(void)
     return directory.make_preferred();
 }
 
-std::filesystem::path CoreGetPluginDirectory(void)
+CORE_EXPORT std::filesystem::path CoreGetPluginDirectory(void)
 {
     std::filesystem::path directory;
 #ifdef PORTABLE_INSTALL
@@ -275,7 +277,7 @@ std::filesystem::path CoreGetPluginDirectory(void)
     return directory.make_preferred();
 }
 
-std::filesystem::path CoreGetUserConfigDirectory(void)
+CORE_EXPORT std::filesystem::path CoreGetUserConfigDirectory(void)
 {
     std::filesystem::path directory;
 #ifdef PORTABLE_INSTALL
@@ -296,7 +298,7 @@ std::filesystem::path CoreGetUserConfigDirectory(void)
     return directory.make_preferred();
 }
 
-std::filesystem::path CoreGetDefaultUserDataDirectory(void)
+CORE_EXPORT std::filesystem::path CoreGetDefaultUserDataDirectory(void)
 {
     std::filesystem::path directory;
 #ifdef PORTABLE_INSTALL
@@ -316,7 +318,7 @@ std::filesystem::path CoreGetDefaultUserDataDirectory(void)
     return directory.make_preferred();
 }
 
-std::filesystem::path CoreGetDefaultUserCacheDirectory(void)
+CORE_EXPORT std::filesystem::path CoreGetDefaultUserCacheDirectory(void)
 {
     std::filesystem::path directory;
 #ifdef PORTABLE_INSTALL
@@ -337,7 +339,7 @@ std::filesystem::path CoreGetDefaultUserCacheDirectory(void)
     return directory.make_preferred();
 }
 
-std::filesystem::path CoreGetDefaultSaveDirectory(void)
+CORE_EXPORT std::filesystem::path CoreGetDefaultSaveDirectory(void)
 {
     std::filesystem::path directory;
 #ifdef PORTABLE_INSTALL
@@ -359,7 +361,7 @@ std::filesystem::path CoreGetDefaultSaveDirectory(void)
     return directory.make_preferred();
 }
 
-std::filesystem::path CoreGetDefaultSaveStateDirectory(void)
+CORE_EXPORT std::filesystem::path CoreGetDefaultSaveStateDirectory(void)
 {
     std::filesystem::path directory;
 #ifdef PORTABLE_INSTALL
@@ -381,7 +383,7 @@ std::filesystem::path CoreGetDefaultSaveStateDirectory(void)
     return directory.make_preferred();
 }
 
-std::filesystem::path CoreGetDefaultScreenshotDirectory(void)
+CORE_EXPORT std::filesystem::path CoreGetDefaultScreenshotDirectory(void)
 {
     std::filesystem::path directory;
 #ifdef PORTABLE_INSTALL
@@ -403,7 +405,7 @@ std::filesystem::path CoreGetDefaultScreenshotDirectory(void)
     return directory.make_preferred();
 }
 
-std::filesystem::path CoreGetUserDataDirectory(void)
+CORE_EXPORT std::filesystem::path CoreGetUserDataDirectory(void)
 {
     if (!m64p::Config.IsHooked())
     {
@@ -413,7 +415,7 @@ std::filesystem::path CoreGetUserDataDirectory(void)
     return std::filesystem::path(m64p::Config.GetUserDataPath());
 }
 
-std::filesystem::path CoreGetUserCacheDirectory(void)
+CORE_EXPORT std::filesystem::path CoreGetUserCacheDirectory(void)
 {
     if (!m64p::Config.IsHooked())
     {
@@ -423,7 +425,7 @@ std::filesystem::path CoreGetUserCacheDirectory(void)
     return std::filesystem::path(m64p::Config.GetUserCachePath());
 }
 
-std::filesystem::path CoreGetSharedDataDirectory(void)
+CORE_EXPORT std::filesystem::path CoreGetSharedDataDirectory(void)
 {
     std::filesystem::path directory;
 #ifdef PORTABLE_INSTALL
@@ -450,38 +452,38 @@ std::filesystem::path CoreGetSharedDataDirectory(void)
     return directory.make_preferred();
 }
 
-std::filesystem::path CoreGetSaveDirectory(void)
+CORE_EXPORT std::filesystem::path CoreGetSaveDirectory(void)
 {
     return CoreSettingsGetStringValue(SettingsID::Core_SaveSRAMPath);
 }
 
-std::filesystem::path CoreGetSaveStateDirectory(void)
+CORE_EXPORT std::filesystem::path CoreGetSaveStateDirectory(void)
 {
     return CoreSettingsGetStringValue(SettingsID::Core_SaveStatePath);
 }
 
-std::filesystem::path CoreGetScreenshotDirectory(void)
+CORE_EXPORT std::filesystem::path CoreGetScreenshotDirectory(void)
 {
     return CoreSettingsGetStringValue(SettingsID::Core_ScreenshotPath);
 }
 
 #ifndef PORTABLE_INSTALL
-void CoreSetLibraryPathOverride(std::filesystem::path path)
+CORE_EXPORT void CoreSetLibraryPathOverride(std::filesystem::path path)
 {
     l_LibraryPathOverride = path;
 }
 
-void CoreSetCorePathOverride(std::filesystem::path path)
+CORE_EXPORT void CoreSetCorePathOverride(std::filesystem::path path)
 {
     l_CorePathOverride = path;
 }
 
-void CoreSetPluginPathOverride(std::filesystem::path path)
+CORE_EXPORT void CoreSetPluginPathOverride(std::filesystem::path path)
 {
     l_PluginPathOverride = path;
 }
 
-void CoreSetSharedDataPathOverride(std::filesystem::path path)
+CORE_EXPORT void CoreSetSharedDataPathOverride(std::filesystem::path path)
 {
     l_SharedDataPathOverride = path;
 }

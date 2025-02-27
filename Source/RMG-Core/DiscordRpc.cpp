@@ -7,10 +7,12 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+#define CORE_INTERNAL
 #include "RomSettings.hpp"
 #include "DiscordRpc.hpp"
 #include "RomHeader.hpp"
 #include "Settings.hpp"
+#include "Library.hpp"
 
 #include <3rdParty/discord-rpc/include/discord_rpc.h>
 #include <algorithm>
@@ -21,7 +23,7 @@
 // Exported Functions
 //
 
-void CoreDiscordRpcInit(void)
+CORE_EXPORT void CoreDiscordRpcInit(void)
 {
     if (!CoreSettingsGetBoolValue(SettingsID::GUI_DiscordRpc))
     {
@@ -31,12 +33,12 @@ void CoreDiscordRpcInit(void)
     Discord_Initialize("801450412280119356", nullptr, 0, "");
 }
 
-void CoreDiscordRpcShutdown(void)
+CORE_EXPORT void CoreDiscordRpcShutdown(void)
 {
     Discord_Shutdown();
 }
 
-void CoreDiscordRpcUpdate(bool inGame)
+CORE_EXPORT void CoreDiscordRpcUpdate(bool inGame)
 {
     std::string smallImageKey;
     std::string largeImageKey;

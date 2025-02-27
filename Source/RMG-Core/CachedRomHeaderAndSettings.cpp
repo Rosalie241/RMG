@@ -7,10 +7,12 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+#define CORE_INTERNAL
 #include "CachedRomHeaderAndSettings.hpp"
 #include "Directories.hpp"
 #include "RomSettings.hpp"
 #include "RomHeader.hpp"
+#include "Library.hpp"
 #include "File.hpp"
 
 #include <algorithm>
@@ -90,7 +92,7 @@ static std::vector<l_CacheEntry>::iterator get_cache_entry_iter(std::filesystem:
 // Exported Functions
 //
 
-void CoreReadRomHeaderAndSettingsCache(void)
+CORE_EXPORT void CoreReadRomHeaderAndSettingsCache(void)
 {
     std::ifstream inputStream;
     char magicBuf[sizeof(CACHE_FILE_MAGIC)];
@@ -183,7 +185,7 @@ void CoreReadRomHeaderAndSettingsCache(void)
     inputStream.close();
 }
 
-bool CoreSaveRomHeaderAndSettingsCache(void)
+CORE_EXPORT bool CoreSaveRomHeaderAndSettingsCache(void)
 {
     std::ofstream outputStream;
     wchar_t fileNameBuf[MAX_FILENAME_LEN];
@@ -282,7 +284,7 @@ bool CoreSaveRomHeaderAndSettingsCache(void)
     return true;
 }
 
-bool CoreGetCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType* type, CoreRomHeader* header, CoreRomSettings* defaultSettings, CoreRomSettings* settings)
+CORE_EXPORT bool CoreGetCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType* type, CoreRomHeader* header, CoreRomSettings* defaultSettings, CoreRomSettings* settings)
 {
     bool ret = false;
     auto iter = get_cache_entry_iter(file);
@@ -355,7 +357,7 @@ bool CoreGetCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType* 
     return true;
 }
 
-bool CoreAddCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType type, CoreRomHeader header, CoreRomSettings defaultSettings, CoreRomSettings settings)
+CORE_EXPORT bool CoreAddCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType type, CoreRomHeader header, CoreRomSettings defaultSettings, CoreRomSettings settings)
 {
     l_CacheEntry cacheEntry;
 
@@ -383,7 +385,7 @@ bool CoreAddCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType t
     return true;
 }
 
-bool CoreUpdateCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType type, CoreRomHeader header, CoreRomSettings defaultSettings, CoreRomSettings settings)
+CORE_EXPORT bool CoreUpdateCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType type, CoreRomHeader header, CoreRomSettings defaultSettings, CoreRomSettings settings)
 {
     l_CacheEntry cachedEntry;
 
@@ -414,7 +416,7 @@ bool CoreUpdateCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomTyp
     return true;
 }
 
-bool CoreUpdateCachedRomHeaderAndSettings(std::filesystem::path file)
+CORE_EXPORT bool CoreUpdateCachedRomHeaderAndSettings(std::filesystem::path file)
 {
     CoreRomType type;
     CoreRomHeader header;
@@ -441,7 +443,7 @@ bool CoreUpdateCachedRomHeaderAndSettings(std::filesystem::path file)
     return CoreUpdateCachedRomHeaderAndSettings(file, type, header, defaultSettings, settings);
 }
 
-bool CoreClearRomHeaderAndSettingsCache(void)
+CORE_EXPORT bool CoreClearRomHeaderAndSettingsCache(void)
 {
     l_CacheEntries.clear();
     l_CacheEntriesChanged = true;

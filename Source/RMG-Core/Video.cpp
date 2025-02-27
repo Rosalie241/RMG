@@ -7,7 +7,10 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+#define CORE_INTERNAL
 #include "Video.hpp"
+
+#include "Library.hpp"
 #include "Error.hpp"
 
 #include "m64p/Api.hpp"
@@ -25,7 +28,7 @@ static std::mutex l_VideoMutex;
 // Exported Functions
 //
 
-bool CoreGetVideoSize(int& width, int& height)
+CORE_EXPORT bool CoreGetVideoSize(int& width, int& height)
 {
     const std::lock_guard<std::mutex> guard(l_VideoMutex);
     std::string error;
@@ -51,7 +54,7 @@ bool CoreGetVideoSize(int& width, int& height)
     return true;
 }
 
-bool CoreSetVideoSize(int width, int height)
+CORE_EXPORT bool CoreSetVideoSize(int width, int height)
 {
     const std::lock_guard<std::mutex> guard(l_VideoMutex);
     std::string error;
@@ -76,7 +79,7 @@ bool CoreSetVideoSize(int width, int height)
     return ret == M64ERR_SUCCESS;
 }
 
-bool CoreToggleFullscreen(void)
+CORE_EXPORT bool CoreToggleFullscreen(void)
 {
     std::string error;
     m64p_error ret;

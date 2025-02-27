@@ -9,13 +9,15 @@
  */
 #include "String.hpp"
 
+#include "Library.hpp"
+
 #include <algorithm>
 
 //
 // Exported Function
 //
 
-std::string CoreLowerString(std::string str)
+CORE_EXPORT std::string CoreLowerString(std::string str)
 {
 	std::string resultString = str;
 
@@ -29,7 +31,7 @@ std::string CoreLowerString(std::string str)
     return resultString;
 }
 
-bool CoreStringToInt(std::string str, int& num)
+CORE_EXPORT bool CoreStringToInt(std::string str, int& num)
 {
     char* endptr;
     num = (int)std::strtol(str.c_str(), &endptr, 10);

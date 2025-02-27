@@ -12,8 +12,12 @@
 
 #include <string>
 
+#ifdef CORE_INTERNAL
+
 // sets error message
 void CoreSetError(std::string error);
+
+#endif // CORE_INTERNAL
 
 // retrieves error message
 std::string CoreGetError(void);

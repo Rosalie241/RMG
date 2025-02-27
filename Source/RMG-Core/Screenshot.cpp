@@ -7,9 +7,12 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+#define CORE_INTERNAL
 #include "Screenshot.hpp"
-#include "m64p/Api.hpp"
+#include "Library.hpp"
 #include "Error.hpp"
+
+#include "m64p/Api.hpp"
 
 #include <string>
 
@@ -17,7 +20,7 @@
 // Exported Functions
 //
 
-bool CoreTakeScreenshot(void)
+CORE_EXPORT bool CoreTakeScreenshot(void)
 {
     std::string error;
     m64p_error ret;

@@ -7,7 +7,9 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+#define CORE_INTERNAL
 #include "Archive.hpp"
+#include "Library.hpp"
 #include "String.hpp"
 #include "Error.hpp"
 
@@ -107,7 +109,7 @@ static int zlib_filefunc_testerror(voidpf opaque, voidpf stream)
 // Exported Functions
 //
 
-bool CoreReadZipFile(std::filesystem::path file, std::filesystem::path& extractedFileName, bool& isDisk, std::vector<char>& outBuffer)
+CORE_EXPORT bool CoreReadZipFile(std::filesystem::path file, std::filesystem::path& extractedFileName, bool& isDisk, std::vector<char>& outBuffer)
 {
     std::string  error;
     std::fstream fileStream;
@@ -245,7 +247,7 @@ bool CoreReadZipFile(std::filesystem::path file, std::filesystem::path& extracte
     return false;
 }
 
-bool CoreRead7zipFile(std::filesystem::path file, std::filesystem::path& extractedFileName, bool& isDisk, std::vector<char>& outBuffer)
+CORE_EXPORT bool CoreRead7zipFile(std::filesystem::path file, std::filesystem::path& extractedFileName, bool& isDisk, std::vector<char>& outBuffer)
 {
     std::string  error;
 
@@ -401,7 +403,7 @@ bool CoreRead7zipFile(std::filesystem::path file, std::filesystem::path& extract
     return false;
 }
 
-bool CoreReadArchiveFile(std::filesystem::path file, std::filesystem::path& extractedFileName, bool& isDisk, std::vector<char>& outBuffer)
+CORE_EXPORT bool CoreReadArchiveFile(std::filesystem::path file, std::filesystem::path& extractedFileName, bool& isDisk, std::vector<char>& outBuffer)
 {
 	std::string file_extension;
 
@@ -431,7 +433,7 @@ bool CoreReadArchiveFile(std::filesystem::path file, std::filesystem::path& extr
     return true;
 }
 
-bool CoreUnzip(std::filesystem::path file, std::filesystem::path path)
+CORE_EXPORT bool CoreUnzip(std::filesystem::path file, std::filesystem::path path)
 {
     std::string error;
     std::filesystem::path targetPath;
