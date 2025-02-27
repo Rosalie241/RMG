@@ -1139,11 +1139,6 @@ EXPORT m64p_error CALL PluginConfig2(void* parent, int romConfig, CoreRomHeader*
     return M64ERR_SUCCESS;
 }
 
-EXPORT int CALL PluginConfig2HasRomConfig(void)
-{
-    return 1;
-}
-
 //
 // Input Plugin Functions
 //
