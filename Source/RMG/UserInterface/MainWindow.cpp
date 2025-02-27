@@ -72,6 +72,7 @@
 #include <RMG-Core/Key.hpp>
 
 using namespace UserInterface;
+using namespace Utilities;
 
 MainWindow::MainWindow() : QMainWindow(nullptr)
 {
@@ -83,15 +84,21 @@ MainWindow::~MainWindow()
 
 bool MainWindow::Init(QApplication* app, bool showUI, bool launchROM)
 {
+    // we use QtMessageBox::Error() instead of this->showErrorMessage()
+    // in this function, because our custom function uses
+    // ->show() instead of ->exec(), causing the user
+    // to not see the error message because ->show() is non-blocking
+    // and we return early here for critical errors
+
     if (!CoreInit())
     {
-        this->showErrorMessage("CoreInit() Failed", QString::fromStdString(CoreGetError()));
+        QtMessageBox::Error(this, "CoreInit() Failed", QString::fromStdString(CoreGetError()));
         return false;
     }
 
     if (!CoreApplyPluginSettings())
     {
-        this->showErrorMessage("CoreApplyPluginSettings() Failed", QString::fromStdString(CoreGetError()));
+        QtMessageBox::Error(this, "CoreApplyPluginSettings() Failed", QString::fromStdString(CoreGetError()));
     }
 
     this->configureTheme(app);
@@ -119,7 +126,7 @@ bool MainWindow::Init(QApplication* app, bool showUI, bool launchROM)
 
     if (!SetupVidExt(this->emulationThread, this, &this->ui_Widget_OpenGL, &this->ui_Widget_Vulkan))
     {
-        this->showErrorMessage("SetupVidExt() Failed", QString::fromStdString(CoreGetError()));
+        QtMessageBox::Error(this, "SetupVidExt() Failed", QString::fromStdString(CoreGetError()));
         return false;
     }
 
@@ -132,7 +139,7 @@ bool MainWindow::Init(QApplication* app, bool showUI, bool launchROM)
 
     if (!this->coreCallBacks->Init())
     {
-        this->showErrorMessage("CoreCallbacks::Init() Failed", QString::fromStdString(CoreGetError()));
+        QtMessageBox::Error(this, "CoreCallbacks::Init() Failed", QString::fromStdString(CoreGetError()));
         return false;
     }
 
