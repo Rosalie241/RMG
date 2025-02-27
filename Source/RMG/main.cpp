@@ -105,7 +105,7 @@ static LONG WINAPI exception_handler(_EXCEPTION_POINTERS* ExceptionInfo)
                                      nullptr, nullptr);
         if (!ret)
         {
-            show_error("Crash detected, failed to save minidump file!");
+            show_error("Failed to save minidump file!");
         }
     }
 
