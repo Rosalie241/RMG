@@ -112,9 +112,6 @@ static std::string get_plugin_type_name(CorePluginType type)
         case CorePluginType::Input:
             name = "Input";
             break;
-        case CorePluginType::Invalid:
-            name = "Invalid";
-            break;
     }
 
     return name + " Plugin";
