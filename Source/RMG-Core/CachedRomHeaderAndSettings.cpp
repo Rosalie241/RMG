@@ -18,21 +18,11 @@
 #include <fstream>
 #include <vector>
 
-#ifdef _WIN32
-#include <Windows.h>
-#else // Linux
-#include <linux/limits.h>
-#endif // _WIN32
-
 //
 // Local Defines
 //
 
-#ifdef _WIN32
-#define MAX_FILENAME_LEN MAX_PATH
-#else // Linux
-#define MAX_FILENAME_LEN PATH_MAX
-#endif // _WIN32
+#define MAX_FILENAME_LEN 4096
 #define ROMHEADER_NAME_LEN 256
 #define GOODNAME_LEN 256
 #define MD5_LEN 33
