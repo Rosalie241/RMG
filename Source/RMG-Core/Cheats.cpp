@@ -15,7 +15,6 @@
 #include "Settings.hpp"
 #include "Cheats.hpp"
 #include "Error.hpp"
-#include "Rom.hpp"
 
 #include "m64p/Api.hpp"
 
