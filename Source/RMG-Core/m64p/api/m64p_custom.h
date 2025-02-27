@@ -39,17 +39,6 @@ typedef m64p_error (*ptr_PluginConfig2)(void*, int, CoreRomHeader*, CoreRomSetti
 EXPORT m64p_error CALL PluginConfig2(void*, int, CoreRomHeader*, CoreRomSettings*);
 #endif
 
-/* PluginConfig2HasRomConfig(void)
- *
- * This optional function returns wether the plugin supports ROM specific config
- * using PluginConfig2
- * 
-*/
-typedef int (*ptr_PluginConfig2HasRomConfig)(void);
-#if defined(M64P_PLUGIN_PROTOTYPES) || defined(M64P_CORE_PROTOTYPES)
-EXPORT int CALL PluginConfig2HasRomConfig(void);
-#endif
-
 #endif // __cplusplus
 
 #ifdef __cplusplus

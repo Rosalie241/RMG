@@ -531,9 +531,7 @@ CORE_EXPORT bool CorePluginsHasROMConfig(CorePluginType type)
 
     plugin = get_plugin(type);
 
-    return plugin->Config2 != nullptr &&
-            plugin->Config2HasRomConfig != nullptr &&
-            plugin->Config2HasRomConfig() > 0;
+    return plugin->Config2 != nullptr;
 }
 
 CORE_EXPORT bool CorePluginsOpenROMConfig(CorePluginType type, void* parent, std::filesystem::path file)
