@@ -57,6 +57,7 @@ $XVFB_RUN "$script_dir/lib4bin" --dst-dir "$bin_dir" \
 	--with-hooks --strace-mode --with-sharun \
 	"$bin_dir/shared/bin/RMG" \
 	"$lib_dir"/libSDL* \
+	"$lib_dir"/libspeexdsp* \
 	"$lib_dir"/libGL* \
 	"$lib_dir"/libEGL* \
 	"$lib_dir"/libvulkan* \
