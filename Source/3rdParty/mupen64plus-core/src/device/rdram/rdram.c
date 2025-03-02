@@ -77,7 +77,7 @@ static size_t get_module(const struct rdram* rdram, uint32_t address)
 
     for (module = 0; module < modules; ++module) {
         id_field = ri_address_to_id_field(ri_address(address), swapfield_value(rdram->regs[module][RDRAM_ADDR_SELECT_REG]));
-        if ((id_field & 0xFFFE) == (idfield_value(rdram->regs[module][RDRAM_DEVICE_ID_REG]) & 0xFFFE)) {
+        if (id_field == idfield_value(rdram->regs[module][RDRAM_DEVICE_ID_REG])) {
             return module;
         }
     }
