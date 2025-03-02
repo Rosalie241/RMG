@@ -1,15 +1,8 @@
-name: HLE RSP
+name: HLE RSP - Scheduled
 
 on:
-  push:
-    paths-ignore:
-      - '.{gitattributes,gitignore,travis.yml}'
-      - '*.md,appveyor.yml,README'
-  pull_request:
-    paths-ignore:
-      - '.{gitattributes,gitignore,travis.yml}'
-      - '*.md,appveyor.yml,README'
-  workflow_dispatch:
+  schedule:
+    - cron: '30 14 21 * *'
 
 jobs:
 
@@ -28,6 +21,7 @@ jobs:
             arch: x86
     name: Linux / ${{ matrix.cc }} / ${{ matrix.arch }}
     runs-on: ubuntu-22.04
+    if: github.repository == 'mupen64plus/mupen64plus-rsp-hle'
     steps:
       - uses: actions/checkout@v4
       - name: Get build dependencies and arrange the environment
@@ -61,6 +55,7 @@ jobs:
             env: MINGW32
     name: Windows / MSYS2 ${{ matrix.cc }} / ${{ matrix.arch }}
     runs-on: windows-2022
+    if: github.repository == 'mupen64plus/mupen64plus-rsp-hle'
     defaults:
       run:
         shell: msys2 {0}
@@ -103,6 +98,7 @@ jobs:
             vs: 2019
     name: Windows / MSVC with ${{ matrix.toolset }} / ${{ matrix.arch }}
     runs-on: windows-${{ matrix.vs }}
+    if: github.repository == 'mupen64plus/mupen64plus-rsp-hle'
     defaults:
       run:
         shell: cmd

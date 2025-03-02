@@ -1,9 +1,70 @@
 RSP High-Level Emulation plugin for Mupen64Plus
 -----------------------------------------------
 
-Mupen64Plus-rsp-hle v2.5.9 - February 10, 2019
-----------------------------------------------
- - *** BETA RELEASE *** For Testing Only ***
+--------------------------------------------
+# Mupen64Plus-rsp-hle v2.6.0 - July 14, 2024
+
+## Merged PRs
+
+* [90](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/90): CI/CD: Update to generic scripts, independent schedule, etc
+* [89](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/89): Fix check for M64P_BIG_ENDIAN
+* [88](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/88): CI/CD: Add BLAKE2 hashfile
+* [87](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/87): CI/CD: Integrate scheduled builds and other...
+* [86](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/86): CI/CD: Update MSVC
+* [85](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/85): CI/CD: Update
+* [84](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/84): Added overload distortion effect, used by a few tracks in CBFD
+* [83](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/83): Fix out of bounds memory access encountered in CBFD
+* [82](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/82): CI/CD: Implement GitHub Actions and public nightly builds
+* [81](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/81): Add RISC-V Support
+* [80](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/80): build: Allow out of tree builds.
+* [79](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/79): Fix undefined behavior
+* [77](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/77): Allow non-default compilers without resorting to symbolic links
+* [76](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/76): Allow to set custom platform toolset from commands
+* [75](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/75): AppVeyor with artifact packaging
+* [74](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/74): Fix HQVM implementation
+* [73](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/73): Rework task dispatching implementation
+* [72](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/72): Changes to have more generic project files
+* [70](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/70): Implement HVQM ucode
+* [69](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/69): Integrate Hvqm preliminary work (not fully functional yet)
+* [68](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/68): Added ppc64le support
+
+## Top Contributors (2 or more commits)
+1. Jj0YzL5nvJ
+2. richard42
+3. Gillou68310
+4. derselbst
+
+
+------------------------------------------------
+# Mupen64Plus-rsp-hle v2.5.9 - February 10, 2019
+
+## Merged PRs
+
+* [67](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/67): Remove use of ConfigSaveSection
+* [66](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/66): Makefile aarch64
+* [65](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/65): Indi and Naboo now have an HLE implementation
+* [64](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/64): Remove WDC and Stunt Racer from LLE list
+* [63](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/63): Update homepage links
+* [62](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/62): Don't set MI_INTR_SP if task is not finished yet 
+* [61](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/61): Implement RE2 fill video double buffer ucode
+* [60](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/60): Update jpeg.c
+* [59](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/59): If DEBUG not set, set NDEBUG
+* [58](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/58): Build MXE targets as additional tests in travis build matrix
+* [54](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/54): Implement RSP fallback.
+* [53](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/53): Implement RE2 video frame decoding ucode
+* [52](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/52): specify audio ucode flags explicitly
+* [51](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/51): Let each ucode specify how sp status should be modified.
+* [47](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/47): Prevent yet one more illegal access to alist_buffer
+* [46](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/46): Add support for Re2 bilinear resizing
+* [45](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/45): Prevent more illegal accesses of alist_buffer
+* [44](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/44): Prevent CLEARBUFF for naudio and nead from deriving a count too big for alist_buffer
+* [43](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/43): Backport fixes from Project64
+* [42](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/42): Use faster container based Travis CI
+* [41](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/41): Use Ubuntu Trusty as base system for Travis CI
+* [40](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/40): Backports from project64
+* [38](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/38): Added x64 configuration to VisualStudio2013 project file
+* [37](https://github.com/mupen64plus/mupen64plus-rsp-hle/pull/37): Remove unnecessary OpenBSD warning.
+
 
 Mupen64Plus-rsp-hle v2.5 - April 26, 2015
 -------------------------------------------------
