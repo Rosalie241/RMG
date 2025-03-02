@@ -13,6 +13,8 @@
 #define CORRECTFILENAME(str)
 #endif /* OS_WINDOWS */
 
+#include <cstdint>
+
 #include "TxCache.h"
 #include "TxQuantize.h"
 #include "TxImage.h"

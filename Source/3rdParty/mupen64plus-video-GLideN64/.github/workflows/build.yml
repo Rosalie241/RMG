@@ -159,6 +159,7 @@ jobs:
           cmake -DCMAKE_BUILD_TYPE=Release -DMUPENPLUSAPI=1 -DMUPENPLUSAPI_GLIDENUI=1 -G "MSYS Makefiles" ../../src
           make -j$(nproc)
           popd
+          cp build/windows-mupen64plus-qt/plugin/Release/*.dll build/windows-mupen64plus-qt/
           cp ini/GLideN64.custom.ini build/windows-mupen64plus-qt/
           cp translations/release/*.qm build/windows-mupen64plus-qt/
         shell: msys2 {0}
