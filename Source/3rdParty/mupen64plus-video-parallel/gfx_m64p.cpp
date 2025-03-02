@@ -181,7 +181,6 @@ EXPORT m64p_error CALL PluginStartup(m64p_dynlib_handle _CoreLibHandle, void *Co
     ConfigSetDefaultBool(configVideoParallel, KEY_DEINTERLACE, 0, "Deinterlacing method. False=Bob, True=Weave");
     ConfigSetDefaultBool(configVideoParallel, KEY_SSREADBACKS, 0, "Enable superscaling of readbacks when upsampling");
     ConfigSetDefaultBool(configVideoParallel, KEY_SSDITHER, 1, "Enable superscaling of dithering when upsampling");
-    ConfigSetDefaultBool(configVideoParallel, KEY_SYNCHRONOUS, 1, "Enable synchronizing RDP and CPU");
     ConfigSetDefaultInt(configVideoParallel, KEY_OVERSCANCROP, 0, "Amount of overscan pixels to crop on all sides");
     ConfigSetDefaultInt(configVideoParallel, KEY_VERTICAL_STRETCH, 0, "Amount of pixels to stretch by vertically. Can fix PAL ports that didn't fill the PAL resolution of 288p (use value of 24 in that case).");
     ConfigSetDefaultBool(configVideoParallel, KEY_AA, 1, "VI anti-aliasing, smooths polygon edges.");
@@ -311,13 +310,10 @@ EXPORT int CALL RomOpen(void)
     vk_overscan = ConfigGetParamInt(configVideoParallel, KEY_OVERSCANCROP);
     vk_vertical_stretch = ConfigGetParamInt(configVideoParallel, KEY_VERTICAL_STRETCH);
 
-    vk_synchronous = ConfigGetParamBool(configVideoParallel, KEY_SYNCHRONOUS);
-
     m64p_error netplay_init = ConfigReceiveNetplayConfig(NULL, 0);
     if (netplay_init != M64ERR_NOT_INIT)
     {
         DebugMessage(M64MSG_INFO, "Netplay enabled, disabling vsync");
-        vk_synchronous = 1; // force synchronous rdp during netplay
         window_vsync   = 0; // force disable vsync during netplay
         vk_ssreadbacks = 0; // can cause desyncs
     }

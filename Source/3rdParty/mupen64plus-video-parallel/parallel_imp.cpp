@@ -24,7 +24,7 @@ unsigned vk_vertical_stretch;
 unsigned vk_downscaling_steps;
 bool vk_native_texture_lod;
 bool vk_native_tex_rect;
-bool vk_synchronous, vk_divot_filter, vk_gamma_dither;
+bool vk_divot_filter, vk_gamma_dither;
 bool vk_vi_aa, vk_vi_scale, vk_dither_filter;
 bool vk_interlacing;
 
@@ -438,11 +438,7 @@ void vk_process_commands()
 			uint32_t height = viCalculateVerticalHeight(*GET_GFX_INFO(VI_V_START_REG), *GET_GFX_INFO(VI_Y_SCALE_REG));
 			*GET_GFX_INFO(DPC_CLOCK_REG) = width * height * 2;
 
-			// For synchronous RDP:
-			if (vk_synchronous)
-			{
-				processor->wait_for_timeline(processor->signal_timeline());
-			}
+			processor->wait_for_timeline(processor->signal_timeline());
 
 			*gfx.MI_INTR_REG |= DP_INTERRUPT;
 			*GET_GFX_INFO(DPC_STATUS_REG) &= ~(DP_STATUS_PIPE_BUSY | DP_STATUS_START_GCLK);
