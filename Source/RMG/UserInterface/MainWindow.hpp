@@ -212,7 +212,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     void on_Action_View_Log(void);
 
     void on_Action_Netplay_CreateSession(void);
-    void on_Action_Netplay_JoinSession(void);
+    void on_Action_Netplay_BrowseSessions(void);
     void on_Action_Netplay_ViewSession(void);
 
     void on_Action_Help_Github(void);

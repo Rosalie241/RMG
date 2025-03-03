@@ -850,7 +850,7 @@ void MainWindow::updateActions(bool inEmulation, bool isPaused)
 
 #ifdef NETPLAY
     this->action_Netplay_CreateSession->setEnabled(!inEmulation && this->netplaySessionDialog == nullptr);
-    this->action_Netplay_JoinSession->setEnabled(!inEmulation && this->netplaySessionDialog == nullptr);
+    this->action_Netplay_BrowseSessions->setEnabled(!inEmulation && this->netplaySessionDialog == nullptr);
     this->action_Netplay_ViewSession->setEnabled(inEmulation && this->netplaySessionDialog != nullptr);
 #endif // NETPLAY
 
@@ -1182,7 +1182,7 @@ void MainWindow::connectActionSignals(void)
     connect(this->action_View_Log, &QAction::triggered, this, &MainWindow::on_Action_View_Log);
 
     connect(this->action_Netplay_CreateSession, &QAction::triggered, this, &MainWindow::on_Action_Netplay_CreateSession);
-    connect(this->action_Netplay_JoinSession, &QAction::triggered, this, &MainWindow::on_Action_Netplay_JoinSession);
+    connect(this->action_Netplay_BrowseSessions, &QAction::triggered, this, &MainWindow::on_Action_Netplay_BrowseSessions);
     connect(this->action_Netplay_ViewSession, &QAction::triggered, this, &MainWindow::on_Action_Netplay_ViewSession);
 
     connect(this->action_Help_Github, &QAction::triggered, this, &MainWindow::on_Action_Help_Github);
@@ -1966,7 +1966,7 @@ void MainWindow::on_Action_Netplay_CreateSession(void)
 #endif // NETPLAY
 }
 
-void MainWindow::on_Action_Netplay_JoinSession(void)
+void MainWindow::on_Action_Netplay_BrowseSessions(void)
 {
 #ifdef NETPLAY
     static QWebSocket webSocket;
