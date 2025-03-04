@@ -2079,6 +2079,13 @@ void MainWindow::on_Emulation_Finished(bool ret, QString error)
 
     if (this->ui_QuitAfterEmulation)
     {
+        // show error message when
+        // the user has requested we quit
+        // after emulation
+        if (!ret)
+        {
+            this->showErrorMessage("EmulationThread::run Failed", error);
+        }
         this->close();
         return;
     }
