@@ -12,6 +12,6 @@
 
 namespace m64p
 {
-CORE_EXPORT m64p::CoreApi Core;
-CORE_EXPORT m64p::ConfigApi Config;
+m64p::CoreApi Core;
+m64p::ConfigApi Config;
 } // namespace m64p
