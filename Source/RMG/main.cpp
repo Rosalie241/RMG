@@ -81,7 +81,7 @@ static LONG WINAPI exception_handler(_EXCEPTION_POINTERS* ExceptionInfo)
         return EXCEPTION_CONTINUE_SEARCH;
     }
     
-    if (filename_len >= MAX_PATH)
+    if ((filename_len + 4) > MAX_PATH)
     { // replace .exe with .dmp
         wcscpy((dump_filename + (filename_len - 4)), L".dmp");
     }
