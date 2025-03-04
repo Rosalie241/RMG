@@ -60,7 +60,7 @@ static std::vector<CoreCheat> l_NetplayCheats;
 // Local Functions
 //
 
-static bool read_file_lines(std::filesystem::path file, std::vector<std::string>& lines)
+static bool read_file_lines(const std::filesystem::path& file, std::vector<std::string>& lines)
 {
     std::string error;
     std::ifstream inputStream(file);
@@ -91,7 +91,7 @@ static bool read_file_lines(std::filesystem::path file, std::vector<std::string>
     return true;
 }
 
-static std::filesystem::path get_cheat_file_name(CoreRomHeader romHeader, CoreRomSettings romSettings)
+static std::filesystem::path get_cheat_file_name(const CoreRomHeader& romHeader, const CoreRomSettings& romSettings)
 {
     std::filesystem::path cheatFileName;
 
@@ -114,7 +114,7 @@ static std::filesystem::path get_cheat_file_name(CoreRomHeader romHeader, CoreRo
     return cheatFileName;
 }
 
-static std::filesystem::path get_shared_cheat_file_path(CoreRomHeader romHeader, CoreRomSettings romSettings)
+static std::filesystem::path get_shared_cheat_file_path(const CoreRomHeader& romHeader, const CoreRomSettings& romSettings)
 {
     std::filesystem::path cheatFilePath;
 
@@ -127,7 +127,7 @@ static std::filesystem::path get_shared_cheat_file_path(CoreRomHeader romHeader,
    return cheatFilePath;
 }
 
-static std::filesystem::path get_user_cheat_file_path(CoreRomHeader romHeader, CoreRomSettings romSettings)
+static std::filesystem::path get_user_cheat_file_path(const CoreRomHeader& romHeader, const CoreRomSettings& romSettings)
 {
     std::filesystem::path oldCheatFilePath;
     std::filesystem::path cheatFilePath;
@@ -433,7 +433,7 @@ static bool parse_cheat_file(const std::vector<std::string>& lines, CoreCheatFil
     return true;
 }
 
-static bool write_cheat_file(CoreCheatFile cheatFile, std::filesystem::path path)
+static bool write_cheat_file(const CoreCheatFile& cheatFile, const std::filesystem::path& path)
 {
     std::string lines;
     std::ofstream outputStream(path);
@@ -509,7 +509,7 @@ static bool write_cheat_file(CoreCheatFile cheatFile, std::filesystem::path path
     return true;
 }
 
-bool combine_cheat_code_and_option(CoreCheatCode code, CoreCheatOption option, int32_t& combinedValue)
+bool combine_cheat_code_and_option(const CoreCheatCode& code, const CoreCheatOption& option, int32_t& combinedValue)
 {
     std::string codeValueString;
     std::string optionValueString;
