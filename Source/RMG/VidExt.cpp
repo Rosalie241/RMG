@@ -10,9 +10,9 @@
 #include "VidExt.hpp"
 
 #include <RMG-Core/Callback.hpp>
-#include <RMG-Core/m64p/Api.hpp>
 #include <RMG-Core/Netplay.hpp>
 #include <RMG-Core/VidExt.hpp>
+#include <RMG-Core/Video.hpp>
 
 #include "OnScreenDisplay.hpp"
 
@@ -367,20 +367,20 @@ static m64p_error VidExt_SetCaption(const char *Title)
 
 static m64p_error VidExt_ToggleFS(void)
 {
-    int videoMode = M64VIDEO_WINDOWED;
+    CoreVideoMode videoMode;
 
-    if (m64p::Core.DoCommand(M64CMD_CORE_STATE_QUERY, M64CORE_VIDEO_MODE, &videoMode) != M64ERR_SUCCESS)
+    if (!CoreGetVideoMode(videoMode))
     {
         return M64ERR_SYSTEM_FAIL;
     }
 
     if (QThread::currentThread() != l_RenderThread)
     {
-        l_MainWindow->on_VidExt_ToggleFS((videoMode == M64VIDEO_WINDOWED));
+        l_MainWindow->on_VidExt_ToggleFS((videoMode == CoreVideoMode::Windowed));
     }
     else
     {
-        l_EmuThread->on_VidExt_ToggleFS((videoMode == M64VIDEO_WINDOWED));
+        l_EmuThread->on_VidExt_ToggleFS((videoMode == CoreVideoMode::Windowed));
     }
 
     return M64ERR_SUCCESS;
