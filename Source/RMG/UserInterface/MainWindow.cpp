@@ -433,8 +433,7 @@ void MainWindow::showErrorMessage(QString text, QString details, bool force)
             continue;
         }
 
-        if (!force &&
-            messageBox->text() == text &&
+        if (messageBox->text() == text &&
             messageBox->detailedText() == details)
         {
             return;
@@ -443,7 +442,7 @@ void MainWindow::showErrorMessage(QString text, QString details, bool force)
 
     // ensure we only display 10 errors at
     // the same time, to prevent message dialog spam
-    if (!force && this->ui_MessageBoxList.size() >= 10)
+    if (this->ui_MessageBoxList.size() >= 10)
     {
         return;
     }
