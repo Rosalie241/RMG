@@ -118,3 +118,22 @@ CORE_EXPORT bool CoreToggleFullscreen(void)
 
     return ret == M64ERR_SUCCESS;
 }
+
+CORE_EXPORT bool CoreGetVideoMode(CoreVideoMode& mode)
+{
+    std::string error;
+    m64p_error ret;
+    m64p_video_mode videoMode;
+
+    ret = m64p::Core.DoCommand(M64CMD_CORE_STATE_QUERY, M64CORE_VIDEO_MODE, &videoMode);
+    if (ret != M64ERR_SUCCESS)
+    {
+        error = "CoreGetVideoMode m64p::Core.DoCommand(M64CMD_CORE_STATE_QUERY) Failed: ";
+        error += m64p::Core.ErrorMessage(ret);
+        CoreSetError(error);
+        return false;
+    }
+
+    mode = static_cast<CoreVideoMode>(videoMode);
+    return true;
+}

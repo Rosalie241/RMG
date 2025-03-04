@@ -10,6 +10,13 @@
 #ifndef CORE_VIDEO_HPP
 #define CORE_VIDEO_HPP
 
+enum CoreVideoMode
+{
+	None       = 1,
+	Windowed   = 2,
+	Fullscreen = 3
+};
+
 // attempts to retrieve the video size
 bool CoreGetVideoSize(int& width, int& height);
 
@@ -18,5 +25,8 @@ bool CoreSetVideoSize(int width, int height);
 
 // toggles fullscreen
 bool CoreToggleFullscreen(void);
+
+// retrieves current video mode
+bool CoreGetVideoMode(CoreVideoMode& mode);
 
 #endif // CORE_VIDEO_HPP
