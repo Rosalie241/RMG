@@ -29,7 +29,7 @@ CORE_EXPORT std::string CoreConvertStringEncoding(std::string str, CoreStringEnc
 
     char outputBuf[256] = {0};
 
-    char* inputBufPtr = (char*)str.c_str();
+    char* inputBufPtr = const_cast<char*>(str.c_str());
     char* outputBufPtr = outputBuf;
 
     size_t inputBufSize = str.size();

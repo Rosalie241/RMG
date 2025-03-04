@@ -58,7 +58,7 @@ CORE_EXPORT bool CoreInitNetplay(std::string address, int port, int player)
         return false;
     }
 
-    ret = m64p::Core.DoCommand(M64CMD_NETPLAY_INIT, port, (void*)address.c_str());
+    ret = m64p::Core.DoCommand(M64CMD_NETPLAY_INIT, port, const_cast<char*>(address.c_str()));
     if (ret != M64ERR_SUCCESS)
     {
         error = "CoreInitNetplay m64p::Core.DoCommand(M64CMD_NETPLAY_INIT) Failed: ";

@@ -129,7 +129,13 @@ CORE_EXPORT bool CoreInit(void)
         return false;
     }
 
-    m64p_ret = m64p::Core.Startup(FRONTEND_API_VERSION, CoreGetUserConfigDirectory().string().c_str(), CoreGetSharedDataDirectory().string().c_str(), (void*)l_CoreContextString, CoreDebugCallback, nullptr, CoreStateCallback);
+    m64p_ret = m64p::Core.Startup(FRONTEND_API_VERSION, 
+                                    CoreGetUserConfigDirectory().string().c_str(), 
+                                    CoreGetSharedDataDirectory().string().c_str(), 
+                                    l_CoreContextString,
+                                    CoreDebugCallback, 
+                                    nullptr,
+                                    CoreStateCallback);
     if (m64p_ret != M64ERR_SUCCESS)
     {
         error = "CoreInit M64P::Core.Startup() Failed: ";

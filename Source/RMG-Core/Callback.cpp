@@ -69,7 +69,7 @@ void CoreDebugCallback(void* context, int level, const char* message)
     l_DebugCallbackFunc((CoreDebugMessageType)level, contextString, messageString);
 }
 
-void CoreStateCallback(void* context, m64p_core_param param, int value)
+void CoreStateCallback(void*, m64p_core_param param, int value)
 {
     if (!l_SetupCallbacks)
     {
@@ -93,7 +93,7 @@ CORE_EXPORT bool CoreSetupCallbacks(std::function<void(enum CoreDebugMessageType
     // send pending messages
     for (const auto& callback : l_PendingCallbacks)
     {
-        CoreDebugCallback((void*)callback.Context.c_str(), callback.Level, callback.Message.c_str());
+        CoreDebugCallback(const_cast<char*>(callback.Context.c_str()), callback.Level, callback.Message.c_str());
     }
     l_PendingCallbacks.clear();
 
@@ -107,5 +107,5 @@ CORE_EXPORT void CoreSetPrintDebugCallback(bool enabled)
 
 CORE_EXPORT void CoreAddCallbackMessage(CoreDebugMessageType type, std::string message)
 {
-    CoreDebugCallback((void*)"[GUI]   ", (int)type, message.c_str());
+    CoreDebugCallback(const_cast<char*>("[GUI]   "), static_cast<int>(type), message.c_str());
 }

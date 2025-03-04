@@ -15,7 +15,7 @@
 #define HOOK_FUNC_OPT(handle, prevar, var) this->var = (ptr_##prevar##var)CoreGetLibrarySymbol(handle, #prevar #var);
 
 #define HOOK_FUNC(handle, prevar, var)                                    \
-    this->var = (ptr_##prevar##var)CoreGetLibrarySymbol(handle, #prevar #var); \
+    this->var = reinterpret_cast<ptr_##prevar##var>(CoreGetLibrarySymbol(handle, #prevar #var)); \
     if (this->var == nullptr)                                             \
     {                                                                     \
         this->errorMessage += "Failed to hook \"" #prevar #var "\": ";    \
@@ -24,6 +24,6 @@
     }
 
 #define UNHOOK_FUNC(prevar, var) \
-    this->var = (ptr_##prevar##var)nullptr;
+    this->var = nullptr;
 
 #endif // M64P_MACROS_HPP

@@ -28,18 +28,12 @@
 #include <array>
 
 //
-// Local Defines
-//
-
-#define NUM_PLUGIN_TYPES 4
-
-//
 // Local Variables
 //
 
-static m64p::PluginApi l_Plugins[NUM_PLUGIN_TYPES];
-static std::string     l_PluginFiles[NUM_PLUGIN_TYPES];
-static char l_PluginContext[NUM_PLUGIN_TYPES][20];
+static m64p::PluginApi l_Plugins[4];
+static std::string     l_PluginFiles[4];
+static char l_PluginContext[4][20];
 
 //
 // Local Functions
@@ -48,12 +42,13 @@ static char l_PluginContext[NUM_PLUGIN_TYPES][20];
 static m64p::PluginApi* get_plugin(CorePluginType type)
 {
     if (type == CorePluginType::Invalid ||
-        (int)type < 0 || (int)type > 4)
+        static_cast<int>(type) < 0 || 
+        static_cast<int>(type) > 4)
     {
         return nullptr;
     }
 
-    return &l_Plugins[(int)type - 1];
+    return &l_Plugins[static_cast<int>(type) - 1];
 }
 
 static CorePluginType get_plugin_type(m64p::PluginApi* plugin)
@@ -67,13 +62,13 @@ static CorePluginType get_plugin_type(m64p::PluginApi* plugin)
         return CorePluginType::Invalid;
     }
 
-    if (m64p_type < (int)CorePluginType::Rsp || 
-        m64p_type > (int)CorePluginType::Input)
+    if (m64p_type < static_cast<int>(CorePluginType::Rsp) || 
+        m64p_type > static_cast<int>(CorePluginType::Input))
     {
         return CorePluginType::Invalid;
     }
 
-    return (CorePluginType)m64p_type;
+    return static_cast<CorePluginType>(m64p_type);
 }
 
 static std::string get_plugin_name(m64p::PluginApi* plugin, const std::string& filename)
@@ -200,9 +195,9 @@ static bool apply_plugin_settings(const std::array<std::string, 4>& pluginSettin
     CoreLibraryHandle handle;
     m64p_error        ret;
 
-    for (int i = 0; i < NUM_PLUGIN_TYPES; i++)
+    for (int i = 0; i < static_cast<int>(CorePluginType::Count); i++)
     {
-        pluginType = (CorePluginType)(i + 1);
+        pluginType = static_cast<CorePluginType>(i + 1);
         settingValue = get_plugin_path(pluginType, pluginSettings[i]);
         if (settingValue.empty())
         { // skip invalid setting value
@@ -280,7 +275,7 @@ static bool apply_plugin_settings(const std::array<std::string, 4>& pluginSettin
             }
 
             // attempt to start plugin
-            ret = plugin->Startup(m64p::Core.GetHandle(), (void*)l_PluginContext[i], CoreDebugCallback);
+            ret = plugin->Startup(m64p::Core.GetHandle(), l_PluginContext[i], CoreDebugCallback);
             if (ret != M64ERR_SUCCESS)
             {
                 error = "apply_plugin_settings (";
@@ -485,13 +480,13 @@ CORE_EXPORT bool CoreArePluginsReady(void)
 {
     std::string error;
 
-    for (int i = 0; i < NUM_PLUGIN_TYPES; i++)
+    for (int i = 0; i < static_cast<int>(CorePluginType::Count); i++)
     {
         if (!l_Plugins[i].IsHooked())
         {
             error = "CoreArePluginsReady Failed: ";
             error += "(";
-            error += get_plugin_type_name((CorePluginType)(i + 1));
+            error += get_plugin_type_name(static_cast<CorePluginType>(i + 1));
             error += ")->IsHooked() returned false!";
             CoreSetError(error);
             return false;
@@ -556,9 +551,9 @@ CORE_EXPORT bool CoreAttachPlugins(void)
         return false;
     }
 
-    for (int i = 0; i < NUM_PLUGIN_TYPES; i++)
+    for (int i = 0; i < static_cast<int>(CorePluginType::Count); i++)
     {
-        ret = m64p::Core.AttachPlugin(plugin_types[i], get_plugin((CorePluginType)plugin_types[i])->GetHandle());
+        ret = m64p::Core.AttachPlugin(plugin_types[i], get_plugin(static_cast<CorePluginType>(plugin_types[i]))->GetHandle());
         if (ret != M64ERR_SUCCESS)
         {
             error = "CoreAttachPlugins m64p::Core.AttachPlugin(";
@@ -583,9 +578,9 @@ CORE_EXPORT bool CoreDetachPlugins(void)
         return false;
     }
 
-    for (int i = 0; i < NUM_PLUGIN_TYPES; i++)
+    for (int i = 0; i < static_cast<int>(CorePluginType::Count); i++)
     {
-        ret = m64p::Core.DetachPlugin((m64p_plugin_type)(i + 1));
+        ret = m64p::Core.DetachPlugin(static_cast<m64p_plugin_type>(i + 1));
         if (ret != M64ERR_SUCCESS)
         {
             error = "CoreDetachPlugins m64p::Core.DetachPlugin(";
@@ -606,7 +601,7 @@ CORE_EXPORT bool CorePluginsShutdown(void)
     m64p::PluginApi* plugin;
     m64p_error       ret;
 
-    for (int i = 0; i < NUM_PLUGIN_TYPES; i++)
+    for (int i = 0; i < static_cast<int>(CorePluginType::Count); i++)
     {
         plugin = &l_Plugins[i];
 
@@ -617,7 +612,7 @@ CORE_EXPORT bool CorePluginsShutdown(void)
             if (ret != M64ERR_SUCCESS)
             {
                 error = "CorePluginsShutdown (";
-                error += get_plugin_type_name((CorePluginType)(i + 1));
+                error += get_plugin_type_name(static_cast<CorePluginType>(i + 1));
                 error += ")->Shutdown() Failed: ";
                 error += m64p::Core.ErrorMessage(ret);
                 CoreSetError(error);

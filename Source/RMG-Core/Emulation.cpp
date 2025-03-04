@@ -124,7 +124,7 @@ static void apply_pif_rom_settings(void)
         SettingsID::Core_PIF_PAL,
     };
 
-    std::string rom = CoreSettingsGetStringValue(settingsIds[(int)romHeader.SystemType]);
+    std::string rom = CoreSettingsGetStringValue(settingsIds[static_cast<int>(romHeader.SystemType)]);
     if (!std::filesystem::is_regular_file(rom))
     {
         return;

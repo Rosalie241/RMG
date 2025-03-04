@@ -248,7 +248,7 @@ CORE_EXPORT bool CoreSaveState(std::filesystem::path file, CoreSaveStateType typ
         return false;
     }
 
-    ret = m64p::Core.DoCommand(M64CMD_STATE_SAVE, (int)type, (void*)file.string().c_str());
+    ret = m64p::Core.DoCommand(M64CMD_STATE_SAVE, static_cast<int>(type), const_cast<char*>(file.string().c_str()));
     if (ret != M64ERR_SUCCESS)
     {
         error = "CoreSaveState: m64p::Core.DoCommand(M64CMD_STATE_SAVE) Failed: ";
@@ -290,7 +290,7 @@ CORE_EXPORT bool CoreLoadSaveState(std::filesystem::path file)
         return false;
     }
 
-    ret = m64p::Core.DoCommand(M64CMD_STATE_LOAD, 0, (void*)file.string().c_str());
+    ret = m64p::Core.DoCommand(M64CMD_STATE_LOAD, 0, const_cast<char*>(file.string().c_str()));
     if (ret != M64ERR_SUCCESS)
     {
         error = "CoreLoadSaveState: m64p::Core.DoCommand(M64CMD_STATE_LOAD) Failed: ";

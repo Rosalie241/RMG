@@ -869,7 +869,7 @@ CORE_EXPORT bool CoreSetCheatOption(std::filesystem::path file, CoreCheat cheat,
     settingSection = romSettings.MD5 + " Cheats";
     settingKey = "Cheat \"" + cheat.Name + "\" Option";
 
-    return CoreSettingsSetValue(settingSection, settingKey, (int)option.Value);
+    return CoreSettingsSetValue(settingSection, settingKey, static_cast<int>(option.Value));
 }
 
 CORE_EXPORT bool CoreGetCheatOption(std::filesystem::path file, CoreCheat cheat, CoreCheatOption& option)

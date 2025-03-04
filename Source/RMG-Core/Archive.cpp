@@ -39,39 +39,37 @@
 // Local Functions
 //
 
-static voidpf zlib_filefunc_open(voidpf opaque, const void* filename, int mode)
+static voidpf zlib_filefunc_open(voidpf opaque, const void* filename, int)
 {
-    std::filesystem::path path = *(std::filesystem::path*)filename;
-
-    // we need a static filestream
-    static std::ifstream fileStream;
+    std::filesystem::path path = *static_cast<const std::filesystem::path*>(filename);
+    std::ifstream* fileStream = static_cast<std::ifstream*>(opaque);
 
     // attempt to open file
-    fileStream.open(path, std::ios::binary);
-    if (!fileStream.is_open())
+    fileStream->open(path, std::ios::binary);
+    if (!fileStream->is_open())
     {
         return nullptr;
     }
 
-    return (voidpf)&fileStream;
+    return static_cast<voidpf>(fileStream);
 }
 
-static uLong zlib_filefunc_read(voidpf opaque, voidpf stream, void* buf, uLong size)
+static uLong zlib_filefunc_read(voidpf, voidpf stream, void* buf, uLong size)
 {
-    std::ifstream* fileStream = (std::ifstream*)stream;
-    fileStream->read((char*)buf, size);
+    std::ifstream* fileStream = static_cast<std::ifstream*>(stream);
+    fileStream->read(static_cast<char*>(buf), size);
     return fileStream->fail() ? fileStream->gcount() : size;
 }
 
-static ZPOS64_T zlib_filefunc_tell(voidpf opaque, voidpf stream)
+static ZPOS64_T zlib_filefunc_tell(voidpf, voidpf stream)
 {
-    std::ifstream* fileStream = (std::ifstream*)stream;
+    std::ifstream* fileStream = static_cast<std::ifstream*>(stream);
     return fileStream->tellg();
 }
 
-static long zlib_filefunc_seek(voidpf opaque, voidpf stream, ZPOS64_T offset, int origin)
+static long zlib_filefunc_seek(voidpf, voidpf stream, ZPOS64_T offset, int origin)
 {
-    std::ifstream* fileStream = (std::ifstream*)stream;
+    std::ifstream* fileStream = static_cast<std::ifstream*>(stream);
     std::ios_base::seekdir seekOrigin;
 
     switch (origin)
@@ -93,14 +91,14 @@ static long zlib_filefunc_seek(voidpf opaque, voidpf stream, ZPOS64_T offset, in
     return fileStream->fail() ? -1 : 0;
 }
 
-static int zlib_filefunc_close(voidpf opaque, voidpf stream)
+static int zlib_filefunc_close(voidpf, voidpf stream)
 {
-    std::ifstream* fileStream = (std::ifstream*)stream;
+    std::ifstream* fileStream = static_cast<std::ifstream*>(stream);
     fileStream->close();
     return fileStream->fail() ? -1 : 0;
 }
 
-static int zlib_filefunc_testerror(voidpf opaque, voidpf stream)
+static int zlib_filefunc_testerror(voidpf, voidpf)
 {
     return errno;
 }
@@ -112,7 +110,7 @@ static int zlib_filefunc_testerror(voidpf opaque, voidpf stream)
 CORE_EXPORT bool CoreReadZipFile(std::filesystem::path file, std::filesystem::path& extractedFileName, bool& isDisk, std::vector<char>& outBuffer)
 {
     std::string  error;
-    std::fstream fileStream;
+    std::ifstream fileStream;
 
     unzFile           zipFile;
     unz_global_info64 zipInfo;
@@ -125,9 +123,9 @@ CORE_EXPORT bool CoreReadZipFile(std::filesystem::path file, std::filesystem::pa
     filefuncs.zseek64_file = zlib_filefunc_seek;
     filefuncs.zclose_file  = zlib_filefunc_close;
     filefuncs.zerror_file  = zlib_filefunc_testerror;
-    filefuncs.opaque       = nullptr;
+    filefuncs.opaque       = &fileStream;
 
-    zipFile = unzOpen2_64((const void*)&file, &filefuncs);
+    zipFile = unzOpen2_64(&file, &filefuncs);
     if (zipFile == nullptr)
     {
         if (errno == 0)
@@ -252,7 +250,7 @@ CORE_EXPORT bool CoreRead7zipFile(std::filesystem::path file, std::filesystem::p
     std::string  error;
 
     const ISzAlloc alloc = { SzAlloc, SzFree };
-    const size_t bufSize = ((size_t)1 << 18);
+    const size_t bufSize = (static_cast<size_t>(1) << 18);
 
     ISzAlloc allocImp;
     ISzAlloc allocTempImp;
@@ -287,7 +285,7 @@ CORE_EXPORT bool CoreRead7zipFile(std::filesystem::path file, std::filesystem::p
     lookStream.buf = nullptr;
 
     // allocate memory look reader
-    lookStream.buf = (Byte*)ISzAlloc_Alloc(&allocImp, bufSize);
+    lookStream.buf = static_cast<Byte*>(ISzAlloc_Alloc(&allocImp, bufSize));
     if (lookStream.buf == nullptr)
     {
         error = "CoreRead7zipFile Failed: ISzAlloc_Alloc Failed!";
@@ -442,6 +440,7 @@ CORE_EXPORT bool CoreUnzip(std::filesystem::path file, std::filesystem::path pat
 
     unzFile           zipFile;
     unz_global_info   zipInfo;
+    std::ifstream     fileStream;
     std::ofstream     outputStream;
     std::vector<char> readBuffer(UNZIP_READ_SIZE);
     int bytes_read = 0;
@@ -454,9 +453,9 @@ CORE_EXPORT bool CoreUnzip(std::filesystem::path file, std::filesystem::path pat
     filefuncs.zseek64_file = zlib_filefunc_seek;
     filefuncs.zclose_file  = zlib_filefunc_close;
     filefuncs.zerror_file  = zlib_filefunc_testerror;
-    filefuncs.opaque       = nullptr;
+    filefuncs.opaque       = &fileStream;
 
-    zipFile = unzOpen2_64((const void*)&file, &filefuncs);
+    zipFile = unzOpen2_64(&file, &filefuncs);
     if (zipFile == nullptr)
     {
         error = "CoreUnzip: unzOpen Failed!";

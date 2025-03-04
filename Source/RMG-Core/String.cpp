@@ -34,7 +34,7 @@ CORE_EXPORT std::string CoreLowerString(std::string str)
 CORE_EXPORT bool CoreStringToInt(std::string str, int& num)
 {
     char* endptr;
-    num = (int)std::strtol(str.c_str(), &endptr, 10);
+    num = static_cast<int>(std::strtol(str.c_str(), &endptr, 10));
     return errno != ERANGE && endptr == (str.c_str() + str.size());
 }
 
