@@ -804,6 +804,13 @@ void RomBrowserWidget::on_listViewWidget_sectionResized(int logicalIndex, int ol
 {
     std::vector<int> columnSizes = CoreSettingsGetIntListValue(SettingsID::RomBrowser_ColumnSizes);
 
+    // this only happens when the ROM browser is
+    // refreshing and the user exits
+    if (columnSizes.empty())
+    {
+        return;
+    }
+
     if (!this->listViewWidget->horizontalHeader()->stretchLastSection())
     {
         columnSizes.at(logicalIndex) = newWidth;
