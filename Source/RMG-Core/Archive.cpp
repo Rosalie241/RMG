@@ -41,11 +41,11 @@
 
 static voidpf zlib_filefunc_open(voidpf opaque, const void* filename, int)
 {
-    std::filesystem::path path = *static_cast<const std::filesystem::path*>(filename);
+    const std::filesystem::path* path = static_cast<const std::filesystem::path*>(filename);
     std::ifstream* fileStream = static_cast<std::ifstream*>(opaque);
 
     // attempt to open file
-    fileStream->open(path, std::ios::binary);
+    fileStream->open(*path, std::ios::binary);
     if (!fileStream->is_open())
     {
         return nullptr;
