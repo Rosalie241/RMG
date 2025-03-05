@@ -36,7 +36,7 @@
 #else // Linux
 #define CACHE_FILE_MAGIC "RMGCoreHeaderAndSettingsCacheLinux_09"
 #endif // _WIN32
-#define CACHE_FILE_ITEMS_MAX 10000
+#define CACHE_FILE_ITEMS_MAX 250000
 
 //
 // Local Structures
