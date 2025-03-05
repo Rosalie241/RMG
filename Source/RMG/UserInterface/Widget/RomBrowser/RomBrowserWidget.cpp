@@ -930,17 +930,21 @@ void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
         CoreSettingsSetValue(SettingsID::RomBrowser_ColumnSizes, columnSizes);
     }
 
-    // update list view's column sizes
-    for (size_t i = 0; i < columnSizes.size(); i++)
+    // update list view's column sizes when
+    // we have any rows in our list view
+    if (this->listViewModel->rowCount() != 0)
     {
-        // set column widths to values specified in config file (or resize to content if not already specified)
-        if (columnSizes.at(i) == -1)
+        for (size_t i = 0; i < columnSizes.size(); i++)
         {
-            this->listViewWidget->resizeColumnToContents(i);
-        }
-        else
-        {
-            this->listViewWidget->setColumnWidth(i, columnSizes.at(i));
+            // set column widths to values specified in config file (or resize to content if not already specified)
+            if (columnSizes.at(i) == -1)
+            {
+                this->listViewWidget->resizeColumnToContents(i);
+            }
+            else
+            {
+                this->listViewWidget->setColumnWidth(i, columnSizes.at(i));
+            }
         }
     }
 
