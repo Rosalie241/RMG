@@ -243,8 +243,7 @@ if (DISCORD_RPC)
 endif(DISCORD_RPC)
 
 set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/imgui)
-set(IMGUI_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/imgui/)
-set(IMGUI_SOURCES_IN
+set(IMGUI_SOURCES
     ${IMGUI_DIR}/imgui_draw.cpp
     ${IMGUI_DIR}/imgui_tables.cpp 
     ${IMGUI_DIR}/imgui_widgets.cpp 
@@ -253,24 +252,8 @@ set(IMGUI_SOURCES_IN
     ${IMGUI_DIR}/backends/imgui_impl_opengl3.h 
     ${IMGUI_DIR}/backends/imgui_impl_opengl3_loader.h 
 )
-set(IMGUI_SOURCES_OUT
-    ${IMGUI_BUILD_DIR}/imgui_draw.cpp
-    ${IMGUI_BUILD_DIR}/imgui_tables.cpp
-    ${IMGUI_BUILD_DIR}/imgui_widgets.cpp
-    ${IMGUI_BUILD_DIR}/imgui.cpp
-    ${IMGUI_BUILD_DIR}/imgui_impl_opengl3.cpp
-    ${IMGUI_BUILD_DIR}/imgui_impl_opengl3.h 
-    ${IMGUI_BUILD_DIR}/imgui_impl_opengl3_loader.h 
-)
-ExternalProject_Add(imgui
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/imgui
-
-    CONFIGURE_COMMAND ${CMAKE_COMMAND} -E make_directory ${IMGUI_BUILD_DIR}
-    BUILD_COMMAND ${CMAKE_COMMAND} -E copy ${IMGUI_SOURCES_IN} ${IMGUI_BUILD_DIR}
-    INSTALL_COMMAND ""
-
-    BUILD_BYPRODUCTS ${IMGUI_SOURCES_OUT}
-)
+add_library(imgui STATIC ${IMGUI_SOURCES})
+target_include_directories(imgui PRIVATE ${IMGUI_DIR})
 
 set(SDL_GAMECONTROLLERDB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/SDL_GameControllerDB)
 set(SDL_GAMECONTROLLERDB_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/SDL_GameControllerDB)
@@ -328,8 +311,6 @@ if (DISCORD_RPC)
     set(DISCORD_RPC_LIB ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 endif(DISCORD_RPC)
 
-ExternalProject_Get_property(imgui BUILD_BYPRODUCTS)
-set(IMGUI_SOURCES ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/imgui PARENT_SCOPE)
 
 ExternalProject_Get_property(SDL_GameControllerDB BUILD_BYPRODUCTS)

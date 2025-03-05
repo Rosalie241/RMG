@@ -123,12 +123,9 @@ else()
     add_executable(RMG ${RMG_SOURCES})
 endif()
 
-add_dependencies(RMG 
-    imgui
-)
-
 target_link_libraries(RMG 
     RMG-Core
+    imgui
 )
 
 # needed for dynamically linked RMG-Core
