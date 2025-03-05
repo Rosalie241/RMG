@@ -1556,7 +1556,7 @@ static bool config_option_default_set(std::string section, std::string key, m64p
     return ret == M64ERR_SUCCESS;
 }
 
-static bool int_list_to_string(std::vector<int> intList, std::string& string)
+static bool int_list_to_string(const std::vector<int>& intList, std::string& string)
 {
     for (size_t i = 0; i < intList.size(); i++)
     {
@@ -1598,7 +1598,7 @@ static bool string_to_int_list(std::string string, std::vector<int>& intList)
     return true;
 }
 
-static bool string_list_to_string(std::vector<std::string> stringList, std::string& string)
+static bool string_list_to_string(const std::vector<std::string>& stringList, std::string& string)
 {
     std::string error;
 
