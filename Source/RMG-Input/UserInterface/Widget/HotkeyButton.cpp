@@ -93,7 +93,7 @@ std::vector<int> HotkeyButton::GetInputType()
 
     for (const auto& data : this->inputData)
     {
-        inputTypeList.push_back((int)data.Type);
+        inputTypeList.push_back(static_cast<int>(data.Type));
     }
 
     return inputTypeList;

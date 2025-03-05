@@ -407,7 +407,7 @@ static void apply_controller_profiles(void)
     {
         InputProfile* profile = &l_InputProfiles[i];
         int plugin = PLUGIN_NONE;
-        bool emulateVRU = (profile->DeviceNum == (int)InputDeviceType::EmulateVRU);
+        bool emulateVRU = (profile->DeviceNum == static_cast<int>(InputDeviceType::EmulateVRU));
 
         switch (profile->ControllerPak)
         {
@@ -549,7 +549,7 @@ static void setup_device_automatic(int num, InputProfile* profile)
     { // fallback to keyboard
         if (num == 0)
         {
-            profile->DeviceNum = (int)InputDeviceType::Keyboard;
+            profile->DeviceNum = static_cast<int>(InputDeviceType::Keyboard);
         }
         else
         {
@@ -576,12 +576,12 @@ static void open_controllers(void)
 
         profile->InputDevice.CloseDevice();
 
-        if (profile->DeviceNum == (int)InputDeviceType::Automatic)
+        if (profile->DeviceNum == static_cast<int>(InputDeviceType::Automatic))
         {
             setup_device_automatic(i, profile);
         }
 
-        if (profile->DeviceNum != (int)InputDeviceType::Keyboard)
+        if (profile->DeviceNum != static_cast<int>(InputDeviceType::Keyboard))
         {
             profile->InputDevice.OpenDevice(profile->DeviceName, profile->DevicePath, profile->DeviceSerial, profile->DeviceNum);
         }
@@ -830,8 +830,8 @@ static void simulate_octagon(const double deadzone, const double inputX, const d
     if (std::abs(ax) > maxAxis) ax = std::copysign(maxAxis, ax);
     if (std::abs(ay) > maxAxis) ay = std::copysign(maxAxis, ay);
 
-    outputX = (int)ax;
-    outputY = (int)ay;
+    outputX = static_cast<int>(ax);
+    outputY = static_cast<int>(ay);
 }
 
 static unsigned char data_crc(unsigned char *data, int length)
@@ -1100,7 +1100,7 @@ EXPORT m64p_error CALL PluginConfigWithRomConfig(void* parent, int romConfig, Co
 
     l_SDLThread->SetAction(SDLThreadAction::SDLPumpEvents);
 
-    UserInterface::MainDialog dialog((QWidget*)parent, l_SDLThread, romConfig, *romHeader, *romSettings);
+    UserInterface::MainDialog dialog(static_cast<QWidget*>(parent), l_SDLThread, romConfig, *romHeader, *romSettings);
     dialog.exec();
 
     // when PluginShutdown() is called during PluginConfig2(),
@@ -1213,7 +1213,7 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
 #ifdef VRU
     // when we're emulating the VRU,
     // we need to check the mic state
-    if (profile->DeviceNum == (int)InputDeviceType::EmulateVRU)
+    if (profile->DeviceNum == static_cast<int>(InputDeviceType::EmulateVRU))
     {
         if (GetVRUMicState())
         {
@@ -1237,7 +1237,7 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
     {
         profile->LastDeviceCheckTime = currentTime;
 
-        if (profile->DeviceNum != (int)InputDeviceType::Keyboard)
+        if (profile->DeviceNum != static_cast<int>(InputDeviceType::Keyboard))
         {
             if (profile->InputDevice.IsOpeningDevice())
             {

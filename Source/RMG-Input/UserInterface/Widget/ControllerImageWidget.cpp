@@ -28,9 +28,9 @@ ControllerImageWidget::~ControllerImageWidget()
 
 void ControllerImageWidget::SetButtonState(enum N64ControllerButton button, bool state)
 {
-    if (this->buttonState[(int)button] != state)
+    if (this->buttonState[static_cast<int>(button)] != state)
     {
-        this->buttonState[(int)button] = state;
+        this->buttonState[static_cast<int>(button)] = state;
         this->needImageUpdate = true;
     }
 }
@@ -74,7 +74,7 @@ void ControllerImageWidget::SetSensitivity(int value)
 void ControllerImageWidget::ClearControllerState()
 {
     // reset button state
-    for (int i = 0; i < (int)N64ControllerButton::Invalid; i++)
+    for (int i = 0; i < static_cast<int>(N64ControllerButton::Invalid); i++)
     {
         if (this->buttonState[i])
         {
@@ -149,7 +149,7 @@ void ControllerImageWidget::paintEvent(QPaintEvent *event)
     // when the button is pressed
     for (auto& button : buttons)
     {
-        if (this->buttonState[(int)button.button])
+        if (this->buttonState[static_cast<int>(button.button)])
         {
             renderer.load(button.imageUri);
             renderer.setAspectRatioMode(Qt::AspectRatioMode::KeepAspectRatio);
@@ -166,7 +166,7 @@ void ControllerImageWidget::paintEvent(QPaintEvent *event)
     const int height = rectF.height();
     // we'll move the analog stick by a percentage
     // of the total width/height from the image
-    const double absoluteMaxOffset = ((double)(height * 0.12265f) / 2);
+    const double absoluteMaxOffset = (static_cast<double>(height * 0.12265f) / 2);
     // slope as in line gradient
     const double offsetSlope = absoluteMaxOffset / 100;
     // take sensitivity into account

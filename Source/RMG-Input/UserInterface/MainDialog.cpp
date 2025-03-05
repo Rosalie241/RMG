@@ -69,12 +69,12 @@ MainDialog::MainDialog(QWidget* parent, Thread::SDLThread* sdlThread, bool romCo
         // so we only have to expose it there
         if (controllerWidget == this->controllerWidgets.last())
         {
-            controllerWidget->AddInputDevice({"Voice Recognition Unit", "", "", (int)InputDeviceType::EmulateVRU});
+            controllerWidget->AddInputDevice({"Voice Recognition Unit", "", "", static_cast<int>(InputDeviceType::EmulateVRU)});
         }
 #endif // VRU
-        controllerWidget->AddInputDevice({"None", "", "", (int)InputDeviceType::None});
-        controllerWidget->AddInputDevice({"Automatic", "", "", (int)InputDeviceType::Automatic});
-        controllerWidget->AddInputDevice({"Keyboard", "", "", (int)InputDeviceType::Keyboard});
+        controllerWidget->AddInputDevice({"None", "", "", static_cast<int>(InputDeviceType::None)});
+        controllerWidget->AddInputDevice({"Automatic", "", "", static_cast<int>(InputDeviceType::Automatic)});
+        controllerWidget->AddInputDevice({"Keyboard", "", "", static_cast<int>(InputDeviceType::Keyboard)});
         controllerWidget->SetInitialized(true);
     }
 
@@ -114,9 +114,9 @@ void MainDialog::openInputDevice(SDLDevice device)
     controllerWidget = this->controllerWidgets.at(this->tabWidget->currentIndex());
 
     // we don't need to open a keyboard or VRU
-    if (device.number == (int)InputDeviceType::None ||
-        device.number == (int)InputDeviceType::Keyboard ||
-        device.number == (int)InputDeviceType::EmulateVRU)
+    if (device.number == static_cast<int>(InputDeviceType::None) ||
+        device.number == static_cast<int>(InputDeviceType::Keyboard) ||
+        device.number == static_cast<int>(InputDeviceType::EmulateVRU))
     {
         this->currentDevice = { "", "", "", device.number };
         controllerWidget->SetCurrentJoystickID(this->currentDevice.number);
@@ -125,7 +125,7 @@ void MainDialog::openInputDevice(SDLDevice device)
     }
 
     // handle automatic mode
-    if (device.number == (int)InputDeviceType::Automatic)
+    if (device.number == static_cast<int>(InputDeviceType::Automatic))
     {
         int currentIndex = this->tabWidget->currentIndex();
         if (currentIndex < this->inputDeviceList.size())
@@ -134,7 +134,7 @@ void MainDialog::openInputDevice(SDLDevice device)
         }
         else
         { // no device found, fallback to keyboard
-            this->currentDevice = { "", "", "", (int)InputDeviceType::Keyboard };
+            this->currentDevice = { "", "", "", static_cast<int>(InputDeviceType::Keyboard) };
             controllerWidget->SetCurrentJoystickID(this->currentDevice.number);
             controllerWidget->SetCurrentJoystick(nullptr, nullptr);
             return;
@@ -238,9 +238,9 @@ void MainDialog::on_ControllerWidget_CurrentInputDeviceChanged(ControllerWidget*
     this->closeInputDevice();
 
     // only open device when needed
-    if (device.number != (int)InputDeviceType::None &&
-        device.number != (int)InputDeviceType::Keyboard &&
-        device.number != (int)InputDeviceType::EmulateVRU)
+    if (device.number != static_cast<int>(InputDeviceType::None) &&
+        device.number != static_cast<int>(InputDeviceType::Keyboard) &&
+        device.number != static_cast<int>(InputDeviceType::EmulateVRU))
     {
         this->openInputDevice(device);
     }
@@ -303,9 +303,9 @@ void MainDialog::on_tabWidget_currentChanged(int index)
     controllerWidget->GetCurrentInputDevice(device);
 
     // only open device when needed
-    if (device.number != (int)InputDeviceType::None &&
-        device.number != (int)InputDeviceType::Keyboard &&
-        device.number != (int)InputDeviceType::EmulateVRU)
+    if (device.number != static_cast<int>(InputDeviceType::None) &&
+        device.number != static_cast<int>(InputDeviceType::Keyboard) &&
+        device.number != static_cast<int>(InputDeviceType::EmulateVRU))
     {
         this->openInputDevice(device);
     }

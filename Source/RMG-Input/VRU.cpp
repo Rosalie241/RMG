@@ -442,7 +442,7 @@ EXPORT void CALL SendVRUWord(uint16_t length, uint16_t* word, uint8_t lang)
         }
 
         // try to create a new recognizer
-        l_VoskRecognizer = l_vosk_recognizer_new_grm(l_VoskModel, (float)l_AudioDeviceSpec.freq, json_document.toJson().constData());
+        l_VoskRecognizer = l_vosk_recognizer_new_grm(l_VoskModel, static_cast<float>(l_AudioDeviceSpec.freq), json_document.toJson().constData());
         if (l_VoskRecognizer != nullptr)
         {
             l_vosk_recognizer_set_max_alternatives(l_VoskRecognizer, 3);
