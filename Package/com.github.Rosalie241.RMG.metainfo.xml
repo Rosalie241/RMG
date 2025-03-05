@@ -29,6 +29,24 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.7.7" date="2025-03-05" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix error messages not being shown when initialization fails</li>
+          <li>Fix emulation error not being shown when launched with '--quit-after-emulation'</li>
+          <li>Fix AppImage not including libspeexdsp</li>
+          <li>Fix mupen64plus-video-parallel not respecting rdp full sync</li>
+          <li>Fix crash when quitting RMG while the ROM browser is refreshing</li>
+          <li>Fix initial column sizes being incorrect in some cases</li>
+          <li>Add exception handler for Windows which generates a minidump</li>
+          <li>Change "Join Session" to "Browse Sessions" in the Netplay menu</li>
+          <li>Change ROM browser cache limit to 250000</li>
+          <li>Remove "Synchronize RDP and CPU" setting from mupen64plus-video-parallel</li>
+          <li>Improve loading time of the ROM browser when there are invalid ROMs in the ROM directory</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.7.6" date="2025-02-22" type="stable">
       <description>
         <p>Changes:</p>
