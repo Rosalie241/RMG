@@ -1086,7 +1086,7 @@ void PluginDebugMessage(int level, std::string message)
 // Custom Plugin Functions
 //
 
-EXPORT m64p_error CALL PluginConfig2(void* parent, int romConfig, CoreRomHeader* romHeader, CoreRomSettings* romSettings)
+EXPORT m64p_error CALL PluginConfigWithRomConfig(void* parent, int romConfig, CoreRomHeader* romHeader, CoreRomSettings* romSettings)
 {
     if (l_SDLThread == nullptr)
     {
