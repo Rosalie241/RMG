@@ -360,12 +360,12 @@ static bool open_plugin_config(CorePluginType type, void* parent, bool romConfig
         return false;
     }
 
-    // check if the plugin has the Config2
-    // or Config function, the Config2 function
+    // check if the plugin has the ConfigWithRomConfig
+    // or Config function, the ConfigWithRomConfig function
     // has priority
-    if (plugin->Config2 != nullptr)
+    if (plugin->ConfigWithRomConfig != nullptr)
     {
-        ret = plugin->Config2(parent, romConfig ? 1 : 0, &romHeader, &romSettings);
+        ret = plugin->ConfigWithRomConfig(parent, romConfig ? 1 : 0, &romHeader, &romSettings);
         functionName = "Config2";
     }
     else
@@ -512,7 +512,7 @@ CORE_EXPORT bool CorePluginsHasConfig(CorePluginType type)
     }
 
     return plugin->Config != nullptr ||
-            plugin->Config2 != nullptr;
+            plugin->ConfigWithRomConfig != nullptr;
 }
 
 CORE_EXPORT bool CorePluginsOpenConfig(CorePluginType type, void* parent)
@@ -526,7 +526,7 @@ CORE_EXPORT bool CorePluginsHasROMConfig(CorePluginType type)
 
     plugin = get_plugin(type);
 
-    return plugin->Config2 != nullptr;
+    return plugin->ConfigWithRomConfig != nullptr;
 }
 
 CORE_EXPORT bool CorePluginsOpenROMConfig(CorePluginType type, void* parent, std::filesystem::path file)

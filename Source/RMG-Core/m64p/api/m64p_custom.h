@@ -27,16 +27,16 @@ EXPORT m64p_error CALL PluginConfig(void*);
 #ifdef __cplusplus // we need C++ for the RMG-Core types
 
 
-/* PluginConfig2(int romConfig)
+/* PluginConfigWithRomConfig(int romConfig)
  *
  * This optional function opens a configuration GUI for the plugin
  * https://github.com/mupen64plus/mupen64plus-core/pull/774
  *
  * romConfig argument determines if it should open the ROM specific config
 */
-typedef m64p_error (*ptr_PluginConfig2)(void*, int, CoreRomHeader*, CoreRomSettings*);
+typedef m64p_error (*ptr_PluginConfigWithRomConfig)(void*, int, CoreRomHeader*, CoreRomSettings*);
 #if defined(M64P_PLUGIN_PROTOTYPES) || defined(M64P_CORE_PROTOTYPES)
-EXPORT m64p_error CALL PluginConfig2(void*, int, CoreRomHeader*, CoreRomSettings*);
+EXPORT m64p_error CALL PluginConfigWithRomConfig(void*, int, CoreRomHeader*, CoreRomSettings*);
 #endif
 
 #endif // __cplusplus
