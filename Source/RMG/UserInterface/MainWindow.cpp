@@ -1830,22 +1830,22 @@ void MainWindow::on_Action_System_GSButton(void)
 
 void MainWindow::on_Action_Settings_Graphics(void)
 {
-    CorePluginsOpenConfig(CorePluginType::Gfx, (void*)this);
+    CorePluginsOpenConfig(CorePluginType::Gfx, this);
 }
 
 void MainWindow::on_Action_Settings_Audio(void)
 {
-    CorePluginsOpenConfig(CorePluginType::Audio, (void*)this);
+    CorePluginsOpenConfig(CorePluginType::Audio, this);
 }
 
 void MainWindow::on_Action_Settings_Rsp(void)
 {
-    CorePluginsOpenConfig(CorePluginType::Rsp, (void*)this);
+    CorePluginsOpenConfig(CorePluginType::Rsp, this);
 }
 
 void MainWindow::on_Action_Settings_Input(void)
 {
-    CorePluginsOpenConfig(CorePluginType::Input, (void*)this);
+    CorePluginsOpenConfig(CorePluginType::Input, this);
 }
 
 void MainWindow::on_Action_Settings_Settings(void)
@@ -1862,7 +1862,7 @@ void MainWindow::on_Action_Settings_Settings(void)
     dialog.exec();
 
     // reload UI,
-    // because we need to keep Options -> Configure {type} Plugin...
+    // because we need to keep Settings -> {type}
     // up-to-date
     this->updateActions(emulationThread->isRunning(), isPaused);
 
