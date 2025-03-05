@@ -32,9 +32,9 @@
 #define REGION_LEN 18
 
 #ifdef _WIN32
-#define CACHE_FILE_MAGIC "RMGCoreHeaderAndSettingsCacheWindows_08"
+#define CACHE_FILE_MAGIC "RMGCoreHeaderAndSettingsCacheWindows_09"
 #else // Linux
-#define CACHE_FILE_MAGIC "RMGCoreHeaderAndSettingsCacheLinux_08"
+#define CACHE_FILE_MAGIC "RMGCoreHeaderAndSettingsCacheLinux_09"
 #endif // _WIN32
 #define CACHE_FILE_ITEMS_MAX 10000
 
@@ -46,6 +46,8 @@ struct l_CacheEntry
 {
     std::filesystem::path fileName;
     CoreFileTime fileTime;
+
+    bool valid;
 
     CoreRomType     type;
     CoreRomHeader   header;
@@ -64,7 +66,7 @@ static std::vector<l_CacheEntry> l_CacheEntries;
 // Internal Functions
 //
 
-static std::filesystem::path get_cache_file_name()
+static std::filesystem::path get_cache_file_name(void)
 {
     std::filesystem::path file;
 
@@ -75,7 +77,7 @@ static std::filesystem::path get_cache_file_name()
     return file;
 }
 
-static std::vector<l_CacheEntry>::iterator get_cache_entry_iter(std::filesystem::path file, bool checkFileTime = true)
+static std::vector<l_CacheEntry>::iterator get_cache_entry_iter(const std::filesystem::path& file, bool checkFileTime = true)
 {
     CoreFileTime fileTime = CoreGetFileTime(file);
 
@@ -85,7 +87,61 @@ static std::vector<l_CacheEntry>::iterator get_cache_entry_iter(std::filesystem:
                 (!checkFileTime || entry.fileTime == fileTime);
     };
 
-    return std::find_if(l_CacheEntries.begin(), l_CacheEntries.end(), predicate);
+        return std::find_if(l_CacheEntries.begin(), l_CacheEntries.end(), predicate);
+}
+
+static void add_cache_entry(const std::filesystem::path& file, CoreRomType type, 
+                            const CoreRomHeader& header, const CoreRomSettings& defaultSettings,
+                            const CoreRomSettings& settings)
+{
+    l_CacheEntry cacheEntry;
+
+    // try to find existing entry with same filename,
+    // when found, remove it from the cache
+    auto iter = get_cache_entry_iter(file, false);
+    if (iter != l_CacheEntries.end())
+    {
+        l_CacheEntries.erase(iter);
+    }
+    else if (l_CacheEntries.size() >= CACHE_FILE_ITEMS_MAX)
+    { // delete first item when we're over the item limit
+        l_CacheEntries.erase(l_CacheEntries.begin());
+    }
+
+    cacheEntry.fileName = file;
+    cacheEntry.fileTime = CoreGetFileTime(file);
+    cacheEntry.type     = type;
+    cacheEntry.header   = header;
+    cacheEntry.settings = settings;
+    cacheEntry.defaultSettings = defaultSettings;
+    cacheEntry.valid    = true;
+
+    l_CacheEntries.push_back(cacheEntry);
+    l_CacheEntriesChanged = true;
+}
+
+static void add_invalid_cache_entry(const std::filesystem::path& file)
+{
+    l_CacheEntry cacheEntry;
+
+    // try to find existing entry with same filename,
+    // when found, remove it from the cache
+    auto iter = get_cache_entry_iter(file, false);
+    if (iter != l_CacheEntries.end())
+    {
+        l_CacheEntries.erase(iter);
+    }
+    else if (l_CacheEntries.size() >= CACHE_FILE_ITEMS_MAX)
+    { // delete first item when we're over the item limit
+        l_CacheEntries.erase(l_CacheEntries.begin());
+    }
+
+    cacheEntry.fileName = file;
+    cacheEntry.fileTime = CoreGetFileTime(file);
+    cacheEntry.valid    = false;
+
+    l_CacheEntries.push_back(cacheEntry);
+    l_CacheEntriesChanged = true;
 }
 
 //
@@ -119,13 +175,21 @@ CORE_EXPORT void CoreReadRomHeaderAndSettingsCache(void)
         return;
     }
 
+    // read entry count
+    size = l_CacheEntries.size();
+    inputStream.read((char*)&size, sizeof(size));
+
+    // reserve items
+    l_CacheEntries.reserve(size);
+
     // read all file entries
 #define FREAD(x) inputStream.read((char*)&x, sizeof(x))
 #define FREAD_STR(x, y) inputStream.read((char*)x, y)
     while (!inputStream.eof())
     {
-        // reset buffers
+        // reset state
         size = 0;
+        cacheEntry = {};
         memset(fileNameBuf, 0, sizeof(fileNameBuf));
         memset(headerNameBuf, 0, sizeof(headerNameBuf));
         memset(gameIDBuf, 0, sizeof(gameIDBuf));
@@ -138,6 +202,15 @@ CORE_EXPORT void CoreReadRomHeaderAndSettingsCache(void)
         FREAD_STR(fileNameBuf, size);
         cacheEntry.fileName = std::filesystem::path(fileNameBuf);
         FREAD(cacheEntry.fileTime);
+        // validity
+        FREAD(cacheEntry.valid);
+        // invalid entries have less data
+        // so we don't need to read further
+        if (!cacheEntry.valid)
+        {
+            l_CacheEntries.push_back(cacheEntry);
+            continue;
+        }
         // type
         FREAD(cacheEntry.type);
         // header
@@ -212,6 +285,10 @@ CORE_EXPORT bool CoreSaveRomHeaderAndSettingsCache(void)
     // write magic header
     outputStream.write((char*)CACHE_FILE_MAGIC, sizeof(CACHE_FILE_MAGIC));
 
+    // write entry count
+    size = l_CacheEntries.size();
+    outputStream.write((char*)&size, sizeof(size));
+
     // write each entry in the file
 #define FWRITE(x) outputStream.write((char*)&x, sizeof(x))
 #define FWRITE_STR(x, y) outputStream.write((char*)x, y)
@@ -241,6 +318,14 @@ CORE_EXPORT bool CoreSaveRomHeaderAndSettingsCache(void)
         FWRITE(size);
         FWRITE_STR(fileNameBuf, size);
         FWRITE(cacheEntry.fileTime);
+        // validity
+        FWRITE(cacheEntry.valid);
+        // skip writing more data
+        // when the entry is invalid
+        if (!cacheEntry.valid)
+        {
+            continue;
+        }
         // type
         FWRITE(cacheEntry.type);
         // header
@@ -309,8 +394,7 @@ CORE_EXPORT bool CoreGetCachedRomHeaderAndSettings(std::filesystem::path file, C
         {
             ret = false;
         }
-        // attempt to add it to the cache, when we've retrieved 
-        // the info successfully
+        // add file to cache
         if (ret)
         {
             if (type != nullptr)
@@ -330,12 +414,19 @@ CORE_EXPORT bool CoreGetCachedRomHeaderAndSettings(std::filesystem::path file, C
                 *defaultSettings = romDefaultSettings;
             }
 
-            return CoreAddCachedRomHeaderAndSettings(file, romType, romHeader, romDefaultSettings, romSettings);
+            add_cache_entry(file, romType, romHeader, romSettings, romDefaultSettings);
+            return true;
         }
         else
         {
+            add_invalid_cache_entry(file);
             return false;
         }
+    }
+
+    if (!(*iter).valid)
+    {
+        return false;
     }
 
     if (type != nullptr)
@@ -354,34 +445,6 @@ CORE_EXPORT bool CoreGetCachedRomHeaderAndSettings(std::filesystem::path file, C
     {
         *defaultSettings = (*iter).defaultSettings;
     }
-    return true;
-}
-
-CORE_EXPORT bool CoreAddCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType type, CoreRomHeader header, CoreRomSettings defaultSettings, CoreRomSettings settings)
-{
-    l_CacheEntry cacheEntry;
-
-    // try to find existing entry with same filename,
-    // when found, remove it from the cache
-    auto iter = get_cache_entry_iter(file, false);
-    if (iter != l_CacheEntries.end())
-    {
-        l_CacheEntries.erase(iter);
-    }
-    else if (l_CacheEntries.size() >= CACHE_FILE_ITEMS_MAX)
-    { // delete first item when we're over the item limit
-        l_CacheEntries.erase(l_CacheEntries.begin());
-    }
-
-    cacheEntry.fileName = file;
-    cacheEntry.fileTime = CoreGetFileTime(file);
-    cacheEntry.type     = type;
-    cacheEntry.header   = header;
-    cacheEntry.settings = settings;
-    cacheEntry.defaultSettings = defaultSettings;
-
-    l_CacheEntries.push_back(cacheEntry);
-    l_CacheEntriesChanged = true;
     return true;
 }
 
@@ -410,6 +473,7 @@ CORE_EXPORT bool CoreUpdateCachedRomHeaderAndSettings(std::filesystem::path file
         (*iter).header          = header;
         (*iter).defaultSettings = defaultSettings;
         (*iter).settings        = settings;
+        (*iter).valid           = true;
         l_CacheEntriesChanged   = true;
     }
 

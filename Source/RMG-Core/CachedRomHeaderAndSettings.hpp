@@ -30,10 +30,6 @@ bool CoreSaveRomHeaderAndSettingsCache(void);
 // an entry if there's no cached entry found
 bool CoreGetCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType* type, CoreRomHeader* header, CoreRomSettings* defaultSettings, CoreRomSettings* settings);
 
-// returns whether adding cached rom header & settings
-// for given filename succeeds
-bool CoreAddCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType type, CoreRomHeader header, CoreRomSettings defaultSettings, CoreRomSettings settings);
-
 // returns whether updating the cached rom header & settings succeeds
 bool CoreUpdateCachedRomHeaderAndSettings(std::filesystem::path file, CoreRomType type, CoreRomHeader header, CoreRomSettings defaultSettings, CoreRomSettings settings);
 
