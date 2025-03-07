@@ -18,6 +18,7 @@
 #include <QPushButton>
 #include <QJsonObject>
 #include <QFileInfo>
+#include <QFile>
 
 #include <RMG-Core/Settings.hpp>
 
@@ -77,12 +78,28 @@ CreateNetplaySessionDialog::CreateNetplaySessionDialog(QWidget *parent, QWebSock
 
     // request server list
     QString serverUrl = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::Netplay_ServerJsonUrl));
-    if (!serverUrl.isEmpty() && QUrl(serverUrl).isValid())
+    if (!serverUrl.isEmpty())
     {
-        QNetworkAccessManager* networkAccessManager = new QNetworkAccessManager(this);
-        connect(networkAccessManager, &QNetworkAccessManager::finished, this, &CreateNetplaySessionDialog::on_networkAccessManager_Finished);
-        networkAccessManager->setTransferTimeout(15000);
-        networkAccessManager->get(QNetworkRequest(QUrl(serverUrl)));
+        QFile qFile(serverUrl);
+        if (qFile.exists())
+        {
+            if (qFile.open(QIODevice::ReadOnly))
+            {
+                NetplayCommon::AddServers(this->serverComboBox, 
+                                          QJsonDocument::fromJson(qFile.readAll()));   
+            }
+            else
+            {
+                QtMessageBox::Error(this, "Server Error", "Failed to open server list json: " + qFile.errorString());
+            }
+        }
+        else if (QUrl(serverUrl).isValid())
+        {
+            QNetworkAccessManager* networkAccessManager = new QNetworkAccessManager(this);
+            connect(networkAccessManager, &QNetworkAccessManager::finished, this, &CreateNetplaySessionDialog::on_networkAccessManager_Finished);
+            networkAccessManager->setTransferTimeout(15000);
+            networkAccessManager->get(QNetworkRequest(QUrl(serverUrl)));
+        }
     }
 
     this->pingTimerId = this->startTimer(2000);
@@ -220,18 +237,10 @@ void CreateNetplaySessionDialog::on_networkAccessManager_Finished(QNetworkReply*
         return;
     }
 
-    QJsonDocument jsonDocument = QJsonDocument::fromJson(reply->readAll());
-    QJsonObject jsonObject     = jsonDocument.object();
-    QStringList jsonServers    = jsonObject.keys();
-
-    for (int i = 0; i < jsonServers.size(); i++)
-    {
-        this->serverComboBox->addItem(jsonServers.at(i), jsonObject.value(jsonServers.at(i)).toString());
-    }
+    NetplayCommon::AddServers(this->serverComboBox, 
+                              QJsonDocument::fromJson(reply->readAll()));
 
     reply->deleteLater();
-
-    NetplayCommon::RestoreSelectedServer(this->serverComboBox);
 }
 
 void CreateNetplaySessionDialog::on_serverComboBox_currentIndexChanged(int index)

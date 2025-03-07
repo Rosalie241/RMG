@@ -81,6 +81,19 @@ QList<QString> NetplayCommon::GetPluginNames(QString md5QString)
     return pluginNames;
 }
 
+void NetplayCommon::AddServers(QComboBox* comboBox, QJsonDocument document)
+{
+    QJsonObject jsonObject  = document.object();
+    QStringList jsonServers = jsonObject.keys();
+
+    for (int i = 0; i < jsonServers.size(); i++)
+    {
+        comboBox->addItem(jsonServers.at(i), jsonObject.value(jsonServers.at(i)).toString());
+    }
+
+    NetplayCommon::RestoreSelectedServer(comboBox);
+}
+
 void NetplayCommon::RestoreSelectedServer(QComboBox* comboBox)
 {
     QString server = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::Netplay_SelectedServer));

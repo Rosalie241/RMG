@@ -10,6 +10,7 @@
 #ifndef NETPLAYCOMMON_HPP
 #define NETPLAYCOMMON_HPP
 
+#include <QJsonDocument>
 #include <QJsonObject>
 #include <QComboBox>
 #include <QString>
@@ -25,6 +26,9 @@ namespace NetplayCommon
 
     // Retrieves RSP and GFX plugin names
     QList<QString> GetPluginNames(QString md5QString);
+
+    // Adds servers from json to combobox
+    void AddServers(QComboBox* comboBox, QJsonDocument document);
 
     // Restores previously selected server
     void RestoreSelectedServer(QComboBox* comboBox);
