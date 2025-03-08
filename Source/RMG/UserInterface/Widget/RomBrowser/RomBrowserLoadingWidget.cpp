@@ -120,7 +120,8 @@ void RomBrowserLoadingWidget::updateLoadingText()
     QString loadingText = "Loading";
 
     if (this->elapsedTimeSinceLoading.isValid() &&
-        this->elapsedTimeSinceLoading.elapsed() >= 5000)
+        this->elapsedTimeSinceLoading.elapsed() >= 5000 &&
+        this->romCount > 0)
     {
         QString romCountString = QString::number(this->romCount);
 
