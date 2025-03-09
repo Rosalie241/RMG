@@ -24,11 +24,21 @@ bool EventFilter::eventFilter(QObject *object, QEvent *event)
     switch (event->type())
     {
     case QEvent::Type::KeyPress:
-        emit this->on_EventFilter_KeyPressed((QKeyEvent *)event);
-        return true;
+    {
+        if (((QKeyEvent *)event)->key() != Qt::Key_Escape)
+        {
+            emit this->on_EventFilter_KeyPressed((QKeyEvent *)event);
+            return true;
+        }
+    } break;
     case QEvent::Type::KeyRelease:
-        emit this->on_EventFilter_KeyReleased((QKeyEvent *)event);
-        return true;
+    {
+        if (((QKeyEvent *)event)->key() != Qt::Key_Escape)
+        {
+            emit this->on_EventFilter_KeyReleased((QKeyEvent *)event);
+            return true;
+        }
+    } break;
     default:
         break;
     }
