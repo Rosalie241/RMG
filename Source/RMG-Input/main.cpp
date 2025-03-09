@@ -203,6 +203,9 @@ static CONTROL_INFO l_ControlInfo;
 static void (*l_DebugCallback)(void *, int, const char *) = nullptr;
 static void *l_DebugCallContext                           = nullptr;
 
+// mupen64plus button state
+static BUTTONS l_ButtonState[NUM_CONTROLLERS] = {0};
+
 // keyboard state
 static bool l_KeyboardState[SDL_NUM_SCANCODES];
 
@@ -598,6 +601,95 @@ static void close_controllers(void)
     }
 }
 
+static void set_sdl_button_state(BUTTONS* buttonState, SDL_JoyButtonEvent* event)
+{
+    // only use first input profile for now
+    InputProfile* profile = &l_InputProfiles[0];
+    // TODO: nuke the above and use controller handles directly,
+    // also nuke InputDevice
+
+
+    // TODO: rework this cursed thing...
+
+#define CHECK_BUTTON(profileButton, buttonStateButton) \
+    for (int i = 0; i < profile->profileButton.Count; i++) \
+    { \
+        const int data = profile->profileButton.Data.at(i); \
+        const int extraData = profile->profileButton.ExtraData.at(i); \
+        \
+        if ((InputType)profile->profileButton.Type[i] == InputType::JoystickButton) \
+        { \
+            if (event->button == data) \
+            { \
+                printf("setting a button state!\n"); \
+                buttonState->buttonStateButton = event->state; \
+                return; \
+            } \
+        } \
+    }
+
+    CHECK_BUTTON(Button_A,            A_BUTTON);
+    CHECK_BUTTON(Button_B,            B_BUTTON);
+    CHECK_BUTTON(Button_Start,        START_BUTTON);
+    CHECK_BUTTON(Button_DpadUp,       U_DPAD);
+    CHECK_BUTTON(Button_DpadDown,     D_DPAD);
+    CHECK_BUTTON(Button_DpadLeft,     L_DPAD);
+    CHECK_BUTTON(Button_DpadRight,    R_DPAD);
+    CHECK_BUTTON(Button_CButtonUp,    U_CBUTTON);
+    CHECK_BUTTON(Button_CButtonDown,  D_CBUTTON);
+    CHECK_BUTTON(Button_CButtonLeft,  L_CBUTTON);
+    CHECK_BUTTON(Button_CButtonRight, R_CBUTTON);
+    CHECK_BUTTON(Button_LeftShoulder,  L_TRIG);
+    CHECK_BUTTON(Button_RightShoulder, R_TRIG);
+    CHECK_BUTTON(Button_ZTrigger,     Z_TRIG);
+#undef CHECK_BUTTON
+}
+
+// TODO?
+static void set_sdl_button_state(BUTTONS* buttonState, SDL_ControllerButtonEvent* event)
+{
+    // only use first input profile for now
+    InputProfile* profile = &l_InputProfiles[0];
+    // TODO: nuke the above and use controller handles directly,
+    // also nuke InputDevice
+
+
+    // TODO: rework this cursed thing...
+
+#define CHECK_BUTTON(profileButton, buttonStateButton) \
+    for (int i = 0; i < profile->profileButton.Count; i++) \
+    { \
+        const int data = profile->profileButton.Data.at(i); \
+        const int extraData = profile->profileButton.ExtraData.at(i); \
+        \
+        if ((InputType)profile->profileButton.Type[i] == InputType::GamepadButton) \
+        { \
+            if (event->button == static_cast<SDL_GameControllerButton>(data)) \
+            { \
+                printf("setting a button state!\n"); \
+                buttonState->buttonStateButton = event->state; \
+                return; \
+            } \
+        } \
+    }
+
+    CHECK_BUTTON(Button_A,            A_BUTTON);
+    CHECK_BUTTON(Button_B,            B_BUTTON);
+    CHECK_BUTTON(Button_Start,        START_BUTTON);
+    CHECK_BUTTON(Button_DpadUp,       U_DPAD);
+    CHECK_BUTTON(Button_DpadDown,     D_DPAD);
+    CHECK_BUTTON(Button_DpadLeft,     L_DPAD);
+    CHECK_BUTTON(Button_DpadRight,    R_DPAD);
+    CHECK_BUTTON(Button_CButtonUp,    U_CBUTTON);
+    CHECK_BUTTON(Button_CButtonDown,  D_CBUTTON);
+    CHECK_BUTTON(Button_CButtonLeft,  L_CBUTTON);
+    CHECK_BUTTON(Button_CButtonRight, R_CBUTTON);
+    CHECK_BUTTON(Button_LeftShoulder,  L_TRIG);
+    CHECK_BUTTON(Button_RightShoulder, R_TRIG);
+    CHECK_BUTTON(Button_ZTrigger,     Z_TRIG);
+#undef CHECK_BUTTON
+}
+
 static int get_button_state(InputProfile* profile, const InputMapping* inputMapping, const bool allPressed = false)
 {
     int state = 0;
@@ -965,6 +1057,10 @@ static void sdl_init()
         debugMessage += "\"!";
         PluginDebugMessage(M64MSG_WARNING, debugMessage);
     }
+
+    //SDL_AddEventWatch(sdl_event_filter, nullptr);
+    //SDL_SetEventFilter(sdl_event_filter, nullptr);
+    
 }
 
 static void sdl_quit()
@@ -1203,6 +1299,32 @@ EXPORT void CALL ControllerCommand(int Control, unsigned char* Command)
 
 EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
 {
+    SDL_Event event;
+
+    if (Control == 0)
+    {
+        while (SDL_PollEvent(&event) > 0)
+        {
+            switch (event.type)
+            {
+            case SDL_JOYBUTTONDOWN:
+            case SDL_JOYBUTTONUP:
+                set_sdl_button_state(&l_ButtonState[Control], &event.jbutton);
+                break;
+
+            // TODO: remove gamepad support and just
+            // use joystick API? it'd simplify things...
+            case SDL_CONTROLLERBUTTONDOWN:
+            case SDL_CONTROLLERBUTTONUP:
+                set_sdl_button_state(&l_ButtonState[Control], &event.cbutton);
+                break;
+            }
+        }
+    }
+
+    *Keys = l_ButtonState[Control];
+    return;
+
     InputProfile* profile = &l_InputProfiles[Control];
 
     if (!profile->PluggedIn || l_IsConfigGuiOpen)
@@ -1226,6 +1348,9 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
         return;
     }
 #endif // VRU
+
+    *Keys = l_ButtonState[Control];
+    return;
 
 #if 0 // TODO: fix hotplug support
     // check if device has been disconnected,
