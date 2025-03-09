@@ -17,6 +17,7 @@
 #else // Unix
 #define CORE_DIR_SEPERATOR_STR "/"
 #endif // _WIN32
+#define CORE_DIR_MAX_LEN 4096
 
 // tries to create the needed directories,
 // returns false when failed

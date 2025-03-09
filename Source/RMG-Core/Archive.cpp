@@ -9,6 +9,8 @@
  */
 #define CORE_INTERNAL
 #include "Archive.hpp"
+
+#include <Directories.hpp>
 #include "Library.hpp"
 #include "String.hpp"
 #include "Error.hpp"
@@ -34,7 +36,6 @@
 //
 
 #define UNZIP_READ_SIZE 67108860 /* 64 MiB */
-#define UNZIP_FILENAME_LEN 4096
 
 //
 // Local Functions
@@ -156,11 +157,11 @@ CORE_EXPORT bool CoreReadZipFile(std::filesystem::path file, std::filesystem::pa
     for (uint64_t i = 0; i < zipInfo.number_entry; i++)
     {
         unz_file_info fileInfo;
-        char          fileName[UNZIP_FILENAME_LEN];
+        char          fileName[CORE_DIR_MAX_LEN];
 
         // if we can't retrieve file info,
         // skip the file
-        if (unzGetCurrentFileInfo(zipFile, &fileInfo, fileName, UNZIP_FILENAME_LEN, nullptr, 0, nullptr, 0) != UNZ_OK)
+        if (unzGetCurrentFileInfo(zipFile, &fileInfo, fileName, CORE_DIR_MAX_LEN, nullptr, 0, nullptr, 0) != UNZ_OK)
         {
             continue;
         }
@@ -320,7 +321,7 @@ CORE_EXPORT bool CoreRead7zipFile(std::filesystem::path file, std::filesystem::p
     for (uint32_t i = 0; i < db.NumFiles; i++)
     {
         size_t filename_size = 0;
-        uint16_t fileName[UNZIP_FILENAME_LEN];
+        uint16_t fileName[CORE_DIR_MAX_LEN];
 
         // skip directories
         if (SzArEx_IsDir(&db, i))
@@ -330,7 +331,7 @@ CORE_EXPORT bool CoreRead7zipFile(std::filesystem::path file, std::filesystem::p
 
         // skip when filename size exceeds our buffer size
         filename_size = SzArEx_GetFileNameUtf16(&db, i, nullptr);
-        if (filename_size > UNZIP_FILENAME_LEN)
+        if (filename_size > CORE_DIR_MAX_LEN)
         {
             continue;
         }
@@ -475,10 +476,10 @@ CORE_EXPORT bool CoreUnzip(std::filesystem::path file, std::filesystem::path pat
     for (uint64_t i = 0; i < zipInfo.number_entry; i++)
     {
         unz_file_info fileInfo;
-        char          fileName[UNZIP_FILENAME_LEN];
+        char          fileName[CORE_DIR_MAX_LEN];
 
         // ensure we can retrieve the current file info
-        if (unzGetCurrentFileInfo(zipFile, &fileInfo, fileName, UNZIP_FILENAME_LEN, nullptr, 0, nullptr, 0) != UNZ_OK)
+        if (unzGetCurrentFileInfo(zipFile, &fileInfo, fileName, CORE_DIR_MAX_LEN, nullptr, 0, nullptr, 0) != UNZ_OK)
         {
             unzClose(zipFile);
             error = "CoreUnzip: unzGetCurrentFileInfo Failed!";

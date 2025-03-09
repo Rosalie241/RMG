@@ -24,7 +24,6 @@
 // Local Defines
 //
 
-#define MAX_FILENAME_LEN 4096
 #define ROMHEADER_NAME_LEN 256
 #define GOODNAME_LEN 256
 #define MD5_LEN 33
@@ -152,7 +151,7 @@ CORE_EXPORT void CoreReadRomHeaderAndSettingsCache(void)
 {
     std::ifstream inputStream;
     char magicBuf[sizeof(CACHE_FILE_MAGIC)];
-    wchar_t fileNameBuf[MAX_FILENAME_LEN];
+    wchar_t fileNameBuf[CORE_DIR_MAX_LEN];
     char headerNameBuf[ROMHEADER_NAME_LEN];
     char gameIDBuf[GAMEID_LEN];
     char regionBuf[REGION_LEN];
@@ -261,7 +260,7 @@ CORE_EXPORT void CoreReadRomHeaderAndSettingsCache(void)
 CORE_EXPORT bool CoreSaveRomHeaderAndSettingsCache(void)
 {
     std::ofstream outputStream;
-    wchar_t fileNameBuf[MAX_FILENAME_LEN];
+    wchar_t fileNameBuf[CORE_DIR_MAX_LEN];
     char headerNameBuf[ROMHEADER_NAME_LEN];
     char gameIDBuf[GAMEID_LEN];
     char regionBuf[REGION_LEN];
@@ -306,7 +305,7 @@ CORE_EXPORT bool CoreSaveRomHeaderAndSettingsCache(void)
         memset(md5Buf, 0, sizeof(md5Buf));
 
         // copy strings into buffers
-        wcsncpy(fileNameBuf, cacheEntry.fileName.wstring().c_str(), MAX_FILENAME_LEN);
+        wcsncpy(fileNameBuf, cacheEntry.fileName.wstring().c_str(), CORE_DIR_MAX_LEN);
         strncpy(headerNameBuf, cacheEntry.header.Name.c_str(), sizeof(headerNameBuf));
         strncpy(gameIDBuf, cacheEntry.header.GameID.c_str(), sizeof(gameIDBuf));
         strncpy(regionBuf, cacheEntry.header.Region.c_str(), sizeof(regionBuf));
