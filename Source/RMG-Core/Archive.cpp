@@ -10,7 +10,7 @@
 #define CORE_INTERNAL
 #include "Archive.hpp"
 
-#include <Directories.hpp>
+#include "Directories.hpp"
 #include "Library.hpp"
 #include "String.hpp"
 #include "Error.hpp"
