@@ -344,7 +344,7 @@ CORE_EXPORT bool CoreRead7zipFile(std::filesystem::path file, std::filesystem::p
         // so we have to catch the exception and do nothing
         try
         {
-            fileNamePath = (char16_t*)fileName;
+            fileNamePath = reinterpret_cast<char16_t*>(fileName);
         }
         catch (...)
         {
