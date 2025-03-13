@@ -49,7 +49,7 @@ BEGIN
             VALUE "FileDescription", "Rosalie's Mupen GUI"
             VALUE "FileVersion", "1.0.0.1"
             VALUE "InternalName", "RMG.exe"
-            VALUE "LegalCopyright", "Copyright (C) 2020 Rosalie Wanders"
+            VALUE "LegalCopyright", "Copyright (C) 2020-2025 Rosalie Wanders"
             VALUE "OriginalFilename", "RMG.exe"
             VALUE "ProductName", "Rosalie's Mupen GUI"
             VALUE "ProductVersion", "1.0.0.1"
