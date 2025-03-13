@@ -138,7 +138,7 @@ CORE_EXPORT bool CoreInit(void)
                                     CoreStateCallback);
     if (m64p_ret != M64ERR_SUCCESS)
     {
-        error = "CoreInit M64P::Core.Startup() Failed: ";
+        error = "CoreInit m64p::Core.Startup() Failed: ";
         error += m64p::Core.ErrorMessage(m64p_ret);
         CoreSetError(error);
         return false;
