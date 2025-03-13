@@ -42,7 +42,7 @@ static std::vector<l_DebugCallbackMessage> l_PendingCallbacks;
 
 void CoreDebugCallback(void* context, int level, const char* message)
 {
-    std::string contextString((const char*)context);
+    std::string contextString(static_cast<char*>(context));
     std::string messageString(message);
 
     if (!l_SetupCallbacks)
