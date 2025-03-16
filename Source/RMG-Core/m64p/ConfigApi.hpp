@@ -22,6 +22,8 @@ class ConfigApi
     ConfigApi(void);
     ~ConfigApi(void);
 
+    ConfigApi(const ConfigApi&) = delete;
+
     bool Hook(m64p_dynlib_handle handle);
     bool Unhook(void);
     bool IsHooked(void);

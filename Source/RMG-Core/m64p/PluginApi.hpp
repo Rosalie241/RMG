@@ -22,6 +22,8 @@ class PluginApi
   public:
     PluginApi(void);
     ~PluginApi(void);
+    
+    PluginApi(const PluginApi&) = delete;
 
     bool Hook(m64p_dynlib_handle);
     bool Unhook(void);

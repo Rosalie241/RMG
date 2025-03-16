@@ -23,6 +23,8 @@ class CoreApi
     CoreApi();
     ~CoreApi();
 
+    CoreApi(const CoreApi&) = delete;
+
     bool Hook(m64p_dynlib_handle handle);
     bool Unhook(void);
     bool IsHooked(void);
