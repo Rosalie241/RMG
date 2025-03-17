@@ -1,12 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 480">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 475 450">
   <defs>
-    <style>.cls-12{fill:none;stroke:#999}
+    <style>
+      .cls-12{fill:none;stroke:#999;stroke-width:2px}
     </style>
   </defs>
   <g id="AnalogStick">
-    <circle cx="250" cy="285" r="23" style="fill:#bbb;stroke-width:2px;stroke:#575757"/>
-    <circle cx="250" cy="285" r="17.4" class="cls-12"/>
-    <circle cx="250" cy="285" r="12" class="cls-12"/>
-    <circle cx="250" cy="285" r="6.7" class="cls-12"/>
+    <circle cx="237.5" cy="256.1" r="23" style="fill:#bbb;stroke-width:2px;stroke:#575757"/>
+    <circle cx="237.5" cy="256.1" r="17.4" class="cls-12"/>
+    <circle cx="237.5" cy="256.1" r="12" class="cls-12"/>
+    <circle cx="237.5" cy="256.1" r="6.7" class="cls-12"/>
   </g>
 </svg>
