@@ -166,7 +166,7 @@ void ControllerImageWidget::paintEvent(QPaintEvent *event)
     const int height = rectF.height();
     // we'll move the analog stick by a percentage
     // of the total width/height from the image
-    const double absoluteMaxOffset = (static_cast<double>(height * 0.12265f) / 2);
+    const double absoluteMaxOffset = (static_cast<double>(height * 0.114) / 2.0);
     // slope as in line gradient
     const double offsetSlope = absoluteMaxOffset / 100;
     // take sensitivity into account
