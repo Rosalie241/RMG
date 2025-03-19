@@ -364,7 +364,7 @@ static bool parse_cheat_file(const std::vector<std::string>& lines, CoreCheatFil
             else
             { // CRC1 & CRC2 & CountryCode
                 // validate header
-                if (line.size() != 22 || line.at(8) != '-' || line.at(17) != '-' || line.at(18) != 'C' || line.at(19) != ':')
+                if (line.size() != 22 || line[8] != '-' || line[17] != '-' || line[18] != 'C' || line[19] != ':')
                 {
                     error = "parse_cheat_file Failed: ";
                     error += "invalid header: \"";
@@ -374,9 +374,9 @@ static bool parse_cheat_file(const std::vector<std::string>& lines, CoreCheatFil
                     return false;
                 }
 
-                std::string crc1 = split_string(line, '-').at(0);
-                std::string crc2 = split_string(line, '-').at(1);
-                std::string countryCode = split_string(line, ':').at(1);
+                std::string crc1 = split_string(line, '-')[0];
+                std::string crc2 = split_string(line, '-')[1];
+                std::string countryCode = split_string(line, ':')[1];
 
                 cheatFile.CRC1 = std::strtoll(crc1.c_str(), nullptr, 16);
                 cheatFile.CRC2 = std::strtoll(crc2.c_str(), nullptr, 16);
