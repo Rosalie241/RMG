@@ -25,7 +25,6 @@ MainDialog::MainDialog(QWidget* parent, Thread::SDLThread* sdlThread, bool romCo
     qRegisterMetaType<SDLDevice>();
     
     this->setupUi(this);
-    this->setWindowIcon(QIcon(":Resource/RMG.png"));
 
     // setup SDL thread
     this->sdlThread = sdlThread;
