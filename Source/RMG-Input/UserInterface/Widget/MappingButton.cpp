@@ -10,6 +10,8 @@
 #include "MappingButton.hpp"
 #include "ControllerWidget.hpp"
 
+#include <QResizeEvent>
+
 using namespace UserInterface::Widget;
 
 MappingButton::MappingButton(QWidget* parent) : QPushButton(parent)
@@ -247,4 +249,11 @@ std::vector<MappingButtonInputDataType>::iterator MappingButton::getInputDataIte
     };
 
     return std::find_if(this->inputData.begin(), this->inputData.end(), predicate);
+}
+
+void MappingButton::resizeEvent(QResizeEvent* event)
+{
+    QPushButton::resizeEvent(event);
+    
+    emit this->controllerWidget->on_MappingButton_Resized(this, event);
 }

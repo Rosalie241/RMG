@@ -49,6 +49,9 @@ private:
 
 	std::vector<MappingButtonInputDataType>::iterator getInputDataIter(InputType type, int value, int extraValue);
 
+protected:
+	void resizeEvent(QResizeEvent* event) Q_DECL_OVERRIDE;
+
 public:
 	MappingButton(QWidget* parent);
 	~MappingButton();

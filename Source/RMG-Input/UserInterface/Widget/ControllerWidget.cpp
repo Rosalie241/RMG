@@ -968,6 +968,48 @@ void ControllerWidget::on_MappingButton_DataSet(MappingButton* button)
     this->addMappingToButton = false;
 }
 
+void ControllerWidget::on_MappingButton_Resized(MappingButton* button, QResizeEvent* event)
+{
+    const struct
+    {
+        AddMappingButton* addMappingButton;
+        RemoveMappingButton* removeMappingButton;
+    } mappingList[] =
+    {
+        // dpad
+        { this->dpadUpAddButton, this->dpadUpRemoveButton },
+        { this->dpadDownAddButton, this->dpadDownRemoveButton },
+        { this->dpadLeftAddButton, this->dpadLeftRemoveButton },
+        { this->dpadRightAddButton, this->dpadRightRemoveButton },
+        // analog stick
+        { this->analogStickUpAddButton, this->analogStickUpRemoveButton },
+        { this->analogStickDownAddButton, this->analogStickDownRemoveButton },
+        { this->analogStickLeftAddButton, this->analogStickLeftRemoveButton },
+        { this->analogStickRightAddButton, this->analogStickRightRemoveButton },
+        // cbuttons
+        { this->cbuttonUpAddButton, this->cbuttonUpRemoveButton },
+        { this->cbuttonDownAddButton, this->cbuttonDownRemoveButton },
+        { this->cbuttonLeftAddButton, this->cbuttonLeftRemoveButton },
+        { this->cbuttonRightAddButton, this->cbuttonRightRemoveButton },
+        // triggers
+        { this->leftShoulderAddButton, this->leftShoulderRemoveButton },
+        { this->rightShoulderAddButton, this->rightShoulderRemoveButton },
+        { this->zTriggerAddButton, this->zTriggerRemoveButton },
+        // buttons
+        { this->aAddButton, this->aRemoveButton },
+        { this->bAddButton, this->bRemoveButton },
+        { this->startAddButton, this->startRemoveButton },
+    };
+
+    const int height = event->size().height();
+
+    for (auto& mapping : mappingList)
+    {
+        mapping.addMappingButton->setFixedHeight(height);
+        mapping.removeMappingButton->setFixedHeight(height);
+    }
+}
+
 void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
 {
     // pass to hotkeys dialog when it's active

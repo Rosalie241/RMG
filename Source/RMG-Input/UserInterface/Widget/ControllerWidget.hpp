@@ -175,6 +175,7 @@ public slots:
     void on_MappingButton_Released(MappingButton* button);
     void on_MappingButton_TimerFinished(MappingButton* button);
     void on_MappingButton_DataSet(MappingButton* button);
+    void on_MappingButton_Resized(MappingButton* button, QResizeEvent* event);
     
     void on_AddMappingButton_Released(MappingButton* button);
     void on_RemoveMappingButton_Released(MappingButton* button);
