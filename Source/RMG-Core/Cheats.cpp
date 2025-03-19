@@ -188,7 +188,7 @@ static std::string join_split_string(const std::vector<std::string>& splitStr, c
             continue;
         }
 
-        element = splitStr.at(i);
+        element = splitStr[i];
 
         joinedString += element;
         // when not at the last element,
@@ -208,7 +208,7 @@ static bool parse_cheat(const std::vector<std::string>& lines, int startIndex, C
     std::string line;
     for (size_t i = startIndex; i < lines.size(); i++)
     {
-        line = lines.at(i);
+        line = lines[i];
 
         // Parse metadata
         // $Cheat Name
@@ -253,8 +253,8 @@ static bool parse_cheat(const std::vector<std::string>& lines, int startIndex, C
             return false;
         }
 
-        std::string address = splitLine.at(0);
-        std::string value   = splitLine.at(1);
+        std::string address = splitLine[0];
+        std::string value   = splitLine[1];
 
         if (splitLine.size() == 2 && address.size() == 8 && (value.size() == 4 || value.size() == 9))
         { // cheat code
@@ -265,7 +265,7 @@ static bool parse_cheat(const std::vector<std::string>& lines, int startIndex, C
             // so strip the old value
             if (value.size() == 9)
             {
-                if (value.at(4) == ':')
+                if (value[4] == ':')
                 {
                     value.erase(4, 5);
                 }
@@ -347,7 +347,7 @@ static bool parse_cheat_file(const std::vector<std::string>& lines, CoreCheatFil
 
     for (size_t index = 0; index < lines.size(); index++)
     {
-        line = lines.at(index);
+        line = lines[index];
 
         if (!readHeader && line.starts_with("[") && line.ends_with("]"))
         {

@@ -1560,7 +1560,7 @@ static bool int_list_to_string(const std::vector<int>& intList, std::string& str
 {
     for (size_t i = 0; i < intList.size(); i++)
     {
-        int num = intList.at(i);
+        int num = intList[i];
         string += std::to_string(num);
 
         // don't add seperator at end
@@ -1604,7 +1604,7 @@ static bool string_list_to_string(const std::vector<std::string>& stringList, st
 
     for (size_t i = 0; i < stringList.size(); i++)
     {
-        std::string str = stringList.at(i);
+        std::string str = stringList[i];
 
         // ensure the string doesn't contain
         // the separator character
