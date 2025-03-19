@@ -173,8 +173,8 @@ void ControllerImageWidget::paintEvent(QPaintEvent *event)
     const double sensitivityFactor = this->sensitivityValue / 100.0;
     const double sensitivityAdjustedMaxOffset = absoluteMaxOffset * std::min(sensitivityFactor, 1.0);
     double offsetDeadzone = this->deadzoneValue * sensitivityFactor * offsetSlope;
-    int offsetx = this->xAxisState * sensitivityFactor * offsetSlope;
-    int offsety = this->yAxisState * sensitivityFactor * offsetSlope;
+    double offsetx = this->xAxisState * sensitivityFactor * offsetSlope;
+    double offsety = this->yAxisState * sensitivityFactor * offsetSlope;
     const double offsetDist = std::hypot(offsetx, offsety);
 
     // take deadzone into account
