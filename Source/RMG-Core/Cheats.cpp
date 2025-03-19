@@ -240,7 +240,7 @@ static bool parse_cheat(const std::vector<std::string>& lines, int startIndex, C
             break;
         }
 
-        std::vector<std::string> splitLine = split_string(line, ' ');
+        const std::vector<std::string> splitLine = split_string(line, ' ');
 
         // skip invalid lines
         if (splitLine.size() < 2)
@@ -374,9 +374,10 @@ static bool parse_cheat_file(const std::vector<std::string>& lines, CoreCheatFil
                     return false;
                 }
 
-                std::string crc1 = split_string(line, '-')[0];
-                std::string crc2 = split_string(line, '-')[1];
-                std::string countryCode = split_string(line, ':')[1];
+                const std::vector<std::string> splitCrcString = split_string(line, '-');
+                const std::string crc1 = splitCrcString[0];
+                const std::string crc2 = splitCrcString[1];
+                const std::string countryCode = split_string(line, ':')[1];
 
                 cheatFile.CRC1 = std::strtoll(crc1.c_str(), nullptr, 16);
                 cheatFile.CRC2 = std::strtoll(crc2.c_str(), nullptr, 16);
