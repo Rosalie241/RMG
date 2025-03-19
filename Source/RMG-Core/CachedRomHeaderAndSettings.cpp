@@ -78,7 +78,7 @@ static std::filesystem::path get_cache_file_name(void)
 
 static std::vector<l_CacheEntry>::iterator get_cache_entry_iter(const std::filesystem::path& file, bool checkFileTime = true)
 {
-    CoreFileTime fileTime = CoreGetFileTime(file);
+    CoreFileTime fileTime = (checkFileTime ? CoreGetFileTime(file) : 0);
 
     auto predicate = [file, fileTime, checkFileTime](const auto& entry)
     {
@@ -86,7 +86,7 @@ static std::vector<l_CacheEntry>::iterator get_cache_entry_iter(const std::files
                 (!checkFileTime || entry.fileTime == fileTime);
     };
 
-        return std::find_if(l_CacheEntries.begin(), l_CacheEntries.end(), predicate);
+    return std::find_if(l_CacheEntries.begin(), l_CacheEntries.end(), predicate);
 }
 
 static void add_cache_entry(const std::filesystem::path& file, CoreRomType type, 
