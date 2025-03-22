@@ -196,6 +196,8 @@ CORE_EXPORT void CoreShutdown(void)
     CoreDiscordRpcShutdown();
 #endif // DISCORD_RPC
 
+    m64p::Core.Shutdown();
+
     m64p::Core.Unhook();
     m64p::Config.Unhook();
 
