@@ -29,6 +29,26 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.7.8" date="2025-03-23" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix ROM browser loading screen showing '[0/0]'</li>
+          <li>Fix configuration dialog of RMG-Input not closing when pressing escape</li>
+          <li>Fix AppImage not including libhidapi-hidraw</li>
+          <li>Fix AppImage not working on nvidia GPUs since v0.7.7 (thank you Samueru-sama)</li>
+          <li>Fix casing in error message in RMG-Core</li>
+          <li>Fix missing space for 'Start:' label in RMG-Input</li>
+          <li>Fix inconsistent height for UI elements in RMG-Input</li>
+          <li>Fix mupen64plus not being shutdown properly</li>
+          <li>Fix high memory requirement introduced in v0.7.1</li>
+          <li>Add bounds checking for some DMA operations</li>
+          <li>Add new controller image to RMG-Input (thank you Jaffacakelover)</li>
+          <li>Add support for using a local file path for the netplay server list URL</li>
+          <li>Swap Z-Trigger and Start UI elements in RMG-Input</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.7.7" date="2025-03-05" type="stable">
       <description>
         <p>Changes:</p>
