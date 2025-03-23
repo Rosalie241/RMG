@@ -1568,7 +1568,7 @@ bool gSPCullVertices( u32 v0, u32 vn )
 	}
 	u32 clip = 0;
 	GraphicsDrawer & drawer = dwnd().getDrawer();
-	for (u32 i = v0; i <= vn; ++i) {
+	for (u32 i = v0; i <= std::min(vn, (VERTBUFF_SIZE - 1)); ++i) {
 		clip |= (~drawer.getVertex(i).clip) & CLIP_ALL;
 		if (clip == CLIP_ALL)
 			return false;
