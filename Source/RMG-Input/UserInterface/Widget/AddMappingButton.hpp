@@ -12,8 +12,6 @@
 
 #include <QPushButton>
 
-#include "common.hpp"
-
 namespace UserInterface
 {
 namespace Widget
