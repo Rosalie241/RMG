@@ -82,7 +82,9 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QStackedWidget(parent)
     // configure list view widget
     this->listViewWidget = new Widget::RomBrowserListViewWidget(this);
     this->listViewModel  = new QStandardItemModel(this);
-    this->listViewWidget->setModel(this->listViewModel);
+    this->listViewProxyModel = new QSortFilterProxyModel(this);
+    this->listViewProxyModel->setSourceModel(this->listViewModel);
+    this->listViewWidget->setModel(this->listViewProxyModel);
     this->listViewWidget->setFrameStyle(QFrame::NoFrame);
     this->listViewWidget->setItemDelegate(new NoFocusDelegate(this));
     this->listViewWidget->setWordWrap(false);
@@ -342,6 +344,13 @@ void RomBrowserWidget::SetGridViewUniformSizes(bool value)
     }
 
     this->gridViewWidget->setUniformItemSizes(value);
+}
+
+void RomBrowserWidget::SetSearchTerm(QString text)
+{
+    this->listViewProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    this->listViewProxyModel->setFilterWildcard(text);
+    this->listViewProxyModel->setFilterKeyColumn(0);
 }
 
 QMap<QString, CoreRomSettings> RomBrowserWidget::GetModelData(void)

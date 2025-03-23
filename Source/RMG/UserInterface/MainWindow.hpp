@@ -54,6 +54,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 
     CoreCallbacks* coreCallBacks = nullptr;
 
+    QVBoxLayout *ui_Layout                         = nullptr;
     QStackedWidget *ui_Widgets                     = nullptr;
     Widget::DummyWidget *ui_Widget_Dummy           = nullptr;
     Widget::OGLWidget   *ui_Widget_OpenGL          = nullptr;
@@ -238,6 +239,8 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 
     void on_Netplay_PlayGame(QString file, QString address, int port, int player);
     void on_NetplaySessionDialog_rejected(void);
+
+    void on_searchLineEdit_textChanged(QString text);
 
   public slots:
 

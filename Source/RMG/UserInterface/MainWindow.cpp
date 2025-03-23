@@ -206,9 +206,8 @@ void MainWindow::initializeUI(bool launchROM)
 {
     this->setupUi(this);
 
-    this->ui_Widgets = new QStackedWidget(this);
     this->ui_Widget_RomBrowser = new Widget::RomBrowserWidget(this);
-    this->ui_Widget_Dummy = new Widget::DummyWidget(this);
+    this->ui_Widget_Dummy      = new Widget::DummyWidget(this);
 
     this->ui_EventFilter = new EventFilter(this);
     this->ui_StatusBar_Label = new QLabel(this);
@@ -253,8 +252,6 @@ void MainWindow::initializeUI(bool launchROM)
 
 void MainWindow::configureUI(QApplication* app, bool showUI)
 {
-    this->setCentralWidget(this->ui_Widgets);
-
     QString geometry = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::RomBrowser_Geometry));
     bool maximized = CoreSettingsGetBoolValue(SettingsID::RomBrowser_Maximized);
     if (maximized)
@@ -298,9 +295,9 @@ void MainWindow::configureUI(QApplication* app, bool showUI)
 
     this->ui_StatusBarTimerTimeout = CoreSettingsGetIntValue(SettingsID::GUI_StatusbarMessageDuration);
 
-    this->ui_Widgets->addWidget(this->ui_Widget_RomBrowser);
-    this->ui_Widgets->addWidget(this->ui_Widget_Dummy);
-    this->ui_Widgets->setCurrentWidget(this->ui_Widget_RomBrowser);
+    this->stackedWidget->addWidget(this->ui_Widget_RomBrowser);
+    this->stackedWidget->addWidget(this->ui_Widget_Dummy);
+    this->stackedWidget->setCurrentWidget(this->ui_Widget_RomBrowser);
 
     this->setFocusPolicy(Qt::FocusPolicy::StrongFocus);
     this->installEventFilter(this->ui_EventFilter);
@@ -510,12 +507,12 @@ void MainWindow::updateUI(bool inEmulation, bool isPaused)
             {
                 this->ui_StatusBar_RenderModeLabel->setText("OpenGL");
             }
-            this->ui_Widgets->setCurrentWidget(this->ui_Widget_OpenGL->GetWidget());
+            this->stackedWidget->setCurrentWidget(this->ui_Widget_OpenGL->GetWidget());
         }
         else if (this->ui_VidExtRenderMode == VidExtRenderMode::Vulkan)
         {
             this->ui_StatusBar_RenderModeLabel->setText("Vulkan");
-            this->ui_Widgets->setCurrentWidget(this->ui_Widget_Vulkan->GetWidget());
+            this->stackedWidget->setCurrentWidget(this->ui_Widget_Vulkan->GetWidget());
         }
         else
         {
@@ -524,7 +521,7 @@ void MainWindow::updateUI(bool inEmulation, bool isPaused)
             // to minimize the flicker that would occur when switching
             // from the ROM browser to the render widget when you i.e
             // launch RMG with a ROM on the commandline or drag & drop
-            this->ui_Widgets->setCurrentWidget(this->ui_Widget_Dummy);
+            this->stackedWidget->setCurrentWidget(this->ui_Widget_Dummy);
         }
 
         this->storeGeometry();
@@ -532,7 +529,7 @@ void MainWindow::updateUI(bool inEmulation, bool isPaused)
     else if (!this->ui_NoSwitchToRomBrowser)
     {
         this->setWindowTitle(this->ui_WindowTitle);
-        this->ui_Widgets->setCurrentWidget(this->ui_Widget_RomBrowser);
+        this->stackedWidget->setCurrentWidget(this->ui_Widget_RomBrowser);
         this->ui_StatusBar_RenderModeLabel->clear();
         this->loadGeometry();
     }
@@ -602,7 +599,7 @@ void MainWindow::loadGeometry(void)
 
     if (this->ui_ShowStatusbar && this->statusBar()->isHidden())
     {
-        this->statusBar()->show();
+        //this->statusBar()->show();
     }
     else if (!this->ui_ShowStatusbar && !this->statusBar()->isHidden())
     {
@@ -1396,7 +1393,7 @@ void MainWindow::on_EventFilter_FileDropped(QDropEvent *event)
         return;
     }
 
-    bool inEmulation     = (this->ui_Widgets->currentIndex() != 0);
+    bool inEmulation     = (this->stackedWidget->currentIndex() != 0);
     bool confirmDragDrop = CoreSettingsGetBoolValue(SettingsID::GUI_ConfirmDragDrop);
     bool refreshRomList  = false;
     QString file;
@@ -1542,7 +1539,7 @@ void MainWindow::on_Action_System_OpenRom(void)
         return;
     }
 
-    if (this->ui_Widgets->currentIndex() != 0)
+    if (this->stackedWidget->currentIndex() != 0)
     {
         this->ui_NoSwitchToRomBrowser = true;
     }
@@ -1581,7 +1578,7 @@ void MainWindow::on_Action_System_OpenCombo(void)
         return;
     }
 
-    if (this->ui_Widgets->currentIndex() != 0)
+    if (this->stackedWidget->currentIndex() != 0)
     {
         this->ui_NoSwitchToRomBrowser = true;
     }
@@ -2258,6 +2255,11 @@ void MainWindow::on_NetplaySessionDialog_rejected()
 #endif // NETPLAY
 }
 
+void MainWindow::on_searchLineEdit_textChanged(QString text)
+{
+    this->ui_Widget_RomBrowser->SetSearchTerm(text);
+}
+
 void MainWindow::on_VidExt_Init(VidExtRenderMode renderMode)
 {
     this->ui_VidExtRenderMode   = renderMode;
@@ -2288,7 +2290,7 @@ void MainWindow::on_VidExt_Init(VidExtRenderMode renderMode)
         this->ui_Widget_OpenGL->installEventFilter(this->ui_EventFilter);
         this->ui_Widget_OpenGL->SetHideCursor(this->ui_HideCursorInEmulation);
 
-        this->ui_Widgets->addWidget(this->ui_Widget_OpenGL->GetWidget());
+        this->stackedWidget->addWidget(this->ui_Widget_OpenGL->GetWidget());
     }
     else if (renderMode == VidExtRenderMode::Vulkan)
     {
@@ -2296,7 +2298,7 @@ void MainWindow::on_VidExt_Init(VidExtRenderMode renderMode)
         this->ui_Widget_Vulkan->installEventFilter(this->ui_EventFilter);
         this->ui_Widget_Vulkan->SetHideCursor(this->ui_HideCursorInEmulation);
 
-        this->ui_Widgets->addWidget(this->ui_Widget_Vulkan->GetWidget());
+        this->stackedWidget->addWidget(this->ui_Widget_Vulkan->GetWidget());
     }
 
     this->updateUI(true, false);
@@ -2339,7 +2341,7 @@ void MainWindow::on_VidExt_SetWindowedMode(int width, int height, int bps, int f
 
     if (this->ui_ShowStatusbar && this->statusBar()->isHidden())
     {
-        this->statusBar()->show();
+        //this->statusBar()->show();
     }
 
     if (!this->ui_HideCursorInEmulation && this->ui_HideCursorInFullscreenEmulation)
@@ -2748,13 +2750,13 @@ void MainWindow::on_VidExt_Quit(void)
 {
     if (this->ui_VidExtRenderMode == VidExtRenderMode::OpenGL)
     {
-        this->ui_Widgets->removeWidget(this->ui_Widget_OpenGL->GetWidget());
+        this->stackedWidget->removeWidget(this->ui_Widget_OpenGL->GetWidget());
         this->ui_Widget_OpenGL->GetWidget()->deleteLater();
         this->ui_Widget_OpenGL = nullptr;
     }
     else if (this->ui_VidExtRenderMode == VidExtRenderMode::Vulkan)
     {
-        this->ui_Widgets->removeWidget(this->ui_Widget_Vulkan->GetWidget());
+        this->stackedWidget->removeWidget(this->ui_Widget_Vulkan->GetWidget());
         this->ui_Widget_Vulkan->GetWidget()->deleteLater();
         this->ui_Widget_Vulkan = nullptr;
     }

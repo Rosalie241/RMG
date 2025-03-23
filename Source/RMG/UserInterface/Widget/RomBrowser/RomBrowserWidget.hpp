@@ -18,6 +18,7 @@
 #include "RomBrowserLoadingWidget.hpp"
 #include "RomBrowserEmptyWidget.hpp"
 
+#include <QSortFilterProxyModel>
 #include <QStandardItemModel>
 #include <QStackedWidget>
 #include <QGridLayout>
@@ -54,6 +55,8 @@ class RomBrowserWidget : public QStackedWidget
 
     void SetGridViewUniformSizes(bool value);
 
+    void SetSearchTerm(QString text);
+
     QMap<QString, CoreRomSettings> GetModelData(void);
 
   private:
@@ -62,8 +65,10 @@ class RomBrowserWidget : public QStackedWidget
 
     Widget::RomBrowserListViewWidget* listViewWidget = nullptr;
     QStandardItemModel* listViewModel                = nullptr;
+    QSortFilterProxyModel* listViewProxyModel        = nullptr;
     Widget::RomBrowserGridViewWidget* gridViewWidget = nullptr;
     QStandardItemModel* gridViewModel                = nullptr;
+    QSortFilterProxyModel* gridViewProxyModel        = nullptr;
 
     QWidget* currentViewWidget = nullptr;
 
