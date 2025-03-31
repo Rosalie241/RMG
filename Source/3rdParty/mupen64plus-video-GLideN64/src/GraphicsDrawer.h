@@ -17,8 +17,9 @@ namespace graphics {
 struct CachedTexture;
 struct FrameBuffer;
 
-#define VERTBUFF_SIZE 256U
-#define ELEMBUFF_SIZE 1024U
+constexpr u32 VERTBUFF_SIZE = 256U;
+constexpr u32 VERTBUFF_MASK = VERTBUFF_SIZE - 1;
+constexpr u32 ELEMBUFF_SIZE = 1024U;
 
 constexpr f32 SCREEN_SIZE_DIM = 640.0f;
 constexpr u32 MIPMAP_TILE_WIDTH = 256u;
@@ -136,7 +137,7 @@ public:
 
 	bool isRejected(u32 _v0, u32 _v1, u32 _v2) const;
 
-	SPVertex & getVertex(u32 _v) { return triangles.vertices[_v]; }
+	SPVertex & getVertex(u32 _v) { return triangles.vertices[_v&VERTBUFF_MASK]; }
 
 	SPVertex * getVertexPtr(u32 _v) { return triangles.vertices.data() + _v; }
 

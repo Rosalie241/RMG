@@ -1566,6 +1566,11 @@ bool gSPCullVertices( u32 v0, u32 vn )
 		// Aidyn Chronicles - The First Mage seems to pass parameters in reverse order.
 		std::swap(v0, vn);
 	}
+
+	if (vn >= VERTBUFF_SIZE)
+		// Wrong input. DL is wrong, let's cull it.
+		return true;
+
 	u32 clip = 0;
 	GraphicsDrawer & drawer = dwnd().getDrawer();
 	for (u32 i = v0; i <= vn; ++i) {

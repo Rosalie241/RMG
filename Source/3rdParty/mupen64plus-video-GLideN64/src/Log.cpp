@@ -12,6 +12,7 @@
 #include <iomanip>
 #include <fstream>
 #include <ctime>
+#include <chrono>
 
 #ifndef MUPENPLUSAPI // zilmar spec
 
