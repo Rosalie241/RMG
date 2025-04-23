@@ -29,7 +29,12 @@
 
 // minizip includes
 #include <unzip.h>
+#ifndef ZNGLIB_H_
+/* sadly older minizip-ng versions didn't include zlib.h automatically,
+ * so i.e voidpf would be undefined, in newer minizip-ng versions,
+ * including zlib.h will cause an error */
 #include <zlib.h>
+#endif
 
 //
 // Local Defines
