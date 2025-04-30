@@ -12,6 +12,7 @@
 #else // Unix
 #include <arpa/inet.h>
 #endif // _WIN32
+#include <cstring>
 
 #define CORE_INTERNAL
 #include "ConvertStringEncoding.hpp"
@@ -168,13 +169,19 @@ CORE_EXPORT bool CoreGetCurrentRomHeader(CoreRomHeader& header)
         return false;
     }
 
+    printf("header name len: %i\n", strlen((char*)m64p_header.Name));
+
     header.CRC1        = ntohl(m64p_header.CRC1);
     header.CRC2        = ntohl(m64p_header.CRC2);
     header.CountryCode = m64p_header.Country_code;
-    header.Name        = CoreConvertStringEncoding(std::string(reinterpret_cast<char*>(m64p_header.Name), 20), CoreStringEncoding::Shift_JIS);
+    header.Name        = CoreConvertStringEncoding(std::string(reinterpret_cast<char*>(m64p_header.Name), 
+                                                    std::min(std::strlen(reinterpret_cast<char*>(m64p_header.Name)), static_cast<size_t>(20))), 
+                                                    CoreStringEncoding::Shift_JIS);
     header.GameID      = get_gameid_from_header(m64p_header);
     header.Region      = get_region_from_countrycode(static_cast<char>(header.CountryCode));
     header.SystemType  = get_systemtype_from_countrycode(header.CountryCode);
+
+    printf("header name len after: %i\n", header.Name.size());  
 
     return true;
 }
