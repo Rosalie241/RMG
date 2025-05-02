@@ -153,7 +153,7 @@ void read_pi_regs(void* opaque, uint32_t address, uint32_t* value)
     struct pi_controller* pi = (struct pi_controller*)opaque;
     uint32_t reg = pi_reg(address);
 
-    if (reg < PI_REGS_COUNT)    
+    if (reg < PI_REGS_COUNT)
         *value = pi->regs[reg];
 
     if (reg == PI_WR_LEN_REG || reg == PI_RD_LEN_REG)

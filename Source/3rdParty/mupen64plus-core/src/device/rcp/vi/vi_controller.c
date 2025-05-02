@@ -104,7 +104,7 @@ void read_vi_regs(void* opaque, uint32_t address, uint32_t* value)
         /* update current field */
         vi->regs[VI_CURRENT_REG] = (vi->regs[VI_CURRENT_REG] & (~1)) | vi->field;
     }
-    
+
     if (reg < VI_REGS_COUNT)
     {
         *value = vi->regs[reg];
