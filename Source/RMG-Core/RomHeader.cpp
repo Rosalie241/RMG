@@ -12,6 +12,7 @@
 #else // Unix
 #include <arpa/inet.h>
 #endif // _WIN32
+#include <cstring>
 
 #define CORE_INTERNAL
 #include "ConvertStringEncoding.hpp"
@@ -23,6 +24,26 @@
 //
 // Local Functions
 //
+
+static std::string get_name_from_headername(uint8_t name[20])
+{
+    std::string safeName;
+    size_t count = 0;
+
+    // count characters from internal
+    // ROM name, the maximum is 20 so
+    // we can hardcode that safely
+    for (; count < 20; count++)
+    {
+        if (name[count] == '\0')
+        {
+            break;
+        }
+    }
+
+    safeName = std::string(reinterpret_cast<char*>(name), count);
+    return CoreConvertStringEncoding(safeName, CoreStringEncoding::Shift_JIS);
+}
 
 static std::string get_gameid_from_header(m64p_rom_header header)
 {
@@ -171,7 +192,7 @@ CORE_EXPORT bool CoreGetCurrentRomHeader(CoreRomHeader& header)
     header.CRC1        = ntohl(m64p_header.CRC1);
     header.CRC2        = ntohl(m64p_header.CRC2);
     header.CountryCode = m64p_header.Country_code;
-    header.Name        = CoreConvertStringEncoding(std::string(reinterpret_cast<char*>(m64p_header.Name), 20), CoreStringEncoding::Shift_JIS);
+    header.Name        = get_name_from_headername(m64p_header.Name);
     header.GameID      = get_gameid_from_header(m64p_header);
     header.Region      = get_region_from_countrycode(static_cast<char>(header.CountryCode));
     header.SystemType  = get_systemtype_from_countrycode(header.CountryCode);
