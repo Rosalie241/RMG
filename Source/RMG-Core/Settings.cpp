@@ -497,7 +497,7 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::KeyBinding_Fullscreen:
         setting = {SETTING_SECTION_KEYBIND, "Fullscreen", std::string("Alt+Return")};
         break;
-    case SettingsID::Keybinding_ViewLog:
+    case SettingsID::KeyBinding_ViewLog:
         setting = {SETTING_SECTION_KEYBIND, "ViewLog", std::string("Ctrl+Alt+L")};
         break;
     case SettingsID::KeyBinding_ViewSearch:
