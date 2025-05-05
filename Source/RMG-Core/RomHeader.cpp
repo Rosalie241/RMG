@@ -12,7 +12,6 @@
 #else // Unix
 #include <arpa/inet.h>
 #endif // _WIN32
-#include <cstring>
 
 #define CORE_INTERNAL
 #include "ConvertStringEncoding.hpp"
