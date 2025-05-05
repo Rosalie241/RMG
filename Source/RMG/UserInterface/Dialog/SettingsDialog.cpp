@@ -1058,7 +1058,8 @@ void SettingsDialog::commonHotkeySettings(SettingsDialogAction action)
     {
         { this->fullscreenKeyButton, SettingsID::KeyBinding_Fullscreen },
         { this->logKeyButton, SettingsID::Keybinding_ViewLog },
-        { this->refreshRomListKeyButton, SettingsID::KeyBinding_RefreshROMList }
+        { this->refreshRomListKeyButton, SettingsID::KeyBinding_RefreshROMList },
+        { this->searchKeyButton, SettingsID::KeyBinding_ViewSearch }
     };
 
 

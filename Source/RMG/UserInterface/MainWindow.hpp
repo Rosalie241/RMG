@@ -210,6 +210,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     void on_Action_View_RefreshRoms(void);
     void on_Action_View_ClearRomCache(void);
     void on_Action_View_Log(void);
+    void on_Action_View_Search(void);
 
     void on_Action_Netplay_CreateSession(void);
     void on_Action_Netplay_BrowseSessions(void);

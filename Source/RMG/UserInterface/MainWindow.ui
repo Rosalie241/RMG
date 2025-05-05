@@ -137,6 +137,8 @@
     <addaction name="action_View_ClearRomCache"/>
     <addaction name="separator"/>
     <addaction name="action_View_Log"/>
+    <addaction name="separator"/>
+    <addaction name="action_View_Search"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -631,6 +633,14 @@
    </property>
    <property name="text">
     <string>View Session</string>
+   </property>
+  </action>
+  <action name="action_View_Search">
+    <property name="icon">
+      <iconset theme="search-line"/>
+     </property>
+   <property name="text">
+    <string>Search</string>
    </property>
   </action>
  </widget>

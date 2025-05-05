@@ -847,6 +847,9 @@ void MainWindow::updateActions(bool inEmulation, bool isPaused)
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::Keybinding_ViewLog));
     this->action_View_Log->setShortcut(QKeySequence(keyBinding));
     this->action_View_ClearRomCache->setEnabled(!inEmulation);
+    keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_ViewSearch));
+    this->action_View_Search->setShortcut(QKeySequence(keyBinding));
+    this->action_View_Search->setEnabled(!inEmulation);
 
 #ifdef NETPLAY
     this->action_Netplay_CreateSession->setEnabled(!inEmulation && this->netplaySessionDialog == nullptr);
@@ -1180,6 +1183,7 @@ void MainWindow::connectActionSignals(void)
     connect(this->action_View_RefreshRoms, &QAction::triggered, this, &MainWindow::on_Action_View_RefreshRoms);
     connect(this->action_View_ClearRomCache, &QAction::triggered, this, &MainWindow::on_Action_View_ClearRomCache);
     connect(this->action_View_Log, &QAction::triggered, this, &MainWindow::on_Action_View_Log);
+    connect(this->action_View_Search, &QAction::triggered, this, &MainWindow::on_Action_View_Search);
 
     connect(this->action_Netplay_CreateSession, &QAction::triggered, this, &MainWindow::on_Action_Netplay_CreateSession);
     connect(this->action_Netplay_BrowseSessions, &QAction::triggered, this, &MainWindow::on_Action_Netplay_BrowseSessions);
@@ -1950,6 +1954,11 @@ void MainWindow::on_Action_View_ClearRomCache(void)
 void MainWindow::on_Action_View_Log(void)
 {
     this->logDialog.show();
+}
+
+void MainWindow::on_Action_View_Search(void)
+{
+    this->ui_Widget_RomBrowser->SetToggleSearch();
 }
 
 void MainWindow::on_Action_Netplay_CreateSession(void)
