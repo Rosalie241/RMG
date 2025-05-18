@@ -193,7 +193,7 @@ void GLInfo::init() {
 	eglImage = (Utils::isEGLExtensionSupported("EGL_KHR_image_base") || Utils::isEGLExtensionSupported("EGL_KHR_image"));
 	ext_fetch_arm =  Utils::isExtensionSupported(*this, "GL_ARM_shader_framebuffer_fetch") && !ext_fetch;
 
-	dual_source_blending = !isGLESX || (Utils::isExtensionSupported(*this, "GL_EXT_blend_func_extended") && !isAnyAdreno);
+	dual_source_blending = !isGLESX || ((!isGLES2) && (Utils::isExtensionSupported(*this, "GL_EXT_blend_func_extended") && !isAnyAdreno));
 	anisotropic_filtering = Utils::isExtensionSupported(*this, "GL_EXT_texture_filter_anisotropic");
 
 #ifdef OS_ANDROID

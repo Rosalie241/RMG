@@ -396,6 +396,8 @@ void Config_LoadCustomConfig()
 	if (result == M64ERR_SUCCESS) config.generalEmulation.enableLegacyBlending = atoi(value);
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "generalEmulation\\enableFragmentDepthWrite", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.generalEmulation.enableFragmentDepthWrite = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "generalEmulation\\hacks", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.generalEmulation.hacks |= atoi(value);
 
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "graphics2D\\correctTexrectCoords", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.graphics2D.correctTexrectCoords = atoi(value);

@@ -204,7 +204,7 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 
 		RDP_Init();
 
-		G_TRI1 = G_TRI2 = G_TRIX = G_QUAD = -1; // For correct work of gSPFlushTriangles()
+		G_TRI1 = G_TRI2 = G_TRIX = G_QUAD = G_TRISTRIP = G_TRIFAN = -1; // For correct work of gSPFlushTriangles()
 		gSP.clipRatio = 1U;
 
 		switch (m_pCurrent->type) {
