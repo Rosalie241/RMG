@@ -181,7 +181,11 @@ EXPORT m64p_error CALL PluginStartup(m64p_dynlib_handle _CoreLibHandle, void *Co
     ConfigSetDefaultBool(configVideoParallel, KEY_DEINTERLACE, 0, "Deinterlacing method. False=Bob, True=Weave");
     ConfigSetDefaultBool(configVideoParallel, KEY_SSREADBACKS, 0, "Enable superscaling of readbacks when upsampling");
     ConfigSetDefaultBool(configVideoParallel, KEY_SSDITHER, 1, "Enable superscaling of dithering when upsampling");
-    ConfigSetDefaultInt(configVideoParallel, KEY_OVERSCANCROP, 0, "Amount of overscan pixels to crop on all sides");
+    ConfigSetDefaultInt(configVideoParallel, KEY_OVERSCANCROPLEFT, 0, "Amount of overscan pixels to crop on the left side");
+    ConfigSetDefaultInt(configVideoParallel, KEY_OVERSCANCROPRIGHT, 0, "Amount of overscan pixels to crop on the right side");
+    ConfigSetDefaultInt(configVideoParallel, KEY_OVERSCANCROPTOP, 0, "Amount of overscan pixels to crop on the top side");
+    ConfigSetDefaultInt(configVideoParallel, KEY_OVERSCANCROPBOTTOM, 0, "Amount of overscan pixels to crop on the bottom side");
+    ConfigSetDefaultBool(configVideoParallel, KEY_OVERSCANCROPENABLE, 0, "Whether to enable overscan");
     ConfigSetDefaultInt(configVideoParallel, KEY_VERTICAL_STRETCH, 0, "Amount of pixels to stretch by vertically. Can fix PAL ports that didn't fill the PAL resolution of 288p (use value of 24 in that case).");
     ConfigSetDefaultBool(configVideoParallel, KEY_AA, 1, "VI anti-aliasing, smooths polygon edges.");
     ConfigSetDefaultBool(configVideoParallel, KEY_DIVOT, 1, "Allow VI divot filter, cleans up stray black pixels.");
@@ -307,7 +311,11 @@ EXPORT int CALL RomOpen(void)
     vk_native_tex_rect = ConfigGetParamBool(configVideoParallel, KEY_NATIVETEXTRECT);
     vk_interlacing = ConfigGetParamBool(configVideoParallel, KEY_DEINTERLACE);
     vk_downscaling_steps = ConfigGetParamInt(configVideoParallel, KEY_DOWNSCALE);
-    vk_overscan = ConfigGetParamInt(configVideoParallel, KEY_OVERSCANCROP);
+    vk_overscan_left = ConfigGetParamInt(configVideoParallel, KEY_OVERSCANCROPLEFT);
+    vk_overscan_right = ConfigGetParamInt(configVideoParallel, KEY_OVERSCANCROPRIGHT);
+    vk_overscan_top = ConfigGetParamInt(configVideoParallel, KEY_OVERSCANCROPTOP);
+    vk_overscan_bottom = ConfigGetParamInt(configVideoParallel, KEY_OVERSCANCROPBOTTOM);
+    vk_overscan_enable = ConfigGetParamBool(configVideoParallel, KEY_OVERSCANCROPENABLE);
     vk_vertical_stretch = ConfigGetParamInt(configVideoParallel, KEY_VERTICAL_STRETCH);
 
     m64p_error netplay_init = ConfigReceiveNetplayConfig(NULL, 0);

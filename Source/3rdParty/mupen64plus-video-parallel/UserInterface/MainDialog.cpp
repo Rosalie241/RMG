@@ -61,17 +61,15 @@ MainDialog::MainDialog(QWidget* parent) : QDialog(parent)
     }
     this->resolutionUpscaleComboBox->setCurrentIndex(comboBoxIndex);
 
-    // set deinterlacer combobox
     this->deinterlacerComboBox->setCurrentIndex(ConfigGetParamBool(configVideoParallel, KEY_DEINTERLACE) ? 1 : 0);
-
-    // set downscaling combobox
     this->downscalerComboBox->setCurrentIndex(ConfigGetParamInt(configVideoParallel, KEY_DOWNSCALE));
-
-    // set cropOverscan combobox
-    this->cropOverscanSpinBox->setValue(ConfigGetParamInt(configVideoParallel, KEY_OVERSCANCROP));
-
-    // set verticalStretch combobox
     this->verticalStretchSpinBox->setValue(ConfigGetParamInt(configVideoParallel, KEY_VERTICAL_STRETCH));
+    
+    this->overscanGroupBox->setChecked(ConfigGetParamBool(configVideoParallel, KEY_OVERSCANCROPENABLE));
+    this->overscanLeftSpinBox->setValue(ConfigGetParamInt(configVideoParallel, KEY_OVERSCANCROPLEFT));
+    this->overscanRightSpinBox->setValue(ConfigGetParamInt(configVideoParallel, KEY_OVERSCANCROPRIGHT));
+    this->overscanTopSpinBox->setValue(ConfigGetParamInt(configVideoParallel, KEY_OVERSCANCROPTOP));
+    this->overscanBottomSpinBox->setValue(ConfigGetParamInt(configVideoParallel, KEY_OVERSCANCROPBOTTOM));
 
     this->superSampledDitherCheckBox->setChecked(ConfigGetParamBool(configVideoParallel, KEY_SSDITHER));
     this->viAaCheckBox->setChecked(ConfigGetParamBool(configVideoParallel, KEY_AA));
@@ -127,8 +125,16 @@ void MainDialog::on_buttonBox_clicked(QAbstractButton* button)
         ConfigSetParameter(configVideoParallel, KEY_DOWNSCALE, M64TYPE_INT, &downscalingValue);
 
         // cropOverscan
-        int cropOverscanValue = this->cropOverscanSpinBox->value();
-        ConfigSetParameter(configVideoParallel, KEY_OVERSCANCROP, M64TYPE_INT, &cropOverscanValue);
+        int overscanEnabled = this->overscanGroupBox->isChecked();
+        int overscanLeft = this->overscanLeftSpinBox->value();
+        int overscanRight = this->overscanRightSpinBox->value();
+        int overscanTop = this->overscanTopSpinBox->value();
+        int overscanBottom = this->overscanBottomSpinBox->value();
+        ConfigSetParameter(configVideoParallel, KEY_OVERSCANCROPENABLE, M64TYPE_BOOL, &overscanEnabled);
+        ConfigSetParameter(configVideoParallel, KEY_OVERSCANCROPLEFT, M64TYPE_INT, &overscanLeft);
+        ConfigSetParameter(configVideoParallel, KEY_OVERSCANCROPRIGHT, M64TYPE_INT, &overscanRight);
+        ConfigSetParameter(configVideoParallel, KEY_OVERSCANCROPTOP, M64TYPE_INT, &overscanTop);
+        ConfigSetParameter(configVideoParallel, KEY_OVERSCANCROPBOTTOM, M64TYPE_INT, &overscanBottom);
 
         // verticalStretch
         int verticalStretchValue = this->verticalStretchSpinBox->value();
@@ -167,8 +173,12 @@ void MainDialog::on_buttonBox_clicked(QAbstractButton* button)
         this->resolutionUpscaleComboBox->setCurrentText("None");
         this->deinterlacerComboBox->setCurrentIndex(0);
         this->downscalerComboBox->setCurrentIndex(0);
-        this->cropOverscanSpinBox->setValue(0);
         this->verticalStretchSpinBox->setValue(0);
+        this->overscanGroupBox->setChecked(false);
+        this->overscanLeftSpinBox->setValue(0);
+        this->overscanRightSpinBox->setValue(0);
+        this->overscanTopSpinBox->setValue(0);
+        this->overscanBottomSpinBox->setValue(0);
 
         this->superSampledDitherCheckBox->setChecked(true);
         this->viAaCheckBox->setChecked(true);

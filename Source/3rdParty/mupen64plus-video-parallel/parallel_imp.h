@@ -13,9 +13,13 @@ extern "C"
     extern bool vk_ssreadbacks;
     extern bool vk_ssdither;
 
-    extern unsigned vk_overscan;
-    extern unsigned vk_vertical_stretch;
-    extern unsigned vk_downscaling_steps;
+    extern uint32_t vk_overscan_left;
+    extern uint32_t vk_overscan_right;
+    extern uint32_t vk_overscan_top;
+    extern uint32_t vk_overscan_bottom;
+    extern bool vk_overscan_enable;
+    extern uint32_t vk_vertical_stretch;
+    extern uint32_t vk_downscaling_steps;
     extern bool vk_native_texture_lod;
     extern bool vk_native_tex_rect;
     extern bool vk_divot_filter, vk_gamma_dither;
