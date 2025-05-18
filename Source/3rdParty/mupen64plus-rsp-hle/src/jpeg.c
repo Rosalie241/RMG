@@ -475,7 +475,7 @@ static void ReorderSubBlock(int16_t *dst, const int16_t *src, const unsigned int
     unsigned int i;
 
     /* source and destination sublocks cannot overlap */
-    assert(labs(dst - src) > SUBBLOCK_SIZE);
+    assert(labs(dst - src) >= SUBBLOCK_SIZE);
 
     for (i = 0; i < SUBBLOCK_SIZE; ++i)
         dst[i] = src[table[i]];

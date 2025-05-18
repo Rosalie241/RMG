@@ -19,19 +19,17 @@ jobs:
             arch: x64
           - cc: Clang
             arch: x86
-    name: Linux / ${{ matrix.cc }} / ${{ matrix.arch }}
-    runs-on: ubuntu-22.04
+    name: Linux / ${{ matrix.cc }} ${{ matrix.arch }}
+    runs-on: ubuntu-24.04
     if: github.repository == 'mupen64plus/mupen64plus-rsp-hle'
     steps:
       - uses: actions/checkout@v4
       - name: Get build dependencies and arrange the environment
         run: |
           git clone --depth 1 https://github.com/mupen64plus/mupen64plus-core.git ../mupen64plus-core
-          export C_CLANG_SUFFIX="-15" C_GCC_SUFFIX="-12"
           ./../mupen64plus-core/.github/workflows/scripts/ci_install_ubuntu_deps.sh ${{ matrix.arch }} ${{ matrix.cc }}
       - name: Build and related stuff, backup binaries
         run: |
-          export C_CLANG_SUFFIX="-15" C_GCC_SUFFIX="-12"
           ./../mupen64plus-core/.github/workflows/scripts/ci_build.sh ${{ matrix.arch }} ${{ matrix.cc }} makepkg
       - name: Upload artifact
         if: matrix.cc == 'GCC'
@@ -53,8 +51,16 @@ jobs:
             arch: x86
             cross: i686
             env: MINGW32
-    name: Windows / MSYS2 ${{ matrix.cc }} / ${{ matrix.arch }}
-    runs-on: windows-2022
+          - cc: GCC
+            arch: x64
+            cross: ucrt-x86_64
+            env: UCRT64
+          - cc: Clang
+            arch: x64
+            cross: clang-x86_64
+            env: CLANG64
+    name: Windows ${{ matrix.arch }} / MSYS2 ${{ matrix.env }} ${{ matrix.cc }}
+    runs-on: windows-2025
     if: github.repository == 'mupen64plus/mupen64plus-rsp-hle'
     defaults:
       run:
@@ -69,7 +75,6 @@ jobs:
             git
             libtool
             make
-            mingw-w64-${{ matrix.cross }}-gcc
             mingw-w64-${{ matrix.cross }}-toolchain
             mingw-w64-${{ matrix.cross }}-ntldd
       - name: Build and related stuff, backup binaries
@@ -92,11 +97,11 @@ jobs:
         include:
           - toolset: v143
             arch: x64
-            vs: 2022
+            vs: 2025
           - toolset: v141_xp
             arch: x86
             vs: 2019
-    name: Windows / MSVC with ${{ matrix.toolset }} / ${{ matrix.arch }}
+    name: Windows ${{ matrix.arch }} / MSVC with ${{ matrix.toolset }}
     runs-on: windows-${{ matrix.vs }}
     if: github.repository == 'mupen64plus/mupen64plus-rsp-hle'
     defaults:
