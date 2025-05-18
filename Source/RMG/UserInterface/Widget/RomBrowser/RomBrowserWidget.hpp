@@ -30,6 +30,7 @@
 #include <QString>
 #include <QList>
 #include <QMenu>
+#include <QPair>
 #include <QMap>
 
 // forward declaration of internal struct
@@ -105,7 +106,7 @@ class RomBrowserWidget : public QWidget
 
     QString coversDirectory;
 
-    QStandardItemModel* getCurrentModel(void);
+    QPair<QStandardItemModel*, QSortFilterProxyModel*> getCurrentModel(void);
     QAbstractItemView*  getCurrentModelView(void);
     bool getCurrentData(RomBrowserModelData& data);
 

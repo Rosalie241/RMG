@@ -397,17 +397,17 @@ void RomBrowserWidget::SetToggleSearch(void)
 QMap<QString, CoreRomSettings> RomBrowserWidget::GetModelData(void)
 {
     QMap<QString, CoreRomSettings> data;
-    QStandardItemModel* model = this->getCurrentModel();
+    QPair<QStandardItemModel*, QSortFilterProxyModel*> model = this->getCurrentModel();
     RomBrowserModelData modelData;
 
-    if (model == nullptr)
+    if (model.first == nullptr)
     {
         return data;
     }
 
-    for (int i = 0; i < model->rowCount(); i++)
+    for (int i = 0; i < model.first->rowCount(); i++)
     {
-        modelData = model->item(i)->data().value<RomBrowserModelData>();
+        modelData = model.first->item(i)->data().value<RomBrowserModelData>();
         // only add cartridges, 64dd disks aren't supported
         if (modelData.type == CoreRomType::Cartridge)
         {
@@ -418,7 +418,7 @@ QMap<QString, CoreRomSettings> RomBrowserWidget::GetModelData(void)
     return data;
 }
 
-QStandardItemModel* RomBrowserWidget::getCurrentModel(void)
+QPair<QStandardItemModel*, QSortFilterProxyModel*> RomBrowserWidget::getCurrentModel(void)
 {
     QWidget* currentWidget = this->stackedWidget->currentWidget();
     if (currentWidget == this->loadingWidget)
@@ -428,14 +428,14 @@ QStandardItemModel* RomBrowserWidget::getCurrentModel(void)
 
     if (currentWidget == this->listViewWidget)
     {
-        return this->listViewModel;
+        return qMakePair(this->listViewModel, this->listViewProxyModel);
     }
     else if (currentWidget == this->gridViewWidget)
     {
-        return this->gridViewModel;
+        return qMakePair(this->gridViewModel, this->gridViewProxyModel);
     }
 
-    return nullptr;
+    return qMakePair(nullptr, nullptr);
 }
 
 QAbstractItemView* RomBrowserWidget::getCurrentModelView(void)
@@ -460,21 +460,16 @@ QAbstractItemView* RomBrowserWidget::getCurrentModelView(void)
 
 bool RomBrowserWidget::getCurrentData(RomBrowserModelData& data)
 {
-    QStandardItemModel* model = this->getCurrentModel();
-    QAbstractItemView*  view  = this->getCurrentModelView();
+    QPair<QStandardItemModel*, QSortFilterProxyModel*> model = this->getCurrentModel();
+    QAbstractItemView* view = this->getCurrentModelView();
 
-    if (model == nullptr || view == nullptr)
+    if (model.first == nullptr || model.second == nullptr || view == nullptr)
     {
         return false;
     }
 
-    QModelIndex    index = view->currentIndex();
-    QStandardItem* item  = model->item(index.row(), 0);
-
-    if (item == nullptr)
-    {
-        return false;
-    }
+    QModelIndex    index = model.second->mapToSource(view->currentIndex());
+    QStandardItem* item  = model.first->item(index.row(), 0);
 
     data = item->data().value<RomBrowserModelData>();
     return true;
@@ -675,9 +670,8 @@ void RomBrowserWidget::on_DoubleClicked(const QModelIndex& index)
 
 void RomBrowserWidget::customContextMenuRequested(QPoint position)
 {
-    QStandardItemModel* model = this->getCurrentModel();
-    QAbstractItemView*  view = this->getCurrentModelView();
-    if (view == nullptr || model == nullptr)
+    QAbstractItemView* view = this->getCurrentModelView();
+    if (view == nullptr)
     {
         return;
     }
@@ -764,20 +758,20 @@ void RomBrowserWidget::generateColumnsMenu(void)
 void RomBrowserWidget::generatePlayWithDiskMenu(void)
 {
     QAction* playGameWithAction;
-    QStandardItemModel* model = this->getCurrentModel();
+    QPair<QStandardItemModel*, QSortFilterProxyModel*> model = this->getCurrentModel();
     RomBrowserModelData modelData;
     int count = 0;
 
     this->menu_PlayGameWithDisk->clear();
 
-    if (model == nullptr)
+    if (model.first == nullptr)
     {
         return;
     }
 
-    for (int i = 0; i < model->rowCount(); i++)
+    for (int i = 0; i < model.first->rowCount(); i++)
     {
-        modelData = model->item(i)->data().value<RomBrowserModelData>();
+        modelData = model.first->item(i)->data().value<RomBrowserModelData>();
         if (modelData.type == CoreRomType::Disk)
         {
             if (count == 0)
@@ -787,8 +781,8 @@ void RomBrowserWidget::generatePlayWithDiskMenu(void)
             }
 
             playGameWithAction = new QAction(this);
-            playGameWithAction->setText(model->item(i)->text());
-            playGameWithAction->setData(model->item(i)->data());
+            playGameWithAction->setText(model.first->item(i)->text());
+            playGameWithAction->setData(model.first->item(i)->data());
             this->menu_PlayGameWithDisk->addAction(playGameWithAction);
 
             // only add 10 disks to menu,
@@ -1210,9 +1204,9 @@ void RomBrowserWidget::on_Action_SetCoverImage(void)
     QFileInfo sourceFileInfo;
     QString coverFile;
 
-    QStandardItemModel* model = this->getCurrentModel();
-    QAbstractItemView*  view  = this->getCurrentModelView();
-    if (model == nullptr || view == nullptr)
+    QPair<QStandardItemModel*, QSortFilterProxyModel*> model = this->getCurrentModel();
+    QAbstractItemView* view  = this->getCurrentModelView();
+    if (model.first == nullptr || model.second == nullptr || view == nullptr)
     {
         return;
     }
@@ -1231,9 +1225,9 @@ void RomBrowserWidget::on_Action_SetCoverImage(void)
     // retrieve file info
     sourceFileInfo = QFileInfo(sourceFile);
 
-    QModelIndex         index = view->currentIndex();
-    QStandardItem*      item  = model->item(index.row(), index.column());
-    RomBrowserModelData data  = model->itemData(index).last().value<RomBrowserModelData>();
+    QModelIndex         index = model.second->mapToSource(view->currentIndex());
+    QStandardItem*      item  = model.first->item(index.row(), index.column());
+    RomBrowserModelData data  = model.first->itemData(index).last().value<RomBrowserModelData>();
 
     // construct new file name (for the cover)
     QString newFileName = this->coversDirectory;
@@ -1269,16 +1263,16 @@ void RomBrowserWidget::on_Action_SetCoverImage(void)
 
 void RomBrowserWidget::on_Action_RemoveCoverImage(void)
 {
-    QStandardItemModel* model = this->getCurrentModel();
+    QPair<QStandardItemModel*, QSortFilterProxyModel*> model = this->getCurrentModel();
     QAbstractItemView*  view  = this->getCurrentModelView();
-    if (model == nullptr || view == nullptr)
+    if (model.first == nullptr || model.second == nullptr || view == nullptr)
     {
         return;
     }
 
-    QModelIndex         index = view->currentIndex();
-    QStandardItem*      item  = model->item(index.row(), index.column());
-    RomBrowserModelData data  = model->itemData(index).last().value<RomBrowserModelData>();
+    QModelIndex         index = model.second->mapToSource(view->currentIndex());
+    QStandardItem*      item  = model.first->item(index.row(), index.column());
+    RomBrowserModelData data  = model.first->itemData(index).last().value<RomBrowserModelData>();
     QString coverFile;
 
     if (!data.coverFile.isEmpty() && QFile::exists(data.coverFile))
