@@ -471,6 +471,11 @@ bool RomBrowserWidget::getCurrentData(RomBrowserModelData& data)
     QModelIndex    index = model.second->mapToSource(view->currentIndex());
     QStandardItem* item  = model.first->item(index.row(), 0);
 
+    if (item == nullptr)
+    {
+        return false;
+    }
+
     data = item->data().value<RomBrowserModelData>();
     return true;
 }
