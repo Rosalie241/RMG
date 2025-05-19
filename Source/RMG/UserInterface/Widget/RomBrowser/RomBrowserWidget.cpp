@@ -64,16 +64,13 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QWidget(parent)
     // configure stacked widget
     this->stackedWidget = new QStackedWidget(this);
 
-    // configure search line edit
-    this->searchLineEdit = new QLineEdit(this);
-    this->searchLineEdit->setPlaceholderText("Search games...");
-    this->searchLineEdit->setVisible(false);
-    connect(this->searchLineEdit, &QLineEdit::textChanged, this, &RomBrowserWidget::on_searchLineEdit_textChanged);
-
+    // configure search widget
+    this->searchWidget = new Widget::RomBrowserSearchWidget(this);
+    connect(this->searchWidget, &RomBrowserSearchWidget::SearchTextChanged, this, &RomBrowserWidget::on_searchWidget_SearchTextChanged);
     // configure layout
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->addWidget(this->stackedWidget);
-    layout->addWidget(this->searchLineEdit);
+    layout->addWidget(this->searchWidget);
     layout->setContentsMargins(0, 0, 0, 0);
     this->setLayout(layout);
 
@@ -305,8 +302,8 @@ void RomBrowserWidget::RefreshRomList(void)
 
     this->stackedWidget->setCurrentWidget(this->loadingWidget);
 
-    this->showSearchLineEdit = this->searchLineEdit->isVisible();
-    this->searchLineEdit->hide();
+    this->showSearchLineEdit = this->searchWidget->isVisible();
+    this->searchWidget->hide();
 
     this->romSearcherTimer.start();
 
@@ -370,7 +367,7 @@ void RomBrowserWidget::SetGridViewUniformSizes(bool value)
 
 void RomBrowserWidget::SetToggleSearch(void)
 {
-    const bool show = !this->searchLineEdit->isVisible();
+    const bool show = !this->searchWidget->isVisible();
 
     // do nothing when not in a valid view
     QWidget* currentWidget = this->stackedWidget->currentWidget();
@@ -380,17 +377,17 @@ void RomBrowserWidget::SetToggleSearch(void)
         return;
     }
 
-    this->searchLineEdit->setVisible(show);
+    this->searchWidget->setVisible(show);
 
     if (show)
     {
         // set focus when it's being shown
-        this->searchLineEdit->setFocus();
+        this->searchWidget->FocusSearchText();
     }
     else
     {
         // reset search when hidden
-        this->searchLineEdit->setText("");
+        this->searchWidget->ClearSearchTerm();
     }
 }
 
@@ -665,7 +662,7 @@ void RomBrowserWidget::timerEvent(QTimerEvent* event)
 {
     this->killTimer(event->timerId());
     this->stackedWidget->setCurrentWidget(this->currentViewWidget);
-    this->searchLineEdit->setVisible(this->showSearchLineEdit);
+    this->searchWidget->setVisible(this->showSearchLineEdit);
 }
 
 void RomBrowserWidget::on_DoubleClicked(const QModelIndex& index)
@@ -844,11 +841,10 @@ void RomBrowserWidget::generateStateMenu(void)
     this->menu_PlayGameWithSlot->setDisabled(this->menu_PlayGameWithSlot->isEmpty());
 }
 
-void RomBrowserWidget::on_searchLineEdit_textChanged(const QString& text)
+void RomBrowserWidget::on_searchWidget_SearchTextChanged(const QString& text)
 {
     // TODO: I should really make a custom data
     // model at this point to save memory & CPU cycles...
-
     this->listViewProxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
     this->listViewProxyModel->setFilterWildcard(text);
     this->listViewProxyModel->setFilterKeyColumn(0);
@@ -1085,7 +1081,7 @@ void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
     }
 
     this->stackedWidget->setCurrentWidget(this->currentViewWidget);
-    this->searchLineEdit->setVisible(this->showSearchLineEdit);
+    this->searchWidget->setVisible(this->showSearchLineEdit);
 }
 
 void RomBrowserWidget::on_Action_PlayGame(void)

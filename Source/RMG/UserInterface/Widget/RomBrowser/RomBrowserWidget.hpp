@@ -16,6 +16,7 @@
 #include "RomBrowserListViewWidget.hpp"
 #include "RomBrowserGridViewWidget.hpp"
 #include "RomBrowserLoadingWidget.hpp"
+#include "RomBrowserSearchWidget.hpp"
 #include "RomBrowserEmptyWidget.hpp"
 
 #include <QSortFilterProxyModel>
@@ -72,8 +73,8 @@ class RomBrowserWidget : public QWidget
     QStandardItemModel* gridViewModel                = nullptr;
     QSortFilterProxyModel* gridViewProxyModel        = nullptr;
 
-    QLineEdit* searchLineEdit = nullptr;
-    bool showSearchLineEdit   = false;
+    Widget::RomBrowserSearchWidget* searchWidget = nullptr;
+    bool showSearchLineEdit = false;
 
     QWidget* currentViewWidget = nullptr;
 
@@ -126,7 +127,7 @@ class RomBrowserWidget : public QWidget
     void generatePlayWithDiskMenu(void);
     void generateStateMenu(void);
 
-    void on_searchLineEdit_textChanged(const QString& text);
+    void on_searchWidget_SearchTextChanged(const QString& text);
 
     void on_listViewWidget_sortIndicatorChanged(int logicalIndex, Qt::SortOrder sortOrder);
     void on_listViewWidget_sectionResized(int logicalIndex, int oldWidth, int newWidth);
