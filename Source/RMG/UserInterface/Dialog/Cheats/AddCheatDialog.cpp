@@ -338,7 +338,7 @@ void AddCheatDialog::accept(void)
     QDialog::accept();
 }
 
-void AddCheatDialog::on_nameLineEdit_textChanged(QString text)
+void AddCheatDialog::on_nameLineEdit_textChanged(void)
 {
     this->validateOkButton();
 }

@@ -49,7 +49,7 @@ class AddCheatDialog : public QDialog, private Ui::AddCheatDialog
   private slots:
     void accept(void) Q_DECL_OVERRIDE;
 
-    void on_nameLineEdit_textChanged(QString text);
+    void on_nameLineEdit_textChanged(void);
     void on_codeTextEdit_textChanged(void);
     void on_optionsTextEdit_textChanged(void);
 };

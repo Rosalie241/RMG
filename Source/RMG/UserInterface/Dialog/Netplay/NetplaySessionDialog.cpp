@@ -141,7 +141,7 @@ void NetplaySessionDialog::updateCheatsTreeWidget(void)
     CheatsCommon::AddCheatsToTreeWidget(true, cheatsArray, this->sessionFile, cheats, this->cheatsTreeWidget, true);    
 }
 
-void NetplaySessionDialog::on_webSocket_textMessageReceived(QString message)
+void NetplaySessionDialog::on_webSocket_textMessageReceived(const QString& message)
 {
     QJsonDocument jsonDocument = QJsonDocument::fromJson(message.toUtf8());
     QJsonObject json = jsonDocument.object();
@@ -225,7 +225,7 @@ void NetplaySessionDialog::on_webSocket_textMessageReceived(QString message)
     }
 }
 
-void NetplaySessionDialog::on_chatLineEdit_textChanged(QString text)
+void NetplaySessionDialog::on_chatLineEdit_textChanged(const QString& text)
 {
     this->sendPushButton->setEnabled(!text.startsWith(' ') && !text.trimmed().isEmpty() && text.size() <= 256);
     this->sendPushButton->setDefault(this->sendPushButton->isEnabled());

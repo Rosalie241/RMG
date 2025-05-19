@@ -47,9 +47,9 @@ class NetplaySessionDialog : public QDialog, private Ui::NetplaySessionDialog
     void updateCheatsTreeWidget(void);
 
   private slots:
-  	void on_webSocket_textMessageReceived(QString message);
+  	void on_webSocket_textMessageReceived(const QString& message);
 
-    void on_chatLineEdit_textChanged(QString text);
+    void on_chatLineEdit_textChanged(const QString& text);
     void on_sendPushButton_clicked(void);
     void on_buttonBox_clicked(QAbstractButton* button);
     
