@@ -29,6 +29,20 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.7.9" date="2025-05-19" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix netplay allocating UDP packets during emulation</li>
+          <li>Fix 'Game List' and 'Game Grid' UI elements not being disabled during emulation</li>
+          <li>Fix compilation error with newer minizip-ng versions</li>
+          <li>Add search feature to the ROM browser</li>
+          <li>Add crop settings for each side in mupen64plus-video-parallel</li>
+          <li>Change default ROM search limit to 2048</li>
+          <li>Update mupen64plus-video-GLideN64 and mupen64plus-rsp-hle</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.7.8" date="2025-03-23" type="stable">
       <description>
         <p>Changes:</p>
