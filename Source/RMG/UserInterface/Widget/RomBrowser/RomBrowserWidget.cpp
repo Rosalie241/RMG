@@ -66,7 +66,9 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QWidget(parent)
 
     // configure search widget
     this->searchWidget = new Widget::RomBrowserSearchWidget(this);
+    this->searchWidget->setVisible(false);
     connect(this->searchWidget, &RomBrowserSearchWidget::SearchTextChanged, this, &RomBrowserWidget::on_searchWidget_SearchTextChanged);
+
     // configure layout
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->addWidget(this->stackedWidget);
