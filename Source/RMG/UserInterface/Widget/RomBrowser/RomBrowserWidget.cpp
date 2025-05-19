@@ -302,7 +302,7 @@ void RomBrowserWidget::RefreshRomList(void)
 
     this->stackedWidget->setCurrentWidget(this->loadingWidget);
 
-    this->showSearchLineEdit = this->searchWidget->isVisible();
+    this->showSearchWidget = this->searchWidget->isVisible();
     this->searchWidget->hide();
 
     this->romSearcherTimer.start();
@@ -662,7 +662,7 @@ void RomBrowserWidget::timerEvent(QTimerEvent* event)
 {
     this->killTimer(event->timerId());
     this->stackedWidget->setCurrentWidget(this->currentViewWidget);
-    this->searchWidget->setVisible(this->showSearchLineEdit);
+    this->searchWidget->setVisible(this->showSearchWidget);
 }
 
 void RomBrowserWidget::on_DoubleClicked(const QModelIndex& index)
@@ -1081,7 +1081,7 @@ void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
     }
 
     this->stackedWidget->setCurrentWidget(this->currentViewWidget);
-    this->searchWidget->setVisible(this->showSearchLineEdit);
+    this->searchWidget->setVisible(this->showSearchWidget);
 }
 
 void RomBrowserWidget::on_Action_PlayGame(void)

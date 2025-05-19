@@ -74,7 +74,7 @@ class RomBrowserWidget : public QWidget
     QSortFilterProxyModel* gridViewProxyModel        = nullptr;
 
     Widget::RomBrowserSearchWidget* searchWidget = nullptr;
-    bool showSearchLineEdit = false;
+    bool showSearchWidget = false;
 
     QWidget* currentViewWidget = nullptr;
 
