@@ -66,7 +66,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QWidget(parent)
 
     // configure search line edit
     this->searchLineEdit = new QLineEdit(this);
-    this->searchLineEdit->setPlaceholderText("Search");
+    this->searchLineEdit->setPlaceholderText("Search games...");
     this->searchLineEdit->setVisible(false);
     connect(this->searchLineEdit, &QLineEdit::textChanged, this, &RomBrowserWidget::on_searchLineEdit_textChanged);
 
