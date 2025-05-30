@@ -1,0 +1,5 @@
+rmg (0.7.9-0minios1~bookworm) bookworm; urgency=medium
+
+  * Initial Debian packaging of upstream RMG
+
+ -- crims0n <crims0n@minios.dev>  Sat, 31 May 2025 00:14:52 +0300

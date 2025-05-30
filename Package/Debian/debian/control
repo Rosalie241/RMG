@@ -1,0 +1,32 @@
+Source: rmg
+Section: games
+Priority: optional
+Maintainer: crims0n <crims0n@minios.dev>
+Build-Depends: debhelper-compat (= 13),
+               cmake,
+               ninja-build,
+               qt6-base-dev,
+               libqt6svg6-dev,
+               libhidapi-dev,
+               libsamplerate0-dev,
+               qt6-websockets-dev,
+               libspeexdsp-dev,
+               libminizip-dev,
+               libsdl2-dev,
+               libsdl2-net-dev,
+               libfreetype6-dev,
+               libgl1-mesa-dev,
+               libglu1-mesa-dev,
+               zlib1g-dev,
+               libvulkan-dev,
+               nasm
+Standards-Version: 4.6.2
+Homepage: https://github.com/Rosalie241/RMG
+Rules-Requires-Root: no
+
+Package: rmg
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Rosalie’s Mupen64Plus GUI front-end
+ Rosalie’s Mupen GUI is a free and open-source front-end for Mupen64Plus,
+ written in C++ and using Qt6 for its user interface.
