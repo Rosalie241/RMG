@@ -19,6 +19,7 @@
 #include <QJsonObject>
 #include <QFileInfo>
 #include <QFile>
+#include <QHostInfo>
 
 #include <RMG-Core/Settings.hpp>
 
@@ -253,7 +254,18 @@ void CreateNetplaySessionDialog::on_serverComboBox_currentIndexChanged(int index
     this->pingLineEdit->setText("Calculating...");
 
     QString address = this->serverComboBox->itemData(index).toString();
-    this->webSocket->open(QUrl(address));
+    QUrl url(address);
+    QHostInfo hostInfo = QHostInfo::fromName(url.host());
+    for (const QHostAddress &resolvedAddr : hostInfo.addresses())
+    {
+        // mupen64plus-core only supports IPv4 (due to SDL2_net)
+        if (resolvedAddr.protocol() == QAbstractSocket::IPv4Protocol)
+        {
+            url.setHost(resolvedAddr.toString());
+            this->webSocket->open(url);
+            return;
+        }
+    }
 }
 
 void CreateNetplaySessionDialog::on_nickNameLineEdit_textChanged(void)
