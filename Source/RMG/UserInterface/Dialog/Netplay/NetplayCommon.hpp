@@ -12,7 +12,9 @@
 
 #include <QJsonDocument>
 #include <QJsonObject>
+#ifdef NETPLAY
 #include <QWebSocket>
+#endif // NETPLAY
 #include <QComboBox>
 #include <QString>
 
@@ -34,8 +36,10 @@ namespace NetplayCommon
     // Restores previously selected server
     void RestoreSelectedServer(QComboBox* comboBox);
 
+#ifdef NETPLAY
     // Attempts to connect the web socket to the given address using IPv4
     bool ConnectToIPv4Server(QString address, QWebSocket* webSocket);
+#endif // #ifdef NETPLAY
 }
 
 #endif // NETPLAYCOMMON_HPP
