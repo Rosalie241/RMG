@@ -22,7 +22,6 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QFile>
-#include <QHostInfo>
 
 #include <RMG-Core/Settings.hpp>
 #include <RMG-Core/Rom.hpp>
@@ -325,21 +324,13 @@ void NetplaySessionBrowserDialog::on_serverComboBox_currentIndexChanged(int inde
     }
 
     this->pingLineEdit->setText("Calculating...");
-
     this->sessionBrowserWidget->StartRefresh();
 
     QString address = this->serverComboBox->itemData(index).toString();
-    QUrl url(address);
-    QHostInfo hostInfo = QHostInfo::fromName(url.host());
-    for (const QHostAddress &resolvedAddr : hostInfo.addresses())
+    if (!NetplayCommon::ConnectToIPv4Server(address, this->webSocket))
     {
-        // mupen64plus-core only supports IPv4 (due to SDL2_net)
-        if (resolvedAddr.protocol() == QAbstractSocket::IPv4Protocol)
-        {
-            url.setHost(resolvedAddr.toString());
-            this->webSocket->open(url);
-            return;
-        }
+        this->sessionBrowserWidget->Reset();
+        QtMessageBox::Error(this, "Failed to find IPv4 address of server");
     }
 }
 
