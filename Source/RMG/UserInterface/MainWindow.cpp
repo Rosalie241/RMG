@@ -330,6 +330,12 @@ void MainWindow::configureTheme(QApplication* app)
     {
         // do nothing
     }
+#ifdef _WIN32
+    else if (theme == "Windows Vista")
+    {
+        app->setStyle(QStyleFactory::create("WindowsVista"));
+    }
+#endif
     else if (theme == "Fusion")
     {
         app->setPalette(QApplication::style()->standardPalette());

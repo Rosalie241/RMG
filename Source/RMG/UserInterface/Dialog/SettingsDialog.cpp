@@ -489,6 +489,10 @@ void SettingsDialog::loadInterfaceGeneralSettings(void)
         this->themeComboBox->addItem(fileInfo.fileName());
     }
 
+#ifdef _WIN32
+    this->themeComboBox->insertItem(1,"Windows Vista");
+#endif
+
     // select currently chosen theme in UI
     this->themeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_Theme)));
     this->iconThemeComboBox->setCurrentText(QString::fromStdString(CoreSettingsGetStringValue(SettingsID::GUI_IconTheme)));
