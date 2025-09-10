@@ -65,7 +65,7 @@ void read_cart_rom(void* opaque, uint32_t address, uint32_t* value)
     }
     else
     {
-        *value = *(uint32_t*)(cart_rom->rom + addr);
+        *value = cart_rom->rom_size == 0 ? 0 : *(uint32_t*)(cart_rom->rom + addr);
     }
 }
 
