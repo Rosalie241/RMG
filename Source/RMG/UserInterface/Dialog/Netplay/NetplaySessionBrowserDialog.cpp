@@ -560,11 +560,7 @@ void NetplaySessionBrowserDialog::on_serverComboBox_currentIndexChanged(int inde
         this->pingTimerId = this->startTimer(2000);
 
         QString address = NetplayCommon::GetServerData(this->serverComboBox, index);
-        if (!NetplayCommon::ConnectToIPv4Server(address, this->webSocket))
-        {
-            this->sessionBrowserWidget->Reset();
-            QtMessageBox::Error(this, "Failed to find IPv4 address of server");
-        }
+        this->webSocket->open(QUrl(address));
     }
 }
 
