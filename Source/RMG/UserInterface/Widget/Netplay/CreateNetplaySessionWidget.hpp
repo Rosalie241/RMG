@@ -10,6 +10,7 @@
 #ifndef CREATENETPLAYSESSIONWIDGET_HPP
 #define CREATENETPLAYSESSIONWIDGET_HPP
 
+#include "NetplaySessionBrowserLoadingWidget.hpp"
 #include "CreateNetplaySessionEmptyWidget.hpp"
 
 #include <QStackedWidget>
@@ -36,14 +37,15 @@ class CreateNetplaySessionWidget : public QStackedWidget
     ~CreateNetplaySessionWidget(void);
 
     void AddRomData(QString goodName, QString md5, QString file);
-
     void RefreshDone(void);
-    
+    void ShowLoading(void);
+
     bool IsCurrentRomValid(void);
     bool GetCurrentRom(NetplayRomData& data);
 
   private:
     Widget::CreateNetplaySessionEmptyWidget* emptyWidget = nullptr;
+    Widget::NetplaySessionBrowserLoadingWidget* loadingWidget = nullptr;
 
     QListWidget* listWidget = nullptr;
 

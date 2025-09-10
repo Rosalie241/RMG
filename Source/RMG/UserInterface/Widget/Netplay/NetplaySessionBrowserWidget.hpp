@@ -16,6 +16,7 @@
 #include <QTableWidgetItem>
 #include <QStackedWidget>
 #include <QTableWidget>
+#include <QUrl>
 
 // session data
 struct NetplaySessionData
@@ -28,6 +29,7 @@ struct NetplaySessionData
     QString CpuEmulator;
     QString RspPlugin;
     QString GfxPlugin;
+    QUrl Address;
 };
 
 namespace UserInterface
@@ -47,7 +49,7 @@ class NetplaySessionBrowserWidget : public QStackedWidget
     void StartRefresh(void);
 
     void AddSessionData(QString name, QString game, QString md5, bool password, int port, 
-                        QString cpuEmulator, QString rspPlugin, QString gfxPlugin);
+                        QString cpuEmulator, QString rspPlugin, QString gfxPlugin, QUrl address);
 
     void RefreshDone(void);
 

@@ -17,6 +17,8 @@
 #include <QJsonDocument>
 #include <QPushButton>
 #include <QJsonObject>
+#include <QJsonArray>
+#include <QUrlQuery>
 #include <QFileInfo>
 #include <QFile>
 
@@ -39,6 +41,7 @@ CreateNetplaySessionDialog::CreateNetplaySessionDialog(QWidget *parent, QWebSock
     this->webSocket = webSocket;
     connect(this->webSocket, &QWebSocket::textMessageReceived, this, &CreateNetplaySessionDialog::on_webSocket_textMessageReceived);
     connect(this->webSocket, &QWebSocket::pong, this, &CreateNetplaySessionDialog::on_webSocket_pong);
+    connect(this->webSocket, &QWebSocket::connected, this, &CreateNetplaySessionDialog::on_webSocket_connected);
 
     // prepare broadcast
     broadcastSocket.bind(QHostAddress(QHostAddress::AnyIPv4), 0);
@@ -96,13 +99,26 @@ CreateNetplaySessionDialog::CreateNetplaySessionDialog(QWidget *parent, QWebSock
         else if (QUrl(serverUrl).isValid())
         {
             QNetworkAccessManager* networkAccessManager = new QNetworkAccessManager(this);
-            connect(networkAccessManager, &QNetworkAccessManager::finished, this, &CreateNetplaySessionDialog::on_networkAccessManager_Finished);
+            connect(networkAccessManager, &QNetworkAccessManager::finished, this, &CreateNetplaySessionDialog::on_jsonServerListDownload_Finished);
             networkAccessManager->setTransferTimeout(15000);
             networkAccessManager->get(QNetworkRequest(QUrl(serverUrl)));
         }
     }
 
-    this->pingTimerId = this->startTimer(2000);
+    QString dispatcherUrl = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::Netplay_DispatcherUrl));
+    if (!dispatcherUrl.isEmpty() && QUrl(dispatcherUrl).isValid())
+    {
+        this->dispatcherUrl = dispatcherUrl;
+
+        QNetworkAccessManager* networkAccessManager = new QNetworkAccessManager(this);
+        connect(networkAccessManager, &QNetworkAccessManager::finished, this, &CreateNetplaySessionDialog::on_dispatcherRegionListDownload_Finished);
+        networkAccessManager->setTransferTimeout(15000);
+
+        QNetworkRequest networkRequest(QUrl(this->dispatcherUrl + "/getRegions"));
+        networkRequest.setRawHeader("netplay-id", "RMG");
+
+        networkAccessManager->get(networkRequest);
+    }
 }
 
 CreateNetplaySessionDialog::~CreateNetplaySessionDialog(void)
@@ -173,6 +189,41 @@ void CreateNetplaySessionDialog::validateCreateButton(void)
     createButton->setEnabled(this->validate());
 }
 
+void CreateNetplaySessionDialog::createSession(void)
+{
+    QList<QString> plugins = NetplayCommon::GetPluginNames(this->sessionMD5);
+
+    QJsonObject jsonFeatures;
+    jsonFeatures.insert("rsp_plugin", plugins[0]);
+    jsonFeatures.insert("gfx_plugin", plugins[1]);
+
+    QJsonObject json;
+    QJsonObject session;
+    session.insert("room_name", this->sessionNameLineEdit->text());
+    session.insert("password", this->passwordLineEdit->text());
+    session.insert("MD5", this->sessionMD5);
+    session.insert("game_name", this->getGameName(this->sessionGoodName, this->sessionFile));
+    session.insert("features",  jsonFeatures);
+    json.insert("type", "request_create_room");
+    json.insert("player_name", this->nickNameLineEdit->text());
+    json.insert("room", session);
+    NetplayCommon::AddCommonJson(json);
+
+    this->webSocket->sendTextMessage(QJsonDocument(json).toJson());
+}
+
+void CreateNetplaySessionDialog::toggleUI(bool enable, bool enableCreateButton)
+{
+    QPushButton* createButton = this->buttonBox->button(QDialogButtonBox::Ok);
+    createButton->setEnabled(enableCreateButton);
+
+    this->serverComboBox->setEnabled(enable);
+    this->sessionNameLineEdit->setReadOnly(!enable);
+    this->passwordLineEdit->setReadOnly(!enable);
+    this->sessionNameLineEdit->setReadOnly(!enable);
+    this->nickNameLineEdit->setReadOnly(!enable);
+}
+
 void CreateNetplaySessionDialog::timerEvent(QTimerEvent* event)
 {
     if (event->timerId() == this->pingTimerId)
@@ -199,7 +250,7 @@ void CreateNetplaySessionDialog::on_webSocket_textMessageReceived(QString messag
         else
         {
             QtMessageBox::Error(this, "Server Error", json.value("message").toString());
-            this->validateCreateButton();
+            this->toggleUI(true, this->validate());
         }
     }
 }
@@ -209,26 +260,28 @@ void CreateNetplaySessionDialog::on_webSocket_pong(quint64 elapsedTime, const QB
     this->pingLineEdit->setText(QString::number(elapsedTime) + " ms");
 }
 
+void CreateNetplaySessionDialog::on_webSocket_connected()
+{
+    if (NetplayCommon::IsServerDispatcher(this->serverComboBox))
+    {
+        this->createSession();
+    }
+}
+
 void CreateNetplaySessionDialog::on_broadcastSocket_readyRead()
 {
     while (this->broadcastSocket.hasPendingDatagrams())
     {
         QNetworkDatagram datagram = this->broadcastSocket.receiveDatagram();
         QByteArray incomingData = datagram.data();
-        QJsonDocument json_doc  = QJsonDocument::fromJson(incomingData);
-        QJsonObject json        = json_doc.object();
-        QStringList servers     = json.keys();
-
-        for (int i = 0; i < servers.size(); i++)
-        {
-            this->serverComboBox->addItem(servers.at(i), json.value(servers.at(i)).toString());
-        }
+        
+        NetplayCommon::AddServers(this->serverComboBox, QJsonDocument::fromJson(incomingData));
     }
 
     NetplayCommon::RestoreSelectedServer(this->serverComboBox);
 }
 
-void CreateNetplaySessionDialog::on_networkAccessManager_Finished(QNetworkReply* reply)
+void CreateNetplaySessionDialog::on_jsonServerListDownload_Finished(QNetworkReply* reply)
 {
     if (reply->error())
     {
@@ -243,6 +296,55 @@ void CreateNetplaySessionDialog::on_networkAccessManager_Finished(QNetworkReply*
     reply->deleteLater();
 }
 
+void CreateNetplaySessionDialog::on_dispatcherRegionListDownload_Finished(QNetworkReply* reply)
+{
+    if (reply->error())
+    {
+        QtMessageBox::Error(this, "Server Error", "Failed to retrieve region list: " + reply->errorString());
+        reply->deleteLater();
+        return;
+    }
+
+    NetplayCommon::AddServers(this->serverComboBox, 
+                              QJsonDocument::fromJson(reply->readAll()), true);
+
+    reply->deleteLater();
+}
+
+void CreateNetplaySessionDialog::on_dispatcherServerCreate_Finished(QNetworkReply* reply)
+{
+    if (reply->error())
+    {
+        QtMessageBox::Error(this, "Server Error", "Failed to create server: " + reply->errorString());
+        reply->deleteLater();
+        this->toggleUI(true, this->validate());
+        return;
+    }
+
+    QJsonDocument jsonDocument = QJsonDocument::fromJson(reply->readAll());
+    QJsonObject jsonObject = jsonDocument.object();
+
+    if (jsonObject.empty() || jsonObject.keys().empty())
+    {
+        QtMessageBox::Error(this, "Server Error", "Failed to create server: " + jsonDocument.toJson());
+        reply->deleteLater();
+        this->toggleUI(true, this->validate());
+        return;
+    }
+
+    // first item should be an address
+    QString address = jsonObject[jsonObject.keys().at(0)].toString();
+    if (!NetplayCommon::ConnectToIPv4Server(address, this->webSocket))
+    {
+        QtMessageBox::Error(this, "Failed to find IPv4 address of server");
+        reply->deleteLater();
+        this->toggleUI(true, this->validate());
+        return;
+    }
+
+    reply->deleteLater();
+}
+
 void CreateNetplaySessionDialog::on_serverComboBox_currentIndexChanged(int index)
 {
     if (index == -1)
@@ -250,12 +352,25 @@ void CreateNetplaySessionDialog::on_serverComboBox_currentIndexChanged(int index
         return;
     }
 
-    this->pingLineEdit->setText("Calculating...");
-
-    QString address = this->serverComboBox->itemData(index).toString();
-    if (!NetplayCommon::ConnectToIPv4Server(address, this->webSocket))
+    bool dispatcher = NetplayCommon::IsServerDispatcher(this->serverComboBox, index);
+    
+    if (this->pingTimerId != -1)
     {
-        QtMessageBox::Error(this, "Failed to find IPv4 address of server");
+        this->killTimer(this->pingTimerId);
+        this->pingTimerId = -1;
+    }
+
+    this->pingLineEdit->setText(dispatcher ? "N/A" : "Calculating...");
+
+    if (!dispatcher)
+    {
+        this->pingTimerId = this->startTimer(2000);
+
+        QString address = NetplayCommon::GetServerData(this->serverComboBox, index);
+        if (!NetplayCommon::ConnectToIPv4Server(address, this->webSocket))
+        {
+            QtMessageBox::Error(this, "Failed to find IPv4 address of server");
+        }
     }
 }
 
@@ -281,7 +396,7 @@ void CreateNetplaySessionDialog::on_romListWidget_OnRomChanged(bool valid)
 
 void CreateNetplaySessionDialog::accept()
 {
-    if (!this->webSocket->isValid())
+    if (!NetplayCommon::IsServerDispatcher(this->serverComboBox) && !this->webSocket->isValid())
     {
         QtMessageBox::Error(this, "Server Error", "Connection Failed");
         return;
@@ -293,29 +408,36 @@ void CreateNetplaySessionDialog::accept()
         return;
     }
 
+    // store these for use in createSession()
+    this->sessionFile     = romData.File;
+    this->sessionMD5      = romData.MD5;
+    this->sessionGoodName = romData.GoodName;
+
     // disable create button while we're processing the request
-    QPushButton* createButton = this->buttonBox->button(QDialogButtonBox::Ok);
-    createButton->setEnabled(false);
+    this->toggleUI(false, false);
 
-    this->sessionFile = romData.File;
+    if (NetplayCommon::IsServerDispatcher(this->serverComboBox))
+    {
+        QNetworkAccessManager* networkAccessManager = new QNetworkAccessManager(this);
+        connect(networkAccessManager, &QNetworkAccessManager::finished, this, &CreateNetplaySessionDialog::on_dispatcherServerCreate_Finished);
+        networkAccessManager->setTransferTimeout(120000);
 
-    QList<QString> plugins = NetplayCommon::GetPluginNames(romData.MD5);
+        QUrl url(this->dispatcherUrl + "/createServer");
 
-    QJsonObject jsonFeatures;
-    jsonFeatures.insert("rsp_plugin", plugins[0]);
-    jsonFeatures.insert("gfx_plugin", plugins[1]);
+        QUrlQuery urlQuery;
+        urlQuery.addQueryItem("region", NetplayCommon::GetServerData(this->serverComboBox));
+        url.setQuery(urlQuery);
 
-    QJsonObject json;
-    QJsonObject session;
-    session.insert("room_name", this->sessionNameLineEdit->text());
-    session.insert("password", this->passwordLineEdit->text());
-    session.insert("MD5", romData.MD5);
-    session.insert("game_name", this->getGameName(romData.GoodName, romData.File));
-    session.insert("features",  jsonFeatures);
-    json.insert("type", "request_create_room");
-    json.insert("player_name", this->nickNameLineEdit->text());
-    json.insert("room", session);
-    NetplayCommon::AddCommonJson(json);
+        QNetworkRequest networkRequest(url);
+        networkRequest.setRawHeader("netplay-id", "RMG");
+        networkAccessManager->get(networkRequest);
 
-    this->webSocket->sendTextMessage(QJsonDocument(json).toJson());
+        // creating a server can take a while,
+        // so show a loading screen
+        this->romListWidget->ShowLoading();
+    }
+    else
+    {
+        this->createSession();
+    }
 }

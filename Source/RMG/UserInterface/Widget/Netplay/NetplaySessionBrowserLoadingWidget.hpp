@@ -22,7 +22,7 @@ class NetplaySessionBrowserLoadingWidget : public QWidget
 {
     Q_OBJECT
 public:
-    NetplaySessionBrowserLoadingWidget(QWidget* parent);
+    NetplaySessionBrowserLoadingWidget(QWidget* parent, QString loadingText = "Loading");
     ~NetplaySessionBrowserLoadingWidget();
 
     void SetWidgetIndex(int index);
@@ -31,6 +31,7 @@ public slots:
     void on_NetplaySessionBrowserWidget_currentChanged(int index);
 
 private:
+    QString baseLoadingText;
     QLabel* loadingLabel;
     int loadingLabelTimerId = -1;
     int widgetIndex = -1;

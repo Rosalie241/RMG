@@ -11,6 +11,7 @@
 
 #include <QCryptographicHash>
 #include <QByteArray>
+#include <QJsonArray>
 #include <QFileInfo>
 #include <QDateTime>
 #include <QHostInfo>
@@ -21,6 +22,9 @@
 #include <RMG-Core/Version.hpp>
 
 using namespace NetplayCommon;
+
+// register type with qt
+Q_DECLARE_METATYPE(NetplayServerData);
 
 void NetplayCommon::AddCommonJson(QJsonObject& json)
 {
@@ -83,14 +87,36 @@ QList<QString> NetplayCommon::GetPluginNames(QString md5QString)
     return pluginNames;
 }
 
-void NetplayCommon::AddServers(QComboBox* comboBox, QJsonDocument document)
+void NetplayCommon::AddServers(QComboBox* comboBox, QJsonDocument document, bool dispatcher)
 {
-    QJsonObject jsonObject  = document.object();
-    QStringList jsonServers = jsonObject.keys();
-
-    for (int i = 0; i < jsonServers.size(); i++)
+    if (dispatcher)
     {
-        comboBox->addItem(jsonServers.at(i), jsonObject.value(jsonServers.at(i)).toString());
+        QJsonArray jsonServers = document.array();
+
+        for (int i = 0; i < jsonServers.size(); i++)
+        {
+            comboBox->addItem(jsonServers.at(i).toString(), 
+                                QVariant::fromValue<NetplayServerData>(
+                                    { 
+                                        dispatcher, 
+                                        jsonServers.at(i).toString()
+                                    }));
+        }
+    }
+    else
+    {
+        QJsonObject jsonObject  = document.object();
+        QStringList jsonServers = jsonObject.keys();
+
+        for (int i = 0; i < jsonServers.size(); i++)
+        {
+            comboBox->addItem(jsonServers.at(i), 
+                                QVariant::fromValue<NetplayServerData>(
+                                    {
+                                        dispatcher,
+                                        jsonObject.value(jsonServers.at(i)).toString()
+                                    }));
+        }
     }
 
     NetplayCommon::RestoreSelectedServer(comboBox);
@@ -109,6 +135,26 @@ void NetplayCommon::RestoreSelectedServer(QComboBox* comboBox)
     {
         comboBox->setCurrentIndex(index);
     }
+}
+
+bool NetplayCommon::IsServerDispatcher(QComboBox* comboBox, int index)
+{
+    if (index == -1)
+    {
+        index = comboBox->currentIndex();
+    }
+
+    return comboBox->itemData(index).value<NetplayServerData>().Dispatcher;
+}
+
+QString NetplayCommon::GetServerData(QComboBox* comboBox, int index)
+{
+    if (index == -1)
+    {
+        index = comboBox->currentIndex();
+    }
+
+    return comboBox->itemData(index).value<NetplayServerData>().Data;
 }
 
 bool NetplayCommon::ConnectToIPv4Server(QString address, QWebSocket* webSocket)

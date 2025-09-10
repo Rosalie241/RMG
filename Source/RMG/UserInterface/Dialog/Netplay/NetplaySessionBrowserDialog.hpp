@@ -43,14 +43,34 @@ class NetplaySessionBrowserDialog : public QDialog, private Ui::NetplaySessionBr
     QUdpSocket broadcastSocket;
     QJsonObject sessionJson;
     QString sessionFile;
+    QString sessionPassword;
+    NetplaySessionData sessionData;
     QMap<QString, CoreRomSettings> romData;
 
     int pingTimerId = -1;
+    int dispatcherTimerId = -1;
+    int dispatcherTimeoutTimerId = -1;
+
+    bool dispatcherMoveThroughList = false;
+    bool dispatcherJoinSession = false;
+    QNetworkAccessManager* dispatcherNetworkAccessManager = nullptr;
+    QNetworkReply* dispatcherNetworkReply = nullptr;
+    QString dispatcherUrl;
+    
+    QStringList dispatcherAddressList;
+    int dispatcherAddressListIndex = 0;
 
     QString showROMDialog(QString name, QString md5);
 
     bool validate(void);
     void validateJoinButton(void);
+
+    void toggleUI(bool enable, bool enableJoinButton);
+
+    void refreshSessions(void);
+    void joinSession(void);
+
+    void resetDispatcherState(void);
 
   protected:
     void timerEvent(QTimerEvent *event) Q_DECL_OVERRIDE;
@@ -62,7 +82,10 @@ class NetplaySessionBrowserDialog : public QDialog, private Ui::NetplaySessionBr
     void on_webSocket_disconnected(void);
 
     void on_broadcastSocket_readyRead(void);
-    void on_networkAccessManager_Finished(QNetworkReply* reply);
+    void on_jsonServerListDownload_Finished(QNetworkReply* reply);
+
+    void on_dispatcherRegionListDownload_Finished(QNetworkReply* reply);
+    void on_dispatcherRetrieveServers_Finished(QNetworkReply* reply);
 
     void on_serverComboBox_currentIndexChanged(int index);
     void on_sessionBrowserWidget_OnSessionChanged(bool valid);

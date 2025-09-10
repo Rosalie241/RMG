@@ -26,6 +26,11 @@ CreateNetplaySessionWidget::CreateNetplaySessionWidget(QWidget* parent) : QStack
     this->emptyWidget = new Widget::CreateNetplaySessionEmptyWidget(this);
     this->addWidget(this->emptyWidget);
 
+    // configure loading widget
+    this->loadingWidget = new Widget::NetplaySessionBrowserLoadingWidget(this, "Creating server");
+    this->loadingWidget->SetWidgetIndex(this->addWidget(this->loadingWidget));
+    connect(this, &QStackedWidget::currentChanged, this->loadingWidget, &NetplaySessionBrowserLoadingWidget::on_NetplaySessionBrowserWidget_currentChanged);
+
     // configure list widget
     this->listWidget = new QListWidget(this);
     this->addWidget(this->listWidget);
@@ -64,6 +69,11 @@ void CreateNetplaySessionWidget::RefreshDone(void)
         this->listWidget->sortItems();
         this->setCurrentWidget(this->listWidget);
     }
+}
+
+void CreateNetplaySessionWidget::ShowLoading(void)
+{
+    this->setCurrentWidget(this->loadingWidget);
 }
 
 bool CreateNetplaySessionWidget::IsCurrentRomValid()

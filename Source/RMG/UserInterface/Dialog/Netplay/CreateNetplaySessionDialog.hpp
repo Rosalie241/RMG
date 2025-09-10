@@ -45,11 +45,19 @@ class CreateNetplaySessionDialog : public QDialog, private Ui::CreateNetplaySess
 
   	QJsonObject sessionJson;
     QString sessionFile;
+    QString sessionMD5;
+    QString sessionGoodName;
+
+    QString dispatcherUrl;
 
     QString getGameName(QString goodName, QString file);
 
     bool validate(void);
     void validateCreateButton(void);
+
+    void createSession(void);
+
+    void toggleUI(bool enable, bool enableCreateButton);
 
   protected:
     void timerEvent(QTimerEvent *event) Q_DECL_OVERRIDE;
@@ -57,8 +65,12 @@ class CreateNetplaySessionDialog : public QDialog, private Ui::CreateNetplaySess
   private slots:
   	void on_webSocket_textMessageReceived(QString message);
     void on_webSocket_pong(quint64 elapsedTime, const QByteArray&);
+    void on_webSocket_connected(void);
     void on_broadcastSocket_readyRead(void);
-    void on_networkAccessManager_Finished(QNetworkReply* reply);
+
+    void on_jsonServerListDownload_Finished(QNetworkReply* reply);
+    void on_dispatcherRegionListDownload_Finished(QNetworkReply* reply);
+    void on_dispatcherServerCreate_Finished(QNetworkReply* reply);
 
     void on_serverComboBox_currentIndexChanged(int index);
 

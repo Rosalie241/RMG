@@ -87,7 +87,7 @@ void NetplaySessionBrowserWidget::StartRefresh(void)
 }
 
 void NetplaySessionBrowserWidget::AddSessionData(QString name, QString game, QString md5, bool password, int port, 
-                                                 QString cpuEmulator, QString rspPlugin, QString gfxPlugin)
+                                                 QString cpuEmulator, QString rspPlugin, QString gfxPlugin, QUrl address)
 {
     const NetplaySessionData sessionData =
     {
@@ -98,7 +98,8 @@ void NetplaySessionBrowserWidget::AddSessionData(QString name, QString game, QSt
         port,
         cpuEmulator,
         rspPlugin,
-        gfxPlugin
+        gfxPlugin,
+        address
     };
 
     int row = this->tableWidget->rowCount();

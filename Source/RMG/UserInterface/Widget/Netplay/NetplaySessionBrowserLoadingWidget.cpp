@@ -15,12 +15,13 @@
 
 using namespace UserInterface::Widget;
 
-NetplaySessionBrowserLoadingWidget::NetplaySessionBrowserLoadingWidget(QWidget* parent) : QWidget(parent)
+NetplaySessionBrowserLoadingWidget::NetplaySessionBrowserLoadingWidget(QWidget* parent, QString loadingText) : QWidget(parent)
 {
     QHBoxLayout* layout = new QHBoxLayout(this);
-
+    
+    this->baseLoadingText = loadingText;
     this->loadingLabel = new QLabel(this);
-    this->loadingLabel->setText("Loading");
+    this->loadingLabel->setText(this->baseLoadingText);
     this->loadingLabel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 
     layout->addWidget(loadingLabel);
@@ -66,7 +67,7 @@ void NetplaySessionBrowserLoadingWidget::on_NetplaySessionBrowserWidget_currentC
 
 void NetplaySessionBrowserLoadingWidget::updateLoadingText()
 {
-    QString loadingText = "Loading";
+    QString loadingText = this->baseLoadingText;
 
     if (dotCount <= 3)
     {
