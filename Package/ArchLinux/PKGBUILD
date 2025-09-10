@@ -1,6 +1,6 @@
 # Maintainer: Rosalie Wanders <rosalie@mailbox.org>
 pkgname=rmg
-pkgver=0.7.9
+pkgver=0.8.0
 pkgrel=2
 pkgdesc="Rosalie's Mupen GUI"
 arch=('x86_64' 'aarch64')
