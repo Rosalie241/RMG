@@ -169,6 +169,9 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::Netplay_ServerJsonUrl:
         setting = {SETTING_SECTION_NETPLAY, "ServerJsonUrl", std::string("")};
         break;
+    case SettingsID::Netplay_DispatcherUrl:
+        setting = {SETTING_SECTION_NETPLAY, "DispatcherUrl", std::string("https://dispatch.gopher64.com")};
+        break;
     case SettingsID::Netplay_SelectedServer:
         setting = {SETTING_SECTION_NETPLAY, "SelectedServer", std::string("")};
         break;
