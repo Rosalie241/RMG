@@ -167,7 +167,7 @@ static l_Setting get_setting(SettingsID settingId)
         setting = {SETTING_SECTION_NETPLAY, "Nickname", std::string("NetplayUser")};
         break;
     case SettingsID::Netplay_ServerJsonUrl:
-        setting = {SETTING_SECTION_NETPLAY, "ServerJsonUrl", std::string("https://m64p.s3.amazonaws.com/servers.json")};
+        setting = {SETTING_SECTION_NETPLAY, "ServerJsonUrl", std::string("")};
         break;
     case SettingsID::Netplay_SelectedServer:
         setting = {SETTING_SECTION_NETPLAY, "SelectedServer", std::string("")};
@@ -1678,6 +1678,10 @@ CORE_EXPORT bool CoreSettingsUpgrade(void)
     std::string settingsString;
 
     settingsVersion = CoreSettingsGetStringValue(SettingsID::GUI_Version);
+    if (settingsVersion.size() > 6)
+    { // strip git prefix
+        settingsVersion = settingsVersion.substr(0, 6);
+    }
 
     // we don't need to do anything
     // when the core version and the settings version match
@@ -1688,7 +1692,6 @@ CORE_EXPORT bool CoreSettingsUpgrade(void)
 
     if (settingsVersion.empty())
     { // settings version was introduced in >v0.1.5
-
 #ifndef PORTABLE_INSTALL // only applies to non-portable installs (i.e flatpak)
         // sadly v0.1.5 introduced an issue,
         // in v0.1.4 the screenshot directory was set to 'Screenshots',
@@ -1716,6 +1719,31 @@ CORE_EXPORT bool CoreSettingsUpgrade(void)
         if (CoreSettingsGetBoolValue(SettingsID::Audio_Synchronize))
         {
             CoreSettingsSetValue(SettingsID::Audio_Synchronize, false);
+        }
+    }
+
+    if (settingsVersion == "v0.6.8" || 
+        settingsVersion == "v0.6.9" ||
+        settingsVersion == "v0.7.0" ||
+        settingsVersion == "v0.7.0" ||
+        settingsVersion == "v0.7.1" ||
+        settingsVersion == "v0.7.2" ||
+        settingsVersion == "v0.7.3" ||
+        settingsVersion == "v0.7.4" ||
+        settingsVersion == "v0.7.5" ||
+        settingsVersion == "v0.7.6" ||
+        settingsVersion == "v0.7.7" ||
+        settingsVersion == "v0.7.8" ||
+        settingsVersion == "v0.7.9")
+    {
+        // in v0.8.0 RMG switched to the dispatcher server for netplay,
+        // to keep support for the json file, we only empty that setting
+        // when it is the default value because the default json url
+        // no longer exists
+        settingsString = CoreSettingsGetStringValue(SettingsID::Netplay_ServerJsonUrl);
+        if (settingsString == "https://m64p.s3.amazonaws.com/servers.json")
+        {
+            CoreSettingsSetValue(SettingsID::Netplay_ServerJsonUrl, std::string(""));
         }
     }
 
