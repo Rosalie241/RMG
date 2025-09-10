@@ -257,7 +257,10 @@ void CreateNetplaySessionDialog::on_webSocket_textMessageReceived(QString messag
 
 void CreateNetplaySessionDialog::on_webSocket_pong(quint64 elapsedTime, const QByteArray&)
 {
-    this->pingLineEdit->setText(QString::number(elapsedTime) + " ms");
+    if (!NetplayCommon::IsServerDispatcher(this->serverComboBox))
+    {
+        this->pingLineEdit->setText(QString::number(elapsedTime) + " ms");
+    }
 }
 
 void CreateNetplaySessionDialog::on_webSocket_connected()

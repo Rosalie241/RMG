@@ -415,7 +415,10 @@ void NetplaySessionBrowserDialog::on_webSocket_textMessageReceived(QString messa
 
 void NetplaySessionBrowserDialog::on_webSocket_pong(quint64 elapsedTime, const QByteArray&)
 {
-    this->pingLineEdit->setText(QString::number(elapsedTime) + " ms");
+    if (!NetplayCommon::IsServerDispatcher(this->serverComboBox))
+    {
+        this->pingLineEdit->setText(QString::number(elapsedTime) + " ms");
+    }
 }
 
 void NetplaySessionBrowserDialog::on_webSocket_disconnected()
