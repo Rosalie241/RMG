@@ -281,27 +281,16 @@ void SettingsDialog::loadSettings(int stackedWidgetIndex)
 
 void SettingsDialog::loadCoreSettings(void)
 {
-    bool disableExtraMem = false;
-    int counterFactor = 0;
-    int cpuEmulator = 0;
-    int saveFilenameFormat = 0;
-    int siDmaDuration = -1;
-    bool randomizeInterrupt = true;
-    bool usePIFROM = false;
-    QString ntscPifROM;
-    QString palPifRom;
-    bool overrideGameSettings = false;
-
-    disableExtraMem = CoreSettingsGetBoolValue(SettingsID::CoreOverlay_DisableExtraMem);
-    counterFactor = CoreSettingsGetIntValue(SettingsID::CoreOverlay_CountPerOp);
-    cpuEmulator = CoreSettingsGetIntValue(SettingsID::CoreOverlay_CPU_Emulator);
-    saveFilenameFormat = CoreSettingsGetIntValue(SettingsID::CoreOverLay_SaveFileNameFormat);
-    siDmaDuration = CoreSettingsGetIntValue(SettingsID::CoreOverlay_SiDmaDuration);
-    randomizeInterrupt = CoreSettingsGetBoolValue(SettingsID::CoreOverlay_RandomizeInterrupt);
-    usePIFROM = CoreSettingsGetBoolValue(SettingsID::Core_PIF_Use);
-    ntscPifROM = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::Core_PIF_NTSC));
-    palPifRom = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::Core_PIF_PAL));
-    overrideGameSettings = CoreSettingsGetBoolValue(SettingsID::Core_OverrideGameSpecificSettings);
+    bool disableExtraMem = CoreSettingsGetBoolValue(SettingsID::CoreOverlay_DisableExtraMem);
+    int counterFactor = CoreSettingsGetIntValue(SettingsID::CoreOverlay_CountPerOp);
+    const int cpuEmulator = CoreSettingsGetIntValue(SettingsID::CoreOverlay_CPU_Emulator);
+    const int saveFilenameFormat = CoreSettingsGetIntValue(SettingsID::CoreOverLay_SaveFileNameFormat);
+    int siDmaDuration = CoreSettingsGetIntValue(SettingsID::CoreOverlay_SiDmaDuration);
+    const bool randomizeInterrupt = CoreSettingsGetBoolValue(SettingsID::CoreOverlay_RandomizeInterrupt);
+    const bool usePIFROM = CoreSettingsGetBoolValue(SettingsID::Core_PIF_Use);
+    const QString ntscPifROM = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::Core_PIF_NTSC));
+    const QString palPifRom = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::Core_PIF_PAL));
+    const bool overrideGameSettings = CoreSettingsGetBoolValue(SettingsID::Core_OverrideGameSpecificSettings);
 
     this->coreCpuEmulatorComboBox->setCurrentIndex(cpuEmulator);
     this->coreSaveFilenameFormatComboBox->setCurrentIndex(saveFilenameFormat);
@@ -337,13 +326,10 @@ void SettingsDialog::loadGameSettings(void)
 
 void SettingsDialog::loadGameCoreSettings(void)
 {
-    bool overrideEnabled, randomizeInterrupt;
-    int cpuEmulator = 0, overclockingFactor = 0;
-
-    overrideEnabled = CoreSettingsGetBoolValue(SettingsID::Game_OverrideCoreSettings, this->gameSection);
-    cpuEmulator = CoreSettingsGetIntValue(SettingsID::Game_CPU_Emulator, this->gameSection);
-    overclockingFactor = CoreSettingsGetIntValue(SettingsID::Game_CountPerOpDenomPot, this->gameSection);
-    randomizeInterrupt = CoreSettingsGetBoolValue(SettingsID::Game_RandomizeInterrupt, this->gameSection);
+    const bool overrideEnabled = CoreSettingsGetBoolValue(SettingsID::Game_OverrideCoreSettings, this->gameSection);
+    const int cpuEmulator = CoreSettingsGetIntValue(SettingsID::Game_CPU_Emulator, this->gameSection);
+    const int overclockingFactor = CoreSettingsGetIntValue(SettingsID::Game_CountPerOpDenomPot, this->gameSection);
+    const bool randomizeInterrupt = CoreSettingsGetBoolValue(SettingsID::Game_RandomizeInterrupt, this->gameSection);
 
     gameOverrideCoreSettingsGroupBox->setChecked(overrideEnabled);
     gameCoreCpuEmulatorComboBox->setCurrentIndex(cpuEmulator);
@@ -423,21 +409,12 @@ void SettingsDialog::loadPluginSettings(void)
 
 void SettingsDialog::loadDirectorySettings(void)
 {
-    // these need to be static, otherwise Qt will segfault
-    static std::string screenshotDir;
-    static std::string saveStateDir;
-    static std::string saveSramDir;
-    static bool overrideUserDirs = false;
-    static std::string userDataDir;
-    static std::string userCacheDir;
-
-    screenshotDir = CoreSettingsGetStringValue(SettingsID::Core_ScreenshotPath);
-    saveStateDir = CoreSettingsGetStringValue(SettingsID::Core_SaveStatePath);
-    saveSramDir = CoreSettingsGetStringValue(SettingsID::Core_SaveSRAMPath);
-
-    overrideUserDirs = CoreSettingsGetBoolValue(SettingsID::Core_OverrideUserDirs);
-    userDataDir = CoreSettingsGetStringValue(SettingsID::Core_UserDataDirOverride);
-    userCacheDir = CoreSettingsGetStringValue(SettingsID::Core_UserCacheDirOverride);
+    const std::string screenshotDir = CoreSettingsGetStringValue(SettingsID::Core_ScreenshotPath);
+    const std::string saveStateDir = CoreSettingsGetStringValue(SettingsID::Core_SaveStatePath);
+    const std::string saveSramDir = CoreSettingsGetStringValue(SettingsID::Core_SaveSRAMPath);
+    const bool overrideUserDirs = CoreSettingsGetBoolValue(SettingsID::Core_OverrideUserDirs);
+    const std::string userDataDir = CoreSettingsGetStringValue(SettingsID::Core_UserDataDirOverride);
+    const std::string userCacheDir = CoreSettingsGetStringValue(SettingsID::Core_UserCacheDirOverride);
 
     this->screenshotDirLineEdit->setText(QString::fromStdString(screenshotDir));
     this->saveStateDirLineEdit->setText(QString::fromStdString(saveStateDir));
@@ -449,15 +426,10 @@ void SettingsDialog::loadDirectorySettings(void)
 
 void SettingsDialog::load64DDSettings(void)
 {
-    std::string japaneseIPLRom;
-    std::string americanIPlRom;
-    std::string developmentIPLRom;
-    int saveDiskFormat = 0;
-
-    japaneseIPLRom = CoreSettingsGetStringValue(SettingsID::Core_64DD_JapaneseIPL);
-    americanIPlRom = CoreSettingsGetStringValue(SettingsID::Core_64DD_AmericanIPL);
-    developmentIPLRom = CoreSettingsGetStringValue(SettingsID::Core_64DD_DevelopmentIPL);
-    saveDiskFormat = CoreSettingsGetIntValue(SettingsID::Core_64DD_SaveDiskFormat);
+    const std::string japaneseIPLRom = CoreSettingsGetStringValue(SettingsID::Core_64DD_JapaneseIPL);
+    const std::string americanIPlRom = CoreSettingsGetStringValue(SettingsID::Core_64DD_AmericanIPL);
+    const std::string developmentIPLRom = CoreSettingsGetStringValue(SettingsID::Core_64DD_DevelopmentIPL);
+    const int saveDiskFormat = CoreSettingsGetIntValue(SettingsID::Core_64DD_SaveDiskFormat);
 
     this->japaneseIPLRomLineEdit->setText(QString::fromStdString(japaneseIPLRom));
     this->americanIPLRomLineEdit->setText(QString::fromStdString(americanIPlRom));
@@ -567,27 +539,16 @@ void SettingsDialog::loadInterfaceNetplaySettings(void)
 
 void SettingsDialog::loadDefaultCoreSettings(void)
 {
-    bool disableExtraMem = false;
-    int counterFactor = 0;
-    int cpuEmulator = 0;
-    int saveFilenameFormat = 0;
-    int siDmaDuration = -1;
-    bool randomizeInterrupt = true;
-    bool usePIFROM;
-    QString ntscPifROM;
-    QString palPifRom;
-    bool overrideGameSettings;
-
-    disableExtraMem = CoreSettingsGetDefaultBoolValue(SettingsID::CoreOverlay_DisableExtraMem);
-    counterFactor = CoreSettingsGetDefaultIntValue(SettingsID::CoreOverlay_CountPerOp);
-    cpuEmulator = CoreSettingsGetDefaultIntValue(SettingsID::CoreOverlay_CPU_Emulator);
-    siDmaDuration = CoreSettingsGetDefaultIntValue(SettingsID::CoreOverlay_SiDmaDuration);
-    saveFilenameFormat = CoreSettingsGetDefaultIntValue(SettingsID::CoreOverLay_SaveFileNameFormat);
-    randomizeInterrupt = CoreSettingsGetDefaultBoolValue(SettingsID::CoreOverlay_RandomizeInterrupt);
-    usePIFROM = CoreSettingsGetDefaultBoolValue(SettingsID::Core_PIF_Use);
-    ntscPifROM = QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::Core_PIF_NTSC));
-    palPifRom = QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::Core_PIF_PAL));
-    overrideGameSettings = CoreSettingsGetDefaultBoolValue(SettingsID::Core_OverrideGameSpecificSettings);
+    bool disableExtraMem = CoreSettingsGetDefaultBoolValue(SettingsID::CoreOverlay_DisableExtraMem);
+    int counterFactor = CoreSettingsGetDefaultIntValue(SettingsID::CoreOverlay_CountPerOp);
+    const int cpuEmulator = CoreSettingsGetDefaultIntValue(SettingsID::CoreOverlay_CPU_Emulator);
+    int siDmaDuration = CoreSettingsGetDefaultIntValue(SettingsID::CoreOverlay_SiDmaDuration);
+    const int saveFilenameFormat = CoreSettingsGetDefaultIntValue(SettingsID::CoreOverLay_SaveFileNameFormat);
+    const bool randomizeInterrupt = CoreSettingsGetDefaultBoolValue(SettingsID::CoreOverlay_RandomizeInterrupt);
+    const bool usePIFROM = CoreSettingsGetDefaultBoolValue(SettingsID::Core_PIF_Use);
+    const QString ntscPifROM = QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::Core_PIF_NTSC));
+    const QString palPifRom = QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::Core_PIF_PAL));
+    const bool overrideGameSettings = CoreSettingsGetDefaultBoolValue(SettingsID::Core_OverrideGameSpecificSettings);
 
     this->coreCpuEmulatorComboBox->setCurrentIndex(cpuEmulator);
     this->coreSaveFilenameFormatComboBox->setCurrentIndex(saveFilenameFormat);
@@ -623,18 +584,10 @@ void SettingsDialog::loadDefaultGameSettings(void)
 
 void SettingsDialog::loadDefaultGameCoreSettings(void)
 {
-    bool overrideEnabled, randomizeInterrupt;
-    int cpuEmulator = 0, overclockingFactor = 0;
-
-    overrideEnabled = CoreSettingsGetDefaultBoolValue(SettingsID::Game_OverrideCoreSettings);
-    cpuEmulator = CoreSettingsGetDefaultIntValue(SettingsID::Game_CPU_Emulator);
-    overclockingFactor = CoreSettingsGetDefaultIntValue(SettingsID::Game_CountPerOpDenomPot);
-    randomizeInterrupt = CoreSettingsGetDefaultBoolValue(SettingsID::Game_RandomizeInterrupt);
-
-    gameOverrideCoreSettingsGroupBox->setChecked(overrideEnabled);
-    gameCoreCpuEmulatorComboBox->setCurrentIndex(cpuEmulator);
-    gameOverclockingFactorSpinBox->setValue(overclockingFactor);
-    gameRandomizeTimingCheckBox->setChecked(randomizeInterrupt);
+    this->gameOverrideCoreSettingsGroupBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::Game_OverrideCoreSettings));
+    this->gameCoreCpuEmulatorComboBox->setCurrentIndex(CoreSettingsGetDefaultIntValue(SettingsID::Game_CPU_Emulator));
+    this->gameOverclockingFactorSpinBox->setValue(CoreSettingsGetDefaultIntValue(SettingsID::Game_CountPerOpDenomPot));
+    this->gameRandomizeTimingCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::Game_RandomizeInterrupt));
 }
 
 void SettingsDialog::loadDefaultGamePluginSettings(void)
@@ -719,8 +672,8 @@ void SettingsDialog::loadDefaultInterfaceOSDSettings(void)
     this->osdHorizontalPaddingSpinBox->setValue(CoreSettingsGetDefaultIntValue(SettingsID::GUI_OnScreenDisplayPaddingX));
     this->osdDurationSpinBox->setValue(CoreSettingsGetDefaultIntValue(SettingsID::GUI_OnScreenDisplayDuration));
 
-    std::vector<int> backgroundColor = CoreSettingsGetDefaultIntListValue(SettingsID::GUI_OnScreenDisplayBackgroundColor);
-    std::vector<int> textColor = CoreSettingsGetDefaultIntListValue(SettingsID::GUI_OnScreenDisplayTextColor);
+    const std::vector<int> backgroundColor = CoreSettingsGetDefaultIntListValue(SettingsID::GUI_OnScreenDisplayBackgroundColor);
+    const std::vector<int> textColor = CoreSettingsGetDefaultIntListValue(SettingsID::GUI_OnScreenDisplayTextColor);
     if (backgroundColor.size() == 4)
     {
         this->currentBackgroundColor = QColor(backgroundColor.at(0), backgroundColor.at(1), backgroundColor.at(2), backgroundColor.at(3));
@@ -768,14 +721,14 @@ void SettingsDialog::saveCoreSettings(void)
 {
     bool disableExtraMem = (this->coreMemorySizeComboBox->currentIndex() == 0);
     int counterFactor = this->coreCounterFactorComboBox->currentIndex() + 1;
-    int cpuEmulator = this->coreCpuEmulatorComboBox->currentIndex();
-    int saveFilenameFormat = this->coreSaveFilenameFormatComboBox->currentIndex();
+    const int cpuEmulator = this->coreCpuEmulatorComboBox->currentIndex();
+    const int saveFilenameFormat = this->coreSaveFilenameFormatComboBox->currentIndex();
     int siDmaDuration = this->coreSiDmaDurationSpinBox->value();
-    bool randomizeInterrupt = this->coreRandomizeTimingCheckBox->isChecked();
-    bool usePIF = this->usePifRomGroupBox->isChecked();
-    QString ntscPifROM = this->ntscPifRomLineEdit->text();
-    QString palPifROM = this->palPifRomLineEdit->text();
-    bool overrideGameSettings = this->coreOverrideGameSettingsGroup->isChecked();
+    const bool randomizeInterrupt = this->coreRandomizeTimingCheckBox->isChecked();
+    const bool usePIF = this->usePifRomGroupBox->isChecked();
+    const QString ntscPifROM = this->ntscPifRomLineEdit->text();
+    const QString palPifROM = this->palPifRomLineEdit->text();
+    const bool overrideGameSettings = this->coreOverrideGameSettingsGroup->isChecked();
 
     CoreSettingsSetValue(SettingsID::CoreOverlay_CPU_Emulator, cpuEmulator);
     CoreSettingsSetValue(SettingsID::CoreOverLay_SaveFileNameFormat, saveFilenameFormat);
@@ -799,11 +752,11 @@ void SettingsDialog::saveCoreSettings(void)
 
 void SettingsDialog::saveGameSettings(void)
 {
-    bool disableExtraMem = this->gameMemorySizeComboBox->currentIndex() == 0;
-    int saveType = this->gameSaveTypeComboBox->currentIndex();
-    int countPerOp = this->gameCounterFactorComboBox->currentIndex() + 1;
-    bool transferPak = this->gameTransferPakComboBox->currentIndex() != 0;
-    int siDmaDuration = this->gameSiDmaDurationSpinBox->value();
+    const bool disableExtraMem = this->gameMemorySizeComboBox->currentIndex() == 0;
+    const int saveType = this->gameSaveTypeComboBox->currentIndex();
+    const int countPerOp = this->gameCounterFactorComboBox->currentIndex() + 1;
+    const bool transferPak = this->gameTransferPakComboBox->currentIndex() != 0;
+    const int siDmaDuration = this->gameSiDmaDurationSpinBox->value();
 
     if ((this->defaultGameSettings.DisableExtraMem != disableExtraMem) ||
         (this->defaultGameSettings.SaveType != saveType) ||
@@ -834,20 +787,15 @@ void SettingsDialog::saveGameSettings(void)
 
 void SettingsDialog::saveGameCoreSettings(void)
 {
-    bool overrideEnabled, randomizeInterrupt;
-    bool defaultOverrideEnabled, defaultRandomizeInterrupt;
-    int cpuEmulator = 0, defaultCpuEmulator;
-    int overclockingFactor = 0, defaultoverclockingFactor;
+    const bool overrideEnabled = gameOverrideCoreSettingsGroupBox->isChecked();
+    const int cpuEmulator = gameCoreCpuEmulatorComboBox->currentIndex();
+    const int overclockingFactor = gameOverclockingFactorSpinBox->value();
+    const bool randomizeInterrupt = gameRandomizeTimingCheckBox->isChecked();
 
-    overrideEnabled = gameOverrideCoreSettingsGroupBox->isChecked();
-    cpuEmulator = gameCoreCpuEmulatorComboBox->currentIndex();
-    overclockingFactor = gameOverclockingFactorSpinBox->value();
-    randomizeInterrupt = gameRandomizeTimingCheckBox->isChecked();
-
-    defaultOverrideEnabled = CoreSettingsGetDefaultBoolValue(SettingsID::Game_OverrideCoreSettings);
-    defaultRandomizeInterrupt = CoreSettingsGetDefaultBoolValue(SettingsID::Game_RandomizeInterrupt);
-    defaultCpuEmulator = CoreSettingsGetDefaultIntValue(SettingsID::Game_CPU_Emulator);
-    defaultoverclockingFactor = CoreSettingsGetDefaultIntValue(SettingsID::Game_CountPerOpDenomPot);
+    const bool defaultOverrideEnabled = CoreSettingsGetDefaultBoolValue(SettingsID::Game_OverrideCoreSettings);
+    const int defaultCpuEmulator = CoreSettingsGetDefaultIntValue(SettingsID::Game_CPU_Emulator);
+    const int defaultoverclockingFactor = CoreSettingsGetDefaultIntValue(SettingsID::Game_CountPerOpDenomPot);
+    const bool defaultRandomizeInterrupt = CoreSettingsGetDefaultBoolValue(SettingsID::Game_RandomizeInterrupt);
 
     if ((defaultOverrideEnabled != overrideEnabled) ||
         (defaultCpuEmulator != cpuEmulator) ||
