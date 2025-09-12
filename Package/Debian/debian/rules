@@ -1,0 +1,20 @@
+#!/usr/bin/make -f
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	cmake -G Ninja \
+	      -S . -B build \
+	      -DCMAKE_BUILD_TYPE=Release \
+	      -DPORTABLE_INSTALL=OFF \
+		  -DDISCORD_RPC=OFF \
+	      -DCMAKE_INSTALL_PREFIX=/usr
+
+override_dh_auto_build:
+	ninja -C build -v
+
+override_dh_auto_install:
+	DESTDIR=$(CURDIR)/debian/tmp \
+	ninja -C build install -v
