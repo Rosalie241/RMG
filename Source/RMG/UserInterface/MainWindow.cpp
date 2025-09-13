@@ -162,11 +162,27 @@ void MainWindow::OpenROM(QString file, QString disk, bool fullscreen, bool quitA
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    bool inEmulation = this->emulationThread->isRunning();
+
+    if (!this->ui_ForceClose &&
+        inEmulation &&
+        CoreSettingsGetBoolValue(SettingsID::GUI_ConfirmExitWhileInGame))
+    {
+        bool skipExitConfirmation = false;
+        bool ret = QtMessageBox::Question(this, "Are you sure you want to exit RMG?", "Don't ask for confirmation again", skipExitConfirmation);
+        CoreSettingsSetValue(SettingsID::GUI_ConfirmExitWhileInGame, !skipExitConfirmation);
+        if (!ret)
+        {
+            event->ignore();
+            return;
+        }
+    }
+
     // we have to make sure we save the geomtry
     // for the ROM browser when emulation
     // isn't running (or hasn't run at all)
     if (!this->ui_QuitAfterEmulation && 
-        !this->emulationThread->isRunning())
+        !inEmulation)
     {
         this->storeGeometry();
     }
@@ -1522,7 +1538,8 @@ void MainWindow::on_networkAccessManager_Finished(QNetworkReply* reply)
     }
 
 #ifdef APPIMAGE_UPDATER
-    this->on_Action_System_Exit();
+    this->ui_ForceClose = true;
+    this->close();
 #else // normal updater
     Dialog::InstallUpdateDialog installUpdateDialog(this, QCoreApplication::applicationDirPath(), downloadUpdateDialog.GetTempDirectory(), downloadUpdateDialog.GetFileName());
     ret = installUpdateDialog.exec();
@@ -2102,6 +2119,8 @@ void MainWindow::on_Emulation_Finished(bool ret, QString error)
         {
             this->showErrorMessage("EmulationThread::run Failed", error);
         }
+
+        this->ui_ForceClose = true;
         this->close();
         return;
     }

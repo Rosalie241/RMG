@@ -20,6 +20,8 @@ namespace QtMessageBox
 	void Info(QWidget* parent, QString text, QString details = "");
 
 	void Error(QWidget* parent, QString text, QString details = "");
+
+	bool Question(QWidget* parent, QString text, QString checkBoxText, bool& checkBoxValue);
 }
 } // namespace Utilities
 

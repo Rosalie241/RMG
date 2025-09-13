@@ -84,9 +84,10 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     bool ui_ShowStatusbar = false;
 
     bool ui_ManuallyPaused = true;
-
     bool ui_ManuallySavedState  = false;
     bool ui_ManuallyLoadedState = false;
+
+    bool ui_ForceClose = false;
 
     QList<QAction*> ui_Actions;
     bool ui_AddedActions = false;

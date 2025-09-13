@@ -11,6 +11,7 @@
 
 #include <QAbstractButton>
 #include <QMessageBox>
+#include <QCheckBox>
 
 using namespace Utilities;
 
@@ -55,5 +56,24 @@ void QtMessageBox::Info(QWidget* parent, QString text, QString details)
 void QtMessageBox::Error(QWidget* parent, QString text, QString details)
 {
     show_messagebox(QMessageBox::Icon::Critical, "Error", parent, text, details);
+}
+
+bool QtMessageBox::Question(QWidget* parent, QString text, QString checkBoxText, bool& checkBoxValue)
+{
+    QMessageBox msgBox(parent);
+    msgBox.setIcon(QMessageBox::Icon::Question);
+    msgBox.setText(text);
+    msgBox.addButton(QMessageBox::Button::Yes);
+    msgBox.addButton(QMessageBox::Button::No);
+
+    QCheckBox* checkBox = new QCheckBox(&msgBox);
+    checkBox->setText(checkBoxText);
+    checkBox->setChecked(checkBoxValue);
+
+    msgBox.setCheckBox(checkBox);
+
+    int ret = msgBox.exec();
+    checkBoxValue = checkBox->isChecked();
+    return ret == QMessageBox::Button::Yes;
 }
 

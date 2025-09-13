@@ -117,6 +117,13 @@
                 </layout>
                </item>
                <item>
+                <widget class="QCheckBox" name="confirmExitWhileInGameCheckBox">
+                 <property name="text">
+                  <string>Ask for confirmation on exit while in-game</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <widget class="QCheckBox" name="checkForUpdatesCheckBox">
                  <property name="text">
                   <string>Check for updates</string>
