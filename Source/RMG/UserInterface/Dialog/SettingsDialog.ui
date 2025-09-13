@@ -2524,7 +2524,7 @@
                     <number>1</number>
                    </property>
                    <property name="text">
-                    <string>Make sure to use a LLE RSP plugin (i.e paraLLEl RSP) when using a LLE Video plugin (i.e paraLLEl)</string>
+                    <string>Make sure to use a LLE RSP plugin (e.g. paraLLEl RSP) when using a LLE Video plugin (e.g. paraLLEl)</string>
                    </property>
                    <property name="textFormat">
                     <enum>Qt::TextFormat::PlainText</enum>
@@ -2720,7 +2720,7 @@
                 <number>1</number>
                </property>
                <property name="text">
-                <string>Make sure to use a LLE RSP plugin (i.e paraLLEl RSP) when using a LLE Video plugin (i.e paraLLEl)</string>
+                <string>Make sure to use a LLE RSP plugin (e.g. paraLLEl RSP) when using a LLE Video plugin (e.g. paraLLEl)</string>
                </property>
                <property name="textFormat">
                 <enum>Qt::TextFormat::PlainText</enum>
