@@ -22,8 +22,8 @@ int PluginAPI::InitiateGFX(const GFX_INFO & _gfxInfo)
 {
 	_initiateGFX(_gfxInfo);
 
-	hWnd = _gfxInfo.hWnd;
-	hStatusBar = _gfxInfo.hStatusBar;
+	hWnd = (HWND)_gfxInfo.hWnd;
+	hStatusBar = (HWND)_gfxInfo.hStatusBar;
 	hToolBar = NULL;
 
 	EnumChildWindows( hWnd, FindToolBarProc, 0 );

@@ -50,7 +50,8 @@ FrameBuffer::~FrameBuffer()
 	gfxContext.deleteFramebuffer(m_depthFBO);
 	gfxContext.deleteFramebuffer(m_resolveFBO);
 	gfxContext.deleteFramebuffer(m_SubFBO);
-	gfxContext.deleteFramebuffer(m_copyFBO);
+	if (m_copyFBO != ObjectHandle::defaultFramebuffer)
+		gfxContext.deleteFramebuffer(m_copyFBO);
 
 	textureCache().removeFrameBufferTexture(m_pTexture);
 	textureCache().removeFrameBufferTexture(m_pDepthTexture);

@@ -62,7 +62,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        image: ["GLideN64 (x64 Project64-Qt)", "GLideN64 (x86 Project64-Qt)", "GLideN64 (x64 Project64-WTL)", "GLideN64 (x86 Project64-WTL)", "GLideN64 (x64 Mupen64Plus-CLI)", "GLideN64 (x86 Mupen64Plus-CLI)", "GLideN64 (x64 Mupen64Plus-Qt)"]
+        image: ["GLideN64 (x64 Project64-Qt)", "GLideN64 (x86 Project64-Qt)", "GLideN64 (x64 Project64-WTL)", "GLideN64 (x86 Project64-WTL)", "GLideN64 (x64 PJ64Legacy-Qt)", "GLideN64 (x86 PJ64Legacy-Qt)", "GLideN64 (x64 PJ64Legacy-WTL)", "GLideN64 (x86 PJ64Legacy-WTL)", "GLideN64 (x64 Mupen64Plus-CLI)", "GLideN64 (x86 Mupen64Plus-CLI)", "GLideN64 (x64 Mupen64Plus-Qt)"]
     env:
       QTDIR_x86: C:\Static_Qt_x86
       QTDIR_x64: C:\Static_Qt_x64
@@ -95,19 +95,22 @@ jobs:
           echo "Mupen64PluginsDir_x64=$pwd\build\windows-mupen64plus-cli-x64\" >> $env:GITHUB_ENV
           echo "GIT_REVISION=$env:revision" >> $env:GITHUB_ENV
         shell: pwsh
-      - name: Prepare Qt Builds
-        if: ${{ matrix.image == 'GLideN64 (x64 Project64-Qt)' || matrix.image == 'GLideN64 (x86 Project64-Qt)' || matrix.image == 'GLideN64 (x64 Mupen64Plus-Qt)' }}
+      - name: Prepare Qt x64 Builds
+        if: ${{ matrix.image == 'GLideN64 (x64 Project64-Qt)' || matrix.image == 'GLideN64 (x64 PJ64Legacy-Qt)' }}
+        run: |
+          curl -L -o %QT_BUILD_x64%.7z %QT_BUILD_BASE_URL%/%QT_BUILD_x64%.7z
+          7z x -o%QTDIR_x64% %QT_BUILD_x64%.7z
+        shell: cmd
+      - name: Prepare Qt x86 Builds
+        if: ${{ matrix.image == 'GLideN64 (x86 Project64-Qt)' || matrix.image == 'GLideN64 (x86 PJ64Legacy-Qt)' }}
         run: |
           curl -L -o %QT_BUILD_x86%.7z %QT_BUILD_BASE_URL%/%QT_BUILD_x86%.7z
-          curl -L -o %QT_BUILD_x64%.7z %QT_BUILD_BASE_URL%/%QT_BUILD_x64%.7z
           7z x -o%QTDIR_x86% %QT_BUILD_x86%.7z
-          7z x -o%QTDIR_x64% %QT_BUILD_x64%.7z
         shell: cmd
       - name: Build GLideN64 (x64 Project64-Qt)
         if: ${{ matrix.image == 'GLideN64 (x64 Project64-Qt)' }}
         run: |
           set QTDIR=%QTDIR_x64%\%QT_BUILD_x64%
-          msbuild projects/msvc/GLideNUI.vcxproj /m /p:Configuration=Release;Platform=x64
           msbuild projects/msvc/GLideN64.sln /m /p:Configuration=Release_qt;Platform=x64
           copy ini\GLideN64.custom.ini %PJ64PluginsDirQT_x64%
           copy translations\release\*.qm %PJ64PluginsDirQT_x64%
@@ -116,7 +119,6 @@ jobs:
         if: ${{ matrix.image == 'GLideN64 (x86 Project64-Qt)' }}
         run: |
           set QTDIR=%QTDIR_x86%\%QT_BUILD_x86%
-          msbuild projects/msvc/GLideNUI.vcxproj /m /p:Configuration=Release;Platform=Win32
           msbuild projects/msvc/GLideN64.sln /m /p:Configuration=Release_qt;Platform=Win32
           copy ini\GLideN64.custom.ini %PJ64PluginsDirQT%
           copy translations\release\*.qm %PJ64PluginsDirQT%
@@ -124,7 +126,6 @@ jobs:
       - name: Build GLideN64 (x64 Project64-WTL)
         if: ${{ matrix.image == 'GLideN64 (x64 Project64-WTL)' }}
         run: |
-          msbuild projects/msvc/GLideNUI-wtl.vcxproj /m /p:Configuration=Release;Platform=x64
           msbuild projects/msvc/GLideN64.sln /m /p:Configuration=Release_wtl;Platform=x64
           copy ini\GLideN64.custom.ini %PJ64PluginsDirWTL_x64%
           mkdir %PJ64PluginsDirWTL_x64%\translations
@@ -133,8 +134,39 @@ jobs:
       - name: Build GLideN64 (x86 Project64-WTL)
         if: ${{ matrix.image == 'GLideN64 (x86 Project64-WTL)' }}
         run: |
-          msbuild projects/msvc/GLideNUI-wtl.vcxproj /m /p:Configuration=Release;Platform=Win32
           msbuild projects/msvc/GLideN64.sln /m /p:Configuration=Release_wtl;Platform=Win32
+          copy ini\GLideN64.custom.ini %PJ64PluginsDirWTL%
+          mkdir %PJ64PluginsDirWTL%\translations
+          copy translations\wtl\*.Lang %PJ64PluginsDirWTL%\translations
+        shell: cmd
+      - name: Build GLideN64 (x64 PJ64Legacy-Qt)
+        if: ${{ matrix.image == 'GLideN64 (x64 PJ64Legacy-Qt)' }}
+        run: |
+          set QTDIR=%QTDIR_x64%\%QT_BUILD_x64%
+          msbuild projects/msvc/GLideN64.sln /m /p:Configuration=Release_qt_legacy;Platform=x64
+          copy ini\GLideN64.custom.ini %PJ64PluginsDirQT_x64%
+          copy translations\release\*.qm %PJ64PluginsDirQT_x64%
+        shell: cmd
+      - name: Build GLideN64 (x86 PJ64Legacy-Qt)
+        if: ${{ matrix.image == 'GLideN64 (x86 PJ64Legacy-Qt)' }}
+        run: |
+          set QTDIR=%QTDIR_x86%\%QT_BUILD_x86%
+          msbuild projects/msvc/GLideN64.sln /m /p:Configuration=Release_qt_legacy;Platform=Win32
+          copy ini\GLideN64.custom.ini %PJ64PluginsDirQT%
+          copy translations\release\*.qm %PJ64PluginsDirQT%
+        shell: cmd
+      - name: Build GLideN64 (x64 PJ64Legacy-WTL)
+        if: ${{ matrix.image == 'GLideN64 (x64 PJ64Legacy-WTL)' }}
+        run: |
+          msbuild projects/msvc/GLideN64.sln /m /p:Configuration=Release_wtl_legacy;Platform=x64
+          copy ini\GLideN64.custom.ini %PJ64PluginsDirWTL_x64%
+          mkdir %PJ64PluginsDirWTL_x64%\translations
+          copy translations\wtl\*.Lang %PJ64PluginsDirWTL_x64%\translations
+        shell: cmd
+      - name: Build GLideN64 (x86 PJ64Legacy-WTL)
+        if: ${{ matrix.image == 'GLideN64 (x86 PJ64Legacy-WTL)' }}
+        run: |
+          msbuild projects/msvc/GLideN64.sln /m /p:Configuration=Release_wtl_legacy;Platform=Win32
           copy ini\GLideN64.custom.ini %PJ64PluginsDirWTL%
           mkdir %PJ64PluginsDirWTL%\translations
           copy translations\wtl\*.Lang %PJ64PluginsDirWTL%\translations
@@ -195,6 +227,42 @@ jobs:
         if: ${{ matrix.image == 'GLideN64 (x86 Project64-WTL)' }}
         with:
           name: GLideN64-${{ env.GIT_REVISION }}-Windows-Project64-WTL-x86
+          path: |
+            build\windows-project64-wtl\*.dll
+            build\windows-project64-wtl\GLideN64.custom.ini
+            build\windows-project64-wtl\translations\*.Lang
+      - name: Upload GLideN64 (x64 PJ64Legacy-Qt)
+        uses: actions/upload-artifact@v4
+        if: ${{ matrix.image == 'GLideN64 (x64 PJ64Legacy-Qt)' }}
+        with:
+          name: GLideN64-${{ env.GIT_REVISION }}-Windows-PJ64Legacy-Qt-x64
+          path: |
+            build\windows-project64-qt-x64\*.dll
+            build\windows-project64-qt-x64\GLideN64.custom.ini
+            build\windows-project64-qt-x64\*.qm
+      - name: Upload GLideN64 (x86 PJ64Legacy-Qt)
+        uses: actions/upload-artifact@v4
+        if: ${{ matrix.image == 'GLideN64 (x86 PJ64Legacy-Qt)' }}
+        with:
+          name: GLideN64-${{ env.GIT_REVISION }}-Windows-PJ64Legacy-Qt-x86
+          path: |
+            build\windows-project64-qt\*.dll
+            build\windows-project64-qt\GLideN64.custom.ini
+            build\windows-project64-qt\*.qm
+      - name: Upload GLideN64 (x64 PJ64Legacy-WTL)
+        uses: actions/upload-artifact@v4
+        if: ${{ matrix.image == 'GLideN64 (x64 PJ64Legacy-WTL)' }}
+        with:
+          name: GLideN64-${{ env.GIT_REVISION }}-Windows-PJ64Legacy-WTL-x64
+          path: |
+            build\windows-project64-wtl-x64\*.dll
+            build\windows-project64-wtl-x64\GLideN64.custom.ini
+            build\windows-project64-wtl-x64\translations\*.Lang
+      - name: Upload GLideN64 (x86 PJ64Legacy-WTL)
+        uses: actions/upload-artifact@v4
+        if: ${{ matrix.image == 'GLideN64 (x86 PJ64Legacy-WTL)' }}
+        with:
+          name: GLideN64-${{ env.GIT_REVISION }}-Windows-PJ64Legacy-WTL-x86
           path: |
             build\windows-project64-wtl\*.dll
             build\windows-project64-wtl\GLideN64.custom.ini

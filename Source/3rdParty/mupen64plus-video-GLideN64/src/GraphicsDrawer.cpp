@@ -39,6 +39,9 @@ GraphicsDrawer::~GraphicsDrawer()
 
 void GraphicsDrawer::addTriangle(u32 _v0, u32 _v1, u32 _v2)
 {
+	if (triangles.num > VERTBUFF_SIZE - 16, false)
+		drawTriangles();
+
 	m_statistics.drawnTris++;
 	const u32 firstIndex = triangles.num;
 	triangles.elements[triangles.num++] = static_cast<u16>(_v0);
@@ -884,7 +887,10 @@ void GraphicsDrawer::drawTriangles()
 				pCurrentDepthBuffer->setDirty();
 		}
 	} else {
-		gfxContext.drawTriangles(triParams);
+		if (config.generalEmulation.enableClipping != 0)
+			renderAndDrawTriangles(triangles.vertices.data(), triangles.elements.data(), triangles.num, m_bFlatColors, m_statistics);
+		else
+			gfxContext.drawTriangles(triParams);
 	}
 
 	triangles.num = 0;
@@ -979,7 +985,10 @@ void GraphicsDrawer::drawDMATriangles(u32 _numVtx)
 				pCurrentDepthBuffer->setDirty();
 		}
 	} else {
-		gfxContext.drawTriangles(triParams);
+		if (config.generalEmulation.enableClipping != 0)
+			renderAndDrawTriangles(m_dmaVertices.data(), nullptr, _numVtx, m_bFlatColors, m_statistics);
+		else
+			gfxContext.drawTriangles(triParams);
 	}
 	dropRenderState();
 }

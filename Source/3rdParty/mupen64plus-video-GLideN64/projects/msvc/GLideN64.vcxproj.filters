@@ -499,7 +499,7 @@
     <ClInclude Include="..\..\src\VI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\ZilmarGFX_1_3.h">
+    <ClInclude Include="..\..\src\windows\Project64-plugin-spec\Video.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\mupenplus\GLideN64_mupenplus.h">

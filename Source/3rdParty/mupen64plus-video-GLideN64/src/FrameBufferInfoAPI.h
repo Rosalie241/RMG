@@ -1,3 +1,4 @@
+#include "osal/osal_export.h"
 #ifndef _FRAME_BUFFER_INFO_API_H_
 #define _FRAME_BUFFER_INFO_API_H_
 
@@ -5,13 +6,6 @@
 extern "C" {
 #endif
 
-#ifdef OS_WINDOWS
-  #define EXPORT	__declspec(dllexport)
-  #define CALL		__cdecl
-#else
-  #define EXPORT 	__attribute__((visibility("default")))
-  #define CALL
-#endif
 
 /******************************************************************
   Function: FrameBufferWrite

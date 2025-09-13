@@ -9,12 +9,28 @@
       <Configuration>Debug_mupenplus</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_qt_legacy|Win32">
+      <Configuration>Debug_qt_legacy</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_qt_legacy|x64">
+      <Configuration>Debug_qt_legacy</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug_qt|Win32">
       <Configuration>Debug_qt</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Debug_qt|x64">
       <Configuration>Debug_qt</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_wtl_legacy|Win32">
+      <Configuration>Debug_wtl_legacy</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug_wtl_legacy|x64">
+      <Configuration>Debug_wtl_legacy</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Debug_wtl|Win32">
@@ -33,12 +49,28 @@
       <Configuration>Release_mupenplus</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_qt_legacy|Win32">
+      <Configuration>Release_qt_legacy</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_qt_legacy|x64">
+      <Configuration>Release_qt_legacy</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release_qt|Win32">
       <Configuration>Release_qt</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release_qt|x64">
       <Configuration>Release_qt</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_wtl_legacy|Win32">
+      <Configuration>Release_wtl_legacy</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release_wtl_legacy|x64">
+      <Configuration>Release_wtl_legacy</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release_wtl|Win32">
@@ -81,10 +113,10 @@
     <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)build\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_wtl' Or'$(Configuration)'=='Debug_mupenplus'">
+  <PropertyGroup Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_qt_legacy' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Debug_wtl_legacy' Or '$(Configuration)'=='Debug_mupenplus'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_wtl' Or '$(Configuration)'=='Release_mupenplus'">
+  <PropertyGroup Condition="'$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_qt_legacy' Or '$(Configuration)'=='Release_wtl' Or '$(Configuration)'=='Release_qt_legacy' Or '$(Configuration)'=='Release_mupenplus'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus'">
@@ -111,7 +143,7 @@
       <Command>call ..\..\src\getRevision.bat</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Debug_mupenplus'">
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_qt_legacy' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Debug_wtl_legacy' Or '$(Configuration)'=='Debug_mupenplus'">
     <ClCompile>
       <PreprocessorDefinitions>GL_DEBUG;DEBUG_DUMP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Optimization>Disabled</Optimization>
@@ -124,7 +156,7 @@
       <AdditionalDependencies>freetype253MT_D.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_wtl' Or '$(Configuration)'=='Release_mupenplus'">
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_qt_legacy' Or '$(Configuration)'=='Release_wtl' Or '$(Configuration)'=='Release_wtl_legacy' Or '$(Configuration)'=='Release_mupenplus'">
     <ClCompile>
       <Optimization>Full</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -163,7 +195,7 @@
       <AdditionalDependencies>legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Release_wtl'">
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Debug_wtl_legacy' Or '$(Configuration)'=='Release_wtl' Or '$(Configuration)'=='Release_wtl_legacy'">
     <ClCompile>
       <PreprocessorDefinitions>WTL_UI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -171,49 +203,54 @@
       <PreprocessorDefinitions>WTL_UI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="('$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Debug_mupenplus') And '$(Platform)'=='Win32'">
+  <ItemDefinitionGroup Condition="('$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_qt_legacy' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Debug_wtl_legacy' Or '$(Configuration)'=='Debug_mupenplus') And '$(Platform)'=='Win32'">
     <Link>
       <AdditionalLibraryDirectories Condition="'$(MSBuildAssemblyVersion)'=='12.0'">lib/msvc12/dbg</AdditionalLibraryDirectories>
       <AdditionalLibraryDirectories Condition="'$(MSBuildAssemblyVersion)'!='12.0'">lib/dbg</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="('$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Debug_mupenplus') And '$(Platform)'=='x64'">
+  <ItemDefinitionGroup Condition="('$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_qt_legacy' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Debug_wtl_legacy' Or '$(Configuration)'=='Debug_mupenplus') And '$(Platform)'=='x64'">
     <Link>
       <AdditionalLibraryDirectories>lib/x64/dbg</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="('$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_wtl' Or '$(Configuration)'=='Release_mupenplus') And '$(Platform)'=='Win32'">
+  <ItemDefinitionGroup Condition="('$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_qt_legacy' Or '$(Configuration)'=='Release_wtl' Or '$(Configuration)'=='Release_wtl_legacy' Or '$(Configuration)'=='Release_mupenplus') And '$(Platform)'=='Win32'">
     <Link>
       <AdditionalLibraryDirectories Condition="'$(MSBuildAssemblyVersion)'=='12.0'">lib/msvc12/rel</AdditionalLibraryDirectories>
       <AdditionalLibraryDirectories Condition="'$(MSBuildAssemblyVersion)'!='12.0'">lib/rel</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="('$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_wtl' Or '$(Configuration)'=='Release_mupenplus') And '$(Platform)'=='x64'">
+  <ItemDefinitionGroup Condition="('$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_qt_legacy' Or '$(Configuration)'=='Release_wtl' Or '$(Configuration)'=='Release_wtl_legacy' Or '$(Configuration)'=='Release_mupenplus') And '$(Platform)'=='x64'">
     <Link>
       <AdditionalLibraryDirectories>lib/x64/rel</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_wtl'">
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_qt_legacy' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Debug_wtl_legacy' Or '$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_qt_legacy' Or '$(Configuration)'=='Release_wtl' Or '$(Configuration)'=='Release_wtl_legacy'">
     <ClCompile>
       <PreprocessorDefinitions>GL_USE_UNIFORMBLOCK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>ZILMAR_API;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
-    <PostBuildEvent Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Release_qt'">
+    <PostBuildEvent Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_qt_legacy' Or '$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_qt_legacy'">
       <Message>Copy result to plugins folder</Message>
       <Command Condition="'$(Platform)'=='Win32'">if NOT "$(PJ64PluginsDirQT)" == "" (if not exist "$(PJ64PluginsDirQT)" mkdir "$(PJ64PluginsDirQT)"
 copy /Y "$(OutDir)$(TargetName).*" "$(PJ64PluginsDirQT)")</Command>
       <Command Condition="'$(Platform)'=='x64'">if NOT "$(PJ64PluginsDirQT_x64)" == "" (if not exist "$(PJ64PluginsDirQT_x64)" mkdir "$(PJ64PluginsDirQT_x64)"
 copy /Y "$(OutDir)$(TargetName).*" "$(PJ64PluginsDirQT_x64)")</Command>
     </PostBuildEvent>
-    <PostBuildEvent Condition="'$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Release_wtl'">
+    <PostBuildEvent Condition="'$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Debug_wtl_legacy' Or '$(Configuration)'=='Release_wtl' Or '$(Configuration)'=='Release_wtl_legacy'">
       <Message>Copy result to plugins folder</Message>
       <Command Condition="'$(Platform)'=='Win32'">if NOT "$(PJ64PluginsDirWTL)" == "" (if not exist "$(PJ64PluginsDirWTL)" mkdir "$(PJ64PluginsDirWTL)"
 copy /Y "$(OutDir)$(TargetName).*" "$(PJ64PluginsDirWTL)")</Command>
       <Command Condition="'$(Platform)'=='x64'">if NOT "$(PJ64PluginsDirWTL_x64)" == "" (if not exist "$(PJ64PluginsDirWTL_x64)" mkdir "$(PJ64PluginsDirWTL_x64)"
 copy /Y "$(OutDir)$(TargetName).*" "$(PJ64PluginsDirWTL_x64)")</Command>
     </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug_qt_legacy' Or '$(Configuration)'=='Debug_wtl_legacy' Or '$(Configuration)'=='Release_qt_legacy' Or '$(Configuration)'=='Release_wtl_legacy'">
+    <ClCompile>
+      <PreprocessorDefinitions>LEGACY_ZILMAR_SPEC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus'">
     <ClCompile>
@@ -227,54 +264,70 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir)")</Command>
 copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug_qt'">
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_qt_legacy'">
     <Link>
       <AdditionalDependencies>bin\$(Platform)\Debug\lib\GLideNUI.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug_wtl'">
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Debug_wtl_legacy'">
     <Link>
       <AdditionalDependencies>bin\$(Platform)\Debug\lib\GLideNUI-wtl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release_qt'">
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_qt_legacy'">
     <Link>
       <AdditionalDependencies>bin\$(Platform)\Release\lib\GLideNUI.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/LTCG %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release_wtl'">
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release_wtl' Or '$(Configuration)'=='Release_wtl_legacy'">
     <Link>
       <AdditionalDependencies>bin\$(Platform)\Release\lib\GLideNUI-wtl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_wtl' Or '$(Configuration)'=='Release_mupenplus'">
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_qt_legacy' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Debug_wtl_legacy' Or '$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_qt_legacy' Or '$(Configuration)'=='Release_wtl' Or '$(Configuration)'=='Release_wtl_legacy' Or '$(Configuration)'=='Release_mupenplus'">
     <ClCompile>
       <AdditionalIncludeDirectories>../../src/inc/freetype/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ConformanceMode>
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">stdcpp17</LanguageStandard>
       <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Debug_qt|Win32'">true</ConformanceMode>
+      <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Debug_qt_legacy|Win32'">true</ConformanceMode>
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug_qt|Win32'">stdcpp17</LanguageStandard>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug_qt_legacy|Win32'">stdcpp17</LanguageStandard>
       <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Debug_wtl|Win32'">true</ConformanceMode>
+      <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Debug_wtl_legacy|Win32'">true</ConformanceMode>
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug_wtl|Win32'">stdcpp17</LanguageStandard>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug_wtl_legacy|Win32'">stdcpp17</LanguageStandard>
       <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ConformanceMode>
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">stdcpp17</LanguageStandard>
       <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Release_qt|Win32'">true</ConformanceMode>
+      <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Release_qt_legacy|Win32'">true</ConformanceMode>
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release_qt|Win32'">stdcpp17</LanguageStandard>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release_qt_legacy|Win32'">stdcpp17</LanguageStandard>
       <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Release_wtl|Win32'">true</ConformanceMode>
+      <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Release_wtl_legacy|Win32'">true</ConformanceMode>
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release_wtl|Win32'">stdcpp17</LanguageStandard>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release_wtl_legacy|Win32'">stdcpp17</LanguageStandard>
       <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|x64'">true</ConformanceMode>
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|x64'">stdcpp17</LanguageStandard>
       <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Debug_qt|x64'">true</ConformanceMode>
+      <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Debug_qt_legacy|x64'">true</ConformanceMode>
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug_qt|x64'">stdcpp17</LanguageStandard>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug_qt_legacy|x64'">stdcpp17</LanguageStandard>
       <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Debug_wtl|x64'">true</ConformanceMode>
+      <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Debug_wtl_legacy|x64'">true</ConformanceMode>
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug_wtl|x64'">stdcpp17</LanguageStandard>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug_wtl_legacy|x64'">stdcpp17</LanguageStandard>
       <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|x64'">true</ConformanceMode>
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|x64'">stdcpp17</LanguageStandard>
       <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Release_qt|x64'">true</ConformanceMode>
+      <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Release_qt_legacy|x64'">true</ConformanceMode>
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release_qt|x64'">stdcpp17</LanguageStandard>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release_qt_legacy|x64'">stdcpp17</LanguageStandard>
       <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Release_wtl|x64'">true</ConformanceMode>
+      <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Release_wtl_legacy|x64'">true</ConformanceMode>
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release_wtl|x64'">stdcpp17</LanguageStandard>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release_wtl_legacy|x64'">stdcpp17</LanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -322,7 +375,7 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_SpecialShadersFactory.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_Utils.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\mupen64plus\mupen64plus_DisplayWindow.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_wtl'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_qt_legacy' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Debug_wtl_legacy' Or '$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_qt_legacy' Or '$(Configuration)'=='Release_wtl' Or '$(Configuration)'=='Release_wtl_legacy'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_Attributes.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_BufferManipulationObjectFactory.cpp" />
@@ -354,19 +407,19 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
     </ClCompile>
     <ClCompile Include="..\..\src\Log.cpp" />
     <ClCompile Include="..\..\src\MupenPlusPluginAPI.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_wtl'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_qt_legacy' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Debug_wtl_legacy' Or '$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_qt_legacy' Or '$(Configuration)'=='Release_wtl' Or '$(Configuration)'=='Release_wtl_legacy'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\mupenplus\CommonAPIImpl_mupenplus.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_wtl'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_qt_legacy' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Debug_wtl_legacy' Or '$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_qt_legacy' Or '$(Configuration)'=='Release_wtl' Or '$(Configuration)'=='Release_wtl_legacy'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\mupenplus\Config_mupenplus.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_wtl'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_qt_legacy' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Debug_wtl_legacy' Or '$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_qt_legacy' Or '$(Configuration)'=='Release_wtl' Or '$(Configuration)'=='Release_wtl_legacy'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\mupenplus\MemoryStatus_mupenplus.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_wtl'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_qt_legacy' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Debug_wtl_legacy' Or '$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_qt_legacy' Or '$(Configuration)'=='Release_wtl' Or '$(Configuration)'=='Release_wtl_legacy'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\mupenplus\MupenPlusAPIImpl.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_wtl'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_qt_legacy' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Debug_wtl_legacy' Or '$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_qt_legacy' Or '$(Configuration)'=='Release_wtl' Or '$(Configuration)'=='Release_wtl_legacy'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\N64.cpp" />
     <ClCompile Include="..\..\src\PaletteTexture.cpp" />
@@ -518,7 +571,7 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
     <ClInclude Include="..\..\src\Log.h" />
     <ClInclude Include="..\..\src\MemoryStatus.h" />
     <ClInclude Include="..\..\src\mupenplus\GLideN64_mupenplus.h">
-      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_wtl'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_qt_legacy' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Debug_wtl_legacy' Or '$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_qt_legacy' Or '$(Configuration)'=='Release_wtl' Or '$(Configuration)'=='Release_wtl_legacy'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\src\N64.h" />
     <ClInclude Include="..\..\src\PaletteTexture.h" />
@@ -567,17 +620,17 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
     <ClInclude Include="..\..\src\windows\GLideN64_windows.h" />
     <ClInclude Include="..\..\src\wst.h" />
     <ClInclude Include="..\..\src\xxHash\xxhash.h" />
-    <ClInclude Include="..\..\src\ZilmarGFX_1_3.h">
+    <ClInclude Include="..\..\src\windows\Project64-plugin-spec\Video.h">
       <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\src\ZlutTexture.h" />
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Release_qt'">
+  <ItemGroup Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_qt_legacy' Or '$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_qt_legacy'">
     <ProjectReference Include="GLideNUI.vcxproj">
       <Project>{37cab375-a7a6-3cab-bd56-0e954d3fd2fe}</Project>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup Condition="'$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Release_wtl'">
+  <ItemGroup Condition="'$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Debug_wtl_legacy' Or '$(Configuration)'=='Release_wtl' Or '$(Configuration)'=='Release_wtl_legacy'">
     <ProjectReference Include="GLideNUI-wtl.vcxproj">
       <Project>{9e05b70f-a294-44a9-a151-b2cc95aa884e}</Project>
     </ProjectReference>

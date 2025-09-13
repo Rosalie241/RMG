@@ -5,6 +5,7 @@
 #include "F3DZEX2.h"
 #include "F3DEX3.h"
 #include "gSP.h"
+#include "RSP.h"
 
 #define	F3DEX3_BRANCH_WZ	0x04
 
@@ -14,6 +15,9 @@
 #define F3DEX3_TRIFAN            0x09
 #define F3DEX3_LIGHTTORDP        0x0A
 #define F3DEX3_RELSEGMENT        0x0B
+
+#define F3DEX3_B_TRISNAKE        0x08
+#define F3DEX3_B_TRI_NOOP        0x09
 
 #define F3DEX3_G_MW_FX		     0x00
 #define F3DEX3_G_MW_LIGHTCOL     0x0A
@@ -236,6 +240,57 @@ static void F3DEX3_TriFan(u32 w0, u32 w1)
 	gSPTriangle(vertices.v[0], vertices.v[5], vertices.v[6]);
 }
 
+static void F3DEX3_TriSnake(u32 w0, u32 /*w1 - read explicitly from RDRAM*/)
+{
+	u8 a = w0;
+	if (!(a & 1))
+	{
+		// I am inlining the first loop to follow the GBI documentation
+		// This requires that snake A is initialized with right turn
+		return;
+	}
+
+	u8 b = w0 >> 8;
+	u8 c = w0 >> 16;
+
+	u32 cursor = RSP.PC[RSP.PCi] - 4;
+
+	while (true)
+	{
+		gSPTriangle((a >> 1) & 0x3f, b >> 1, c >> 1);
+		if (a & 0x80)
+		{
+			break;
+		}
+
+		// Snake is layed out in the memory as big endian (SS = TRISNAKE)
+		// SS i0 i1 i2 | i3 i4 i5 i6 | i7  i8 ...
+		// RDRAM is layed out as little endian so we have the XOR with 3
+		// i2 i1 i0 SS | i6 i5 i4 i3 | i10 i9 ...
+		u32 cursorLoc = (cursor++) ^ 3;
+		if (cursorLoc >= RDRAMSize)
+		{
+			break;
+		}
+
+		u8 v = RDRAM[cursorLoc];
+		bool right = v & 1;
+		if (!right)
+		{
+			b = a;
+		}
+		else
+		{
+			c = a;
+		}
+		a = v;
+	}
+
+	RSP.PC[RSP.PCi] = (cursor + 7) & (~7U);
+	RSP.nextCmd = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi]], 24, 8);
+	gSPFlushTriangles();
+}
+
 static void F3DEX3_LightToRDP(u32 w0, u32 w1)
 {
 	// unsupported, i do not know what this is for
@@ -252,6 +307,11 @@ static void F3DEX3_Memset(u32 w0, u32 w1)
 	u32 addr = w1;
 	u32 length = w0 & 0x00FFFFFF;
 	gDPMemset(value, addr, length);
+}
+
+static void F3DEX3_Mtx(u32 w0, u32 w1)
+{
+	gSPMatrix(w1, _SHIFTR(w0, 0, 8) ^ G_MTX_PUSH ^ G_MTX_LOAD);
 }
 
 void F3DEX3_Init()
@@ -273,7 +333,14 @@ void F3DEX3_Init()
 	GBI_SetGBI(G_LOAD_UCODE, F3DEX2_LOAD_UCODE, F3DEX_Load_uCode);
 	GBI_SetGBI(G_MOVEMEM, F3DEX2_MOVEMEM, F3DEX3_MoveMem);
 	GBI_SetGBI(G_MOVEWORD, F3DEX2_MOVEWORD, F3DEX3_MoveWord);
-	GBI_SetGBI(G_MTX, F3DEX2_MTX, F3DEX2_Mtx);
+	if (GBI.f3dex3Version() > 0)
+	{
+		GBI_SetGBI(G_MTX, F3DEX2_MTX, F3DEX3_Mtx);
+	}
+	else
+	{
+		GBI_SetGBI(G_MTX, F3DEX2_MTX, F3DEX2_Mtx);
+	}
 	GBI_SetGBI(G_GEOMETRYMODE, F3DEX2_GEOMETRYMODE, F3DEX2_GeometryMode);
 	GBI_SetGBI(G_POPMTX, F3DEX2_POPMTX, F3DEX2_PopMtx);
 	GBI_SetGBI(G_TEXTURE, F3DEX2_TEXTURE, F3DEX2_Texture);
@@ -288,8 +355,16 @@ void F3DEX3_Init()
 	GBI_SetGBI(G_TRI1, F3DEX2_TRI1, F3DEX2_Tri1);
 	GBI_SetGBI(G_TRI2, F3DEX2_TRI2, F3DEX_Tri2);
 	GBI_SetGBI(G_QUAD, F3DEX2_QUAD, F3DEX2_Quad);
-	GBI_SetGBI(G_TRISTRIP, F3DEX3_TRISTRIP, F3DEX3_TriStrip);
-	GBI_SetGBI(G_TRIFAN, F3DEX3_TRIFAN, F3DEX3_TriFan);
+	if (GBI.f3dex3Version() > 0)
+	{
+		GBI_SetGBI(G_TRISTRIP, F3DEX3_B_TRISNAKE, F3DEX3_TriSnake);
+		GBI_SetGBI(G_SPNOOP, F3DEX3_B_TRI_NOOP, F3D_SPNoOp);
+	}
+	else
+	{
+		GBI_SetGBI(G_TRISTRIP, F3DEX3_TRISTRIP, F3DEX3_TriStrip);
+		GBI_SetGBI(G_TRIFAN, F3DEX3_TRIFAN, F3DEX3_TriFan);
+	}
 	GBI_SetGBI(G_LIGHTTORDP, F3DEX3_LIGHTTORDP, F3DEX3_LightToRDP);
 	GBI_SetGBI(G_RELSEGMENT, F3DEX3_RELSEGMENT, F3DEX3_RelSegment);
 	GBI_SetGBI(G_SPECIAL_1, F3DEX3_MEMSET, F3DEX3_Memset);
