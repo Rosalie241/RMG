@@ -156,6 +156,9 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::GUI_LastUpdateCheck:
         setting = {SETTING_SECTION_GUI, "LastUpdateCheck", std::string("")};
         break;
+    case SettingsID::GUI_ConfirmExitWhileInGame:
+        setting = {SETTING_SECTION_GUI, "ConfirmExitWhileInGame", true};
+        break;
     case SettingsID::GUI_DiscordRpc:
         setting = {SETTING_SECTION_GUI, "DiscordRpc", true};
         break;
