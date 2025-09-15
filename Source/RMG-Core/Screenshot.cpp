@@ -35,6 +35,7 @@ CORE_EXPORT bool CoreTakeScreenshot(void)
     {
         error = "CoreTakeScreenshot M64P::Core.DoCommand(M64CMD_TAKE_NEXT_SCREENSHOT) Failed: ";
         error += m64p::Core.ErrorMessage(ret);
+        CoreSetError(error);
     }
 
     return ret == M64ERR_SUCCESS;
