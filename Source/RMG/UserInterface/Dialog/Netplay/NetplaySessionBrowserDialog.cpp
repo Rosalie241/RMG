@@ -381,7 +381,7 @@ void NetplaySessionBrowserDialog::on_webSocket_textMessageReceived(QString messa
                                                             session.value("features").toObject().value("cpu_emulator").toString(),
                                                             session.value("features").toObject().value("rsp_plugin").toString(),
                                                             session.value("features").toObject().value("gfx_plugin").toString(),
-                                                            this->webSocket->requestUrl().toString());
+                                                            this->webSocket->requestUrl());
             }
 
             // we're done refreshing the sessions
