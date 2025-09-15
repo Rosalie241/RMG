@@ -363,6 +363,8 @@ void NetplaySessionBrowserDialog::on_webSocket_textMessageReceived(QString messa
 
     QString type = json.value("type").toString();
 
+    bool dispatcher = NetplayCommon::IsServerDispatcher(this->serverComboBox);
+
     if (type == "reply_get_rooms")
     {
         if (json.value("accept").toInt() == 0)
@@ -385,7 +387,7 @@ void NetplaySessionBrowserDialog::on_webSocket_textMessageReceived(QString messa
             }
 
             // we're done refreshing the sessions
-            if (!NetplayCommon::IsServerDispatcher(this->serverComboBox))
+            if (!dispatcher)
             {
                 this->sessionBrowserWidget->RefreshDone();
             }
@@ -410,7 +412,10 @@ void NetplaySessionBrowserDialog::on_webSocket_textMessageReceived(QString messa
         }
     }
 
-    this->dispatcherMoveThroughList = true;
+    if (dispatcher)
+    {
+        this->dispatcherMoveThroughList = true;
+    }
 }
 
 void NetplaySessionBrowserDialog::on_webSocket_pong(quint64 elapsedTime, const QByteArray&)
