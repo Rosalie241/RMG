@@ -31,7 +31,7 @@
 // Local Functions
 //
 
-static bool get_emulation_state(m64p_emu_state* state)
+static bool get_emulation_state(m64p_emu_state& state)
 {
     std::string error;
     m64p_error ret;
@@ -41,7 +41,7 @@ static bool get_emulation_state(m64p_emu_state* state)
         return false;
     }
 
-    ret = m64p::Core.DoCommand(M64CMD_CORE_STATE_QUERY, M64CORE_EMU_STATE, state);
+    ret = m64p::Core.DoCommand(M64CMD_CORE_STATE_QUERY, M64CORE_EMU_STATE, &state);
     if (ret != M64ERR_SUCCESS)
     {
         error = "get_emulation_state m64p::Core.DoCommand(M64CMD_CORE_STATE_QUERY) Failed: ";
@@ -418,11 +418,11 @@ CORE_EXPORT bool CoreResetEmulation(bool hard)
 CORE_EXPORT bool CoreIsEmulationRunning(void)
 {
     m64p_emu_state state = M64EMU_STOPPED;
-    return get_emulation_state(&state) && state == M64EMU_RUNNING;
+    return get_emulation_state(state) && state == M64EMU_RUNNING;
 }
 
 CORE_EXPORT bool CoreIsEmulationPaused(void)
 {
     m64p_emu_state state = M64EMU_STOPPED;
-    return get_emulation_state(&state) && state == M64EMU_PAUSED;
+    return get_emulation_state(state) && state == M64EMU_PAUSED;
 }
