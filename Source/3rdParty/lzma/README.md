@@ -1,2 +1,2 @@
-# LZMA SDK v24.09
+# LZMA SDK v25.01
 Downloaded from https://www.7-zip.org/sdk.html
