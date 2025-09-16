@@ -139,7 +139,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     void initializeEmulationThread(void);
     void connectEmulationThreadSignals(void);
     void launchEmulationThread(QString cartRom, QString address, int port, int player);
-    void launchEmulationThread(QString cartRom, QString diskRom = "", bool refreshRomListAfterEmulation = false, int slot = -1, bool netplay = false);
+    void launchEmulationThread(QString cartRom, QString diskRom = "", bool refreshRomListAfterEmulation = false, int slot = -1, bool netplay = false, bool dragdrop = false);
 
     QString getSaveStateSlotDateTimeText(QAction* action);
     QString getSaveStateSlotText(QAction* action, int slot);

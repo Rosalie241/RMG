@@ -680,7 +680,7 @@ void MainWindow::launchEmulationThread(QString cartRom, QString address, int por
     this->launchEmulationThread(cartRom, "", false, -1, true);
 }
 
-void MainWindow::launchEmulationThread(QString cartRom, QString diskRom, bool refreshRomListAfterEmulation, int slot, bool netplay)
+void MainWindow::launchEmulationThread(QString cartRom, QString diskRom, bool refreshRomListAfterEmulation, int slot, bool netplay, bool dragdrop)
 {
 #ifdef NETPLAY
     if (this->netplaySessionDialog != nullptr && !netplay)
@@ -690,7 +690,7 @@ void MainWindow::launchEmulationThread(QString cartRom, QString diskRom, bool re
     }
 #endif // NETPLAY
 
-    if (this->emulationThread->isRunning())
+    if (!dragdrop && this->emulationThread->isRunning())
     {
         this->showErrorMessage("EmulationThread::run Failed", "Cannot start emulation when emulation is already running or being started");
         return;
@@ -1435,6 +1435,13 @@ void MainWindow::on_EventFilter_FileDropped(QDropEvent *event)
     bool refreshRomList  = false;
     QString file;
 
+    // when we're still opening the ROM while emulation is running,
+    // ignore the event
+    if (this->emulationThread->isRunning() && !CoreHasRomOpen())
+    {
+        return;
+    }
+
     if (inEmulation && confirmDragDrop)
     {
         QMessageBox::StandardButton reply = QMessageBox::question(this, "",
@@ -1460,7 +1467,7 @@ void MainWindow::on_EventFilter_FileDropped(QDropEvent *event)
         refreshRomList = this->ui_RefreshRomListAfterEmulation;
     }
 
-    this->launchEmulationThread(file, "", refreshRomList);
+    this->launchEmulationThread(file, "", refreshRomList, -1, false, true);
 #endif // DRAG_DROP
 }
 
