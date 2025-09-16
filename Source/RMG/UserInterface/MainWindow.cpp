@@ -690,6 +690,12 @@ void MainWindow::launchEmulationThread(QString cartRom, QString diskRom, bool re
     }
 #endif // NETPLAY
 
+    if (this->emulationThread->isRunning())
+    {
+        this->showErrorMessage("EmulationThread::run Failed", "Cannot start emulation when emulation is already running or being started");
+        return;
+    }
+
     CoreSettingsSave();
 
     if (this->emulationThread->isRunning())
