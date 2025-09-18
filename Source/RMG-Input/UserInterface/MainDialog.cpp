@@ -141,15 +141,15 @@ void MainDialog::openInputDevice(SDLDevice device)
     }
 
     int controllerMode = CoreSettingsGetIntValue(SettingsID::Input_ControllerMode);
-    if ((controllerMode == 0 && SDL_IsGameController(device.number) == SDL_TRUE) ||
+    if ((controllerMode == 0 && SDL_IsGamepad(device.number) == true) ||
         (controllerMode == 2))
     {
         this->currentJoystick = nullptr;
-        this->currentController = SDL_GameControllerOpen(device.number);
+        this->currentController = SDL_OpenGamepad(device.number);
     }
     else if (controllerMode == 0 || controllerMode == 1)
     {
-        this->currentJoystick = SDL_JoystickOpen(device.number);
+        this->currentJoystick = SDL_OpenJoystick(device.number);
         this->currentController = nullptr;
     }
 
@@ -164,13 +164,13 @@ void MainDialog::closeInputDevice()
 {
     if (this->currentJoystick != nullptr)
     {
-        SDL_JoystickClose(this->currentJoystick);
+        SDL_CloseJoystick(this->currentJoystick);
         this->currentJoystick = nullptr;
     }
 
     if (this->currentController != nullptr)
     {
-        SDL_GameControllerClose(this->currentController);
+        SDL_CloseGamepad(this->currentController);
         this->currentController = nullptr;
     }
 }
@@ -205,8 +205,8 @@ void MainDialog::on_InputPollTimer_triggered()
 
     // check if controller has been disconnected,
     // if so, keep trying to re-open it
-    if ((this->currentJoystick != nullptr && !SDL_JoystickGetAttached(this->currentJoystick)) ||
-        (this->currentController != nullptr && !SDL_GameControllerGetAttached(this->currentController)))
+    if ((this->currentJoystick != nullptr && !SDL_JoystickConnected(this->currentJoystick)) ||
+        (this->currentController != nullptr && !SDL_GamepadConnected(this->currentController)))
     {
         this->closeInputDevice();
         this->openInputDevice(this->currentDevice);
@@ -214,7 +214,7 @@ void MainDialog::on_InputPollTimer_triggered()
 
     // process SDL events
     SDL_Event event;
-    while (SDL_PeepEvents(&event, 1, SDL_GETEVENT, 0, SDL_LASTEVENT) == 1)
+    while (SDL_PeepEvents(&event, 1, SDL_GETEVENT, 0, SDL_EVENT_LAST) == 1)
     {
         controllerWidget->on_MainDialog_SdlEvent(&event);
     }
@@ -356,14 +356,14 @@ void MainDialog::on_EventFilter_KeyPressed(QKeyEvent *event)
 
     SDL_KeyboardEvent keyboardEvent;
     keyboardEvent.state = SDL_PRESSED;
-    keyboardEvent.type = SDL_KEYDOWN;
+    keyboardEvent.type = SDL_EVENT_KEY_DOWN;
     keyboardEvent.keysym.scancode = (SDL_Scancode)key;
     keyboardEvent.keysym.sym = (SDL_Keycode)key;
     keyboardEvent.keysym.mod = mod;
 
     SDL_Event sdlEvent;
     sdlEvent.key = keyboardEvent;
-    sdlEvent.type = SDL_KEYDOWN;
+    sdlEvent.type = SDL_EVENT_KEY_DOWN;
 
     SDL_PeepEvents(&sdlEvent, 1, SDL_ADDEVENT, 0, 0);
 }
@@ -375,14 +375,14 @@ void MainDialog::on_EventFilter_KeyReleased(QKeyEvent *event)
 
     SDL_KeyboardEvent keyboardEvent;
     keyboardEvent.state = SDL_RELEASED;
-    keyboardEvent.type = SDL_KEYUP;
+    keyboardEvent.type = SDL_EVENT_KEY_UP;
     keyboardEvent.keysym.scancode = (SDL_Scancode)key;
     keyboardEvent.keysym.sym = (SDL_Keycode)key;
     keyboardEvent.keysym.mod = mod;
 
     SDL_Event sdlEvent;
     sdlEvent.key = keyboardEvent;
-    sdlEvent.type = SDL_KEYUP;
+    sdlEvent.type = SDL_EVENT_KEY_UP;
 
     SDL_PeepEvents(&sdlEvent, 1, SDL_ADDEVENT, 0, 0);
 }

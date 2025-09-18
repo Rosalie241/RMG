@@ -204,7 +204,7 @@ static void (*l_DebugCallback)(void *, int, const char *) = nullptr;
 static void *l_DebugCallContext                           = nullptr;
 
 // keyboard state
-static bool l_KeyboardState[SDL_NUM_SCANCODES];
+static bool l_KeyboardState[SDL_SCANCODE_COUNT];
 
 // config GUI state
 static bool l_IsConfigGuiOpen = false;
@@ -509,19 +509,19 @@ static void setup_device_automatic(int num, InputProfile* profile)
     }
 
     bool foundSdlDevice                   = false;
-    SDL_GameController* sdlGameController = nullptr;
+    SDL_Gamepad* sdlGameController = nullptr;
     SDL_Joystick* sdlJoystick             = nullptr;
     std::string sdlDeviceName;
 
     for (int i = (previousSdlDeviceNum + 1); i < SDL_NumJoysticks(); i++)
     {
-        if (SDL_IsGameController(i))
+        if (SDL_IsGamepad(i))
         {
-            sdlGameController = SDL_GameControllerOpen(i);
+            sdlGameController = SDL_OpenGamepad(i);
             if (sdlGameController != nullptr)
             {
-                sdlDeviceName = SDL_GameControllerName(sdlGameController);
-                SDL_GameControllerClose(sdlGameController);
+                sdlDeviceName = SDL_GetGamepadName(sdlGameController);
+                SDL_CloseGamepad(sdlGameController);
                 profile->DeviceNum   = i;
                 profile->DeviceName  = sdlDeviceName;
                 previousSdlDeviceNum = i;
@@ -531,11 +531,11 @@ static void setup_device_automatic(int num, InputProfile* profile)
         }
         else
         {
-            sdlJoystick = SDL_JoystickOpen(i);
+            sdlJoystick = SDL_OpenJoystick(i);
             if (sdlJoystick != nullptr)
             {
-                sdlDeviceName = SDL_JoystickName(sdlJoystick);
-                SDL_JoystickClose(sdlJoystick);
+                sdlDeviceName = SDL_GetJoystickName(sdlJoystick);
+                SDL_CloseJoystick(sdlJoystick);
                 profile->DeviceNum   = i;
                 profile->DeviceName  = sdlDeviceName;
                 previousSdlDeviceNum = i;
@@ -568,7 +568,7 @@ static void setup_device_automatic(int num, InputProfile* profile)
 static void open_controllers(void)
 {
     // force re-fresh joystick list
-    SDL_JoystickUpdate();
+    SDL_UpdateJoysticks();
 
     for (int i = 0; i < NUM_CONTROLLERS; i++)
     {
@@ -613,16 +613,16 @@ static int get_button_state(InputProfile* profile, const InputMapping* inputMapp
             {
                 if (allPressed && i > 0)
                 {
-                    state &= SDL_GameControllerGetButton(profile->InputDevice.GetGameControllerHandle(), (SDL_GameControllerButton)data);
+                    state &= SDL_GetGamepadButton(profile->InputDevice.GetGameControllerHandle(), (SDL_GamepadButton)data);
                 }
                 else
                 {
-                    state |= SDL_GameControllerGetButton(profile->InputDevice.GetGameControllerHandle(), (SDL_GameControllerButton)data);
+                    state |= SDL_GetGamepadButton(profile->InputDevice.GetGameControllerHandle(), (SDL_GamepadButton)data);
                 }
             } break;
             case InputType::GamepadAxis:
             {
-                int axis_value = SDL_GameControllerGetAxis(profile->InputDevice.GetGameControllerHandle(), (SDL_GameControllerAxis)data);
+                int axis_value = SDL_GetGamepadAxis(profile->InputDevice.GetGameControllerHandle(), (SDL_GamepadAxis)data);
                 if (allPressed && i > 0)
                 {
                     state &= (abs(axis_value) >= (SDL_AXIS_PEAK / 2) && (extraData ? axis_value > 0 : axis_value < 0)) ? 1 : 0;
@@ -636,27 +636,27 @@ static int get_button_state(InputProfile* profile, const InputMapping* inputMapp
             {
                 if (allPressed && i > 0)
                 {
-                    state &= SDL_JoystickGetButton(profile->InputDevice.GetJoystickHandle(), data);
+                    state &= SDL_GetJoystickButton(profile->InputDevice.GetJoystickHandle(), data);
                 }
                 else
                 {
-                    state |= SDL_JoystickGetButton(profile->InputDevice.GetJoystickHandle(), data);
+                    state |= SDL_GetJoystickButton(profile->InputDevice.GetJoystickHandle(), data);
                 }
             } break;
             case InputType::JoystickHat:
             {
                 if (allPressed && i > 0)
                 {
-                    state &= (SDL_JoystickGetHat(profile->InputDevice.GetJoystickHandle(), data) & extraData) ? 1 : 0;
+                    state &= (SDL_GetJoystickHat(profile->InputDevice.GetJoystickHandle(), data) & extraData) ? 1 : 0;
                 }
                 else
                 {
-                    state |= (SDL_JoystickGetHat(profile->InputDevice.GetJoystickHandle(), data) & extraData) ? 1 : 0;
+                    state |= (SDL_GetJoystickHat(profile->InputDevice.GetJoystickHandle(), data) & extraData) ? 1 : 0;
                 }
             } break;
             case InputType::JoystickAxis:
             {
-                int axis_value = SDL_JoystickGetAxis(profile->InputDevice.GetJoystickHandle(), data);
+                int axis_value = SDL_GetJoystickAxis(profile->InputDevice.GetJoystickHandle(), data);
                 if (allPressed && i > 0)
                 {
                     state &= (abs(axis_value) >= (SDL_AXIS_PEAK / 2) && (extraData ? axis_value > 0 : axis_value < 0)) ? 1 : 0;
@@ -706,11 +706,11 @@ static double get_axis_state(InputProfile* profile, const InputMapping* inputMap
         {
             case InputType::GamepadButton:
             {
-                button_state |= SDL_GameControllerGetButton(profile->InputDevice.GetGameControllerHandle(), (SDL_GameControllerButton)data);
+                button_state |= SDL_GetGamepadButton(profile->InputDevice.GetGameControllerHandle(), (SDL_GamepadButton)data);
             } break;
             case InputType::GamepadAxis:
             {
-                double axis_value = SDL_GameControllerGetAxis(profile->InputDevice.GetGameControllerHandle(), (SDL_GameControllerAxis)data);
+                double axis_value = SDL_GetGamepadAxis(profile->InputDevice.GetGameControllerHandle(), (SDL_GamepadAxis)data);
                 if (axis_value < -32767.0) axis_value = -32767.0;
                 if (extraData ? axis_value > 0 : axis_value < 0)
                 {
@@ -721,15 +721,15 @@ static double get_axis_state(InputProfile* profile, const InputMapping* inputMap
             } break;
             case InputType::JoystickButton:
             {
-                button_state |= SDL_JoystickGetButton(profile->InputDevice.GetJoystickHandle(), data);
+                button_state |= SDL_GetJoystickButton(profile->InputDevice.GetJoystickHandle(), data);
             } break;
             case InputType::JoystickHat:
             {
-                button_state |= (SDL_JoystickGetHat(profile->InputDevice.GetJoystickHandle(), data) & extraData) ? 1 : 0;
+                button_state |= (SDL_GetJoystickHat(profile->InputDevice.GetJoystickHandle(), data) & extraData) ? 1 : 0;
             } break;
             case InputType::JoystickAxis:
             {
-                double axis_value = SDL_JoystickGetAxis(profile->InputDevice.GetJoystickHandle(), data);
+                double axis_value = SDL_GetJoystickAxis(profile->InputDevice.GetJoystickHandle(), data);
                 if (axis_value < -32767.0) axis_value = -32767.0;
                 if (extraData ? axis_value > 0 : axis_value < 0)
                 {
@@ -936,7 +936,7 @@ static void sdl_init()
     std::string debugMessage;
     int ret = -1;
 
-    for (const int subsystem : {SDL_INIT_GAMECONTROLLER, SDL_INIT_AUDIO, SDL_INIT_VIDEO, SDL_INIT_HAPTIC})
+    for (const int subsystem : {SDL_INIT_GAMEPAD, SDL_INIT_AUDIO, SDL_INIT_VIDEO, SDL_INIT_HAPTIC})
     {
         if (!SDL_WasInit(subsystem))
         {
@@ -950,10 +950,10 @@ static void sdl_init()
     // try to load SDL_GameControllerDB when the file exists
     if (std::filesystem::is_regular_file(gameControllerDbPath))
     {
-        ret = SDL_GameControllerAddMappingsFromFile(gameControllerDbPath.string().c_str());
+        ret = SDL_AddGamepadMappingsFromFile(gameControllerDbPath.string().c_str());
         if (ret == -1)
         {
-            debugMessage = "sdl_init(): SDL_GameControllerAddMappingsFromFile Failed: ";
+            debugMessage = "sdl_init(): SDL_AddGamepadMappingsFromFile Failed: ";
             debugMessage += SDL_GetError();
             PluginDebugMessage(M64MSG_WARNING, debugMessage);
         }
@@ -969,7 +969,7 @@ static void sdl_init()
 
 static void sdl_quit()
 {
-    for (const int subsystem : {SDL_INIT_GAMECONTROLLER, SDL_INIT_HAPTIC})
+    for (const int subsystem : {SDL_INIT_GAMEPAD, SDL_INIT_HAPTIC})
     {
         if (SDL_WasInit(subsystem))
         {
@@ -1309,7 +1309,7 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
 
 EXPORT void CALL InitiateControllers(CONTROL_INFO ControlInfo)
 {
-    for (int i = 0; i < SDL_NUM_SCANCODES; i++)
+    for (int i = 0; i < SDL_SCANCODE_COUNT; i++)
     {
         l_KeyboardState[i] = 0;
     }

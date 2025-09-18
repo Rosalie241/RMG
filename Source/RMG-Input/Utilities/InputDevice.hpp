@@ -30,7 +30,7 @@ public:
     void SetSDLThread(Thread::SDLThread* sdlThread);
 
     SDL_Joystick*       GetJoystickHandle(void);
-    SDL_GameController* GetGameControllerHandle(void);
+    SDL_Gamepad* GetGameControllerHandle(void);
 
     bool StartRumble(void);
     bool StopRumble(void);
@@ -52,7 +52,7 @@ public:
 
 private:
     SDL_Joystick*       joystick = nullptr;
-    SDL_GameController* gameController = nullptr;
+    SDL_Gamepad* gameController = nullptr;
 
     bool hasOpenDevice = false;
     bool isOpeningDevice = false;

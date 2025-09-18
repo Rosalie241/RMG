@@ -260,7 +260,7 @@ static bool init_mic(void)
     SDL_AudioSpec desiredAudioSpec;
 
     desiredAudioSpec.freq     = 44100;
-    desiredAudioSpec.format   = AUDIO_S16SYS;
+    desiredAudioSpec.format   = SDL_AUDIO_S16;
     desiredAudioSpec.channels = 1;
     desiredAudioSpec.samples  = 1024;
     desiredAudioSpec.callback = nullptr;

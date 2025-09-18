@@ -1022,10 +1022,10 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
 
     switch (event->type)
     {
-        case SDL_CONTROLLERBUTTONDOWN:
-        case SDL_CONTROLLERBUTTONUP:
-        case SDL_JOYBUTTONDOWN:
-        case SDL_JOYBUTTONUP:
+        case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+        case SDL_EVENT_GAMEPAD_BUTTON_UP:
+        case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
+        case SDL_EVENT_JOYSTICK_BUTTON_UP:
         { // gamepad & joystick button
             SDL_JoystickID joystickId = -1;
             InputType inputType = InputType::Invalid;
@@ -1033,8 +1033,8 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             bool sdlButtonPressed = false;
             QString sdlButtonName;
 
-            if ((event->type == SDL_CONTROLLERBUTTONDOWN) ||
-                (event->type == SDL_CONTROLLERBUTTONUP))
+            if ((event->type == SDL_EVENT_GAMEPAD_BUTTON_DOWN) ||
+                (event->type == SDL_EVENT_GAMEPAD_BUTTON_UP))
             { // gamepad button
                 if (!this->isCurrentJoystickGameController &&
                     this->optionsDialogSettings.FilterEventsForButtons)
@@ -1045,11 +1045,11 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
                 joystickId = event->cbutton.which;
                 inputType = InputType::GamepadButton;
                 sdlButton = event->cbutton.button;
-                sdlButtonPressed = (event->type == SDL_CONTROLLERBUTTONDOWN);
-                sdlButtonName = SDL_GameControllerGetStringForButton((SDL_GameControllerButton)sdlButton);
+                sdlButtonPressed = (event->type == SDL_EVENT_GAMEPAD_BUTTON_DOWN);
+                sdlButtonName = SDL_GetGamepadStringForButton((SDL_GamepadButton)sdlButton);
             }
-            else if ((event->type == SDL_JOYBUTTONDOWN) ||
-                     (event->type == SDL_JOYBUTTONUP))
+            else if ((event->type == SDL_EVENT_JOYSTICK_BUTTON_DOWN) ||
+                     (event->type == SDL_EVENT_JOYSTICK_BUTTON_UP))
             { // joystick button
                 if (this->isCurrentJoystickGameController &&
                     this->optionsDialogSettings.FilterEventsForButtons)
@@ -1060,7 +1060,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
                 joystickId = event->jbutton.which;
                 inputType = InputType::JoystickButton;
                 sdlButton = event->jbutton.button;
-                sdlButtonPressed = (event->type == SDL_JOYBUTTONDOWN);
+                sdlButtonPressed = (event->type == SDL_EVENT_JOYSTICK_BUTTON_DOWN);
                 sdlButtonName = "button " + QString::number(sdlButton);
             }
 
@@ -1142,7 +1142,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             }
         } break;
 
-        case SDL_JOYHATMOTION:
+        case SDL_EVENT_JOYSTICK_HAT_MOTION:
         { // joystick hat
             SDL_JoystickID joystickId = event->jhat.which;
             InputType inputType = InputType::JoystickHat;
@@ -1279,8 +1279,8 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             }
         } break;
 
-        case SDL_CONTROLLERAXISMOTION:
-        case SDL_JOYAXISMOTION:
+        case SDL_EVENT_GAMEPAD_AXIS_MOTION:
+        case SDL_EVENT_JOYSTICK_AXIS_MOTION:
         { // gamepad & joystick axis
             SDL_JoystickID joystickId = -1;
             InputType inputType = InputType::Invalid;
@@ -1288,7 +1288,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             int sdlAxisValue = 0;
             QString sdlAxisName;
 
-            if (event->type == SDL_CONTROLLERAXISMOTION)
+            if (event->type == SDL_EVENT_GAMEPAD_AXIS_MOTION)
             { // gamepad axis
                 if (!this->isCurrentJoystickGameController &&
                     this->optionsDialogSettings.FilterEventsForAxis)
@@ -1300,7 +1300,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
                 inputType = InputType::GamepadAxis;
                 sdlAxis = event->caxis.axis;
                 sdlAxisValue = event->caxis.value;
-                sdlAxisName = SDL_GameControllerGetStringForAxis((SDL_GameControllerAxis)sdlAxis);
+                sdlAxisName = SDL_GetGamepadStringForAxis((SDL_GamepadAxis)sdlAxis);
                 sdlAxisName += sdlAxisValue > 0 ? "+" : "-";
             }
             else
@@ -1395,8 +1395,8 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             }
         } break;
 
-        case SDL_KEYDOWN:
-        case SDL_KEYUP:
+        case SDL_EVENT_KEY_DOWN:
+        case SDL_EVENT_KEY_UP:
         { // keyboard button
 
             // make sure a keyboard is selected
@@ -1406,7 +1406,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             }
 
             const SDL_Scancode sdlButton = (SDL_Scancode)event->key.keysym.scancode;
-            const bool sdlButtonPressed = (event->type == SDL_KEYDOWN);
+            const bool sdlButtonPressed = (event->type == SDL_EVENT_KEY_DOWN);
 
             // handle button widget
             if (this->currentButton != nullptr)
@@ -1949,7 +1949,7 @@ void ControllerWidget::SetIsCurrentJoystickGameController(bool isGameController)
     this->isCurrentJoystickGameController = isGameController;
 }
 
-void ControllerWidget::SetCurrentJoystick(SDL_Joystick* joystick, SDL_GameController* controller)
+void ControllerWidget::SetCurrentJoystick(SDL_Joystick* joystick, SDL_Gamepad* controller)
 {
     this->currentJoystick   = joystick;
     this->currentController = controller;

@@ -105,15 +105,15 @@ void HotkeysDialog::on_MainDialog_SdlEvent(SDL_Event* event)
         default:
             break;
 
-        case SDL_CONTROLLERBUTTONDOWN:
-        case SDL_JOYBUTTONDOWN:
+        case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+        case SDL_EVENT_JOYSTICK_BUTTON_DOWN:
         {
             SDL_JoystickID joystickId = -1;
             InputType inputType = InputType::Invalid;
             int sdlButton = 0;
             QString sdlButtonName;
 
-            if (event->type == SDL_CONTROLLERBUTTONDOWN)
+            if (event->type == SDL_EVENT_GAMEPAD_BUTTON_DOWN)
             { // gamepad button
                 if (!this->isCurrentJoystickGameController &&
                     this->filterEventsForButtons)
@@ -124,7 +124,7 @@ void HotkeysDialog::on_MainDialog_SdlEvent(SDL_Event* event)
                 joystickId = event->cbutton.which;
                 inputType = InputType::GamepadButton;
                 sdlButton = event->cbutton.button;
-                sdlButtonName = SDL_GameControllerGetStringForButton((SDL_GameControllerButton)sdlButton);
+                sdlButtonName = SDL_GetGamepadStringForButton((SDL_GamepadButton)sdlButton);
             }
             else
             { // joystick button
@@ -157,12 +157,12 @@ void HotkeysDialog::on_MainDialog_SdlEvent(SDL_Event* event)
             }
         } break;
 
-        case SDL_CONTROLLERBUTTONUP:
-        case SDL_JOYBUTTONUP:
+        case SDL_EVENT_GAMEPAD_BUTTON_UP:
+        case SDL_EVENT_JOYSTICK_BUTTON_UP:
         {
             SDL_JoystickID joystickId = -1;
 
-            if (event->type == SDL_CONTROLLERBUTTONUP)
+            if (event->type == SDL_EVENT_GAMEPAD_BUTTON_UP)
             { // gamepad button
                 if (!this->isCurrentJoystickGameController &&
                     this->filterEventsForButtons)
@@ -198,8 +198,8 @@ void HotkeysDialog::on_MainDialog_SdlEvent(SDL_Event* event)
             }
         } break;
 
-        case SDL_CONTROLLERAXISMOTION:
-        case SDL_JOYAXISMOTION:
+        case SDL_EVENT_GAMEPAD_AXIS_MOTION:
+        case SDL_EVENT_JOYSTICK_AXIS_MOTION:
         { // gamepad & joystick axis
             SDL_JoystickID joystickId = -1;
             InputType inputType = InputType::Invalid;
@@ -207,7 +207,7 @@ void HotkeysDialog::on_MainDialog_SdlEvent(SDL_Event* event)
             int sdlAxisValue = 0;
             QString sdlAxisName;
 
-            if (event->type == SDL_CONTROLLERAXISMOTION)
+            if (event->type == SDL_EVENT_GAMEPAD_AXIS_MOTION)
             { // gamepad axis
                 if (!this->isCurrentJoystickGameController &&
                     this->filterEventsForButtons)
@@ -219,7 +219,7 @@ void HotkeysDialog::on_MainDialog_SdlEvent(SDL_Event* event)
                 inputType = InputType::GamepadAxis;
                 sdlAxis = event->caxis.axis;
                 sdlAxisValue = event->caxis.value;
-                sdlAxisName = SDL_GameControllerGetStringForAxis((SDL_GameControllerAxis)sdlAxis);
+                sdlAxisName = SDL_GetGamepadStringForAxis((SDL_GamepadAxis)sdlAxis);
                 sdlAxisName += sdlAxisValue > 0 ? "+" : "-";
             }
             else

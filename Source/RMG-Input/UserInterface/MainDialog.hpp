@@ -37,7 +37,7 @@ private:
 
     QList<Widget::ControllerWidget*> controllerWidgets;
     SDL_Joystick* currentJoystick         = nullptr;
-    SDL_GameController* currentController = nullptr;
+    SDL_Gamepad* currentController = nullptr;
     SDLDevice currentDevice;
 
     int previousTabWidgetIndex = 0;

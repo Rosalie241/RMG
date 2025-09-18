@@ -35,7 +35,7 @@ SDL_Joystick* InputDevice::GetJoystickHandle()
     return this->joystick;
 }
 
-SDL_GameController* InputDevice::GetGameControllerHandle()
+SDL_Gamepad* InputDevice::GetGameControllerHandle()
 {
     return this->gameController;
 }
@@ -44,11 +44,11 @@ bool InputDevice::StartRumble(void)
 {
     if (this->gameController != nullptr)
     {
-        return SDL_GameControllerRumble(this->gameController, 0xFFFF, 0xFFFF, SDL_HAPTIC_INFINITY) == 0;
+        return SDL_RumbleGamepad(this->gameController, 0xFFFF, 0xFFFF, SDL_HAPTIC_INFINITY) == 0;
     }
     else if (this->joystick != nullptr)
     {
-        return SDL_JoystickRumble(this->joystick, 0xFFFF, 0xFFFF, SDL_HAPTIC_INFINITY) == 0;
+        return SDL_RumbleJoystick(this->joystick, 0xFFFF, 0xFFFF, SDL_HAPTIC_INFINITY) == 0;
     }
 
     return false;
@@ -58,11 +58,11 @@ bool InputDevice::StopRumble(void)
 {
     if (this->gameController != nullptr)
     {
-        return SDL_GameControllerRumble(this->gameController, 0, 0, 0) == 0;
+        return SDL_RumbleGamepad(this->gameController, 0, 0, 0) == 0;
     }
     else if (this->joystick != nullptr)
     {
-        return SDL_JoystickRumble(this->joystick, 0, 0, 0) == 0;
+        return SDL_RumbleJoystick(this->joystick, 0, 0, 0) == 0;
     }
 
     return false;
@@ -70,7 +70,7 @@ bool InputDevice::StopRumble(void)
 
 bool InputDevice::IsAttached(void)
 {
-    return SDL_JoystickGetAttached(this->joystick) == SDL_TRUE;
+    return SDL_JoystickConnected(this->joystick) == true;
 }
 
 bool InputDevice::HasOpenDevice()
@@ -103,13 +103,13 @@ bool InputDevice::CloseDevice()
 {
     if (this->joystick != nullptr)
     {
-        SDL_JoystickClose(this->joystick);
+        SDL_CloseJoystick(this->joystick);
         this->joystick = nullptr;
     }
 
     if (this->gameController != nullptr)
     {
-        SDL_GameControllerClose(this->gameController);
+        SDL_CloseGamepad(this->gameController);
         this->gameController = nullptr;
     }
 
@@ -182,10 +182,10 @@ void InputDevice::on_SDLThread_DeviceSearchFinished(void)
         }
     }
 
-    this->joystick = SDL_JoystickOpen(device.number);
-    if (SDL_IsGameController(device.number))
+    this->joystick = SDL_OpenJoystick(device.number);
+    if (SDL_IsGamepad(device.number))
     {
-        this->gameController = SDL_GameControllerOpen(device.number);
+        this->gameController = SDL_OpenGamepad(device.number);
     }
 
     this->isOpeningDevice = false;

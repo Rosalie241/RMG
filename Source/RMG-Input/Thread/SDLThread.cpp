@@ -61,40 +61,40 @@ void SDLThread::run(void)
             case SDLThreadAction::GetInputDevices:
             {
                 // force re-fresh joystick list
-                SDL_JoystickUpdate();
+                SDL_UpdateJoysticks();
 
                 QString name;
                 QString path;
                 QString serial;
 
-                SDL_GameController* controller;
+                SDL_Gamepad* controller;
                 SDL_Joystick* joystick;
 
                 for (int i = 0; i < SDL_NumJoysticks(); i++)
                 {
-                    if (SDL_IsGameController(i))
+                    if (SDL_IsGamepad(i))
                     {
-                        controller = SDL_GameControllerOpen(i);
+                        controller = SDL_OpenGamepad(i);
                         if (controller == nullptr)
                         { // skip invalid controllers
                             continue;
                         }
-                        name = SDL_GameControllerName(controller);
-                        path = SDL_GameControllerPath(controller);
-                        serial = SDL_GameControllerGetSerial(controller);
-                        SDL_GameControllerClose(controller);
+                        name = SDL_GetGamepadName(controller);
+                        path = SDL_GetGamepadPath(controller);
+                        serial = SDL_GetGamepadSerial(controller);
+                        SDL_CloseGamepad(controller);
                     }
                     else
                     {
-                        joystick = SDL_JoystickOpen(i);
+                        joystick = SDL_OpenJoystick(i);
                         if (joystick == nullptr)
                         { // skip invalid joysticks
                             continue;
                         }
-                        name = SDL_JoystickName(joystick);
-                        path = SDL_JoystickPath(joystick);
-                        serial = SDL_JoystickGetSerial(joystick);
-                        SDL_JoystickClose(joystick);
+                        name = SDL_GetJoystickName(joystick);
+                        path = SDL_GetJoystickPath(joystick);
+                        serial = SDL_GetJoystickSerial(joystick);
+                        SDL_CloseJoystick(joystick);
                     }
 
                     if (name != nullptr)

@@ -107,7 +107,7 @@ private:
     bool isCurrentJoystickGameController = false;
 
     SDL_Joystick* currentJoystick         = nullptr;
-    SDL_GameController* currentController = nullptr;
+    SDL_Gamepad* currentController = nullptr;
 
     int previousProfileComboBoxIndex = -1;
 
@@ -150,7 +150,7 @@ public:
 
     void SetCurrentJoystickID(SDL_JoystickID joystickId);
     void SetIsCurrentJoystickGameController(bool isGameController);
-    void SetCurrentJoystick(SDL_Joystick* joystick, SDL_GameController* controller);
+    void SetCurrentJoystick(SDL_Joystick* joystick, SDL_Gamepad* controller);
 
     void AddUserProfile(QString name, QString section);
     void RemoveUserProfile(QString name, QString section);
