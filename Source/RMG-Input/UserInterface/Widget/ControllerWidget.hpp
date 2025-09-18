@@ -22,7 +22,7 @@ using namespace UserInterface::Widget;
 #include "ui_ControllerWidget.h"
 #include "common.hpp"
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 #include <RMG-Core/RomSettings.hpp>
 #include <RMG-Core/RomHeader.hpp>

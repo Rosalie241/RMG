@@ -27,7 +27,7 @@
 #include <QByteArray>
 #include <QJsonArray>
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 #include "VRUwords.hpp"
 #include "VRU.hpp"

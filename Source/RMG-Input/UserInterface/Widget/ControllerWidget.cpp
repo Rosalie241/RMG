@@ -23,7 +23,7 @@
 #include <QPainter>
 #include <QPixmap>
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 using namespace UserInterface::Widget;
 

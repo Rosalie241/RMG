@@ -12,7 +12,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 #include <RMG-Core/Emulation.hpp>
 #include <RMG-Core/Settings.hpp>

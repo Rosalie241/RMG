@@ -9,7 +9,7 @@
  */
 #include "SDLThread.hpp"
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 using namespace Thread;
 

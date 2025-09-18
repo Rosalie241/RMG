@@ -13,7 +13,7 @@
 
 #include <RMG-Core/Core.hpp>
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 #include <QTimer>
 
 Q_DECLARE_METATYPE(SDLDevice);

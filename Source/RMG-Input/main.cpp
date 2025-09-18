@@ -40,7 +40,7 @@
 
 #include <QGuiApplication>
 #include <QApplication>
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 #include <algorithm>
 #include <chrono>
