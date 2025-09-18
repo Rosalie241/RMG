@@ -6,7 +6,6 @@ project(RMG-Core)
 set(CMAKE_CXX_STANDARD 20)
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(SDL2 REQUIRED sdl2)
 pkg_check_modules(MINIZIP REQUIRED minizip)
 if (WIN32)
     pkg_check_modules(ICONV REQUIRED iconv)
