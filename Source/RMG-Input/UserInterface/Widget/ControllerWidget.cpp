@@ -1065,10 +1065,10 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             }
 
             // make sure we have the right joystick
-            if (joystickId != this->currentJoystickId)
+            /*if (joystickId != this->currentJoystickId)
             {
                 break;
-            }
+            }*/
 
             // handle button widget
             if (this->currentButton != nullptr)

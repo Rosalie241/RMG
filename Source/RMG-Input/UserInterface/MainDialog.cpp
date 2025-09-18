@@ -140,7 +140,7 @@ void MainDialog::openInputDevice(SDLDevice device)
         }
     }
 
-    int controllerMode = CoreSettingsGetIntValue(SettingsID::Input_ControllerMode);
+    int controllerMode = 1; // TODO: CoreSettingsGetIntValue(SettingsID::Input_ControllerMode);
     if ((controllerMode == 0 && SDL_IsGamepad(device.number) == true) ||
         (controllerMode == 2))
     {
