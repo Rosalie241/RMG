@@ -123,7 +123,7 @@ void OptionsDialog::on_changeGameboySaveButton_clicked()
 
 void OptionsDialog::on_testRumbleButton_clicked()
 {
-#if SDL_VERSION_ATLEAST(2,0,18)
+#if SDL_VERSION_ATLEAST(2,0,18) && !SDL_VERSION_ATLEAST(3,0,0) // TODO: port this to SDL3
     if ((this->currentJoystick != nullptr   && SDL_JoystickHasRumble(this->currentJoystick) != true) ||
         (this->currentController != nullptr && SDL_GameControllerHasRumble(this->currentController) != true))
     {

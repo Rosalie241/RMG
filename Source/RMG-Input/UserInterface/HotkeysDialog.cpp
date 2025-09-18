@@ -121,9 +121,9 @@ void HotkeysDialog::on_MainDialog_SdlEvent(SDL_Event* event)
                     return;
                 }
 
-                joystickId = event->cbutton.which;
+                joystickId = event->gbutton.which;
                 inputType = InputType::GamepadButton;
-                sdlButton = event->cbutton.button;
+                sdlButton = event->gbutton.button;
                 sdlButtonName = SDL_GetGamepadStringForButton((SDL_GamepadButton)sdlButton);
             }
             else
@@ -170,7 +170,7 @@ void HotkeysDialog::on_MainDialog_SdlEvent(SDL_Event* event)
                     return;
                 }
 
-                joystickId = event->cbutton.which;
+                joystickId = event->gbutton.which;
             }
             else
             { // joystick button
@@ -215,10 +215,10 @@ void HotkeysDialog::on_MainDialog_SdlEvent(SDL_Event* event)
                     return;
                 }
 
-                joystickId = event->caxis.which;
+                joystickId = event->gaxis.which;
                 inputType = InputType::GamepadAxis;
-                sdlAxis = event->caxis.axis;
-                sdlAxisValue = event->caxis.value;
+                sdlAxis = event->gaxis.axis;
+                sdlAxisValue = event->gaxis.value;
                 sdlAxisName = SDL_GetGamepadStringForAxis((SDL_GamepadAxis)sdlAxis);
                 sdlAxisName += sdlAxisValue > 0 ? "+" : "-";
             }

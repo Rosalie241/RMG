@@ -9,7 +9,7 @@
  */
 #include "QtKeyToSdl2Key.hpp"
 
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 
 using namespace Utilities;
 

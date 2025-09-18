@@ -1042,9 +1042,9 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
                     return;
                 }
 
-                joystickId = event->cbutton.which;
+                joystickId = event->gbutton.which;
                 inputType = InputType::GamepadButton;
-                sdlButton = event->cbutton.button;
+                sdlButton = event->gbutton.button;
                 sdlButtonPressed = (event->type == SDL_EVENT_GAMEPAD_BUTTON_DOWN);
                 sdlButtonName = SDL_GetGamepadStringForButton((SDL_GamepadButton)sdlButton);
             }
@@ -1296,10 +1296,10 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
                     return;
                 }
 
-                joystickId = event->caxis.which;
+                joystickId = event->gaxis.which;
                 inputType = InputType::GamepadAxis;
-                sdlAxis = event->caxis.axis;
-                sdlAxisValue = event->caxis.value;
+                sdlAxis = event->gaxis.axis;
+                sdlAxisValue = event->gaxis.value;
                 sdlAxisName = SDL_GetGamepadStringForAxis((SDL_GamepadAxis)sdlAxis);
                 sdlAxisName += sdlAxisValue > 0 ? "+" : "-";
             }
@@ -1405,7 +1405,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
                 break;
             }
 
-            const SDL_Scancode sdlButton = (SDL_Scancode)event->key.keysym.scancode;
+            const SDL_Scancode sdlButton = (SDL_Scancode)event->key.scancode;
             const bool sdlButtonPressed = (event->type == SDL_EVENT_KEY_DOWN);
 
             // handle button widget

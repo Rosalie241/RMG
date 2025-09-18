@@ -70,11 +70,16 @@ void SDLThread::run(void)
                 SDL_Gamepad* controller;
                 SDL_Joystick* joystick;
 
-                for (int i = 0; i < SDL_NumJoysticks(); i++)
+                int numJoysticks = 0;
+                SDL_JoystickID* joysticks = SDL_GetJoysticks(&numJoysticks);
+
+                for (int i = 0; i < numJoysticks; i++)
                 {
-                    if (SDL_IsGamepad(i))
+                    SDL_JoystickID joystickId = joysticks[i];
+
+                    if (SDL_IsGamepad(joystickId))
                     {
-                        controller = SDL_OpenGamepad(i);
+                        controller = SDL_OpenGamepad(joystickId);
                         if (controller == nullptr)
                         { // skip invalid controllers
                             continue;
@@ -86,7 +91,7 @@ void SDLThread::run(void)
                     }
                     else
                     {
-                        joystick = SDL_OpenJoystick(i);
+                        joystick = SDL_OpenJoystick(joystickId);
                         if (joystick == nullptr)
                         { // skip invalid joysticks
                             continue;

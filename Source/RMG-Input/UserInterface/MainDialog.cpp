@@ -154,8 +154,10 @@ void MainDialog::openInputDevice(SDLDevice device)
     }
 
     this->currentDevice = device;
-    joystickId = SDL_JoystickGetDeviceInstanceID(device.number);
-    controllerWidget->SetCurrentJoystickID(joystickId);
+    // REMOVE THIS HACK AND USE SEPERATE JOYSTICKID ITEM FROM SDLDEVICE
+    // IN THE FUTURE
+    joystickId = device.number;
+    controllerWidget->SetCurrentJoystickID(device.number);
     controllerWidget->SetIsCurrentJoystickGameController(currentController != nullptr);
     controllerWidget->SetCurrentJoystick(this->currentJoystick, this->currentController);
 }
@@ -310,9 +312,11 @@ void MainDialog::on_tabWidget_currentChanged(int index)
     }
 }
 
-void MainDialog::on_SDLThread_DeviceFound(QString name, QString path, QString serial, int number)
+void MainDialog::on_SDLThread_DeviceFound(QString name, QString path, QString serial, SDL_JoystickID joystickId)
 {
-    SDLDevice inputDevice = {name.toStdString(), path.toStdString(), serial.toStdString(), number};
+    // TODO: REMOVE THE JOYSTICKID -> NUMBER HACK
+    // AND USE A SEPERATE TYPE & JOYSTICKID ITEM IN SDLDEVICE
+    SDLDevice inputDevice = {name.toStdString(), path.toStdString(), serial.toStdString(), (int)joystickId};
     this->inputDeviceList.append(inputDevice);
 }
 
@@ -355,11 +359,11 @@ void MainDialog::on_EventFilter_KeyPressed(QKeyEvent *event)
     int mod = Utilities::QtModKeyToSdl2ModKey(event->modifiers());
 
     SDL_KeyboardEvent keyboardEvent;
-    keyboardEvent.state = SDL_PRESSED;
+    keyboardEvent.down = true;
     keyboardEvent.type = SDL_EVENT_KEY_DOWN;
-    keyboardEvent.keysym.scancode = (SDL_Scancode)key;
-    keyboardEvent.keysym.sym = (SDL_Keycode)key;
-    keyboardEvent.keysym.mod = mod;
+    keyboardEvent.scancode = (SDL_Scancode)key;
+    keyboardEvent.key = (SDL_Keycode)key;
+    keyboardEvent.mod = mod;
 
     SDL_Event sdlEvent;
     sdlEvent.key = keyboardEvent;
@@ -374,11 +378,11 @@ void MainDialog::on_EventFilter_KeyReleased(QKeyEvent *event)
     int mod = Utilities::QtModKeyToSdl2ModKey(event->modifiers());
 
     SDL_KeyboardEvent keyboardEvent;
-    keyboardEvent.state = SDL_RELEASED;
+    keyboardEvent.down = false;
     keyboardEvent.type = SDL_EVENT_KEY_UP;
-    keyboardEvent.keysym.scancode = (SDL_Scancode)key;
-    keyboardEvent.keysym.sym = (SDL_Keycode)key;
-    keyboardEvent.keysym.mod = mod;
+    keyboardEvent.scancode = (SDL_Scancode)key;
+    keyboardEvent.key = (SDL_Keycode)key;
+    keyboardEvent.mod = mod;
 
     SDL_Event sdlEvent;
     sdlEvent.key = keyboardEvent;

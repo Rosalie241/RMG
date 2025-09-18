@@ -65,7 +65,7 @@ public slots:
 
     void on_tabWidget_currentChanged(int);
 
-    void on_SDLThread_DeviceFound(QString, QString, QString, int);
+    void on_SDLThread_DeviceFound(QString, QString, QString, SDL_JoystickID);
     void on_SDLThread_DeviceSearchFinished(void);
 
 private slots:

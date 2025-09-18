@@ -500,6 +500,7 @@ static void apply_gameboy_settings(void)
 
 static void setup_device_automatic(int num, InputProfile* profile)
 {
+#if 0 // TODO: port to SDL3
     static int previousSdlDeviceNum = -1;
 
     // reset variable when needed
@@ -563,6 +564,7 @@ static void setup_device_automatic(int num, InputProfile* profile)
             }
         }
     }
+#endif
 }
 
 static void open_controllers(void)

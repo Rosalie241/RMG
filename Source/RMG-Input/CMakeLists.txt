@@ -35,6 +35,7 @@ set(RMG_INPUT_SOURCES
     main.cpp
 )
 
+set(VRU OFF) # TODO: port to SDL3
 if (VRU)
     list(APPEND RMG_INPUT_SOURCES 
         VRU.cpp
