@@ -109,6 +109,11 @@ void SDLThread::run(void)
                 }
                 this->currentAction = SDLThreadAction::None;
                 emit this->OnDeviceSearchFinished();
+
+                if (joysticks != nullptr)
+                {
+                    SDL_free(joysticks);
+                }
             } break;
         }
 

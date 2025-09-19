@@ -712,6 +712,11 @@ static void open_controllers(void)
             open_controller(profile, joysticks, joysticksCount);
         }
     }
+
+    if (joysticks != nullptr)
+    {
+        SDL_free(joysticks);
+    }
 }
 
 static void close_controllers(void)
