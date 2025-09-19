@@ -1,0 +1,7 @@
+usr/bin/RMG
+usr/lib/*/libRMG-Core.so
+usr/lib/*/RMG/
+usr/share/RMG/
+usr/share/applications/com.github.Rosalie241.RMG.desktop
+usr/share/icons/hicolor/scalable/apps/com.github.Rosalie241.RMG.svg
+usr/share/metainfo/com.github.Rosalie241.RMG.metainfo.xml
