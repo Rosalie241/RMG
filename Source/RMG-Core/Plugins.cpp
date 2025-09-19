@@ -530,6 +530,12 @@ CORE_EXPORT bool CoreAttachPlugins(void)
 
     for (int i = 0; i < static_cast<int>(CorePluginType::Count); i++)
     {
+        // TODO: remove hack
+        // it seems that this crashes....
+        // RMG-Audio using SDL2 and RMG-Input using SDL3
+        // do NOT MIX
+        if (plugin_types[i] == M64PLUGIN_AUDIO) continue;
+
         ret = m64p::Core.AttachPlugin(plugin_types[i], get_plugin(static_cast<CorePluginType>(plugin_types[i])).GetHandle());
         if (ret != M64ERR_SUCCESS)
         {
