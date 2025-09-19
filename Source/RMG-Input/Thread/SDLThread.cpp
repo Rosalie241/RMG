@@ -104,7 +104,7 @@ void SDLThread::run(void)
 
                     if (name != nullptr)
                     {
-                        emit this->OnInputDeviceFound(name, path, serial, i);
+                        emit this->OnInputDeviceFound(name, path, serial, joystickId);
                     }
                 }
                 this->currentAction = SDLThreadAction::None;

@@ -98,8 +98,7 @@ struct InputProfile
 
     // input device
     SDL_Joystick* SDLJoystick = nullptr;
-    //SDL_Gamepad* SDLGamepad;
-    //Utilities::InputDevice InputDevice;
+    SDL_Gamepad*  SDLGamepad  = nullptr;
 
     // buttons
     InputMapping Button_A;
@@ -569,34 +568,73 @@ static void setup_device_automatic(int num, InputProfile* profile)
 #endif
 }
 
+static std::string string_from_const_char(const char* str)
+{
+    std::string string;
+    if (str != nullptr)
+    {
+        string = str;
+    }
+    return string;
+}
+
 #include <iostream>
 static void open_controller(InputProfile* profile, SDL_JoystickID* joysticks, int joysticksCount)
 {
     SDL_JoystickID joystickId;
+    SDL_Gamepad* gamepad;
     SDL_Joystick* joystick;
+
+    std::string deviceName;
+    std::string devicePath;
+    std::string deviceSerial;
 
     for (int i = 0; i < joysticksCount; i++)
     {
         joystickId = joysticks[i];
-        joystick = SDL_OpenJoystick(joystickId);
 
-        if (joystick == nullptr)
+        if (SDL_IsGamepad(joystickId))
         {
-            std::cout << "open_controller: failed to open device!" << std::endl;
-            continue;
+            joystick = SDL_OpenJoystick(joystickId);
+            gamepad  = SDL_OpenGamepad(joystickId);
+            if (gamepad == nullptr)
+            {
+                std::cout << "open_controller: failed to open gamepad" << std::endl;
+                continue;
+            }
+
+            deviceName = string_from_const_char(SDL_GetGamepadName(gamepad));
+            devicePath = string_from_const_char(SDL_GetGamepadPath(gamepad));
+            deviceSerial = string_from_const_char(SDL_GetGamepadSerial(gamepad));
+        }
+        else
+        {
+            gamepad  = nullptr;
+            joystick = SDL_OpenJoystick(joystickId);
+            if (joystick == nullptr)
+            {
+                std::cout << "open_controller: failed to open device!" << std::endl;
+                continue;
+            }
+
+            deviceName = string_from_const_char(SDL_GetJoystickName(joystick));
+            devicePath = string_from_const_char(SDL_GetJoystickPath(joystick));
+            deviceSerial = string_from_const_char(SDL_GetJoystickSerial(joystick));
         }
 
-        /*if (profile->DeviceName == SDL_GetJoystickName(joystick) &&
-            profile->DevicePath == SDL_GetJoystickPath(joystick) &&
-            profile->DeviceSerial == SDL_GetJoystickSerial(joystick))
-        {*/
+        if (deviceName   == profile->DeviceName &&
+            devicePath   == profile->DevicePath &&
+            deviceSerial == profile->DeviceSerial)
+        {
             std::cout << "open_controller: found match!" << std::endl;
 
             profile->SDLJoystick = joystick;
+            profile->SDLGamepad = gamepad;
             return;
-        //}
+        }
 
         SDL_CloseJoystick(joystick);
+        SDL_CloseGamepad(gamepad);
     }
 
     std::cout << "open_controller: found no match :(!" << std::endl;
@@ -608,6 +646,11 @@ static void close_controller(InputProfile* profile)
     {
         SDL_CloseJoystick(profile->SDLJoystick);
         profile->SDLJoystick = nullptr;
+    }
+    if (profile->SDLGamepad != nullptr)
+    {
+        SDL_CloseGamepad(profile->SDLGamepad);
+        profile->SDLGamepad = nullptr;
     }
 }
 
@@ -662,16 +705,16 @@ static int get_button_state(InputProfile* profile, const InputMapping* inputMapp
             {
                 if (allPressed && i > 0)
                 {
-                    state &= 0; // TODO: SDL_GetGamepadButton(profile->InputDevice.GetGameControllerHandle(), (SDL_GamepadButton)data);
+                    state &= SDL_GetGamepadButton(profile->SDLGamepad, (SDL_GamepadButton)data);
                 }
                 else
                 {
-                    state |= 0; // TODO: SDL_GetGamepadButton(profile->InputDevice.GetGameControllerHandle(), (SDL_GamepadButton)data);
+                    state |= SDL_GetGamepadButton(profile->SDLGamepad, (SDL_GamepadButton)data);
                 }
             } break;
             case InputType::GamepadAxis:
             {
-                int axis_value = 0; // TODO: SDL_GetGamepadAxis(profile->InputDevice.GetGameControllerHandle(), (SDL_GamepadAxis)data);
+                int axis_value = SDL_GetGamepadAxis(profile->SDLGamepad, (SDL_GamepadAxis)data);
                 if (allPressed && i > 0)
                 {
                     state &= (abs(axis_value) >= (SDL_AXIS_PEAK / 2) && (extraData ? axis_value > 0 : axis_value < 0)) ? 1 : 0;
@@ -755,11 +798,11 @@ static double get_axis_state(InputProfile* profile, const InputMapping* inputMap
         {
             case InputType::GamepadButton:
             {
-                button_state |= 0; // TODO: SDL_GetGamepadButton(profile->InputDevice.GetGameControllerHandle(), (SDL_GamepadButton)data);
+                button_state |= SDL_GetGamepadButton(profile->SDLGamepad, (SDL_GamepadButton)data);
             } break;
             case InputType::GamepadAxis:
             {
-                double axis_value = 0; // TODO: SDL_GetGamepadAxis(profile->InputDevice.GetGameControllerHandle(), (SDL_GamepadAxis)data);
+                double axis_value = SDL_GetGamepadAxis(profile->SDLGamepad, (SDL_GamepadAxis)data);
                 if (axis_value < -32767.0) axis_value = -32767.0;
                 if (extraData ? axis_value > 0 : axis_value < 0)
                 {

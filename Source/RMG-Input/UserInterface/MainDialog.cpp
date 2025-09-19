@@ -140,7 +140,7 @@ void MainDialog::openInputDevice(SDLDevice device)
         }
     }
 
-    int controllerMode = 1; // TODO: CoreSettingsGetIntValue(SettingsID::Input_ControllerMode);
+    int controllerMode = CoreSettingsGetIntValue(SettingsID::Input_ControllerMode);
     if ((controllerMode == 0 && SDL_IsGamepad(device.number) == true) ||
         (controllerMode == 2))
     {
@@ -177,6 +177,7 @@ void MainDialog::closeInputDevice()
     }
 }
 
+#include <iostream>
 void MainDialog::on_InputPollTimer_triggered()
 {
     Widget::ControllerWidget* controllerWidget;
@@ -216,7 +217,7 @@ void MainDialog::on_InputPollTimer_triggered()
 
     // process SDL events
     SDL_Event event;
-    while (SDL_PeepEvents(&event, 1, SDL_GETEVENT, 0, SDL_EVENT_LAST) == 1)
+    while (SDL_PeepEvents(&event, 1, SDL_GETEVENT, SDL_EVENT_FIRST, SDL_EVENT_LAST) == 1)
     {
         controllerWidget->on_MainDialog_SdlEvent(&event);
     }
@@ -316,6 +317,7 @@ void MainDialog::on_SDLThread_DeviceFound(QString name, QString path, QString se
 {
     // TODO: REMOVE THE JOYSTICKID -> NUMBER HACK
     // AND USE A SEPERATE TYPE & JOYSTICKID ITEM IN SDLDEVICE
+    std::cout << "found device: " << joystickId << std::endl;
     SDLDevice inputDevice = {name.toStdString(), path.toStdString(), serial.toStdString(), (int)joystickId};
     this->inputDeviceList.append(inputDevice);
 }
