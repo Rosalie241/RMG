@@ -12,7 +12,6 @@
 #define INPUT_PLUGIN_API_VERSION 0x020100
 
 #include "UserInterface/MainDialog.hpp"
-#include "Utilities/InputDevice.hpp"
 #include "Thread/HotkeysThread.hpp"
 #include "Thread/SDLThread.hpp"
 #include "common.hpp"
@@ -449,6 +448,8 @@ static void apply_controller_profiles(void)
     }
 }
 
+static void controller_rumble_stop(InputProfile* profile); // forward declaration
+
 static void switch_controller_pak(InputProfile* profile, const int Control, const int pak)
 {
     const int currentPak = l_ControlInfo.Controls[Control].Plugin;
@@ -466,7 +467,7 @@ static void switch_controller_pak(InputProfile* profile, const int Control, cons
     // ensure that we stop the controller's rumble
     if (currentPak == PLUGIN_RAW)
     {
-        // TODO: profile->InputDevice.StopRumble();
+        controller_rumble_stop(profile);
     }
 }
 
@@ -578,12 +579,13 @@ static std::string string_from_const_char(const char* str)
     return string;
 }
 
-#include <iostream>
 static void open_controller(InputProfile* profile, SDL_JoystickID* joysticks, int joysticksCount)
 {
     SDL_JoystickID joystickId;
-    SDL_Gamepad* gamepad;
-    SDL_Joystick* joystick;
+    SDL_Joystick* joystick = nullptr;
+    SDL_Gamepad* gamepad = nullptr;
+    std::string errorMessage;
+
 
     std::string deviceName;
     std::string devicePath;
@@ -599,7 +601,9 @@ static void open_controller(InputProfile* profile, SDL_JoystickID* joysticks, in
             gamepad  = SDL_OpenGamepad(joystickId);
             if (gamepad == nullptr)
             {
-                std::cout << "open_controller: failed to open gamepad" << std::endl;
+                errorMessage = "open_controller: failed to open gamepad: ";
+                errorMessage += SDL_GetError();
+                PluginDebugMessage(M64MSG_ERROR, errorMessage);
                 continue;
             }
 
@@ -613,7 +617,9 @@ static void open_controller(InputProfile* profile, SDL_JoystickID* joysticks, in
             joystick = SDL_OpenJoystick(joystickId);
             if (joystick == nullptr)
             {
-                std::cout << "open_controller: failed to open device!" << std::endl;
+                errorMessage = "open_controller: failed to open joystick: ";
+                errorMessage += SDL_GetError();
+                PluginDebugMessage(M64MSG_ERROR, errorMessage);
                 continue;
             }
 
@@ -626,18 +632,22 @@ static void open_controller(InputProfile* profile, SDL_JoystickID* joysticks, in
             devicePath   == profile->DevicePath &&
             deviceSerial == profile->DeviceSerial)
         {
-            std::cout << "open_controller: found match!" << std::endl;
-
             profile->SDLJoystick = joystick;
             profile->SDLGamepad = gamepad;
             return;
         }
 
-        SDL_CloseJoystick(joystick);
-        SDL_CloseGamepad(gamepad);
+        if (joystick != nullptr)
+        {
+            SDL_CloseJoystick(joystick);
+            joystick = nullptr;
+        }
+        if (gamepad != nullptr)
+        {
+            SDL_CloseGamepad(gamepad);
+            gamepad = nullptr;
+        }
     }
-
-    std::cout << "open_controller: found no match :(!" << std::endl;
 }
 
 static void close_controller(InputProfile* profile)
@@ -651,6 +661,30 @@ static void close_controller(InputProfile* profile)
     {
         SDL_CloseGamepad(profile->SDLGamepad);
         profile->SDLGamepad = nullptr;
+    }
+}
+
+static void controller_rumble_start(InputProfile* profile)
+{
+    if (profile->SDLGamepad != nullptr)
+    {
+        SDL_RumbleGamepad(profile->SDLGamepad, 0xFFFF, 0xFFFF, SDL_HAPTIC_INFINITY);
+    }
+    else if (profile->SDLJoystick != nullptr)
+    {
+        SDL_RumbleJoystick(profile->SDLJoystick, 0xFFFF, 0xFFFF, SDL_HAPTIC_INFINITY);
+    }
+}
+
+static void controller_rumble_stop(InputProfile* profile)
+{
+    if (profile->SDLGamepad != nullptr)
+    {
+        SDL_RumbleGamepad(profile->SDLGamepad,  0, 0, 0);
+    }
+    else if (profile->SDLJoystick != nullptr)
+    {
+        SDL_RumbleJoystick(profile->SDLJoystick,  0, 0, 0);
     }
 }
 
@@ -1090,13 +1124,6 @@ EXPORT m64p_error CALL PluginStartup(m64p_dynlib_handle CoreLibHandle, void *Con
     l_SDLThread = new Thread::SDLThread(nullptr);
     l_SDLThread->start();
 
-#if 0 // TODO: remove
-    for (int i = 0; i < NUM_CONTROLLERS; i++)
-    {
-        l_InputProfiles[i].InputDevice.SetSDLThread(l_SDLThread);
-    }
-#endif
-
     l_HotkeysThread = new Thread::HotkeysThread(check_hotkeys, nullptr);
     l_HotkeysThread->start();
 
@@ -1276,16 +1303,14 @@ EXPORT void CALL ControllerCommand(int Control, unsigned char* Command)
                 unsigned int dwAddress = (Command[3] << 8) + (Command[4] & 0xE0);
                 if (dwAddress == PAK_IO_RUMBLE) 
                 {
-#if 0 // TODO
                     if (*data) 
                     {
-                        profile->InputDevice.StartRumble();
+                        controller_rumble_start(profile);
                     }
                     else
                     {
-                        profile->InputDevice.StopRumble();
+                        controller_rumble_stop(profile);
                     }
-#endif 
                 }
                 data[32] = data_crc( data, 32 );
             }
