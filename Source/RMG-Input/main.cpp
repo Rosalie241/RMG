@@ -601,7 +601,7 @@ static void open_controller(InputProfile* profile, SDL_JoystickID* joysticks, in
             gamepad  = SDL_OpenGamepad(joystickId);
             if (gamepad == nullptr)
             {
-                errorMessage = "open_controller: failed to open gamepad: ";
+                errorMessage = "open_controller(): SDL_OpenGamepad Failed: ";
                 errorMessage += SDL_GetError();
                 PluginDebugMessage(M64MSG_ERROR, errorMessage);
                 continue;
@@ -617,7 +617,7 @@ static void open_controller(InputProfile* profile, SDL_JoystickID* joysticks, in
             joystick = SDL_OpenJoystick(joystickId);
             if (joystick == nullptr)
             {
-                errorMessage = "open_controller: failed to open joystick: ";
+                errorMessage = "open_controller(): SDL_OpenJoystick Failed: ";
                 errorMessage += SDL_GetError();
                 PluginDebugMessage(M64MSG_ERROR, errorMessage);
                 continue;

@@ -8,7 +8,9 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "SDLThread.hpp"
+#include "main.hpp"
 
+#include <RMG-Core/m64p/api/m64p_types.h>
 #include <SDL3/SDL.h>
 
 using namespace Thread;
@@ -66,14 +68,25 @@ void SDLThread::run(void)
                 QString name;
                 QString path;
                 QString serial;
+                QString errorMessage;
 
                 SDL_Gamepad* controller;
                 SDL_Joystick* joystick;
 
-                int numJoysticks = 0;
-                SDL_JoystickID* joysticks = SDL_GetJoysticks(&numJoysticks);
+                int joysticksCount = 0;
+                SDL_JoystickID* joysticks = SDL_GetJoysticks(&joysticksCount);
+                if (joysticks == nullptr)
+                {
+                    errorMessage = "SDLThread::run() SDL_GetJoysticks Failed: ";
+                    errorMessage += SDL_GetError();
+                    PluginDebugMessage(M64MSG_ERROR, errorMessage.toStdString());
 
-                for (int i = 0; i < numJoysticks; i++)
+                    // ensure count is reset
+                    joysticksCount = 0;
+                }
+
+
+                for (int i = 0; i < joysticksCount; i++)
                 {
                     SDL_JoystickID joystickId = joysticks[i];
 
@@ -82,6 +95,9 @@ void SDLThread::run(void)
                         controller = SDL_OpenGamepad(joystickId);
                         if (controller == nullptr)
                         { // skip invalid controllers
+                            errorMessage = "SDLThread::run(): SDL_OpenGamepad Failed: ";
+                            errorMessage += SDL_GetError();
+                            PluginDebugMessage(M64MSG_ERROR, errorMessage.toStdString());
                             continue;
                         }
                         name = SDL_GetGamepadName(controller);
@@ -94,6 +110,9 @@ void SDLThread::run(void)
                         joystick = SDL_OpenJoystick(joystickId);
                         if (joystick == nullptr)
                         { // skip invalid joysticks
+                            errorMessage = "SDLThread::run(): SDL_OpenJoystick Failed: ";
+                            errorMessage += SDL_GetError();
+                            PluginDebugMessage(M64MSG_ERROR, errorMessage.toStdString());
                             continue;
                         }
                         name = SDL_GetJoystickName(joystick);
@@ -107,6 +126,7 @@ void SDLThread::run(void)
                         emit this->OnInputDeviceFound(name, path, serial, joystickId);
                     }
                 }
+
                 this->currentAction = SDLThreadAction::None;
                 emit this->OnDeviceSearchFinished();
 
