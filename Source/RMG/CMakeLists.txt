@@ -74,7 +74,7 @@ set(RMG_SOURCES
     UserInterface/UIResources.qrc
     Thread/RomSearcherThread.cpp
     Thread/EmulationThread.cpp
-    Utilities/QtKeyToSdl2Key.cpp
+    Utilities/QtKeyToSdl3Key.cpp
     Utilities/QtMessageBox.cpp
     OnScreenDisplay.cpp
     Callbacks.cpp

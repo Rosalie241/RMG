@@ -7,15 +7,15 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef QTKEYTOSDL2KEY_HPP
-#define QTKEYTOSDL2KEY_HPP
+#ifndef QTKEYTOSDL3KEY_HPP
+#define QTKEYTOSDL3KEY_HPP
 
 #include <QObject>
 
 namespace Utilities
 {
-int QtKeyToSdl2Key(int key);
-int QtModKeyToSdl2ModKey(Qt::KeyboardModifiers modifiers);
+int QtKeyToSdl3Key(int key);
+int QtModKeyToSdl3ModKey(Qt::KeyboardModifiers modifiers);
 } // namespace Utilities
 
-#endif // QTKEYTOSDL2KEY_HPP
+#endif // QTKEYTOSDL3KEY_HPP
