@@ -121,15 +121,15 @@ public:
     ControllerWidget(QWidget* parent, EventFilter* eventFilter);
     ~ControllerWidget();
 
-    void AddInputDevice(SDLDevice device);
-    void RemoveInputDevice(SDLDevice device);
+    void AddInputDevice(InputDevice device);
+    void RemoveInputDevice(InputDevice device);
     void CheckInputDeviceSettings();
     void CheckInputDeviceSettings(QString section);
 
     void DrawControllerImage();
     void ClearControllerImage();
 
-    void GetCurrentInputDevice(SDLDevice& device, bool ignoreDeviceNotFound = false);
+    void GetCurrentInputDevice(InputDevice& device, bool ignoreDeviceNotFound = false);
     bool IsPluggedIn();
 
     void SetOnlyLoadGameProfile(bool value, CoreRomHeader romHeader, CoreRomSettings romSettings);
@@ -184,7 +184,7 @@ public slots:
     void on_MainDialog_SdlEventPollFinished();
 
 signals:
-    void CurrentInputDeviceChanged(ControllerWidget* widget, SDLDevice device);
+    void CurrentInputDeviceChanged(ControllerWidget* widget, InputDevice device);
     void RefreshInputDevicesButtonClicked();
 
     void UserProfileAdded(QString name, QString section);

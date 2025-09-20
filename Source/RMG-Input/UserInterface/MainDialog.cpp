@@ -16,13 +16,13 @@
 #include <SDL3/SDL.h>
 #include <QTimer>
 
-Q_DECLARE_METATYPE(SDLDevice);
+Q_DECLARE_METATYPE(InputDevice);
 
 using namespace UserInterface;
 
 MainDialog::MainDialog(QWidget* parent, Thread::SDLThread* sdlThread, bool romConfig, CoreRomHeader romHeader, CoreRomSettings romSettings) : QDialog(parent)
 {
-    qRegisterMetaType<SDLDevice>();
+    qRegisterMetaType<InputDevice>();
     
     this->setupUi(this);
 
@@ -68,12 +68,12 @@ MainDialog::MainDialog(QWidget* parent, Thread::SDLThread* sdlThread, bool romCo
         // so we only have to expose it there
         if (controllerWidget == this->controllerWidgets.last())
         {
-            controllerWidget->AddInputDevice({"Voice Recognition Unit", "", "", static_cast<int>(InputDeviceType::EmulateVRU)});
+            controllerWidget->AddInputDevice({ InputDeviceType::EmulateVRU, "Voice Recognition Unit" });
         }
 #endif // VRU
-        controllerWidget->AddInputDevice({"None", "", "", static_cast<int>(InputDeviceType::None)});
-        controllerWidget->AddInputDevice({"Automatic", "", "", static_cast<int>(InputDeviceType::Automatic)});
-        controllerWidget->AddInputDevice({"Keyboard", "", "", static_cast<int>(InputDeviceType::Keyboard)});
+        controllerWidget->AddInputDevice({ InputDeviceType::None, "None" });
+        controllerWidget->AddInputDevice({ InputDeviceType::Automatic, "Automatic" });
+        controllerWidget->AddInputDevice({ InputDeviceType::Keyboard, "Keyboard" });
         controllerWidget->SetInitialized(true);
     }
 
@@ -90,7 +90,7 @@ MainDialog::~MainDialog()
     this->closeInputDevice();
 }
 
-void MainDialog::addInputDevice(SDLDevice device)
+void MainDialog::addInputDevice(InputDevice device)
 {
     for (auto& controllerWidget : this->controllerWidgets)
     {
@@ -98,7 +98,7 @@ void MainDialog::addInputDevice(SDLDevice device)
     }
 }
 
-void MainDialog::removeInputDevice(SDLDevice device)
+void MainDialog::removeInputDevice(InputDevice device)
 {
     for (auto& controllerWidget : this->controllerWidgets)
     {
@@ -106,58 +106,54 @@ void MainDialog::removeInputDevice(SDLDevice device)
     }
 }
 
-void MainDialog::openInputDevice(SDLDevice device)
+void MainDialog::openInputDevice(InputDevice device)
 {
-    SDL_JoystickID joystickId;
     Widget::ControllerWidget* controllerWidget;
     controllerWidget = this->controllerWidgets.at(this->tabWidget->currentIndex());
 
     // we don't need to open a keyboard or VRU
-    if (device.number == static_cast<int>(InputDeviceType::None) ||
-        device.number == static_cast<int>(InputDeviceType::Keyboard) ||
-        device.number == static_cast<int>(InputDeviceType::EmulateVRU))
+    if (device.type == InputDeviceType::None ||
+        device.type == InputDeviceType::Keyboard ||
+        device.type == InputDeviceType::EmulateVRU)
     {
-        this->currentDevice = { "", "", "", device.number };
-        controllerWidget->SetCurrentJoystickID(this->currentDevice.number);
+        this->currentDevice = { };
+        controllerWidget->SetCurrentJoystickID(this->currentDevice.id);
         controllerWidget->SetCurrentJoystick(nullptr, nullptr);
         return;
     }
 
     // handle automatic mode
-    if (device.number == static_cast<int>(InputDeviceType::Automatic))
+    if (device.type == InputDeviceType::Automatic)
     {
         int currentIndex = this->tabWidget->currentIndex();
         if (currentIndex < this->inputDeviceList.size())
         { // use device when there's one
-            device.number = this->inputDeviceList.at(currentIndex).number;
+            device.id = this->inputDeviceList.at(currentIndex).id;
         }
         else
         { // no device found, fallback to keyboard
-            this->currentDevice = { "", "", "", static_cast<int>(InputDeviceType::Keyboard) };
-            controllerWidget->SetCurrentJoystickID(this->currentDevice.number);
+            this->currentDevice = { InputDeviceType::Keyboard, "Keyboard" };
+            controllerWidget->SetCurrentJoystickID(this->currentDevice.id);
             controllerWidget->SetCurrentJoystick(nullptr, nullptr);
             return;
         }
     }
 
     int controllerMode = CoreSettingsGetIntValue(SettingsID::Input_ControllerMode);
-    if ((controllerMode == 0 && SDL_IsGamepad(device.number) == true) ||
+    if ((controllerMode == 0 && SDL_IsGamepad(device.id)) ||
         (controllerMode == 2))
     {
         this->currentJoystick = nullptr;
-        this->currentController = SDL_OpenGamepad(device.number);
+        this->currentController = SDL_OpenGamepad(device.id);
     }
     else if (controllerMode == 0 || controllerMode == 1)
     {
-        this->currentJoystick = SDL_OpenJoystick(device.number);
+        this->currentJoystick = SDL_OpenJoystick(device.id);
         this->currentController = nullptr;
     }
 
     this->currentDevice = device;
-    // REMOVE THIS HACK AND USE SEPERATE JOYSTICKID ITEM FROM SDLDEVICE
-    // IN THE FUTURE
-    joystickId = device.number;
-    controllerWidget->SetCurrentJoystickID(device.number);
+    controllerWidget->SetCurrentJoystickID(device.id);
     controllerWidget->SetIsCurrentJoystickGameController(currentController != nullptr);
     controllerWidget->SetCurrentJoystick(this->currentJoystick, this->currentController);
 }
@@ -224,7 +220,7 @@ void MainDialog::on_InputPollTimer_triggered()
     controllerWidget->on_MainDialog_SdlEventPollFinished();
 }
 
-void MainDialog::on_ControllerWidget_CurrentInputDeviceChanged(ControllerWidget* widget, SDLDevice device)
+void MainDialog::on_ControllerWidget_CurrentInputDeviceChanged(ControllerWidget* widget, InputDevice device)
 {
     Widget::ControllerWidget* currentWidget;
     currentWidget = controllerWidgets.at(this->tabWidget->currentIndex());
@@ -239,9 +235,9 @@ void MainDialog::on_ControllerWidget_CurrentInputDeviceChanged(ControllerWidget*
     this->closeInputDevice();
 
     // only open device when needed
-    if (device.number != static_cast<int>(InputDeviceType::None) &&
-        device.number != static_cast<int>(InputDeviceType::Keyboard) &&
-        device.number != static_cast<int>(InputDeviceType::EmulateVRU))
+    if (device.type != InputDeviceType::None &&
+        device.type != InputDeviceType::Keyboard &&
+        device.type != InputDeviceType::EmulateVRU)
     {
         this->openInputDevice(device);
     }
@@ -277,7 +273,7 @@ void MainDialog::on_ControllerWidget_UserProfileRemoved(QString name, QString se
 
 void MainDialog::on_tabWidget_currentChanged(int index)
 {
-    SDLDevice device;
+    InputDevice device;
     Widget::ControllerWidget* controllerWidget;
 
     // save previous tab's user profile
@@ -304,9 +300,9 @@ void MainDialog::on_tabWidget_currentChanged(int index)
     controllerWidget->GetCurrentInputDevice(device);
 
     // only open device when needed
-    if (device.number != static_cast<int>(InputDeviceType::None) &&
-        device.number != static_cast<int>(InputDeviceType::Keyboard) &&
-        device.number != static_cast<int>(InputDeviceType::EmulateVRU))
+    if (device.type != InputDeviceType::None &&
+        device.type != InputDeviceType::Keyboard &&
+        device.type != InputDeviceType::EmulateVRU)
     {
         this->openInputDevice(device);
     }
@@ -314,9 +310,8 @@ void MainDialog::on_tabWidget_currentChanged(int index)
 
 void MainDialog::on_SDLThread_DeviceFound(QString name, QString path, QString serial, SDL_JoystickID joystickId)
 {
-    // TODO: REMOVE THE JOYSTICKID -> NUMBER HACK
-    // AND USE A SEPERATE TYPE & JOYSTICKID ITEM IN SDLDEVICE
-    SDLDevice inputDevice = {name.toStdString(), path.toStdString(), serial.toStdString(), (int)joystickId};
+    const InputDevice inputDevice = { InputDeviceType::Joystick, name.toStdString(), 
+                                      path.toStdString(), serial.toStdString(), joystickId };
     this->inputDeviceList.append(inputDevice);
 }
 

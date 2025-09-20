@@ -88,7 +88,7 @@ struct InputProfile
     std::string DeviceName;
     std::string DevicePath;
     std::string DeviceSerial;
-    int DeviceNum = -1;
+    InputDeviceType DeviceType = InputDeviceType::Invalid;
     std::chrono::time_point<std::chrono::high_resolution_clock> LastDeviceCheckTime = std::chrono::high_resolution_clock::now();
 
     // Gameboy information
@@ -309,23 +309,14 @@ static void load_settings(void)
 
         profile->PluggedIn = CoreSettingsGetBoolValue(SettingsID::Input_PluggedIn, section);
         profile->DeadzoneValue = CoreSettingsGetIntValue(SettingsID::Input_Deadzone, section);
-        profile->ControllerPak = (N64ControllerPak)CoreSettingsGetIntValue(SettingsID::Input_Pak, section);
+        profile->ControllerPak = static_cast<N64ControllerPak>(CoreSettingsGetIntValue(SettingsID::Input_Pak, section));
         profile->DeviceName = CoreSettingsGetStringValue(SettingsID::Input_DeviceName, section);
         profile->DevicePath = CoreSettingsGetStringValue(SettingsID::Input_DevicePath, section);
         profile->DeviceSerial = CoreSettingsGetStringValue(SettingsID::Input_DeviceSerial, section);
-        profile->DeviceNum = CoreSettingsGetIntValue(SettingsID::Input_DeviceNum, section);
+        profile->DeviceType = static_cast<InputDeviceType>(CoreSettingsGetIntValue(SettingsID::Input_DeviceType, section));
         profile->GameboyRom = CoreSettingsGetStringValue(SettingsID::Input_GameboyRom, section);
         profile->GameboySave = CoreSettingsGetStringValue(SettingsID::Input_GameboySave, section);
-
-        // keep compatibility with profiles before version v0.3.9
-        if (CoreSettingsKeyExists(section, "Sensitivity"))
-        {
-            profile->SensitivityValue = CoreSettingsGetIntValue(SettingsID::Input_Sensitivity, section);
-        }
-        else
-        {
-            profile->SensitivityValue = 100;
-        }
+        profile->SensitivityValue = CoreSettingsGetIntValue(SettingsID::Input_Sensitivity, section);
 
 #define LOAD_INPUT_MAPPING(mapping, setting) \
         load_inputmapping_settings(&profile->mapping, section, SettingsID::setting##_Name, SettingsID::setting##_InputType, SettingsID::setting##_Data, SettingsID::setting##_ExtraData)
@@ -407,7 +398,7 @@ static void apply_controller_profiles(void)
     {
         InputProfile* profile = &l_InputProfiles[i];
         int plugin = PLUGIN_NONE;
-        bool emulateVRU = (profile->DeviceNum == static_cast<int>(InputDeviceType::EmulateVRU));
+        bool emulateVRU = (profile->DeviceType == InputDeviceType::EmulateVRU);
 
         switch (profile->ControllerPak)
         {
@@ -586,7 +577,6 @@ static void open_controller(InputProfile* profile, SDL_JoystickID* joysticks, in
     SDL_Gamepad* gamepad = nullptr;
     std::string errorMessage;
 
-
     std::string deviceName;
     std::string devicePath;
     std::string deviceSerial;
@@ -702,12 +692,11 @@ static void open_controllers(void)
 
         close_controller(profile);
 
-        if (profile->DeviceNum == static_cast<int>(InputDeviceType::Automatic))
+        if (profile->DeviceType == InputDeviceType::Automatic)
         {
             setup_device_automatic(i, profile);
         }
-
-        if (profile->DeviceNum > -1) // TODO: fix this....
+        else if (profile->DeviceType == InputDeviceType::Joystick)
         {
             open_controller(profile, joysticks, joysticksCount);
         }
@@ -1339,7 +1328,7 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
 #ifdef VRU
     // when we're emulating the VRU,
     // we need to check the mic state
-    if (profile->DeviceNum == static_cast<int>(InputDeviceType::EmulateVRU))
+    if (profile->DeviceType == InputDeviceType::EmulateVRU)
     {
         if (GetVRUMicState())
         {
@@ -1352,31 +1341,6 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
         return;
     }
 #endif // VRU
-
-#if 0 // TODO: fix hotplug support
-    // check if device has been disconnected,
-    // if it has, try to open it again,
-    // only do this every 2 seconds to prevent lag
-    const auto currentTime  = std::chrono::high_resolution_clock::now();
-    const int secondsPassed = std::chrono::duration_cast<std::chrono::seconds>(currentTime - profile->LastDeviceCheckTime).count();
-    if (secondsPassed >= 2)
-    {
-        profile->LastDeviceCheckTime = currentTime;
-
-        if (profile->DeviceNum != static_cast<int>(InputDeviceType::Keyboard))
-        {
-            if (profile->InputDevice.IsOpeningDevice())
-            {
-                return;
-            }
-
-            if (!profile->InputDevice.HasOpenDevice() || !profile->InputDevice.IsAttached())
-            {
-                profile->InputDevice.OpenDevice(profile->DeviceName, profile->DevicePath, profile->DeviceSerial, profile->DeviceNum);
-            }
-        }
-    }
-#endif
 
     // when we've matched a hotkey,
     // we don't need to check anything
