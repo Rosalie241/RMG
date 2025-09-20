@@ -9,7 +9,7 @@
  */
 #include "MainDialog.hpp"
 #include "Widget/ControllerWidget.hpp"
-#include "Utilities/QtKeyToSdl2Key.hpp"
+#include "Utilities/QtKeyToSdl3Key.hpp"
 
 #include <RMG-Core/Core.hpp>
 
@@ -177,7 +177,6 @@ void MainDialog::closeInputDevice()
     }
 }
 
-#include <iostream>
 void MainDialog::on_InputPollTimer_triggered()
 {
     Widget::ControllerWidget* controllerWidget;
@@ -317,7 +316,6 @@ void MainDialog::on_SDLThread_DeviceFound(QString name, QString path, QString se
 {
     // TODO: REMOVE THE JOYSTICKID -> NUMBER HACK
     // AND USE A SEPERATE TYPE & JOYSTICKID ITEM IN SDLDEVICE
-    std::cout << "found device: " << joystickId << std::endl;
     SDLDevice inputDevice = {name.toStdString(), path.toStdString(), serial.toStdString(), (int)joystickId};
     this->inputDeviceList.append(inputDevice);
 }
@@ -357,8 +355,8 @@ void MainDialog::on_SDLThread_DeviceSearchFinished(void)
 
 void MainDialog::on_EventFilter_KeyPressed(QKeyEvent *event)
 {
-    int key = Utilities::QtKeyToSdl2Key(event->key());
-    int mod = Utilities::QtModKeyToSdl2ModKey(event->modifiers());
+    int key = Utilities::QtKeyToSdl3Key(event->key());
+    int mod = Utilities::QtModKeyToSdl3ModKey(event->modifiers());
 
     SDL_KeyboardEvent keyboardEvent;
     keyboardEvent.down = true;
@@ -376,8 +374,8 @@ void MainDialog::on_EventFilter_KeyPressed(QKeyEvent *event)
 
 void MainDialog::on_EventFilter_KeyReleased(QKeyEvent *event)
 {
-    int key = Utilities::QtKeyToSdl2Key(event->key());
-    int mod = Utilities::QtModKeyToSdl2ModKey(event->modifiers());
+    int key = Utilities::QtKeyToSdl3Key(event->key());
+    int mod = Utilities::QtModKeyToSdl3ModKey(event->modifiers());
 
     SDL_KeyboardEvent keyboardEvent;
     keyboardEvent.down = false;

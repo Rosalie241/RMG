@@ -28,7 +28,7 @@ set(RMG_INPUT_SOURCES
     UserInterface/MainDialog.ui
     UserInterface/MainDialog.cpp
     UserInterface/UIResources.qrc
-    Utilities/QtKeyToSdl2Key.cpp
+    Utilities/QtKeyToSdl3Key.cpp
     Thread/SDLThread.cpp
     Thread/HotkeysThread.cpp
     main.cpp
