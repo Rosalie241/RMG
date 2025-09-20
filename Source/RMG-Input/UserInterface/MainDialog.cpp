@@ -90,7 +90,7 @@ MainDialog::~MainDialog()
     this->closeInputDevice();
 }
 
-void MainDialog::addInputDevice(InputDevice device)
+void MainDialog::addInputDevice(const InputDevice& device)
 {
     for (auto& controllerWidget : this->controllerWidgets)
     {
@@ -98,7 +98,7 @@ void MainDialog::addInputDevice(InputDevice device)
     }
 }
 
-void MainDialog::removeInputDevice(InputDevice device)
+void MainDialog::removeInputDevice(const InputDevice& device)
 {
     for (auto& controllerWidget : this->controllerWidgets)
     {
@@ -111,10 +111,9 @@ void MainDialog::openInputDevice(InputDevice device)
     Widget::ControllerWidget* controllerWidget;
     controllerWidget = this->controllerWidgets.at(this->tabWidget->currentIndex());
 
-    // we don't need to open a keyboard or VRU
-    if (device.type == InputDeviceType::None ||
-        device.type == InputDeviceType::Keyboard ||
-        device.type == InputDeviceType::EmulateVRU)
+    // we don't need to open a non-joystick device
+    if (device.type != InputDeviceType::Automatic &&
+        device.type != InputDeviceType::Joystick)
     {
         this->currentDevice = { };
         controllerWidget->SetCurrentJoystickID(this->currentDevice.id);
@@ -235,9 +234,8 @@ void MainDialog::on_ControllerWidget_CurrentInputDeviceChanged(ControllerWidget*
     this->closeInputDevice();
 
     // only open device when needed
-    if (device.type != InputDeviceType::None &&
-        device.type != InputDeviceType::Keyboard &&
-        device.type != InputDeviceType::EmulateVRU)
+    if (device.type == InputDeviceType::Automatic ||
+        device.type == InputDeviceType::Joystick)
     {
         this->openInputDevice(device);
     }
@@ -300,9 +298,8 @@ void MainDialog::on_tabWidget_currentChanged(int index)
     controllerWidget->GetCurrentInputDevice(device);
 
     // only open device when needed
-    if (device.type != InputDeviceType::None &&
-        device.type != InputDeviceType::Keyboard &&
-        device.type != InputDeviceType::EmulateVRU)
+    if (device.type == InputDeviceType::Automatic ||
+        device.type == InputDeviceType::Joystick)
     {
         this->openInputDevice(device);
     }

@@ -121,8 +121,8 @@ public:
     ControllerWidget(QWidget* parent, EventFilter* eventFilter);
     ~ControllerWidget();
 
-    void AddInputDevice(InputDevice device);
-    void RemoveInputDevice(InputDevice device);
+    void AddInputDevice(const InputDevice& device);
+    void RemoveInputDevice(const InputDevice& device);
     void CheckInputDeviceSettings();
     void CheckInputDeviceSettings(QString section);
 

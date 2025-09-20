@@ -44,8 +44,8 @@ private:
 
     EventFilter* eventFilter;
 
-    void addInputDevice(InputDevice device);
-    void removeInputDevice(InputDevice device);
+    void addInputDevice(const InputDevice& device);
+    void removeInputDevice(const InputDevice& device);
 
     void openInputDevice(InputDevice device);
     void closeInputDevice();

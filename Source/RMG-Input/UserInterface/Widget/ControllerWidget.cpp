@@ -245,7 +245,7 @@ void ControllerWidget::initializeMiscButtons()
 
 bool ControllerWidget::isCurrentDeviceKeyboard()
 {
-    InputDevice device = this->inputDeviceComboBox->currentData().value<InputDevice>();
+    const InputDevice device = this->inputDeviceComboBox->currentData().value<InputDevice>();
 
     return device.type == InputDeviceType::Automatic ||
             device.type == InputDeviceType::Keyboard;
@@ -499,7 +499,7 @@ void ControllerWidget::showErrorMessage(QString text, QString details)
     msgBox.exec();
 }
 
-void ControllerWidget::AddInputDevice(InputDevice device)
+void ControllerWidget::AddInputDevice(const InputDevice& device)
 {
     QString deviceName = QString::fromStdString(device.name);
     QString name = deviceName;
@@ -515,7 +515,7 @@ void ControllerWidget::AddInputDevice(InputDevice device)
     this->inputDeviceComboBox->addItem(name, QVariant::fromValue<InputDevice>(device));
 }
 
-void ControllerWidget::RemoveInputDevice(InputDevice device)
+void ControllerWidget::RemoveInputDevice(const InputDevice& device)
 {
     inputDeviceNameList.removeOne(QString::fromStdString(device.name));
 
@@ -872,12 +872,13 @@ void ControllerWidget::on_removeProfileButton_clicked()
 
 void ControllerWidget::on_resetButton_clicked()
 {
-    QString section = this->getCurrentSettingsSection();
+    const QString section = this->getCurrentSettingsSection();
+    const std::string sectionStr = section.toStdString();
 
     // revert settings in current section when it exists
-    if (CoreSettingsSectionExists(section.toStdString()))
+    if (CoreSettingsSectionExists(sectionStr))
     {
-        CoreSettingsRevertSection(section.toStdString());
+        CoreSettingsRevertSection(sectionStr);
     }
 
     this->LoadSettings(section);
