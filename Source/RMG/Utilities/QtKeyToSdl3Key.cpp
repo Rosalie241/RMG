@@ -7,13 +7,13 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-#include "QtKeyToSdl2Key.hpp"
+#include "QtKeyToSdl3Key.hpp"
 
-#include <SDL2/SDL.h>
+#include <SDL3/SDL.h>
 
 using namespace Utilities;
 
-int Utilities::QtKeyToSdl2Key(int key)
+int Utilities::QtKeyToSdl3Key(int key)
 {
     SDL_Scancode returnValue;
     switch (key)
@@ -323,16 +323,16 @@ int Utilities::QtKeyToSdl2Key(int key)
     return returnValue;
 }
 
-int Utilities::QtModKeyToSdl2ModKey(Qt::KeyboardModifiers modifiers)
+int Utilities::QtModKeyToSdl3ModKey(Qt::KeyboardModifiers modifiers)
 {
     int value = 0;
     if (modifiers & Qt::ShiftModifier)
-        value |= KMOD_SHIFT;
+        value |= SDL_KMOD_SHIFT;
     if (modifiers & Qt::ControlModifier)
-        value |= KMOD_CTRL;
+        value |= SDL_KMOD_CTRL;
     if (modifiers & Qt::AltModifier)
-        value |= KMOD_ALT;
+        value |= SDL_KMOD_ALT;
     if (modifiers & Qt::MetaModifier)
-        value |= KMOD_GUI;
+        value |= SDL_KMOD_GUI;
     return value;
 }

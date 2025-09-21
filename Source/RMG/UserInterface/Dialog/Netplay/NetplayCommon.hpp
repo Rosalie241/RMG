@@ -12,9 +12,6 @@
 
 #include <QJsonDocument>
 #include <QJsonObject>
-#ifdef NETPLAY
-#include <QWebSocket>
-#endif // NETPLAY
 #include <QComboBox>
 #include <QString>
 
@@ -47,11 +44,6 @@ namespace NetplayCommon
 
     // Returns server data from comboBox
     QString GetServerData(QComboBox* comboBox, int index = -1);
-
-#ifdef NETPLAY
-    // Attempts to connect the web socket to the given address using IPv4
-    bool ConnectToIPv4Server(QString address, QWebSocket* webSocket);
-#endif // #ifdef NETPLAY
 }
 
 #endif // NETPLAYCOMMON_HPP

@@ -156,23 +156,3 @@ QString NetplayCommon::GetServerData(QComboBox* comboBox, int index)
 
     return comboBox->itemData(index).value<NetplayServerData>().Data;
 }
-
-bool NetplayCommon::ConnectToIPv4Server(QString address, QWebSocket* webSocket)
-{
-    QUrl addressUrl(address);
-    QHostInfo hostInfo = QHostInfo::fromName(addressUrl.host());
-
-    for (const QHostAddress &resolvedAddr : hostInfo.addresses())
-    {
-        // mupen64plus-core only supports IPv4 (due to SDL2_net)
-        if (resolvedAddr.protocol() == QAbstractSocket::IPv4Protocol)
-        {
-            addressUrl.setHost(resolvedAddr.toString());
-            webSocket->open(addressUrl);
-            return true;
-        }
-    }
-
-    webSocket->close();
-    return false;
-}

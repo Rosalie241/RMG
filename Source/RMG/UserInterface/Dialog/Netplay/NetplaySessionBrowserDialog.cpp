@@ -289,12 +289,7 @@ void NetplaySessionBrowserDialog::timerEvent(QTimerEvent *event)
             if (this->dispatcherAddressListIndex < this->dispatcherAddressList.size())
             {
                 QString address = this->dispatcherAddressList.at(this->dispatcherAddressListIndex);
-
-                if (!NetplayCommon::ConnectToIPv4Server(address, this->webSocket))
-                {
-                    this->sessionBrowserWidget->Reset();
-                    QtMessageBox::Error(this, "Failed to find IPv4 address of server");
-                }
+                this->webSocket->open(QUrl(address));
 
                 this->dispatcherMoveThroughList = false;
 

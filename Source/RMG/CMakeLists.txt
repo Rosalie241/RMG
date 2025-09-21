@@ -37,8 +37,7 @@ if (NETPLAY)
     add_definitions(-DNETPLAY)
 endif(NETPLAY)
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(SDL2 REQUIRED sdl2)
+find_package(SDL3 REQUIRED)
 
 set(RMG_SOURCES
     UserInterface/MainWindow.cpp
@@ -75,7 +74,7 @@ set(RMG_SOURCES
     UserInterface/UIResources.qrc
     Thread/RomSearcherThread.cpp
     Thread/EmulationThread.cpp
-    Utilities/QtKeyToSdl2Key.cpp
+    Utilities/QtKeyToSdl3Key.cpp
     Utilities/QtMessageBox.cpp
     OnScreenDisplay.cpp
     Callbacks.cpp
@@ -140,7 +139,6 @@ target_include_directories(RMG PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/../
-    ${SDL2_INCLUDE_DIRS}
     ${IMGUI_DIR}
 )
 

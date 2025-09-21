@@ -337,13 +337,7 @@ void CreateNetplaySessionDialog::on_dispatcherServerCreate_Finished(QNetworkRepl
 
     // first item should be an address
     QString address = jsonObject[jsonObject.keys().at(0)].toString();
-    if (!NetplayCommon::ConnectToIPv4Server(address, this->webSocket))
-    {
-        QtMessageBox::Error(this, "Failed to find IPv4 address of server");
-        reply->deleteLater();
-        this->toggleUI(true, this->validate());
-        return;
-    }
+    this->webSocket->open(QUrl(address));
 
     reply->deleteLater();
 }
