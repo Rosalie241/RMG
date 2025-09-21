@@ -1,0 +1,37 @@
+SDL3_net_0.0.0 {
+  global:
+    NET_AcceptClient;
+    NET_CompareAddresses;
+    NET_CreateClient;
+    NET_CreateDatagramSocket;
+    NET_CreateServer;
+    NET_DestroyDatagram;
+    NET_DestroyDatagramSocket;
+    NET_DestroyServer;
+    NET_DestroyStreamSocket;
+    NET_FreeLocalAddresses;
+    NET_GetAddressStatus;
+    NET_GetAddressString;
+    NET_GetConnectionStatus;
+    NET_GetLocalAddresses;
+    NET_GetStreamSocketAddress;
+    NET_GetStreamSocketPendingWrites;
+    NET_Version;
+    NET_Init;
+    NET_Quit;
+    NET_ReadFromStreamSocket;
+    NET_ReceiveDatagram;
+    NET_RefAddress;
+    NET_ResolveHostname;
+    NET_SendDatagram;
+    NET_SimulateAddressResolutionLoss;
+    NET_SimulateDatagramPacketLoss;
+    NET_SimulateStreamPacketLoss;
+    NET_UnrefAddress;
+    NET_WaitUntilConnected;
+    NET_WaitUntilInputAvailable;
+    NET_WaitUntilResolved;
+    NET_WaitUntilStreamSocketDrained;
+    NET_WriteToStreamSocket;
+  local: *;
+};

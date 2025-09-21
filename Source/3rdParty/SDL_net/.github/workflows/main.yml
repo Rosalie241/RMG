@@ -1,0 +1,90 @@
+name: Build
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  Build:
+    name: '${{ matrix.platform.name }}'
+    runs-on: '${{ matrix.platform.os }}'
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - { name: 'Linux',                    os: ubuntu-latest,  shell: sh }
+          - { name: 'MacOS',                    os: macos-latest,   shell: sh }
+#          - { name: 'Windows msys2 (mingw32)',  os: windows-latest, shell: 'msys2 {0}', msystem: mingw32, msys-env: mingw-w64-i686 }
+          - { name: 'Windows msys2 (mingw64)',  os: windows-latest, shell: 'msys2 {0}', msystem: mingw64, msys-env: mingw-w64-x86_64 }
+#          - { name: 'Windows msys2 (clang32)',  os: windows-latest, shell: 'msys2 {0}', msystem: clang32, msys-env: mingw-w64-clang-i686 }
+          - { name: 'Windows msys2 (clang64)',  os: windows-latest, shell: 'msys2 {0}', msystem: clang64, msys-env: mingw-w64-clang-x86_64 }
+#          - { name: 'Windows MSVC (x86)',       os: windows-latest, shell: sh, msvc: true, msvc-arch: x86, cmake: '-DPerl_ROOT=C:/Strawberry/perl/bin/' }
+          - { name: 'Windows MSVC (x64)',       os: windows-latest, shell: sh, msvc: true, msvc-arch: x64, cmake: '-DPerl_ROOT=C:/Strawberry/perl/bin/' }
+#          - { name: 'Windows MSVC (arm32)',     os: windows-latest, shell: sh, msvc: true, msvc-arch: amd64_arm, cross: true }
+#          - { name: 'Windows MSVC (arm64)',     os: windows-latest, shell: sh, msvc: true, msvc-arch: amd64_arm64, cross: true }
+    defaults:
+      run:
+        shell: ${{ matrix.platform.shell }}
+    steps:
+      - uses: ilammy/msvc-dev-cmd@v1
+        if: ${{ matrix.platform.msvc }}
+        with:
+          arch: ${{ matrix.platform.msvc-arch }}
+      - name: Set up MSYS2
+        if: ${{ contains(matrix.platform.shell, 'msys2') }}
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: ${{ matrix.platform.msystem }}
+          install: >-
+            ${{ matrix.platform.msys-env }}-cc
+            ${{ matrix.platform.msys-env }}-cmake
+            ${{ matrix.platform.msys-env }}-crt
+            ${{ matrix.platform.msys-env }}-ninja
+            ${{ matrix.platform.msys-env }}-perl
+      - name: Get SDL3_net sources
+        uses: actions/checkout@v4
+      - name: Install Ninja
+        if: ${{ !contains(matrix.platform.shell, 'msys2') }}
+        uses: aseprite/get-ninja@main
+      - name: Set up SDL3
+        uses: libsdl-org/setup-sdl@main
+        id: sdl
+        with:
+          cmake-generator: Ninja
+          version: 3-head
+          sdl-test: true
+          shell: ${{ matrix.platform.shell }}
+          add-to-environment: true
+      - name: Configure (CMake)
+        run: |
+          cmake -B build -GNinja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=prefix \
+            -DSDLNET_WERROR=ON \
+            -DSDLNET_INSTALL_MAN=ON \
+            -DCMAKE_INSTALL_PREFIX=prefix \
+            ${{ matrix.platform.cmake }}
+
+      - name: Build (CMake)
+        run: |
+          cmake --build build/ --verbose
+      - name: Install (CMake)
+        if: ${{ matrix.platform.shell == 'sh' || contains(matrix.platform.shell, 'msys2') }}
+        run: |
+          set -eu
+          rm -fr DESTDIR-cmake
+          cmake --install build/ --config Release
+          echo "SDL3_net_ROOT=$(pwd)/prefix" >> $GITHUB_ENV
+          ( cd prefix; find . ) | LC_ALL=C sort -u
+      - name: Verify CMake configuration files
+        run: |
+          cmake -S cmake/test -B cmake_config_build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DTEST_SHARED=TRUE \
+            -DTEST_STATIC=FALSE
+          cmake --build cmake_config_build --verbose
+
+      - name: Check that versioning is consistent
+        # We only need to run this once: arbitrarily use the Linux build
+        if: ${{ runner.os == 'Linux' }}
+        run: ./build-scripts/test-versioning.sh
