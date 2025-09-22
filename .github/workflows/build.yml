@@ -19,12 +19,36 @@ jobs:
         run: |
           sudo apt-get -y update
           sudo apt-get -y upgrade
-          sudo apt-get -y install cmake libhidapi-dev libsamplerate0-dev libspeex-dev libminizip-dev libsdl2-dev libsdl2-net-dev libfreetype6-dev \
+          sudo apt-get -y install cmake libhidapi-dev libsamplerate0-dev libspeex-dev libminizip-dev libfreetype6-dev \
             libgl1-mesa-dev libglu1-mesa-dev pkg-config zlib1g-dev binutils-dev libspeexdsp-dev qt6-base-dev libqt6svg6-dev libqt6websockets6-dev libvulkan-dev \
             build-essential nasm git zip appstream xvfb qt6ct mesa-vulkan-drivers
+
+          # sdl3 dependencies
+          sudo apt-get -y install build-essential git make \
+            pkg-config cmake ninja-build gnome-desktop-testing libasound2-dev libpulse-dev \
+            libaudio-dev libjack-dev libsndio-dev libx11-dev libxext-dev \
+            libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev \
+            libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
+            libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev
       - name: Prepare Environment
         run: |
           echo "GIT_REVISION=$(git describe --tags --always)" >> $GITHUB_ENV
+      - name: Build SDL3
+        run: |
+          export sdl_dir="$(pwd)/../SDL3"
+
+          git clone https://github.com/libsdl-org/SDL.git "$sdl_dir" -b release-3.2.22 --depth=1
+
+          mkdir -p "$sdl_dir/build"
+          cmake -S "$sdl_dir" -B "$sdl_dir/build" \
+                -DCMAKE_BUILD_TYPE="Release" \
+                -DCMAKE_INSTALL_LIBDIR="lib/x86_64-linux-gnu" \
+                -DCMAKE_INSTALL_FULL_LIBDIR="/usr/lib/x86_64-linux-gnu" \
+                -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+                -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+
+          cmake --build "$sdl_dir/build" --parallel "$(nproc)"
+          sudo cmake --install "$sdl_dir/build" --prefix /usr/
       - name: Build RMG (AppImage)
         run: |
           export src_dir="$(pwd)"
@@ -84,8 +108,7 @@ jobs:
             mingw-w64-ucrt-x86_64-hidapi
             mingw-w64-ucrt-x86_64-freetype
             mingw-w64-ucrt-x86_64-libpng
-            mingw-w64-ucrt-x86_64-SDL2
-            mingw-w64-ucrt-x86_64-SDL2_net
+            mingw-w64-ucrt-x86_64-sdl3
             mingw-w64-ucrt-x86_64-qt6
             mingw-w64-ucrt-x86_64-hidapi
             mingw-w64-ucrt-x86_64-speexdsp
