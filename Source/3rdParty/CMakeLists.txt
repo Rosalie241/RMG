@@ -3,6 +3,8 @@
 #
 include(ExternalProject)
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 find_program(RUST_CARGO cargo)
 if(NO_RUST)
     set(BUILD_INPUT_GCA OFF)
@@ -62,6 +64,20 @@ else()
     set(MAKE_DEBUG "0")
 endif()
 
+# TODO: when SDL3_net has made a release,
+# remove the vendored SDL3_net
+set(SDL3NET_DIR ${CMAKE_CURRENT_SOURCE_DIR}/SDL_net)
+set(SDL3NET_SOURCES
+    ${SDL3NET_DIR}/src/SDL_net.c
+)
+add_library(SDL3_net STATIC ${SDL3NET_SOURCES})
+target_include_directories(SDL3_net PRIVATE ${SDL3NET_DIR}/include)
+set(SDL3NET_CFLAGS "-DUSE_SDL3NET -I${SDL3NET_DIR}/include")
+set(SDL3NET_LDLIBS "$<TARGET_FILE:SDL3_net>")
+if (WIN32)
+    set(SDL3NET_LDLIBS "${SDL3NET_LDLIBS} -liphlpapi -lws2_32")
+endif (WIN32)
+
 ExternalProject_Add(mupen64plus-core
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-core/
 
@@ -76,11 +92,15 @@ ExternalProject_Add(mupen64plus-core
         TARGET=${CORE_FILE} DEBUG=${MAKE_DEBUG}
         CC=${MAKE_CC_COMPILER} CXX=${MAKE_CXX_COMPILER}
         OPTFLAGS=${MAKE_OPTFLAGS}
+        # TODO: when SDL3_net has made a release,
+        # remove the vendored SDL3_net
+        SDLNET_CFLAGS=${SDL3NET_CFLAGS} SDLNET_LDLIBS=${SDL3NET_LDLIBS}
     BUILD_IN_SOURCE False
     BUILD_ALWAYS True
     BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-core
 
     BUILD_BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-core/${CORE_FILE}
+    DEPENDS SDL3_net
 )
 
 set(APIDIR "${CMAKE_SOURCE_DIR}/Source/3rdParty/mupen64plus-core/src/api")
