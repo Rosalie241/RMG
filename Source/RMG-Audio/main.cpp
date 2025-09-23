@@ -22,15 +22,14 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.          *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#include <SDL.h>
-#include <SDL_audio.h>
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_audio.h>
 #include <stdio.h>
 #include <stdarg.h>
 
 #include "main.hpp"
 
 #include "sdl_backend.hpp"
-#include "Resamplers/resamplers.hpp"
 
 #define M64P_PLUGIN_PROTOTYPES 1
 #include <RMG-Core/m64p/api/m64p_common.h>
@@ -44,11 +43,6 @@
 /* version info */
 #define SDL_AUDIO_PLUGIN_VERSION 0x020509
 #define AUDIO_PLUGIN_API_VERSION 0x020000
-#define CONFIG_PARAM_VERSION     1.00
-
-#if SDL_VERSION_ATLEAST(2,0,0)
-#define SDL_MixAudio(A, B, C, D) SDL_MixAudioFormat(A, B, AUDIO_S16SYS, C, D)
-#endif
 
 /* local variables */
 static void (*l_DebugCallback)(void *, int, const char *) = nullptr;
@@ -58,36 +52,35 @@ static int l_PluginInit = 0;
 static struct sdl_backend* l_sdl_backend = nullptr;
 
 /* Read header for type definition */
-static AUDIO_INFO AudioInfo;
+static AUDIO_INFO l_AudioInfo;
+
 // volume to scale the audio by, range of 0..100
 // if muted, this holds the volume when not muted
-static int VolPercent = 80;
-// how much percent to increment/decrement volume by
-static int VolDelta = 5;
-// the actual volume passed into SDL, range of 0..SDL_MIX_MAXVOLUME
-static int VolSDL = SDL_MIX_MAXVOLUME;
+static int l_Volume = 80;
+
 // Muted or not
-static int VolIsMuted = 0;
+static bool l_Muted = 0;
 
 /* Helper functions */
-static void ApplyVolumeSettings(void)
+static void apply_volume_settings(void)
 {
-    if (VolIsMuted)
+    float volume = 0;
+
+    if (!l_Muted)
     {
-        VolSDL = 0;
+        volume = l_Volume / 100.0f;
     }
-    else
+
+    if (l_sdl_backend != nullptr)
     {
-        VolSDL = SDL_MIX_MAXVOLUME * VolPercent / 100;
+        sdl_apply_volume(l_sdl_backend, volume);
     }
 }
 
-static void LoadVolumeSettings(void)
+static void load_volume_settings(void)
 {
-    VolIsMuted = CoreSettingsGetBoolValue(SettingsID::Audio_Muted) ? 1 : 0;
-    VolPercent = CoreSettingsGetIntValue(SettingsID::Audio_Volume);
-
-    ApplyVolumeSettings();
+    l_Muted = CoreSettingsGetBoolValue(SettingsID::Audio_Muted);
+    l_Volume = CoreSettingsGetIntValue(SettingsID::Audio_Volume);
 }
 
 /* Global functions */
@@ -123,8 +116,8 @@ EXPORT m64p_error CALL PluginStartup(m64p_dynlib_handle CoreLibHandle, void *Con
     l_DebugCallback = DebugCallback;
     l_DebugCallContext = Context;
 
-    // apply volume settings
-    LoadVolumeSettings();
+    /* load settings */
+    load_volume_settings();
 
     l_PluginInit = 1;
     return M64ERR_SUCCESS;
@@ -186,7 +179,8 @@ EXPORT m64p_error CALL PluginConfig(void* parent)
     dialog.exec();
 
     // apply volume settings
-    LoadVolumeSettings();
+    load_volume_settings();
+    apply_volume_settings();
 
     return M64ERR_SUCCESS;
 }
@@ -215,9 +209,10 @@ EXPORT void CALL AiDacrateChanged(int SystemType)
     if (!l_PluginInit || l_sdl_backend == nullptr)
         return;
 
-    unsigned int frequency = dacrate2freq(vi_clock_from_system_type(SystemType), *AudioInfo.AI_DACRATE_REG);
+    unsigned int frequency = dacrate2freq(vi_clock_from_system_type(SystemType), *l_AudioInfo.AI_DACRATE_REG);
 
     sdl_set_frequency(l_sdl_backend, frequency);
+    apply_volume_settings();
 }
 
 EXPORT void CALL AiLenChanged(void)
@@ -225,9 +220,7 @@ EXPORT void CALL AiLenChanged(void)
     if (!l_PluginInit || l_sdl_backend == nullptr)
         return;
 
-    sdl_push_samples(l_sdl_backend, AudioInfo.RDRAM + (*AudioInfo.AI_DRAM_ADDR_REG & 0xffffff), *AudioInfo.AI_LEN_REG);
-
-    sdl_synchronize_audio(l_sdl_backend);
+    sdl_push_samples(l_sdl_backend, l_AudioInfo.RDRAM + (*l_AudioInfo.AI_DRAM_ADDR_REG & 0xffffff), *l_AudioInfo.AI_LEN_REG);
 }
 
 EXPORT int CALL InitiateAudio(AUDIO_INFO Audio_Info)
@@ -235,7 +228,7 @@ EXPORT int CALL InitiateAudio(AUDIO_INFO Audio_Info)
     if (!l_PluginInit)
         return 0;
 
-    AudioInfo = Audio_Info;
+    l_AudioInfo = Audio_Info;
     return 1;
 }
 
@@ -245,6 +238,8 @@ EXPORT int CALL RomOpen(void)
         return 0;
 
     l_sdl_backend = init_sdl_backend();
+    apply_volume_settings();
+
     return 1;
 }
 
@@ -269,47 +264,33 @@ EXPORT void CALL SetSpeedFactor(int percentage)
     sdl_set_speed_factor(l_sdl_backend, percentage);
 }
 
-size_t ResampleAndMix(void* resampler, const struct resampler_interface* iresampler,
-        void* mix_buffer,
-        const void* src, size_t src_size, unsigned int src_freq,
-        void* dst, size_t dst_size, unsigned int dst_freq)
-{
-    size_t consumed;
-
-    consumed = iresampler->resample(resampler, src, src_size, src_freq, mix_buffer, dst_size, dst_freq);
-    memset(dst, 0, dst_size);
-    SDL_MixAudio((Uint8*)dst, (Uint8*)mix_buffer, dst_size, VolSDL);
-
-    return consumed;
-}
-
 EXPORT void CALL VolumeMute(void)
 {
-    VolIsMuted = !VolIsMuted;
-    ApplyVolumeSettings();
+    l_Muted = !l_Muted;
+    apply_volume_settings();
 }
 
 EXPORT void CALL VolumeUp(void)
 {
-    VolPercent += 10;
-    ApplyVolumeSettings();
+    l_Volume += 10;
+    apply_volume_settings();
 }
 
 EXPORT void CALL VolumeDown(void)
 {
-    VolPercent -= 10;
-    ApplyVolumeSettings();
+    l_Volume -= 10;
+    apply_volume_settings();
 }
 
 EXPORT int CALL VolumeGetLevel(void)
 {
-    return VolIsMuted ? 0 : VolPercent;
+    return l_Muted ? 0 : l_Volume;
 }
 
 EXPORT void CALL VolumeSetLevel(int level)
 {
-    VolPercent = level;
-    ApplyVolumeSettings();
+    l_Volume = level;
+    apply_volume_settings();
 }
 
 EXPORT const char * CALL VolumeGetString(void)

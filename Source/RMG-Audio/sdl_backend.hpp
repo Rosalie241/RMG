@@ -36,8 +36,8 @@ void sdl_set_frequency(struct sdl_backend* sdl_backend, unsigned int frequency);
 
 void sdl_push_samples(struct sdl_backend* sdl_backend, const void* src, size_t size);
 
-void sdl_synchronize_audio(struct sdl_backend* sdl_backend);
-
 void sdl_set_speed_factor(struct sdl_backend* sdl_backend, unsigned int speed_factor);
+
+void sdl_apply_volume(struct sdl_backend* sdl_backend, float vol);
 
 #endif

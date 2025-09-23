@@ -27,12 +27,5 @@
 #define ATTR_FMT(fmtpos, attrpos)
 #endif
 
-struct resampler_interface;
-
-size_t ResampleAndMix(void* resampler, const struct resampler_interface* iresampler,
-        void* mix_buffer,
-        const void* src, size_t src_size, unsigned int src_freq,
-        void* dst, size_t dst_size, unsigned int dst_freq);
-
 void DebugMessage(int level, const char *message, ...) ATTR_FMT(2,3);
 
