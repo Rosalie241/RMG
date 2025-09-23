@@ -19,6 +19,9 @@ bool IsVRUInit(void);
 // attempts to de-initialize VRY capabilities
 bool QuitVRU(void);
 
+// returns whether VRU has initialized SDL audio
+bool HasVRUInitSDL(void);
+
 int GetVRUMicState(void);
 
 #endif // VRU_HPP

@@ -10,8 +10,7 @@ set(CMAKE_SHARED_LIBRARY_PREFIX "")
 
 find_package(Qt6 COMPONENTS Gui Widgets Core Svg REQUIRED)
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(SDL2 REQUIRED sdl2)
+find_package(SDL3 REQUIRED)
 
 set(RMG_INPUT_SOURCES
     UserInterface/Widget/ControllerWidget.ui
@@ -29,8 +28,7 @@ set(RMG_INPUT_SOURCES
     UserInterface/MainDialog.ui
     UserInterface/MainDialog.cpp
     UserInterface/UIResources.qrc
-    Utilities/QtKeyToSdl2Key.cpp
-    Utilities/InputDevice.cpp
+    Utilities/QtKeyToSdl3Key.cpp
     Thread/SDLThread.cpp
     Thread/HotkeysThread.cpp
     main.cpp
@@ -46,13 +44,12 @@ endif(VRU)
 
 add_library(RMG-Input SHARED ${RMG_INPUT_SOURCES})
 
-target_link_libraries(RMG-Input RMG-Core ${SDL2_LIBRARIES})
+target_link_libraries(RMG-Input RMG-Core SDL3::SDL3)
 
 target_include_directories(RMG-Input PRIVATE 
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/../
-    ${SDL2_INCLUDE_DIRS}
 )
 
 target_link_libraries(RMG-Input Qt6::Gui Qt6::Widgets Qt6::Svg)

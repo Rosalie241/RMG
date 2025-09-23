@@ -10,6 +10,7 @@
 #ifndef SDLTHREAD_HPP
 #define SDLTHREAD_HPP
 
+#include <SDL3/SDL.h>
 #include <QThread>
 
 enum class SDLThreadAction
@@ -40,7 +41,7 @@ private:
     SDLThreadAction currentAction = SDLThreadAction::None;
 
 signals:
-    void OnInputDeviceFound(QString name, QString path, QString serial, int number);
+    void OnInputDeviceFound(QString name, QString path, QString serial, SDL_JoystickID joystickId);
     void OnDeviceSearchFinished(void);
 };
 } // namespace Thread

@@ -27,7 +27,7 @@
 #include <QByteArray>
 #include <QJsonArray>
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 #include "VRUwords.hpp"
 #include "VRU.hpp"
@@ -85,8 +85,8 @@ static int l_WordListCount = 0;
 static QStringList l_RegisteredWords;
 static QList<int>  l_RegisteredWordsIndex;
 
-static SDL_AudioDeviceID l_AudioDevice = 0;
-static SDL_AudioSpec     l_AudioDeviceSpec;
+static SDL_AudioStream* l_AudioStream = nullptr;
+static bool l_HasInitSDL = false;
 
 //
 // Local Functions
@@ -260,14 +260,24 @@ static bool init_mic(void)
     SDL_AudioSpec desiredAudioSpec;
 
     desiredAudioSpec.freq     = 44100;
-    desiredAudioSpec.format   = AUDIO_S16SYS;
+    desiredAudioSpec.format   = SDL_AUDIO_S16;
     desiredAudioSpec.channels = 1;
-    desiredAudioSpec.samples  = 1024;
-    desiredAudioSpec.callback = nullptr;
-    desiredAudioSpec.userdata = nullptr;
 
-    l_AudioDevice = SDL_OpenAudioDevice(nullptr, 1, &desiredAudioSpec, &l_AudioDeviceSpec, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE);
-    if (l_AudioDevice == 0)
+    if (!SDL_WasInit(SDL_INIT_AUDIO))
+    {
+        if (!SDL_InitSubSystem(SDL_INIT_AUDIO))
+        {
+            debugMessage = "VRU: SDL_InitSubSystem Failed: ";
+            debugMessage += SDL_GetError();
+            PluginDebugMessage(M64MSG_ERROR, debugMessage);
+            return false;
+        }
+
+        l_HasInitSDL = true;
+    }
+
+    l_AudioStream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_RECORDING, &desiredAudioSpec, NULL, NULL);
+    if (l_AudioStream == nullptr)
     {
         debugMessage = "VRU: SDL_OpenAudioDevice Failed: ";
         debugMessage += SDL_GetError();
@@ -280,9 +290,10 @@ static bool init_mic(void)
 
 static void quit_mic(void)
 {
-    if (l_AudioDevice != 0)
+    if (l_AudioStream != nullptr)
     {
-        SDL_CloseAudioDevice(l_AudioDevice);
+        SDL_DestroyAudioStream(l_AudioStream);
+        l_AudioStream = nullptr;
     }
 }
 
@@ -379,6 +390,11 @@ bool QuitVRU(void)
     return true;
 }
 
+bool HasVRUInitSDL(void)
+{
+    return l_HasInitSDL;
+}
+
 int GetVRUMicState(void)
 {
     return l_MicState;
@@ -442,7 +458,7 @@ EXPORT void CALL SendVRUWord(uint16_t length, uint16_t* word, uint8_t lang)
         }
 
         // try to create a new recognizer
-        l_VoskRecognizer = l_vosk_recognizer_new_grm(l_VoskModel, static_cast<float>(l_AudioDeviceSpec.freq), json_document.toJson().constData());
+        l_VoskRecognizer = l_vosk_recognizer_new_grm(l_VoskModel, 44100.0f, json_document.toJson().constData());
         if (l_VoskRecognizer != nullptr)
         {
             l_vosk_recognizer_set_max_alternatives(l_VoskRecognizer, 3);
@@ -459,12 +475,11 @@ EXPORT void CALL SetMicState(int state)
 
     if (state)
     {
-        SDL_ClearQueuedAudio(l_AudioDevice);
-        SDL_PauseAudioDevice(l_AudioDevice, 0);
+        SDL_ResumeAudioStreamDevice(l_AudioStream);
     }
     else
     {
-        SDL_PauseAudioDevice(l_AudioDevice, 1);
+        SDL_PauseAudioStreamDevice(l_AudioStream);
     }
 
     l_MicState = state;
@@ -489,13 +504,18 @@ EXPORT void CALL ReadVRUResults(uint16_t* error_flags, uint16_t* num_results, ui
     }
 
     // retrieve audio data from device
-    SDL_PauseAudioDevice(l_AudioDevice, 1);
+    SDL_PauseAudioStreamDevice(l_AudioStream);
 
-    uint32_t audio_size = SDL_GetQueuedAudioSize(l_AudioDevice);
+    int audio_size = SDL_GetAudioStreamAvailable(l_AudioStream);
+    if (audio_size == -1)
+    {
+        return;
+    }
+
     std::vector<char> audio_buf(audio_size);
 
     // read audio
-    audio_size = SDL_DequeueAudio(l_AudioDevice, audio_buf.data(), audio_buf.size());
+    audio_size = SDL_GetAudioStreamData(l_AudioStream, audio_buf.data(), audio_buf.size());
 
     // hand audio data to vosk and retrieve results
     int ret = l_vosk_recognizer_accept_waveform(l_VoskRecognizer, audio_buf.data(), audio_size);
