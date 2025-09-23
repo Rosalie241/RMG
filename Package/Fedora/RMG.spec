@@ -1,5 +1,5 @@
 Name:    RMG       
-Version: 0.8.0
+Version: 0.8.1
 Release: %autorelease
 Summary: Rosalie's Mupen GUI 
 
@@ -14,8 +14,7 @@ BuildRequires: cmake
 BuildRequires: hidapi-devel
 BuildRequires: libsamplerate-devel
 BuildRequires: minizip-compat-devel
-BuildRequires: SDL2-devel
-BuildRequires: SDL2_net-devel
+BuildRequires: SDL3-devel
 BuildRequires: freetype-devel
 BuildRequires: mesa-libGL-devel
 BuildRequires: mesa-libGLU-devel
@@ -28,8 +27,7 @@ BuildRequires: qt6-qtwebsockets-devel
 BuildRequires: libxkbcommon-devel
 
 Requires: hidapi
-Requires: SDL2
-Requires: SDL2_net
+Requires: SDL3
 Requires: zlib-ng
 Requires: libsamplerate
 Requires: speexdsp

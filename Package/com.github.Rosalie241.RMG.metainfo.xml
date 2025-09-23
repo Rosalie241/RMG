@@ -29,6 +29,23 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.8.1" date="2025-09-23" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix incorrect usage of 'i.e' and replace it with 'e.g.' in the settings dialog</li>
+          <li>Fix 7zip archives not supporting the PPMd compression method</li>
+          <li>Fix being able to open another game while emulation is being started</li>
+          <li>Fix allowing drag and drop events while emulation is being started</li>
+          <li>Add 'Ask for confirmation on exit while in-game' setting</li>
+          <li>Migrate RMG-Audio to SDL3 (thank you loganmc10 for the help)</li>
+          <li>Migrate RMG-Input to SDL3</li>
+          <li>Migrate RMG to SDL3</li>
+          <li>Migrate mupen64plus-core to SDL3 and SDL3_net</li>
+          <li>Update GLideN64 and LZMA SDK</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.8.0" date="2025-09-10" type="stable">
       <description>
         <p>Changes:</p>
