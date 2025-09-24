@@ -1704,10 +1704,7 @@ m64p_error main_run(void)
 
     /* init GbCamera backend specified in the configuration file */
     init_video_capture_backend(&igbcam_backend, &gbcam_backend,
-        g_CoreConfig, "GbCameraVideoCaptureBackend1");
-
-    /* open GB cam video device */
-    igbcam_backend->open(gbcam_backend, M64282FP_SENSOR_W, M64282FP_SENSOR_H);
+        g_CoreConfig, "GbCameraVideoCaptureBackend1");    
 
     /* open storage files, provide default content if not present */
     open_mpk_file(&mpk);
