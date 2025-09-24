@@ -49,6 +49,7 @@
 #include <QSettings>
 #include <QStatusBar>
 #include <QMenuBar>
+#include <cstdlib>
 #include <QString>
 #include <QTimer>
 #include <cmath>
@@ -322,11 +323,7 @@ void MainWindow::configureUI(QApplication* app, bool showUI)
     this->installEventFilter(this->ui_EventFilter);
     this->ui_Widget_Dummy->installEventFilter(this->ui_EventFilter);
 
-    this->ui_WindowTitle = QCoreApplication::applicationName();
-    this->ui_WindowTitle += " (";
-    this->ui_WindowTitle += QString::fromStdString(CoreGetVersion());
-    this->ui_WindowTitle += ")";
-
+    this->ui_WindowTitle = this->getWindowTitle();
     this->setWindowTitle(this->ui_WindowTitle);
 }
 
@@ -433,6 +430,42 @@ void MainWindow::configureTheme(QApplication* app)
 
     // fallback for icons we don't provide (i.e standard system icons)
     QIcon::setFallbackThemeName(fallbackThemeName);
+}
+
+QString MainWindow::getWindowTitle(void)
+{
+    const QDate currentDate = QDateTime::currentDateTime().date();
+    const QStringList lgbtWordList = {
+    {
+        "lesbian",
+        "gay",
+        "bisexual",
+        "transgender",
+        "queer",
+    }};
+
+    QString windowTitle = QCoreApplication::applicationName();
+
+    if (currentDate.month() == 3 && currentDate.day() == 31)
+    {
+        windowTitle += " (transgender rights!!!)";
+    }
+    else if (currentDate.month() == 6)
+    {
+        // initialize random seed
+        srand(time(nullptr));
+
+        QString word = lgbtWordList.at(rand() % lgbtWordList.count());
+        windowTitle += " (" + word + " rights!!!)";
+    }
+    else
+    {
+        windowTitle += " (";
+        windowTitle += QString::fromStdString(CoreGetVersion());
+        windowTitle += ")";
+    }
+
+    return windowTitle;
 }
 
 void MainWindow::showErrorMessage(QString text, QString details, bool force)

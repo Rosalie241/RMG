@@ -129,6 +129,8 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     void configureUI(QApplication* app, bool showUI);
     void configureTheme(QApplication* app);
 
+    QString getWindowTitle(void);
+
     void showErrorMessage(QString text, QString details = "", bool force = true);
 
     void updateUI(bool inEmulation, bool isPaused);
