@@ -435,7 +435,7 @@ void MainWindow::configureTheme(QApplication* app)
 QString MainWindow::getWindowTitle(void)
 {
     const QDate currentDate = QDateTime::currentDateTime().date();
-    const QStringList lgbtWordList = {
+    const QStringList firstWordList = {
     {
         "lesbian",
         "gay",
@@ -443,20 +443,29 @@ QString MainWindow::getWindowTitle(void)
         "transgender",
         "queer",
     }};
+    const QStringList secondWordList = {
+    {
+        " rights!!!",
+        "s rise up!!!"
+    }};
 
     QString windowTitle = QCoreApplication::applicationName();
 
-    if (currentDate.month() == 3 && currentDate.day() == 31)
-    {
-        windowTitle += " (transgender rights!!!)";
-    }
-    else if (currentDate.month() == 6)
-    {
-        // initialize random seed
-        srand(time(nullptr));
+    // initialize random seed
+    srand(time(nullptr));
 
-        QString word = lgbtWordList.at(rand() % lgbtWordList.count());
-        windowTitle += " (" + word + " rights!!!)";
+    bool showCustomWindowTitle = (rand() % 10) < 3;
+
+    if (showCustomWindowTitle && currentDate.month() == 3 && currentDate.day() == 31)
+    {
+        QString secondWord = secondWordList.at(rand() % secondWordList.count());
+        windowTitle += " (transgender" + secondWord + ")";
+    }
+    else if (showCustomWindowTitle && currentDate.month() == 6)
+    {
+        QString firstWsord = firstWordList.at(rand() % firstWordList.count());
+        QString secondWord = secondWordList.at(rand() % secondWordList.count());
+        windowTitle += " (" + firstWsord + secondWord + ")";
     }
     else
     {
