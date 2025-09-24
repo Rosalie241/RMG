@@ -91,6 +91,7 @@ enum class SettingsID
     Core_CountPerOpDenomPot,
     Core_SiDmaDuration,
     Core_SaveFileNameFormat,
+    Core_GbCameraVideoCaptureBackend1,
 
     // (mupen64plus) Overlay Core Settings
     CoreOverlay_RandomizeInterrupt,
@@ -101,6 +102,7 @@ enum class SettingsID
     CoreOverlay_CountPerOpDenomPot,
     CoreOverlay_SiDmaDuration,
     CoreOverLay_SaveFileNameFormat,
+    CoreOverlay_GbCameraVideoCaptureBackend1,
 
     // (mupen64plus) Core Directory Settings
     Core_ScreenshotPath,
