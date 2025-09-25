@@ -334,8 +334,10 @@ static m64p_error init_video_capture_backend(const struct video_capture_backend_
         DebugMessage(M64MSG_INFO, "Using video capture backend: %s", (*ivcap)->name);
     }
     else {
-        DebugMessage(M64MSG_ERROR, "Failed to initialize video capture backend %s: %s", (*ivcap)->name, CoreErrorMessage(err));
-        *ivcap = NULL;
+        DebugMessage(M64MSG_ERROR, "Failed to initialize video capture backend %s: %s, falling back to dummy backend", (*ivcap)->name, CoreErrorMessage(err));
+        /* fallback to dummy backend */
+        *ivcap = get_video_capture_backend(NULL);
+        (*ivcap)->init(vcap, section);
     }
 
     free(section);

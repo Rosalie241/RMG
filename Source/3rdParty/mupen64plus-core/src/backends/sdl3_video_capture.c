@@ -23,13 +23,15 @@
 
 struct sdl3_video_capture
 {
-    unsigned int width;
-    unsigned int height;
+    int init_sdl;
 
     SDL_Camera* camera;
     SDL_CameraID camera_id;
 
     char* target_camera_name;
+
+    unsigned int width;
+    unsigned int height;
 };
 
 #include "backends/api/video_capture_backend.h"
@@ -55,10 +57,17 @@ static m64p_error sdl3_init(void** vcap, const char* section)
     memset(*vcap, 0, sizeof(struct sdl3_video_capture));
     struct sdl3_video_capture* sdl = (struct sdl3_video_capture*)(*vcap);
 
-    if (!SDL_Init(SDL_INIT_CAMERA))
+    /* attempt to initialize SDL3 */
+    if (!SDL_WasInit(SDL_INIT_CAMERA))
     {
-        DebugMessage(M64MSG_ERROR, "Failed to initialize SDL camera subsystem: %s", SDL_GetError());
-        return M64ERR_SYSTEM_FAIL;
+        if (!SDL_Init(SDL_INIT_CAMERA))
+        {
+            DebugMessage(M64MSG_ERROR, "Failed to initialize SDL camera subsystem: %s", SDL_GetError());
+            free(sdl);
+            return M64ERR_SYSTEM_FAIL;
+        }
+
+        sdl->init_sdl = 1;
     }
 
     /* default parameters */
@@ -79,16 +88,10 @@ static m64p_error sdl3_init(void** vcap, const char* section)
 
         /* get parameters */
         device = ConfigGetParamString(config, "device");
-
-        /* fallback to NULL when default value has been used */
-        if (strlen(device) == 0)
-        {
-            device = NULL;
-        }
     }
 
     /* store device name for later */
-    if (device != NULL)
+    if (device != NULL && strlen(device) > 0)
     {
         sdl->target_camera_name = strdup(device);
     }
@@ -101,17 +104,17 @@ static void sdl3_release(void* vcap)
     struct sdl3_video_capture* sdl = (struct sdl3_video_capture*)(vcap);
     if (sdl != NULL)
     {
+        if (sdl->init_sdl && SDL_WasInit(SDL_INIT_CAMERA))
+        {
+            SDL_QuitSubSystem(SDL_INIT_CAMERA);
+        }
+
         if (sdl->target_camera_name != NULL)
         {
             free(sdl->target_camera_name);
         }
 
         free(sdl);
-    }
-
-    if (SDL_WasInit(SDL_INIT_CAMERA))
-    {
-        SDL_QuitSubSystem(SDL_INIT_CAMERA);
     }
 }
 
@@ -167,7 +170,7 @@ static m64p_error sdl3_open(void* vcap, unsigned int width, unsigned int height)
     }
 
     /* show warning when device was not found */
-    if (sdl->target_camera_name != NULL && found_camera == 0)
+    if (sdl->target_camera_name != NULL && !found_camera)
     {
         DebugMessage(M64MSG_WARNING, "Failed to find video device with name \"%s\", falling back to default", sdl->target_camera_name);
     }
