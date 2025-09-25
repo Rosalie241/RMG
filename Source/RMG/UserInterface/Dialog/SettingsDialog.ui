@@ -1818,6 +1818,31 @@
             </layout>
            </item>
            <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_47">
+             <item>
+              <widget class="QLabel" name="label_26">
+               <property name="text">
+                <string>Video capture backend</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="coreVideoCaptureBackendComboBox">
+               <item>
+                <property name="text">
+                 <string>None</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>SDL3</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
             <widget class="QGroupBox" name="usePifRomGroupBox">
              <property name="title">
               <string>&amp;Use PIF ROM</string>

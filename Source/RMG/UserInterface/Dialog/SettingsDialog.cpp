@@ -284,6 +284,7 @@ void SettingsDialog::loadCoreSettings(void)
     bool disableExtraMem = CoreSettingsGetBoolValue(SettingsID::CoreOverlay_DisableExtraMem);
     int counterFactor = CoreSettingsGetIntValue(SettingsID::CoreOverlay_CountPerOp);
     const int cpuEmulator = CoreSettingsGetIntValue(SettingsID::CoreOverlay_CPU_Emulator);
+    const QString videoCaptureBackend = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::CoreOverlay_GbCameraVideoCaptureBackend1));
     const int saveFilenameFormat = CoreSettingsGetIntValue(SettingsID::CoreOverLay_SaveFileNameFormat);
     int siDmaDuration = CoreSettingsGetIntValue(SettingsID::CoreOverlay_SiDmaDuration);
     const bool randomizeInterrupt = CoreSettingsGetBoolValue(SettingsID::CoreOverlay_RandomizeInterrupt);
@@ -293,6 +294,7 @@ void SettingsDialog::loadCoreSettings(void)
     const bool overrideGameSettings = CoreSettingsGetBoolValue(SettingsID::Core_OverrideGameSpecificSettings);
 
     this->coreCpuEmulatorComboBox->setCurrentIndex(cpuEmulator);
+    this->coreVideoCaptureBackendComboBox->setCurrentIndex(videoCaptureBackend == "sdl3" ? 1 : 0);
     this->coreSaveFilenameFormatComboBox->setCurrentIndex(saveFilenameFormat);
     this->coreRandomizeTimingCheckBox->setChecked(randomizeInterrupt);
 
@@ -543,6 +545,7 @@ void SettingsDialog::loadDefaultCoreSettings(void)
     bool disableExtraMem = CoreSettingsGetDefaultBoolValue(SettingsID::CoreOverlay_DisableExtraMem);
     int counterFactor = CoreSettingsGetDefaultIntValue(SettingsID::CoreOverlay_CountPerOp);
     const int cpuEmulator = CoreSettingsGetDefaultIntValue(SettingsID::CoreOverlay_CPU_Emulator);
+    const QString videoCaptureBackend = QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::CoreOverlay_GbCameraVideoCaptureBackend1));
     int siDmaDuration = CoreSettingsGetDefaultIntValue(SettingsID::CoreOverlay_SiDmaDuration);
     const int saveFilenameFormat = CoreSettingsGetDefaultIntValue(SettingsID::CoreOverLay_SaveFileNameFormat);
     const bool randomizeInterrupt = CoreSettingsGetDefaultBoolValue(SettingsID::CoreOverlay_RandomizeInterrupt);
@@ -552,6 +555,7 @@ void SettingsDialog::loadDefaultCoreSettings(void)
     const bool overrideGameSettings = CoreSettingsGetDefaultBoolValue(SettingsID::Core_OverrideGameSpecificSettings);
 
     this->coreCpuEmulatorComboBox->setCurrentIndex(cpuEmulator);
+    this->coreVideoCaptureBackendComboBox->setCurrentIndex(videoCaptureBackend == "sdl3" ? 1 : 0);
     this->coreSaveFilenameFormatComboBox->setCurrentIndex(saveFilenameFormat);
     this->coreRandomizeTimingCheckBox->setChecked(randomizeInterrupt);
 
@@ -724,6 +728,7 @@ void SettingsDialog::saveCoreSettings(void)
     bool disableExtraMem = (this->coreMemorySizeComboBox->currentIndex() == 0);
     int counterFactor = this->coreCounterFactorComboBox->currentIndex() + 1;
     const int cpuEmulator = this->coreCpuEmulatorComboBox->currentIndex();
+    const int videoCaptureBackend = this->coreVideoCaptureBackendComboBox->currentIndex();
     const int saveFilenameFormat = this->coreSaveFilenameFormatComboBox->currentIndex();
     int siDmaDuration = this->coreSiDmaDurationSpinBox->value();
     const bool randomizeInterrupt = this->coreRandomizeTimingCheckBox->isChecked();
@@ -733,6 +738,7 @@ void SettingsDialog::saveCoreSettings(void)
     const bool overrideGameSettings = this->coreOverrideGameSettingsGroup->isChecked();
 
     CoreSettingsSetValue(SettingsID::CoreOverlay_CPU_Emulator, cpuEmulator);
+    CoreSettingsSetValue(SettingsID::CoreOverlay_GbCameraVideoCaptureBackend1, std::string((videoCaptureBackend == 1) ? "sdl3" : ""));
     CoreSettingsSetValue(SettingsID::CoreOverLay_SaveFileNameFormat, saveFilenameFormat);
     CoreSettingsSetValue(SettingsID::CoreOverlay_RandomizeInterrupt, randomizeInterrupt);
     CoreSettingsSetValue(SettingsID::Core_PIF_Use, usePIF);
