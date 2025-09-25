@@ -116,6 +116,13 @@
                 </property>
                </widget>
               </item>
+              <item>
+               <widget class="QPushButton" name="clearGameboyRomButton">
+                <property name="text">
+                 <string>Clear</string>
+                </property>
+               </widget>
+              </item>
              </layout>
             </widget>
            </item>
@@ -136,6 +143,13 @@
                <widget class="QPushButton" name="changeGameboySaveButton">
                 <property name="text">
                  <string>Change</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="clearGameboySaveButton">
+                <property name="text">
+                 <string>Clear</string>
                 </property>
                </widget>
               </item>

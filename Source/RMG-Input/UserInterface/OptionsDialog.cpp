@@ -11,6 +11,7 @@
 
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QIcon>
 
 #include <SDL3/SDL.h>
 
@@ -41,6 +42,11 @@ OptionsDialog::OptionsDialog(QWidget* parent, OptionsDialogSettings settings,
     {
         this->hideEmulationInfoText();
     }
+
+    this->clearGameboyRomButton->setText("");
+    this->clearGameboyRomButton->setIcon(QIcon::fromTheme("delete-bin-line"));
+    this->clearGameboySaveButton->setText("");
+    this->clearGameboySaveButton->setIcon(QIcon::fromTheme("delete-bin-line"));
 
     this->currentJoystick   = joystick;
     this->currentController = controller;
@@ -112,6 +118,11 @@ void OptionsDialog::on_changeGameboyRomButton_clicked()
     }
 }
 
+void OptionsDialog::on_clearGameboyRomButton_clicked()
+{
+    this->gameboyRomLineEdit->clear();
+}
+
 void OptionsDialog::on_changeGameboySaveButton_clicked()
 {
     QString gameBoySave = QFileDialog::getOpenFileName(this, tr("Open Gameboy Save"), "", "Gameboy save (*.sav *.ram)");
@@ -119,6 +130,11 @@ void OptionsDialog::on_changeGameboySaveButton_clicked()
     {
         this->gameboySaveLineEdit->setText(QDir::toNativeSeparators(gameBoySave));
     }
+}
+
+void OptionsDialog::on_clearGameboySaveButton_clicked()
+{
+    this->gameboySaveLineEdit->clear();
 }
 
 void OptionsDialog::on_testRumbleButton_clicked()
