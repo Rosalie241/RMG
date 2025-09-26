@@ -29,6 +29,18 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.8.2" date="2025-09-26" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix screenshot filename being incorrect when playing 64DD games</li>
+          <li>Fix GameBoy tower functionality not working in Pokemon Stadium 1 and 2</li>
+          <li>Add clear buttons to transfer pak settings in RMG-Input</li>
+          <li>Add support for the GameBoy camera by implementing a SDL3 backend in mupen64plus-core</li>
+          <li>Improve accuracy of RSP</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.8.1" date="2025-09-23" type="stable">
       <description>
         <p>Changes:</p>
