@@ -443,8 +443,10 @@ void InterpretOpcode(struct r4300_core* r4300)
 			else                NOP(r4300, 0);
 			break;
 		case 4: /* Coprocessor 0 opcode 4: MTC0  */
-		case 5: /* Coprocessor 0 opcode 5: DMTC0 */
 			MTC0(r4300, op);
+			break;
+		case 5: /* Coprocessor 0 opcode 5: DMTC0 */
+			DMTC0(r4300, op);
 			break;
 		case 16: /* Coprocessor 0 opcode 16: TLB */
 			switch (op & 0x3F) {
@@ -686,8 +688,7 @@ void InterpretOpcode(struct r4300_core* r4300)
 		else                NOP(r4300, 0);
 		break;
 	case 35: /* Major opcode 35: LW */
-		if (RT_OF(op) != 0) LW(r4300, op);
-		else                NOP(r4300, 0);
+		LW(r4300, op);
 		break;
 	case 36: /* Major opcode 36: LBU */
 		if (RT_OF(op) != 0) LBU(r4300, op);

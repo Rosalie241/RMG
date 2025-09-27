@@ -221,10 +221,21 @@ DECLARE_INSTRUCTION(LL)
 DECLARE_INSTRUCTION(LW)
 {
     DECLARE_R4300
-    const uint32_t lsaddr = (uint32_t) irs32 + (uint32_t) iimmediate;
+    const uint64_t lsaddr = (int64_t) irs + (int16_t) iimmediate;
     int64_t *lsrtp = &irt;
-    ADD_TO_PC(1);
     uint32_t value;
+
+    if (lsaddr & 3) {
+        uint64_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+        cp0_regs[CP0_CONTEXT_REG] = (lsaddr >> 9 & 0x00000000007FFFF0);
+        cp0_regs[CP0_XCONTEXT_REG] = (lsaddr >> 9 & 0x7FFFFFF0) | (lsaddr >> 31 & 0x80000000);
+        cp0_regs[CP0_BADVADDR_REG] = lsaddr;
+        cp0_regs[CP0_CAUSE_REG] = CP0_CAUSE_EXCCODE_ADEL;
+        exception_general(r4300);
+        return;
+    }
+
+    ADD_TO_PC(1);
 
     if (r4300_read_aligned_word(r4300, lsaddr, &value)) {
         *lsrtp = SE32(value);
@@ -374,8 +385,19 @@ DECLARE_INSTRUCTION(SC)
 DECLARE_INSTRUCTION(SW)
 {
     DECLARE_R4300
-    const uint32_t lsaddr = (uint32_t) irs32 + (uint32_t) iimmediate;
+    const uint64_t lsaddr = (int64_t) irs + (int16_t) iimmediate;
     int64_t *lsrtp = &irt;
+
+    if (lsaddr & 3) {
+        uint64_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+        cp0_regs[CP0_CONTEXT_REG]  = (lsaddr >> 9 & 0x007FFFF0);
+        cp0_regs[CP0_XCONTEXT_REG] = (lsaddr >> 9 & 0x7FFFFFF0) | (lsaddr >> 31 & 0x80000000);
+        cp0_regs[CP0_BADVADDR_REG] = lsaddr;
+        cp0_regs[CP0_CAUSE_REG] = CP0_CAUSE_EXCCODE_ADES;
+        exception_general(r4300);
+        return;
+    }
+
     ADD_TO_PC(1);
 
     r4300_write_aligned_word(r4300, lsaddr, (uint32_t)*lsrtp, ~UINT32_C(0));
@@ -1302,6 +1324,15 @@ DECLARE_INSTRUCTION(DMFC0)
     case CP0_UNUSED_31:
         rrt = (*cp0_latch);
         break;
+    case CP0_BADVADDR_REG:
+        rrt32 = cp0_regs[CP0_BADVADDR_REG];
+        break;
+    case CP0_XCONTEXT_REG:
+        rrt = cp0_regs[CP0_XCONTEXT_REG] | ((int64_t)1 << 32);
+        break;
+    case CP0_CONTEXT_REG:
+        rrt = cp0_regs[CP0_CONTEXT_REG];
+        break;
     default:
         rrt = cp0_regs[rfs];
         break;
@@ -1338,8 +1369,7 @@ DECLARE_INSTRUCTION(MTC0)
         cp0_regs[CP0_ENTRYLO1_REG] = rrt32 & UINT32_C(0x3FFFFFFF);
         break;
     case CP0_CONTEXT_REG:
-        cp0_regs[CP0_CONTEXT_REG] = (rrt32 & UINT32_C(0xFF800000))
-            | (cp0_regs[CP0_CONTEXT_REG] & UINT32_C(0x007FFFF0));
+        cp0_regs[CP0_CONTEXT_REG] = rrt32;
         break;
     case CP0_PAGEMASK_REG:
         cp0_regs[CP0_PAGEMASK_REG] = rrt32 & UINT32_C(0x01FFE000);
@@ -1434,6 +1464,136 @@ DECLARE_INSTRUCTION(MTC0)
 
     ADD_TO_PC(1);
 }
+
+#include <stdio.h>
+DECLARE_INSTRUCTION(DMTC0)
+{
+    DECLARE_R4300
+    uint64_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+    uint64_t* cp0_latch = r4300_cp0_latch(&r4300->cp0);
+    int* cp0_cycle_count = r4300_cp0_cycle_count(&r4300->cp0);
+
+    (*cp0_latch) = rrt;
+
+    switch(rfs)
+    {
+    case CP0_INDEX_REG:
+        cp0_regs[CP0_INDEX_REG] = rrt32 & UINT32_C(0x8000003F);
+        if ((cp0_regs[CP0_INDEX_REG] & UINT32_C(0x3F)) > UINT32_C(31))
+        {
+            DebugMessage(M64MSG_ERROR, "MTC0 instruction writing Index register with TLB index > 31");
+            *r4300_stop(r4300)=1;
+        }
+        break;
+    case CP0_RANDOM_REG:
+        break;
+    case CP0_ENTRYLO0_REG:
+        cp0_regs[CP0_ENTRYLO0_REG] = rrt32 & UINT32_C(0x3FFFFFFF);
+        break;
+    case CP0_ENTRYLO1_REG:
+        cp0_regs[CP0_ENTRYLO1_REG] = rrt32 & UINT32_C(0x3FFFFFFF);
+        break;
+    case CP0_CONTEXT_REG:
+        printf("setting context reg to 0x%16lX\n", rrt);
+        cp0_regs[CP0_CONTEXT_REG] = rrt;
+        break;
+    case CP0_PAGEMASK_REG:
+        cp0_regs[CP0_PAGEMASK_REG] = rrt32 & UINT32_C(0x01FFE000);
+        break;
+    case CP0_WIRED_REG:
+        cp0_regs[CP0_WIRED_REG] = rrt32 & UINT32_C(0x0000003F);
+        cp0_regs[CP0_RANDOM_REG] = UINT32_C(31);
+        break;
+    case CP0_BADVADDR_REG:
+        break;
+    case CP0_COUNT_REG:
+        cp0_update_count(r4300);
+        r4300->cp0.interrupt_unsafe_state |= INTR_UNSAFE_R4300;
+        if (*cp0_cycle_count >= 0) { gen_interrupt(r4300); }
+        r4300->cp0.interrupt_unsafe_state &= ~INTR_UNSAFE_R4300;
+        translate_event_queue(&r4300->cp0, rrt32);
+        break;
+    case CP0_ENTRYHI_REG:
+        cp0_regs[CP0_ENTRYHI_REG] = rrt32 & UINT32_C(0xFFFFE0FF);
+        break;
+    case CP0_COMPARE_REG:
+        cp0_update_count(r4300);
+        remove_event(&r4300->cp0.q, COMPARE_INT);
+
+        /* Add count_per_op to avoid wrong event order in case CP0_COUNT_REG == CP0_COMPARE_REG */
+        cp0_regs[CP0_COUNT_REG] += r4300->cp0.count_per_op;
+        *cp0_cycle_count += r4300->cp0.count_per_op;
+        add_interrupt_event_count(&r4300->cp0, COMPARE_INT, rrt32);
+        cp0_regs[CP0_COUNT_REG] -= r4300->cp0.count_per_op;
+
+        /* Update next interrupt in case first event is COMPARE_INT */
+        *cp0_cycle_count = cp0_regs[CP0_COUNT_REG] - r4300->cp0.q.first->data.count;
+        cp0_regs[CP0_COMPARE_REG] = rrt32;
+        cp0_regs[CP0_CAUSE_REG] &= ~CP0_CAUSE_IP7;
+        break;
+    case CP0_STATUS_REG:
+        rrt32 &= ~UINT32_C(0x080000); /* 19th bit isn't writable */
+
+        if((rrt32 & CP0_STATUS_FR) != (cp0_regs[CP0_STATUS_REG] & CP0_STATUS_FR))
+            set_fpr_pointers(&r4300->cp1, rrt32);
+
+        cp0_regs[CP0_STATUS_REG] = rrt32;
+        ADD_TO_PC(1);
+        cp0_update_count(r4300);
+        r4300_check_interrupt(r4300, CP0_CAUSE_IP2, r4300->mi->regs[MI_INTR_REG] & r4300->mi->regs[MI_INTR_MASK_REG]); // ???
+        r4300->cp0.interrupt_unsafe_state |= INTR_UNSAFE_R4300;
+        if (*cp0_cycle_count >= 0) { gen_interrupt(r4300); }
+        r4300->cp0.interrupt_unsafe_state &= ~INTR_UNSAFE_R4300;
+        return;
+    case CP0_CAUSE_REG:
+        cp0_regs[CP0_CAUSE_REG] &= ~(CP0_CAUSE_IP0 | CP0_CAUSE_IP1);
+        cp0_regs[CP0_CAUSE_REG] |= rrt32 & (CP0_CAUSE_IP0 | CP0_CAUSE_IP1);
+        break;
+    case CP0_EPC_REG:
+        cp0_regs[CP0_EPC_REG] = rrt32;
+        break;
+    case CP0_PREVID_REG:
+        break;
+    case CP0_CONFIG_REG:
+        cp0_regs[CP0_CONFIG_REG] = (rrt32 & UINT32_C(0x0000000F)) 
+                | (cp0_regs[CP0_CONFIG_REG] & UINT32_C(0x00008000))
+                | (cp0_regs[CP0_CONFIG_REG] & UINT32_C(0x7FFFFFFF));
+        break;
+    case CP0_LLADDR_REG:
+        cp0_regs[CP0_LLADDR_REG] = rrt32;
+        break;
+    case CP0_WATCHLO_REG:
+        cp0_regs[CP0_WATCHLO_REG] = rrt32;
+        break;
+    case CP0_WATCHHI_REG:
+        cp0_regs[CP0_WATCHHI_REG] = rrt32;
+        break;
+    //case CP0_CONTEXT_REG:
+      //  cp0_regs[CP0_CONTEXT_REG] = rrt;
+    case CP0_XCONTEXT_REG:
+        cp0_regs[CP0_XCONTEXT_REG] = rrt;
+        break;
+    case CP0_CACHEERR_REG:
+        break;
+    case CP0_PARITYERR_REG:
+        cp0_regs[CP0_PARITYERR_REG] = rrt32 & UINT32_C(0x000000FF);
+        break;
+    case CP0_TAGLO_REG:
+        cp0_regs[CP0_TAGLO_REG] = rrt32 & UINT32_C(0x0FFFFFC0);
+        break;
+    case CP0_TAGHI_REG:
+        cp0_regs[CP0_TAGHI_REG] = 0;
+        break;
+    case CP0_ERROREPC_REG:
+        cp0_regs[CP0_ERROREPC_REG] = rrt;
+        break;
+    default:
+        break;
+    }
+
+    ADD_TO_PC(1);
+}
+
 
 /* CP1 load/store instructions */
 
