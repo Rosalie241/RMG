@@ -100,7 +100,7 @@ static void clear_queue(struct interrupt_queue* q)
 
 static int before_event(const struct cp0* cp0, unsigned int evt1, unsigned int evt2, int type2)
 {
-    const uint32_t* cp0_regs = r4300_cp0_regs((struct cp0*)cp0); /* OK to cast away const qualifier */
+    const uint64_t* cp0_regs = r4300_cp0_regs((struct cp0*)cp0); /* OK to cast away const qualifier */
     uint32_t count = cp0_regs[CP0_COUNT_REG];
     int* cp0_cycle_count = r4300_cp0_cycle_count((struct cp0*)cp0);
 
@@ -128,7 +128,7 @@ unsigned int add_random_interrupt_time(struct r4300_core* r4300)
 
 void add_interrupt_event(struct cp0* cp0, int type, unsigned int delay)
 {
-    const uint32_t* cp0_regs = r4300_cp0_regs(cp0);
+    const uint64_t* cp0_regs = r4300_cp0_regs(cp0);
     add_interrupt_event_count(cp0, type, cp0_regs[CP0_COUNT_REG] + delay);
 }
 
@@ -136,7 +136,7 @@ void add_interrupt_event_count(struct cp0* cp0, int type, unsigned int count)
 {
     struct node* event;
     struct node* e;
-    const uint32_t* cp0_regs = r4300_cp0_regs(cp0);
+    const uint64_t* cp0_regs = r4300_cp0_regs(cp0);
     unsigned int* cp0_next_interrupt = r4300_cp0_next_interrupt(cp0);
     int* cp0_cycle_count = r4300_cp0_cycle_count(cp0);
 
@@ -191,7 +191,7 @@ void add_interrupt_event_count(struct cp0* cp0, int type, unsigned int count)
 void remove_interrupt_event(struct cp0* cp0)
 {
     struct node* e;
-    const uint32_t* cp0_regs = r4300_cp0_regs(cp0);
+    const uint64_t* cp0_regs = r4300_cp0_regs(cp0);
     unsigned int* cp0_next_interrupt = r4300_cp0_next_interrupt(cp0);
     int* cp0_cycle_count = r4300_cp0_cycle_count(cp0);
 
@@ -264,7 +264,7 @@ void remove_event(struct interrupt_queue* q, int type)
 void translate_event_queue(struct cp0* cp0, unsigned int base)
 {
     struct node* e;
-    uint32_t* cp0_regs = r4300_cp0_regs(cp0);
+    uint64_t* cp0_regs = r4300_cp0_regs(cp0);
     int* cp0_cycle_count = r4300_cp0_cycle_count(cp0);
 
     remove_event(&cp0->q, COMPARE_INT);
@@ -309,7 +309,7 @@ int save_eventqueue_infos(const struct cp0* cp0, char *buf)
 void load_eventqueue_infos(struct cp0* cp0, const char *buf)
 {
     int len = 0;
-    uint32_t* cp0_regs = r4300_cp0_regs(cp0);
+    uint64_t* cp0_regs = r4300_cp0_regs(cp0);
 
     clear_queue(&cp0->q);
 
@@ -335,7 +335,7 @@ void init_interrupt(struct cp0* cp0)
 void r4300_check_interrupt(struct r4300_core* r4300, uint32_t cause_ip, int set_cause)
 {
     struct node* event;
-    uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+    uint64_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
     unsigned int* cp0_next_interrupt = r4300_cp0_next_interrupt(&r4300->cp0);
     int* cp0_cycle_count = r4300_cp0_cycle_count(&r4300->cp0);
 
@@ -379,7 +379,7 @@ void r4300_check_interrupt(struct r4300_core* r4300, uint32_t cause_ip, int set_
 
 void raise_maskable_interrupt(struct r4300_core* r4300, uint32_t cause_ip)
 {
-    uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+    uint64_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
     cp0_regs[CP0_CAUSE_REG] = (cp0_regs[CP0_CAUSE_REG] | cause_ip) & ~CP0_CAUSE_EXCCODE_MASK;
 
     if (!(cp0_regs[CP0_STATUS_REG] & cp0_regs[CP0_CAUSE_REG] & UINT32_C(0xff00))) {
@@ -396,7 +396,7 @@ void raise_maskable_interrupt(struct r4300_core* r4300, uint32_t cause_ip)
 void compare_int_handler(void* opaque)
 {
     struct r4300_core* r4300 = (struct r4300_core*)opaque;
-    uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+    uint64_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
     int* cp0_cycle_count = r4300_cp0_cycle_count(&r4300->cp0);
 
     /* Add count_per_op to avoid wrong event order in case CP0_COUNT_REG == CP0_COMPARE_REG */
@@ -422,7 +422,7 @@ void check_int_handler(void* opaque)
 void special_int_handler(void* opaque)
 {
     struct cp0* cp0 = (struct cp0*)opaque;
-    const uint32_t* cp0_regs = r4300_cp0_regs(cp0);
+    const uint64_t* cp0_regs = r4300_cp0_regs(cp0);
 
     remove_interrupt_event(cp0);
     add_interrupt_event_count(cp0, SPECIAL_INT, ((cp0_regs[CP0_COUNT_REG] & UINT32_C(0x80000000)) ^ UINT32_C(0x80000000)));
@@ -434,7 +434,7 @@ void nmi_int_handler(void* opaque)
 {
     struct device* dev = (struct device*)opaque;
     struct r4300_core* r4300 = &dev->r4300;
-    uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+    uint64_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
 
     reset_pif(&dev->pif, 1);
 
@@ -537,7 +537,7 @@ static void call_interrupt_handler(const struct cp0* cp0, size_t index)
 
 void gen_interrupt(struct r4300_core* r4300)
 {
-    uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+    uint64_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
     unsigned int* cp0_next_interrupt = r4300_cp0_next_interrupt(&r4300->cp0);
     int* cp0_cycle_count = r4300_cp0_cycle_count(&r4300->cp0);
 

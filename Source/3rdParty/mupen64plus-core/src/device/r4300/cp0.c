@@ -49,7 +49,7 @@ void init_cp0(struct cp0* cp0, unsigned int count_per_op, unsigned int count_per
 
 void poweron_cp0(struct cp0* cp0)
 {
-    uint32_t* cp0_regs;
+    uint64_t* cp0_regs;
     unsigned int* cp0_next_interrupt;
     int* cp0_cycle_count;
 
@@ -81,7 +81,7 @@ void poweron_cp0(struct cp0* cp0)
 }
 
 
-uint32_t* r4300_cp0_regs(struct cp0* cp0)
+uint64_t* r4300_cp0_regs(struct cp0* cp0)
 {
 #ifndef NEW_DYNAREC
     return cp0->regs;
@@ -124,7 +124,7 @@ int* r4300_cp0_cycle_count(struct cp0* cp0)
 
 int check_cop1_unusable(struct r4300_core* r4300)
 {
-    uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+    uint64_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
 
     if (!(cp0_regs[CP0_STATUS_REG] & CP0_STATUS_CU1))
     {
@@ -137,7 +137,7 @@ int check_cop1_unusable(struct r4300_core* r4300)
 
 int check_cop2_unusable(struct r4300_core* r4300)
 {
-    uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+    uint64_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
 
     if (!(cp0_regs[CP0_STATUS_REG] & CP0_STATUS_CU2))
     {
@@ -151,7 +151,7 @@ int check_cop2_unusable(struct r4300_core* r4300)
 void cp0_update_count(struct r4300_core* r4300)
 {
     struct cp0* cp0 = &r4300->cp0;
-    uint32_t* cp0_regs = r4300_cp0_regs(cp0);
+    uint64_t* cp0_regs = r4300_cp0_regs(cp0);
 
 #ifdef NEW_DYNAREC
     if (r4300->emumode != EMUMODE_DYNAREC)
@@ -213,7 +213,7 @@ static void exception_epilog(struct r4300_core* r4300)
 
 void TLB_refill_exception(struct r4300_core* r4300, uint32_t address, int w)
 {
-    uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+    uint64_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
     int usual_handler = 0, i;
 
     if (r4300->emumode != EMUMODE_DYNAREC && w != 2) {
@@ -297,7 +297,7 @@ void TLB_refill_exception(struct r4300_core* r4300, uint32_t address, int w)
 
 void exception_general(struct r4300_core* r4300)
 {
-    uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+    uint64_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
 
     cp0_update_count(r4300);
     cp0_regs[CP0_STATUS_REG] |= CP0_STATUS_EXL;

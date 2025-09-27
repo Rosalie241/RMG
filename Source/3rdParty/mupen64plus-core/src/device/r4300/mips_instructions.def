@@ -115,7 +115,7 @@ DECLARE_INSTRUCTION(RESERVED)
 {
     DECLARE_R4300
 
-    uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+    uint64_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
 
     DebugMessage(M64MSG_ERROR, "reserved opcode: %" PRIX32 ":%" PRIX32, PCADDR, *fast_mem_access(r4300, PCADDR));
 
@@ -127,7 +127,7 @@ DECLARE_INSTRUCTION(RESERVED_COP2)
 {
     DECLARE_R4300
 
-    uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+    uint64_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
 
     if (check_cop2_unusable(r4300)) { return; }
 
@@ -140,7 +140,7 @@ DECLARE_INSTRUCTION(RESERVED_COP2)
 DECLARE_INSTRUCTION(BREAK)
 {
     DECLARE_R4300
-    uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+    uint64_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
 
     cp0_regs[CP0_CAUSE_REG] = CP0_CAUSE_EXCCODE_BP;
     exception_general(r4300);
@@ -993,7 +993,7 @@ DECLARE_INSTRUCTION(CACHE)
 DECLARE_INSTRUCTION(ERET)
 {
     DECLARE_R4300
-    uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+    uint64_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
     int* cp0_cycle_count = r4300_cp0_cycle_count(&r4300->cp0);
 
     cp0_update_count(r4300);
@@ -1022,7 +1022,7 @@ DECLARE_INSTRUCTION(SYNC)
 DECLARE_INSTRUCTION(SYSCALL)
 {
     DECLARE_R4300
-    uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+    uint64_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
 
     cp0_regs[CP0_CAUSE_REG] = CP0_CAUSE_EXCCODE_SYS;
     exception_general(r4300);
@@ -1034,7 +1034,7 @@ DECLARE_INSTRUCTION(SYSCALL)
 DECLARE_INSTRUCTION(name) \
 { \
     DECLARE_R4300 \
-    uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0); \
+    uint64_t* cp0_regs = r4300_cp0_regs(&r4300->cp0); \
     if (cond) \
     { \
         cp0_regs[CP0_CAUSE_REG] = CP0_CAUSE_EXCCODE_TR; \
@@ -1067,7 +1067,7 @@ DECLARE_INSTRUCTION(TLBP)
 {
     DECLARE_R4300
     int i;
-    uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+    uint64_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
 
     cp0_regs[CP0_INDEX_REG] |= UINT32_C(0x80000000);
     for (i = 0; i < 32; ++i)
@@ -1087,7 +1087,7 @@ DECLARE_INSTRUCTION(TLBP)
 DECLARE_INSTRUCTION(TLBR)
 {
     DECLARE_R4300
-    uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+    uint64_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
 
     int index;
     index = cp0_regs[CP0_INDEX_REG] & UINT32_C(0x1F);
@@ -1104,7 +1104,7 @@ DECLARE_INSTRUCTION(TLBR)
 
 static void TLBWrite(struct r4300_core* r4300, unsigned int idx)
 {
-    uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+    uint64_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
     uint32_t pc_addr = *r4300_pc(r4300);
 
     if (pc_addr >= r4300->cp0.tlb.entries[idx].start_even && pc_addr < r4300->cp0.tlb.entries[idx].end_even && r4300->cp0.tlb.entries[idx].v_even)
@@ -1218,7 +1218,7 @@ static void TLBWrite(struct r4300_core* r4300, unsigned int idx)
 DECLARE_INSTRUCTION(TLBWR)
 {
     DECLARE_R4300
-    uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+    uint64_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
     cp0_update_count(r4300);
     cp0_regs[CP0_RANDOM_REG] = (cp0_regs[CP0_COUNT_REG]/r4300->cp0.count_per_op % (32 - cp0_regs[CP0_WIRED_REG]))
         + cp0_regs[CP0_WIRED_REG];
@@ -1229,7 +1229,7 @@ DECLARE_INSTRUCTION(TLBWR)
 DECLARE_INSTRUCTION(TLBWI)
 {
     DECLARE_R4300
-    uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+    uint64_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
 
     TLBWrite(r4300, cp0_regs[CP0_INDEX_REG] & UINT32_C(0x3F));
     ADD_TO_PC(1);
@@ -1240,7 +1240,7 @@ DECLARE_INSTRUCTION(TLBWI)
 DECLARE_INSTRUCTION(MFC0)
 {
     DECLARE_R4300
-    uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+    uint64_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
     uint64_t* cp0_latch = r4300_cp0_latch(&r4300->cp0);
 
     switch(rfs)
@@ -1275,7 +1275,7 @@ DECLARE_INSTRUCTION(MFC0)
 DECLARE_INSTRUCTION(DMFC0)
 {
     DECLARE_R4300
-    uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+    uint64_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
     uint64_t* cp0_latch = r4300_cp0_latch(&r4300->cp0);
 
     switch(rfs)
@@ -1313,7 +1313,7 @@ DECLARE_INSTRUCTION(DMFC0)
 DECLARE_INSTRUCTION(MTC0)
 {
     DECLARE_R4300
-    uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+    uint64_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
     uint64_t* cp0_latch = r4300_cp0_latch(&r4300->cp0);
     int* cp0_cycle_count = r4300_cp0_cycle_count(&r4300->cp0);
 
@@ -1517,7 +1517,7 @@ DECLARE_INSTRUCTION(DCFC1)
     DECLARE_R4300
     if (check_cop1_unusable(r4300)) { return; }
 
-    uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+    uint64_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
 
     fpu_reset_cause(r4300_cp1_fcr31(&r4300->cp1));
 
@@ -1563,7 +1563,7 @@ DECLARE_INSTRUCTION(DCTC1)
     DECLARE_R4300
     if (check_cop1_unusable(r4300)) { return; }
 
-    uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
+    uint64_t* cp0_regs = r4300_cp0_regs(&r4300->cp0);
 
     fpu_reset_cause(r4300_cp1_fcr31(&r4300->cp1));
 

@@ -818,7 +818,7 @@ void netplay_check_sync(struct cp0* cp0)
 
     if (l_vi_counter % 600 == 0)
     {
-        const uint32_t* cp0_regs = r4300_cp0_regs(cp0);
+        const uint64_t* cp0_regs = r4300_cp0_regs(cp0);
 
         l_check_sync_packet->data[0] = UDP_SYNC_DATA;
         netplay_write32(l_vi_counter, &l_check_sync_packet->data[1]); //current VI count

@@ -208,7 +208,7 @@ static int savestates_load_m64p(struct device* dev, char *filepath)
     unsigned char using_tlb_data[4];
     unsigned char data_0001_0200[4096]; // 4k for extra state from v1.2
 
-    uint32_t* cp0_regs = r4300_cp0_regs(&dev->r4300.cp0);
+    uint64_t* cp0_regs = r4300_cp0_regs(&dev->r4300.cp0);
 
     SDL_LockMutex(savestates_lock);
 
@@ -990,7 +990,7 @@ static int savestates_load_pj64(struct device* dev,
     size_t savestateSize;
     unsigned char *savestateData, *curr;
 
-    uint32_t* cp0_regs = r4300_cp0_regs(&dev->r4300.cp0);
+    uint64_t* cp0_regs = r4300_cp0_regs(&dev->r4300.cp0);
 
     /* Read and check Project64 magic number. */
     if (!read_func(handle, header, 8))
@@ -1543,7 +1543,7 @@ static int savestates_save_m64p(const struct device* dev, char *filepath)
     char *curr;
 
     /* OK to cast away const qualifier */
-    const uint32_t* cp0_regs = r4300_cp0_regs((struct cp0*)&dev->r4300.cp0);
+    const uint64_t* cp0_regs = r4300_cp0_regs((struct cp0*)&dev->r4300.cp0);
 
     save = malloc(sizeof(*save));
     if (!save) {
@@ -1951,7 +1951,7 @@ static int savestates_save_pj64(const struct device* dev,
     size_t savestateSize;
     unsigned char *savestateData, *curr;
 
-    const uint32_t* cp0_regs = r4300_cp0_regs((struct cp0*)&dev->r4300.cp0);
+    const uint64_t* cp0_regs = r4300_cp0_regs((struct cp0*)&dev->r4300.cp0);
 
     // Allocate memory for the save state data
     savestateSize = 8 + SaveRDRAMSize + 0x2754;

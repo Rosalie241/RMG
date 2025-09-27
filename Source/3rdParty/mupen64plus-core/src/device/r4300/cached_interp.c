@@ -136,7 +136,7 @@ void cached_interp_##name##_OUT(void) \
 void cached_interp_##name##_IDLE(void) \
 { \
     DECLARE_R4300 \
-    uint32_t* cp0_regs = r4300_cp0_regs(&r4300->cp0); \
+    uint64_t* cp0_regs = r4300_cp0_regs(&r4300->cp0); \
     int* cp0_cycle_count = r4300_cp0_cycle_count(&r4300->cp0); \
     const int take_jump = (condition); \
     if (cop1 && check_cop1_unusable(r4300)) return; \

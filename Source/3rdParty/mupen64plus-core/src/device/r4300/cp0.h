@@ -184,7 +184,7 @@ struct cp0
 {
 #ifndef NEW_DYNAREC
 	/* New dynarec uses a different memory layout */
-    uint32_t regs[CP0_REGS_COUNT];
+    uint64_t regs[CP0_REGS_COUNT];
     uint64_t latch;
 #endif
 
@@ -227,7 +227,7 @@ struct cp0
 void init_cp0(struct cp0* cp0, unsigned int count_per_op, unsigned int count_per_op_denom_pot, struct new_dynarec_hot_state* new_dynarec_hot_state, const struct interrupt_handler* interrupt_handlers);
 void poweron_cp0(struct cp0* cp0);
 
-uint32_t* r4300_cp0_regs(struct cp0* cp0);
+uint64_t* r4300_cp0_regs(struct cp0* cp0);
 uint64_t* r4300_cp0_latch(struct cp0* cp0);
 uint32_t* r4300_cp0_last_addr(struct cp0* cp0);
 unsigned int* r4300_cp0_next_interrupt(struct cp0* cp0);
