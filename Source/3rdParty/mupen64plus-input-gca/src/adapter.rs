@@ -71,7 +71,7 @@ impl GcAdapter {
             })
             .ok_or(rusb::Error::NoDevice)?;
 
-        let mut handle = device.open()?;
+        let handle = device.open()?;
 
         if handle.kernel_driver_active(0).unwrap_or(false) {
             handle.detach_kernel_driver(0)?;
