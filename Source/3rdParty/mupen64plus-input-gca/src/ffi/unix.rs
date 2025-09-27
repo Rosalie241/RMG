@@ -359,25 +359,21 @@ impl BUTTONS__bindgen_ty_1 {
     }
     #[inline]
     pub fn X_AXIS(&self) -> ::std::os::raw::c_int {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(16usize, 8u8) as u32) }
+        u32::cast_signed(self._bitfield_1.get(16usize, 8u8) as u32)
     }
     #[inline]
     pub fn set_X_AXIS(&mut self, val: ::std::os::raw::c_int) {
-        unsafe {
-            let val: u32 = ::std::mem::transmute(val);
-            self._bitfield_1.set(16usize, 8u8, val as u64)
-        }
+        let val: u32 = i32::cast_unsigned(val);
+        self._bitfield_1.set(16usize, 8u8, val as u64)
     }
     #[inline]
     pub fn Y_AXIS(&self) -> ::std::os::raw::c_int {
-        unsafe { ::std::mem::transmute(self._bitfield_1.get(24usize, 8u8) as u32) }
+        u32::cast_signed(self._bitfield_1.get(24usize, 8u8) as u32)
     }
     #[inline]
     pub fn set_Y_AXIS(&mut self, val: ::std::os::raw::c_int) {
-        unsafe {
-            let val: u32 = ::std::mem::transmute(val);
-            self._bitfield_1.set(24usize, 8u8, val as u64)
-        }
+        let val: u32 = i32::cast_unsigned(val);
+        self._bitfield_1.set(24usize, 8u8, val as u64)
     }
     #[inline]
     pub fn new_bitfield_1(
@@ -466,11 +462,11 @@ impl BUTTONS__bindgen_ty_1 {
             Reserved2 as u64
         });
         __bindgen_bitfield_unit.set(16usize, 8u8, {
-            let X_AXIS: u32 = unsafe { ::std::mem::transmute(X_AXIS) };
+            let X_AXIS: u32 = i32::cast_unsigned(X_AXIS);
             X_AXIS as u64
         });
         __bindgen_bitfield_unit.set(24usize, 8u8, {
-            let Y_AXIS: u32 = unsafe { ::std::mem::transmute(Y_AXIS) };
+            let Y_AXIS: u32 = i32::cast_unsigned(Y_AXIS);
             Y_AXIS as u64
         });
         __bindgen_bitfield_unit
