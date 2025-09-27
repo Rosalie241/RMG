@@ -117,6 +117,14 @@ SettingsDialog::SettingsDialog(QWidget *parent, QString file) : QDialog(parent)
     // connect hotkey settings to slot
     this->commonHotkeySettings(SettingsDialogAction::ConnectSignals);
 
+    // set icons for certain buttons
+    this->clearJapaneseIPLRomPathButton->setText("");
+    this->clearJapaneseIPLRomPathButton->setIcon(QIcon::fromTheme("delete-bin-line"));
+    this->clearAmericanIPLRomPathButton->setText("");
+    this->clearAmericanIPLRomPathButton->setIcon(QIcon::fromTheme("delete-bin-line"));
+    this->clearDevelopmentIPLRomPathButton->setText("");
+    this->clearDevelopmentIPLRomPathButton->setIcon(QIcon::fromTheme("delete-bin-line"));
+
 #ifndef NETPLAY
     this->innerInterfaceTabWidget->setTabVisible((int)SettingsDialogTab::InterfaceNetplay, false);
 #endif // !NETPLAY
@@ -1403,6 +1411,21 @@ void SettingsDialog::on_changeAmericanIPLRomPathButton_clicked(void)
 void SettingsDialog::on_changeDevelopmentIPLRomPathButton_clicked(void)
 {
     this->chooseFile(this->developmentIPLRomLineEdit, tr("Open Japanese Development 64DD IPL"), "IPL ROMs (*.n64)");
+}
+
+void SettingsDialog::on_clearJapaneseIPLRomPathButton_clicked(void)
+{
+    this->japaneseIPLRomLineEdit->clear();
+}
+
+void SettingsDialog::on_clearAmericanIPLRomPathButton_clicked(void)
+{
+    this->americanIPLRomLineEdit->clear();
+}
+
+void SettingsDialog::on_clearDevelopmentIPLRomPathButton_clicked(void)
+{
+    this->developmentIPLRomLineEdit->clear();
 }
 
 void SettingsDialog::on_changeBackgroundColorButton_clicked(void)

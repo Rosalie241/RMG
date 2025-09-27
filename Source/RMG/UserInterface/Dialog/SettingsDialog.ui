@@ -3031,6 +3031,13 @@
                 </property>
                </widget>
               </item>
+              <item>
+               <widget class="QPushButton" name="clearJapaneseIPLRomPathButton">
+                <property name="text">
+                 <string>Clear</string>
+                </property>
+               </widget>
+              </item>
              </layout>
             </widget>
            </item>
@@ -3054,6 +3061,13 @@
                 </property>
                </widget>
               </item>
+              <item>
+               <widget class="QPushButton" name="clearAmericanIPLRomPathButton">
+                <property name="text">
+                 <string>Clear</string>
+                </property>
+               </widget>
+              </item>
              </layout>
             </widget>
            </item>
@@ -3074,6 +3088,13 @@
                <widget class="QPushButton" name="changeDevelopmentIPLRomPathButton">
                 <property name="text">
                  <string>Change</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="clearDevelopmentIPLRomPathButton">
+                <property name="text">
+                 <string>Clear</string>
                 </property>
                </widget>
               </item>

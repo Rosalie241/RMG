@@ -149,6 +149,10 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void on_changeAmericanIPLRomPathButton_clicked(void);
     void on_changeDevelopmentIPLRomPathButton_clicked(void);
 
+    void on_clearJapaneseIPLRomPathButton_clicked(void);
+    void on_clearAmericanIPLRomPathButton_clicked(void);
+    void on_clearDevelopmentIPLRomPathButton_clicked(void);
+
     void on_changeBackgroundColorButton_clicked(void);
     void on_changeTextColorButton_clicked(void);
 
