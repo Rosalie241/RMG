@@ -129,13 +129,20 @@ void hle_execute(struct hle_t* hle)
 
     if (!match)
     {
+        /* wrap around when needed */
+        if (cached_ucodes->count >= CACHED_UCODES_MAX_SIZE)
+            cached_ucodes->count = 0;
+
         info = &cached_ucodes->infos[cached_ucodes->count];
         info->uc_start = uc_start;
         info->uc_dstart = uc_dstart;
         info->uc_dsize = uc_dsize;
         info->uc_pfunc = task_detection(hle);
-        cached_ucodes->count++;
-        assert(cached_ucodes->count <= CACHED_UCODES_MAX_SIZE);
+
+        /* ensure we stay within bounds */
+        if (cached_ucodes->count < CACHED_UCODES_MAX_SIZE)
+            cached_ucodes->count++;
+
         assert(info->uc_pfunc != NULL);
     }
 
