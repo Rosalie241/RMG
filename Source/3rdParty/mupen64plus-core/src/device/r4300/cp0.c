@@ -65,7 +65,7 @@ void poweron_cp0(struct cp0* cp0)
     cp0_regs[CP0_COUNT_REG] = UINT32_C(0x5000);
     cp0_regs[CP0_CAUSE_REG] = UINT32_C(0x5c);
     cp0_regs[CP0_CONTEXT_REG] = UINT32_C(0x7ffff0);
-    cp0_regs[CP0_EPC_REG] = UINT32_C(0xffffffff);
+    cp0_regs[CP0_EPC_REG] = UINT64_C(0xffffffffffffffff);
     cp0_regs[CP0_BADVADDR_REG] = UINT32_C(0xffffffff);
     cp0_regs[CP0_ERROREPC_REG] = UINT32_C(0xffffffff);
 
@@ -246,8 +246,8 @@ void TLB_refill_exception(struct r4300_core* r4300, uint32_t address, int w)
         if (r4300->emumode != EMUMODE_PURE_INTERPRETER)
         {
             cp0_regs[CP0_EPC_REG] = (w != 2)
-                ? *r4300_pc(r4300)
-                : address;
+                ? SE32(*r4300_pc(r4300))
+                : SE32(address);
         }
         else {
             cp0_regs[CP0_EPC_REG] = *r4300_pc(r4300);
@@ -302,7 +302,7 @@ void exception_general(struct r4300_core* r4300)
     cp0_update_count(r4300);
     cp0_regs[CP0_STATUS_REG] |= CP0_STATUS_EXL;
 
-    cp0_regs[CP0_EPC_REG] = *r4300_pc(r4300);
+    cp0_regs[CP0_EPC_REG] = SE32(*r4300_pc(r4300));
 
     if (r4300->delay_slot == 1 || r4300->delay_slot == 3)
     {
