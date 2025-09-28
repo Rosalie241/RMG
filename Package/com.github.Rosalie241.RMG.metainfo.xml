@@ -29,6 +29,18 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.8.3" date="2025-09-28" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix supported 64DD games not having the transfer pak functionality enabled</li>
+          <li>Fix crash in Mario Artist Talent Studio when using mupen64plus-rsp-hle since v0.8.2</li>
+          <li>Fix frame count not increasing from 0 since v0.8.2</li>
+          <li>Fix loading save states freezing since v0.8.2</li>
+          <li>Add clear buttons to 64DD IPL settings in the settings dialog</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.8.2" date="2025-09-26" type="stable">
       <description>
         <p>Changes:</p>
