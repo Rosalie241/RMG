@@ -5,13 +5,15 @@ script_dir="$(dirname "$0")"
 toplvl_dir="$(realpath "$script_dir/../../")"
 bin_dir="$toplvl_dir/Bin/AppImage" # RMG should be installed here
 lib_dir="/usr/lib64"
+arch="$(uname -m)"
+
 
 XVFB_RUN="xvfb-run -a --"
 LIB4BIN_URL="https://raw.githubusercontent.com/VHSgunzo/sharun/refs/heads/main/lib4bin"
-APPIMAGETOOL_URL="https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
-SHARUN_URL="https://github.com/VHSgunzo/sharun/releases/latest/download/sharun-x86_64"
+APPIMAGETOOL_URL="https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-$arch.AppImage"
+SHARUN_URL="https://github.com/VHSgunzo/sharun/releases/latest/download/sharun-$arch"
 
-export ARCH="$(uname -m)"
+export ARCH="$arch"
 export APPIMAGE_EXTRACT_AND_RUN=1
 export VERSION="$(git describe --tags --always)"
 export OUTPUT="$bin_dir/../RMG-Portable-Linux64-$VERSION.AppImage"
@@ -41,9 +43,9 @@ then
 	XVFB_RUN=""
 fi
 
-if [[ -d "/usr/lib/x86_64-linux-gnu/" ]]
+if [[ -d "/usr/lib/$arch-linux-gnu/" ]]
 then
-	lib_dir="/usr/lib/x86_64-linux-gnu/"
+	lib_dir="/usr/lib/$arch-linux-gnu/"
 fi
 
 cp "$bin_dir/usr/share/applications/com.github.Rosalie241.RMG.desktop" "$bin_dir"

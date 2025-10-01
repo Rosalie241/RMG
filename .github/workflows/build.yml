@@ -4,17 +4,21 @@ on: [push, pull_request]
 
 jobs:
   build-linux:
-    runs-on: ubuntu-24.04
     strategy:
       matrix:
-        features: [ ON, OFF ]
+        include:
+          - { os: ubuntu-24.04, features: ON, architecture: x86_64 }
+          - { os: ubuntu-24.04, features: OFF, architecture: x86_64 }
+          - { os: ubuntu-24.04-arm, features: ON, architecture: aarch64 }
+          - { os: ubuntu-24.04-arm, features: OFF, architecture: aarch64 }
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: hendrikmuhs/ccache-action@v1.2
         with:
-          key: linux-features-${{ matrix.features }}
+          key: linux-${{ matrix.architecture }}-features-${{ matrix.features }}
       - name: Install Packages
         run: |
           sudo apt-get -y update
@@ -42,8 +46,8 @@ jobs:
           mkdir -p "$sdl_dir/build"
           cmake -S "$sdl_dir" -B "$sdl_dir/build" \
                 -DCMAKE_BUILD_TYPE="Release" \
-                -DCMAKE_INSTALL_LIBDIR="lib/x86_64-linux-gnu" \
-                -DCMAKE_INSTALL_FULL_LIBDIR="/usr/lib/x86_64-linux-gnu" \
+                -DCMAKE_INSTALL_LIBDIR="lib/${{ matrix.architecture }}-linux-gnu" \
+                -DCMAKE_INSTALL_FULL_LIBDIR="/usr/lib/${{ matrix.architecture }}-linux-gnu" \
                 -DCMAKE_C_COMPILER_LAUNCHER=ccache \
                 -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
 
@@ -73,12 +77,12 @@ jobs:
           cmake --install "$build_dir" --strip --prefix="$bin_dir/usr"
         shell: bash
       - name: Create AppImage
-        if: ${{ matrix.features == 'ON' }}
+        if: ${{ matrix.features == 'ON' && matrix.architecture == 'x86_64' }}
         run: |
           ./Package/AppImage/Create.sh
         shell: bash
       - name: Upload RMG (AppImage)
-        if: ${{ matrix.features == 'ON' }}
+        if: ${{ matrix.features == 'ON' && matrix.architecture == 'x86_64' }}
         uses: actions/upload-artifact@v4
         with:
           name: RMG-Portable-Linux64-${{ env.GIT_REVISION }}
