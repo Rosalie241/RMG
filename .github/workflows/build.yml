@@ -21,6 +21,15 @@ jobs:
           key: linux-${{ matrix.architecture }}-features-${{ matrix.features }}
       - name: Install Packages
         run: |
+          # remove and disable snap, this fixes long update times
+          # taken from https://github.com/ading2210/gh-actions-remove-snap/blob/main/workflow.sh
+          sudo systemctl disable --now snapd
+          sudo apt-get purge -y snapd
+          echo "Package: snapd"    | sudo tee /etc/apt/preferences.d/disable-snap.pref
+          echo "Pin: release a=*"  | sudo tee -a /etc/apt/preferences.d/disable-snap.pref
+          echo "Pin-Priority: -10" | sudo tee -a /etc/apt/preferences.d/disable-snap.pref
+          sudo apt-mark hold firefox
+
           sudo apt-get -y update
           sudo apt-get -y upgrade
           sudo apt-get -y install cmake libhidapi-dev libsamplerate0-dev libspeex-dev libminizip-dev libfreetype6-dev \
