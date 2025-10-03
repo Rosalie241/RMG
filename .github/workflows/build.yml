@@ -61,7 +61,6 @@ jobs:
     
           mkdir $build_dir Bin/ -p
           cmake -S "$src_dir" -B "$build_dir" -DCMAKE_BUILD_TYPE="Release" \
-                -DDISCORD_RPC=${{ matrix.features }} \
                 -DDRAG_DROP=${{ matrix.features }} \
                 -DNETPLAY=${{ matrix.features }} \
                 -DVRU=${{ matrix.features }} \
@@ -132,7 +131,6 @@ jobs:
           export build_dir="$(pwd)/Build/Release"
 
           cmake -S "$src_dir" -B "$build_dir" -DCMAKE_BUILD_TYPE="Release" \
-                -DDISCORD_RPC=${{ matrix.features }} \
                 -DDRAG_DROP=${{ matrix.features }} \
                 -DNETPLAY=${{ matrix.features }} \
                 -DVRU=${{ matrix.features }} \

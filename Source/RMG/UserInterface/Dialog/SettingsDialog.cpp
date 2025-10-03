@@ -132,10 +132,6 @@ SettingsDialog::SettingsDialog(QWidget *parent, QString file) : QDialog(parent)
 #ifndef UPDATER
     this->checkForUpdatesCheckBox->setHidden(true);
 #endif // !UPDATER
-
-#ifndef DISCORD_RPC
-    this->discordRpcCheckBox->setHidden(true);
-#endif // !DISCORD_RPC
 }
 
 SettingsDialog::~SettingsDialog(void)
@@ -482,9 +478,6 @@ void SettingsDialog::loadInterfaceGeneralSettings(void)
 #ifdef UPDATER
     this->checkForUpdatesCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_CheckForUpdates));
 #endif // UPDATER
-#ifdef DISCORD_RPC
-    this->discordRpcCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GUI_DiscordRpc));
-#endif // DISCORD_RPC
 }
 
 void SettingsDialog::loadInterfaceEmulationSettings(void)
@@ -650,9 +643,6 @@ void SettingsDialog::loadDefaultInterfaceGeneralSettings(void)
 #ifdef UPDATER
     this->checkForUpdatesCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_CheckForUpdates));
 #endif // UPDATER
-#ifdef DISCORD_RPC
-    this->discordRpcCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GUI_DiscordRpc));
-#endif // DISCORD_RPC
 }
 
 void SettingsDialog::loadDefaultInterfaceEmulationSettings(void)
@@ -896,9 +886,6 @@ void SettingsDialog::saveInterfaceGeneralSettings(void)
 #ifdef UPDATER
     CoreSettingsSetValue(SettingsID::GUI_CheckForUpdates, this->checkForUpdatesCheckBox->isChecked());
 #endif // UPDATER
-#ifdef DISCORD_RPC
-    CoreSettingsSetValue(SettingsID::GUI_DiscordRpc, this->discordRpcCheckBox->isChecked());
-#endif // DISCORD_RPC
 }
 
 void SettingsDialog::saveInterfaceEmulationSettings(void)

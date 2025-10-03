@@ -131,13 +131,6 @@
                 </widget>
                </item>
                <item>
-                <widget class="QCheckBox" name="discordRpcCheckBox">
-                 <property name="text">
-                  <string>Discord Rich Presence</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
                 <spacer name="verticalSpacer_6">
                  <property name="orientation">
                   <enum>Qt::Orientation::Vertical</enum>

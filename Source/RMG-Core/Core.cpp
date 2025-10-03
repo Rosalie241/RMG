@@ -11,9 +11,6 @@
 #include "CachedRomHeaderAndSettings.hpp"
 #include "Directories.hpp"
 #include "MediaLoader.hpp"
-#ifdef DISCORD_RPC
-#include "DiscordRpc.hpp"
-#endif // DISCORD_RPC
 #include "Callback.hpp"
 #include "Settings.hpp"
 #include "Library.hpp"
@@ -177,12 +174,6 @@ CORE_EXPORT bool CoreInit(void)
     }
 
     CoreReadRomHeaderAndSettingsCache();
-
-#ifdef DISCORD_RPC
-    CoreDiscordRpcInit();
-    CoreDiscordRpcUpdate(false);
-#endif // DISCORD_RPC
-
     return true;
 }
 
@@ -191,10 +182,6 @@ CORE_EXPORT void CoreShutdown(void)
     CorePluginsShutdown();
 
     CoreSaveRomHeaderAndSettingsCache();
-
-#ifdef DISCORD_RPC
-    CoreDiscordRpcShutdown();
-#endif // DISCORD_RPC
 
     m64p::Core.Shutdown();
 

@@ -40,7 +40,6 @@ enum class SettingsID
     GUI_CheckForUpdates,
     GUI_LastUpdateCheck,
     GUI_ConfirmExitWhileInGame,
-    GUI_DiscordRpc,
     GUI_Version,
 
     // Netplay Settings

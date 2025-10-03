@@ -21,10 +21,6 @@
 #include "File.hpp"
 #include "Rom.hpp"
 
-#ifdef DISCORD_RPC
-#include "DiscordRpc.hpp"
-#endif // DISCORD_RPC
-
 #include "m64p/Api.hpp"
 
 //
@@ -230,10 +226,6 @@ CORE_EXPORT bool CoreStartEmulation(std::filesystem::path n64rom, std::filesyste
     // apply pif rom settings
     apply_pif_rom_settings();
 
-#ifdef DISCORD_RPC
-    CoreDiscordRpcUpdate(true);
-#endif // DISCORD_RPC
-
 #ifdef NETPLAY
     if (netplay)
     {
@@ -273,10 +265,6 @@ CORE_EXPORT bool CoreStartEmulation(std::filesystem::path n64rom, std::filesyste
 
     // reset media loader state
     CoreResetMediaLoader();
-
-#ifdef DISCORD_RPC
-    CoreDiscordRpcUpdate(false);
-#endif // DISCORD_RPC
 
     if (!netplay || netplay_ret)
     {

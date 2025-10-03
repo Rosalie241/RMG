@@ -24,10 +24,6 @@ if (APPIMAGE_UPDATER)
     add_definitions(-DAPPIMAGE_UPDATER)
 endif(APPIMAGE_UPDATER)
 
-if (DISCORD_RPC)
-    add_definitions(-DDISCORD_RPC)
-endif(DISCORD_RPC)
-
 if (DRAG_DROP)
     add_definitions(-DDRAG_DROP)
 endif(DRAG_DROP)
