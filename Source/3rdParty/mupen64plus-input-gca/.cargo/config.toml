@@ -1,3 +1,0 @@
-# Statically link the C runtime on Windows MSVC
-[target.x86_64-pc-windows-msvc]
-rustflags = ["-C", "target-feature=+crt-static"]

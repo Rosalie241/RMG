@@ -5,16 +5,6 @@ include(ExternalProject)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-find_program(RUST_CARGO cargo)
-if(NO_RUST)
-    set(BUILD_INPUT_GCA OFF)
-elseif(${RUST_CARGO} STREQUAL "RUST_CARGO-NOTFOUND")
-    message(WARNING "mupen64plus-input-gca will not be built due to not having cargo installed")
-    set(BUILD_INPUT_GCA OFF)
-else()
-    set(BUILD_INPUT_GCA ON)
-endif()
-
 set(M64P_CORE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-core)
 if(WIN32)
     set(SO_EXT "dll")
@@ -172,21 +162,6 @@ ExternalProject_Add(mupen64plus-input-raphnetraw
     BUILD_BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-input-raphnetraw/mupen64plus-input-raphnetraw.${SO_EXT}
 )
 
-if (BUILD_INPUT_GCA)
-    ExternalProject_Add(mupen64plus-input-gca
-        SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-input-gca/
-
-        CONFIGURE_COMMAND ""
-        INSTALL_COMMAND ""
-
-        BUILD_COMMAND cargo build --manifest-path ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-input-gca/Cargo.toml --release --features "m64p_compat" --target-dir=${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-input-gca/target
-        BUILD_IN_SOURCE False
-        BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-input-gca/target/release
-
-        BUILD_BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-input-gca/target/release/${GCA_LIB}
-    )
-endif(BUILD_INPUT_GCA)
-
 set(GLIDEN64_DIR "${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-video-GLideN64")
 set(GLIDEN64_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-video-GLideN64")
 set(GLIDEN64_CUSTOM_INI "${GLIDEN64_DIR}/ini/GLideN64.custom.ini")
@@ -293,11 +268,6 @@ set(MUPEN64PLUS_PLUGIN_RSP_PARALLEL ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 
 ExternalProject_Get_property(mupen64plus-input-raphnetraw BUILD_BYPRODUCTS)
 set(MUPEN64PLUS_PLUGIN_INPUT_RAPHNET ${BUILD_BYPRODUCTS} PARENT_SCOPE)
-
-if (BUILD_INPUT_GCA)
-    ExternalProject_Get_property(mupen64plus-input-gca BUILD_BYPRODUCTS)
-    set(MUPEN64PLUS_PLUGIN_INPUT_GCA ${BUILD_BYPRODUCTS} PARENT_SCOPE)
-endif(BUILD_INPUT_GCA)
 
 if (USE_ANGRYLION)
     ExternalProject_Get_property(mupen64plus-video-angrylion-plus BUILD_BYPRODUCTS)

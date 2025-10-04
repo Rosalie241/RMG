@@ -12,7 +12,6 @@ option(VRU              "Enables VRU support in RMG-Input" ON)
 option(USE_CCACHE       "Enables usage of ccache when ccache has been found" ON)
 option(USE_LTO          "Enables building with LTO/IPO when compiler supports it" ON)
 option(NO_ASM           "Disables the usage of assembly in the mupen64plus-core" OFF)
-option(NO_RUST          "Disables the building of rust subprojects" OFF)
 option(USE_LIBFMT       "Enables usage of libfmt instead of detecting whether std::format is supported" OFF)
 option(USE_ANGRYLION    "Enables building angrylion-rdp-plus which uses a non-GPL compliant license" OFF)
 
@@ -199,10 +198,6 @@ install(FILES ${MUPEN64PLUS_PLUGIN_RSP_PARALLEL}
     PERMISSIONS ${LIB_PERMISSIONS}
 )
 install(FILES ${MUPEN64PLUS_PLUGIN_INPUT_RAPHNET}
-    DESTINATION ${PLUGIN_INSTALL_PATH}/Input
-    PERMISSIONS ${LIB_PERMISSIONS}
-)
-install(FILES ${MUPEN64PLUS_PLUGIN_INPUT_GCA}
     DESTINATION ${PLUGIN_INSTALL_PATH}/Input
     PERMISSIONS ${LIB_PERMISSIONS}
 )
