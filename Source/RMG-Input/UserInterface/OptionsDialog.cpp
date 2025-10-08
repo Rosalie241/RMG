@@ -139,9 +139,19 @@ void OptionsDialog::on_clearGameboySaveButton_clicked()
 
 void OptionsDialog::on_testRumbleButton_clicked()
 {
-#if SDL_VERSION_ATLEAST(2,0,18) && !SDL_VERSION_ATLEAST(3,0,0) // TODO: port this to SDL3
-    if ((this->currentJoystick != nullptr   && SDL_JoystickHasRumble(this->currentJoystick) != true) ||
-        (this->currentController != nullptr && SDL_GameControllerHasRumble(this->currentController) != true))
+    bool rumbleSupported = false;
+
+    SDL_PropertiesID properties;
+    if ((this->currentJoystick != nullptr && (properties = SDL_GetJoystickProperties(this->currentJoystick)) != 0) ||
+        (this->currentController != nullptr && (properties = SDL_GetGamepadProperties(this->currentController)) != 0))
+    {
+        const char* propertyName = this->currentJoystick != nullptr ? SDL_PROP_JOYSTICK_CAP_RUMBLE_BOOLEAN
+                                                                    : SDL_PROP_GAMEPAD_CAP_RUMBLE_BOOLEAN;
+
+        rumbleSupported = SDL_GetBooleanProperty(properties, propertyName, false);
+    }
+
+    if (!rumbleSupported)
     {
         QMessageBox msgBox(this);
         msgBox.setIcon(QMessageBox::Icon::Critical);
@@ -151,7 +161,6 @@ void OptionsDialog::on_testRumbleButton_clicked()
         msgBox.exec();
         return;
     }
-#endif
 
     if (this->currentJoystick != nullptr)
     {
