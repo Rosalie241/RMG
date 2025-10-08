@@ -31,7 +31,7 @@ CORE_EXPORT bool CoreSetKeyUp(int key, int mod)
         return false;
     }
 
-    ret = m64p::Core.DoCommand(M64CMD_SEND_SDL_KEYUP, (mod << 16) + key, NULL);
+    ret = m64p::Core.DoCommand(M64CMD_SEND_SDL_KEYUP, (mod << 16) + key, nullptr);
     if (ret != M64ERR_SUCCESS)
     {
         error = "CoreSetKeyUp M64P::Core.DoCommand(M64CMD_SEND_SDL_KEYUP) Failed: ";
@@ -52,7 +52,7 @@ CORE_EXPORT bool CoreSetKeyDown(int key, int mod)
         return false;
     }
 
-    ret = m64p::Core.DoCommand(M64CMD_SEND_SDL_KEYDOWN, (mod << 16) + key, NULL);
+    ret = m64p::Core.DoCommand(M64CMD_SEND_SDL_KEYDOWN, (mod << 16) + key, nullptr);
     if (ret != M64ERR_SUCCESS)
     {
         error = "CoreSetKeyDown M64P::Core.DoCommand(M64CMD_SEND_SDL_KEYDOWN) Failed: ";
