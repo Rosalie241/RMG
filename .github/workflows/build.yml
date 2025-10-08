@@ -32,7 +32,7 @@ jobs:
 
           sudo apt-get -y update
           sudo apt-get -y upgrade
-          sudo apt-get -y install cmake libhidapi-dev libsamplerate0-dev libspeex-dev libminizip-dev libfreetype6-dev \
+          sudo apt-get -y install cmake libusb-1.0-0-dev libhidapi-dev libsamplerate0-dev libspeex-dev libminizip-dev libfreetype6-dev \
             libgl1-mesa-dev libglu1-mesa-dev pkg-config zlib1g-dev binutils-dev libspeexdsp-dev qt6-base-dev libqt6svg6-dev libqt6websockets6-dev libvulkan-dev \
             build-essential nasm git zip appstream xvfb qt6ct mesa-vulkan-drivers
 
@@ -117,11 +117,11 @@ jobs:
             make
             mingw-w64-ucrt-x86_64-cmake
             mingw-w64-ucrt-x86_64-gcc
-            mingw-w64-ucrt-x86_64-hidapi
             mingw-w64-ucrt-x86_64-freetype
             mingw-w64-ucrt-x86_64-libpng
             mingw-w64-ucrt-x86_64-sdl3
             mingw-w64-ucrt-x86_64-qt6
+            mingw-w64-ucrt-x86_64-libusb
             mingw-w64-ucrt-x86_64-hidapi
             mingw-w64-ucrt-x86_64-speexdsp
             mingw-w64-ucrt-x86_64-libsamplerate
