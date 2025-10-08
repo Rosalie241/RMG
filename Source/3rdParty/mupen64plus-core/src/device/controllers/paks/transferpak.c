@@ -39,7 +39,7 @@
 
 static uint16_t gb_cart_address(unsigned int bank, uint16_t address)
 {
-    return 0x4000 * bank + (address & 0x7fff) - 0x4000;
+    return (address & 0x3fff) | (bank * 0x4000);
 }
 
 void init_transferpak(struct transferpak* tpk, struct gb_cart* gb_cart)
