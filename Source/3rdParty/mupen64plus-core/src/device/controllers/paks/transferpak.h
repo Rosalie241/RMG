@@ -27,13 +27,6 @@
 
 struct gb_cart;
 
-enum cart_access_mode
-{
-    CART_NOT_INSERTED = 0x40,
-    CART_ACCESS_MODE_0 = 0x80,
-    CART_ACCESS_MODE_1 = 0x89
-};
-
 struct transferpak
 {
     unsigned int enabled;

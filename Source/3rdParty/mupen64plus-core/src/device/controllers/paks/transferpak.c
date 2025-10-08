@@ -34,7 +34,6 @@
 
 #include <string.h>
 
-
 #define RESET_MODE_CART_ENABLE_BIT UINT32_C(0x00000001)
 #define RESET_MODE_PAK_ENABLE_BIT UINT32_C(0x00000080)
 
@@ -93,9 +92,7 @@ static void read_transferpak(void* pak, uint16_t address, uint8_t* data, size_t 
     {
     case 0x8:
         /* get gb cart state (enabled/disabled) */
-        value = (tpk->enabled)
-              ? 0x84
-              : 0x00;
+        value = (tpk->enabled) ? 0x84 : 0x00;
 
         DebugMessage(M64MSG_VERBOSE, "tpak get cart state: %02x", value);
         memset(data, value, size);
@@ -164,6 +161,13 @@ static void write_transferpak(void* pak, uint16_t address, const uint8_t* data, 
             DebugMessage(M64MSG_VERBOSE, "tpak disabled");
             break;
         case 0x84:
+            if (!tpk->enabled)
+            {
+                tpk->bank = 3;
+                tpk->cart_enabled = 0;
+                tpk->reset_state = 0;
+            }
+
             tpk->enabled = 1;
             DebugMessage(M64MSG_VERBOSE, "tpak enabled");
             break;
@@ -176,7 +180,7 @@ static void write_transferpak(void* pak, uint16_t address, const uint8_t* data, 
         /* set gb cart bank */
         if (tpk->enabled)
         {
-            tpk->bank = value;
+            tpk->bank = value > 3 ? 0 : value;
             DebugMessage(M64MSG_VERBOSE, "tpak set bank %02x", tpk->bank);
         }
         break;
@@ -200,7 +204,7 @@ static void write_transferpak(void* pak, uint16_t address, const uint8_t* data, 
     case 0xe:
     case 0xf:
         /* write gb cart */
-//        if (tpk->enabled)
+        if (tpk->enabled)
         {
             DebugMessage(M64MSG_VERBOSE, "tpak write gb: %04x <- %02x", address, value);
 
