@@ -82,7 +82,6 @@ struct GameCubeAdapterControllerState
         };
     };
 
-
     uint8_t LeftStickX;
     uint8_t LeftStickY;
     uint8_t RightStickX;
@@ -387,8 +386,8 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
 
     const int triggerTreshold = INT8_MAX * l_Settings.TriggerTreshold;
     const int cStickTreshold  = INT8_MAX * l_Settings.CButtonTreshold;
-    const int8_t cX = (int8_t)(state.RightStickX + 128);
-    const int8_t cY = (int8_t)(state.RightStickY + 128);
+    const int8_t cX = static_cast<int8_t>(state.RightStickX + 128);
+    const int8_t cY = static_cast<int8_t>(state.RightStickY + 128);
 
     Keys->L_TRIG = state.LeftTrigger > triggerTreshold;
     Keys->R_TRIG = state.RightTrigger > triggerTreshold;
@@ -398,8 +397,8 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
     Keys->U_CBUTTON = cY > cStickTreshold;
     Keys->D_CBUTTON = cY < -cStickTreshold;
 
-    const int8_t x = (int8_t)(state.LeftStickX + 128);
-    const int8_t y = (int8_t)(state.LeftStickY + 128);
+    const int8_t x = static_cast<int8_t>(state.LeftStickX + 128);
+    const int8_t y = static_cast<int8_t>(state.LeftStickY + 128);
 
     double modX = (static_cast<double>(x) / static_cast<double>(INT8_MAX)) * N64_AXIS_PEAK * l_Settings.SensitivityValue;
     double modY = (static_cast<double>(y) / static_cast<double>(INT8_MAX)) * N64_AXIS_PEAK * l_Settings.SensitivityValue;
