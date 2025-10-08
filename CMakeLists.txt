@@ -12,7 +12,6 @@ option(VRU              "Enables VRU support in RMG-Input" ON)
 option(USE_CCACHE       "Enables usage of ccache when ccache has been found" ON)
 option(USE_LTO          "Enables building with LTO/IPO when compiler supports it" ON)
 option(NO_ASM           "Disables the usage of assembly in the mupen64plus-core" OFF)
-option(USE_LIBFMT       "Enables usage of libfmt instead of detecting whether std::format is supported" OFF)
 option(USE_ANGRYLION    "Enables building angrylion-rdp-plus which uses a non-GPL compliant license" OFF)
 
 project(RMG)
@@ -55,27 +54,6 @@ if (USE_LTO)
         endif(ENABLE_IPO)
     endif()
 endif(USE_LTO)
-
-if (NOT USE_LIBFMT)
-    set(CMAKE_CXX_STANDARD 20)
-    set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-    include(CheckCXXSourceCompiles)
-
-    check_cxx_source_compiles("
-        #include <format>
-        int main(void)
-        {
-            std::string str = std::format(\"number: {}\", 10);
-            return 0;
-        }" HAVE_STDFORMAT)
-
-    # fallback to libfmt if std::format
-    # isn't supported in the compiler
-    if (NOT HAVE_STDFORMAT)
-        set(USE_LIBFMT ON)
-    endif(NOT HAVE_STDFORMAT)
-endif(NOT USE_LIBFMT)
 
 if (NOT PORTABLE_INSTALL AND WIN32)
     message(WARNING "Not-Portable build not supported on windows, re-enabling PORTABLE_INSTALL!")
