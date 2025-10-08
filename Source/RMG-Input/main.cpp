@@ -79,8 +79,8 @@ struct InputMapping
 struct InputProfile
 {
     bool PluggedIn    = false;
-    int DeadzoneValue = 0;
-    int SensitivityValue = 100;
+    double DeadzoneValue = 0.0;
+    double SensitivityValue = 100.0;
 
     N64ControllerPak ControllerPak = N64ControllerPak::None;
 
@@ -227,8 +227,8 @@ static void load_inputmapping_settings(InputMapping* mapping, std::string sectio
     // it should be true when the minimum of the lengths
     // of all int lists is 0, and the name isn't empty or whitespace
     if (mapping->Count == 0 &&
-        !mapping->Name.empty() && !mapping->Name.at(0).empty() &&
-        mapping->Name.at(0).find_first_not_of(' ') != std::string::npos)
+        !mapping->Name.empty() && !mapping->Name[0].empty() &&
+        mapping->Name[0].find_first_not_of(' ') != std::string::npos)
     {
         mapping->Type.push_back(CoreSettingsGetIntValue(inputTypeSettingsId, section));
         mapping->Data.push_back(CoreSettingsGetIntValue(dataSettingsId, section));
@@ -308,7 +308,7 @@ static void load_settings(void)
         }
 
         profile->PluggedIn = CoreSettingsGetBoolValue(SettingsID::Input_PluggedIn, section);
-        profile->DeadzoneValue = CoreSettingsGetIntValue(SettingsID::Input_Deadzone, section);
+        profile->DeadzoneValue = static_cast<double>(CoreSettingsGetIntValue(SettingsID::Input_Deadzone, section)) / 100.0;
         profile->ControllerPak = static_cast<N64ControllerPak>(CoreSettingsGetIntValue(SettingsID::Input_Pak, section));
         profile->DeviceName = CoreSettingsGetStringValue(SettingsID::Input_DeviceName, section);
         profile->DevicePath = CoreSettingsGetStringValue(SettingsID::Input_DevicePath, section);
@@ -316,7 +316,7 @@ static void load_settings(void)
         profile->DeviceType = static_cast<InputDeviceType>(CoreSettingsGetIntValue(SettingsID::Input_DeviceType, section));
         profile->GameboyRom = CoreSettingsGetStringValue(SettingsID::Input_GameboyRom, section);
         profile->GameboySave = CoreSettingsGetStringValue(SettingsID::Input_GameboySave, section);
-        profile->SensitivityValue = CoreSettingsGetIntValue(SettingsID::Input_Sensitivity, section);
+        profile->SensitivityValue = static_cast<double>(CoreSettingsGetIntValue(SettingsID::Input_Sensitivity, section)) / 100.0;
 
 #define LOAD_INPUT_MAPPING(mapping, setting) \
         load_inputmapping_settings(&profile->mapping, section, SettingsID::setting##_Name, SettingsID::setting##_InputType, SettingsID::setting##_Data, SettingsID::setting##_ExtraData)
@@ -733,94 +733,62 @@ static void close_controllers(void)
 static int get_button_state(InputProfile* profile, const InputMapping* inputMapping, const bool allPressed = false)
 {
     int state = 0;
+    int full_state = 0;
 
     for (int i = 0; i < inputMapping->Count; i++)
     {
-        const int data = inputMapping->Data.at(i);
-        const int extraData = inputMapping->ExtraData.at(i);
+        const int data = inputMapping->Data[i];
+        const int extraData = inputMapping->ExtraData[i];
 
-        switch ((InputType)inputMapping->Type[i])
+        switch (static_cast<InputType>(inputMapping->Type[i]))
         {
             case InputType::GamepadButton:
             {
-                if (allPressed && i > 0)
-                {
-                    state &= SDL_GetGamepadButton(profile->SDLGamepad, (SDL_GamepadButton)data);
-                }
-                else
-                {
-                    state |= SDL_GetGamepadButton(profile->SDLGamepad, (SDL_GamepadButton)data);
-                }
+                state = SDL_GetGamepadButton(profile->SDLGamepad, static_cast<SDL_GamepadButton>(data));
             } break;
             case InputType::GamepadAxis:
             {
-                int axis_value = SDL_GetGamepadAxis(profile->SDLGamepad, (SDL_GamepadAxis)data);
-                if (allPressed && i > 0)
-                {
-                    state &= (abs(axis_value) >= (SDL_AXIS_PEAK / 2) && (extraData ? axis_value > 0 : axis_value < 0)) ? 1 : 0;
-                }
-                else
-                {
-                    state |= (abs(axis_value) >= (SDL_AXIS_PEAK / 2) && (extraData ? axis_value > 0 : axis_value < 0)) ? 1 : 0;
-                }
+                int axis_value = SDL_GetGamepadAxis(profile->SDLGamepad, static_cast<SDL_GamepadAxis>(data));
+                state = (abs(axis_value) >= (SDL_AXIS_PEAK / 2) && (extraData ? axis_value > 0 : axis_value < 0)) ? 1 : 0;
             } break;
             case InputType::JoystickButton:
             {
-                if (allPressed && i > 0)
-                {
-                    state &= SDL_GetJoystickButton(profile->SDLJoystick, data);
-                }
-                else
-                {
-                    state |= SDL_GetJoystickButton(profile->SDLJoystick, data);
-                }
+                state = SDL_GetJoystickButton(profile->SDLJoystick, data);
             } break;
             case InputType::JoystickHat:
             {
-                if (allPressed && i > 0)
-                {
-                    state &= (SDL_GetJoystickHat(profile->SDLJoystick, data) & extraData) ? 1 : 0;
-                }
-                else
-                {
-                    state |= (SDL_GetJoystickHat(profile->SDLJoystick, data) & extraData) ? 1 : 0;
-                }
+                state = (SDL_GetJoystickHat(profile->SDLJoystick, data) & extraData) ? 1 : 0;
             } break;
             case InputType::JoystickAxis:
             {
                 int axis_value = SDL_GetJoystickAxis(profile->SDLJoystick, data);
-                if (allPressed && i > 0)
-                {
-                    state &= (abs(axis_value) >= (SDL_AXIS_PEAK / 2) && (extraData ? axis_value > 0 : axis_value < 0)) ? 1 : 0;
-                }
-                else
-                {
-                    state |= (abs(axis_value) >= (SDL_AXIS_PEAK / 2) && (extraData ? axis_value > 0 : axis_value < 0)) ? 1 : 0;
-                }
+                state = (abs(axis_value) >= (SDL_AXIS_PEAK / 2) && (extraData ? axis_value > 0 : axis_value < 0)) ? 1 : 0;
             } break;
             case InputType::Keyboard:
             {
-                if (allPressed && i > 0)
-                {
-                    state &= l_KeyboardState[data] ? 1 : 0;
-                }
-                else
-                {
-                    state |= l_KeyboardState[data] ? 1 : 0;
-                }
+                state = l_KeyboardState[data] ? 1 : 0;
             } break;
             default:
                 break;
         }
 
-        // early return when needed
-        if (allPressed && !state)
+        if (allPressed && i > 0)
         {
-            return state;
+            full_state &= state;
+        }
+        else
+        {
+            full_state |= state;
+        }
+
+        // early return when needed
+        if (allPressed && !full_state)
+        {
+            return full_state;
         }
     }
 
-    return state;
+    return full_state;
 }
 
 // returns axis input scaled to the range [-1, 1]
@@ -831,18 +799,18 @@ static double get_axis_state(InputProfile* profile, const InputMapping* inputMap
 
     for (int i = 0; i < inputMapping->Count; i++)
     {
-        const int data = inputMapping->Data.at(i);
-        const int extraData = inputMapping->ExtraData.at(i);
+        const int data = inputMapping->Data[i];
+        const int extraData = inputMapping->ExtraData[i];
 
-        switch ((InputType)inputMapping->Type[i])
+        switch (static_cast<InputType>(inputMapping->Type[i]))
         {
             case InputType::GamepadButton:
             {
-                button_state |= SDL_GetGamepadButton(profile->SDLGamepad, (SDL_GamepadButton)data);
+                button_state |= SDL_GetGamepadButton(profile->SDLGamepad, static_cast<SDL_GamepadButton>(data));
             } break;
             case InputType::GamepadAxis:
             {
-                double axis_value = SDL_GetGamepadAxis(profile->SDLGamepad, (SDL_GamepadAxis)data);
+                double axis_value = SDL_GetGamepadAxis(profile->SDLGamepad, static_cast<SDL_GamepadAxis>(data));
                 if (axis_value < -32767.0) axis_value = -32767.0;
                 if (extraData ? axis_value > 0 : axis_value < 0)
                 {
@@ -1392,12 +1360,12 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
     inputX = get_axis_state(profile, &profile->AnalogStick_Right, 1, inputX, useButtonMapping);
 
     // take deadzone into account
-    const double deadzone = profile->DeadzoneValue / 100.0;
+    const double deadzone = profile->DeadzoneValue;
     inputX = apply_deadzone(inputX, deadzone);
     inputY = apply_deadzone(inputY, deadzone);
 
     // take sensitivity into account
-    const double sensitivityRatio = profile->SensitivityValue / 100.0;
+    const double sensitivityRatio = profile->SensitivityValue;
     const double lowerInputLimit = std::max(-1.0, -sensitivityRatio);
     const double upperInputLimit = std::min(1.0, sensitivityRatio);
     inputX = std::clamp(inputX * sensitivityRatio, lowerInputLimit, upperInputLimit);
