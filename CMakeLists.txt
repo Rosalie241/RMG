@@ -136,6 +136,7 @@ add_subdirectory(Source/RMG-Core)
 add_subdirectory(Source/RMG)
 add_subdirectory(Source/RMG-Audio)
 add_subdirectory(Source/RMG-Input)
+add_subdirectory(Source/RMG-Input-GCA)
 install(TARGETS RMG-Core
     DESTINATION ${SYSTEM_LIB_INSTALL_PATH}
 )
@@ -145,7 +146,7 @@ install(TARGETS RMG
 install(TARGETS RMG-Audio
     DESTINATION ${PLUGIN_INSTALL_PATH}/Audio
 )
-install(TARGETS RMG-Input
+install(TARGETS RMG-Input RMG-Input-GCA
     DESTINATION ${PLUGIN_INSTALL_PATH}/Input
 )
 
