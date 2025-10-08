@@ -68,6 +68,7 @@ static std::vector<std::string> l_keyList;
 #define SETTING_SECTION_M64P        "Core"
 #define SETTING_SECTION_AUDIO       SETTING_SECTION_GUI  " - Audio Plugin"
 #define SETTING_SECTION_INPUT       SETTING_SECTION_GUI  " - Input Plugin"
+#define SETTING_SECTION_GCA         SETTING_SECTION_GUI  " - GameCube Adapter Input Plugin"
 #define SETTING_SECTION_RSP         "Rsp-HLE"
 
 // retrieves l_Setting from settingId
@@ -1361,6 +1362,19 @@ static l_Setting get_setting(SettingsID settingId)
         break;
     case SettingsID::Input_Hotkey_Fullscreen_ExtraData:
         setting = {"", "Hotkey_Fullscreen_ExtraData" };
+        break;
+
+    case SettingsID::GCAInput_Deadzone:
+        setting = {SETTING_SECTION_GCA, "Deadzone", 9};
+        break;
+    case SettingsID::GCAInput_Sensitivity:
+        setting = {SETTING_SECTION_GCA, "Sensitivity", 100};
+        break;
+    case SettingsID::GCAInput_CButtonTreshold:
+        setting = {SETTING_SECTION_GCA, "CButtonTreshold", 40};
+        break;
+    case SettingsID::GCAInput_TriggerTreshold:
+        setting = {SETTING_SECTION_GCA, "TriggerTreshold", 50};
         break;
     }
 

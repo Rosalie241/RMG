@@ -461,6 +461,12 @@ enum class SettingsID
     Input_Hotkey_Fullscreen_Data,
     Input_Hotkey_Fullscreen_ExtraData,
 
+    // GCA Input Plugin Settings
+    GCAInput_Deadzone,
+    GCAInput_Sensitivity,
+    GCAInput_CButtonTreshold,
+    GCAInput_TriggerTreshold,
+
     Invalid
 };
 
