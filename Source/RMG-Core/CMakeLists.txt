@@ -60,10 +60,6 @@ if (PORTABLE_INSTALL)
     add_definitions(-DPORTABLE_INSTALL)
 endif(PORTABLE_INSTALL)
 
-if (USE_LIBFMT)
-    add_definitions(-DUSE_LIBFMT)
-endif(USE_LIBFMT)
-
 add_library(RMG-Core SHARED ${RMG_CORE_SOURCES})
 
 if(UNIX)

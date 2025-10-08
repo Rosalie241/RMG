@@ -19,23 +19,11 @@
 
 #include "m64p/Api.hpp"
 
-#ifdef USE_LIBFMT
-#include "../3rdParty/fmt/include/fmt/core.h"
-#include "../3rdParty/fmt/include/fmt/format.h"
-#include "../3rdParty/fmt/include/fmt/format-inl.h"
-#include "../3rdParty/fmt/src/format.cc"
-
-#define fmt_string(...) fmt::format(__VA_ARGS__)
-#else // USE_LIBFMT
-#include <format>
-
-#define fmt_string(...) std::format(__VA_ARGS__)
-#endif // USE_LIBFMT
-
 #include <filesystem>
 #include <algorithm>
 #include <fstream>
 #include <sstream>
+#include <format>
 
 //
 // Local Structs
@@ -104,11 +92,11 @@ static std::filesystem::path get_cheat_file_name(const CoreRomHeader& romHeader,
             return std::filesystem::path();
         }
 
-        cheatFileName = fmt_string("{}.cht", romSettings.MD5);
+        cheatFileName = std::format("{}.cht", romSettings.MD5);
     }
     else
     { // else use CRC1 & CRC2 & CountryCode
-        cheatFileName = fmt_string("{:08X}-{:08X}-{:02X}.cht", romHeader.CRC1, romHeader.CRC2, romHeader.CountryCode);
+        cheatFileName = std::format("{:08X}-{:08X}-{:02X}.cht", romHeader.CRC1, romHeader.CRC2, romHeader.CountryCode);
     }
 
     return cheatFileName;
@@ -453,43 +441,43 @@ static bool write_cheat_file(const CoreCheatFile& cheatFile, const std::filesyst
     // fallback to using MD5 when CRC1 & CRC2 & CountryCode are 0
     if (cheatFile.CRC1 == 0 && cheatFile.CRC2 == 0 && cheatFile.CountryCode == 0)
     {
-        lines += fmt_string("[{}]\n", cheatFile.MD5);
+        lines += std::format("[{}]\n", cheatFile.MD5);
     }
     else
     { // else use CRC1 & CRC2 & CountryCode
-        lines += fmt_string("[{:08X}-{:08X}-C:{:02X}]\n", cheatFile.CRC1, cheatFile.CRC2, cheatFile.CountryCode);
+        lines += std::format("[{:08X}-{:08X}-C:{:02X}]\n", cheatFile.CRC1, cheatFile.CRC2, cheatFile.CountryCode);
     }
 
-    lines += fmt_string("Name={}\n\n", cheatFile.Name);
+    lines += std::format("Name={}\n\n", cheatFile.Name);
 
     for (const CoreCheat& cheat : cheatFile.Cheats)
     {
-        lines += fmt_string("${}\n", cheat.Name);
+        lines += std::format("${}\n", cheat.Name);
 
         if (!cheat.Author.empty())
         {
-            lines += fmt_string("Author={}\n", cheat.Author);
+            lines += std::format("Author={}\n", cheat.Author);
         }
 
         if (!cheat.Note.empty())
         {
-            lines += fmt_string("Note={}\n", cheat.Note);
+            lines += std::format("Note={}\n", cheat.Note);
         }
 
         for (const CoreCheatCode& code : cheat.CheatCodes)
         {
             if (code.UseOptions)
             {
-                std::string value = fmt_string("{:04X}", code.Value);
+                std::string value = std::format("{:04X}", code.Value);
 
                 // insert question mark string
                 value.replace(code.OptionIndex, code.OptionSize, code.OptionSize, '?');
 
-                lines += fmt_string("{:04X} {}\n", code.Address, value);
+                lines += std::format("{:04X} {}\n", code.Address, value);
             }
             else
             {
-                lines += fmt_string("{:08X} {:04X}\n", code.Address, code.Value);
+                lines += std::format("{:08X} {:04X}\n", code.Address, code.Value);
             }
         }
 
@@ -497,7 +485,7 @@ static bool write_cheat_file(const CoreCheatFile& cheatFile, const std::filesyst
         {
             for (const CoreCheatOption& option : cheat.CheatOptions)
             {
-                lines += fmt_string("{:0{}X} {}\n", option.Value, option.Size, option.Name);
+                lines += std::format("{:0{}X} {}\n", option.Value, option.Size, option.Name);
             }
         }
 
@@ -527,8 +515,8 @@ bool combine_cheat_code_and_option(const CoreCheatCode& code, const CoreCheatOpt
         return false;
     }
 
-    codeValueString   = fmt_string("{:04X}", code.Value);
-    optionValueString = fmt_string("{:0{}X}", option.Value, option.Size);
+    codeValueString   = std::format("{:04X}", code.Value);
+    optionValueString = std::format("{:0{}X}", option.Value, option.Size);
 
     // insert option
     codeValueString.replace(code.OptionIndex, code.OptionSize, optionValueString);
@@ -653,16 +641,16 @@ CORE_EXPORT bool CoreGetCheatLines(CoreCheat cheat, std::vector<std::string>& co
     {
         if (code.UseOptions)
         {
-            std::string value = fmt_string("{:04X}", code.Value);
+            std::string value = std::format("{:04X}", code.Value);
 
             // insert question mark string
             value.replace(code.OptionIndex, code.OptionSize, code.OptionSize, '?');
 
-            codeLines.push_back(fmt_string("{:04X} {}", code.Address, value));
+            codeLines.push_back(std::format("{:04X} {}", code.Address, value));
         }
         else
         {
-            codeLines.push_back(fmt_string("{:08X} {:04X}", code.Address, code.Value));
+            codeLines.push_back(std::format("{:08X} {:04X}", code.Address, code.Value));
         }
     }
 
@@ -670,7 +658,7 @@ CORE_EXPORT bool CoreGetCheatLines(CoreCheat cheat, std::vector<std::string>& co
     {
         for (const CoreCheatOption& option : cheat.CheatOptions)
         {
-            optionLines.push_back(fmt_string("{:0{}X} {}", option.Value, option.Size, option.Name));
+            optionLines.push_back(std::format("{:0{}X} {}", option.Value, option.Size, option.Name));
         }
     }
 
