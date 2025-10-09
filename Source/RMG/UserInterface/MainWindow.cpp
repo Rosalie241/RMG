@@ -171,12 +171,14 @@ void MainWindow::closeEvent(QCloseEvent *event)
     {
         bool skipExitConfirmation = false;
         bool ret = QtMessageBox::Question(this, "Are you sure you want to exit RMG?", "Don't ask for confirmation again", skipExitConfirmation);
-        CoreSettingsSetValue(SettingsID::GUI_ConfirmExitWhileInGame, !skipExitConfirmation);
         if (!ret)
         {
             event->ignore();
             return;
         }
+
+        // only save setting when user accepted
+        CoreSettingsSetValue(SettingsID::GUI_ConfirmExitWhileInGame, !skipExitConfirmation);
     }
 
     // we have to make sure we save the geomtry
