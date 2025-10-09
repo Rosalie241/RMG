@@ -29,6 +29,14 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.8.5" date="2025-10-09" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix buttons being stuck as pressed in the configuration GUI of RMG-Input in some cases</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.8.4" date="2025-10-09" type="stable">
       <description>
         <p>Changes:</p>
