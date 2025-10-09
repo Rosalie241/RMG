@@ -29,6 +29,20 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.8.4" date="2025-10-09" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix 'Test Rumble' functionality in RMG-Input not checking for rumble support since v0.8.1</li>
+          <li>Fix exit confirmation checkbox saving the setting when rejecting the dialog</li>
+          <li>Remove discord rich presence support</li>
+          <li>Remove mupen64plus-input-gca</li>
+          <li>Remove fallback to libfmt when 'std::format' isn't supported by the compiler</li>
+          <li>Introduce RMG-Input-GCA</li>
+          <li>Update mupen64plus-core, GLideN64 and SDL_GameControllerDB</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.8.3" date="2025-09-28" type="stable">
       <description>
         <p>Changes:</p>

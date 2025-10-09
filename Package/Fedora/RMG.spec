@@ -1,5 +1,5 @@
 Name:    RMG       
-Version: 0.8.3
+Version: 0.8.4
 Release: %autorelease
 Summary: Rosalie's Mupen GUI 
 
@@ -11,6 +11,7 @@ BuildRequires: gcc
 BuildRequires: g++
 BuildRequires: nasm
 BuildRequires: cmake
+BuildRequires: libusb1-devel
 BuildRequires: hidapi-devel
 BuildRequires: libsamplerate-devel
 BuildRequires: minizip-compat-devel
@@ -26,6 +27,7 @@ BuildRequires: qt6-qtsvg-devel
 BuildRequires: qt6-qtwebsockets-devel
 BuildRequires: libxkbcommon-devel
 
+Requires: libusb1
 Requires: hidapi
 Requires: SDL3
 Requires: zlib-ng

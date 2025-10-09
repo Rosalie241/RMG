@@ -1,13 +1,13 @@
 # Maintainer: Rosalie Wanders <rosalie@mailbox.org>
 pkgname=rmg
-pkgver=0.8.3
+pkgver=0.8.4
 pkgrel=1
 pkgdesc="Rosalie's Mupen GUI"
 arch=('x86_64' 'aarch64')
 url="https://github.com/Rosalie241/$pkgname"
 license=('GPL3')
 
-depends=("hidapi" "libsamplerate" "speexdsp" "minizip" "sdl3" "zlib" "freetype2" "qt6-base" "qt6-svg" "qt6-websockets")
+depends=("libusb" "hidapi" "libsamplerate" "speexdsp" "minizip" "sdl3" "zlib" "freetype2" "qt6-base" "qt6-svg" "qt6-websockets")
 makedepends=("git" "nasm" "cmake" "vulkan-headers")
 
 source=("git+https://github.com/Rosalie241/$pkgname.git#tag=v$pkgver")
@@ -24,7 +24,6 @@ build()
                 -DCMAKE_BUILD_TYPE="Release" \
                 -DPORTABLE_INSTALL="OFF" \
                 -DCMAKE_INSTALL_PREFIX="/usr" \
-                -DNO_RUST="ON" \
                 -G "Unix Makefiles"
 
     cmake --build "$srcdir/$pkgname/build"
