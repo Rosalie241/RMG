@@ -1326,7 +1326,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             // more than 50%, otherwise we might detect
             // an accidental axis movement (due to i.e deadzone)
             const bool sdlAxisButtonPressed = (abs(sdlAxisValue) >= (SDL_AXIS_PEAK / 2));
-            int sdlAxisDirection = (sdlAxisValue > 0 ? 1 : 0);
+            int sdlAxisDirection = (sdlAxisValue >= 0 ? 1 : 0);
 
             // make sure we have the right joystick
             if (joystickId != this->currentJoystickId)
