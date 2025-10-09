@@ -48,7 +48,7 @@ protected:
 private:
     OptionsDialogSettings settings;
 
-    SDL_Joystick* currentJoystick         = nullptr;
+    SDL_Joystick* currentJoystick  = nullptr;
     SDL_Gamepad* currentController = nullptr;
 
     void setIconsForEmulationInfoText(void);
