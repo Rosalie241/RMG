@@ -1326,7 +1326,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             // more than 50%, otherwise we might detect
             // an accidental axis movement (due to i.e deadzone)
             const bool sdlAxisButtonPressed = (abs(sdlAxisValue) >= (SDL_AXIS_PEAK / 2));
-            int sdlAxisDirection = (sdlAxisValue >= 0 ? 1 : 0);
+            int sdlAxisDirection = (sdlAxisValue > 0 ? 1 : 0);
 
             // make sure we have the right joystick
             if (joystickId != this->currentJoystickId)
@@ -1361,12 +1361,23 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
                 break;
             }
 
-            // update controller button state
+            // update controller button state,
+            // we have to loop over each possible direction,
+            // then ensure the opposite direction is disabled
+            // because an axis can only be at one direction
+            // at a given time
+            const int directions[] =
+            {
+                0, 1
+            };
             for (auto& button : this->buttonWidgetMappings)
             {
-                if (button.buttonWidget->HasInputData(inputType, sdlAxis, sdlAxisDirection))
+                for (int direction : directions)
                 {
-                    this->controllerImageWidget->SetButtonState(button.button, sdlAxisButtonPressed);
+                    if (button.buttonWidget->HasInputData(inputType, sdlAxis, direction))
+                    {
+                        this->controllerImageWidget->SetButtonState(button.button, (direction == sdlAxisDirection && sdlAxisButtonPressed));
+                    }
                 }
             }
 
