@@ -1570,14 +1570,18 @@ void ControllerWidget::LoadSettings()
         this->gameSection = section + " Game " + QString::fromStdString(romSettings.MD5);
 
         // use internal rom name
-        QString internalName = QString::fromStdString(romHeader.Name);
+        QString name = QString::fromStdString(romHeader.Name);
+        if (name.isEmpty())
+        { // fallback to partial MD5 hash name
+            name = QString::fromStdString(romSettings.MD5).slice(0, 10);
+        }
 
         // add game specific profile when 
         // it doesn't exist yet
         int index = this->profileComboBox->findData(this->gameSection);
         if (index == -1)
         {
-            this->profileComboBox->addItem(internalName, this->gameSection);
+            this->profileComboBox->addItem(name, this->gameSection);
         }
 
         // if a game specific section exists,
@@ -1594,7 +1598,7 @@ void ControllerWidget::LoadSettings()
                 !CoreSettingsKeyExists(this->gameSection.toStdString(), "UseGameProfile") ||
                 CoreSettingsGetBoolValue(SettingsID::Input_UseGameProfile, this->gameSection.toStdString()))
             {
-                this->profileComboBox->setCurrentText(internalName);
+                this->profileComboBox->setCurrentText(name);
 
                 // only use game section if it exists
                 if (CoreSettingsSectionExists(this->gameSection.toStdString()))
