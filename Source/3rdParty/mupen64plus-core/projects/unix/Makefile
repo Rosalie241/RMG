@@ -736,16 +736,6 @@ endif
 
 ifeq ($(ACCURATE_FPU), 1)
   CFLAGS += -DACCURATE_FPU_BEHAVIOR
-  # -O2 & -O3 enable -ftree-pre in GCC
-  # which break some FPU functions and cause
-  # a lot of test failures in n64-systemtest,
-  # so fix that by disabling -ftree-pre
-  # TODO: test with different GCC versions
-  # NOTE: tested with GCC 13.2.1
-  CC_VERSION := $(shell $(CC) --version)
-  ifneq ($(findstring GCC,$(CC_VERSION)), )
-    CFLAGS += -fno-tree-pre
-  endif
 endif
 
 ifeq ($(DEBUGGER), 1)
