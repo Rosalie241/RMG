@@ -1573,7 +1573,7 @@ void ControllerWidget::LoadSettings()
         QString name = QString::fromStdString(romHeader.Name);
         if (name.isEmpty())
         { // fallback to partial MD5 hash name
-            name = QString::fromStdString(romSettings.MD5).slice(0, 10);
+            name = QString::fromStdString(romSettings.MD5).left(10);
         }
 
         // add game specific profile when 
