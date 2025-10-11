@@ -2824,6 +2824,9 @@
                 <property name="text">
                  <string>Change</string>
                 </property>
+                <property name="icon">
+                 <iconset theme="folder-open-line"/>
+                </property>
                </widget>
               </item>
              </layout>
@@ -2847,6 +2850,9 @@
                 <property name="text">
                  <string>Change</string>
                 </property>
+                <property name="icon">
+                 <iconset theme="folder-open-line"/>
+                </property>
                </widget>
               </item>
              </layout>
@@ -2869,6 +2875,9 @@
                <widget class="QPushButton" name="changeSaveSramDirButton">
                 <property name="text">
                  <string>Change</string>
+                </property>
+                <property name="icon">
+                 <iconset theme="folder-open-line"/>
                 </property>
                </widget>
               </item>
@@ -2908,6 +2917,9 @@
                    <property name="text">
                     <string>Change</string>
                    </property>
+                   <property name="icon">
+                    <iconset theme="folder-open-line"/>
+                   </property>
                   </widget>
                  </item>
                 </layout>
@@ -2930,6 +2942,9 @@
                   <widget class="QPushButton" name="changeUserCacheDirButton">
                    <property name="text">
                     <string>Change</string>
+                   </property>
+                   <property name="icon">
+                    <iconset theme="folder-open-line"/>
                    </property>
                   </widget>
                  </item>
@@ -3022,12 +3037,18 @@
                 <property name="text">
                  <string>Change</string>
                 </property>
+                <property name="icon">
+                 <iconset theme="folder-open-line"/>
+                </property>
                </widget>
               </item>
               <item>
                <widget class="QPushButton" name="clearJapaneseIPLRomPathButton">
                 <property name="text">
-                 <string>Clear</string>
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset theme="delete-bin-line"/>
                 </property>
                </widget>
               </item>
@@ -3052,12 +3073,18 @@
                 <property name="text">
                  <string>Change</string>
                 </property>
+                <property name="icon">
+                 <iconset theme="folder-open-line"/>
+                </property>
                </widget>
               </item>
               <item>
                <widget class="QPushButton" name="clearAmericanIPLRomPathButton">
                 <property name="text">
-                 <string>Clear</string>
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset theme="delete-bin-line"/>
                 </property>
                </widget>
               </item>
@@ -3082,12 +3109,18 @@
                 <property name="text">
                  <string>Change</string>
                 </property>
+                <property name="icon">
+                 <iconset theme="folder-open-line"/>
+                </property>
                </widget>
               </item>
               <item>
                <widget class="QPushButton" name="clearDevelopmentIPLRomPathButton">
                 <property name="text">
-                 <string>Clear</string>
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset theme="delete-bin-line"/>
                 </property>
                </widget>
               </item>

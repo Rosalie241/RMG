@@ -117,14 +117,6 @@ SettingsDialog::SettingsDialog(QWidget *parent, QString file) : QDialog(parent)
     // connect hotkey settings to slot
     this->commonHotkeySettings(SettingsDialogAction::ConnectSignals);
 
-    // set icons for certain buttons
-    this->clearJapaneseIPLRomPathButton->setText("");
-    this->clearJapaneseIPLRomPathButton->setIcon(QIcon::fromTheme("delete-bin-line"));
-    this->clearAmericanIPLRomPathButton->setText("");
-    this->clearAmericanIPLRomPathButton->setIcon(QIcon::fromTheme("delete-bin-line"));
-    this->clearDevelopmentIPLRomPathButton->setText("");
-    this->clearDevelopmentIPLRomPathButton->setIcon(QIcon::fromTheme("delete-bin-line"));
-
 #ifndef NETPLAY
     this->innerInterfaceTabWidget->setTabVisible((int)SettingsDialogTab::InterfaceNetplay, false);
 #endif // !NETPLAY
