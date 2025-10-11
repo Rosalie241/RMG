@@ -410,16 +410,10 @@ void SettingsDialog::loadDirectorySettings(void)
     const std::string screenshotDir = CoreSettingsGetStringValue(SettingsID::Core_ScreenshotPath);
     const std::string saveStateDir = CoreSettingsGetStringValue(SettingsID::Core_SaveStatePath);
     const std::string saveSramDir = CoreSettingsGetStringValue(SettingsID::Core_SaveSRAMPath);
-    const bool overrideUserDirs = CoreSettingsGetBoolValue(SettingsID::Core_OverrideUserDirs);
-    const std::string userDataDir = CoreSettingsGetStringValue(SettingsID::Core_UserDataDirOverride);
-    const std::string userCacheDir = CoreSettingsGetStringValue(SettingsID::Core_UserCacheDirOverride);
 
     this->screenshotDirLineEdit->setText(QString::fromStdString(screenshotDir));
     this->saveStateDirLineEdit->setText(QString::fromStdString(saveStateDir));
     this->saveSramDirLineEdit->setText(QString::fromStdString(saveSramDir));
-    this->overrideUserDirsGroupBox->setChecked(overrideUserDirs);
-    this->userDataDirLineEdit->setText(QString::fromStdString(userDataDir));
-    this->userCacheDirLineEdit->setText(QString::fromStdString(userCacheDir));
 }
 
 void SettingsDialog::load64DDSettings(void)
@@ -609,9 +603,6 @@ void SettingsDialog::loadDefaultDirectorySettings(void)
     this->screenshotDirLineEdit->setText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::Core_ScreenshotPath)));
     this->saveStateDirLineEdit->setText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::Core_SaveStatePath)));
     this->saveSramDirLineEdit->setText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::Core_SaveSRAMPath)));
-    this->overrideUserDirsGroupBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::Core_OverrideUserDirs));
-    this->userDataDirLineEdit->setText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::Core_UserDataDirOverride)));
-    this->userCacheDirLineEdit->setText(QString::fromStdString(CoreSettingsGetDefaultStringValue(SettingsID::Core_UserCacheDirOverride)));
 }
 
 void SettingsDialog::loadDefault64DDSettings(void)
@@ -851,10 +842,6 @@ void SettingsDialog::saveDirectorySettings(void)
     CoreSettingsSetValue(SettingsID::Core_ScreenshotPath, this->screenshotDirLineEdit->text().toStdString());
     CoreSettingsSetValue(SettingsID::Core_SaveStatePath, this->saveStateDirLineEdit->text().toStdString());
     CoreSettingsSetValue(SettingsID::Core_SaveSRAMPath, this->saveSramDirLineEdit->text().toStdString());
-
-    CoreSettingsSetValue(SettingsID::Core_OverrideUserDirs, this->overrideUserDirsGroupBox->isChecked());
-    CoreSettingsSetValue(SettingsID::Core_UserDataDirOverride, this->userDataDirLineEdit->text().toStdString());
-    CoreSettingsSetValue(SettingsID::Core_UserCacheDirOverride, this->userCacheDirLineEdit->text().toStdString());
 }
 
 void SettingsDialog::save64DDSettings(void)
@@ -1365,16 +1352,6 @@ void SettingsDialog::on_changeSaveStateDirButton_clicked(void)
 void SettingsDialog::on_changeSaveSramDirButton_clicked(void)
 {
     this->chooseDirectory(this->saveSramDirLineEdit, tr("Select Save (SRAM) Directory"));
-}
-
-void SettingsDialog::on_changeUserDataDirButton_clicked(void)
-{
-    this->chooseDirectory(this->userDataDirLineEdit, tr("Select User Data Directory"));
-}
-
-void SettingsDialog::on_changeUserCacheDirButton_clicked(void)
-{
-    this->chooseDirectory(this->userCacheDirLineEdit, tr("Select User Cache Directory"));
 }
 
 void SettingsDialog::on_changeJapaneseIPLRomPathButton_clicked(void)

@@ -142,8 +142,6 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void on_changeScreenShotDirButton_clicked(void);
     void on_changeSaveStateDirButton_clicked(void);
     void on_changeSaveSramDirButton_clicked(void);
-    void on_changeUserDataDirButton_clicked(void);
-    void on_changeUserCacheDirButton_clicked(void);
 
     void on_changeJapaneseIPLRomPathButton_clicked(void);
     void on_changeAmericanIPLRomPathButton_clicked(void);
