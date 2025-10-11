@@ -508,7 +508,7 @@ static void open_controller_automatic(int index, InputProfile* profile, SDL_Joys
     std::string debugMessage;
 
     std::string debugMessageBase;
-    debugMessageBase = "setup_device_automatic(";
+    debugMessageBase = "open_controller_automatic(";
     debugMessageBase += std::to_string(index);
     debugMessageBase += "): ";
 
@@ -518,7 +518,6 @@ static void open_controller_automatic(int index, InputProfile* profile, SDL_Joys
 
         if (SDL_IsGamepad(joystickId))
         {
-            profile->SDLJoystick = SDL_OpenJoystick(joystickId);
             profile->SDLGamepad = SDL_OpenGamepad(joystickId);
             if (profile->SDLGamepad == nullptr)
             {
@@ -526,6 +525,14 @@ static void open_controller_automatic(int index, InputProfile* profile, SDL_Joys
                 debugMessage += SDL_GetError();
                 PluginDebugMessage(M64MSG_ERROR, debugMessage);
                 continue;
+            }
+
+            profile->SDLJoystick = SDL_GetGamepadJoystick(profile->SDLGamepad);
+            if (profile->SDLJoystick == nullptr)
+            {
+                debugMessage = debugMessageBase + "SDL_GetGamepadJoystick Failed: ";
+                debugMessage += SDL_GetError();
+                PluginDebugMessage(M64MSG_WARNING, debugMessage);
             }
 
             debugMessage = debugMessageBase + "found gamepad: ";
@@ -599,14 +606,21 @@ static void open_controller(InputProfile* profile, SDL_JoystickID* joysticks, in
 
         if (SDL_IsGamepad(joystickId))
         {
-            joystick = SDL_OpenJoystick(joystickId);
-            gamepad  = SDL_OpenGamepad(joystickId);
+            gamepad = SDL_OpenGamepad(joystickId);
             if (gamepad == nullptr)
             {
                 errorMessage = "open_controller(): SDL_OpenGamepad Failed: ";
                 errorMessage += SDL_GetError();
                 PluginDebugMessage(M64MSG_ERROR, errorMessage);
                 continue;
+            }
+            
+            joystick = SDL_GetGamepadJoystick(gamepad);
+            if (joystick == nullptr)
+            {
+                errorMessage = "open_controller(): SDL_GetGamepadJoystick Failed: ";
+                errorMessage += SDL_GetError();
+                PluginDebugMessage(M64MSG_WARNING, errorMessage);
             }
 
             deviceName = string_from_const_char(SDL_GetGamepadName(gamepad));
@@ -639,30 +653,32 @@ static void open_controller(InputProfile* profile, SDL_JoystickID* joysticks, in
             return;
         }
 
-        if (joystick != nullptr)
-        {
-            SDL_CloseJoystick(joystick);
-            joystick = nullptr;
-        }
         if (gamepad != nullptr)
         {
             SDL_CloseGamepad(gamepad);
             gamepad = nullptr;
+            joystick = nullptr; // owned by SDL3
+        }
+        else if (joystick != nullptr)
+        {
+            SDL_CloseJoystick(joystick);
+            joystick = nullptr;
         }
     }
 }
 
 static void close_controller(InputProfile* profile)
 {
-    if (profile->SDLJoystick != nullptr)
-    {
-        SDL_CloseJoystick(profile->SDLJoystick);
-        profile->SDLJoystick = nullptr;
-    }
     if (profile->SDLGamepad != nullptr)
     {
         SDL_CloseGamepad(profile->SDLGamepad);
         profile->SDLGamepad = nullptr;
+        profile->SDLJoystick = nullptr; // owned by SDL3
+    }
+    else if (profile->SDLJoystick != nullptr)
+    {
+        SDL_CloseJoystick(profile->SDLJoystick);
+        profile->SDLJoystick = nullptr;
     }
 }
 
