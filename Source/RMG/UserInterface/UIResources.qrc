@@ -12,6 +12,7 @@
   <file alias="icons/black/svg/delete-bin-line.svg">Resource/icons/black/svg/delete-bin-line.svg</file>
   <file alias="icons/black/svg/door-open-line.svg">Resource/icons/black/svg/door-open-line.svg</file>
   <file alias="icons/black/svg/download-line.svg">Resource/icons/black/svg/download-line.svg</file>
+  <file alias="icons/black/svg/eye-line.svg">Resource/icons/black/svg/eye-line.svg</file>
   <file alias="icons/black/svg/file-line.svg">Resource/icons/black/svg/file-line.svg</file>
   <file alias="icons/black/svg/file-list-line.svg">Resource/icons/black/svg/file-list-line.svg</file>
   <file alias="icons/black/svg/folder-open-line.svg">Resource/icons/black/svg/folder-open-line.svg</file>
@@ -19,6 +20,7 @@
   <file alias="icons/black/svg/function-line.svg">Resource/icons/black/svg/function-line.svg</file>
   <file alias="icons/black/svg/gamepad-line.svg">Resource/icons/black/svg/gamepad-line.svg</file>
   <file alias="icons/black/svg/github-fill.svg">Resource/icons/black/svg/github-fill.svg</file>
+  <file alias="icons/black/svg/hard-drive-line.svg">Resource/icons/black/svg/hard-drive-line.svg</file>
   <file alias="icons/black/svg/information-line.svg">Resource/icons/black/svg/information-line.svg</file>
   <file alias="icons/black/svg/list-check.svg">Resource/icons/black/svg/list-check.svg</file>
   <file alias="icons/black/svg/pause-line.svg">Resource/icons/black/svg/pause-line.svg</file>
@@ -46,6 +48,7 @@
   <file alias="icons/white/svg/delete-bin-line.svg">Resource/icons/white/svg/delete-bin-line.svg</file>
   <file alias="icons/white/svg/door-open-line.svg">Resource/icons/white/svg/door-open-line.svg</file>
   <file alias="icons/white/svg/download-line.svg">Resource/icons/white/svg/download-line.svg</file>
+  <file alias="icons/white/svg/eye-line.svg">Resource/icons/white/svg/eye-line.svg</file>
   <file alias="icons/white/svg/file-line.svg">Resource/icons/white/svg/file-line.svg</file>
   <file alias="icons/white/svg/file-list-line.svg">Resource/icons/white/svg/file-list-line.svg</file>
   <file alias="icons/white/svg/folder-open-line.svg">Resource/icons/white/svg/folder-open-line.svg</file>
@@ -53,6 +56,7 @@
   <file alias="icons/white/svg/function-line.svg">Resource/icons/white/svg/function-line.svg</file>
   <file alias="icons/white/svg/gamepad-line.svg">Resource/icons/white/svg/gamepad-line.svg</file>
   <file alias="icons/white/svg/github-fill.svg">Resource/icons/white/svg/github-fill.svg</file>
+  <file alias="icons/white/svg/hard-drive-line.svg">Resource/icons/white/svg/hard-drive-line.svg</file>
   <file alias="icons/white/svg/information-line.svg">Resource/icons/white/svg/information-line.svg</file>
   <file alias="icons/white/svg/list-check.svg">Resource/icons/white/svg/list-check.svg</file>
   <file alias="icons/white/svg/pause-line.svg">Resource/icons/white/svg/pause-line.svg</file>
