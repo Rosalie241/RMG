@@ -114,12 +114,18 @@
                 <property name="text">
                  <string>Change</string>
                 </property>
+                <property name="icon">
+                 <iconset theme="folder-open-line"/>
+                </property>
                </widget>
               </item>
               <item>
                <widget class="QPushButton" name="clearGameboyRomButton">
                 <property name="text">
-                 <string>Clear</string>
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset theme="delete-bin-line"/>
                 </property>
                </widget>
               </item>
@@ -144,12 +150,18 @@
                 <property name="text">
                  <string>Change</string>
                 </property>
+                <property name="icon">
+                 <iconset theme="folder-open-line"/>
+                </property>
                </widget>
               </item>
               <item>
                <widget class="QPushButton" name="clearGameboySaveButton">
                 <property name="text">
-                 <string>Clear</string>
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset theme="delete-bin-line"/>
                 </property>
                </widget>
               </item>

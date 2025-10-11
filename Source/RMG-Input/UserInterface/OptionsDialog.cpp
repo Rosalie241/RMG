@@ -43,11 +43,6 @@ OptionsDialog::OptionsDialog(QWidget* parent, OptionsDialogSettings settings,
         this->hideEmulationInfoText();
     }
 
-    this->clearGameboyRomButton->setText("");
-    this->clearGameboyRomButton->setIcon(QIcon::fromTheme("delete-bin-line"));
-    this->clearGameboySaveButton->setText("");
-    this->clearGameboySaveButton->setIcon(QIcon::fromTheme("delete-bin-line"));
-
     this->currentJoystick   = joystick;
     this->currentController = controller;
 
