@@ -54,11 +54,6 @@ enum class SettingsID
     Core_INPUT_Plugin,
     Core_RSP_Plugin,
 
-    // Core User Directory Settings
-    Core_OverrideUserDirs,
-    Core_UserDataDirOverride,
-    Core_UserCacheDirOverride,
-
     // Core 64DD ROM Settings
     Core_64DD_JapaneseIPL,
     Core_64DD_AmericanIPL,

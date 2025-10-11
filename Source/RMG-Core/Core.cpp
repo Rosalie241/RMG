@@ -55,18 +55,8 @@ static bool config_override_user_dirs(void)
 {
     std::string error;
     m64p_error  ret;
-    std::string dataDir;
-    std::string cacheDir;
-    bool        overrideUserDirs;
-
-    dataDir = CoreSettingsGetStringValue(SettingsID::Core_UserDataDirOverride);
-    cacheDir = CoreSettingsGetStringValue(SettingsID::Core_UserCacheDirOverride);
-    overrideUserDirs = CoreSettingsGetBoolValue(SettingsID::Core_OverrideUserDirs);
-
-    if (!overrideUserDirs)
-    {
-        return true;
-    }
+    const std::string dataDir = CoreGetUserDataDirectory().string();
+    const std::string cacheDir = CoreGetUserCacheDirectory().string();
 
     ret = m64p::Config.OverrideUserPaths(dataDir.c_str(), cacheDir.c_str());
     if (ret != M64ERR_SUCCESS)

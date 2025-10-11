@@ -40,14 +40,6 @@ std::filesystem::path CoreGetLibraryDirectory(void);
 // plugins should be located
 std::filesystem::path CoreGetPluginDirectory(void);
 
-// returns the default user data directory where
-// data files should be located
-std::filesystem::path CoreGetDefaultUserDataDirectory(void);
-
-// returns the default user cache directory where
-// cache files should be located
-std::filesystem::path CoreGetDefaultUserCacheDirectory(void);
-
 // returns the default save directory where
 // game saves should be located
 std::filesystem::path CoreGetDefaultSaveDirectory(void);

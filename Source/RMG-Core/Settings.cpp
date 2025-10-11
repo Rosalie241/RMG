@@ -214,16 +214,6 @@ static l_Setting get_setting(SettingsID settingId)
                   };
         break;
 
-    case SettingsID::Core_OverrideUserDirs:
-        setting = {SETTING_SECTION_CORE, "OverrideUserDirectories", true};
-        break;
-    case SettingsID::Core_UserDataDirOverride:
-        setting = {SETTING_SECTION_CORE, "UserDataDirectory", CoreGetDefaultUserDataDirectory().string()};
-        break;
-    case SettingsID::Core_UserCacheDirOverride:
-        setting = {SETTING_SECTION_CORE, "UserCacheDirectory", CoreGetDefaultUserCacheDirectory().string()};
-        break;
-
     case SettingsID::Core_OverrideGameSpecificSettings:
         setting = {SETTING_SECTION_CORE, "OverrideGameSpecificSettings", false};
         break;

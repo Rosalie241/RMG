@@ -296,47 +296,6 @@ CORE_EXPORT std::filesystem::path CoreGetUserConfigDirectory(void)
     return directory.make_preferred();
 }
 
-CORE_EXPORT std::filesystem::path CoreGetDefaultUserDataDirectory(void)
-{
-    std::filesystem::path directory;
-#ifdef PORTABLE_INSTALL
-    if (CoreGetPortableDirectoryMode())
-    {
-        directory = "Data";
-    }
-    else
-#endif // PORTABLE_INSTALL
-    {
-#ifdef _WIN32
-        directory = get_appdata_directory("Data");
-#else
-        directory = get_var_directory("XDG_DATA_HOME", "/RMG", "HOME", "/.local/share/RMG");
-#endif // _WIN32
-    }
-    return directory.make_preferred();
-}
-
-CORE_EXPORT std::filesystem::path CoreGetDefaultUserCacheDirectory(void)
-{
-    std::filesystem::path directory;
-#ifdef PORTABLE_INSTALL
-    if (CoreGetPortableDirectoryMode())
-    {
-        directory = "Cache";
-    }
-    else
-#endif // PORTABLE_INSTALL
-    {
-#ifdef _WIN32
-        directory = get_appdata_directory("Cache");
-
-#else
-        directory = get_var_directory("XDG_CACHE_HOME", "/RMG", "HOME", "/.cache/RMG");
-#endif // _WIN32
-    }
-    return directory.make_preferred();
-}
-
 CORE_EXPORT std::filesystem::path CoreGetDefaultSaveDirectory(void)
 {
     std::filesystem::path directory;
@@ -352,7 +311,7 @@ CORE_EXPORT std::filesystem::path CoreGetDefaultSaveDirectory(void)
         directory = get_appdata_directory("Save/Game");
 
 #else
-        directory = CoreGetDefaultUserDataDirectory();
+        directory = CoreGetUserDataDirectory();
         directory += "/Save/Game";
 #endif // _WIN32
     }
@@ -374,7 +333,7 @@ CORE_EXPORT std::filesystem::path CoreGetDefaultSaveStateDirectory(void)
         directory = get_appdata_directory("Save/State");
 
 #else
-        directory = CoreGetDefaultUserDataDirectory();
+        directory = CoreGetUserDataDirectory();
         directory += "/Save/State";
 #endif // _WIN32
     }
@@ -396,7 +355,7 @@ CORE_EXPORT std::filesystem::path CoreGetDefaultScreenshotDirectory(void)
         directory = get_appdata_directory("Screenshots");
 
 #else
-        directory = CoreGetDefaultUserDataDirectory();
+        directory = CoreGetUserDataDirectory();
         directory += "/Screenshots";
 #endif // _WIN32
     }
@@ -405,22 +364,43 @@ CORE_EXPORT std::filesystem::path CoreGetDefaultScreenshotDirectory(void)
 
 CORE_EXPORT std::filesystem::path CoreGetUserDataDirectory(void)
 {
-    if (!m64p::Config.IsHooked())
+    std::filesystem::path directory;
+#ifdef PORTABLE_INSTALL
+    if (CoreGetPortableDirectoryMode())
     {
-        return std::filesystem::path();
+        directory = "Data";
     }
-    
-    return std::filesystem::path(m64p::Config.GetUserDataPath());
+    else
+#endif // PORTABLE_INSTALL
+    {
+#ifdef _WIN32
+        directory = get_appdata_directory("Data");
+#else
+        directory = get_var_directory("XDG_DATA_HOME", "/RMG", "HOME", "/.local/share/RMG");
+#endif // _WIN32
+    }
+    return directory.make_preferred();
 }
 
 CORE_EXPORT std::filesystem::path CoreGetUserCacheDirectory(void)
 {
-    if (!m64p::Config.IsHooked())
+    std::filesystem::path directory;
+#ifdef PORTABLE_INSTALL
+    if (CoreGetPortableDirectoryMode())
     {
-        return std::filesystem::path();
+        directory = "Cache";
     }
+    else
+#endif // PORTABLE_INSTALL
+    {
+#ifdef _WIN32
+        directory = get_appdata_directory("Cache");
 
-    return std::filesystem::path(m64p::Config.GetUserCachePath());
+#else
+        directory = get_var_directory("XDG_CACHE_HOME", "/RMG", "HOME", "/.cache/RMG");
+#endif // _WIN32
+    }
+    return directory.make_preferred();
 }
 
 CORE_EXPORT std::filesystem::path CoreGetSharedDataDirectory(void)
