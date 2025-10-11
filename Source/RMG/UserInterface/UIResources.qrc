@@ -22,6 +22,7 @@
   <file alias="icons/black/svg/information-line.svg">Resource/icons/black/svg/information-line.svg</file>
   <file alias="icons/black/svg/list-check.svg">Resource/icons/black/svg/list-check.svg</file>
   <file alias="icons/black/svg/pause-line.svg">Resource/icons/black/svg/pause-line.svg</file>
+  <file alias="icons/black/svg/pencil-line.svg">Resource/icons/black/svg/pencil-line.svg</file>
   <file alias="icons/black/svg/play-line.svg">Resource/icons/black/svg/play-line.svg</file>
   <file alias="icons/black/svg/plug-line.svg">Resource/icons/black/svg/plug-line.svg</file>
   <file alias="icons/black/svg/refresh-line.svg">Resource/icons/black/svg/refresh-line.svg</file>
@@ -55,6 +56,7 @@
   <file alias="icons/white/svg/information-line.svg">Resource/icons/white/svg/information-line.svg</file>
   <file alias="icons/white/svg/list-check.svg">Resource/icons/white/svg/list-check.svg</file>
   <file alias="icons/white/svg/pause-line.svg">Resource/icons/white/svg/pause-line.svg</file>
+  <file alias="icons/white/svg/pencil-line.svg">Resource/icons/white/svg/pencil-line.svg</file>
   <file alias="icons/white/svg/play-line.svg">Resource/icons/white/svg/play-line.svg</file>
   <file alias="icons/white/svg/plug-line.svg">Resource/icons/white/svg/plug-line.svg</file>
   <file alias="icons/white/svg/refresh-line.svg">Resource/icons/white/svg/refresh-line.svg</file>

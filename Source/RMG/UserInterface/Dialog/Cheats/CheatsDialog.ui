@@ -23,10 +23,10 @@
       </sizepolicy>
      </property>
      <property name="verticalScrollBarPolicy">
-      <enum>Qt::ScrollBarAsNeeded</enum>
+      <enum>Qt::ScrollBarPolicy::ScrollBarAsNeeded</enum>
      </property>
      <property name="sizeAdjustPolicy">
-      <enum>QAbstractScrollArea::AdjustToContentsOnFirstShow</enum>
+      <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustToContentsOnFirstShow</enum>
      </property>
      <property name="sortingEnabled">
       <bool>true</bool>
@@ -46,7 +46,7 @@
      <item>
       <spacer name="horizontalSpacer_2">
        <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <enum>Qt::Orientation::Horizontal</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -61,6 +61,9 @@
        <property name="text">
         <string>Add</string>
        </property>
+       <property name="icon">
+        <iconset theme="add-line"/>
+       </property>
       </widget>
      </item>
      <item>
@@ -70,6 +73,9 @@
        </property>
        <property name="text">
         <string>Edit</string>
+       </property>
+       <property name="icon">
+        <iconset theme="pencil-line"/>
        </property>
       </widget>
      </item>
@@ -81,12 +87,15 @@
        <property name="text">
         <string>Remove</string>
        </property>
+       <property name="icon">
+        <iconset theme="delete-bin-line"/>
+       </property>
       </widget>
      </item>
      <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <enum>Qt::Orientation::Horizontal</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -125,7 +134,7 @@
          </size>
         </property>
         <property name="sizeAdjustPolicy">
-         <enum>QAbstractScrollArea::AdjustToContentsOnFirstShow</enum>
+         <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustToContentsOnFirstShow</enum>
         </property>
         <property name="readOnly">
          <bool>true</bool>
@@ -138,10 +147,10 @@
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::StandardButton::Ok</set>
      </property>
     </widget>
    </item>
