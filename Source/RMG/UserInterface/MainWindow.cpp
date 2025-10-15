@@ -53,6 +53,7 @@
 #include <QString>
 #include <QTimer>
 #include <cmath>
+#include <QDir>
 #include <QUrl>
 
 #include <RMG-Core/CachedRomHeaderAndSettings.hpp>
@@ -2234,8 +2235,14 @@ void MainWindow::on_RomBrowser_PlayGameWithSlot(QString file, int slot)
 
 void MainWindow::on_RomBrowser_ChangeRomDirectory(void)
 {
-    QString dir = QFileDialog::getExistingDirectory(this, tr("Select ROM Directory"));
-    if (!dir.isEmpty())
+    QString currentDir = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::RomBrowser_Directory));
+    if (!QDir(currentDir).exists())
+    {
+        currentDir = "";
+    }
+
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Select ROM Directory"), currentDir);
+    if (!dir.isEmpty() && currentDir != dir)
     {
         CoreSettingsSetValue(SettingsID::RomBrowser_Directory, dir.toStdString());
         this->ui_Widget_RomBrowser->RefreshRomList();

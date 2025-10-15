@@ -20,6 +20,7 @@
 #include <QColorDialog>
 #include <QDirIterator>
 #include <QLabel>
+#include <QDir>
 
 #include <RMG-Core/CachedRomHeaderAndSettings.hpp>
 #include <RMG-Core/Directories.hpp>
@@ -1193,7 +1194,13 @@ void SettingsDialog::hideEmulationInfoText(void)
 
 void SettingsDialog::chooseDirectory(QLineEdit *lineEdit, QString caption)
 {
-    QString dir = QFileDialog::getExistingDirectory(this, caption);
+    QString currentDir = lineEdit->text();
+    if (!QDir(currentDir).exists())
+    {
+        currentDir = "";
+    }
+
+    QString dir = QFileDialog::getExistingDirectory(this, caption, currentDir);
     if (dir.isEmpty())
     {
         return;
