@@ -15,8 +15,10 @@
 
 #include <QStandardItemModel>
 #include <QHBoxLayout>
+#include <QStringList>
 #include <QTreeWidget>
 #include <QDialog>
+#include <QString>
 #include <QWidget>
 #include <QColor>
 #include <QMutex>
@@ -127,7 +129,7 @@ class SettingsDialog : public QDialog, private Ui::SettingsDialog
     void hideEmulationInfoText(void);
 
     void chooseDirectory(QLineEdit *, QString caption);
-    void chooseFile(QLineEdit *, QString caption, QString filter = "", QString md5 = "");
+    void chooseFile(QLineEdit *, QString caption, QString filter = "", QStringList md5List = {});
     void chooseColor(QPushButton *, QColor *, bool skipChoice = false);
 
     bool applyPluginSettings(void);

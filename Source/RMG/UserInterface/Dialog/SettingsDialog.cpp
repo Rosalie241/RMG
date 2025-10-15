@@ -1209,7 +1209,7 @@ void SettingsDialog::chooseDirectory(QLineEdit *lineEdit, QString caption)
     lineEdit->setText(QDir::toNativeSeparators(dir));
 }
 
-void SettingsDialog::chooseFile(QLineEdit *lineEdit, QString caption, QString filter, QString md5)
+void SettingsDialog::chooseFile(QLineEdit *lineEdit, QString caption, QString filter, QStringList md5List)
 {
     QString file = QFileDialog::getOpenFileName(this, caption, "", filter);
     if (file.isEmpty())
@@ -1217,7 +1217,7 @@ void SettingsDialog::chooseFile(QLineEdit *lineEdit, QString caption, QString fi
         return;
     }
 
-    if (!md5.isEmpty())
+    if (!md5List.isEmpty())
     {
         QFile qFile(file);
         if (!qFile.open(QFile::ReadOnly))
@@ -1227,14 +1227,28 @@ void SettingsDialog::chooseFile(QLineEdit *lineEdit, QString caption, QString fi
         }
 
         QCryptographicHash hash(QCryptographicHash::Algorithm::Md5);
-        if (hash.addData(&qFile))
+        if (!hash.addData(&qFile))
         {
-            QString md5Hash = QString(hash.result().toHex());
-            if (md5Hash != md5)
+            QtMessageBox::Error(this, "MD5 hashing failed", "QCryptographicHash::addData() Failed");
+            return;
+        }
+
+        QString md5Hash = QString(hash.result().toHex());
+
+        bool hashFound = false;
+        for (const QString& md5 : md5List)
+        {
+            if (md5Hash == md5)
             {
-                QtMessageBox::Error(this, "MD5 mismatch", "Expected file with MD5: \"" + md5 + "\"");
-                return;
+                hashFound = true;
+                break;
             }
+        }
+
+        if (!hashFound)
+        {
+            QtMessageBox::Error(this, "MD5 mismatch", "Expected file with MD5: \"" + md5List.first() + "\"");
+            return;
         }
     }
 
@@ -1549,10 +1563,10 @@ void SettingsDialog::on_coreCpuEmulatorComboBox_currentIndexChanged(int index)
 
 void SettingsDialog::on_changeNTSCPifRomButton_clicked(void)
 {
-    this->chooseFile(this->ntscPifRomLineEdit, tr("Open NTSC PIF ROM"), "PIF ROMs (*.rom)", "5c124e7948ada85da603a522782940d0");
+    this->chooseFile(this->ntscPifRomLineEdit, tr("Open NTSC PIF ROM"), "PIF ROMs (*.rom)", { "5C124E7948ADA85DA603A522782940D0", "4921D5F2165DEE6E2496F4388C4C81DA" });
 }
 
 void SettingsDialog::on_changePALPifRomButton_clicked(void)
 {
-    this->chooseFile(this->palPifRomLineEdit, tr("Open PAL PIF ROM"), "PIF ROMs (*.rom)", "d4232dc935cad0650ac2664d52281f3a");
+    this->chooseFile(this->palPifRomLineEdit, tr("Open PAL PIF ROM"), "PIF ROMs (*.rom)", { "D4232DC935CAD0650AC2664D52281F3A", "2B6EEC586FAA43F3462333B844834554" });
 }
