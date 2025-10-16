@@ -110,7 +110,7 @@ SettingsDialog::SettingsDialog(QWidget *parent, QString file) : QDialog(parent)
 
     pluginList = CoreGetAllPlugins();
 
-    for (int i = 0; i < (int)SettingsDialogTab::Invalid; i++)
+    for (int i = 0; i < static_cast<int>(SettingsDialogTab::Invalid); i++)
     {
         this->loadSettings(i);
     }
@@ -119,7 +119,7 @@ SettingsDialog::SettingsDialog(QWidget *parent, QString file) : QDialog(parent)
     this->commonHotkeySettings(SettingsDialogAction::ConnectSignals);
 
 #ifndef NETPLAY
-    this->innerInterfaceTabWidget->setTabVisible((int)SettingsDialogTab::InterfaceNetplay, false);
+    this->innerInterfaceTabWidget->setTabVisible(static_cast<int>(SettingsDialogTab::InterfaceNetplay), false);
 #endif // !NETPLAY
 
 #ifndef UPDATER
@@ -165,12 +165,12 @@ int SettingsDialog::currentIndex(void)
 void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
 {
     if (stackedWidgetIndex < 0 || 
-        stackedWidgetIndex > (int)SettingsDialogTab::Invalid)
+        stackedWidgetIndex > static_cast<int>(SettingsDialogTab::Invalid))
     {
         return;
     }
 
-    switch ((SettingsDialogTab)stackedWidgetIndex)
+    switch (static_cast<SettingsDialogTab>(stackedWidgetIndex))
     {
     default:
         break;
@@ -222,12 +222,12 @@ void SettingsDialog::restoreDefaults(int stackedWidgetIndex)
 void SettingsDialog::loadSettings(int stackedWidgetIndex)
 {
     if (stackedWidgetIndex < 0 || 
-        stackedWidgetIndex > (int)SettingsDialogTab::Invalid)
+        stackedWidgetIndex > static_cast<int>(SettingsDialogTab::Invalid))
     {
         return;
     }
 
-    switch ((SettingsDialogTab)stackedWidgetIndex)
+    switch (static_cast<SettingsDialogTab>(stackedWidgetIndex))
     {
     default:
         break;
@@ -370,7 +370,7 @@ void SettingsDialog::loadGamePluginSettings(void)
 
     for (const auto &p : this->pluginList)
     {
-        index = ((int)p.Type - 1);
+        index = (static_cast<int>(p.Type) - 1);
 
         comboBox = comboBoxArray[index];
         comboBox->addItem(QString::fromStdString(p.Name), QString::fromStdString(p.File));
@@ -502,7 +502,8 @@ void SettingsDialog::loadInterfaceOSDSettings(void)
     std::vector<int> textColor = CoreSettingsGetIntListValue(SettingsID::GUI_OnScreenDisplayTextColor);
     if (backgroundColor.size() == 4)
     {
-        this->currentBackgroundColor = QColor(backgroundColor.at(0), backgroundColor.at(1), backgroundColor.at(2), backgroundColor.at(3));
+        this->currentBackgroundColor = QColor(backgroundColor.at(0), backgroundColor.at(1), 
+                                              backgroundColor.at(2), backgroundColor.at(3));
         this->chooseColor(this->changeBackgroundColorButton, &this->currentBackgroundColor, true);
     }
     if (textColor.size() == 4)
@@ -664,7 +665,8 @@ void SettingsDialog::loadDefaultInterfaceOSDSettings(void)
     const std::vector<int> textColor = CoreSettingsGetDefaultIntListValue(SettingsID::GUI_OnScreenDisplayTextColor);
     if (backgroundColor.size() == 4)
     {
-        this->currentBackgroundColor = QColor(backgroundColor.at(0), backgroundColor.at(1), backgroundColor.at(2), backgroundColor.at(3));
+        this->currentBackgroundColor = QColor(backgroundColor.at(0), backgroundColor.at(1), 
+                                              backgroundColor.at(2), backgroundColor.at(3));
         this->chooseColor(this->changeBackgroundColorButton, &this->currentBackgroundColor, true);
     }
     if (textColor.size() == 4)
@@ -813,7 +815,7 @@ void SettingsDialog::saveGamePluginSettings(void)
         comboBox = comboBoxArray[i];
         id = settingsIdArray[i];
 
-        if (comboBox->currentIndex() != 0 )
+        if (comboBox->currentIndex() != 0)
         {
             CoreSettingsSetValue(id, this->gameSection, comboBox->currentData().toString().toStdString());
         }
@@ -1109,7 +1111,7 @@ void SettingsDialog::commonPluginSettings(SettingsDialogAction action)
 
     for (const auto &p : this->pluginList)
     {
-        index = ((int)p.Type - 1);
+        index = (static_cast<int>(p.Type) - 1);
         comboBox = comboBoxArray[index];
         pluginFileName = pluginFileNames[index];
         pluginName = QString::fromStdString(p.Name);

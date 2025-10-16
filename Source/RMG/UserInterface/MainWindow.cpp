@@ -2304,7 +2304,7 @@ void MainWindow::on_RomBrowser_EditGameInputSettings(QString file)
         this->ui_Widget_RomBrowser->StopRefreshRomList();
     }
 
-    if (!CorePluginsOpenROMConfig(CorePluginType::Input, (void*)this, file.toStdU32String()))
+    if (!CorePluginsOpenROMConfig(CorePluginType::Input, this, file.toStdU32String()))
     {
         this->showErrorMessage("CorePluginsOpenROMConfig() Failed", QString::fromStdString(CoreGetError()));
         return;
@@ -2512,8 +2512,8 @@ void MainWindow::on_VidExt_ResizeWindow(int width, int height)
     // account for HiDPI scaling
     if (this->devicePixelRatio() != 1)
     {
-        width  = (int)std::ceil((double)((double)width  / this->devicePixelRatio()));
-        height = (int)std::ceil((double)((double)height / this->devicePixelRatio()));
+        width  = static_cast<int>(std::ceil(static_cast<double>(static_cast<double>(width)  / this->devicePixelRatio())));
+        height = static_cast<int>(std::ceil(static_cast<double>(static_cast<double>(height) / this->devicePixelRatio())));
     }
 
     if (!this->menuBar()->isHidden())
@@ -2715,7 +2715,7 @@ void MainWindow::on_Core_StateCallback(CoreStateCallbackType type, int value)
         case CoreStateCallbackType::EmulationState:
         {
             // update Pause button
-            this->action_System_Pause->setChecked(value == (int)CoreEmulationState::Paused);
+            this->action_System_Pause->setChecked(value == static_cast<int>(CoreEmulationState::Paused));
             // update OSD state
             if (value == (int)CoreEmulationState::Paused)
             {

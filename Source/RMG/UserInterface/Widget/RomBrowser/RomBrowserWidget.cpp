@@ -874,7 +874,7 @@ void RomBrowserWidget::on_searchWidget_SearchTextChanged(const QString& text)
 void RomBrowserWidget::on_listViewWidget_sortIndicatorChanged(int logicalIndex, Qt::SortOrder sortOrder)
 {
     CoreSettingsSetValue(SettingsID::RomBrowser_ListViewSortSection, logicalIndex);
-    CoreSettingsSetValue(SettingsID::RomBrowser_ListViewSortOrder, (int)sortOrder);
+    CoreSettingsSetValue(SettingsID::RomBrowser_ListViewSortOrder, static_cast<int>(sortOrder));
 }
 
 void RomBrowserWidget::on_listViewWidget_sectionResized(int logicalIndex, int oldWidth, int newWidth)
@@ -987,7 +987,7 @@ void RomBrowserWidget::on_RomBrowserThread_RomsFound(QList<RomSearcherThreadData
 void RomBrowserWidget::on_RomBrowserThread_Finished(bool canceled)
 {
     // sort data
-    this->listViewProxyModel->sort(this->listViewSortSection, (Qt::SortOrder)this->listViewSortOrder);
+    this->listViewProxyModel->sort(this->listViewSortSection, static_cast<Qt::SortOrder>(this->listViewSortOrder));
     this->gridViewProxyModel->sort(0, Qt::SortOrder::AscendingOrder);
 
     // retrieve column settings
