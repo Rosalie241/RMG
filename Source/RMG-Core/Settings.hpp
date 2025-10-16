@@ -461,6 +461,7 @@ enum class SettingsID
     GCAInput_Sensitivity,
     GCAInput_CButtonTreshold,
     GCAInput_TriggerTreshold,
+    GCAInput_SwapZL,
 
     Invalid
 };
