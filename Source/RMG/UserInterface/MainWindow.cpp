@@ -49,12 +49,13 @@
 #include <QSettings>
 #include <QStatusBar>
 #include <QMenuBar>
-#include <cstdlib>
 #include <QString>
 #include <QTimer>
-#include <cmath>
 #include <QDir>
 #include <QUrl>
+
+#include <cstdlib>
+#include <cmath>
 
 #include <RMG-Core/CachedRomHeaderAndSettings.hpp>
 #include <RMG-Core/SpeedLimiter.hpp>
@@ -1150,23 +1151,19 @@ void MainWindow::configureActions(void)
     for (int i = 0; i < 12; i++)
     {
         QAction* speedAction = speedActions[i];
+        int speedActionNumber = speedActionNumbers[i];
 
         speedAction->setCheckable(true);
-        speedAction->setChecked(currentSpeedFactor == speedActionNumbers[i]);
+        speedAction->setChecked(currentSpeedFactor == speedActionNumber);
         speedAction->setActionGroup(speedActionGroup);
 
         // connect emulation speed action here because we need to do
         // something special for them
-        connect(speedAction, &QAction::triggered, [=, this](bool checked)
+        connect(speedAction, &QAction::triggered, [this, speedActionNumber](bool checked)
         {
             if (checked)
             {
-                QString factorText = speedAction->text().split("%").first();
-                // sometimes the text can contain a '&'
-                // which will make the toInt() function return 0
-                // so strip it out
-                factorText.remove('&');
-                this->on_Action_System_SpeedFactor(factorText.toInt());
+                this->on_Action_System_SpeedFactor(speedActionNumber);
             }
         });
     }
@@ -1183,16 +1180,11 @@ void MainWindow::configureActions(void)
 
         // connect slot action here because we need to do
         // something special for them
-        connect(slotAction, &QAction::triggered, [=, this](bool checked)
+        connect(slotAction, &QAction::triggered, [this, i](bool checked)
         {
             if (checked)
             {
-                QString slotText = slotAction->text().split(" ").at(1);
-                // sometimes the text can contain a '&'
-                // which will make the toInt() function return 0
-                // so strip it out
-                slotText.remove('&');
-                this->on_Action_System_CurrentSaveState(slotText.toInt());
+                this->on_Action_System_CurrentSaveState(i);
             }
         });
     }
