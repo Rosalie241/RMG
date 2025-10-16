@@ -111,10 +111,7 @@ NetplaySessionBrowserDialog::NetplaySessionBrowserDialog(QWidget *parent, QWebSo
         connect(networkAccessManager, &QNetworkAccessManager::finished, this, &NetplaySessionBrowserDialog::on_dispatcherRegionListDownload_Finished);
         networkAccessManager->setTransferTimeout(15000);
 
-        QNetworkRequest networkRequest(QUrl(this->dispatcherUrl + "/getRegions"));
-        networkRequest.setRawHeader("netplay-id", "RMG");
-
-        networkAccessManager->get(networkRequest);
+        networkAccessManager->get(NetplayCommon::GetNetworkRequest(this->dispatcherUrl + "/getRegions"));
     }
 
     this->validateJoinButton();
@@ -545,8 +542,7 @@ void NetplaySessionBrowserDialog::on_serverComboBox_currentIndexChanged(int inde
         urlQuery.addQueryItem("region", region);
         url.setQuery(urlQuery);
 
-        QNetworkRequest networkRequest(url);
-        networkRequest.setRawHeader("netplay-id", "RMG");
+        QNetworkRequest networkRequest = NetplayCommon::GetNetworkRequest(url);
 
         // sadly we have to force HTTP/1 here due to a Qt bug,
         // we abort the connection which sadly in Qt6 causes an error and eventually segfault,

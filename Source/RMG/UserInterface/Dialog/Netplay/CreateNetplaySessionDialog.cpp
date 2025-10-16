@@ -114,10 +114,7 @@ CreateNetplaySessionDialog::CreateNetplaySessionDialog(QWidget *parent, QWebSock
         connect(networkAccessManager, &QNetworkAccessManager::finished, this, &CreateNetplaySessionDialog::on_dispatcherRegionListDownload_Finished);
         networkAccessManager->setTransferTimeout(15000);
 
-        QNetworkRequest networkRequest(QUrl(this->dispatcherUrl + "/getRegions"));
-        networkRequest.setRawHeader("netplay-id", "RMG");
-
-        networkAccessManager->get(networkRequest);
+        networkAccessManager->get(NetplayCommon::GetNetworkRequest(this->dispatcherUrl + "/getRegions"));
     }
 }
 
@@ -422,9 +419,7 @@ void CreateNetplaySessionDialog::accept()
         urlQuery.addQueryItem("region", NetplayCommon::GetServerData(this->serverComboBox));
         url.setQuery(urlQuery);
 
-        QNetworkRequest networkRequest(url);
-        networkRequest.setRawHeader("netplay-id", "RMG");
-        networkAccessManager->get(networkRequest);
+        networkAccessManager->get(NetplayCommon::GetNetworkRequest(url));
 
         // creating a server can take a while,
         // so show a loading screen

@@ -14,6 +14,11 @@
 #include <QJsonObject>
 #include <QComboBox>
 #include <QString>
+#ifdef NETPLAY
+#include <QNetworkRequest>
+#include <QUrl>
+#endif // NETPLAY
+
 
 namespace NetplayCommon
 {
@@ -34,7 +39,7 @@ namespace NetplayCommon
     QList<QString> GetPluginNames(QString md5QString);
 
     // Adds servers from json to combobox
-    void AddServers(QComboBox* comboBox, QJsonDocument document, bool dispatcher = false);
+    void AddServers(QComboBox* comboBox, const QJsonDocument& document, bool dispatcher = false);
 
     // Restores previously selected server
     void RestoreSelectedServer(QComboBox* comboBox);
@@ -44,6 +49,11 @@ namespace NetplayCommon
 
     // Returns server data from comboBox
     QString GetServerData(QComboBox* comboBox, int index = -1);
+
+#ifdef NETPLAY
+    // Returns network request from url with emulator id
+    QNetworkRequest GetNetworkRequest(QUrl url);
+#endif // NETPLAY
 }
 
 #endif // NETPLAYCOMMON_HPP

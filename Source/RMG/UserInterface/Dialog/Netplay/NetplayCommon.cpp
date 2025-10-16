@@ -87,7 +87,7 @@ QList<QString> NetplayCommon::GetPluginNames(QString md5QString)
     return pluginNames;
 }
 
-void NetplayCommon::AddServers(QComboBox* comboBox, QJsonDocument document, bool dispatcher)
+void NetplayCommon::AddServers(QComboBox* comboBox, const QJsonDocument& document, bool dispatcher)
 {
     if (dispatcher)
     {
@@ -155,4 +155,11 @@ QString NetplayCommon::GetServerData(QComboBox* comboBox, int index)
     }
 
     return comboBox->itemData(index).value<NetplayServerData>().Data;
+}
+
+QNetworkRequest NetplayCommon::GetNetworkRequest(QUrl url)
+{
+    QNetworkRequest networkRequest(url);
+    networkRequest.setRawHeader("netplay-id", "RMG");
+    return networkRequest;
 }
