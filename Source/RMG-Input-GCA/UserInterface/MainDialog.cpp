@@ -21,6 +21,7 @@ MainDialog::MainDialog(QWidget* parent) : QDialog(parent)
     this->sensitivitySlider->setValue(CoreSettingsGetIntValue(SettingsID::GCAInput_Sensitivity));
     this->triggerTresholdSlider->setValue(CoreSettingsGetIntValue(SettingsID::GCAInput_TriggerTreshold));
     this->cButtonTresholdSlider->setValue(CoreSettingsGetIntValue(SettingsID::GCAInput_CButtonTreshold));
+    this->swapZLCheckBox->setChecked(CoreSettingsGetBoolValue(SettingsID::GCAInput_SwapZL));
 }
 
 MainDialog::~MainDialog()
@@ -39,6 +40,7 @@ void MainDialog::on_buttonBox_clicked(QAbstractButton* button)
         CoreSettingsSetValue(SettingsID::GCAInput_Sensitivity, this->sensitivitySlider->value());
         CoreSettingsSetValue(SettingsID::GCAInput_TriggerTreshold, this->triggerTresholdSlider->value());
         CoreSettingsSetValue(SettingsID::GCAInput_CButtonTreshold, this->cButtonTresholdSlider->value());
+        CoreSettingsSetValue(SettingsID::GCAInput_SwapZL, this->swapZLCheckBox->isChecked());
         CoreSettingsSave();
     }
     else if (pushButton == defaultButton)
@@ -47,6 +49,7 @@ void MainDialog::on_buttonBox_clicked(QAbstractButton* button)
         this->sensitivitySlider->setValue(CoreSettingsGetDefaultIntValue(SettingsID::GCAInput_Sensitivity));
         this->triggerTresholdSlider->setValue(CoreSettingsGetDefaultIntValue(SettingsID::GCAInput_TriggerTreshold));
         this->cButtonTresholdSlider->setValue(CoreSettingsGetDefaultIntValue(SettingsID::GCAInput_CButtonTreshold));
+        this->swapZLCheckBox->setChecked(CoreSettingsGetDefaultBoolValue(SettingsID::GCAInput_SwapZL));
     }
 }
 

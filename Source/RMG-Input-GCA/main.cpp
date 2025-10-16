@@ -52,6 +52,8 @@ struct SettingsProfile
 
     double TriggerTreshold = 0.5;
     double CButtonTreshold = 0.4;
+
+    bool SwapZL = false;
 };
 
 struct GameCubeAdapterControllerState
@@ -307,6 +309,7 @@ static void load_settings(void)
     l_Settings.SensitivityValue = static_cast<double>(CoreSettingsGetIntValue(SettingsID::GCAInput_Sensitivity)) / 100.0;
     l_Settings.CButtonTreshold = static_cast<double>(CoreSettingsGetIntValue(SettingsID::GCAInput_CButtonTreshold)) / 100.0;
     l_Settings.TriggerTreshold = static_cast<double>(CoreSettingsGetIntValue(SettingsID::GCAInput_TriggerTreshold)) / 100.0;
+    l_Settings.SwapZL = CoreSettingsGetBoolValue(SettingsID::GCAInput_SwapZL);
 }
 
 static double apply_deadzone(const double input, const double deadzone)
@@ -424,15 +427,15 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
     Keys->R_DPAD = state.DpadRight;
     Keys->D_DPAD = state.DpadDown;
     Keys->U_DPAD = state.DpadUp;
-    Keys->Z_TRIG = state.Z;
 
     const int triggerTreshold = INT8_MAX * l_Settings.TriggerTreshold;
     const int cStickTreshold  = INT8_MAX * l_Settings.CButtonTreshold;
     const int8_t cX = static_cast<int8_t>(state.RightStickX + 128);
     const int8_t cY = static_cast<int8_t>(state.RightStickY + 128);
 
-    Keys->L_TRIG = state.LeftTrigger > triggerTreshold;
     Keys->R_TRIG = state.RightTrigger > triggerTreshold;
+    Keys->L_TRIG = l_Settings.SwapZL ? state.Z : (state.LeftTrigger > triggerTreshold);
+    Keys->Z_TRIG = l_Settings.SwapZL ? (state.LeftTrigger > triggerTreshold) : state.Z;
 
     Keys->L_CBUTTON = cX < -cStickTreshold;
     Keys->R_CBUTTON = cX > cStickTreshold;
