@@ -25,17 +25,19 @@ bool EventFilter::eventFilter(QObject *object, QEvent *event)
     {
     case QEvent::Type::KeyPress:
     {
-        if (((QKeyEvent *)event)->key() != Qt::Key_Escape)
+        QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+        if (keyEvent->key() != Qt::Key_Escape)
         {
-            emit this->on_EventFilter_KeyPressed((QKeyEvent *)event);
+            emit this->on_EventFilter_KeyPressed(keyEvent);
             return true;
         }
     } break;
     case QEvent::Type::KeyRelease:
     {
-        if (((QKeyEvent *)event)->key() != Qt::Key_Escape)
+        QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+        if (keyEvent->key() != Qt::Key_Escape)
         {
-            emit this->on_EventFilter_KeyReleased((QKeyEvent *)event);
+            emit this->on_EventFilter_KeyReleased(keyEvent);
             return true;
         }
     } break;
@@ -45,3 +47,4 @@ bool EventFilter::eventFilter(QObject *object, QEvent *event)
 
     return QObject::eventFilter(object, event);
 }
+;

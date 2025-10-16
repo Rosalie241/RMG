@@ -87,7 +87,7 @@ HotkeysDialog::HotkeysDialog(QWidget* parent, QList<HotkeySettingMapping> hotkey
         for (size_t y = 0; y < givenMapping.inputTypes.size(); y++)
         {
             buttonMapping.button->AddInputData(
-                (InputType)givenMapping.inputTypes.at(y),
+                static_cast<InputType>(givenMapping.inputTypes.at(y)),
                 givenMapping.inputData.at(y),
                 givenMapping.extraInputData.at(y),
                 QString::fromStdString(givenMapping.inputText.at(y))

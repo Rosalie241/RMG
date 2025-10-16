@@ -355,8 +355,8 @@ void MainDialog::on_EventFilter_KeyPressed(QKeyEvent *event)
     SDL_KeyboardEvent keyboardEvent;
     keyboardEvent.down = true;
     keyboardEvent.type = SDL_EVENT_KEY_DOWN;
-    keyboardEvent.scancode = (SDL_Scancode)key;
-    keyboardEvent.key = (SDL_Keycode)key;
+    keyboardEvent.scancode = static_cast<SDL_Scancode>(key);
+    keyboardEvent.key = static_cast<SDL_Keycode>(key);
     keyboardEvent.mod = mod;
 
     SDL_Event sdlEvent;
@@ -374,8 +374,8 @@ void MainDialog::on_EventFilter_KeyReleased(QKeyEvent *event)
     SDL_KeyboardEvent keyboardEvent;
     keyboardEvent.down = false;
     keyboardEvent.type = SDL_EVENT_KEY_UP;
-    keyboardEvent.scancode = (SDL_Scancode)key;
-    keyboardEvent.key = (SDL_Keycode)key;
+    keyboardEvent.scancode = static_cast<SDL_Scancode>(key);
+    keyboardEvent.key = static_cast<SDL_Keycode>(key);
     keyboardEvent.mod = mod;
 
     SDL_Event sdlEvent;

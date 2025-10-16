@@ -266,7 +266,7 @@ void ControllerWidget::disableAllChildren()
             continue;
         }
 
-        QWidget* widget = (QWidget*)object;
+        QWidget* widget = static_cast<QWidget*>(object);
         if (widget->isEnabled())
         {
             widget->setEnabled(false);
@@ -1049,7 +1049,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
                 inputType = InputType::GamepadButton;
                 sdlButton = event->gbutton.button;
                 sdlButtonPressed = (event->type == SDL_EVENT_GAMEPAD_BUTTON_DOWN);
-                sdlButtonName = SDL_GetGamepadStringForButton((SDL_GamepadButton)sdlButton);
+                sdlButtonName = SDL_GetGamepadStringForButton(static_cast<SDL_GamepadButton>(sdlButton));
             }
             else if ((event->type == SDL_EVENT_JOYSTICK_BUTTON_DOWN) ||
                      (event->type == SDL_EVENT_JOYSTICK_BUTTON_UP))
@@ -1303,7 +1303,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
                 inputType = InputType::GamepadAxis;
                 sdlAxis = event->gaxis.axis;
                 sdlAxisValue = event->gaxis.value;
-                sdlAxisName = SDL_GetGamepadStringForAxis((SDL_GamepadAxis)sdlAxis);
+                sdlAxisName = SDL_GetGamepadStringForAxis(static_cast<SDL_GamepadAxis>(sdlAxis));
                 sdlAxisName += sdlAxisValue > 0 ? "+" : "-";
             }
             else
@@ -1419,7 +1419,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
                 break;
             }
 
-            const SDL_Scancode sdlButton = (SDL_Scancode)event->key.scancode;
+            const SDL_Scancode sdlButton = static_cast<SDL_Scancode>(event->key.scancode);
             const bool sdlButtonPressed = (event->type == SDL_EVENT_KEY_DOWN);
 
             // handle button widget
@@ -1718,7 +1718,7 @@ void ControllerWidget::LoadSettings(QString sectionQString, bool loadUserProfile
         // add all input data
         for (int i = 0; i < count; i++)
         {
-            buttonSetting.button->AddInputData((InputType)types[i], data[i], extraData[i], QString::fromStdString(names.at(i)));
+            buttonSetting.button->AddInputData(static_cast<InputType>(types[i]), data[i], extraData[i], QString::fromStdString(names.at(i)));
         }
     }
 

@@ -173,6 +173,7 @@ void HotkeyButton::on_countDownTimer_triggered()
         this->currentCountDownNum = 5;
         this->countDownTimer->stop();
         emit this->hotkeysDialog->on_HotkeyButton_TimerFinished(this);
+        return;
     }
 
     this->currentCountDownNum--;
