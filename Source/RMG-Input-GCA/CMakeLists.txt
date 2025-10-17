@@ -30,4 +30,9 @@ target_include_directories(RMG-Input-GCA PRIVATE
     ${LIBUSB1_INCLUDE_DIRS}
 )
 
-target_link_libraries(RMG-Input-GCA RMG-Core ${LIBUSB1_LIBRARIES} Qt6::Gui Qt6::Widgets Qt6::Svg)
+target_link_libraries(RMG-Input-GCA 
+    RMG-Core 
+    ${LIBUSB1_LIBRARIES} 
+    Qt6::Gui Qt6::Widgets Qt6::Svg 
+    atomic # needed by GCC due to std::atomic usage
+)

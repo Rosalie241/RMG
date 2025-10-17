@@ -20,6 +20,12 @@
 
 #include "UserInterface/MainDialog.hpp"
 
+#include <atomic>
+#include <chrono>
+#include <thread>
+#include <array>
+#include <mutex>
+
 //
 // Local Defines
 //
@@ -100,7 +106,11 @@ static bool l_UsbInitialized = false;
 
 // GCA variables
 static libusb_device_handle* l_DeviceHandle = nullptr;
-static GameCubeAdapterControllerState l_ControllerState[4] = {0};
+static std::atomic<bool> l_PollThreadRunning;
+static std::atomic<bool> l_PolledState;
+static std::mutex l_ControllerStateMutex;
+static std::array<GameCubeAdapterControllerState, 4> l_ControllerState;
+static std::thread l_PollThread;
 static SettingsProfile l_Settings = {0};
 
 // mupen64plus debug callback
@@ -151,16 +161,22 @@ static void usb_quit(void)
     }
 }
 
+static void gca_reset_state(void)
+{
+    l_ControllerStateMutex.lock();
+    l_ControllerState = {0};
+    l_ControllerStateMutex.unlock();
+}
+
 static bool gca_init(void)
 {
     std::string debugMessage;
     int ret;
 
     // reset state
-    for (int i = 0; i < NUM_CONTROLLERS; i++)
-    {
-        l_ControllerState[i] = {0};
-    }
+    gca_reset_state();
+    l_PolledState.store(false);
+    l_PollThreadRunning.store(true);
 
     // attempt open device
     l_DeviceHandle = libusb_open_device_with_vid_pid(nullptr, GCA_VENDOR_ID, GCA_PRODUCT_ID);
@@ -227,39 +243,62 @@ static void gca_quit(void)
     }
 }
 
-static bool gca_poll_input(int index, GameCubeAdapterControllerState& state)
+static void gca_poll_thread(void)
 {
-    if (index == 0 && l_DeviceHandle != nullptr)
+    uint8_t readBuf[37] = {0};
+    int transferred = 0;
+    int ret;
+    int offset;
+    std::array<GameCubeAdapterControllerState, 4> state;
+    std::string debugMessage;
+
+    while (l_PollThreadRunning.load(std::memory_order_relaxed))
     {
-        uint8_t readBuf[37] = {0};
-        int transferred = 0;
-        int ret = libusb_interrupt_transfer(l_DeviceHandle, GCA_ENDPOINT_IN, readBuf, sizeof(readBuf), &transferred, 16);
-        if (ret != LIBUSB_SUCCESS || transferred != sizeof(readBuf))
+        ret = libusb_interrupt_transfer(l_DeviceHandle, GCA_ENDPOINT_IN, readBuf, sizeof(readBuf), &transferred, 16);
+        if (ret == LIBUSB_ERROR_NO_DEVICE)
         {
-            std::string debugMessage;
-            debugMessage = "gca_poll_input(): failed to retrieve input buffer: ";
+            debugMessage = "gca_poll_thread(): adapter disconnected, stopping polling thread";
+            PluginDebugMessage(M64MSG_WARNING, debugMessage);
+
+            // reset state
+            gca_reset_state();
+
+            // ensure that we don't get stuck in InitiateControllers(),
+            // because that might be waiting on l_PolledState to be set
+            l_PolledState.store(true);
+            return;
+        }
+        else if (ret != LIBUSB_SUCCESS || transferred != sizeof(readBuf))
+        {
+            debugMessage = "gca_poll_thread(): failed to retrieve input buffer: ";
             debugMessage += libusb_error_name(ret);
             PluginDebugMessage(M64MSG_WARNING, debugMessage);
-            return false;
+            continue;
         }
 
         for (int i = 0; i < NUM_CONTROLLERS; i++)
         {
-            int offset = (i * 9);
-            l_ControllerState[i].Status       = readBuf[offset + 1];
-            l_ControllerState[i].Buttons1     = readBuf[offset + 2];
-            l_ControllerState[i].Buttons2     = readBuf[offset + 3];
-            l_ControllerState[i].LeftStickX   = readBuf[offset + 4];
-            l_ControllerState[i].LeftStickY   = readBuf[offset + 5];
-            l_ControllerState[i].RightStickX  = readBuf[offset + 6];
-            l_ControllerState[i].RightStickY  = readBuf[offset + 7];
-            l_ControllerState[i].LeftTrigger  = readBuf[offset + 8];
-            l_ControllerState[i].RightTrigger = readBuf[offset + 9];
+            offset = (i * 9);
+            state[i].Status       = readBuf[offset + 1];
+            state[i].Buttons1     = readBuf[offset + 2];
+            state[i].Buttons2     = readBuf[offset + 3];
+            state[i].LeftStickX   = readBuf[offset + 4];
+            state[i].LeftStickY   = readBuf[offset + 5];
+            state[i].RightStickX  = readBuf[offset + 6];
+            state[i].RightStickY  = readBuf[offset + 7];
+            state[i].LeftTrigger  = readBuf[offset + 8];
+            state[i].RightTrigger = readBuf[offset + 9];
         }
-    }
 
-    state = l_ControllerState[index];
-    return true;
+        l_ControllerStateMutex.lock();
+        l_ControllerState = state;
+        l_ControllerStateMutex.unlock();
+
+        l_PolledState.store(true, std::memory_order_relaxed);
+
+        // poll every 1ms
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
 }
 
 static void load_settings(void)
@@ -368,8 +407,11 @@ EXPORT void CALL ControllerCommand(int Control, unsigned char* Command)
 
 EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
 {
-    GameCubeAdapterControllerState state;
-    if (!gca_poll_input(Control, state) || !state.Status)
+    l_ControllerStateMutex.lock();
+    GameCubeAdapterControllerState state = l_ControllerState[Control];
+    l_ControllerStateMutex.unlock();
+
+    if (!state.Status)
     {
         Keys->Value = 0;
         return;
@@ -417,16 +459,22 @@ EXPORT void CALL InitiateControllers(CONTROL_INFO ControlInfo)
         return;
     }
 
+    // start polling thread
+    l_PollThread = std::thread(gca_poll_thread);
+
+    // wait for initial state to be polled
+    while (!l_PolledState.load())
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    }
+
+    l_ControllerStateMutex.lock();
     for (int i = 0; i < NUM_CONTROLLERS; i++)
     {
-        GameCubeAdapterControllerState state;
-        if (!gca_poll_input(i, state))
-        {
-            return;
-        }
-
+        GameCubeAdapterControllerState state = l_ControllerState[i];
         ControlInfo.Controls[i].Present = (state.Status > 0) ? 1 : 0;
     }
+    l_ControllerStateMutex.unlock();
 
     // load settings
     load_settings();
@@ -443,6 +491,13 @@ EXPORT int CALL RomOpen(void)
 
 EXPORT void CALL RomClosed(void)
 {
+    // wait for polling thread to stop
+    if (l_PollThread.joinable())
+    {
+        l_PollThreadRunning.store(false);
+        l_PollThread.join();
+    }
+
     gca_quit();
 }
 
