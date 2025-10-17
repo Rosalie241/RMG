@@ -111,14 +111,14 @@ static bool hook_vosk(void)
         return false;
     }
 
-    l_vosk_model_new = (ptr_vosk_model_new) CoreGetLibrarySymbol(l_VoskLibHandle, "vosk_model_new");
-    l_vosk_model_free = (ptr_vosk_model_free) CoreGetLibrarySymbol(l_VoskLibHandle, "vosk_model_free");
-    l_vosk_recognizer_new_grm = (ptr_vosk_recognizer_new_grm) CoreGetLibrarySymbol(l_VoskLibHandle, "vosk_recognizer_new_grm");
-    l_vosk_recognizer_free = (ptr_vosk_recognizer_free) CoreGetLibrarySymbol(l_VoskLibHandle, "vosk_recognizer_free");
-    l_vosk_recognizer_accept_waveform = (ptr_vosk_recognizer_accept_waveform) CoreGetLibrarySymbol(l_VoskLibHandle, "vosk_recognizer_accept_waveform");
-    l_vosk_recognizer_final_result = (ptr_vosk_recognizer_final_result) CoreGetLibrarySymbol(l_VoskLibHandle, "vosk_recognizer_final_result");
-    l_vosk_set_log_level = (ptr_vosk_set_log_level) CoreGetLibrarySymbol(l_VoskLibHandle, "vosk_set_log_level");
-    l_vosk_recognizer_set_max_alternatives = (ptr_vosk_recognizer_set_max_alternatives) CoreGetLibrarySymbol(l_VoskLibHandle, "vosk_recognizer_set_max_alternatives");
+    l_vosk_model_new = reinterpret_cast<ptr_vosk_model_new>(CoreGetLibrarySymbol(l_VoskLibHandle, "vosk_model_new"));
+    l_vosk_model_free = reinterpret_cast<ptr_vosk_model_free>(CoreGetLibrarySymbol(l_VoskLibHandle, "vosk_model_free"));
+    l_vosk_recognizer_new_grm = reinterpret_cast<ptr_vosk_recognizer_new_grm>(CoreGetLibrarySymbol(l_VoskLibHandle, "vosk_recognizer_new_grm"));
+    l_vosk_recognizer_free = reinterpret_cast<ptr_vosk_recognizer_free>(CoreGetLibrarySymbol(l_VoskLibHandle, "vosk_recognizer_free"));
+    l_vosk_recognizer_accept_waveform = reinterpret_cast<ptr_vosk_recognizer_accept_waveform>(CoreGetLibrarySymbol(l_VoskLibHandle, "vosk_recognizer_accept_waveform"));
+    l_vosk_recognizer_final_result = reinterpret_cast<ptr_vosk_recognizer_final_result>(CoreGetLibrarySymbol(l_VoskLibHandle, "vosk_recognizer_final_result"));
+    l_vosk_set_log_level = reinterpret_cast<ptr_vosk_set_log_level>(CoreGetLibrarySymbol(l_VoskLibHandle, "vosk_set_log_level"));
+    l_vosk_recognizer_set_max_alternatives = reinterpret_cast<ptr_vosk_recognizer_set_max_alternatives>(CoreGetLibrarySymbol(l_VoskLibHandle, "vosk_recognizer_set_max_alternatives"));
 
     if (l_vosk_model_new == nullptr ||
         l_vosk_model_free == nullptr ||
@@ -301,7 +301,7 @@ static QByteArray words_to_byte_array(uint16_t* words, uint16_t size)
 {
     QByteArray byte_array;
 
-    uint8_t* bytes = (uint8_t*)words;
+    uint8_t* bytes = reinterpret_cast<uint8_t*>(words);
 
     for (int i = 0; i < (size * 2); i += 2)
     {
