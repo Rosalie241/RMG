@@ -26,7 +26,7 @@ void RemoveMappingButton::Initialize(ControllerWidget* widget, MappingButton* bu
     this->controllerWidget = widget;
     this->mappingButton    = button;
 
-    connect(this, &QPushButton::released, [=, this]
+    connect(this, &QPushButton::released, [this]
     {
         emit this->controllerWidget->on_RemoveMappingButton_Released(this->mappingButton);
     });

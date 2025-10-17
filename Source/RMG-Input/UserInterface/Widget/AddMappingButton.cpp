@@ -26,7 +26,7 @@ void AddMappingButton::Initialize(ControllerWidget* widget, MappingButton* butto
     this->controllerWidget = widget;
     this->mappingButton    = button;
 
-    connect(this, &QPushButton::released, [=, this]
+    connect(this, &QPushButton::released, [this]
     {
         emit this->controllerWidget->on_AddMappingButton_Released(this->mappingButton);
     });
