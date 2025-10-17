@@ -9,6 +9,7 @@
  */
 #include "ControllerWidget.hpp"
 #include "UserInterface/OptionsDialog.hpp"
+#include "Utilities/Sdl3ButtonLabelToString.hpp"
 
 #include "common.hpp"
 
@@ -1050,6 +1051,23 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
                 sdlButton = event->gbutton.button;
                 sdlButtonPressed = (event->type == SDL_EVENT_GAMEPAD_BUTTON_DOWN);
                 sdlButtonName = SDL_GetGamepadStringForButton(static_cast<SDL_GamepadButton>(sdlButton));
+
+                // convert A/B/X/Y buttons to their native counterpart,
+                // this makes the button text look better in the UI
+                if (sdlButton == SDL_GAMEPAD_BUTTON_SOUTH ||
+                    sdlButton == SDL_GAMEPAD_BUTTON_EAST  ||
+                    sdlButton == SDL_GAMEPAD_BUTTON_WEST  ||
+                    sdlButton == SDL_GAMEPAD_BUTTON_NORTH)
+                {
+                    SDL_GamepadButtonLabel sdlLabel = SDL_GetGamepadButtonLabel(this->currentController, 
+                                                                                static_cast<SDL_GamepadButton>(sdlButton));
+
+                    QString sdlLabelName = Utilities::Sdl3ButtonLabelToString(sdlLabel);
+                    if (!sdlLabelName.isEmpty())
+                    { // replace only when we have a name
+                        sdlButtonName = sdlLabelName;
+                    }
+                }
             }
             else if ((event->type == SDL_EVENT_JOYSTICK_BUTTON_DOWN) ||
                      (event->type == SDL_EVENT_JOYSTICK_BUTTON_UP))
