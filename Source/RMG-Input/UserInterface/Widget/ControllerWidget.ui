@@ -1254,6 +1254,13 @@
         </spacer>
        </item>
        <item>
+        <widget class="QPushButton" name="autoConfigButton">
+         <property name="text">
+          <string>Auto-Configure</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="resetButton">
          <property name="text">
           <string>Reset</string>

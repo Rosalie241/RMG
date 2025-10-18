@@ -13,6 +13,7 @@
 
 #include "common.hpp"
 
+#include <RMG-Core/Directories.hpp>
 #include <RMG-Core/RomSettings.hpp>
 #include <RMG-Core/RomHeader.hpp>
 #include <RMG-Core/Core.hpp>
@@ -239,6 +240,7 @@ void ControllerWidget::initializeProfileButtons()
 void ControllerWidget::initializeMiscButtons()
 {
     this->inputDeviceRefreshButton->setIcon(QIcon::fromTheme("refresh-line"));
+    this->autoConfigButton->setIcon(QIcon::fromTheme("magic-line"));
     this->resetButton->setIcon(QIcon::fromTheme("restart-line"));
     this->optionsButton->setIcon(QIcon::fromTheme("settings-3-line"));
     this->hotkeysButton->setIcon(QIcon::fromTheme("gamepad-line"));
@@ -246,10 +248,10 @@ void ControllerWidget::initializeMiscButtons()
 
 bool ControllerWidget::isCurrentDeviceKeyboard()
 {
-    const InputDevice device = this->inputDeviceComboBox->currentData().value<InputDevice>();
+    const inputDeviceData deviceData = this->inputDeviceComboBox->currentData().value<inputDeviceData>();
 
-    return device.type == InputDeviceType::Keyboard ||
-            (this->allowKeyboardForAutomatic && device.type == InputDeviceType::Automatic);
+    return deviceData.device.type == InputDeviceType::Keyboard ||
+            (this->allowKeyboardForAutomatic && deviceData.device.type == InputDeviceType::Automatic);
 }
 
 bool ControllerWidget::isCurrentDeviceNotFound()
@@ -500,7 +502,7 @@ void ControllerWidget::showErrorMessage(QString text, QString details)
     msgBox.exec();
 }
 
-void ControllerWidget::AddInputDevice(const InputDevice& device)
+void ControllerWidget::AddInputDevice(const InputDevice& device, const InputProfileDBEntry& inputProfile)
 {
     QString deviceName = QString::fromStdString(device.name);
     QString name = deviceName;
@@ -513,7 +515,7 @@ void ControllerWidget::AddInputDevice(const InputDevice& device)
     }
 
     this->inputDeviceNameList.append(deviceName);
-    this->inputDeviceComboBox->addItem(name, QVariant::fromValue<InputDevice>(device));
+    this->inputDeviceComboBox->addItem(name, QVariant::fromValue<inputDeviceData>({ device, inputProfile }));
 }
 
 void ControllerWidget::RemoveInputDevice(const InputDevice& device)
@@ -609,7 +611,8 @@ void ControllerWidget::CheckInputDeviceSettings(QString sectionQString)
 
     for (int i = 0; i < this->inputDeviceComboBox->count(); i++)
     {
-        InputDevice otherDevice = this->inputDeviceComboBox->itemData(i).value<InputDevice>();
+        inputDeviceData otherDeviceData = this->inputDeviceComboBox->itemData(i).value<inputDeviceData>();
+        InputDevice otherDevice = otherDeviceData.device;
         if (device.name == otherDevice.name &&
             device.serial == otherDevice.serial)
         {
@@ -645,7 +648,7 @@ void ControllerWidget::CheckInputDeviceSettings(QString sectionQString)
         QString title = QString::fromStdString(deviceName);
         title += " (not found)";
         this->inputDeviceNameList.append(QString::fromStdString(deviceName));
-        this->inputDeviceComboBox->addItem(title, QVariant::fromValue<InputDevice>(device));
+        this->inputDeviceComboBox->addItem(title, QVariant::fromValue<inputDeviceData>({ device, {} }));
         this->inputDeviceComboBox->setCurrentIndex(this->inputDeviceNameList.count() - 1);
     }
 }
@@ -670,7 +673,7 @@ void ControllerWidget::GetCurrentInputDevice(InputDevice& device, bool ignoreDev
     }
     else
     {
-        device = this->inputDeviceComboBox->itemData(currentIndex).value<InputDevice>();
+        device = this->inputDeviceComboBox->itemData(currentIndex).value<inputDeviceData>().device;
     }
 }
 
@@ -725,20 +728,23 @@ void ControllerWidget::on_inputDeviceComboBox_currentIndexChanged(int value)
         return;
     }
 
-    InputDevice device = this->inputDeviceComboBox->itemData(value).value<InputDevice>();
+    inputDeviceData deviceData = this->inputDeviceComboBox->itemData(value).value<inputDeviceData>();
 
     this->ClearControllerImage();
 
     if (this->isCurrentDeviceNotFound())
     {
-        device = { };
+        deviceData.device = { };
     }
 
-    // set plugged in state
-    this->setPluggedIn(device.type != InputDeviceType::None &&
-                       device.type != InputDeviceType::EmulateVRU);
+    // set whether auto configure button is enabled
+    this->autoConfigButton->setEnabled(deviceData.inputProfile.valid);
 
-    emit this->CurrentInputDeviceChanged(this, device);
+    // set plugged in state
+    this->setPluggedIn(deviceData.device.type != InputDeviceType::None &&
+                       deviceData.device.type != InputDeviceType::EmulateVRU);
+
+    emit this->CurrentInputDeviceChanged(this, deviceData.device);
 }
 
 void ControllerWidget::on_inputDeviceRefreshButton_clicked()
@@ -870,6 +876,48 @@ void ControllerWidget::on_removeProfileButton_clicked()
     }
 }
 
+void ControllerWidget::on_autoConfigButton_clicked()
+{
+    inputDeviceData deviceData = this->inputDeviceComboBox->currentData().value<inputDeviceData>();
+    InputProfileDBEntry inputProfile = deviceData.inputProfile;
+
+    for (const auto& inputEntry : inputProfile.inputEntries)
+    {
+        if (inputEntry.button != N64ControllerButton::Invalid)
+        {
+            for (const auto& buttonMapping : this->buttonWidgetMappings)
+            {
+                if (buttonMapping.button == inputEntry.button)
+                {
+                    buttonMapping.buttonWidget->Clear();
+                    for (int i = 0; i < inputEntry.data.size(); i++)
+                    {
+                        buttonMapping.buttonWidget->AddInputData(inputEntry.inputTypes[i], inputEntry.data[i], 
+                                                                 inputEntry.extraData[i], inputEntry.names[i]);
+                    }
+                    break;
+                }
+            }
+        }
+        else if (inputEntry.axis != InputAxisDirection::Invalid)
+        {
+            for (const auto& axisMapping : this->joystickWidgetMappings)
+            {
+                if (axisMapping.direction == inputEntry.axis)
+                {
+                    axisMapping.buttonWidget->Clear();
+                    for (int i = 0; i < inputEntry.data.size(); i++)
+                    {
+                        axisMapping.buttonWidget->AddInputData(inputEntry.inputTypes[i], inputEntry.data[i], 
+                                                                 inputEntry.extraData[i], inputEntry.names[i]);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+}
+
 void ControllerWidget::on_resetButton_clicked()
 {
     const QString section = this->getCurrentSettingsSection();
@@ -886,8 +934,8 @@ void ControllerWidget::on_resetButton_clicked()
 
 void ControllerWidget::on_optionsButton_clicked()
 {
-    InputDevice device = this->inputDeviceComboBox->currentData().value<InputDevice>();
-    const bool isKeyboard = device.type == InputDeviceType::Keyboard;
+    inputDeviceData deviceData = this->inputDeviceComboBox->currentData().value<inputDeviceData>();
+    const bool isKeyboard = deviceData.device.type == InputDeviceType::Keyboard;
 
     OptionsDialog dialog(this, this->optionsDialogSettings,
                          isKeyboard ? nullptr : this->currentJoystick, 
@@ -1526,8 +1574,8 @@ void ControllerWidget::on_MainDialog_SdlEventPollFinished()
 
 bool ControllerWidget::IsPluggedIn()
 {
-    const InputDevice device = this->inputDeviceComboBox->currentData().value<InputDevice>();
-    return device.type != InputDeviceType::None;
+    const inputDeviceData deviceData = this->inputDeviceComboBox->currentData().value<inputDeviceData>();
+    return deviceData.device.type != InputDeviceType::None;
 }
 
 void ControllerWidget::SetOnlyLoadGameProfile(bool value, CoreRomHeader romHeader, CoreRomSettings romSettings)

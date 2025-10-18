@@ -61,7 +61,8 @@ enum class InputAxisDirection
     Up = 0,
     Down,
     Left,
-    Right
+    Right,
+    Invalid
 };
 
 enum class N64ControllerPak

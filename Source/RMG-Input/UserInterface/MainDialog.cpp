@@ -68,16 +68,18 @@ MainDialog::MainDialog(QWidget* parent, Thread::SDLThread* sdlThread, bool romCo
         // so we only have to expose it there
         if (controllerWidget == this->controllerWidgets.last())
         {
-            controllerWidget->AddInputDevice({ InputDeviceType::EmulateVRU, "Voice Recognition Unit" });
+            controllerWidget->AddInputDevice({ InputDeviceType::EmulateVRU, "Voice Recognition Unit" }, {});
         }
 #endif // VRU
         controllerWidget->SetAllowKeyboardForAutomatic(controllerWidget == this->controllerWidgets.first());
 
-        controllerWidget->AddInputDevice({ InputDeviceType::None, "None" });
-        controllerWidget->AddInputDevice({ InputDeviceType::Automatic, "Automatic" });
-        controllerWidget->AddInputDevice({ InputDeviceType::Keyboard, "Keyboard" });
+        controllerWidget->AddInputDevice({ InputDeviceType::None, "None" }, {});
+        controllerWidget->AddInputDevice({ InputDeviceType::Automatic, "Automatic" }, {});
+        controllerWidget->AddInputDevice({ InputDeviceType::Keyboard, "Keyboard" }, {});
         controllerWidget->SetInitialized(true);
     }
+
+    this->inputProfileDB.Load();
 
     // fill device list at least once
     this->on_ControllerWidget_RefreshInputDevicesButtonClicked();
@@ -94,9 +96,12 @@ MainDialog::~MainDialog()
 
 void MainDialog::addInputDevice(const InputDevice& device)
 {
+    InputProfileDBEntry inputProfile = {};
+    this->inputProfileDB.FindEntry(inputProfile, device);
+
     for (auto& controllerWidget : this->controllerWidgets)
     {
-        controllerWidget->AddInputDevice(device);
+        controllerWidget->AddInputDevice(device, inputProfile);
     }
 }
 
