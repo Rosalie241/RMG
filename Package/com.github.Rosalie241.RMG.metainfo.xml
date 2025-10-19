@@ -29,6 +29,29 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.8.6" date="2025-10-19" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix game specific profile name being empty for ROMs with no internal ROM name in RMG-Input</li>
+          <li>Fix GameBoy tower functionality not working in Pokemon Stadium when using a GameBoy save</li>
+          <li>Fix currently set directory not being the starting directory in directory dialogs</li>
+          <li>Fix ROM browser refreshing after 'Edit ROM Directory...' when the directory is the same</li>
+          <li>Fix settings dialog not allowing you to select all supported PIF file variants</li>
+          <li>Fix slowdown when using RMG-Input-GCA by polling input on a different thread</li>
+          <li>Fix RMG-Input not using native controller button names for the face buttons in the configuration GUI</li>
+          <li>Add icons to the cheats dialog</li>
+          <li>Add icons to the context menu of the ROM browser</li>
+          <li>Add icons to the buttons of the settings dialog</li>
+          <li>Add icons to the buttons of the options dialog in RMG-Input</li>
+          <li>Add 'Swap Z and L' setting to RMG-Input-GCA</li>
+          <li>Add Auto-Configure feature to RMG-Input</li>
+          <li>Add more bounds checking to mupen64plus-core</li>
+          <li>Remove user directories override settings</li>
+          <li>Update mupen64plus-core</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.8.5" date="2025-10-09" type="stable">
       <description>
         <p>Changes:</p>
