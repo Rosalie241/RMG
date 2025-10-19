@@ -36,6 +36,7 @@ Requires: speexdsp
 Requires: qt6-qtbase
 Requires: qt6-qtsvg
 Requires: qt6-qtwebsockets
+Requires: libatomic
 
 %description
 Rosalie's Mupen GUI is a free and open-source mupen64plus front-end written in C++
