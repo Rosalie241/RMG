@@ -59,6 +59,9 @@ MainDialog::MainDialog(QWidget* parent, Thread::SDLThread* sdlThread, bool romCo
             &MainDialog::on_ControllerWidget_UserProfileRemoved);
     }
 
+    // initialize input profile DB
+    this->inputProfileDB.Load();
+
     // always add keyboard device
     for (auto& controllerWidget : this->controllerWidgets)
     {
@@ -68,14 +71,14 @@ MainDialog::MainDialog(QWidget* parent, Thread::SDLThread* sdlThread, bool romCo
         // so we only have to expose it there
         if (controllerWidget == this->controllerWidgets.last())
         {
-            controllerWidget->AddInputDevice({ InputDeviceType::EmulateVRU, "Voice Recognition Unit" });
+            controllerWidget->AddInputDevice({ InputDeviceType::EmulateVRU, "Voice Recognition Unit" }, {});
         }
 #endif // VRU
         controllerWidget->SetAllowKeyboardForAutomatic(controllerWidget == this->controllerWidgets.first());
 
-        controllerWidget->AddInputDevice({ InputDeviceType::None, "None" });
-        controllerWidget->AddInputDevice({ InputDeviceType::Automatic, "Automatic" });
-        controllerWidget->AddInputDevice({ InputDeviceType::Keyboard, "Keyboard" });
+        this->addInputDevice(controllerWidget, { InputDeviceType::None, "None" });
+        this->addInputDevice(controllerWidget, { InputDeviceType::Automatic, "Automatic" });
+        this->addInputDevice(controllerWidget, { InputDeviceType::Keyboard, "Keyboard" });
         controllerWidget->SetInitialized(true);
     }
 
@@ -92,11 +95,24 @@ MainDialog::~MainDialog()
     this->closeInputDevice();
 }
 
+void MainDialog::addInputDevice(Widget::ControllerWidget* controllerWidget, const InputDevice& device)
+{
+    // only fallback to fallback profile when
+    // we have a controller device
+    InputProfileDBEntry inputProfile = this->inputProfileDB.FindEntry(device,
+                                            device.type == InputDeviceType::Automatic ||
+                                            device.type == InputDeviceType::Joystick);
+
+    controllerWidget->AddInputDevice(device, inputProfile);
+}
+
 void MainDialog::addInputDevice(const InputDevice& device)
 {
+    InputProfileDBEntry inputProfile = this->inputProfileDB.FindEntry(device);
+
     for (auto& controllerWidget : this->controllerWidgets)
     {
-        controllerWidget->AddInputDevice(device);
+        controllerWidget->AddInputDevice(device, inputProfile);
     }
 }
 
@@ -200,15 +216,6 @@ void MainDialog::on_InputPollTimer_triggered()
             break;
         default:
             break;
-    }
-
-    // check if controller has been disconnected,
-    // if so, keep trying to re-open it
-    if ((this->currentJoystick != nullptr && !SDL_JoystickConnected(this->currentJoystick)) ||
-        (this->currentGamepad != nullptr && !SDL_GamepadConnected(this->currentGamepad)))
-    {
-        this->closeInputDevice();
-        this->openInputDevice(this->currentDevice);
     }
 
     // process SDL events

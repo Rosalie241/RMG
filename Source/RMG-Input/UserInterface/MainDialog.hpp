@@ -13,6 +13,7 @@
 #include "common.hpp"
 #include <QDialog>
 
+#include "Utilities/InputProfileDB.hpp"
 #include "Widget/ControllerWidget.hpp"
 #include "Thread/SDLThread.hpp"
 #include "EventFilter.hpp"
@@ -31,6 +32,8 @@ private:
     QTimer* inputPollTimer;
     Thread::SDLThread* sdlThread;
 
+    Utilities::InputProfileDB inputProfileDB;
+
     QList<InputDevice> oldInputDeviceList;
     QList<InputDevice> inputDeviceList;
     bool updatingDeviceList = false;
@@ -44,6 +47,7 @@ private:
 
     EventFilter* eventFilter;
 
+    void addInputDevice(Widget::ControllerWidget* controllerWidget, const InputDevice& device);
     void addInputDevice(const InputDevice& device);
     void removeInputDevice(const InputDevice& device);
 

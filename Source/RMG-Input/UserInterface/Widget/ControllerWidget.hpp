@@ -16,6 +16,7 @@
 #include "UserInterface/OptionsDialog.hpp"
 #include "UserInterface/HotkeysDialog.hpp"
 #include "UserInterface/EventFilter.hpp"
+#include "Utilities/InputProfileDB.hpp"
 
 using namespace UserInterface::Widget;
 
@@ -43,7 +44,6 @@ private:
 
     OptionsDialogSettings optionsDialogSettings;
 
-    QList<QString> inputDeviceNameList;
     MappingButton* currentButton = nullptr;
     bool addMappingToButton      = false;
 
@@ -72,6 +72,12 @@ private:
         SettingsID extraDataSettingsId;
     };
 
+    struct inputDeviceData
+    {
+        InputDevice device;
+        InputProfileDBEntry inputProfile;
+    };
+
     QList<buttonWidgetMapping> buttonWidgetMappings;
     QList<axisWidgetMapping> joystickWidgetMappings;
     QList<buttonSettingMapping> buttonSettingMappings;
@@ -93,6 +99,8 @@ private:
     QString getCurrentSettingsSection();
 
     QString getUserProfileSectionName(QString profile);
+
+    QString getGamepadButtonText(SDL_GamepadButton button);
 
     bool isSectionUserProfile(QString section);
     bool isSectionGameProfile(QString section);
@@ -123,7 +131,7 @@ public:
     ControllerWidget(QWidget* parent, EventFilter* eventFilter);
     ~ControllerWidget();
 
-    void AddInputDevice(const InputDevice& device);
+    void AddInputDevice(const InputDevice& device, const InputProfileDBEntry& inputProfile);
     void RemoveInputDevice(const InputDevice& device);
     void CheckInputDeviceSettings();
     void CheckInputDeviceSettings(QString section);
@@ -170,6 +178,7 @@ private slots:
     void on_addProfileButton_clicked();
     void on_removeProfileButton_clicked();
 
+    void on_autoConfigButton_clicked();
     void on_resetButton_clicked();
     void on_optionsButton_clicked();
     void on_hotkeysButton_clicked();
