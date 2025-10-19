@@ -22,7 +22,7 @@
 using namespace UserInterface;
 
 OptionsDialog::OptionsDialog(QWidget* parent, OptionsDialogSettings settings,
-                             SDL_Joystick* joystick, SDL_Gamepad* controller) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint)
+                             SDL_Joystick* joystick, SDL_Gamepad* gamepad) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint)
 {
     this->setupUi(this);
 
@@ -43,11 +43,11 @@ OptionsDialog::OptionsDialog(QWidget* parent, OptionsDialogSettings settings,
         this->hideEmulationInfoText();
     }
 
-    this->currentJoystick   = joystick;
-    this->currentController = controller;
+    this->currentJoystick = joystick;
+    this->currentGamepad = gamepad;
 
     this->testRumbleButton->setVisible(settings.ControllerPak == 1);
-    this->testRumbleButton->setEnabled(this->currentJoystick != nullptr || this->currentController != nullptr);
+    this->testRumbleButton->setEnabled(this->currentJoystick != nullptr || this->currentGamepad != nullptr);
 }
 
 OptionsDialogSettings OptionsDialog::GetSettings()
@@ -138,7 +138,7 @@ void OptionsDialog::on_testRumbleButton_clicked()
 
     SDL_PropertiesID properties;
     if ((this->currentJoystick != nullptr && (properties = SDL_GetJoystickProperties(this->currentJoystick)) != 0) ||
-        (this->currentController != nullptr && (properties = SDL_GetGamepadProperties(this->currentController)) != 0))
+        (this->currentGamepad != nullptr && (properties = SDL_GetGamepadProperties(this->currentGamepad)) != 0))
     {
         const char* propertyName = this->currentJoystick != nullptr ? SDL_PROP_JOYSTICK_CAP_RUMBLE_BOOLEAN
                                                                     : SDL_PROP_GAMEPAD_CAP_RUMBLE_BOOLEAN;
@@ -163,6 +163,6 @@ void OptionsDialog::on_testRumbleButton_clicked()
     }
     else
     {
-        SDL_RumbleGamepad(this->currentController, 0xFFFF, 0xFFFF, 1500);
+        SDL_RumbleGamepad(this->currentGamepad, 0xFFFF, 0xFFFF, 1500);
     }
 }

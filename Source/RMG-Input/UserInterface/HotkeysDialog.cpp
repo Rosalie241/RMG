@@ -13,15 +13,15 @@
 using namespace UserInterface;
 
 HotkeysDialog::HotkeysDialog(QWidget* parent, QList<HotkeySettingMapping> hotkeySettingMappings, 
-    bool isGameController, SDL_JoystickID joystickId, 
+    bool isGamepad, SDL_JoystickID joystickId, 
     bool filterEvents, bool removeDuplicates) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint)
 {
     this->setupUi(this);
 
-    this->currentJoystickId               = joystickId;
-    this->isCurrentJoystickGameController = isGameController;
-    this->filterEventsForButtons          = filterEvents;
-    this->removeDuplicates                = removeDuplicates;
+    this->currentJoystickId        = joystickId;
+    this->isCurrentJoystickGamepad = isGamepad;
+    this->filterEventsForButtons   = filterEvents;
+    this->removeDuplicates         = removeDuplicates;
 
     this->hotkeySettingMappings.append(
     {
@@ -115,7 +115,7 @@ void HotkeysDialog::on_MainDialog_SdlEvent(SDL_Event* event)
 
             if (event->type == SDL_EVENT_GAMEPAD_BUTTON_DOWN)
             { // gamepad button
-                if (!this->isCurrentJoystickGameController &&
+                if (!this->isCurrentJoystickGamepad &&
                     this->filterEventsForButtons)
                 {
                     return;
@@ -128,7 +128,7 @@ void HotkeysDialog::on_MainDialog_SdlEvent(SDL_Event* event)
             }
             else
             { // joystick button
-                if (this->isCurrentJoystickGameController &&
+                if (this->isCurrentJoystickGamepad &&
                     this->filterEventsForButtons)
                 {
                     return;
@@ -164,7 +164,7 @@ void HotkeysDialog::on_MainDialog_SdlEvent(SDL_Event* event)
 
             if (event->type == SDL_EVENT_GAMEPAD_BUTTON_UP)
             { // gamepad button
-                if (!this->isCurrentJoystickGameController &&
+                if (!this->isCurrentJoystickGamepad &&
                     this->filterEventsForButtons)
                 {
                     return;
@@ -174,7 +174,7 @@ void HotkeysDialog::on_MainDialog_SdlEvent(SDL_Event* event)
             }
             else
             { // joystick button
-                if (this->isCurrentJoystickGameController &&
+                if (this->isCurrentJoystickGamepad &&
                     this->filterEventsForButtons)
                 {
                     return;
@@ -209,7 +209,7 @@ void HotkeysDialog::on_MainDialog_SdlEvent(SDL_Event* event)
 
             if (event->type == SDL_EVENT_GAMEPAD_AXIS_MOTION)
             { // gamepad axis
-                if (!this->isCurrentJoystickGameController &&
+                if (!this->isCurrentJoystickGamepad &&
                     this->filterEventsForButtons)
                 {
                     return;
@@ -224,7 +224,7 @@ void HotkeysDialog::on_MainDialog_SdlEvent(SDL_Event* event)
             }
             else
             { // joystick axis
-                if (this->isCurrentJoystickGameController &&
+                if (this->isCurrentJoystickGamepad &&
                     this->filterEventsForButtons)
                 {
                     return;

@@ -891,7 +891,7 @@ void ControllerWidget::on_optionsButton_clicked()
 
     OptionsDialog dialog(this, this->optionsDialogSettings,
                          isKeyboard ? nullptr : this->currentJoystick, 
-                         isKeyboard ? nullptr : this->currentController);
+                         isKeyboard ? nullptr : this->currentGamepad);
     int ret = dialog.exec();
 
     // when saved, store settings for later
@@ -904,7 +904,7 @@ void ControllerWidget::on_optionsButton_clicked()
 void ControllerWidget::on_hotkeysButton_clicked()
 {
     HotkeysDialog dialog(this, this->hotkeySettingMappings,
-                         this->isCurrentJoystickGameController,
+                         this->isCurrentJoystickGamepad,
                          this->currentJoystickId,
                          this->optionsDialogSettings.FilterEventsForButtons,
                          this->optionsDialogSettings.RemoveDuplicateMappings);
@@ -1040,7 +1040,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             if ((event->type == SDL_EVENT_GAMEPAD_BUTTON_DOWN) ||
                 (event->type == SDL_EVENT_GAMEPAD_BUTTON_UP))
             { // gamepad button
-                if (!this->isCurrentJoystickGameController &&
+                if (!this->isCurrentJoystickGamepad &&
                     this->optionsDialogSettings.FilterEventsForButtons)
                 {
                     return;
@@ -1059,7 +1059,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
                     sdlButton == SDL_GAMEPAD_BUTTON_WEST  ||
                     sdlButton == SDL_GAMEPAD_BUTTON_NORTH)
                 {
-                    SDL_GamepadButtonLabel sdlLabel = SDL_GetGamepadButtonLabel(this->currentController, 
+                    SDL_GamepadButtonLabel sdlLabel = SDL_GetGamepadButtonLabel(this->currentGamepad, 
                                                                                 static_cast<SDL_GamepadButton>(sdlButton));
 
                     QString sdlLabelName = Utilities::Sdl3ButtonLabelToString(sdlLabel);
@@ -1072,7 +1072,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             else if ((event->type == SDL_EVENT_JOYSTICK_BUTTON_DOWN) ||
                      (event->type == SDL_EVENT_JOYSTICK_BUTTON_UP))
             { // joystick button
-                if (this->isCurrentJoystickGameController &&
+                if (this->isCurrentJoystickGamepad &&
                     this->optionsDialogSettings.FilterEventsForButtons)
                 {
                     return;
@@ -1172,7 +1172,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             bool sdlHatCentered = (sdlHatDirection == SDL_HAT_CENTERED);
             QString sdlHatName  = "hat " + QString::number(sdlHat) + ":" + QString::number(sdlHatDirection);
 
-            if (this->isCurrentJoystickGameController &&
+            if (this->isCurrentJoystickGamepad &&
                 this->optionsDialogSettings.FilterEventsForButtons)
             {
                 return;
@@ -1311,7 +1311,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
 
             if (event->type == SDL_EVENT_GAMEPAD_AXIS_MOTION)
             { // gamepad axis
-                if (!this->isCurrentJoystickGameController &&
+                if (!this->isCurrentJoystickGamepad &&
                     this->optionsDialogSettings.FilterEventsForAxis)
                 {
                     return;
@@ -1326,7 +1326,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
             }
             else
             { // joystick axis
-                if (this->isCurrentJoystickGameController &&
+                if (this->isCurrentJoystickGamepad &&
                     this->optionsDialogSettings.FilterEventsForAxis)
                 {
                     return;
@@ -1966,15 +1966,15 @@ void ControllerWidget::SetCurrentJoystickID(SDL_JoystickID joystickId)
     this->currentJoystickId = joystickId;
 }
 
-void ControllerWidget::SetIsCurrentJoystickGameController(bool isGameController)
+void ControllerWidget::SetIsCurrentJoystickGameController(bool isGamepad)
 {
-    this->isCurrentJoystickGameController = isGameController;
+    this->isCurrentJoystickGamepad = isGamepad;
 }
 
-void ControllerWidget::SetCurrentJoystick(SDL_Joystick* joystick, SDL_Gamepad* controller)
+void ControllerWidget::SetCurrentJoystick(SDL_Joystick* joystick, SDL_Gamepad* gamepad)
 {
-    this->currentJoystick   = joystick;
-    this->currentController = controller;
+    this->currentJoystick = joystick;
+    this->currentGamepad = gamepad;
 }
 
 void ControllerWidget::AddUserProfile(QString name, QString section)

@@ -38,7 +38,7 @@ Q_OBJECT
 
 public:
     OptionsDialog(QWidget *parent, OptionsDialogSettings settings, 
-                  SDL_Joystick* joystick, SDL_Gamepad* controller);
+                  SDL_Joystick* joystick, SDL_Gamepad* gamepad);
 
     OptionsDialogSettings GetSettings();
 
@@ -48,8 +48,8 @@ protected:
 private:
     OptionsDialogSettings settings;
 
-    SDL_Joystick* currentJoystick  = nullptr;
-    SDL_Gamepad* currentController = nullptr;
+    SDL_Joystick* currentJoystick = nullptr;
+    SDL_Gamepad* currentGamepad = nullptr;
 
     void setIconsForEmulationInfoText(void);
     void hideEmulationInfoText(void);

@@ -145,18 +145,18 @@ void MainDialog::openInputDevice(InputDevice device)
         (controllerMode == 2))
     {
         this->currentJoystick = nullptr;
-        this->currentController = SDL_OpenGamepad(device.id);
+        this->currentGamepad = SDL_OpenGamepad(device.id);
     }
     else if (controllerMode == 0 || controllerMode == 1)
     {
         this->currentJoystick = SDL_OpenJoystick(device.id);
-        this->currentController = nullptr;
+        this->currentGamepad = nullptr;
     }
 
     this->currentDevice = device;
     controllerWidget->SetCurrentJoystickID(device.id);
-    controllerWidget->SetIsCurrentJoystickGameController(currentController != nullptr);
-    controllerWidget->SetCurrentJoystick(this->currentJoystick, this->currentController);
+    controllerWidget->SetIsCurrentJoystickGameController(currentGamepad != nullptr);
+    controllerWidget->SetCurrentJoystick(this->currentJoystick, this->currentGamepad);
 }
 
 void MainDialog::closeInputDevice()
@@ -167,10 +167,10 @@ void MainDialog::closeInputDevice()
         this->currentJoystick = nullptr;
     }
 
-    if (this->currentController != nullptr)
+    if (this->currentGamepad != nullptr)
     {
-        SDL_CloseGamepad(this->currentController);
-        this->currentController = nullptr;
+        SDL_CloseGamepad(this->currentGamepad);
+        this->currentGamepad = nullptr;
     }
 }
 
@@ -205,7 +205,7 @@ void MainDialog::on_InputPollTimer_triggered()
     // check if controller has been disconnected,
     // if so, keep trying to re-open it
     if ((this->currentJoystick != nullptr && !SDL_JoystickConnected(this->currentJoystick)) ||
-        (this->currentController != nullptr && !SDL_GamepadConnected(this->currentController)))
+        (this->currentGamepad != nullptr && !SDL_GamepadConnected(this->currentGamepad)))
     {
         this->closeInputDevice();
         this->openInputDevice(this->currentDevice);

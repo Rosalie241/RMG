@@ -292,7 +292,7 @@
            </item>
            <item>
             <property name="text">
-             <string>Controller</string>
+             <string>Gamepad</string>
             </property>
            </item>
           </widget>

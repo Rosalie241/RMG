@@ -103,11 +103,11 @@ private:
 
     void showErrorMessage(QString text, QString details = "");
 
-    SDL_JoystickID currentJoystickId     = -1;
-    bool isCurrentJoystickGameController = false;
+    SDL_JoystickID currentJoystickId = -1;
+    bool isCurrentJoystickGamepad = false;
 
-    SDL_Joystick* currentJoystick         = nullptr;
-    SDL_Gamepad* currentController = nullptr;
+    SDL_Joystick* currentJoystick = nullptr;
+    SDL_Gamepad* currentGamepad = nullptr;
 
     int previousProfileComboBoxIndex = -1;
 
@@ -152,8 +152,8 @@ public:
     void RevertSettings();
 
     void SetCurrentJoystickID(SDL_JoystickID joystickId);
-    void SetIsCurrentJoystickGameController(bool isGameController);
-    void SetCurrentJoystick(SDL_Joystick* joystick, SDL_Gamepad* controller);
+    void SetIsCurrentJoystickGameController(bool isGamepad);
+    void SetCurrentJoystick(SDL_Joystick* joystick, SDL_Gamepad* gamepad);
 
     void AddUserProfile(QString name, QString section);
     void RemoveUserProfile(QString name, QString section);
