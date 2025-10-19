@@ -26,6 +26,7 @@ BuildRequires: qt6-qtbase-devel
 BuildRequires: qt6-qtsvg-devel
 BuildRequires: qt6-qtwebsockets-devel
 BuildRequires: libxkbcommon-devel
+BuildRequires: libatomic
 
 Requires: libusb1
 Requires: hidapi
