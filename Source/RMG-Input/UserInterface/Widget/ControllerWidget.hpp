@@ -160,7 +160,7 @@ public:
     void RevertSettings();
 
     void SetCurrentJoystickID(SDL_JoystickID joystickId);
-    void SetIsCurrentJoystickGameController(bool isGamepad);
+    void SetIsCurrentJoystickGamepad(bool isGamepad);
     void SetCurrentJoystick(SDL_Joystick* joystick, SDL_Gamepad* gamepad);
 
     void AddUserProfile(QString name, QString section);

@@ -171,7 +171,7 @@ void MainDialog::openInputDevice(InputDevice device)
 
     this->currentDevice = device;
     controllerWidget->SetCurrentJoystickID(device.id);
-    controllerWidget->SetIsCurrentJoystickGameController(currentGamepad != nullptr);
+    controllerWidget->SetIsCurrentJoystickGamepad(currentGamepad != nullptr);
     controllerWidget->SetCurrentJoystick(this->currentJoystick, this->currentGamepad);
 }
 

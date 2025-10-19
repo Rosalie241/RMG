@@ -2030,7 +2030,7 @@ void ControllerWidget::SetCurrentJoystickID(SDL_JoystickID joystickId)
     this->currentJoystickId = joystickId;
 }
 
-void ControllerWidget::SetIsCurrentJoystickGameController(bool isGamepad)
+void ControllerWidget::SetIsCurrentJoystickGamepad(bool isGamepad)
 {
     this->isCurrentJoystickGamepad = isGamepad;
 }
