@@ -159,9 +159,8 @@ public:
 
     void RevertSettings();
 
-    void SetCurrentJoystickID(SDL_JoystickID joystickId);
-    void SetIsCurrentJoystickGamepad(bool isGamepad);
-    void SetCurrentJoystick(SDL_Joystick* joystick, SDL_Gamepad* gamepad);
+    void SetCurrentInputDevice(SDL_JoystickID joystickId, SDL_Joystick* joystick, 
+                               SDL_Gamepad* gamepad, const InputProfileDBEntry& inputProfile);
 
     void AddUserProfile(QString name, QString section);
     void RemoveUserProfile(QString name, QString section);

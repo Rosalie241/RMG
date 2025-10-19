@@ -128,14 +128,14 @@ void MainDialog::openInputDevice(InputDevice device)
 {
     Widget::ControllerWidget* controllerWidget;
     controllerWidget = this->controllerWidgets.at(this->tabWidget->currentIndex());
+    InputProfileDBEntry inputProfile = {};
 
     // we don't need to open a non-joystick device
     if (device.type != InputDeviceType::Automatic &&
         device.type != InputDeviceType::Joystick)
     {
         this->currentDevice = { };
-        controllerWidget->SetCurrentJoystickID(this->currentDevice.id);
-        controllerWidget->SetCurrentJoystick(nullptr, nullptr);
+        controllerWidget->SetCurrentInputDevice(this->currentDevice.id, nullptr, nullptr, inputProfile);
         return;
     }
 
@@ -146,12 +146,12 @@ void MainDialog::openInputDevice(InputDevice device)
         if (currentIndex < this->inputDeviceList.size())
         { // use device when there's one
             device.id = this->inputDeviceList.at(currentIndex).id;
+            inputProfile = this->inputProfileDB.FindEntry(this->inputDeviceList.at(currentIndex));
         }
         else
         { // no device found, fallback to keyboard
             this->currentDevice = { InputDeviceType::Keyboard, "Keyboard" };
-            controllerWidget->SetCurrentJoystickID(this->currentDevice.id);
-            controllerWidget->SetCurrentJoystick(nullptr, nullptr);
+            controllerWidget->SetCurrentInputDevice(this->currentDevice.id, nullptr, nullptr, inputProfile);
             return;
         }
     }
@@ -170,9 +170,7 @@ void MainDialog::openInputDevice(InputDevice device)
     }
 
     this->currentDevice = device;
-    controllerWidget->SetCurrentJoystickID(device.id);
-    controllerWidget->SetIsCurrentJoystickGamepad(currentGamepad != nullptr);
-    controllerWidget->SetCurrentJoystick(this->currentJoystick, this->currentGamepad);
+    controllerWidget->SetCurrentInputDevice(device.id, this->currentJoystick, this->currentGamepad, inputProfile);
 }
 
 void MainDialog::closeInputDevice()

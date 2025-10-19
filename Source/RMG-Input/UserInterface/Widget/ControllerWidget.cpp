@@ -2025,23 +2025,25 @@ void ControllerWidget::RevertSettings()
     }
 }
 
-void ControllerWidget::SetCurrentJoystickID(SDL_JoystickID joystickId)
+void ControllerWidget::SetCurrentInputDevice(SDL_JoystickID joystickId, SDL_Joystick* joystick, 
+                                             SDL_Gamepad* gamepad, const InputProfileDBEntry& inputProfile)
 {
     this->currentJoystickId = joystickId;
-}
-
-void ControllerWidget::SetIsCurrentJoystickGamepad(bool isGamepad)
-{
-    this->isCurrentJoystickGamepad = isGamepad;
-}
-
-void ControllerWidget::SetCurrentJoystick(SDL_Joystick* joystick, SDL_Gamepad* gamepad)
-{
     this->currentJoystick = joystick;
     this->currentGamepad = gamepad;
+    this->isCurrentJoystickGamepad = (gamepad != nullptr);
 
     // we can enable the auto-configure button when we have a gamepad
     this->autoConfigButton->setEnabled(gamepad != nullptr);
+
+    // update input profile when needed
+    if (inputProfile.valid)
+    {
+        int currentIndex = this->inputDeviceComboBox->currentIndex();
+        inputDeviceData deviceData = this->inputDeviceComboBox->itemData(currentIndex).value<inputDeviceData>();
+        deviceData.inputProfile = inputProfile;
+        this->inputDeviceComboBox->setItemData(currentIndex, QVariant::fromValue<inputDeviceData>(deviceData));
+    }
 }
 
 void ControllerWidget::AddUserProfile(QString name, QString section)
