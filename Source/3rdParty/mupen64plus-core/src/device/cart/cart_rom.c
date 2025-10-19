@@ -63,9 +63,13 @@ void read_cart_rom(void* opaque, uint32_t address, uint32_t* value)
     {
         *value = cart_rom->last_write;
     }
+    else if (addr < cart_rom->rom_size)
+    {
+        *value = *(uint32_t*)(cart_rom->rom + addr);
+    }
     else
     {
-        *value = cart_rom->rom_size == 0 ? 0 : *(uint32_t*)(cart_rom->rom + addr);
+        *value = 0;
     }
 }
 
