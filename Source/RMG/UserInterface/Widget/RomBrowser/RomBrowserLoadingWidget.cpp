@@ -30,10 +30,8 @@ RomBrowserLoadingWidget::RomBrowserLoadingWidget(QWidget* parent) : QWidget(pare
 
     this->setLayout(layout);
 
-#ifdef DRAG_DROP
     // configure drag & drop
     this->setAcceptDrops(true);
-#endif // DRAG_DROP
 }
 
 RomBrowserLoadingWidget::~RomBrowserLoadingWidget()
@@ -53,7 +51,6 @@ void RomBrowserLoadingWidget::SetCurrentRomIndex(int index, int count)
 
 void RomBrowserLoadingWidget::dragMoveEvent(QDragMoveEvent* event)
 {
-#ifdef DRAG_DROP
     const QMimeData* mimeData = event->mimeData();
 
     if (!mimeData->hasUrls() || !mimeData->urls().first().isLocalFile())
@@ -63,12 +60,10 @@ void RomBrowserLoadingWidget::dragMoveEvent(QDragMoveEvent* event)
     }
 
     event->acceptProposedAction();
-#endif // DRAG_DROP
 }
 
 void RomBrowserLoadingWidget::dragEnterEvent(QDragEnterEvent* event)
 {
-#ifdef DRAG_DROP
     const QMimeData* mimeData = event->mimeData();
 
     if (!mimeData->hasUrls() || !mimeData->urls().first().isLocalFile())
@@ -78,7 +73,6 @@ void RomBrowserLoadingWidget::dragEnterEvent(QDragEnterEvent* event)
     }
 
     event->acceptProposedAction();
-#endif // DRAG_DROP
 }
 
 void RomBrowserLoadingWidget::dropEvent(QDropEvent* event)

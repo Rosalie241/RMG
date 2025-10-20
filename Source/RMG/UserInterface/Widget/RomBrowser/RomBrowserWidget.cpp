@@ -161,9 +161,7 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QWidget(parent)
     this->gridViewWidget->setModel(this->gridViewProxyModel);
     this->gridViewWidget->setFlow(QListView::Flow::LeftToRight);
     this->gridViewWidget->setResizeMode(QListView::Adjust);
-#ifndef DRAG_DROP
     this->gridViewWidget->setMovement(QListView::Static);
-#endif // DRAG_DROP
     this->gridViewWidget->setUniformItemSizes(CoreSettingsGetBoolValue(SettingsID::RomBrowser_GridViewUniformItemSizes));
     this->gridViewWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
     this->gridViewWidget->setViewMode(QListView::ViewMode::IconMode);
@@ -183,10 +181,8 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QWidget(parent)
     connect(this->gridViewWidget, &Widget::RomBrowserGridViewWidget::ZoomOut, this, &RomBrowserWidget::on_ZoomOut);
     connect(this->gridViewWidget, &Widget::RomBrowserGridViewWidget::FileDropped, this, &RomBrowserWidget::FileDropped);
 
-#ifdef DRAG_DROP
     // configure drag & drop
     this->setAcceptDrops(true);
-#endif // DRAG_DROP
 
     // configure context menu policy
     this->setContextMenuPolicy(Qt::ContextMenuPolicy::CustomContextMenu);

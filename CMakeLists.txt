@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.15)
 option(PORTABLE_INSTALL "Portable Installation" ON)
 option(UPDATER          "Enables updater" ${WIN32})
 option(APPIMAGE_UPDATER "Enables AppImage updater" OFF)
-option(DRAG_DROP        "Enables drag and drop" ON)
+option(KCA_DRAG_DROP    "Enables drag and drop using KCoreAddons" OFF) # https://bugreports.qt.io/browse/QTBUG-91357
 option(NETPLAY          "Enables netplay" ON)
 option(VRU              "Enables VRU support in RMG-Input" ON)
 option(USE_CCACHE       "Enables usage of ccache when ccache has been found" ON)

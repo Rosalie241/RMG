@@ -54,6 +54,10 @@
 #include <QDir>
 #include <QUrl>
 
+#ifdef KCA_DRAG_DROP
+#include <KUrlMimeData>
+#endif
+
 #include <cstdlib>
 #include <cmath>
 
@@ -1458,11 +1462,15 @@ void MainWindow::on_EventFilter_KeyReleased(QKeyEvent *event)
 
 void MainWindow::on_EventFilter_FileDropped(QDropEvent *event)
 {
-#ifdef DRAG_DROP
     const QMimeData *mimeData = event->mimeData();
 
-    if (!mimeData->hasUrls() || mimeData->urls().empty() ||
-        !mimeData->urls().first().isLocalFile())
+    QList<QUrl> urls = mimeData->urls();
+#ifdef KCA_DRAG_DROP
+    urls = KUrlMimeData::urlsFromMimeData(mimeData, KUrlMimeData::PreferLocalUrls);
+#endif
+
+    if (!mimeData->hasUrls() || urls.empty() ||
+        !urls.first().isLocalFile())
     {
         return;
     }
@@ -1490,7 +1498,7 @@ void MainWindow::on_EventFilter_FileDropped(QDropEvent *event)
         }
     }
 
-    file = mimeData->urls().first().toLocalFile();
+    file = urls.first().toLocalFile();
 
     if (inEmulation)
     {
@@ -1505,7 +1513,6 @@ void MainWindow::on_EventFilter_FileDropped(QDropEvent *event)
     }
 
     this->launchEmulationThread(file, "", refreshRomList, -1, false, true);
-#endif // DRAG_DROP
 }
 
 void MainWindow::on_QGuiApplication_applicationStateChanged(Qt::ApplicationState state)

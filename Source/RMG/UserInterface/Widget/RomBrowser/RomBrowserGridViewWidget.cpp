@@ -17,12 +17,10 @@ using namespace UserInterface::Widget;
 
 RomBrowserGridViewWidget::RomBrowserGridViewWidget(QWidget* parent) : QListView(parent)
 {
-#ifdef DRAG_DROP
     // configure drag & drop
     this->setDragDropMode(QAbstractItemView::DragDropMode::DropOnly);
     this->setAcceptDrops(true);
     this->setDropIndicatorShown(true);
-#endif // DRAG_DROP
 }
 
 RomBrowserGridViewWidget::~RomBrowserGridViewWidget()
@@ -31,7 +29,6 @@ RomBrowserGridViewWidget::~RomBrowserGridViewWidget()
 
 void RomBrowserGridViewWidget::dragMoveEvent(QDragMoveEvent* event)
 {
-#ifdef DRAG_DROP
     const QMimeData* mimeData = event->mimeData();
 
     if (!mimeData->hasUrls() || !mimeData->urls().first().isLocalFile())
@@ -41,12 +38,10 @@ void RomBrowserGridViewWidget::dragMoveEvent(QDragMoveEvent* event)
     }
 
     event->acceptProposedAction();
-#endif // DRAG_DROP
 }
 
 void RomBrowserGridViewWidget::dragEnterEvent(QDragEnterEvent* event)
 {
-#ifdef DRAG_DROP
     const QMimeData* mimeData = event->mimeData();
 
     if (!mimeData->hasUrls() || !mimeData->urls().first().isLocalFile())
@@ -56,7 +51,6 @@ void RomBrowserGridViewWidget::dragEnterEvent(QDragEnterEvent* event)
     }
 
     event->acceptProposedAction();
-#endif // DRAG_DROP
 }
 
 void RomBrowserGridViewWidget::dropEvent(QDropEvent* event)
