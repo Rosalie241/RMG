@@ -161,7 +161,6 @@ RomBrowserWidget::RomBrowserWidget(QWidget *parent) : QWidget(parent)
     this->gridViewWidget->setModel(this->gridViewProxyModel);
     this->gridViewWidget->setFlow(QListView::Flow::LeftToRight);
     this->gridViewWidget->setResizeMode(QListView::Adjust);
-    this->gridViewWidget->setMovement(QListView::Static);
     this->gridViewWidget->setUniformItemSizes(CoreSettingsGetBoolValue(SettingsID::RomBrowser_GridViewUniformItemSizes));
     this->gridViewWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
     this->gridViewWidget->setViewMode(QListView::ViewMode::IconMode);
