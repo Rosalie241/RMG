@@ -9,8 +9,8 @@
  */
 #include "ControllerWidget.hpp"
 #include "UserInterface/OptionsDialog.hpp"
-#include "Utilities/Sdl3ButtonLabelToString.hpp"
 
+#include "UserInterface/UICommon.hpp"
 #include "common.hpp"
 
 #include <RMG-Core/RomSettings.hpp>
@@ -338,32 +338,6 @@ QString ControllerWidget::getUserProfileSectionName(QString profile)
     profileSection += "\"";
 
     return profileSection;
-}
-
-QString ControllerWidget::getGamepadButtonText(SDL_GamepadButton button)
-{
-    QString text = SDL_GetGamepadStringForButton(button);
-    if (this->currentGamepad == nullptr)
-    {
-        return text;
-    }
-
-    // convert A/B/X/Y buttons to their native counterpart,
-    // this makes the button text look better in the UI
-    if (button == SDL_GAMEPAD_BUTTON_SOUTH ||
-        button == SDL_GAMEPAD_BUTTON_EAST  ||
-        button == SDL_GAMEPAD_BUTTON_WEST  ||
-        button == SDL_GAMEPAD_BUTTON_NORTH)
-    {
-        SDL_GamepadButtonLabel buttonLabel = SDL_GetGamepadButtonLabel(this->currentGamepad, button);
-        QString labelString = Utilities::Sdl3ButtonLabelToString(buttonLabel);
-        if (!labelString.isEmpty())
-        { // replace only when we have a name
-            text = labelString;
-        }
-    }
-
-    return text;
 }
 
 bool ControllerWidget::isSectionUserProfile(QString section)
@@ -918,7 +892,7 @@ void ControllerWidget::on_autoConfigButton_clicked()
                     {
                         if (inputEntry.inputTypes[i] == InputType::GamepadButton)
                         {
-                            name = this->getGamepadButtonText(static_cast<SDL_GamepadButton>(inputEntry.data[i]));
+                            name = UICommon::GetGamepadButtonText(this->currentGamepad, static_cast<SDL_GamepadButton>(inputEntry.data[i]));
                         }
                         else
                         {
@@ -985,8 +959,7 @@ void ControllerWidget::on_optionsButton_clicked()
 void ControllerWidget::on_hotkeysButton_clicked()
 {
     HotkeysDialog dialog(this, this->hotkeySettingMappings,
-                         this->isCurrentJoystickGamepad,
-                         this->currentJoystickId,
+                         this->currentJoystickId, this->currentGamepad,
                          this->optionsDialogSettings.FilterEventsForButtons,
                          this->optionsDialogSettings.RemoveDuplicateMappings);
 
@@ -1131,7 +1104,7 @@ void ControllerWidget::on_MainDialog_SdlEvent(SDL_Event* event)
                 inputType = InputType::GamepadButton;
                 sdlButton = event->gbutton.button;
                 sdlButtonPressed = (event->type == SDL_EVENT_GAMEPAD_BUTTON_DOWN);
-                sdlButtonName = this->getGamepadButtonText(static_cast<SDL_GamepadButton>(sdlButton));
+                sdlButtonName = UICommon::GetGamepadButtonText(this->currentGamepad, static_cast<SDL_GamepadButton>(sdlButton));
             }
             else if ((event->type == SDL_EVENT_JOYSTICK_BUTTON_DOWN) ||
                      (event->type == SDL_EVENT_JOYSTICK_BUTTON_UP))

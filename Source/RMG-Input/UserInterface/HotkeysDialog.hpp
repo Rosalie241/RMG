@@ -41,6 +41,7 @@ Q_OBJECT
 private:
 
     SDL_JoystickID currentJoystickId = -1;
+    SDL_Gamepad* currentGamepad = nullptr;
     bool isCurrentJoystickGamepad = false;
     bool filterEventsForButtons   = false;
     bool removeDuplicates         = false;
@@ -60,7 +61,7 @@ private:
 
 public:
     HotkeysDialog(QWidget *parent, QList<HotkeySettingMapping> hotkeySettingMappings, 
-        bool isGamepad, SDL_JoystickID joystickId, 
+        SDL_JoystickID joystickId, SDL_Gamepad* gamepad,
         bool filterEvents, bool removeDuplicates);
 
     QList<HotkeySettingMapping> GetSettingMappings();

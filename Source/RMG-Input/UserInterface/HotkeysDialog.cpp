@@ -8,18 +8,21 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "HotkeysDialog.hpp"
+
+#include "UserInterface/UICommon.hpp"
 #include "common.hpp"
 
 using namespace UserInterface;
 
 HotkeysDialog::HotkeysDialog(QWidget* parent, QList<HotkeySettingMapping> hotkeySettingMappings, 
-    bool isGamepad, SDL_JoystickID joystickId, 
+    SDL_JoystickID joystickId, SDL_Gamepad* gamepad,
     bool filterEvents, bool removeDuplicates) : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint)
 {
     this->setupUi(this);
 
     this->currentJoystickId        = joystickId;
-    this->isCurrentJoystickGamepad = isGamepad;
+    this->currentGamepad           = gamepad;
+    this->isCurrentJoystickGamepad = (gamepad != nullptr);
     this->filterEventsForButtons   = filterEvents;
     this->removeDuplicates         = removeDuplicates;
 
@@ -124,7 +127,7 @@ void HotkeysDialog::on_MainDialog_SdlEvent(SDL_Event* event)
                 joystickId = event->gbutton.which;
                 inputType = InputType::GamepadButton;
                 sdlButton = event->gbutton.button;
-                sdlButtonName = SDL_GetGamepadStringForButton((SDL_GamepadButton)sdlButton);
+                sdlButtonName = UICommon::GetGamepadButtonText(this->currentGamepad, static_cast<SDL_GamepadButton>(sdlButton));
             }
             else
             { // joystick button
@@ -219,7 +222,7 @@ void HotkeysDialog::on_MainDialog_SdlEvent(SDL_Event* event)
                 inputType = InputType::GamepadAxis;
                 sdlAxis = event->gaxis.axis;
                 sdlAxisValue = event->gaxis.value;
-                sdlAxisName = SDL_GetGamepadStringForAxis((SDL_GamepadAxis)sdlAxis);
+                sdlAxisName = SDL_GetGamepadStringForAxis(static_cast<SDL_GamepadAxis>(sdlAxis));
                 sdlAxisName += sdlAxisValue > 0 ? "+" : "-";
             }
             else

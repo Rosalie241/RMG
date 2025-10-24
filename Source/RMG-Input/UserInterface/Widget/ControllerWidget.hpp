@@ -100,8 +100,6 @@ private:
 
     QString getUserProfileSectionName(QString profile);
 
-    QString getGamepadButtonText(SDL_GamepadButton button);
-
     bool isSectionUserProfile(QString section);
     bool isSectionGameProfile(QString section);
 

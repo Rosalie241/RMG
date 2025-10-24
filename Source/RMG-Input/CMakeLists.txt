@@ -28,6 +28,7 @@ set(RMG_INPUT_SOURCES
     UserInterface/MainDialog.ui
     UserInterface/MainDialog.cpp
     UserInterface/UIResources.qrc
+    UserInterface/UICommon.cpp
     Utilities/Sdl3ButtonLabelToString.cpp
     Utilities/InputProfileDB.cpp
     Utilities/QtKeyToSdl3Key.cpp
