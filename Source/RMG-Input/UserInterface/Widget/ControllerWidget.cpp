@@ -10,6 +10,8 @@
 #include "ControllerWidget.hpp"
 #include "UserInterface/OptionsDialog.hpp"
 
+#include "UserInterface/Layout/AlignCenterLayout.hpp"
+
 #include "UserInterface/UICommon.hpp"
 #include "common.hpp"
 
@@ -26,11 +28,20 @@
 
 #include <SDL3/SDL.h>
 
+using namespace UserInterface::Layout;
 using namespace UserInterface::Widget;
 
 ControllerWidget::ControllerWidget(QWidget* parent, EventFilter* eventFilter) : QWidget(parent)
 {
     this->setupUi(this);
+
+    AlignCenterLayout* layout = new AlignCenterLayout(6);
+    this->verticalLayout_10->insertLayout(0, layout);
+    this->verticalLayout_10->removeItem(horizontalLayout_4);
+    delete horizontalLayout_4;
+    layout->addWidget(profileGroupBox);
+    layout->addWidget(inputDeviceGroupBox);
+    layout->addWidget(deadZoneGroupBox);
 
     // install eventFilter to all children and parents
     this->installEventFilter(eventFilter);

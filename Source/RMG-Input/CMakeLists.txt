@@ -13,6 +13,7 @@ find_package(Qt6 COMPONENTS Gui Widgets Core Svg REQUIRED)
 find_package(SDL3 REQUIRED)
 
 set(RMG_INPUT_SOURCES
+    UserInterface/Layout/AlignCenterLayout.cpp
     UserInterface/Widget/ControllerWidget.ui
     UserInterface/Widget/ControllerWidget.cpp
     UserInterface/Widget/ControllerImageWidget.cpp
