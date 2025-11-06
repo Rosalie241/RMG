@@ -32,9 +32,8 @@ RomInfoDialog::RomInfoDialog(QWidget *parent, QString file, CoreRomType romType,
     this->crc2LineEdit->setText(QString::number(romHeader.CRC2, 16).toUpper());
     this->gameIDLineEdit->setText(QString::fromStdString(romHeader.GameID));
     this->gameRegionLineEdit->setText(QString::fromStdString(romHeader.Region));
-    this->systemRegionLineEdit->setText(romType == CoreRomType::Disk
-                                            ? "Unknown"
-                                            : (romHeader.SystemType == CoreSystemType::NTSC ? "NTSC" : "PAL"));
+    this->systemRegionLineEdit->setText(romHeader.SystemType == CoreSystemType::NTSC ? "NTSC" : "PAL");
+    this->gameTypeLineEdit->setText(romType == CoreRomType::Disk ? "Disk" : "Cartridge");
 }
 
 RomInfoDialog::~RomInfoDialog(void)
