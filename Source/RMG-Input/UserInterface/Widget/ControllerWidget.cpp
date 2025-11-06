@@ -269,6 +269,11 @@ void ControllerWidget::disableAllChildren()
         }
 
         QWidget* widget = static_cast<QWidget*>(object);
+        if (widget == this->autoConfigButton)
+        { // save the state because whether it's enabled
+          // is set elsewhere
+            this->autoConfigButtonEnabled = widget->isEnabled();
+        }
         if (widget->isEnabled())
         {
             widget->setEnabled(false);
@@ -286,7 +291,11 @@ void ControllerWidget::enableAllChildren()
         }
 
         QWidget* widget = static_cast<QWidget*>(object);
-        if (!widget->isEnabled())
+        if (widget == this->autoConfigButton)
+        { // we have to restore the state
+            widget->setEnabled(this->autoConfigButtonEnabled);
+        }
+        else if (!widget->isEnabled())
         {
             widget->setEnabled(true);
         }

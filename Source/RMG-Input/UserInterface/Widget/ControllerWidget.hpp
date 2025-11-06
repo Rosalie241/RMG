@@ -51,6 +51,8 @@ private:
     QList<QString> removedProfiles;
     QList<QString> addedProfiles;
 
+    bool autoConfigButtonEnabled = false;
+
     struct buttonWidgetMapping
     {
         enum N64ControllerButton button;
