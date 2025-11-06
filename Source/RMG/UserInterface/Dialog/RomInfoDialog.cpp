@@ -14,7 +14,7 @@
 
 using namespace UserInterface::Dialog;
 
-RomInfoDialog::RomInfoDialog(QString file, CoreRomHeader romHeader, CoreRomSettings romSettings, QWidget *parent) : QDialog(parent)
+RomInfoDialog::RomInfoDialog(QWidget *parent, QString file, CoreRomType romType, CoreRomHeader romHeader, CoreRomSettings romSettings) : QDialog(parent)
 {
     this->setupUi(this);
 
@@ -32,7 +32,9 @@ RomInfoDialog::RomInfoDialog(QString file, CoreRomHeader romHeader, CoreRomSetti
     this->crc2LineEdit->setText(QString::number(romHeader.CRC2, 16).toUpper());
     this->gameIDLineEdit->setText(QString::fromStdString(romHeader.GameID));
     this->gameRegionLineEdit->setText(QString::fromStdString(romHeader.Region));
-    this->systemRegionLineEdit->setText(romHeader.SystemType == CoreSystemType::NTSC ? "NTSC" : "PAL");
+    this->systemRegionLineEdit->setText(romType == CoreRomType::Disk
+                                            ? "Unknown"
+                                            : (romHeader.SystemType == CoreSystemType::NTSC ? "NTSC" : "PAL"));
 }
 
 RomInfoDialog::~RomInfoDialog(void)

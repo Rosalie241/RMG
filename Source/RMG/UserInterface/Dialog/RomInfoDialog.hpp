@@ -12,6 +12,7 @@
 
 #include <RMG-Core/RomSettings.hpp>
 #include <RMG-Core/RomHeader.hpp>
+#include <RMG-Core/Rom.hpp>
 
 #include <QWidget>
 #include <QDialog>
@@ -27,7 +28,7 @@ class RomInfoDialog : public QDialog, private Ui::RomInfoDialog
     Q_OBJECT
 
   public:
-    RomInfoDialog(QString file, CoreRomHeader romHeader, CoreRomSettings romSettings, QWidget *parent);
+    RomInfoDialog(QWidget *parent, QString file, CoreRomType romType, CoreRomHeader romHeader, CoreRomSettings romSettings);
     ~RomInfoDialog(void);
 };
 } // namespace Dialog
