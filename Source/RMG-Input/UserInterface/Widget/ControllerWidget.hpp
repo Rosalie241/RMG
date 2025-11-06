@@ -109,6 +109,8 @@ private:
 
     bool hasAnySettingChanged(QString section);
 
+    void addProfile(const QString& profile, const QString& section);
+
     void showErrorMessage(QString text, QString details = "");
 
     SDL_JoystickID currentJoystickId = -1;

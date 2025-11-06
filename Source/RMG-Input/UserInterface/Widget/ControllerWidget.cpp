@@ -10,6 +10,8 @@
 #include "ControllerWidget.hpp"
 #include "UserInterface/OptionsDialog.hpp"
 
+#include "UserInterface/Layout/AlignCenterLayout.hpp"
+
 #include "UserInterface/UICommon.hpp"
 #include "common.hpp"
 
@@ -26,11 +28,23 @@
 
 #include <SDL3/SDL.h>
 
+using namespace UserInterface::Layout;
 using namespace UserInterface::Widget;
 
 ControllerWidget::ControllerWidget(QWidget* parent, EventFilter* eventFilter) : QWidget(parent)
 {
     this->setupUi(this);
+
+    // sadly Qt Designer doesn't support inserting
+    // custom layouts, so just replace an existing
+    // one with our custom one
+    this->mainLayout->removeItem(this->horizontalLayout_4);
+    delete this->horizontalLayout_4;
+    AlignCenterLayout* layout = new AlignCenterLayout(this->mainLayout->spacing());
+    layout->addWidget(profileGroupBox);
+    layout->addWidget(inputDeviceGroupBox);
+    layout->addWidget(deadZoneGroupBox);
+    this->mainLayout->insertLayout(0, layout);
 
     // install eventFilter to all children and parents
     this->installEventFilter(eventFilter);
@@ -176,7 +190,6 @@ ControllerWidget::ControllerWidget(QWidget* parent, EventFilter* eventFilter) : 
 
 ControllerWidget::~ControllerWidget()
 {
-
 }
 
 void ControllerWidget::initializeMappingButtons()
@@ -499,6 +512,22 @@ bool ControllerWidget::hasAnySettingChanged(QString sectionQString)
     return false;
 }
 
+void ControllerWidget::addProfile(const QString& profile, const QString& section)
+{
+    int index = this->profileComboBox->findData(section);
+    if (index == -1)
+    {
+        this->profileComboBox->addItem(profile, section);
+
+        // add tooltip to UI
+        index = this->profileComboBox->findData(section);
+        if (index != -1)
+        {
+            this->profileComboBox->setItemData(index, profile, Qt::ToolTipRole);
+        }
+    }
+}
+
 void ControllerWidget::showErrorMessage(QString text, QString details)
 {
     QMessageBox msgBox(this);
@@ -523,6 +552,13 @@ void ControllerWidget::AddInputDevice(const InputDevice& device, const InputProf
     }
 
     this->inputDeviceComboBox->addItem(name, QVariant::fromValue<inputDeviceData>({ device, inputProfile }));
+
+    // add tooltip to UI
+    int index = this->inputDeviceComboBox->findText(name);
+    if (index != -1)
+    {
+        this->inputDeviceComboBox->setItemData(index, name, Qt::ToolTipRole);
+    }
 }
 
 void ControllerWidget::RemoveInputDevice(const InputDevice& device)
@@ -721,6 +757,9 @@ void ControllerWidget::on_profileComboBox_currentIndexChanged(int value)
     // update previous index
     this->previousProfileComboBoxIndex = value;
 
+    // update tooltip
+    this->profileComboBox->setToolTip(this->profileComboBox->itemText(value));
+
     // reload settings from section
     this->LoadSettings(this->getCurrentSettingsSection());
     // reload input device settings
@@ -750,6 +789,9 @@ void ControllerWidget::on_inputDeviceComboBox_currentIndexChanged(int value)
     // set plugged in state
     this->setPluggedIn(deviceData.device.type != InputDeviceType::None &&
                        deviceData.device.type != InputDeviceType::EmulateVRU);
+
+    // update tooltip
+    this->inputDeviceComboBox->setToolTip(this->inputDeviceComboBox->itemText(value));
 
     emit this->CurrentInputDeviceChanged(this, deviceData.device);
 }
@@ -799,7 +841,7 @@ void ControllerWidget::on_addProfileButton_clicked()
     section = this->getUserProfileSectionName(newProfile);
 
     // add profile to UI
-    this->profileComboBox->addItem(newProfile, section);
+    this->addProfile(newProfile, section);
     this->profileComboBox->setCurrentText(newProfile);
 
     // add profile to settings
@@ -1596,7 +1638,7 @@ void ControllerWidget::SetSettingsSection(QString profile, QString section)
     this->settingsSection = section;
     if (!this->onlyLoadGameProfile)
     {
-        this->profileComboBox->addItem(profile, section);
+        this->addProfile(profile, section);
     }
 }
 
@@ -1645,7 +1687,7 @@ void ControllerWidget::LoadSettings()
         int index = this->profileComboBox->findData(this->gameSection);
         if (index == -1)
         {
-            this->profileComboBox->addItem(name, this->gameSection);
+            this->addProfile(name, this->gameSection);
         }
 
         // if a game specific section exists,
@@ -1696,7 +1738,7 @@ void ControllerWidget::LoadSettings()
                 int index = this->profileComboBox->findData(profileSection);
                 if (index == -1)
                 {
-                    this->profileComboBox->addItem(QString::fromStdString(profile), profileSection);
+                    this->addProfile(QString::fromStdString(profile), profileSection);
                 }
             }
         }
@@ -2033,7 +2075,7 @@ void ControllerWidget::AddUserProfile(QString name, QString section)
     int index = this->profileComboBox->findData(section);
     if (index == -1)
     {
-        this->profileComboBox->addItem(name, section);
+        this->addProfile(name, section);
     }
 }
 
