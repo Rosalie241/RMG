@@ -29,6 +29,21 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.8.7" date="2025-11-06" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix drag and drop not working in the flatpak</li>
+          <li>Fix hotkeys dialog in RMG-Input not showing native face button names</li>
+          <li>Fix cheat dialog in RMG not allowing users to set cheat option since v0.7.2</li>
+          <li>Fix cheat codes not being cleared before trying to load another cheat in RMG-Core</li>
+          <li>Fix 'Auto-Configure' button being enabled when it should be disabled after configuring a button</li>
+          <li>Fix top row of UI elements in the configuration GUI of RMG-Input not being aligned properly</li>
+          <li>Add tooltips to the top row of UI elements in the configuration GUI of RMG-Input</li>
+          <li>Add 'Game Type' to the 'ROM Information' dialog</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.8.6" date="2025-10-19" type="stable">
       <description>
         <p>Changes:</p>
