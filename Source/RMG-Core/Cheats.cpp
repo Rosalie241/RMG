@@ -955,6 +955,7 @@ CORE_EXPORT bool CoreApplyCheats(void)
 
     for (const CoreCheat& cheat : cheats)
     {
+        m64p_cheatCodes.clear();
         skipCheat = false;
 
         if (!CoreIsCheatEnabled("", cheat))
@@ -1072,6 +1073,7 @@ CORE_EXPORT bool CoreApplyNetplayCheats(void)
 
     for (const CoreCheat& cheat : l_NetplayCheats)
     {
+        m64p_cheatCodes.clear();
         skipCheat = false;
 
         for (const CoreCheatCode& code : cheat.CheatCodes)
