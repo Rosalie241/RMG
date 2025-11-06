@@ -158,7 +158,7 @@ bool CheatsCommon::GetCheatOption(bool netplay, const QJsonArray& json, QString 
         return CoreGetCheatOption(file.toStdU32String(), cheat, option);
     }
 }
-bool CheatsCommon::SetCheatOption(bool netplay, QJsonArray& json, QString file, const CoreCheat& cheat, CoreCheatOption& option)
+bool CheatsCommon::SetCheatOption(bool netplay, QJsonArray& json, QString file, const CoreCheat& cheat, const CoreCheatOption& option)
 {
     if (netplay)
     {
@@ -195,7 +195,7 @@ bool CheatsCommon::SetCheatOption(bool netplay, QJsonArray& json, QString file, 
     }
     else
     {
-        return CoreGetCheatOption(file.toStdU32String(), cheat, option);
+        return CoreSetCheatOption(file.toStdU32String(), cheat, option);
     }
 }
 

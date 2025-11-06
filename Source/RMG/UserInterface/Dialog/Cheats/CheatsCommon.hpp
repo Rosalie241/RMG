@@ -31,7 +31,7 @@ namespace CheatsCommon
     bool GetCheatOption(bool netplay, const QJsonArray& json, QString file, const CoreCheat& cheat, CoreCheatOption& option);
 
     // Sets cheat option
-    bool SetCheatOption(bool netplay, QJsonArray& json, QString file, const CoreCheat& cheat, CoreCheatOption& option);
+    bool SetCheatOption(bool netplay, QJsonArray& json, QString file, const CoreCheat& cheat, const CoreCheatOption& option);
 
     // Parses json into cheat list
     bool ParseCheatJson(const QJsonArray& json, std::vector<CoreCheat>& cheats);
