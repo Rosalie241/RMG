@@ -51,7 +51,7 @@ private:
     QList<QString> removedProfiles;
     QList<QString> addedProfiles;
 
-    bool autoConfigButtonEnabled = false;
+    bool autoConfigureButtonEnabled = false;
 
     struct buttonWidgetMapping
     {
@@ -181,7 +181,7 @@ private slots:
     void on_addProfileButton_clicked();
     void on_removeProfileButton_clicked();
 
-    void on_autoConfigButton_clicked();
+    void on_autoConfigureButton_clicked();
     void on_resetButton_clicked();
     void on_optionsButton_clicked();
     void on_hotkeysButton_clicked();

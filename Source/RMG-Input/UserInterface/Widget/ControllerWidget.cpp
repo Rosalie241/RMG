@@ -252,7 +252,7 @@ void ControllerWidget::initializeProfileButtons()
 void ControllerWidget::initializeMiscButtons()
 {
     this->inputDeviceRefreshButton->setIcon(QIcon::fromTheme("refresh-line"));
-    this->autoConfigButton->setIcon(QIcon::fromTheme("magic-line"));
+    this->autoConfigureButton->setIcon(QIcon::fromTheme("magic-line"));
     this->resetButton->setIcon(QIcon::fromTheme("restart-line"));
     this->optionsButton->setIcon(QIcon::fromTheme("settings-3-line"));
     this->hotkeysButton->setIcon(QIcon::fromTheme("gamepad-line"));
@@ -287,10 +287,10 @@ void ControllerWidget::disableAllChildren()
         }
 
         QWidget* widget = static_cast<QWidget*>(object);
-        if (widget == this->autoConfigButton)
+        if (widget == this->autoConfigureButton)
         { // save the state because whether it's enabled
           // is set elsewhere
-            this->autoConfigButtonEnabled = widget->isEnabled();
+            this->autoConfigureButtonEnabled = widget->isEnabled();
         }
         if (widget->isEnabled())
         {
@@ -316,9 +316,9 @@ void ControllerWidget::enableAllChildren()
         }
 
         QWidget* widget = static_cast<QWidget*>(object);
-        if (widget == this->autoConfigButton)
+        if (widget == this->autoConfigureButton)
         { // we have to restore the state
-            widget->setEnabled(this->autoConfigButtonEnabled);
+            widget->setEnabled(this->autoConfigureButtonEnabled);
         }
         else if (!widget->isEnabled())
         {
@@ -798,7 +798,7 @@ void ControllerWidget::on_inputDeviceComboBox_currentIndexChanged(int value)
     }
 
     // set whether auto configure button is enabled
-    this->autoConfigButton->setEnabled(deviceData.inputProfile.valid);
+    this->autoConfigureButton->setEnabled(deviceData.inputProfile.valid);
 
     // set plugged in state
     this->setPluggedIn(deviceData.device.type != InputDeviceType::None &&
@@ -939,7 +939,7 @@ void ControllerWidget::on_removeProfileButton_clicked()
     }
 }
 
-void ControllerWidget::on_autoConfigButton_clicked()
+void ControllerWidget::on_autoConfigureButton_clicked()
 {
     inputDeviceData deviceData = this->inputDeviceComboBox->currentData().value<inputDeviceData>();
     QString name;
@@ -2072,7 +2072,7 @@ void ControllerWidget::SetCurrentInputDevice(SDL_JoystickID joystickId, SDL_Joys
     this->isCurrentJoystickGamepad = (gamepad != nullptr);
 
     // we can enable the auto-configure button when we have a gamepad
-    this->autoConfigButton->setEnabled(gamepad != nullptr);
+    this->autoConfigureButton->setEnabled(gamepad != nullptr);
 
     // update input profile when needed
     if (inputProfile.valid)
