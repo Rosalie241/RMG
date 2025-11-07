@@ -171,7 +171,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
     bool inEmulation = this->emulationThread->isRunning();
 
-    if (!this->ui_ForceClose &&
+    if (this->ui_ShowUI &&
+        !this->ui_ForceClose &&
         inEmulation &&
         CoreSettingsGetBoolValue(SettingsID::GUI_ConfirmExitWhileInGame))
     {
