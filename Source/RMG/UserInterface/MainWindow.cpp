@@ -1490,13 +1490,15 @@ void MainWindow::on_EventFilter_FileDropped(QDropEvent *event)
 
     if (inEmulation && confirmDragDrop)
     {
-        QMessageBox::StandardButton reply = QMessageBox::question(this, "",
-            "Are you sure you want to launch the drag & dropped ROM?",
-            QMessageBox::Yes | QMessageBox::No);
-        if (reply == QMessageBox::No)
+        confirmDragDrop = false;
+        bool ret = QtMessageBox::Question(this, "Are you sure you want to launch the drag & dropped ROM?", 
+                                                "Don't ask for confirmation again", confirmDragDrop);
+        if (!ret)
         {
             return;
         }
+
+        CoreSettingsSetValue(SettingsID::GUI_ConfirmDragDrop, !confirmDragDrop);
     }
 
     file = urls.first().toLocalFile();
