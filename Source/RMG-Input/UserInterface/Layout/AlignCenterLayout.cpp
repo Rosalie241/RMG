@@ -81,7 +81,7 @@ void AlignCenterLayout::setGeometry(const QRect& rect)
 
 
     // the side widgets are limited to 25% of available width
-    // the middle widget is limited to 1/3rd of the available width
+    // the middle widget is limited to 40% of the available width
     //
     // this also takes into account the situation where there's an overlap
     // between widgets, which is something this avoids.
@@ -89,7 +89,7 @@ void AlignCenterLayout::setGeometry(const QRect& rect)
     const int itemHeight = centerItem->minimumSize().height() + spacing;
     const int rectWidth = rect.width();
     const int topLocation = rect.y() + spacing;
-    const int centerItemWidth = std::min(centerItem->sizeHint().width(), rectWidth / 3);
+    const int centerItemWidth = std::min(centerItem->sizeHint().width(), static_cast<int>(std::ceil(rectWidth / 2.5)));
     const int centerItemLocation = ((rectWidth / 2)) - (centerItemWidth / 2);
     const int maxSideItemWidth = std::min(centerItemLocation, rectWidth / 4) - spacing;
     const int sideItemWidth = std::min(leftItem->minimumSize().width(), maxSideItemWidth);
