@@ -201,8 +201,15 @@ void MainWindow::closeEvent(QCloseEvent *event)
     Qt::ToolBarArea toolbarArea = this->toolBarArea(this->toolBar);
     CoreSettingsSetValue(SettingsID::GUI_ToolbarArea, this->getToolbarSettingAreaFromArea(toolbarArea));
 
+    // attempt to shutdown emulation
     this->ui_NoSwitchToRomBrowser = true;
     this->on_Action_System_Shutdown();
+
+    // wait until emulation has shut down
+    while (this->emulationThread->isRunning())
+    {
+        QCoreApplication::processEvents();
+    }
 
     this->ui_Widget_RomBrowser->StopRefreshRomList();
 
@@ -214,13 +221,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
         this->netplaySessionDialog->close();
     }
 #endif // NETPLAY
-
-    this->logDialog.close();
-
-    while (this->emulationThread->isRunning())
-    {
-        QCoreApplication::processEvents();
-    }
 
     CoreSettingsSave();
     CoreShutdown();
