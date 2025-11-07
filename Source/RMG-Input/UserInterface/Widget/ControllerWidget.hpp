@@ -93,6 +93,8 @@ private:
     bool isCurrentDeviceKeyboard();
     bool isCurrentDeviceNotFound();
 
+    bool disabledAllChildren = false;
+
     void disableAllChildren();
     void enableAllChildren();
 

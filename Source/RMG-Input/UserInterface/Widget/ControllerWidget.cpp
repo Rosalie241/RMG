@@ -274,6 +274,11 @@ bool ControllerWidget::isCurrentDeviceNotFound()
 
 void ControllerWidget::disableAllChildren()
 {
+    if (this->disabledAllChildren)
+    {
+        return;
+    }
+
     for (auto& object : this->children())
     {
         if (!object->inherits("QWidget"))
@@ -292,10 +297,17 @@ void ControllerWidget::disableAllChildren()
             widget->setEnabled(false);
         }
     }
+
+    this->disabledAllChildren = true;
 }
 
 void ControllerWidget::enableAllChildren()
 {
+    if (!this->disabledAllChildren)
+    {
+        return;
+    }
+
     for (auto& object : this->children())
     {
         if (!object->inherits("QWidget"))
@@ -313,6 +325,8 @@ void ControllerWidget::enableAllChildren()
             widget->setEnabled(true);
         }
     }
+
+    this->disabledAllChildren = false;
 }
 
 void ControllerWidget::removeDuplicates(MappingButton* button)
