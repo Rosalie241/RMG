@@ -47,8 +47,10 @@ else()
     set(MAKE_OPTFLAGS "${CMAKE_C_FLAGS}")
 endif()
 
-if ("${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo" OR
-    "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+if ("${CMAKE_BUILD_TYPE}" STREQUAL "RelWithDebInfo")
+    set(MAKE_DEBUG "0")
+    set(MAKE_OPTFLAGS "${MAKE_OPTFLAGS} -g")
+elseif ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
     set(MAKE_DEBUG "1")
 else()
     set(MAKE_DEBUG "0")
