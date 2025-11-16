@@ -29,6 +29,22 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.8.8" date="2025-11-16" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix exit confirmation dialog showing when launching RMG with '--nogui'</li>
+          <li>Fix emulation not shutting down properly on exit in some cases</li>
+          <li>Fix remaining issues with the 'Auto-Configure' button state in the configuration dialog of RMG-Input</li>
+          <li>Fix asserts being enabled when building the RelWithDebInfo configuration</li>
+          <li>Fix uninitialized variable being read in the configuration dialog of GLideN64</li>
+          <li>Add checkbox to drag and drop confirmation dialog to prevent future confirmations</li>
+          <li>Move 'Ask for confirmation on exit' setting to the emulation tab in the settings dialog</li>
+          <li>Improve 'Input Device' UI element in the configuration GUI of RMG-Input by allowing it to take more width</li>
+          <li>Improve refresh and join button state in the Netplay Session Browser dialog</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.8.7" date="2025-11-06" type="stable">
       <description>
         <p>Changes:</p>
