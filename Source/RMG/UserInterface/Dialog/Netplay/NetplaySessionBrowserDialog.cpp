@@ -195,7 +195,7 @@ void NetplaySessionBrowserDialog::validateJoinButton(void)
     joinButton->setEnabled(this->validate());
 }
 
-void NetplaySessionBrowserDialog::toggleUI(bool enable, bool enableJoinButton)
+void NetplaySessionBrowserDialog::toggleUI(bool enable, bool enableJoinButton, bool toggleOtherUI)
 {
     QPushButton* joinButton = this->buttonBox->button(QDialogButtonBox::Ok);
     joinButton->setEnabled(enableJoinButton);
@@ -203,19 +203,17 @@ void NetplaySessionBrowserDialog::toggleUI(bool enable, bool enableJoinButton)
     QPushButton* refreshButton = this->buttonBox->button(QDialogButtonBox::RestoreDefaults);
     refreshButton->setEnabled(enable);
 
-    this->serverComboBox->setEnabled(enable);
-    this->nickNameLineEdit->setReadOnly(!enable);
+    if (toggleOtherUI)
+    {
+        this->serverComboBox->setEnabled(enable);
+        this->nickNameLineEdit->setReadOnly(!enable);
+    }
 }
 
 void NetplaySessionBrowserDialog::refreshSessions(void)
 {
-    // disable refresh button while refreshing
-    QPushButton* refreshButton = this->buttonBox->button(QDialogButtonBox::RestoreDefaults);
-    refreshButton->setEnabled(false);
-
-    // disable join button while refreshing
-    QPushButton* joinButton = this->buttonBox->button(QDialogButtonBox::Ok);
-    joinButton->setEnabled(false);
+    // disable join and refresh button while refreshing
+    this->toggleUI(false, false, false);
 
     if (NetplayCommon::IsServerDispatcher(this->serverComboBox))
     {
@@ -512,13 +510,13 @@ void NetplaySessionBrowserDialog::on_dispatcherRetrieveServers_Finished(QNetwork
 
 void NetplaySessionBrowserDialog::on_serverComboBox_currentIndexChanged(int index)
 {
-    QPushButton* refreshButton = this->buttonBox->button(QDialogButtonBox::RestoreDefaults);
-    refreshButton->setEnabled(index != -1);
-
     if (index == -1)
     {
         return;
     }
+
+    // disable join and refresh button while refreshing
+    this->toggleUI(false, false, false);
 
     bool dispatcher = NetplayCommon::IsServerDispatcher(this->serverComboBox, index);
 

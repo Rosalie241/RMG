@@ -65,7 +65,7 @@ class NetplaySessionBrowserDialog : public QDialog, private Ui::NetplaySessionBr
     bool validate(void);
     void validateJoinButton(void);
 
-    void toggleUI(bool enable, bool enableJoinButton);
+    void toggleUI(bool enable, bool enableJoinButton, bool toggleOtherUI = true);
 
     void refreshSessions(void);
     void joinSession(void);
