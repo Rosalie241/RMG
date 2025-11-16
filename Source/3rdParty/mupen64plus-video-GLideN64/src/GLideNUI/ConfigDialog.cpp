@@ -197,7 +197,7 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 	ui->overscanPalBottomSpinBox->setValue(config.frameBufferEmulation.overscanPAL.bottom);
 
 	QStringList fullscreenModesList, fullscreenRatesList;
-	int fullscreenMode, fullscreenRate;
+	int fullscreenMode = 0, fullscreenRate = 0;
 	fillFullscreenResolutionsList(fullscreenModesList, fullscreenMode, fullscreenRatesList, fullscreenRate);
 #ifdef M64P_GLIDENUI
 	if (fullscreenModesList.isEmpty() && fullscreenRatesList.isEmpty()) {
