@@ -13,7 +13,7 @@ jobs:
           - { os: ubuntu-24.04-arm, features: OFF, architecture: aarch64 }
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - uses: hendrikmuhs/ccache-action@v1.2
@@ -91,7 +91,7 @@ jobs:
         shell: bash
       - name: Upload RMG (AppImage)
         if: ${{ matrix.features == 'ON' && matrix.architecture == 'x86_64' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: RMG-Portable-Linux64-${{ env.GIT_REVISION }}
           path: Bin/*.AppImage
@@ -102,7 +102,7 @@ jobs:
       matrix:
         features: [ ON, OFF ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - uses: hendrikmuhs/ccache-action@v1.2
@@ -161,13 +161,13 @@ jobs:
         shell: msys2 {0}
       - name: Upload RMG (Portable)
         if: ${{ matrix.features == 'ON' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: RMG-Portable-Windows64-${{ env.GIT_REVISION }}
           path: Bin/Release/*
       - name: Upload RMG (Installer)
         if: ${{ matrix.features == 'ON' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: RMG-Setup-Windows64-${{ env.GIT_REVISION }}
           path: Bin/*.exe
