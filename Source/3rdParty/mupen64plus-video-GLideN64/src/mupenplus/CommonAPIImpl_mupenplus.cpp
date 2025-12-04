@@ -73,6 +73,16 @@ void PluginAPI::GetUserConfigPath(wchar_t * _strPath)
 {
 	_getWSPath(ConfigGetUserConfigPath(), _strPath);
 }
+
+void PluginAPI::GetSharedDataPath(wchar_t * _strPath)
+{
+	/* this is kind of a hack, we know mupen64plus.ini is always present
+	 * on valid installations, so we use that to retrieve the shared
+	 * data path, we'll get the full path to the filename but
+	 * we strip it to the final seperator to strip out the filename
+	 */
+	_getWSPath(ConfigGetSharedDataFilepath("mupen64plus.ini"), _strPath, true);
+}
 #endif // M64P_GLIDENUI
 
 void PluginAPI::FindPluginPath(wchar_t * _strPath)

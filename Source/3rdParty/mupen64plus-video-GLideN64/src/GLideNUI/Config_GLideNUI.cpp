@@ -17,7 +17,7 @@ void Config_DoConfig(void* parent)
 	wchar_t strSharedIniFolderPath[PLUGIN_PATH_SIZE];
 
 #ifdef M64P_GLIDENUI
-	api().FindPluginPath(strSharedIniFolderPath);
+	api().GetSharedDataPath(strSharedIniFolderPath);
 	api().GetUserConfigPath(strIniFolderPath);
 #else
 	api().FindPluginPath(strSharedIniFolderPath);
@@ -42,7 +42,7 @@ void Config_LoadConfig()
 	wchar_t strSharedIniFolderPath[PLUGIN_PATH_SIZE];
 
 #ifdef M64P_GLIDENUI
-	api().FindPluginPath(strSharedIniFolderPath);
+	api().GetSharedDataPath(strSharedIniFolderPath);
 	api().GetUserConfigPath(strIniFolderPath);
 #else
 	api().FindPluginPath(strSharedIniFolderPath);
