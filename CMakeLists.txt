@@ -10,7 +10,6 @@ option(KCA_DRAG_DROP    "Enables drag and drop using KCoreAddons" OFF) # https:/
 option(NETPLAY          "Enables netplay" ON)
 option(VRU              "Enables VRU support in RMG-Input" ON)
 option(USE_CCACHE       "Enables usage of ccache when ccache has been found" ON)
-option(USE_LTO          "Enables building with LTO/IPO when compiler supports it" ON)
 option(NO_ASM           "Disables the usage of assembly in the mupen64plus-core" OFF)
 option(USE_ANGRYLION    "Enables building angrylion-rdp-plus which uses a non-GPL compliant license" OFF)
 
@@ -42,18 +41,6 @@ if (USE_CCACHE)
         set(USE_CCACHE OFF)
     endif(CCACHE_FOUND)
 endif(USE_CCACHE)
-
-if (USE_LTO)
-    include(CheckIPOSupported)
-    check_ipo_supported(RESULT ENABLE_IPO)
-
-    # ensure we don't enable LTO on Debug builds
-    if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-        if(ENABLE_IPO)
-            set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
-        endif(ENABLE_IPO)
-    endif()
-endif(USE_LTO)
 
 if (NOT PORTABLE_INSTALL AND WIN32)
     message(WARNING "Not-Portable build not supported on windows, re-enabling PORTABLE_INSTALL!")

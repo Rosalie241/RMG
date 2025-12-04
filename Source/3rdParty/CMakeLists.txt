@@ -38,11 +38,7 @@ else()
 endif()
 
 if ("${CMAKE_C_FLAGS}" STREQUAL "")
-    if (USE_LTO)
-        set(MAKE_OPTFLAGS "-O3 -flto")
-    else(USE_LTO)
-        set(MAKE_OPTFLAGS "-O3")
-    endif(USE_LTO)
+    set(MAKE_OPTFLAGS "-O3")
 else()
     set(MAKE_OPTFLAGS "${CMAKE_C_FLAGS}")
 endif()
@@ -62,10 +58,15 @@ set(SDL3NET_DIR ${CMAKE_CURRENT_SOURCE_DIR}/SDL_net)
 set(SDL3NET_SOURCES
     ${SDL3NET_DIR}/src/SDL_net.c
 )
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(SDL3 REQUIRED sdl3)
 add_library(SDL3_net STATIC ${SDL3NET_SOURCES})
 target_include_directories(SDL3_net PRIVATE ${SDL3NET_DIR}/include)
 set(SDL3NET_CFLAGS "-DUSE_SDL3NET -I${SDL3NET_DIR}/include")
-set(SDL3NET_LDLIBS "$<TARGET_FILE:SDL3_net>")
+# for some reason MingW needs SDL3 to be linked after SDL3_net,
+# else we get a lot of missing symbol errors, should be harmless
+# on other platforms
+set(SDL3NET_LDLIBS "$<TARGET_FILE:SDL3_net> -l${SDL3_LIBRARIES}")
 if (WIN32)
     set(SDL3NET_LDLIBS "${SDL3NET_LDLIBS} -liphlpapi -lws2_32")
 endif (WIN32)
@@ -140,7 +141,7 @@ ExternalProject_Add(mupen64plus-rsp-parallel
 
     BUILD_IN_SOURCE False
     BUILD_ALWAYS True
-    CMAKE_ARGS ${CMAKE_CONFIGURE_ARGS}
+    CMAKE_ARGS -DUSE_IPO=OFF ${CMAKE_CONFIGURE_ARGS}
     BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-rsp-parallel
 
     BUILD_BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-rsp-parallel/mupen64plus-rsp-parallel.${SO_EXT}
@@ -184,7 +185,7 @@ if (USE_ANGRYLION)
 
         BUILD_IN_SOURCE False
         BUILD_ALWAYS True
-        CMAKE_ARGS -DBUILD_MUPEN64PLUS=ON -DBUILD_PROJECT64=OFF -DUSE_QT5=OFF ${CMAKE_CONFIGURE_ARGS}
+        CMAKE_ARGS -DBUILD_MUPEN64PLUS=ON -DBUILD_PROJECT64=OFF -DUSE_QT5=OFF -DUSE_IPO=OFF ${CMAKE_CONFIGURE_ARGS}
         BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-video-angrylion-plus
 
         BUILD_BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-video-angrylion-plus/mupen64plus-video-angrylion-plus.${SO_EXT}
@@ -198,7 +199,7 @@ ExternalProject_Add(mupen64plus-video-GLideN64
 
     BUILD_IN_SOURCE False
     BUILD_ALWAYS True
-    CMAKE_ARGS -DMUPENPLUSAPI=ON -DMUPENPLUSAPI_GLIDENUI=ON -DGLIDENUI_QT6=ON -DUSE_SYSTEM_LIBS=ON ${CMAKE_CONFIGURE_ARGS}
+    CMAKE_ARGS -DMUPENPLUSAPI=ON -DMUPENPLUSAPI_GLIDENUI=ON -DGLIDENUI_QT6=ON -DUSE_IPO=OFF -DUSE_SYSTEM_LIBS=ON ${CMAKE_CONFIGURE_ARGS}
 
     SOURCE_SUBDIR ./src/
     BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-video-GLideN64
@@ -213,7 +214,7 @@ ExternalProject_Add(mupen64plus-video-parallel
 
     BUILD_IN_SOURCE False
     BUILD_ALWAYS True
-    CMAKE_ARGS -DCONFIG_GUI=ON ${CMAKE_CONFIGURE_ARGS}
+    CMAKE_ARGS -DCONFIG_GUI=ON -DUSE_IPO=OFF ${CMAKE_CONFIGURE_ARGS}
     BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-video-parallel
 
     BUILD_BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-video-parallel/mupen64plus-video-parallel.${SO_EXT}
