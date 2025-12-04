@@ -37,7 +37,7 @@ class AddCheatDialog : public QDialog, private Ui::AddCheatDialog
     CoreCheat oldCheat;
     QString file;
 
-    void setPlainTextEditLines(QPlainTextEdit* plainTextEdit, std::vector<std::string> lines);
+    void setPlainTextEditLines(QPlainTextEdit* plainTextEdit, const std::vector<std::string>& lines);
     bool validate(void);
     void validateOkButton(void);
 

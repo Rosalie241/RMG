@@ -63,13 +63,13 @@ void AddCheatDialog::SetCheat(CoreCheat cheat)
     this->oldCheat = cheat;
 }
 
-void AddCheatDialog::setPlainTextEditLines(QPlainTextEdit* plainTextEdit, std::vector<std::string> lines)
+void AddCheatDialog::setPlainTextEditLines(QPlainTextEdit* plainTextEdit, const std::vector<std::string>& lines)
 {
     // reset text edit
     plainTextEdit->clear();
 
     // add lines
-    for (std::string& line : lines)
+    for (const std::string& line : lines)
     {
         plainTextEdit->appendPlainText(QString::fromStdString(line));
     }
