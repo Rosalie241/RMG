@@ -8,11 +8,11 @@ include_directories(../mupen64plus-core/src/api)
 add_definitions(-DM64P_PLUGIN_API -DGRANITE_VULKAN_MT)
 
 option(CONFIG_GUI "Enables Qt configuration GUI)" OFF)
+option(USE_IPO "Enables IPO/LTO when supported" ON)
 
 # check for INTERPROCEDURAL_OPTIMIZATION support
-if((${CMAKE_VERSION} VERSION_EQUAL 3.9) OR (${CMAKE_VERSION} VERSION_GREATER 3.9))
+if(USE_IPO AND (${CMAKE_VERSION} VERSION_EQUAL 3.9) OR (${CMAKE_VERSION} VERSION_GREATER 3.9))
     cmake_policy(SET CMP0069 NEW)
-
     include(CheckIPOSupported)
     check_ipo_supported(RESULT ENABLE_IPO)
     if(ENABLE_IPO)
@@ -20,7 +20,7 @@ if((${CMAKE_VERSION} VERSION_EQUAL 3.9) OR (${CMAKE_VERSION} VERSION_GREATER 3.9
     endif(ENABLE_IPO)
 endif()
 
-if(ENABLE_IPO AND (CMAKE_BUILD_TYPE STREQUAL "Release"))
+if(USE_IPO AND ENABLE_IPO AND (CMAKE_BUILD_TYPE STREQUAL "Release"))
     set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
 endif()
 
