@@ -6,12 +6,14 @@ project(parallel-rsp LANGUAGES CXX C)
 
 set(NAME_PLUGIN_M64P "mupen64plus-rsp-parallel")
 
+option(USE_IPO "Enables IPO/LTO when supported" ON)
+
 include_directories(../mupen64plus-core/src/api)
 add_definitions(-DM64P_PLUGIN_API)
 add_definitions(-DPARALLEL_INTEGRATION)
 
 # check for INTERPROCEDURAL_OPTIMIZATION support
-if((${CMAKE_VERSION} VERSION_EQUAL 3.9) OR (${CMAKE_VERSION} VERSION_GREATER 3.9))
+if(USE_IPO AND (${CMAKE_VERSION} VERSION_EQUAL 3.9) OR (${CMAKE_VERSION} VERSION_GREATER 3.9))
     cmake_policy(SET CMP0069 NEW)
 
     include(CheckIPOSupported)
@@ -21,7 +23,7 @@ if((${CMAKE_VERSION} VERSION_EQUAL 3.9) OR (${CMAKE_VERSION} VERSION_GREATER 3.9
     endif(ENABLE_IPO)
 endif()
 
-if(ENABLE_IPO AND (CMAKE_BUILD_TYPE STREQUAL "Release"))
+if(USE_IPO AND ENABLE_IPO AND (CMAKE_BUILD_TYPE STREQUAL "Release"))
     set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
 endif()
 
