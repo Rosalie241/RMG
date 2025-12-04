@@ -79,7 +79,6 @@ target_include_directories(RMG-Core PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/../
-    ${CMAKE_CURRENT_SOURCE_DIR}/../3rdParty/fmt/include/
     ${MINIZIP_INCLUDE_DIRS}
 )
 
