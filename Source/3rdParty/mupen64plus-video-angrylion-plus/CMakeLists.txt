@@ -4,6 +4,7 @@ option(BUILD_MUPEN64PLUS "Enables build of mupen64plus version" ON)
 option(BUILD_PROJECT64   "Enables build of project64 version" WIN32)
 option(GLES "Set to ON to use OpenGL ES 3.0 renderer instead of OpenGL 3.3 core")
 option(USE_QT5 "Enables Qt5 instead of Qt6 (will be removed in the future)" OFF)
+option(USE_IPO "Enables IPO/LTO when supported" ON)
 
 project(angrylion-plus)
 
@@ -34,14 +35,16 @@ endif(USE_QT5)
 # set policy CMP0042 for MacOS X
 set(CMAKE_MACOSX_RPATH 1)
 
-# check for INTERPROCEDURAL_OPTIMIZATION support
-cmake_policy(SET CMP0069 NEW)
-
-include(CheckIPOSupported)
-check_ipo_supported(RESULT ENABLE_IPO)
-if(ENABLE_IPO)
-    message("Interprocedural optimizations enabled")
-endif(ENABLE_IPO)
+if (USE_IPO)
+    # check for INTERPROCEDURAL_OPTIMIZATION support
+    cmake_policy(SET CMP0069 NEW)
+    
+    include(CheckIPOSupported)
+    check_ipo_supported(RESULT ENABLE_IPO)
+    if(ENABLE_IPO)
+        message("Interprocedural optimizations enabled")
+    endif(ENABLE_IPO)
+endif(USE_IPO)
 
 # C++14 is required for the Parallel utility class
 set(CMAKE_CXX_STANDARD 14)
@@ -114,7 +117,7 @@ else(MINGW)
 endif(MINGW)
 
 # set IPO option, if supported
-if(ENABLE_IPO AND (CMAKE_BUILD_TYPE STREQUAL "Release"))
+if(USE_IPO AND ENABLE_IPO AND (CMAKE_BUILD_TYPE STREQUAL "Release"))
     set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -O3")
 endif()
