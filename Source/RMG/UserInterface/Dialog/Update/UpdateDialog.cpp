@@ -83,30 +83,18 @@ void UpdateDialog::accept(void)
         QString url           = object.value("browser_download_url").toString();
 
 #ifdef _WIN32
-        if (this->isWin32Setup)
+        if (((QSysInfo::buildCpuArchitecture() == "x86_64" && lowerFilename.contains("windows64")) ||
+              lowerFilename.contains("windows-" + QSysInfo::buildCpuArchitecture())) &&
+            lowerFilename.contains(this->isWin32Setup ? "setup" : "portable") &&
+            lowerFilename.endsWith(this->isWin32Setup ? ".exe"  : ".zip"))
         {
-            if (lowerFilename.contains("windows64") &&
-                lowerFilename.contains("setup") &&
-                lowerFilename.endsWith(".exe"))
-            {
-                filenameToDownload = filename;
-                urlToDownload = QUrl(url);
-                break;
-            }
-        }
-        else
-        {
-            if (lowerFilename.contains("windows64") &&
-                lowerFilename.contains("portable") &&
-                lowerFilename.endsWith(".zip"))
-            {
-                filenameToDownload = filename;
-                urlToDownload = QUrl(url);
-                break;
-            }
+            filenameToDownload = filename;
+            urlToDownload = QUrl(url);
+            break;
         }
 #else
-        if (lowerFilename.contains("linux64") &&
+        if (((QSysInfo::buildCpuArchitecture() == "x86_64" && lowerFilename.contains("linux64")) ||
+              lowerFilename.contains("linux-" + QSysInfo::buildCpuArchitecture())) &&
             lowerFilename.contains("portable") &&
             lowerFilename.endsWith(".appimage"))
         {
