@@ -616,6 +616,9 @@ static void trim_whitespace(char *str)
 
 NET_Address *NET_ResolveHostname(const char *host)
 {
+    // If this isn't true, we'll spin up resolver threads without locking that will be orphaned in NET_Init()
+    SDL_assert(SDL_GetAtomicInt(&initialize_count) > 0);
+
     NET_Address *addr = SDL_calloc(1, sizeof (NET_Address));
     if (!addr) {
         return NULL;
@@ -788,7 +791,6 @@ static void SDLCALL EnumerateNetAddrTable(void *userdata, SDL_PropertiesID props
 
 static void SDLCALL CleanupNetAddrTable(void *userdata, void *value)
 {
-    (void) userdata;
     NET_UnrefAddress((NET_Address *) value);
 }
 
@@ -1677,6 +1679,7 @@ NET_DatagramSocket *NET_CreateDatagramSocket(NET_Address *addr, Uint16 port)
         }
 
         setsockopt(handle, SOL_SOCKET, SO_REUSEADDR, (const char *) &one, sizeof (one));
+        setsockopt(handle, SOL_SOCKET, SO_BROADCAST, (const char *) &one, sizeof (one));
 
         const int rc = bind(handle, ainfo->ai_addr, (SockLen) ainfo->ai_addrlen);
         if (rc == SOCKET_ERROR) {
@@ -1971,9 +1974,11 @@ int NET_WaitUntilInputAvailable(void **vsockets, int numsockets, int timeoutms)
 {
     NET_GenericSocket **sockets = (NET_GenericSocket **) vsockets;
     if (!sockets) {
-        return SDL_InvalidParamError("sockets");
+        SDL_InvalidParamError("sockets");
+        return -1;
     } else if (numsockets < 0) {
-        return SDL_InvalidParamError("numsockets");
+        SDL_InvalidParamError("numsockets");
+        return -1;
     } else if (numsockets == 0) {
         return 0;
     }
@@ -1985,6 +1990,10 @@ int NET_WaitUntilInputAvailable(void **vsockets, int numsockets, int timeoutms)
     int numhandles = 0;
     for (int i = 0; i < numsockets; i++) {
         const NET_GenericSocket *sock = sockets[i];
+        if (!sock) {
+            SDL_InvalidParamError("sockets");
+            return -1;
+        }
         switch (sock->socktype) {
             case SOCKETTYPE_STREAM:
                 numhandles++;

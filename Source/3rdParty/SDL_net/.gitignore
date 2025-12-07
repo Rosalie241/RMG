@@ -44,7 +44,6 @@ compile_commands.json
 Makefile
 .ninja_*
 *.ninja
-SDL3_net.xcodeproj
 Debug/
 Release/
 RelWithDebInfo/
@@ -54,6 +53,15 @@ dummy.sym
 # for CLion
 .idea
 cmake-build-*
+
+# for Xcode
+*.mode1*
+*.perspective*
+*.pbxuser
+(^|/)build($|/)
+.DS_Store
+xcuserdata
+*.xcworkspace
 
 # for Visual C++
 .vs

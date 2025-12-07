@@ -1,0 +1,35 @@
+# SDL3_net.dylib exports
+_NET_AcceptClient
+_NET_CompareAddresses
+_NET_CreateClient
+_NET_CreateDatagramSocket
+_NET_CreateServer
+_NET_DestroyDatagram
+_NET_DestroyDatagramSocket
+_NET_DestroyServer
+_NET_DestroyStreamSocket
+_NET_FreeLocalAddresses
+_NET_GetAddressStatus
+_NET_GetAddressString
+_NET_GetConnectionStatus
+_NET_GetLocalAddresses
+_NET_GetStreamSocketAddress
+_NET_GetStreamSocketPendingWrites
+_NET_Version
+_NET_Init
+_NET_Quit
+_NET_ReadFromStreamSocket
+_NET_ReceiveDatagram
+_NET_RefAddress
+_NET_ResolveHostname
+_NET_SendDatagram
+_NET_SimulateAddressResolutionLoss
+_NET_SimulateDatagramPacketLoss
+_NET_SimulateStreamPacketLoss
+_NET_UnrefAddress
+_NET_WaitUntilConnected
+_NET_WaitUntilInputAvailable
+_NET_WaitUntilResolved
+_NET_WaitUntilStreamSocketDrained
+_NET_WriteToStreamSocket
+# extra symbols go here (don't modify this line)

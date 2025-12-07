@@ -121,7 +121,7 @@ extern "C" {
 #endif
 
 /**
- * The current major version of SDL_net headers.
+ * The current major version of the SDL_net headers.
  *
  * If this were SDL_net version 3.2.1, this value would be 3.
  *

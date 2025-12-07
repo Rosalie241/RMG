@@ -121,6 +121,8 @@ target_compile_definitions(${sdl3_net_target_name} PRIVATE
     SDL_BUILD_MINOR_VERSION=${MINOR_VERSION}
     SDL_BUILD_MICRO_VERSION=${MICRO_VERSION}
 )
+# Make sure SDL3's include directory comes first
+target_include_directories(${sdl3_net_target_name} PRIVATE $<TARGET_PROPERTY:SDL3::Headers,INTERFACE_INCLUDE_DIRECTORIES>)
 target_link_libraries(${sdl3_net_target_name} PUBLIC SDL3::Headers)
 if(SDLNET_BUILD_SHARED_LIBS)
     target_link_libraries(${sdl3_net_target_name} PRIVATE SDL3::SDL3-shared)
@@ -156,12 +158,15 @@ if(NOT ANDROID)
         VERSION "${SO_VERSION}"
     )
     if(APPLE)
-        cmake_minimum_required(VERSION 3.17...3.28)
         set_target_properties(${sdl3_net_target_name} PROPERTIES
             MACHO_COMPATIBILITY_VERSION "${DYLIB_COMPAT_VERSION}"
             MACHO_CURRENT_VERSION "${DYLIB_CURRENT_VERSION}"
         )
         sdl_no_deprecated_errors(${sdl3_net_target_name})
+        set_property(TARGET ${sdl3_net_target_name} APPEND PROPERTY LINK_DEPENDS
+                "${PROJECT_SOURCE_DIR}/src/SDL_net.exports")
+        target_link_options(${sdl3_net_target_name} PRIVATE
+                "SHELL:-Wl,-exported_symbols_list,${PROJECT_SOURCE_DIR}/src/SDL_net.exports")
     endif()
 endif()
 if(SDLNET_BUILD_SHARED_LIBS)

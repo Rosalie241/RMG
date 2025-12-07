@@ -260,6 +260,15 @@ jobs:
 #              -B build_darwin
 #          cmake --build build_darwin --config Release --verbose
 #
+#          cmake -S "${{ steps.src.outputs.path }}/cmake/test"               \
+#              -DTEST_SHARED=TRUE                                            \
+#              -DTEST_STATIC=FALSE                                           \
+#              -DCMAKE_PREFIX_PATH="${{ steps.mount.outputs.mount-point }}/SDL3_net.xcframework/macos-arm64_x86_64;${{ steps.deps-mount.outputs.path }}/SDL3.xcframework/macos-arm64_x86_64" \
+#              -DCMAKE_SYSTEM_NAME=Darwin                                    \
+#              -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"                      \
+#              -B build_darwin2
+#          cmake --build build_darwin2 --config Release --verbose
+#
 #      - name: 'CMake (configure + build) iOS'
 #        run: |
 #          cmake -S "${{ steps.src.outputs.path }}/cmake/test"               \
@@ -271,6 +280,15 @@ jobs:
 #              -Werror=dev                                                   \
 #              -B build_ios
 #          cmake --build build_ios --config Release --verbose
+#
+#          cmake -S "${{ steps.src.outputs.path }}/cmake/test"               \
+#              -DTEST_SHARED=TRUE                                            \
+#              -DTEST_STATIC=FALSE                                           \
+#              -DCMAKE_PREFIX_PATH="${{ steps.mount.outputs.mount-point }}/SDL3_net.xcframework/ios-arm64;${{ steps.deps-mount.outputs.path }}/SDL3.xcframework/ios-arm64" \
+#              -DCMAKE_SYSTEM_NAME=iOS                                       \
+#              -DCMAKE_OSX_ARCHITECTURES="arm64"                             \
+#              -B build_ios2
+#          cmake --build build_ios2 --config Release --verbose
 #      - name: 'CMake (configure + build) tvOS'
 #        run: |
 #          cmake -S "${{ steps.src.outputs.path }}/cmake/test"               \
@@ -282,6 +300,15 @@ jobs:
 #              -Werror=dev                                                   \
 #              -B build_tvos
 #          cmake --build build_tvos --config Release --verbose
+#
+#          cmake -S "${{ steps.src.outputs.path }}/cmake/test"               \
+#              -DTEST_SHARED=TRUE                                            \
+#              -DTEST_STATIC=FALSE                                           \
+#              -DCMAKE_PREFIX_PATH="${{ steps.mount.outputs.mount-point }}/SDL3_net.xcframework/tvos-arm64;${{ steps.deps-mount.outputs.path }}/SDL3.xcframework/tvos-arm64" \
+#              -DCMAKE_SYSTEM_NAME=tvOS                                      \
+#              -DCMAKE_OSX_ARCHITECTURES="arm64"                             \
+#              -B build_tvos2
+#          cmake --build build_tvos2 --config Release --verbose
 #      - name: 'CMake (configure + build) iOS simulator'
 #        run: |
 #          sysroot=$(xcodebuild -version -sdk iphonesimulator Path)
@@ -296,6 +323,16 @@ jobs:
 #              -Werror=dev                                                   \
 #              -B build_ios_simulator
 #          cmake --build build_ios_simulator --config Release --verbose
+#
+#          cmake -S "${{ steps.src.outputs.path }}/cmake/test"               \
+#              -DTEST_SHARED=TRUE                                            \
+#              -DTEST_STATIC=FALSE                                           \
+#              -DCMAKE_PREFIX_PATH="${{ steps.mount.outputs.mount-point }}/SDL3_net.xcframework/ios-arm64_x86_64-simulator;${{ steps.deps-mount.outputs.path }}/SDL3.xcframework/ios-arm64_x86_64-simulator" \
+#              -DCMAKE_SYSTEM_NAME=iOS                                       \
+#              -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"                      \
+#              -DCMAKE_OSX_SYSROOT="${sysroot}"                              \
+#              -B build_ios_simulator2
+#          cmake --build build_ios_simulator2 --config Release --verbose
 #      - name: 'CMake (configure + build) tvOS simulator'
 #        run: |
 #          sysroot=$(xcodebuild -version -sdk appletvsimulator Path)
@@ -310,6 +347,16 @@ jobs:
 #              -Werror=dev                                                   \
 #              -B build_tvos_simulator
 #          cmake --build build_tvos_simulator --config Release --verbose
+#
+#          cmake -S "${{ steps.src.outputs.path }}/cmake/test"               \
+#              -DTEST_SHARED=TRUE                                            \
+#              -DTEST_STATIC=FALSE                                           \
+#              -DCMAKE_PREFIX_PATH="${{ steps.mount.outputs.mount-point }}/SDL3_net.xcframework/tvos-arm64_x86_64-simulator;${{ steps.deps-mount.outputs.path }}/SDL3.xcframework/tvos-arm64_x86_64-simulator" \
+#              -DCMAKE_SYSTEM_NAME=tvOS                                      \
+#              -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"                      \
+#              -DCMAKE_OSX_SYSROOT="${sysroot}"                              \
+#              -B build_tvos_simulator2
+#          cmake --build build_tvos_simulator2 --config Release --verbose
   msvc:
     needs: [src]
     runs-on: windows-2025
@@ -622,9 +669,10 @@ jobs:
         with:
           sparse-checkout: 'build-scripts/build-release.py'
       - name: 'Setup Android NDK'
+        id: setup-ndk
         uses: nttld/setup-ndk@v1
         with:
-          local-cache: true
+          local-cache: false
           ndk-version: r28c
       - name: 'Setup Java JDK'
         uses: actions/setup-java@v4
@@ -653,6 +701,8 @@ jobs:
         run: |
           python build-scripts/build-release.py \
             --actions download android \
+            --android-api 21 \
+            --android-ndk-home "${{ steps.setup-ndk.outputs.ndk-path }}" \
             --commit ${{ inputs.commit }} \
             --root "${{ steps.tar.outputs.path }}" \
             --github \
@@ -718,6 +768,11 @@ jobs:
         run: |
           sudo apt-get update -y
           sudo apt-get install -y ninja-build
+      - name: 'Verify alignment of libSDL3_net.so (arm64-v8a/x86_64)'
+        run: |
+          set -e
+          ${{ steps.src.outputs.path }}/build-scripts/check_elf_alignment.sh ${{ steps.sdk.outputs.prefix }}/lib/arm64-v8a/libSDL3_net.so
+          ${{ steps.src.outputs.path }}/build-scripts/check_elf_alignment.sh ${{ steps.sdk.outputs.prefix }}/lib/x86_64/libSDL3_net.so
       - name: 'CMake (configure + build) x86, x64, arm32, arm64'
         run: |
           android_abis="x86 x86_64 armeabi-v7a arm64-v8a"
