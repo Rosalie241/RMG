@@ -7,10 +7,14 @@ jobs:
     strategy:
       matrix:
         include:
-          - { os: ubuntu-24.04, features: ON, architecture: x86_64 }
-          - { os: ubuntu-24.04, features: OFF, architecture: x86_64 }
-          - { os: ubuntu-24.04-arm, features: ON, architecture: aarch64 }
-          - { os: ubuntu-24.04-arm, features: OFF, architecture: aarch64 }
+          - { os: ubuntu-24.04, features: ON, architecture: x86_64, configuration: Release }
+          - { os: ubuntu-24.04, features: ON, architecture: x86_64, configuration: Debug }
+          - { os: ubuntu-24.04, features: OFF, architecture: x86_64, configuration: Release }
+          - { os: ubuntu-24.04, features: OFF, architecture: x86_64, configuration: Debug }
+          - { os: ubuntu-24.04-arm, features: ON, architecture: aarch64, configuration: Release }
+          - { os: ubuntu-24.04-arm, features: ON, architecture: aarch64, configuration: Debug }
+          - { os: ubuntu-24.04-arm, features: OFF, architecture: aarch64, configuration: Release }
+          - { os: ubuntu-24.04-arm, features: OFF, architecture: aarch64, configuration: Debug }
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6
@@ -18,7 +22,7 @@ jobs:
           fetch-depth: 0
       - uses: hendrikmuhs/ccache-action@v1.2
         with:
-          key: linux-${{ matrix.architecture }}-features-${{ matrix.features }}
+          key: linux-${{ matrix.architecture }}-${{ matrix.features }}-${{ matrix.configuration }}
       - name: Install Packages
         run: |
           # remove and disable snap, this fixes long update times
@@ -69,7 +73,7 @@ jobs:
           export bin_dir="$(pwd)/Bin/AppImage"
     
           mkdir $build_dir Bin/ -p
-          cmake -S "$src_dir" -B "$build_dir" -DCMAKE_BUILD_TYPE="Release" \
+          cmake -S "$src_dir" -B "$build_dir" -DCMAKE_BUILD_TYPE="${{ matrix.configuration }}" \
                 -DNETPLAY=${{ matrix.features }} \
                 -DVRU=${{ matrix.features }} \
                 -DUSE_ANGRYLION=${{ matrix.features }} \
@@ -84,12 +88,12 @@ jobs:
           cmake --install "$build_dir" --strip --prefix="$bin_dir/usr"
         shell: bash
       - name: Create AppImage
-        if: ${{ matrix.features == 'ON' && matrix.architecture == 'x86_64' }}
+        if: ${{ matrix.features == 'ON' && matrix.architecture == 'x86_64' && matrix.configuration == 'Release' }}
         run: |
           ./Package/AppImage/Create.sh
         shell: bash
       - name: Upload RMG (AppImage)
-        if: ${{ matrix.features == 'ON' && matrix.architecture == 'x86_64' }}
+        if: ${{ matrix.features == 'ON' && matrix.architecture == 'x86_64' && matrix.configuration == 'Release' }}
         uses: actions/upload-artifact@v5
         with:
           name: RMG-Portable-Linux64-${{ env.GIT_REVISION }}
@@ -99,14 +103,18 @@ jobs:
     runs-on: windows-2025
     strategy:
       matrix:
-        features: [ ON, OFF ]
+        include:
+          - { features: ON, configuration: Release }
+          - { features: ON, configuration: Debug }
+          - { features: OFF, configuration: Release }
+          - { features: OFF, configuration: Debug }
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - uses: hendrikmuhs/ccache-action@v1.2
         with:
-          key: windows-features-${{ matrix.features }}
+          key: windows-${{ matrix.features }}-${{ matrix.configuration }}
       - uses: msys2/setup-msys2@v2
         with:
           path-type: inherit
@@ -138,7 +146,7 @@ jobs:
           export src_dir="$(pwd)"
           export build_dir="$(pwd)/Build/Release"
 
-          cmake -S "$src_dir" -B "$build_dir" -DCMAKE_BUILD_TYPE="Release" \
+          cmake -S "$src_dir" -B "$build_dir" -DCMAKE_BUILD_TYPE="${{ matrix.configuration }}" \
                 -DNETPLAY=${{ matrix.features }} \
                 -DVRU=${{ matrix.features }} \
                 -DUSE_ANGRYLION=${{ matrix.features }} \
@@ -151,20 +159,20 @@ jobs:
           cmake --build "$build_dir" --target=bundle_dependencies
         shell: msys2 {0}
       - name: Create Installer
-        if: ${{ matrix.features == 'ON' }}
+        if: ${{ matrix.features == 'ON' && matrix.configuration == 'Release' }}
         run: .\Build\Release\Source\Installer\CreateInstaller.bat
       - name: Configure RMG (Portable)
-        if: ${{ matrix.features == 'ON' }}
+        if: ${{ matrix.features == 'ON' && matrix.configuration == 'Release' }}
         run: touch Bin/Release/portable.txt
         shell: msys2 {0}
       - name: Upload RMG (Portable)
-        if: ${{ matrix.features == 'ON' }}
+        if: ${{ matrix.features == 'ON' && matrix.configuration == 'Release' }}
         uses: actions/upload-artifact@v5
         with:
           name: RMG-Portable-Windows64-${{ env.GIT_REVISION }}
           path: Bin/Release/*
       - name: Upload RMG (Installer)
-        if: ${{ matrix.features == 'ON' }}
+        if: ${{ matrix.features == 'ON' && matrix.configuration == 'Release' }}
         uses: actions/upload-artifact@v5
         with:
           name: RMG-Setup-Windows64-${{ env.GIT_REVISION }}
