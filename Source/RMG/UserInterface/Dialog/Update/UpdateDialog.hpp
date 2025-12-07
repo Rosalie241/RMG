@@ -29,9 +29,6 @@ class UpdateDialog : public QDialog, private Ui::UpdateDialog
     QJsonObject jsonObject;
     QString filename;
     QUrl url;
-#ifdef _WIN32
-    bool isWin32Setup = false;
-#endif // _WIN32
 
   public:
     UpdateDialog(QWidget *parent, QJsonObject jsonObject, bool forced);

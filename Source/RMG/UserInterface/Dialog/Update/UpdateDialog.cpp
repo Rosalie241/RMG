@@ -71,7 +71,7 @@ void UpdateDialog::accept(void)
     QUrl urlToDownload;
 
 #ifdef _WIN32
-    this->isWin32Setup = QFile::exists("unins000.exe") && QFile::exists("unins000.dat");
+    const bool isWin32Setup = QFile::exists("unins000.exe") && QFile::exists("unins000.dat");
 #endif // _WIN32
 
     for (const QJsonValue& value : jsonArray)
@@ -85,8 +85,8 @@ void UpdateDialog::accept(void)
 #ifdef _WIN32
         if (((QSysInfo::buildCpuArchitecture() == "x86_64" && lowerFilename.contains("windows64")) ||
               lowerFilename.contains("windows-" + QSysInfo::buildCpuArchitecture())) &&
-            lowerFilename.contains(this->isWin32Setup ? "setup" : "portable") &&
-            lowerFilename.endsWith(this->isWin32Setup ? ".exe"  : ".zip"))
+            lowerFilename.contains(isWin32Setup ? "setup" : "portable") &&
+            lowerFilename.endsWith(isWin32Setup ? ".exe"  : ".zip"))
         {
             filenameToDownload = filename;
             urlToDownload = QUrl(url);
