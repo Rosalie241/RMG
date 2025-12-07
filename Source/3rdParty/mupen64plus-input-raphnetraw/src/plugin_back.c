@@ -228,6 +228,7 @@ int pb_romClosed(void)
 	return 0;
 }
 
+#if defined(TIME_RAW_IO) || defined(TIME_COMMAND_TO_READ)
 static void timing(int start, const char *label)
 {
 #ifdef ENABLE_TIMING
@@ -248,6 +249,7 @@ static void timing(int start, const char *label)
 	}
 #endif
 }
+#endif
 
 #ifdef _DEBUG
 static void debug_raw_commands_in(unsigned char *command, int channel_id)
@@ -301,7 +303,9 @@ static int pb_performIo(void)
 	struct adapter *adap;
 	struct blockio_op *biops;
 	int j, i, res;
+#ifdef TRACE_BLOCK_IO
 	int op_was_extio[MAX_OPS] = { };
+#endif
 
 	for (j=0; j<g_n_channels; j++)
 	{
