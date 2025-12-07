@@ -144,7 +144,7 @@ jobs:
       - name: Build RMG (Portable)
         run: |
           export src_dir="$(pwd)"
-          export build_dir="$(pwd)/Build/Release"
+          export build_dir="$(pwd)/Build/${{ matrix.configuration }}"
 
           cmake -S "$src_dir" -B "$build_dir" -DCMAKE_BUILD_TYPE="${{ matrix.configuration }}" \
                 -DNETPLAY=${{ matrix.features }} \
