@@ -42,11 +42,13 @@
 #define ATTR_FMT(fmtpos, attrpos)
 #endif
 
+#ifndef WIN32
 static jmp_buf CPU_state;
 static void seg_av_handler(int signal_code)
 {
     longjmp(CPU_state, signal_code);
 }
+#endif
 static void ISA_op_illegal(int signal_code)
 {
     message("Plugin built for SIMD extensions this CPU does not support!");
@@ -521,7 +523,9 @@ void no_LLE(void)
 }
 EXPORT void CALL InitiateRSP(RSP_INFO Rsp_Info, pu32 CycleCount)
 {
+#ifndef _WIN32
     int recovered_from_exception;
+#endif
 
     if (CycleCount != NULL) /* cycle-accuracy not doable with today's hosts */
         *CycleCount = 0;
