@@ -222,6 +222,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
 #endif // NETPLAY
 
+    this->logDialog.close();
+
     CoreSettingsSave();
     CoreShutdown();
 
