@@ -88,15 +88,15 @@ jobs:
           cmake --install "$build_dir" --strip --prefix="$bin_dir/usr"
         shell: bash
       - name: Create AppImage
-        if: ${{ matrix.features == 'ON' && matrix.architecture == 'x86_64' && matrix.configuration == 'Release' }}
+        if: ${{ matrix.features == 'ON' && matrix.configuration == 'Release' }}
         run: |
           ./Package/AppImage/Create.sh
         shell: bash
       - name: Upload RMG (AppImage)
-        if: ${{ matrix.features == 'ON' && matrix.architecture == 'x86_64' && matrix.configuration == 'Release' }}
+        if: ${{ matrix.features == 'ON' && matrix.configuration == 'Release' }}
         uses: actions/upload-artifact@v5
         with:
-          name: RMG-Portable-Linux64-${{ env.GIT_REVISION }}
+          name: RMG-Portable-Linux-${{ matrix.architecture }}-${{ env.GIT_REVISION }}
           path: Bin/*.AppImage
 
   build-windows:
