@@ -92,6 +92,7 @@ endif(UPDATER)
 
 if (NETPLAY)
     list(APPEND RMG_SOURCES
+        UserInterface/KailleraSessionManager.cpp
         UserInterface/Dialog/Netplay/NetplayCommon.cpp
         UserInterface/Dialog/Netplay/CreateNetplaySessionDialog.cpp
         UserInterface/Dialog/Netplay/CreateNetplaySessionDialog.ui

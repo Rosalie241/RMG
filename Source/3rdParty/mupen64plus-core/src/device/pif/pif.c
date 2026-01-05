@@ -35,6 +35,7 @@
 #include "device/rcp/si/si_controller.h"
 #include "plugin/plugin.h"
 #include "main/netplay.h"
+#include "main/pif_sync_callback.h"
 
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
@@ -382,6 +383,7 @@ void update_pif_ram(struct pif* pif)
     }
 
     netplay_update_input(pif);
+    call_pif_sync_callback(pif);
 
 #ifdef DEBUG_PIF
     DebugMessage(M64MSG_INFO, "PIF post read");

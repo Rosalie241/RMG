@@ -15,6 +15,7 @@
 #include "Settings.hpp"
 #include "Library.hpp"
 #include "Netplay.hpp"
+#include "Kaillera.hpp"
 #include "Plugins.hpp"
 #include "Cheats.hpp"
 #include "Error.hpp"
@@ -22,6 +23,136 @@
 #include "Rom.hpp"
 
 #include "m64p/Api.hpp"
+
+// Windows/POSIX dynamic loading
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <dlfcn.h>
+#endif
+
+// Forward declarations for PIF structures
+extern "C" {
+    struct pif;
+    struct pif_channel {
+        void* jbd;
+        const void* ijbd;
+        uint8_t* tx;
+        uint8_t* tx_buf;
+        uint8_t* rx;
+        uint8_t* rx_buf;
+    };
+    struct pif {
+        uint8_t* base;
+        uint8_t* ram;
+        struct pif_channel channels[6];  // PIF_CHANNELS_COUNT = 6
+    };
+
+    // Joybus command constants
+    enum {
+        JCMD_STATUS = 0x00,
+        JCMD_CONTROLLER_READ = 0x01,
+        JCMD_PAK_READ = 0x02,
+        JCMD_PAK_WRITE = 0x03,
+        JCMD_EEPROM_READ = 0x04,
+        JCMD_EEPROM_WRITE = 0x05,
+        JCMD_RESET = 0xff
+    };
+
+    typedef void (*pif_sync_callback_t)(struct pif*);
+}
+
+//
+// Local Variables
+//
+
+// Frame counter for Kaillera sync (updated via frame callback)
+static int s_CurrentFrame = 0;
+
+// Frame callback function
+static void FrameCallback(unsigned int frameIndex)
+{
+    s_CurrentFrame = frameIndex;
+}
+
+// Kaillera PIF sync callback (called from mupen64plus-core after netplay sync)
+static void KailleraPifSyncCallback(struct pif* pif)
+{
+#ifdef NETPLAY
+    if (!CoreHasInitKaillera()) {
+        return;
+    }
+
+    int player_num = CoreGetKailleraPlayerNumber();
+    int num_players = CoreGetKailleraNumPlayers();
+
+    if (player_num < 1 || player_num > 4) {
+        return; // Invalid player number
+    }
+
+    // Extract local input from the FIRST active controller (channel 0)
+    // Each player uses their local controller, regardless of player number
+    uint32_t local_input = 0;
+
+    if (pif->channels[0].tx &&
+        pif->channels[0].tx_buf[0] == JCMD_CONTROLLER_READ &&
+        pif->channels[0].rx_buf != NULL) {
+        // Read 4-byte controller response from local controller
+        // N64 controller format: [buttons_hi][buttons_lo][x_axis][y_axis]
+        uint8_t* rx = pif->channels[0].rx_buf;
+        local_input = (rx[0] << 24) | (rx[1] << 16) | (rx[2] << 8) | rx[3];
+    }
+
+    // Synchronize via Kaillera (send our input, get all inputs back)
+    uint32_t sync_buffer[4] = {0};
+    sync_buffer[0] = local_input;
+
+    int ret = CoreModifyKailleraPlayValues(sync_buffer, sizeof(uint32_t));
+
+    // Write back synchronized inputs to PIF RAM for all netplay players
+    // This makes remote players appear as physically connected controllers
+    if (ret > 0) {
+        int num_received = ret / sizeof(uint32_t);
+
+        for (int i = 0; i < num_received && i < 4; i++) {
+            if (pif->channels[i].tx && pif->channels[i].rx != NULL) {
+                // Always clear error bits to show controller as connected
+                *pif->channels[i].rx &= ~0xC0;
+
+                uint8_t cmd = pif->channels[i].tx_buf[0];
+
+                if (cmd == JCMD_STATUS || cmd == JCMD_RESET) {
+                    // Controller detection - force standard controller type response
+                    if (pif->channels[i].rx_buf != NULL) {
+                        uint16_t type = 0x0500; // JDT_JOY_ABS_COUNTERS | JDT_JOY_PORT
+                        pif->channels[i].rx_buf[0] = (uint8_t)(type >> 0);
+                        pif->channels[i].rx_buf[1] = (uint8_t)(type >> 8);
+                        pif->channels[i].rx_buf[2] = 0; // No pak status
+                    }
+                }
+                else if (cmd == JCMD_CONTROLLER_READ) {
+                    // Write synced controller input
+                    if (pif->channels[i].rx_buf != NULL) {
+                        uint8_t* rx = pif->channels[i].rx_buf;
+                        rx[0] = (sync_buffer[i] >> 24) & 0xFF;
+                        rx[1] = (sync_buffer[i] >> 16) & 0xFF;
+                        rx[2] = (sync_buffer[i] >> 8) & 0xFF;
+                        rx[3] = sync_buffer[i] & 0xFF;
+                    }
+                }
+                else if (cmd == JCMD_PAK_READ && pif->channels[i].rx_buf != NULL) {
+                    // No controller pak present
+                    pif->channels[i].rx_buf[32] = 255;
+                }
+                else if (cmd == JCMD_PAK_WRITE && pif->channels[i].rx_buf != NULL) {
+                    // No controller pak present
+                    pif->channels[i].rx_buf[0] = 255;
+                }
+            }
+        }
+    }
+#endif // NETPLAY
+}
 
 //
 // Local Functions
@@ -227,12 +358,34 @@ CORE_EXPORT bool CoreStartEmulation(std::filesystem::path n64rom, std::filesyste
     apply_pif_rom_settings();
 
 #ifdef NETPLAY
+    // Kaillera connection happens BEFORE emulation via kailleraSelectServerDialog
+    // Just verify it's initialized if netplay was requested
     if (netplay)
     {
-        netplay_ret = CoreInitNetplay(address, port, player);
-        if (!netplay_ret)
+        // Check if address is "KAILLERA" marker (set by UI when using Kaillera)
+        if (address == "KAILLERA")
         {
-            m64p_ret = M64ERR_SYSTEM_FAIL;
+            if (!CoreHasInitKaillera())
+            {
+                CoreSetError("CoreStartEmulation: Kaillera not initialized");
+                m64p_ret = M64ERR_SYSTEM_FAIL;
+                netplay_ret = false;
+            }
+            else
+            {
+                // Store player number for input plugin to use
+                CoreSetKailleraPlayerNumber(player);
+                netplay_ret = true;
+            }
+        }
+        else
+        {
+            // Legacy netplay (Mupen64Plus built-in)
+            netplay_ret = CoreInitNetplay(address, port, player);
+            if (!netplay_ret)
+            {
+                m64p_ret = M64ERR_SYSTEM_FAIL;
+            }
         }
     }
 #endif // NETPLAY
@@ -241,6 +394,31 @@ CORE_EXPORT bool CoreStartEmulation(std::filesystem::path n64rom, std::filesyste
     // is successful or if there's no netplay requested
     if (!netplay || netplay_ret)
     {
+        // Register frame callback for frame counter (used by Kaillera)
+        s_CurrentFrame = 0;
+        m64p::Core.DoCommand(M64CMD_SET_FRAME_CALLBACK, 0, (void*)FrameCallback);
+
+#ifdef NETPLAY
+        // Register Kaillera PIF sync callback (works with any input plugin)
+        // Get function pointer dynamically since mupen64plus is loaded at runtime
+        typedef void (*set_pif_sync_callback_t)(pif_sync_callback_t);
+        void* coreHandle = m64p::Core.GetHandle();
+        if (coreHandle)
+        {
+#ifdef _WIN32
+            set_pif_sync_callback_t set_callback =
+                (set_pif_sync_callback_t)GetProcAddress((HMODULE)coreHandle, "set_pif_sync_callback");
+#else
+            set_pif_sync_callback_t set_callback =
+                (set_pif_sync_callback_t)dlsym(coreHandle, "set_pif_sync_callback");
+#endif
+            if (set_callback)
+            {
+                set_callback(KailleraPifSyncCallback);
+            }
+        }
+#endif
+
         m64p_ret = m64p::Core.DoCommand(M64CMD_EXECUTE, 0, nullptr);
         if (m64p_ret != M64ERR_SUCCESS)
         {
@@ -252,7 +430,16 @@ CORE_EXPORT bool CoreStartEmulation(std::filesystem::path n64rom, std::filesyste
 #ifdef NETPLAY
     if (netplay && netplay_ret)
     {
-        CoreShutdownNetplay();
+        // Check if we used Kaillera or legacy netplay
+        if (address == "KAILLERA")
+        {
+            CoreEndKailleraGame();
+            CoreShutdownKaillera();
+        }
+        else
+        {
+            CoreShutdownNetplay();
+        }
     }
 #endif // NETPLAY
 
@@ -296,6 +483,11 @@ CORE_EXPORT bool CoreStopEmulation(void)
         return false;
     }
 
+#ifdef NETPLAY
+    // Clear Kaillera player number when stopping
+    CoreSetKailleraPlayerNumber(0);
+#endif
+
     return ret == M64ERR_SUCCESS;
 }
 
@@ -309,7 +501,7 @@ CORE_EXPORT bool CorePauseEmulation(void)
         return false;
     }
 
-    if (CoreHasInitNetplay())
+    if (CoreHasInitNetplay() || CoreHasInitKaillera())
     {
         return false;
     }
@@ -317,7 +509,7 @@ CORE_EXPORT bool CorePauseEmulation(void)
     if (!CoreIsEmulationRunning())
     {
         error = "CorePauseEmulation Failed: ";
-        error += "cannot pause emulation when emulation isn't running!";\
+        error += "cannot pause emulation when emulation isn't running!";
         CoreSetError(error);
         return false;
     }
@@ -343,7 +535,7 @@ CORE_EXPORT bool CoreResumeEmulation(void)
         return false;
     }
 
-    if (CoreHasInitNetplay())
+    if (CoreHasInitNetplay() || CoreHasInitKaillera())
     {
         return false;
     }
@@ -414,4 +606,10 @@ CORE_EXPORT bool CoreIsEmulationPaused(void)
 {
     m64p_emu_state state = M64EMU_STOPPED;
     return get_emulation_state(state) && state == M64EMU_PAUSED;
+}
+
+CORE_EXPORT int CoreGetCurrentFrameCount(void)
+{
+    // Return frame counter updated via frame callback
+    return s_CurrentFrame;
 }

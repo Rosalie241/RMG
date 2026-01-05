@@ -39,12 +39,15 @@ set(RMG_INPUT_SOURCES
 )
 
 if (VRU)
-    list(APPEND RMG_INPUT_SOURCES 
+    list(APPEND RMG_INPUT_SOURCES
         VRU.cpp
         VRUwords.cpp
     )
     add_definitions(-DVRU)
 endif(VRU)
+
+# Enable Kaillera netplay support
+add_definitions(-DNETPLAY)
 
 add_library(RMG-Input SHARED ${RMG_INPUT_SOURCES})
 

@@ -70,6 +70,7 @@
 #include <RMG-Core/SaveState.hpp>
 #include <RMG-Core/Settings.hpp>
 #include <RMG-Core/Netplay.hpp>
+#include <RMG-Core/Kaillera.hpp>
 #include <RMG-Core/Version.hpp>
 #include <RMG-Core/Cheats.hpp>
 #include <RMG-Core/Volume.hpp>
@@ -935,9 +936,7 @@ void MainWindow::updateActions(bool inEmulation, bool isPaused)
     this->action_View_Search->setEnabled(!inEmulation);
 
 #ifdef NETPLAY
-    this->action_Netplay_CreateSession->setEnabled(!inEmulation && this->netplaySessionDialog == nullptr);
     this->action_Netplay_BrowseSessions->setEnabled(!inEmulation && this->netplaySessionDialog == nullptr);
-    this->action_Netplay_ViewSession->setEnabled(inEmulation && this->netplaySessionDialog != nullptr);
 #endif // NETPLAY
 
     keyBinding = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::KeyBinding_IncreaseVolume));
@@ -1259,9 +1258,7 @@ void MainWindow::connectActionSignals(void)
     connect(this->action_View_Log, &QAction::triggered, this, &MainWindow::on_Action_View_Log);
     connect(this->action_View_Search, &QAction::triggered, this, &MainWindow::on_Action_View_Search);
 
-    connect(this->action_Netplay_CreateSession, &QAction::triggered, this, &MainWindow::on_Action_Netplay_CreateSession);
     connect(this->action_Netplay_BrowseSessions, &QAction::triggered, this, &MainWindow::on_Action_Netplay_BrowseSessions);
-    connect(this->action_Netplay_ViewSession, &QAction::triggered, this, &MainWindow::on_Action_Netplay_ViewSession);
 
     connect(this->action_Help_Github, &QAction::triggered, this, &MainWindow::on_Action_Help_Github);
     connect(this->action_Help_About, &QAction::triggered, this, &MainWindow::on_Action_Help_About);
@@ -1535,7 +1532,8 @@ void MainWindow::on_QGuiApplication_applicationStateChanged(Qt::ApplicationState
 
         case Qt::ApplicationState::ApplicationInactive:
         {
-            if (pauseOnFocusLoss && isRunning && !isPaused)
+            // Don't pause if Kaillera netplay is active (can't pause during synchronized netplay)
+            if (pauseOnFocusLoss && isRunning && !isPaused && !CoreHasInitKaillera())
             {
                 this->on_Action_System_Pause();
                 this->ui_ManuallyPaused = false;
@@ -2065,13 +2063,51 @@ void MainWindow::on_Action_Netplay_CreateSession(void)
 void MainWindow::on_Action_Netplay_BrowseSessions(void)
 {
 #ifdef NETPLAY
-    static QWebSocket webSocket;
-
-    Dialog::NetplaySessionBrowserDialog dialog(this, &webSocket, this->ui_Widget_RomBrowser->GetModelData());
-    int ret = dialog.exec();
-    if (ret == QDialog::Accepted)
+    // Initialize Kaillera if not already initialized
+    if (!CoreInitKaillera())
     {
-        this->showNetplaySessionDialog(&webSocket, dialog.GetSessionJson(), dialog.GetSessionFile());
+        this->showErrorMessage("Kaillera Error", QString::fromStdString(CoreGetError()));
+        return;
+    }
+
+    // Set Kaillera app info (app name and game list)
+    QString appName = "RMG v" + QString::fromStdString(CoreGetVersion());
+    QString gameList = ""; // Will be set from ROM list
+    // Build game list from ROM browser (null-terminated strings with double-null at end)
+    QMap<QString, CoreRomSettings> romData = this->ui_Widget_RomBrowser->GetModelData();
+    for (auto it = romData.begin(); it != romData.end(); ++it)
+    {
+        gameList += QString::fromStdString(it.value().GoodName) + QString(QChar('\0'));
+    }
+    gameList += QString(QChar('\0')); // Double null terminator
+    CoreSetKailleraAppInfo(appName.toStdString(), gameList.toStdString());
+
+    // Create Kaillera session manager
+    if (this->kailleraSessionManager != nullptr)
+    {
+        delete this->kailleraSessionManager;
+    }
+    this->kailleraSessionManager = new KailleraSessionManager(this);
+
+    // Connect signals
+    connect(this->kailleraSessionManager, &KailleraSessionManager::gameStarted,
+            this, &MainWindow::on_Kaillera_GameStarted);
+    connect(this->kailleraSessionManager, &KailleraSessionManager::chatReceived,
+            this, &MainWindow::on_Kaillera_ChatReceived);
+    connect(this->kailleraSessionManager, &KailleraSessionManager::playerDropped,
+            this, &MainWindow::on_Kaillera_PlayerDropped);
+    connect(this->kailleraSessionManager, &KailleraSessionManager::gameEnded,
+            this, &MainWindow::on_Kaillera_GameEnded);
+
+    // Show Kaillera's built-in server browser dialog
+    // This is a blocking call - user will select server, join/create game
+    // When they start a game, gameStarted signal will be emitted
+    if (!this->kailleraSessionManager->showServerDialog())
+    {
+        // User cancelled or error occurred
+        delete this->kailleraSessionManager;
+        this->kailleraSessionManager = nullptr;
+        CoreShutdownKaillera();
     }
 #endif // NETPLAY
 }
@@ -2086,6 +2122,82 @@ void MainWindow::on_Action_Netplay_ViewSession(void)
     }
 #endif
 }
+
+#ifdef NETPLAY
+void MainWindow::on_Kaillera_GameStarted(QString gameName, int playerNum, int totalPlayers)
+{
+    // Find ROM file by game name
+    QString romFile = this->findRomByName(gameName);
+    if (romFile.isEmpty())
+    {
+        this->showErrorMessage("ROM Not Found",
+            "Could not find ROM: " + gameName + "\n\nPlease add it to your ROM directory and refresh the list.");
+        CoreEndKailleraGame();
+        CoreShutdownKaillera();
+        if (this->kailleraSessionManager != nullptr)
+        {
+            delete this->kailleraSessionManager;
+            this->kailleraSessionManager = nullptr;
+        }
+        return;
+    }
+
+    // Launch emulation with Kaillera marker
+    this->emulationThread->SetRomFile(romFile);
+    this->emulationThread->SetDiskFile("");
+    this->emulationThread->SetNetplay("KAILLERA", 0, playerNum); // "KAILLERA" is the marker
+    this->emulationThread->start();
+}
+
+void MainWindow::on_Kaillera_ChatReceived(QString nickname, QString message)
+{
+    // For now, just log to console
+    // In the future, could show in a chat dialog
+    qDebug() << "[Kaillera Chat]" << nickname << ":" << message;
+}
+
+void MainWindow::on_Kaillera_PlayerDropped(QString nickname, int playerNum)
+{
+    // Show notification
+    OnScreenDisplaySetMessage(nickname.toStdString() + " has disconnected.");
+
+    // Note: If we're the one who dropped, on_Kaillera_GameEnded will be called automatically
+}
+
+void MainWindow::on_Kaillera_GameEnded(void)
+{
+    // Stop emulation if running
+    if (CoreIsEmulationRunning())
+    {
+        CoreStopEmulation();
+    }
+
+    // Clean up Kaillera session manager
+    if (this->kailleraSessionManager != nullptr)
+    {
+        delete this->kailleraSessionManager;
+        this->kailleraSessionManager = nullptr;
+    }
+
+    CoreShutdownKaillera();
+}
+
+QString MainWindow::findRomByName(QString gameName)
+{
+    // Search ROM browser data for matching game name
+    QMap<QString, CoreRomSettings> romData = this->ui_Widget_RomBrowser->GetModelData();
+
+    for (auto it = romData.begin(); it != romData.end(); ++it)
+    {
+        if (QString::fromStdString(it.value().GoodName) == gameName)
+        {
+            return it.key(); // Return the file path
+        }
+    }
+
+    return QString(); // Not found
+}
+#endif // NETPLAY
 
 void MainWindow::on_Action_Help_Github(void)
 {

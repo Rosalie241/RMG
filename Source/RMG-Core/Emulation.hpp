@@ -40,4 +40,8 @@ bool CoreIsEmulationRunning(void);
 // returns whether emulation is paused
 bool CoreIsEmulationPaused(void);
 
+// returns current VI (vertical interrupt) frame count
+// used for synchronization in netplay/Kaillera
+int CoreGetCurrentFrameCount(void);
+
 #endif // CORE_EMULATION_HPP

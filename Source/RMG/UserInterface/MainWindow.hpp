@@ -21,6 +21,7 @@
 
 #ifdef NETPLAY
 #include "Dialog/Netplay/NetplaySessionDialog.hpp"
+#include "KailleraSessionManager.hpp"
 #endif // NETPLAY
 #include "Dialog/LogDialog.hpp"
 
@@ -120,6 +121,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     Dialog::LogDialog logDialog;
 #ifdef NETPLAY
     Dialog::NetplaySessionDialog* netplaySessionDialog = nullptr;
+    KailleraSessionManager* kailleraSessionManager = nullptr;
 #endif // NETPLAY
 
     void closeEvent(QCloseEvent *) Q_DECL_OVERRIDE;
@@ -165,6 +167,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 
 #ifdef NETPLAY
     void showNetplaySessionDialog(QWebSocket* webSocket, QJsonObject json, QString sessionFile);
+    QString findRomByName(QString gameName);
 #endif // NETPLAY
   protected:
     void timerEvent(QTimerEvent *event) Q_DECL_OVERRIDE;
@@ -218,6 +221,11 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     void on_Action_Netplay_CreateSession(void);
     void on_Action_Netplay_BrowseSessions(void);
     void on_Action_Netplay_ViewSession(void);
+
+    void on_Kaillera_GameStarted(QString gameName, int playerNum, int totalPlayers);
+    void on_Kaillera_ChatReceived(QString nickname, QString message);
+    void on_Kaillera_PlayerDropped(QString nickname, int playerNum);
+    void on_Kaillera_GameEnded(void);
 
     void on_Action_Help_Github(void);
     void on_Action_Help_About(void);

@@ -34,6 +34,7 @@
 #include <RMG-Core/SaveState.hpp>
 #include <RMG-Core/Settings.hpp>
 #include <RMG-Core/Netplay.hpp>
+#include <RMG-Core/Kaillera.hpp>
 #include <RMG-Core/Cheats.hpp>
 #include <RMG-Core/Video.hpp>
 
@@ -1398,6 +1399,10 @@ EXPORT void CALL GetKeys(int Control, BUTTONS* Keys)
 
     Keys->X_AXIS = octagonX;
     Keys->Y_AXIS = octagonY;
+
+    // NOTE: Kaillera netplay synchronization moved to PIF RAM level
+    // (See kaillera_update_input() in mupen64plus-core/src/main/kaillera.c)
+    // This ensures sync works with ALL input plugins including raphnet
 }
 
 EXPORT void CALL InitiateControllers(CONTROL_INFO ControlInfo)

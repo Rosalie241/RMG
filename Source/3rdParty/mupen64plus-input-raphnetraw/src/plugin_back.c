@@ -309,7 +309,7 @@ static int pb_performIo(void)
 
 	for (j=0; j<g_n_channels; j++)
 	{
-		adap = &g_adapters[j];
+		adap = g_channels[j].adapter;
 		biops = adap->biops;
 
 		/* Skip adapters that do not have IO operations queued. */
