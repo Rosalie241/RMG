@@ -283,7 +283,7 @@ void MainWindow::configureUI(QApplication* app, bool showUI)
 {
     this->setCentralWidget(this->ui_Widgets);
 
-    QString geometry = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::RomBrowser_Geometry));
+    /*QString geometry = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::RomBrowser_Geometry));
     bool maximized = CoreSettingsGetBoolValue(SettingsID::RomBrowser_Maximized);
     if (maximized)
     {
@@ -292,7 +292,7 @@ void MainWindow::configureUI(QApplication* app, bool showUI)
     else if (!geometry.isEmpty())
     {
         this->restoreGeometry(QByteArray::fromBase64(geometry.toLocal8Bit()));
-    }
+    }*/
 
     this->ui_ShowUI = showUI;
 
