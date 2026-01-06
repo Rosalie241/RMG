@@ -21,6 +21,7 @@ LogDialog::LogDialog(QWidget *parent) : QDialog(parent)
     this->setWindowIcon(QIcon(":Resource/RMG.png"));
     this->setWindowFlags(this->windowFlags() | Qt::WindowMinimizeButtonHint);
 
+#if 0
     try
     { // for some reason on Windows 10 for some users, 
       // ->setFont() will crash in DwriteCreateFactory,
@@ -34,6 +35,7 @@ LogDialog::LogDialog(QWidget *parent) : QDialog(parent)
     catch (...)
     {
     }
+#endif
 }
 
 LogDialog::~LogDialog(void)
