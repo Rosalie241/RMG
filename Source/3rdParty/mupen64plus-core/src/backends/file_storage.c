@@ -124,8 +124,18 @@ static void file_storage_save(void* storage, size_t start, size_t size)
 
 static void file_storage_parent_save(void* storage, size_t start, size_t size)
 {
-    struct file_storage* fstorage = (struct file_storage*)((struct file_storage*)storage)->filename;
-    file_storage_save(fstorage, start, size);
+    struct file_storage* sub = (struct file_storage*)storage;
+    struct file_storage* parent = (struct file_storage*)sub->filename;
+
+    /* Calculate offset of sub-storage data within parent data.
+     * This is needed for mempaks where controllers 2-4 have their data
+     * at offsets 32KB, 64KB, 96KB within the shared 128KB .mpk file.
+     * Without this adjustment, saves from controllers 2-4 would incorrectly
+     * write to offset 0 instead of their proper section.
+     */
+    size_t offset = sub->data - parent->data;
+
+    file_storage_save(parent, offset + start, size);
 }
 
 static void dummy_save(void* storage, size_t start, size_t size)
