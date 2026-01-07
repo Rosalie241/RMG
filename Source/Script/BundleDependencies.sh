@@ -2,6 +2,7 @@
 #
 # ./BundleDependencies.sh "./Bin/Release/RMG.exe" "./Bin/Release/"
 #
+set -e
 
 exe="$1"
 bin_dir="$2"
@@ -35,7 +36,7 @@ do
 	copyForOBJ "$file"
 done
 
-windeployqt-qt6 --exclude-plugins qpdf,qwebp,qgif,qtga,qtuiotouchplugin,qglib,qtiff,qmng,qwbmp \
+windeployqt6 --exclude-plugins qpdf,qwebp,qgif,qtga,qtuiotouchplugin,qglib,qtiff,qmng,qwbmp \
 				--no-translations "$exe"
 
 # needed by Qt at runtime
