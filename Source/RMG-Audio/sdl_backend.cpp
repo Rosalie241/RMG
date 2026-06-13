@@ -88,7 +88,7 @@ static void sdl_init_audio_device(struct sdl_backend* sdl_backend)
     {
         if (!SDL_Init(SDL_INIT_AUDIO))
         {
-            DebugMessage(M64MSG_ERROR, "Failed to initialize SDL audio subsystem.");
+            DebugMessage(M64MSG_ERROR, "Failed to initialize SDL audio subsystem: %s", SDL_GetError());
             sdl_backend->error = 1;
             return;
         }
