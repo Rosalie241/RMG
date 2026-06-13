@@ -94,7 +94,7 @@ jobs:
         shell: bash
       - name: Upload RMG (AppImage)
         if: ${{ matrix.features == 'ON' && matrix.architecture == 'x86_64' && matrix.configuration == 'Release' }}
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: RMG-Portable-Linux64-${{ env.GIT_REVISION }}
           path: Bin/*.AppImage
@@ -167,13 +167,13 @@ jobs:
         shell: msys2 {0}
       - name: Upload RMG (Portable)
         if: ${{ matrix.features == 'ON' && matrix.configuration == 'Release' }}
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: RMG-Portable-Windows64-${{ env.GIT_REVISION }}
           path: Bin/Release/*
       - name: Upload RMG (Installer)
         if: ${{ matrix.features == 'ON' && matrix.configuration == 'Release' }}
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: RMG-Setup-Windows64-${{ env.GIT_REVISION }}
           path: Bin/*.exe
