@@ -48,17 +48,6 @@ class NetplaySessionBrowserDialog : public QDialog, private Ui::NetplaySessionBr
     QMap<QString, CoreRomSettings> romData;
 
     int pingTimerId = -1;
-    int dispatcherTimerId = -1;
-    int dispatcherTimeoutTimerId = -1;
-
-    bool dispatcherMoveThroughList = false;
-    bool dispatcherJoinSession = false;
-    QNetworkAccessManager* dispatcherNetworkAccessManager = nullptr;
-    QNetworkReply* dispatcherNetworkReply = nullptr;
-    QString dispatcherUrl;
-    
-    QStringList dispatcherAddressList;
-    int dispatcherAddressListIndex = 0;
 
     QString showROMDialog(QString name, QString md5);
 
@@ -83,9 +72,6 @@ class NetplaySessionBrowserDialog : public QDialog, private Ui::NetplaySessionBr
 
     void on_broadcastSocket_readyRead(void);
     void on_jsonServerListDownload_Finished(QNetworkReply* reply);
-
-    void on_dispatcherRegionListDownload_Finished(QNetworkReply* reply);
-    void on_dispatcherRetrieveServers_Finished(QNetworkReply* reply);
 
     void on_serverComboBox_currentIndexChanged(int index);
     void on_sessionBrowserWidget_OnSessionChanged(bool valid);

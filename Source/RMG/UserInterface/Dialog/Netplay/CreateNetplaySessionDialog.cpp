@@ -41,7 +41,6 @@ CreateNetplaySessionDialog::CreateNetplaySessionDialog(QWidget *parent, QWebSock
     this->webSocket = webSocket;
     connect(this->webSocket, &QWebSocket::textMessageReceived, this, &CreateNetplaySessionDialog::on_webSocket_textMessageReceived);
     connect(this->webSocket, &QWebSocket::pong, this, &CreateNetplaySessionDialog::on_webSocket_pong);
-    connect(this->webSocket, &QWebSocket::connected, this, &CreateNetplaySessionDialog::on_webSocket_connected);
 
     // prepare broadcast
     broadcastSocket.bind(QHostAddress(QHostAddress::AnyIPv4), 0);
@@ -103,18 +102,6 @@ CreateNetplaySessionDialog::CreateNetplaySessionDialog(QWidget *parent, QWebSock
             networkAccessManager->setTransferTimeout(15000);
             networkAccessManager->get(QNetworkRequest(QUrl(serverUrl)));
         }
-    }
-
-    QString dispatcherUrl = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::Netplay_DispatcherUrl));
-    if (!dispatcherUrl.isEmpty() && QUrl(dispatcherUrl).isValid())
-    {
-        this->dispatcherUrl = dispatcherUrl;
-
-        QNetworkAccessManager* networkAccessManager = new QNetworkAccessManager(this);
-        connect(networkAccessManager, &QNetworkAccessManager::finished, this, &CreateNetplaySessionDialog::on_dispatcherRegionListDownload_Finished);
-        networkAccessManager->setTransferTimeout(15000);
-
-        networkAccessManager->get(NetplayCommon::GetNetworkRequest(this->dispatcherUrl + "/getRegions"));
     }
 }
 
@@ -254,18 +241,7 @@ void CreateNetplaySessionDialog::on_webSocket_textMessageReceived(QString messag
 
 void CreateNetplaySessionDialog::on_webSocket_pong(quint64 elapsedTime, const QByteArray&)
 {
-    if (!NetplayCommon::IsServerDispatcher(this->serverComboBox))
-    {
-        this->pingLineEdit->setText(QString::number(elapsedTime) + " ms");
-    }
-}
-
-void CreateNetplaySessionDialog::on_webSocket_connected()
-{
-    if (NetplayCommon::IsServerDispatcher(this->serverComboBox))
-    {
-        this->createSession();
-    }
+    this->pingLineEdit->setText(QString::number(elapsedTime) + " ms");
 }
 
 void CreateNetplaySessionDialog::on_broadcastSocket_readyRead()
@@ -296,49 +272,6 @@ void CreateNetplaySessionDialog::on_jsonServerListDownload_Finished(QNetworkRepl
     reply->deleteLater();
 }
 
-void CreateNetplaySessionDialog::on_dispatcherRegionListDownload_Finished(QNetworkReply* reply)
-{
-    if (reply->error())
-    {
-        QtMessageBox::Error(this, "Server Error", "Failed to retrieve region list: " + reply->errorString());
-        reply->deleteLater();
-        return;
-    }
-
-    NetplayCommon::AddServers(this->serverComboBox, 
-                              QJsonDocument::fromJson(reply->readAll()), true);
-
-    reply->deleteLater();
-}
-
-void CreateNetplaySessionDialog::on_dispatcherServerCreate_Finished(QNetworkReply* reply)
-{
-    if (reply->error())
-    {
-        QtMessageBox::Error(this, "Server Error", "Failed to create server: " + reply->errorString());
-        reply->deleteLater();
-        this->toggleUI(true, this->validate());
-        return;
-    }
-
-    QJsonDocument jsonDocument = QJsonDocument::fromJson(reply->readAll());
-    QJsonObject jsonObject = jsonDocument.object();
-
-    if (jsonObject.empty() || jsonObject.keys().empty())
-    {
-        QtMessageBox::Error(this, "Server Error", "Failed to create server: " + jsonDocument.toJson());
-        reply->deleteLater();
-        this->toggleUI(true, this->validate());
-        return;
-    }
-
-    // first item should be an address
-    QString address = jsonObject[jsonObject.keys().at(0)].toString();
-    this->webSocket->open(QUrl(address));
-
-    reply->deleteLater();
-}
-
 void CreateNetplaySessionDialog::on_serverComboBox_currentIndexChanged(int index)
 {
     if (index == -1)
@@ -346,23 +279,18 @@ void CreateNetplaySessionDialog::on_serverComboBox_currentIndexChanged(int index
         return;
     }
 
-    bool dispatcher = NetplayCommon::IsServerDispatcher(this->serverComboBox, index);
-    
     if (this->pingTimerId != -1)
     {
         this->killTimer(this->pingTimerId);
         this->pingTimerId = -1;
     }
 
-    this->pingLineEdit->setText(dispatcher ? "N/A" : "Calculating...");
+    this->pingLineEdit->setText("Calculating...");
 
-    if (!dispatcher)
-    {
-        this->pingTimerId = this->startTimer(2000);
+    this->pingTimerId = this->startTimer(2000);
 
-        QString address = NetplayCommon::GetServerData(this->serverComboBox, index);
-        this->webSocket->open(QUrl(address));
-    }
+    QString address = NetplayCommon::GetServerData(this->serverComboBox, index);
+    this->webSocket->open(QUrl(address));
 }
 
 void CreateNetplaySessionDialog::on_nickNameLineEdit_textChanged(void)
@@ -387,7 +315,7 @@ void CreateNetplaySessionDialog::on_romListWidget_OnRomChanged(bool valid)
 
 void CreateNetplaySessionDialog::accept()
 {
-    if (!NetplayCommon::IsServerDispatcher(this->serverComboBox) && !this->webSocket->isValid())
+    if (!this->webSocket->isValid())
     {
         QtMessageBox::Error(this, "Server Error", "Connection Failed");
         return;
@@ -407,26 +335,5 @@ void CreateNetplaySessionDialog::accept()
     // disable create button while we're processing the request
     this->toggleUI(false, false);
 
-    if (NetplayCommon::IsServerDispatcher(this->serverComboBox))
-    {
-        QNetworkAccessManager* networkAccessManager = new QNetworkAccessManager(this);
-        connect(networkAccessManager, &QNetworkAccessManager::finished, this, &CreateNetplaySessionDialog::on_dispatcherServerCreate_Finished);
-        networkAccessManager->setTransferTimeout(120000);
-
-        QUrl url(this->dispatcherUrl + "/createServer");
-
-        QUrlQuery urlQuery;
-        urlQuery.addQueryItem("region", NetplayCommon::GetServerData(this->serverComboBox));
-        url.setQuery(urlQuery);
-
-        networkAccessManager->get(NetplayCommon::GetNetworkRequest(url));
-
-        // creating a server can take a while,
-        // so show a loading screen
-        this->romListWidget->ShowLoading();
-    }
-    else
-    {
-        this->createSession();
-    }
+    this->createSession();
 }

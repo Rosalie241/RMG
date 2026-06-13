@@ -71,11 +71,6 @@ NetplaySessionBrowserDialog::NetplaySessionBrowserDialog(QWidget *parent, QWebSo
     this->nickNameLineEdit->setValidator(new QRegularExpressionValidator(re, this));
     this->nickNameLineEdit->setText(QString::fromStdString(CoreSettingsGetStringValue(SettingsID::Netplay_Nickname)));
 
-    // configure dispatcher network access manager
-    this->dispatcherNetworkAccessManager = new QNetworkAccessManager(this);
-    this->dispatcherNetworkAccessManager->setTransferTimeout(15000);
-    connect(this->dispatcherNetworkAccessManager, &QNetworkAccessManager::finished, this, &NetplaySessionBrowserDialog::on_dispatcherRetrieveServers_Finished);
-
     // request server list
     QString serverUrl = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::Netplay_ServerJsonUrl));
     if (!serverUrl.isEmpty())
@@ -100,18 +95,6 @@ NetplaySessionBrowserDialog::NetplaySessionBrowserDialog(QWidget *parent, QWebSo
             networkAccessManager->setTransferTimeout(15000);
             networkAccessManager->get(QNetworkRequest(QUrl(serverUrl)));
         }
-    }
-
-    QString dispatcherUrl = QString::fromStdString(CoreSettingsGetStringValue(SettingsID::Netplay_DispatcherUrl));
-    if (!dispatcherUrl.isEmpty() && QUrl(dispatcherUrl).isValid())
-    {
-        this->dispatcherUrl = dispatcherUrl;
-
-        QNetworkAccessManager* networkAccessManager = new QNetworkAccessManager(this);
-        connect(networkAccessManager, &QNetworkAccessManager::finished, this, &NetplaySessionBrowserDialog::on_dispatcherRegionListDownload_Finished);
-        networkAccessManager->setTransferTimeout(15000);
-
-        networkAccessManager->get(NetplayCommon::GetNetworkRequest(this->dispatcherUrl + "/getRegions"));
     }
 
     this->validateJoinButton();
@@ -215,14 +198,7 @@ void NetplaySessionBrowserDialog::refreshSessions(void)
     // disable join and refresh button while refreshing
     this->toggleUI(false, false, false);
 
-    if (NetplayCommon::IsServerDispatcher(this->serverComboBox))
-    {
-        this->on_serverComboBox_currentIndexChanged(this->serverComboBox->currentIndex());
-    }
-    else
-    {
-        this->on_webSocket_connected();
-    }
+    this->on_webSocket_connected();
 }
 
 void NetplaySessionBrowserDialog::joinSession(void)
@@ -241,31 +217,6 @@ void NetplaySessionBrowserDialog::joinSession(void)
     this->webSocket->sendTextMessage(QJsonDocument(json).toJson());
 }
 
-void NetplaySessionBrowserDialog::resetDispatcherState(void)
-{
-    if (this->dispatcherTimerId != -1)
-    {
-        this->killTimer(this->dispatcherTimerId);
-        this->dispatcherTimerId = -1;
-    }
-
-    if (this->dispatcherTimeoutTimerId != -1)
-    {
-        this->killTimer(this->dispatcherTimeoutTimerId);
-        this->dispatcherTimeoutTimerId = -1;
-    }
-
-    if (this->dispatcherNetworkReply != nullptr)
-    {
-        this->dispatcherNetworkReply->abort();
-        this->dispatcherNetworkReply = nullptr;
-    }
-
-    this->dispatcherMoveThroughList  = false;
-    this->dispatcherJoinSession      = false;
-    this->dispatcherAddressListIndex = false;
-}
-
 void NetplaySessionBrowserDialog::timerEvent(QTimerEvent *event)
 {
     if (event->timerId() == this->pingTimerId)
@@ -274,44 +225,6 @@ void NetplaySessionBrowserDialog::timerEvent(QTimerEvent *event)
         {
             this->webSocket->ping();
         }
-    }
-    else if (event->timerId() == this->dispatcherTimerId)
-    {
-        if (this->dispatcherMoveThroughList)
-        {
-            this->dispatcherAddressListIndex++;
-
-            if (this->dispatcherAddressListIndex < this->dispatcherAddressList.size())
-            {
-                QString address = this->dispatcherAddressList.at(this->dispatcherAddressListIndex);
-                this->webSocket->open(QUrl(address));
-
-                this->dispatcherMoveThroughList = false;
-
-                // start socket timeout
-                if (this->dispatcherTimeoutTimerId != -1)
-                {
-                    this->killTimer(this->dispatcherTimeoutTimerId);
-                    this->dispatcherTimeoutTimerId = -1;
-                }
-
-                this->dispatcherTimeoutTimerId = this->startTimer(15000);
-            }
-            else
-            {
-                this->sessionBrowserWidget->RefreshDone();
-                this->resetDispatcherState();
-            }
-        }
-    }
-    else if (event->timerId() == this->dispatcherTimeoutTimerId)
-    {
-        this->webSocket->close();
-        this->dispatcherMoveThroughList = true;
-
-        this->killTimer(this->dispatcherTimeoutTimerId);
-        this->dispatcherTimeoutTimerId = -1;
-
     }
 }
 
@@ -323,20 +236,8 @@ void NetplaySessionBrowserDialog::on_webSocket_connected(void)
         return;
     }
 
-    bool dispatcher = NetplayCommon::IsServerDispatcher(this->serverComboBox);
-
-    if (dispatcher && this->dispatcherJoinSession)
-    {
-        this->joinSession();
-        this->dispatcherJoinSession = false;
-        return;
-    }
-
-    // clear sessions when we're not using the dispatcher server
-    if (!dispatcher)
-    {
-        this->sessionBrowserWidget->StartRefresh();
-    }
+    // clear sessions
+    this->sessionBrowserWidget->StartRefresh();
 
     // request session list from server
     QJsonObject json;
@@ -352,8 +253,6 @@ void NetplaySessionBrowserDialog::on_webSocket_textMessageReceived(QString messa
     QJsonObject json = jsonDocument.object();
 
     QString type = json.value("type").toString();
-
-    bool dispatcher = NetplayCommon::IsServerDispatcher(this->serverComboBox);
 
     if (type == "reply_get_rooms")
     {
@@ -377,10 +276,7 @@ void NetplaySessionBrowserDialog::on_webSocket_textMessageReceived(QString messa
             }
 
             // we're done refreshing the sessions
-            if (!dispatcher)
-            {
-                this->sessionBrowserWidget->RefreshDone();
-            }
+            this->sessionBrowserWidget->RefreshDone();
         }
         else
         {
@@ -401,27 +297,16 @@ void NetplaySessionBrowserDialog::on_webSocket_textMessageReceived(QString messa
             this->toggleUI(true, this->validate());
         }
     }
-
-    if (dispatcher)
-    {
-        this->dispatcherMoveThroughList = true;
-    }
 }
 
 void NetplaySessionBrowserDialog::on_webSocket_pong(quint64 elapsedTime, const QByteArray&)
 {
-    if (!NetplayCommon::IsServerDispatcher(this->serverComboBox))
-    {
-        this->pingLineEdit->setText(QString::number(elapsedTime) + " ms");
-    }
+    this->pingLineEdit->setText(QString::number(elapsedTime) + " ms");
 }
 
 void NetplaySessionBrowserDialog::on_webSocket_disconnected()
 {
-    if (!NetplayCommon::IsServerDispatcher(this->serverComboBox))
-    {
-        this->sessionBrowserWidget->Reset();
-    }
+    this->sessionBrowserWidget->Reset();
 }
 
 void NetplaySessionBrowserDialog::on_broadcastSocket_readyRead(void)
@@ -453,61 +338,6 @@ void NetplaySessionBrowserDialog::on_jsonServerListDownload_Finished(QNetworkRep
     reply->deleteLater();
 }
 
-void NetplaySessionBrowserDialog::on_dispatcherRegionListDownload_Finished(QNetworkReply* reply)
-{
-    if (reply->error())
-    {
-        this->sessionBrowserWidget->Reset();
-        QtMessageBox::Error(this, "Server Error", "Failed to retrieve region list: " + reply->errorString());
-        reply->deleteLater();
-        return;
-    }
-
-    NetplayCommon::AddServers(this->serverComboBox, 
-                              QJsonDocument::fromJson(reply->readAll()), true);
-
-    reply->deleteLater();
-}
-
-void NetplaySessionBrowserDialog::on_dispatcherRetrieveServers_Finished(QNetworkReply* reply)
-{
-    // don't show an error when the request has been aborted
-    if (reply->error() == QNetworkReply::OperationCanceledError)
-    {
-        reply->deleteLater();
-        return;
-    }
-
-    if (reply->error())
-    {
-        this->sessionBrowserWidget->Reset();
-        QtMessageBox::Error(this, "Server Error", "Failed to retrieve server list: " + reply->errorString());
-        reply->deleteLater();
-        return;
-    }
-
-    QJsonDocument jsonDocument = QJsonDocument::fromJson(reply->readAll());
-    QJsonObject jsonObject = jsonDocument.object();
-    QStringList jsonKeys = jsonObject.keys();
-
-    this->sessionBrowserWidget->StartRefresh();
-    this->resetDispatcherState();
-
-    // we only care about the addresses
-    this->dispatcherAddressList.clear();
-    for (int i = 0; i < jsonKeys.size(); i++)
-    {
-        QString address = jsonObject[jsonKeys.at(i)].toString();
-        this->dispatcherAddressList.append(address);
-    }
-
-    this->dispatcherAddressListIndex = -1;
-    this->dispatcherMoveThroughList = true;
-    this->dispatcherTimerId = this->startTimer(250);
-
-    reply->deleteLater();
-}
-
 void NetplaySessionBrowserDialog::on_serverComboBox_currentIndexChanged(int index)
 {
     if (index == -1)
@@ -518,47 +348,19 @@ void NetplaySessionBrowserDialog::on_serverComboBox_currentIndexChanged(int inde
     // disable join and refresh button while refreshing
     this->toggleUI(false, false, false);
 
-    bool dispatcher = NetplayCommon::IsServerDispatcher(this->serverComboBox, index);
-
     if (this->pingTimerId != -1)
     {
         this->killTimer(this->pingTimerId);
         this->pingTimerId = -1;
     }
 
-    this->resetDispatcherState();
-    this->pingLineEdit->setText(dispatcher ? "N/A" : "Calculating...");
+    this->pingLineEdit->setText("Calculating...");
     this->sessionBrowserWidget->StartRefresh();
 
-    if (dispatcher)
-    {
-        QString region = NetplayCommon::GetServerData(this->serverComboBox, index);
+    this->pingTimerId = this->startTimer(2000);
 
-        QUrl url(this->dispatcherUrl + "/getServers");
-
-        QUrlQuery urlQuery;
-        urlQuery.addQueryItem("region", region);
-        url.setQuery(urlQuery);
-
-        QNetworkRequest networkRequest = NetplayCommon::GetNetworkRequest(url);
-
-        // sadly we have to force HTTP/1 here due to a Qt bug,
-        // we abort the connection which sadly in Qt6 causes an error and eventually segfault,
-        // so to workaround this, force HTTP/1 until it's fixed in Qt6
-        //
-        // thank you MapLibre devs for figuring out this issue:
-        // https://github.com/maplibre/maplibre-native/issues/3644
-        networkRequest.setAttribute(QNetworkRequest::Http2AllowedAttribute, false);
-
-        this->dispatcherNetworkReply = this->dispatcherNetworkAccessManager->get(networkRequest);
-    }
-    else
-    {
-        this->pingTimerId = this->startTimer(2000);
-
-        QString address = NetplayCommon::GetServerData(this->serverComboBox, index);
-        this->webSocket->open(QUrl(address));
-    }
+    QString address = NetplayCommon::GetServerData(this->serverComboBox, index);
+    this->webSocket->open(QUrl(address));
 }
 
 void NetplaySessionBrowserDialog::on_sessionBrowserWidget_OnSessionChanged(bool valid)
@@ -589,8 +391,7 @@ void NetplaySessionBrowserDialog::on_buttonBox_clicked(QAbstractButton* button)
 
 void NetplaySessionBrowserDialog::accept()
 {
-    if (!NetplayCommon::IsServerDispatcher(this->serverComboBox) &&
-        !this->webSocket->isValid())
+    if (!this->webSocket->isValid())
     {
         QtMessageBox::Error(this, "Server Error", "Connection Failed");
         return;
@@ -666,13 +467,5 @@ void NetplaySessionBrowserDialog::accept()
 
     this->sessionData = sessionData;
 
-    if (NetplayCommon::IsServerDispatcher(this->serverComboBox))
-    {
-        this->dispatcherJoinSession = true;
-        this->webSocket->open(sessionData.Address);
-    }
-    else
-    {
-        this->joinSession();
-    }
+    this->joinSession();
 }
