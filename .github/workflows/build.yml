@@ -54,7 +54,7 @@ jobs:
         run: |
           export sdl_dir="$(pwd)/../SDL3"
 
-          git clone https://github.com/libsdl-org/SDL.git "$sdl_dir" -b release-3.2.28 --depth=1
+          git clone https://github.com/libsdl-org/SDL.git "$sdl_dir" -b release-3.4.10 --depth=1
 
           mkdir -p "$sdl_dir/build"
           cmake -S "$sdl_dir" -B "$sdl_dir/build" \
