@@ -45,7 +45,6 @@ enum class SettingsID
     // Netplay Settings
     Netplay_Nickname,
     Netplay_ServerJsonUrl,
-    Netplay_DispatcherUrl,
     Netplay_SelectedServer,
 
     // Core Plugin Settings
