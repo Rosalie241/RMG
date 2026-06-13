@@ -16,6 +16,40 @@ You can download Rosalie's Mupen GUI on
 * [Arch User Repository](https://aur.archlinux.org/packages/rmg)
 * [Fedora COPR](https://copr.fedorainfracloud.org/coprs/rosalie/RMG/)
 
+## Netplay
+
+You can use netplay with the following methods:
+
+### Port Forwarding
+
+1) Download [rmg-netplay-server](https://github.com/Rosalie241/rmg-netplay-server/releases/latest)
+2) Port forward the ports stated in the [rmg-netplay-server README](https://github.com/Rosalie241/rmg-netplay-server)
+3) Create a JSON file with something similar to the following contents, but using your public IP instead of a local one:
+```
+{
+  "some-server-name": "127.0.0.1"
+}
+```
+If you want to add multiple servers instead:
+```
+{
+  "some-server-name": "127.0.0.1",
+  "some-server-name-2": "127.0.0.1"
+}
+```
+4) Store the JSON file or upload it somewhere
+5) Enter the JSON file path or URL in the "Server list URL" text box in the RMG settings dialog
+6) The specified servers in the JSON file should appear in the RMG GUI
+
+
+### Tunneling Software
+
+1) Download [rmg-netplay-server](https://github.com/Rosalie241/rmg-netplay-server/releases/latest)
+2) Download [Radmin VPN](https://www.radmin-vpn.com/)
+3) Run and create or join a network in Radmin VPN
+4) The host should run [rmg-netplay-server](https://github.com/Rosalie241/rmg-netplay-server)
+5) The server should show up as `local-server` within the RMG GUI
+
 ## Support
 
 You can ask for help or report issues on [Github](https://github.com/Rosalie241/RMG/issues/new)
