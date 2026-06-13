@@ -64,6 +64,7 @@ $XVFB_RUN "$script_dir/lib4bin" --dst-dir "$bin_dir" \
 	"$lib_dir"/libGL* \
 	"$lib_dir"/libEGL* \
 	"$lib_dir"/libvulkan* \
+	"$lib_dir"/libpulse* \
 	"$lib_dir"/dri/* \
 	"$lib_dir"/libssl.so* \
 	"$lib_dir"/qt6/plugins/iconengines/* \
