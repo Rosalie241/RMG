@@ -3,6 +3,14 @@
 [ -f "$APPIMAGE_QT_THEME" ] && set -- "$@" "-stylesheet" "$APPIMAGE_QT_THEME"
 cur_dir="$(readlink -f "$(dirname "$0")")"
 
+# force pulseaudio to fix audio issues
+# else we get the following error:
+# 	Failed to initialize SDL audio subsystem: Failed loading libjack.so.0: 
+# 	/tmp/.mount_RMG-PoJFjkog/shared/lib/libc.so.6: version `GLIBC_ABI_GNU2_TLS' not found
+# 	(required by /usr/lib64/pipewire-0.3/jack/libjack.so.0)
+# see https://github.com/Rosalie241/RMG/issues/494 for more details
+export SDL_AUDIODRIVER=pulseaudio
+
 exec "$cur_dir/bin/RMG" \
 		--lib-path="$cur_dir/shared/lib/RMG" \
 		--core-path="$cur_dir/shared/lib/RMG/Core" \
