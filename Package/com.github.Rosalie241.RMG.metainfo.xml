@@ -29,6 +29,18 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.9.0" date="2026-06-14" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix build issues with zlib v1.3.1</li>
+          <li>Fix audio not working when using the AppImage (thank you Samueru-sama)</li>
+          <li>Fix screenshots causing a crash on Linux</li>
+          <li>Remove dispatcher server support</li>
+          <li>Update mupen64plus-core and LZMA SDK</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.8.9" date="2026-01-23" type="stable">
       <description>
         <p>Changes:</p>
