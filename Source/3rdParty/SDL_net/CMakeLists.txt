@@ -8,7 +8,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 # See docs/release_checklist.md
 set(MAJOR_VERSION 3)
-set(MINOR_VERSION 0)
+set(MINOR_VERSION 3)
 set(MICRO_VERSION 0)
 set(SDL_REQUIRED_VERSION 3.0.0)
 
@@ -67,7 +67,7 @@ include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
 set(PLATFORM_SUPPORTS_SHARED ON)
-if(EMSCRIPTEN OR VITA OR PSP OR PS2 OR N3DS OR RISCOS)
+if(EMSCRIPTEN OR VITA OR PSP OR PS2 OR N3DS OR RISCOS OR DOS)
     set(PLATFORM_SUPPORTS_SHARED OFF)
 endif()
 
@@ -104,9 +104,46 @@ endif()
 set(PC_LIBS)
 set(PC_REQUIRES)
 
-add_library(${sdl3_net_target_name} src/SDL_net.c)
+if(HAIKU)
+    set(HAVE_GETIFADDRS True)  # Haiku always has it (but you have to -lnetwork, so check_c_source_compiles won't work as-is).
+    set(EXTRA_SOURCES "src/SDL_net_haiku.cpp")
+    enable_language(CXX)
+endif()
+
+set(PLATFORM_UNSUPPORTED False)
+if (DOS OR EMSCRIPTEN)  # These either don't have networking at all, or have needs we don't currently meet.
+    set(PLATFORM_UNSUPPORTED True)
+endif()
+
+option(SDLNET_STUB_ONLY "Build a stub library that does nothing" ${PLATFORM_UNSUPPORTED})
+if(SDLNET_STUB_ONLY)
+    message(WARNING "Only building a stub library. The functions will be there but all of them will fail!")
+    add_library(${sdl3_net_target_name} src/SDL_net_stub_only.c)
+else()
+    add_library(${sdl3_net_target_name} src/SDL_net.c ${EXTRA_SOURCES})
+endif()
+
+if(NOT (HAIKU OR WIN32 OR SDLNET_STUB_ONLY))
+    check_c_source_compiles("
+        #include <ifaddrs.h>
+        int main(void) {
+          struct ifaddrs* ifap;
+          getifaddrs(&ifap);
+          return 0;
+        }
+        " HAVE_GETIFADDRS)
+endif()
+
+if(HAVE_GETIFADDRS)
+    target_compile_definitions(${sdl3_net_target_name} PRIVATE HAVE_GETIFADDRS)
+endif()
+
 add_library(SDL3_net::${sdl3_net_target_name} ALIAS ${sdl3_net_target_name})
-set_property(TARGET ${sdl3_net_target_name} PROPERTY C_STANDARD 99)
+if("c_std_99" IN_LIST CMAKE_C_COMPILE_FEATURES)
+    target_compile_features(${sdl3_net_target_name} PRIVATE c_std_99)
+else()
+    message(WARNING "target_compile_features does not know c_std_99 for C compiler")
+endif()
 if(NOT TARGET SDL3_net::SDL3_net)
     add_library(SDL3_net::SDL3_net ALIAS ${sdl3_net_target_name})
 endif()
@@ -140,8 +177,8 @@ if(WIN32)
     target_link_libraries(${sdl3_net_target_name} PRIVATE iphlpapi ws2_32)
     list(APPEND PC_LIBS -liphlpapi -lws2_32)
 endif()
-if(CMAKE_SYSTEM_NAME MATCHES "Haiku.*")
-    target_link_libraries(${sdl3_net_target_name} PRIVATE network)
+if(HAIKU)
+    target_link_libraries(${sdl3_net_target_name} PRIVATE network be bnetapi)
 endif()
 set_target_properties(${sdl3_net_target_name} PROPERTIES
     OUTPUT_NAME "SDL3_net"
@@ -306,7 +343,10 @@ if(SDLNET_SAMPLES)
         sdl_target_link_options_no_undefined(${TARGET})
         target_link_libraries(${TARGET} PRIVATE SDL3_net::${sdl3_net_target_name})
         target_link_libraries(${TARGET} PRIVATE ${sdl3_target_name})
-        set_property(TARGET ${TARGET} PROPERTY C_STANDARD 99)
+
+        if("c_std_99" IN_LIST CMAKE_C_COMPILE_FEATURES)
+            target_compile_features(${TARGET} PRIVATE c_std_99)
+        endif()
         set_property(TARGET ${TARGET} PROPERTY C_EXTENSIONS FALSE)
 
         if(SDLNET_SAMPLES_INSTALL)
@@ -320,6 +360,7 @@ if(SDLNET_SAMPLES)
     add_sdl_net_example_executable(resolve-hostnames examples/resolve-hostnames.c)
     add_sdl_net_example_executable(get-local-addrs examples/get-local-addrs.c)
     add_sdl_net_example_executable(echo-server examples/echo-server.c)
+    add_sdl_net_example_executable(datagram examples/datagram.c)
 
     # Build at least one example in C90
     set_property(TARGET get-local-addrs PROPERTY C_STANDARD 90)

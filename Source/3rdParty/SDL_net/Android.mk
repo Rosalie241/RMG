@@ -18,7 +18,7 @@ LOCAL_SRC_FILES := \
 	$(subst $(LOCAL_PATH)/,,) \
 	$(wildcard $(LOCAL_PATH)/src/*.c) \
 
-LOCAL_CFLAGS =
+LOCAL_CFLAGS = -DHAVE_GETIFADDRS
 
 # Warnings we haven't fixed (yet)
 LOCAL_CFLAGS += -Wno-unused-parameter -Wno-sign-compare

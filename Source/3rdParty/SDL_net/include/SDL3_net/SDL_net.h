@@ -27,7 +27,7 @@
  * SDL_net is a simple library to help with networking.
  *
  * In current times, it's a relatively thin layer over system-level APIs like
- * BSD Sockets or WinSock. It's primary strength is in making those interfaces
+ * BSD Sockets or WinSock. Its primary strength is in making those interfaces
  * less complicated to use, and handling several unexpected corner cases, so
  * the app doesn't have to.
  *
@@ -136,7 +136,7 @@ extern "C" {
  *
  * \since This macro is available since SDL_net 3.0.0.
  */
-#define SDL_NET_MINOR_VERSION   0
+#define SDL_NET_MINOR_VERSION   3
 
 /**
  * The current micro (or patchlevel) version of the SDL_net headers.
@@ -416,6 +416,50 @@ extern SDL_DECLSPEC NET_Status SDLCALL NET_GetAddressStatus(NET_Address *address
 extern SDL_DECLSPEC const char * SDLCALL NET_GetAddressString(NET_Address *address);
 
 /**
+ * Get the protocol-level bytes of a network address from a resolved address.
+ *
+ * This data is not human-readable, is protocol-specific, and might not even
+ * be in a specific byte order.
+ *
+ * This is only useful for possibly hashing, to map a address to a specific
+ * player in a game, or possibly for handing to a system-level networking API
+ * (which is _not_ recommended; an app does this at their own risk).
+ *
+ * Do not store these bytes for future runs of the program; there is no
+ * promise the format won't change.
+ *
+ * On return `*num_bytes` will hold the number of bytes provided with the
+ * address. Since the data is not NULL-terminated, this is the only way to
+ * determine its size; as such, this parameter must not be NULL.
+ *
+ * Do not free or modify the returned data; it belongs to the NET_Address that
+ * was queried, and is valid as long as the object lives. Either make sure the
+ * address has a reference as long as you need this or make a copy of the
+ * bytes.
+ *
+ * This will return NULL if resolution is still in progress, or if resolution
+ * failed. You can use NET_GetAddressStatus() or NET_WaitUntilResolved() to
+ * make sure resolution has successfully completed before calling this.
+ *
+ * A human-readable version is available in NET_GetAddressString() and isn't
+ * any less efficient to query than the raw bytes.
+ *
+ * \param address The NET_Address to query.
+ * \param num_bytes on return, will be set to the number of bytes returned.
+ * \returns a pointer to bytes, or NULL on error; call SDL_GetError() for
+ *          details.
+ *
+ * \threadsafety It is safe to call this function from any thread.
+ *
+ * \since This function is available since SDL_net 3.0.0.
+ *
+ * \sa NET_GetAddressString
+ * \sa NET_GetAddressStatus
+ * \sa NET_WaitUntilResolved
+ */
+extern SDL_DECLSPEC const void * SDLCALL NET_GetAddressBytes(NET_Address *address, int *num_bytes);
+
+/**
  * Add a reference to an NET_Address.
  *
  * Since several pieces of the library might share a single NET_Address,
@@ -640,8 +684,13 @@ typedef struct NET_StreamSocket NET_StreamSocket;
  * you do not have to byteswap it into "network order," as the library will
  * handle that for you.
  *
+ * There are currently no extra properties for creating a client, so `props`
+ * should be zero. A future revision of SDL_net may add additional (optional)
+ * properties.
+ *
  * \param address the address of the remote server to connect to.
  * \param port the port on the remote server to connect to.
+ * \param props properties of the new client. Specify zero for defaults.
  * \returns a new NET_StreamSocket, pending connection, or NULL on error; call
  *          SDL_GetError() for details.
  *
@@ -653,7 +702,7 @@ typedef struct NET_StreamSocket NET_StreamSocket;
  * \sa NET_GetConnectionStatus
  * \sa NET_DestroyStreamSocket
  */
-extern SDL_DECLSPEC NET_StreamSocket * SDLCALL NET_CreateClient(NET_Address *address, Uint16 port);
+extern SDL_DECLSPEC NET_StreamSocket * SDLCALL NET_CreateClient(NET_Address *address, Uint16 port, SDL_PropertiesID props);
 
 /**
  * Block until a stream socket has connected to a server.
@@ -750,8 +799,24 @@ typedef struct NET_Server NET_Server;
  * you do not have to byteswap it into "network order," as the library will
  * handle that for you.
  *
+ * The caller may supply properties to customize behavior. This is optional,
+ * and a value of zero for `props` will request defaults for all properties.
+ *
+ * These are the supported properties:
+ *
+ * - `NET_PROP_SERVER_REUSEADDR_BOOLEAN`: true if the server should be created
+ *   even if a previous server has recently used this address. For various
+ *   reasons, networks prefer that there be some delay between apps reusing
+ *   the same address, but this can be problematic when iterating quickly, for
+ *   software development purposes or just restarting a crashed service. This
+ *   property defaults to true (although it should be noted that, at the
+ *   operating system level, this defaults to false!). If this property is
+ *   false and the OS feels that not enough time has elapsed, server creation
+ *   will fail and this function will report an error.
+ *
  * \param addr the _local_ address to listen for connections on, or NULL.
  * \param port the port on the local address to listen for connections on.
+ * \param props properties of the new server. Specify zero for defaults.
  * \returns a new NET_Server, or NULL on error; call SDL_GetError() for
  *          details.
  *
@@ -763,7 +828,10 @@ typedef struct NET_Server NET_Server;
  * \sa NET_AcceptClient
  * \sa NET_DestroyServer
  */
-extern SDL_DECLSPEC NET_Server * SDLCALL NET_CreateServer(NET_Address *addr, Uint16 port);
+extern SDL_DECLSPEC NET_Server * SDLCALL NET_CreateServer(NET_Address *addr, Uint16 port, SDL_PropertiesID props);
+
+#define NET_PROP_SERVER_REUSEADDR_BOOLEAN     "NET.server.reuseaddr"
+
 
 /**
  * Create a stream socket for the next pending client connection.
@@ -1029,7 +1097,7 @@ extern SDL_DECLSPEC int SDLCALL NET_WaitUntilStreamSocketDrained(NET_StreamSocke
  * on what is available at the time, and also the app isn't required to read
  * all available data at once.
  *
- * This call never blocks; if no new data isn't available at the time of the
+ * This call never blocks; if no new data is available at the time of the
  * call, it returns 0 immediately. The caller can try again later.
  *
  * If the connection has failed (remote side dropped us, or one of a million
@@ -1163,8 +1231,8 @@ typedef struct NET_DatagramSocket NET_DatagramSocket;
  */
 typedef struct NET_Datagram
 {
-    NET_Address *addr;  /**< this is unref'd by NET_DestroyDatagram. You only need to ref it if you want to keep it. */
-    Uint16 port;  /**< these do not have to come from the same port the receiver is bound to. These are in host byte order, don't byteswap them! */
+    NET_Address *addr;  /**< Sender's address. This is unref'd by NET_DestroyDatagram. You only need to ref it if you want to keep it. */
+    Uint16 port;  /**< Sender's port. These do not have to come from the same port the receiver is bound to. These are in host byte order, don't byteswap them! */
     Uint8 *buf;  /**< the payload of this datagram. */
     int buflen;  /**< the number of bytes available at `buf`. */
 } NET_Datagram;
@@ -1213,10 +1281,37 @@ typedef struct NET_Datagram
  * you do not have to byteswap it into "network order," as the library will
  * handle that for you.
  *
+ * The caller may supply properties to customize behavior. This is optional,
+ * and a value of zero for `props` will request defaults for all properties.
+ *
+ * These are the supported properties:
+ *
+ * - `NET_PROP_DATAGRAM_SOCKET_REUSEADDR_BOOLEAN`: true if the socket should
+ *   be created even if a previous socket has recently used this address. For
+ *   various reasons, networks prefer that there be some delay between apps
+ *   reusing the same address, but this can be problematic when iterating
+ *   quickly, for software development purposes or just restarting a crashed
+ *   service. This property defaults to true (although it should be noted
+ *   that, at the operating system level, this defaults to false!). If this
+ *   property is false and the OS feels that not enough time has elapsed,
+ *   socket creation will fail and this function will report an error.
+ * - `NET_PROP_DATAGRAM_SOCKET_ALLOW_BROADCAST_BOOLEAN`: true if the socket
+ *   should allow broadcasting. At the lower level, this will set
+ *   `SO_BROADCAST` for IPv4 sockets, to allow sending to the subnet's
+ *   broadcast address at the OS level. For IPv6, it'll join the all-nodes
+ *   link-local multicast group, ff02::1, allowing sending and receiving
+ *   there, more or less simulating the usual IPv4 broadcast semantics. Other
+ *   protocols take similar approaches. If you do not intend to send or
+ *   receive broadcast packets on this socket, set this property to false, or
+ *   omit it, as it defaults to false. Note: IPv4 will still be able to
+ *   receive broadcast packets without this option, but IPv6 will not. Also
+ *   see notes about sending to a broadcast address in NET_SendDatagram().
+ *
  * \param addr the local address to listen for connections on, or NULL to
  *             listen on all available local addresses.
  * \param port the port on the local address to listen for connections on, or
  *             zero for the system to decide.
+ * \param props properties of the new socket. Specify zero for defaults.
  * \returns a new NET_DatagramSocket, or NULL on error; call SDL_GetError()
  *          for details.
  *
@@ -1227,7 +1322,11 @@ typedef struct NET_Datagram
  * \sa NET_GetLocalAddresses
  * \sa NET_DestroyDatagramSocket
  */
-extern SDL_DECLSPEC NET_DatagramSocket * SDLCALL NET_CreateDatagramSocket(NET_Address *addr, Uint16 port);
+extern SDL_DECLSPEC NET_DatagramSocket * SDLCALL NET_CreateDatagramSocket(NET_Address *addr, Uint16 port, SDL_PropertiesID props);
+
+#define NET_PROP_DATAGRAM_SOCKET_REUSEADDR_BOOLEAN         "NET.datagram_socket.reuseaddr"
+#define NET_PROP_DATAGRAM_SOCKET_ALLOW_BROADCAST_BOOLEAN   "NET.datagram_socket.allow_broadcast"
+
 
 /**
  * Send a new packet over a datagram socket to a remote system.
@@ -1239,7 +1338,9 @@ extern SDL_DECLSPEC NET_DatagramSocket * SDLCALL NET_CreateDatagramSocket(NET_Ad
  *
  * Datagram packets might arrive in a different order than you sent them, or
  * they may just be lost while travelling across the network. You have to plan
- * for this.
+ * for this. As an added confusion, since SDL_net might send the same packet
+ * on multiple interfaces, you might get duplicate packets, possibly from
+ * different network addresses. You have to plan for this, too.
  *
  * You can send to any address and port on the network, but there has to be a
  * datagram socket waiting for the data on the other side for the packet not
@@ -1262,8 +1363,37 @@ extern SDL_DECLSPEC NET_DatagramSocket * SDLCALL NET_CreateDatagramSocket(NET_Ad
  * should assume it is no longer usable and should destroy it with
  * SDL_DestroyDatagramSocket().
  *
+ * Sending to a NULL address is treated as a request to broadcast a packet.
+ * Note that this will report failure immediately if the socket was not
+ * created with broadcast permission. Broadcast packets are (more or less)
+ * sent to every machine on the LAN, unconditionally.
+ *
+ * **WARNING**: It is possible to build a game where everyone is playing on
+ * the same LAN, and every player is simply broadcasting packets. This is
+ * absolutely the wrong thing to do, however. Broadcast packets go to every
+ * device on the LAN, whether they want them or not. The game DOOM, in its
+ * heyday, was capable of
+ * [bringing entire networks to their knees](https://doomwiki.org/wiki/Doom_in_workplaces)
+ * , as many players on the same network would all be broadcasting
+ * relentlessly.
+ *
+ * In practice, broadcasting sparingly can be useful for certain
+ * functionality: a LAN-only client broadcasting a few packets to ask for
+ * available servers, and running servers replying directly to that client
+ * without broadcasting at all, is reasonable and safe. Once clients and
+ * servers have found each other, they can communicate directly without any
+ * broadcasting at all. For peer-to-peer games, once connection is
+ * established, it's better to either send unique packets to each known
+ * player, or use a multicasting (which works like broadcast, but only routes
+ * packets to devices that are explicitly listening for it).
+ *
+ * With IPv6, which doesn't support broadcasts, broadcasting is faked with
+ * multicast to the all-nodes link-local multicast group, ff02::1, either on a
+ * specific interface or letting the OS choose the default. Other protocols
+ * might fake broadcast operations in similar ways in the future.
+ *
  * \param sock the datagram socket to send data through.
- * \param address the NET_Address object address.
+ * \param address the NET_Address object address. May be NULL to broadcast.
  * \param port the address port.
  * \param buf a pointer to the data to send as a single packet.
  * \param buflen the size of the data to send, in bytes.
@@ -1287,7 +1417,7 @@ extern SDL_DECLSPEC bool SDLCALL NET_SendDatagram(NET_DatagramSocket *sock, NET_
  * Datagram sockets send packets of data. They either arrive as complete
  * packets or they don't arrive at all, so you'll never receive half a packet.
  *
- * This call never blocks; if no new data isn't available at the time of the
+ * This call never blocks; if no new data is available at the time of the
  * call, it returns true immediately. The caller can try again later.
  *
  * On a successful call to this function, it returns true, even if no new
