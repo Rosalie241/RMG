@@ -1,15 +1,8 @@
-name: CXD4 RSP
+name: CXD4 RSP - Scheduled
 
 on:
-  push:
-    paths-ignore:
-      - '.{gitattributes,gitignore,travis.yml}'
-      - '*.md,appveyor.yml,README'
-  pull_request:
-    paths-ignore:
-      - '.{gitattributes,gitignore,travis.yml}'
-      - '*.md,appveyor.yml,README'
-  workflow_dispatch:
+  schedule:
+    - cron: '35 14 21 * *'
 
 jobs:
 
@@ -28,6 +21,7 @@ jobs:
             arch: x86
     name: Linux / ${{ matrix.cc }} ${{ matrix.arch }}
     runs-on: ubuntu-24.04
+    if: github.repository == 'mupen64plus/mupen64plus-rsp-cxd4'
     steps:
       - uses: actions/checkout@v6
       - name: Get build dependencies and arrange the environment
@@ -72,6 +66,7 @@ jobs:
             env: CLANG64
     name: Windows ${{ matrix.arch }} / MSYS2 ${{ matrix.env }} ${{ matrix.cc }}
     runs-on: windows-2025
+    if: github.repository == 'mupen64plus/mupen64plus-rsp-cxd4'
     defaults:
       run:
         shell: msys2 {0}
@@ -116,6 +111,7 @@ jobs:
             arch: x86
     name: Windows ${{ matrix.arch }} / MSVC with ${{ matrix.toolset }}
     runs-on: windows-2025
+    if: github.repository == 'mupen64plus/mupen64plus-rsp-cxd4'
     defaults:
       run:
         shell: cmd

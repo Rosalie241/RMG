@@ -121,22 +121,25 @@ ifeq ("$(CPU)","NONE")
   $(error CPU type "$(HOST_CPU)" not supported.  Please file bug report at 'https://github.com/mupen64plus/mupen64plus-core/issues')
 endif
 
-# base CFLAGS, LDLIBS, and LDFLAGS
-OPTFLAGS ?= -O3 -flto
-WARNFLAGS ?= -Wall
-CFLAGS += $(OPTFLAGS) $(WARNFLAGS) -fvisibility=hidden -I$(SRCDIR)
-CPPFLAGS += -DM64P_PLUGIN_API
-LDFLAGS += $(SHARED)
-
 ifeq ($(CPU), X86)
   SSE ?= SSE2
-  ifeq ($(SSE), SSE2)
+  ifeq ("$(SSE)", "SSE2")
     CFLAGS   += -msse2
     CPPFLAGS += -DARCH_MIN_SSE2
     POSTFIX = -sse2
   endif
   CFLAGS += -mstackrealign
 endif
+
+SRCDIR = ../../
+OBJDIR = _obj$(POSTFIX)
+
+# base CFLAGS, LDLIBS, and LDFLAGS
+OPTFLAGS ?= -O3 -flto
+WARNFLAGS ?= -Wall
+CFLAGS += $(OPTFLAGS) $(WARNFLAGS) -fvisibility=hidden -I$(SRCDIR)
+CPPFLAGS += -DM64P_PLUGIN_API
+LDFLAGS += $(SHARED)
 
 ifeq ($(NEON), 1)
     CFLAGS   += -mfpu=neon
@@ -264,9 +267,6 @@ endif
 ifeq ($(PLUGINDIR),)
   PLUGINDIR := $(LIBDIR)/mupen64plus
 endif
-
-SRCDIR = ../../
-OBJDIR = _obj$(POSTFIX)
 
 # list of source files to compile
 SOURCE = \

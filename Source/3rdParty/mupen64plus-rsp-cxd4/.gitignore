@@ -1,10 +1,5 @@
-*.asm
-*.s
-
-*.o
-*.so
-obj
-
-*.obj
-*.dll
-*.exe
+/projects/unix/_obj*/
+/projects/unix/mupen64plus-rsp-cxd4*.so
+/projects/unix/mupen64plus-rsp-cxd4*.dll
+/projects/msvc/Win32/
+/projects/msvc/x64/

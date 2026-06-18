@@ -36,7 +36,7 @@ m64p_error osal_dynlib_open(m64p_dynlib_handle *pLibHandle, const char *pccLibra
     if (*pLibHandle == NULL)
     {
         char *pchErrMsg;
-        DWORD dwErr = GetLastError(); 
+        DWORD dwErr = GetLastError();
         FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, dwErr,
                       MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR) &pchErrMsg, 0, NULL);
         fprintf(stderr, "LoadLibrary('%s') error: %s\n", pccLibraryPath, pchErrMsg);
@@ -62,7 +62,7 @@ m64p_error osal_dynlib_close(m64p_dynlib_handle LibHandle)
     if (rval == 0)
     {
         char *pchErrMsg;
-        DWORD dwErr = GetLastError(); 
+        DWORD dwErr = GetLastError();
         FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, dwErr,
                       MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR) &pchErrMsg, 0, NULL);
         fprintf(stderr, "FreeLibrary() error: %s\n", pchErrMsg);

@@ -234,7 +234,8 @@ void SP_DMA_READ(void)
         i = 0;
         --count;
         do {
-            offC = (count*length + *CR[0x0] + i) & 0x00001FF8ul;
+            offC = ((count*length + *CR[0x0] + i) & 0x00000FF8ul)
+                 | (*CR[0x0] & 0x00001000ul);
             offD = (count*skip + *CR[0x1] + i) & 0x00FFFFF8ul;
             i += 0x008;
             if (offD > su_max_address) {
@@ -245,8 +246,6 @@ void SP_DMA_READ(void)
         } while (i < length);
     } while (count);
 
-    if ((*CR[0x0] ^ offC) & 0x1000)
-        message("DMA over the DMEM-to-IMEM gap.");
     GET_RCP_REG(SP_DMA_BUSY_REG)  =  0x00000000;
     GET_RCP_REG(SP_STATUS_REG)   &= ~SP_STATUS_DMA_BUSY;
     return;
@@ -274,7 +273,8 @@ void SP_DMA_WRITE(void)
         i = 0;
         --count;
         do {
-            offC = (count*length + *CR[0x0] + i) & 0x00001FF8ul;
+            offC = ((count*length + *CR[0x0] + i) & 0x00000FF8ul)
+                 | (*CR[0x0] & 0x00001000ul);
             offD = (count*skip + *CR[0x1] + i) & 0x00FFFFF8ul;
             i += 0x000008;
             if (offD > su_max_address)
@@ -283,8 +283,6 @@ void SP_DMA_WRITE(void)
         } while (i < length);
     } while (count);
 
-    if ((*CR[0x0] ^ offC) & 0x1000)
-        message("DMA over the DMEM-to-IMEM gap.");
     GET_RCP_REG(SP_DMA_BUSY_REG)  =  0x00000000;
     GET_RCP_REG(SP_STATUS_REG)   &= ~SP_STATUS_DMA_BUSY;
     return;
