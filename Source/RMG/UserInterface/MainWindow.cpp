@@ -457,6 +457,7 @@ QString MainWindow::getWindowTitle(void)
     const QStringList secondWordList = {
     {
         " rights!!!",
+        " rights are human rights <3",
         "s rise up!!!"
     }};
 
