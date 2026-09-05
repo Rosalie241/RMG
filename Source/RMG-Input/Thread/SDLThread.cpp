@@ -13,6 +13,8 @@
 #include <RMG-Core/m64p/api/m64p_types.h>
 #include <SDL3/SDL.h>
 
+#include "../Utilities/Sdl3GuidWithIndex.hpp"
+
 using namespace Thread;
 
 SDLThread::SDLThread(QObject *parent) : QThread(parent)
@@ -68,7 +70,10 @@ void SDLThread::run(void)
                 QString name;
                 QString path;
                 QString serial;
+                QString guid;
                 QString errorMessage;
+
+                std::vector<std::string> guidsWithoutIndex;
 
                 SDL_Gamepad* controller;
                 SDL_Joystick* joystick;
@@ -103,6 +108,7 @@ void SDLThread::run(void)
                         name = SDL_GetGamepadName(controller);
                         path = SDL_GetGamepadPath(controller);
                         serial = SDL_GetGamepadSerial(controller);
+                        guid = QString::fromStdString(Utilities::Sdl3GuidWithIndex(guidsWithoutIndex, joystickId));
                         SDL_CloseGamepad(controller);
                     }
                     else
@@ -118,12 +124,13 @@ void SDLThread::run(void)
                         name = SDL_GetJoystickName(joystick);
                         path = SDL_GetJoystickPath(joystick);
                         serial = SDL_GetJoystickSerial(joystick);
+                        guid = nullptr;
                         SDL_CloseJoystick(joystick);
                     }
 
                     if (name != nullptr)
                     {
-                        emit this->OnInputDeviceFound(name, path, serial, joystickId);
+                        emit this->OnInputDeviceFound(name, path, serial, guid, joystickId);
                     }
                 }
 

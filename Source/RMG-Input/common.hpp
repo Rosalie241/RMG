@@ -80,15 +80,16 @@ struct InputDevice
     std::string name;
     std::string path;
     std::string serial;
+    std::string guid;
     SDL_JoystickID id = 0;
 
     bool operator== (const InputDevice& other) const
     {
-        return other.type == type &&
+        return other.guid == guid || (other.type == type &&
                 other.name == name &&
                 other.path == path &&
                 other.serial == serial &&
-                other.id == id;
+                other.id == id);
     }
 };
 

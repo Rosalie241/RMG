@@ -41,7 +41,7 @@ private:
     SDLThreadAction currentAction = SDLThreadAction::None;
 
 signals:
-    void OnInputDeviceFound(QString name, QString path, QString serial, SDL_JoystickID joystickId);
+    void OnInputDeviceFound(QString name, QString path, QString serial, QString guid, SDL_JoystickID joystickId);
     void OnDeviceSearchFinished(void);
 };
 } // namespace Thread

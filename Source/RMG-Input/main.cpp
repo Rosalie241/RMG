@@ -16,6 +16,7 @@
 #include "Thread/SDLThread.hpp"
 #include "common.hpp"
 #include "main.hpp"
+#include "Utilities/Sdl3GuidWithIndex.hpp"
 #ifdef VRU
 #include "VRU.hpp"
 #endif // VRU
@@ -88,6 +89,7 @@ struct InputProfile
     std::string DeviceName;
     std::string DevicePath;
     std::string DeviceSerial;
+    std::string DeviceGuid;
     InputDeviceType DeviceType = InputDeviceType::Invalid;
     std::chrono::time_point<std::chrono::high_resolution_clock> LastDeviceCheckTime = std::chrono::high_resolution_clock::now();
 
@@ -313,6 +315,7 @@ static void load_settings(void)
         profile->DeviceName = CoreSettingsGetStringValue(SettingsID::Input_DeviceName, section);
         profile->DevicePath = CoreSettingsGetStringValue(SettingsID::Input_DevicePath, section);
         profile->DeviceSerial = CoreSettingsGetStringValue(SettingsID::Input_DeviceSerial, section);
+        profile->DeviceGuid = CoreSettingsGetStringValue(SettingsID::Input_DeviceGuid, section);
         profile->DeviceType = static_cast<InputDeviceType>(CoreSettingsGetIntValue(SettingsID::Input_DeviceType, section));
         profile->GameboyRom = CoreSettingsGetStringValue(SettingsID::Input_GameboyRom, section);
         profile->GameboySave = CoreSettingsGetStringValue(SettingsID::Input_GameboySave, section);
@@ -599,6 +602,8 @@ static void open_controller(InputProfile* profile, SDL_JoystickID* joysticks, in
     std::string deviceName;
     std::string devicePath;
     std::string deviceSerial;
+    std::string deviceGuid;
+    std::vector<std::string> deviceGuidsWithoutIndex;
 
     for (int i = 0; i < joysticksCount; i++)
     {
@@ -626,6 +631,7 @@ static void open_controller(InputProfile* profile, SDL_JoystickID* joysticks, in
             deviceName = string_from_const_char(SDL_GetGamepadName(gamepad));
             devicePath = string_from_const_char(SDL_GetGamepadPath(gamepad));
             deviceSerial = string_from_const_char(SDL_GetGamepadSerial(gamepad));
+            deviceGuid = Utilities::Sdl3GuidWithIndex(deviceGuidsWithoutIndex, joystickId);
         }
         else
         {
@@ -642,11 +648,13 @@ static void open_controller(InputProfile* profile, SDL_JoystickID* joysticks, in
             deviceName = string_from_const_char(SDL_GetJoystickName(joystick));
             devicePath = string_from_const_char(SDL_GetJoystickPath(joystick));
             deviceSerial = string_from_const_char(SDL_GetJoystickSerial(joystick));
+            deviceGuid = nullptr;
         }
 
-        if (deviceName   == profile->DeviceName &&
+        if (deviceGuid   == profile->DeviceGuid ||
+            (deviceName   == profile->DeviceName &&
             devicePath   == profile->DevicePath &&
-            deviceSerial == profile->DeviceSerial)
+            deviceSerial == profile->DeviceSerial))
         {
             profile->SDLJoystick = joystick;
             profile->SDLGamepad = gamepad;
