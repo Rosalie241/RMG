@@ -16,10 +16,12 @@ BuildRequires: hidapi-devel
 BuildRequires: libsamplerate-devel
 BuildRequires: minizip-compat-devel
 BuildRequires: SDL3-devel
+BuildRequires: SDL3_net-devel
 BuildRequires: freetype-devel
 BuildRequires: mesa-libGL-devel
 BuildRequires: mesa-libGLU-devel
 BuildRequires: zlib-ng-devel
+BuildRequires: libzstd-devel
 BuildRequires: binutils-devel
 BuildRequires: speexdsp-devel
 BuildRequires: qt6-qtbase-devel
@@ -31,7 +33,9 @@ BuildRequires: libatomic
 Requires: libusb1
 Requires: hidapi
 Requires: SDL3
+Requires: SDL3_net
 Requires: zlib-ng
+Requires: libzstd
 Requires: libsamplerate
 Requires: speexdsp
 Requires: qt6-qtbase

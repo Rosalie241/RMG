@@ -59,6 +59,7 @@ $XVFB_RUN "$script_dir/lib4bin" --dst-dir "$bin_dir" \
 	--strace-mode --with-sharun \
 	"$bin_dir/shared/bin/RMG" \
 	"$lib_dir"/libSDL* \
+	"$lib_dir"/libzstd* \
 	"$lib_dir"/libspeexdsp* \
 	"$lib_dir"/libhidapi-hidraw* \
 	"$lib_dir"/libGL* \
