@@ -66,6 +66,22 @@ jobs:
 
           cmake --build "$sdl_dir/build" --parallel "$(nproc)"
           sudo cmake --install "$sdl_dir/build" --prefix /usr/
+      - name: Build SDL3_net
+        run: |
+          export sdlnet_dir="$(pwd)/../SDL3_net"
+
+          git clone https://github.com/libsdl-org/SDL_net.git "$sdlnet_dir" -b release-3.2.0 --depth=1
+
+          mkdir -p "$sdlnet_dir/build"
+          cmake -S "$sdlnet_dir" -B "$sdlnet_dir/build" \
+                -DCMAKE_BUILD_TYPE="Release" \
+                -DCMAKE_INSTALL_LIBDIR="lib/${{ matrix.architecture }}-linux-gnu" \
+                -DCMAKE_INSTALL_FULL_LIBDIR="/usr/lib/${{ matrix.architecture }}-linux-gnu" \
+                -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+                -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+
+          cmake --build "$sdlnet_dir/build" --parallel "$(nproc)"
+          sudo cmake --install "$sdlnet_dir/build" --prefix /usr/
       - name: Build RMG (AppImage)
         run: |
           export src_dir="$(pwd)"
@@ -127,6 +143,7 @@ jobs:
             mingw-w64-ucrt-x86_64-freetype
             mingw-w64-ucrt-x86_64-libpng
             mingw-w64-ucrt-x86_64-sdl3
+            mingw-w64-ucrt-x86_64-sdl3-net
             mingw-w64-ucrt-x86_64-qt6
             mingw-w64-ucrt-x86_64-libusb
             mingw-w64-ucrt-x86_64-hidapi
