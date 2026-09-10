@@ -34,6 +34,7 @@ void _loadSettings(QSettings & settings)
 	config.video.fxaa= settings.value("fxaa", config.video.fxaa).toInt();
 	config.video.verticalSync = settings.value("verticalSync", config.video.verticalSync).toInt();
 	config.video.threadedVideo = settings.value("threadedVideo", config.video.threadedVideo).toInt();
+	config.video.asyncShaderCompilation = settings.value("asyncShaderCompilation", config.video.asyncShaderCompilation).toInt();
 	QString deviceName = QString::fromWCharArray(config.video.deviceName);
 	config.video.deviceName[settings.value("deviceName", deviceName).toString().toWCharArray(config.video.deviceName)] = L'\0';
 	settings.endGroup();
@@ -186,6 +187,7 @@ void _writeSettingsToFile(const QString & filename)
 	settings.setValue("fxaa", config.video.fxaa);
 	settings.setValue("verticalSync", config.video.verticalSync);
 	settings.setValue("threadedVideo", config.video.threadedVideo);
+	settings.setValue("asyncShaderCompilation", config.video.asyncShaderCompilation);
 	settings.setValue("deviceName", QString::fromWCharArray(config.video.deviceName));
 	settings.endGroup();
 

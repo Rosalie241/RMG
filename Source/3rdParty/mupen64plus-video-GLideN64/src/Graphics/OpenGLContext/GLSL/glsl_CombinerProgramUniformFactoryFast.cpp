@@ -1,10 +1,10 @@
 #include "glsl_CombinerProgramUniformFactoryFast.h"
 
 #include <Config.h>
-#include <Textures.h>
 #include <DisplayWindow.h>
 #include <Debugger.h>
 #include <FrameBuffer.h>
+#include <Pow.h>
 
 #include <cmath>
 
@@ -120,17 +120,34 @@ public:
 	UMipmap1(GLuint _program) {
 		LocateUniform(uMinLod);
 		LocateUniform(uMaxTile);
+		LocateUniform(uMaxAnisotropy);
+		LocateUniform(uTextureHD);
 	}
 
 	void update(bool _force) override
 	{
 		uMinLod.set(gDP.primColor.m, _force);
 		uMaxTile.set(gSP.texture.level, _force);
+		// Custom anisotropic filtering level for LOD/mipmap programs (UTextureFetchMode,
+		// which normally carries uMaxAnisotropy, is only added for non-LOD programs).
+		const int maxAnisotropy = (config.texture.anisotropy > 1 && gDP.otherMode.textureFilter != 0)
+			? static_cast<int>(config.texture.anisotropy) : 1;
+		uMaxAnisotropy.set(maxAnisotropy, _force);
+		// HD textures have no mip chain, so hardware AF cannot filter them; the shader
+		// switches to manual supersampling when this is set. Applies with N64 LOD emulation
+		// enabled (the fake-mipmap path handles HD unconditionally).
+		const CachedTexture * pTex0 = textureCache().current[0];
+		const CachedTexture * pTex1 = textureCache().current[1];
+		const bool bHD = (pTex0 != nullptr && pTex0->bHDTexture) ||
+						 (pTex1 != nullptr && pTex1->bHDTexture);
+		uTextureHD.set(bHD ? 1 : 0, _force);
 	}
 
 private:
 	fUniform uMinLod;
 	iUniform uMaxTile;
+	iUniform uMaxAnisotropy;
+	iUniform uTextureHD;
 };
 
 class UMipmap2 : public UniformGroup

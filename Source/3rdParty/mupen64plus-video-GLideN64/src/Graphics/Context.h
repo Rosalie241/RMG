@@ -28,7 +28,8 @@ namespace graphics {
 		TextureBarrier,
 		EglImage,
 		EglImageFramebuffer,
-		DualSourceBlending
+		DualSourceBlending,
+		AsyncShaderCompilation
 	};
 
 	enum class ClampMode {
@@ -228,6 +229,16 @@ namespace graphics {
 
 		CombinerProgram * createCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key);
 
+		// Issue compilation of a combiner program without waiting for the result.
+		void createCombinerProgramAsync(Combiner & _color, Combiner & _alpha, const CombinerKey & _key);
+
+		// Collect asynchronously compiled combiner programs, which are ready
+		// (or all pending ones if _wait is true).
+		void getCompiledCombinerPrograms(Combiners & _compiled, bool _wait);
+
+		// Delete pending combiner programs without finalizing them.
+		void dropPendingCombinerPrograms();
+
 		bool saveShadersStorage(const Combiners & _combiners);
 
 		bool loadShadersStorage(Combiners & _combiners);
@@ -305,6 +316,7 @@ namespace graphics {
 		static bool EglImage;
 		static bool EglImageFramebuffer;
 		static bool DualSourceBlending;
+		static bool AsyncShaderCompilation;
 
 	private:
 		std::unique_ptr<ContextImpl> m_impl;

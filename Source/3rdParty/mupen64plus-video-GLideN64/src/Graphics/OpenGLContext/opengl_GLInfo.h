@@ -42,6 +42,7 @@ struct GLInfo {
 	bool dual_source_blending = false;
 	bool anisotropic_filtering = false;
 	bool coverage = false;
+	bool parallelShaderCompile = false;
 	Renderer renderer = Renderer::Other;
 
 	void init();

@@ -47,6 +47,9 @@
     <TargetName>$(ProjectName)</TargetName>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
   </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnabled>false</VcpkgEnabled>
+  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>

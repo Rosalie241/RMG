@@ -28,7 +28,6 @@
 #include "TxTexCache.h"
 #include "TxDbg.h"
 #include <osal_files.h>
-#include <zlib.h>
 
 #define TEXCACHE_DUMP_ENABLED (FILE_TEXCACHE|DUMP_TEXCACHE)
 

@@ -2,8 +2,17 @@
 #include "RSP.h"
 #include "GBI.h"
 
-void RSP_LoadMatrix( f32 mtx[4][4], u32 address )
+// An N64 matrix is 16 s16 integer parts followed by 16 u16 fraction parts.
+static const u32 N64_MATRIX_SIZE = 64;
+
+bool RSP_LoadMatrix( f32 mtx[4][4], u32 address )
 {
+    // The loop below reads 64 bytes starting at address with no further
+    // checking. Written to avoid overflowing the addition; address comes from
+    // a display list and is not trustworthy.
+    if (address > RDRAMSize || RDRAMSize - address < N64_MATRIX_SIZE)
+        return false;
+
     f32 recip = FIXED2FLOATRECIP16;
 #if defined (WIN32_ASM)
     __asm {
@@ -93,4 +102,6 @@ LoadLoop:
     : "f"(recip), "S"((intptr_t)RDRAM+address), "D"(mtx), "c"(4)
     : "memory" );
 #endif // WIN32_ASM
+
+    return true;
 }

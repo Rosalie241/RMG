@@ -1787,6 +1787,26 @@ bool GraphicsDrawer::isRejected(u32 _v0, u32 _v1, u32 _v2) const
 	return false;
 }
 
+bool GraphicsDrawer::isAlphaCompareCulled(s32 _v0, s32 _v1, s32 _v2, s8 _mode, u8 _alpha) const
+{
+	const SPVertex& v0 = triangles.vertices[_v0];
+	const SPVertex& v1 = triangles.vertices[_v1];
+	const SPVertex& v2 = triangles.vertices[_v2];
+
+	if (_mode > 0)
+	{
+		return v0.a < _alpha && v1.a < _alpha && v2.a < _alpha;
+	}
+	else if (_mode < 0)
+	{
+		return v0.a >= _alpha && v1.a >= _alpha && v2.a >= _alpha;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 void GraphicsDrawer::copyTexturedRect(const CopyRectParams & _params)
 {
 	m_drawingState = DrawingState::Non;

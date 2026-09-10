@@ -6,7 +6,7 @@
 #include <osal_files.h>
 #include <algorithm>
 
-#include "../Textures.h"
+#include "../Pow.h"
 #include "../Config.h"
 #include "../GLideN64.h"
 #include "../GBI.h"
@@ -125,11 +125,13 @@ bool Config_SetDefault()
 
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "ThreadedVideo", config.video.threadedVideo, "Enable threaded video backend.");
 	assert(res == M64ERR_SUCCESS);
-
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "AsyncShaderCompilation", config.video.asyncShaderCompilation, "Compile new shader programs asynchronously to avoid stuttering. Needs GL_ARB/KHR_parallel_shader_compile support.");
+	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "MultiSampling", config.video.multisampling, "Set MultiSampling (MSAA) value. (0=off, 2,4,8,16=quality)");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "FXAA", config.video.fxaa, "Toggle Fast Approximate Anti-Aliasing (FXAA).");
 	assert(res == M64ERR_SUCCESS);
+
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "AspectRatio", config.frameBufferEmulation.aspect, "Screen aspect ratio. (0=stretch, 1=force 4:3, 2=force 16:9, 3=adjust 4:3, 4=adjust 16:9)");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "BufferSwapMode", config.frameBufferEmulation.bufferSwapMode, "Swap frame buffers. (0=On VI update call, 1=On VI origin change, 2=On buffer update)");
@@ -366,6 +368,8 @@ void Config_LoadCustomConfig()
 		if (config.video.fxaa != 0)
 			config.video.multisampling = 0;
 	}
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "video\\asyncShaderCompilation", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.video.asyncShaderCompilation = atoi(value);
 
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "texture\\anisotropy", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.texture.anisotropy = atoi(value);
@@ -504,6 +508,7 @@ void Config_LoadConfig()
 	config.video.windowedHeight = ConfigGetParamInt(g_configVideoGeneral, "ScreenHeight");
 	config.video.verticalSync = ConfigGetParamBool(g_configVideoGeneral, "VerticalSync");
 	config.video.threadedVideo = ConfigGetParamBool(g_configVideoGliden64, "ThreadedVideo");
+	config.video.asyncShaderCompilation = ConfigGetParamBool(g_configVideoGliden64, "AsyncShaderCompilation");
 	const u32 multisampling = ConfigGetParamInt(g_configVideoGliden64, "MultiSampling");
 	config.video.multisampling = multisampling == 0 ? 0 : pow2(multisampling);
 	config.video.fxaa = ConfigGetParamBool(g_configVideoGliden64, "FXAA");

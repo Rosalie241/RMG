@@ -14,7 +14,8 @@ namespace opengl {
 			CachedBindBuffer * _bindBuffer);
 		virtual ~ColorBufferReaderWithBufferStorage();
 
-		const u8 * _readPixels(const ReadColorBufferParams& _params, u32& _heightOffset, u32& _stride) override;
+		const u8 * _readPixels(const ReadColorBufferParams& _params, u32& _heightOffset, u32& _stride,
+			size_t& _gpuDataSize) override;
 
 		void cleanUp() override;
 

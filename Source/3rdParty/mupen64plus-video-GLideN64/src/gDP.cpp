@@ -699,7 +699,7 @@ void gDPLoadBlock(u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt)
 	if (gDP.loadTile->size == G_IM_SIZ_32b)
 		gDPLoadBlock32(gDP.loadTile->uls, gDP.loadTile->lrs, dxt);
 	else if (gDP.loadTile->format == G_IM_FMT_YUV)
-		memcpy(TMEM, &RDRAM[address], bytes); // HACK!
+		memcpy(TMEM, &RDRAM[address], bytes & 0xFFF); // HACK!
 	else {
 		u32 tmemAddr = gDP.loadTile->tmem;
 		UnswapCopyWrap(RDRAM, address, reinterpret_cast<u8*>(TMEM), tmemAddr << 3, 0xFFF, bytes);
@@ -831,6 +831,7 @@ void gDPMemset(u32 value, u32 addr, u32 length)
 		calculateParams(gDP.depthImageAddress, G_IM_SIZ_16b, imageWidth);
 
 		// HACK: this usually replaces gDPSetColorImage for zb so save zb
+		const auto backupCurr = frameBufferList().getCurrent();
 		frameBufferList().saveBuffer(gDP.depthImageAddress, (u16)G_IM_FMT_RGBA, (u16)G_IM_SIZ_16b, (u16)imageWidth, false);
 
 		if (config.generalEmulation.enableFragmentDepthWrite == 0)
@@ -847,6 +848,11 @@ void gDPMemset(u32 value, u32 addr, u32 length)
 			ValueKeeper<gDPInfo::OtherMode> backupOtherMode(gDP.otherMode, otherMode);
 			drawer.drawRect(0, uly, imageWidth, lry);
 			frameBufferList().setBufferChanged(f32(lry));
+		}
+
+		if (backupCurr != nullptr) {
+			frameBufferList().setCurrent(backupCurr);
+			frameBufferList().attachDepthBuffer();
 		}
 	}
 	else if (0 == config.frameBufferEmulation.enable) {
@@ -1092,6 +1098,11 @@ void gDPFullSync()
 		if (config.frameBufferEmulation.copyDepthToRDRAM != Config::cdDisable && !FBInfo::fbInfo.isSupported())
 			FrameBuffer_CopyDepthBuffer(gDP.colorImage.address);
 	}
+
+	// Display list is finished. Check for combiner programs scheduled
+	// for asynchronous compilation and add ready ones to the combiners map,
+	// so they can be used in next display lists.
+	CombinerInfo::get().processPendingCombiners();
 
 	*REG.MI_INTR |= MI_INTR_DP;
 	*REG.DPC_STATUS &= ~(DPC_STATUS_PIPE_BUSY | DPC_STATUS_CMD_BUSY | DPC_STATUS_START_GCLK);

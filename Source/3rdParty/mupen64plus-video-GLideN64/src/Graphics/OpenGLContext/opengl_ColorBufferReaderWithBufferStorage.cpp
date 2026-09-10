@@ -47,7 +47,7 @@ void ColorBufferReaderWithBufferStorage::_destroyBuffers()
 }
 
 const u8 * ColorBufferReaderWithBufferStorage::_readPixels(const ReadColorBufferParams& _params, u32& _heightOffset,
-	u32& _stride)
+	u32& _stride, size_t& _gpuDataSize)
 {
 	GLenum format = GLenum(_params.colorFormat);
 	GLenum type = GLenum(_params.colorType);
@@ -64,6 +64,8 @@ const u8 * ColorBufferReaderWithBufferStorage::_readPixels(const ReadColorBuffer
 
 	_heightOffset = 0;
 	_stride = m_pTexture->width;
+	// The PBOs are allocated and persistently mapped at textureBytes.
+	_gpuDataSize = m_pTexture->textureBytes;
 
 	return reinterpret_cast<u8*>(m_PBOData[m_curIndex]);
 }

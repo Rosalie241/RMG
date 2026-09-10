@@ -25,7 +25,13 @@ void F3DSETA_MoveWord(u32 w0, u32 w1)
 {
 	switch (_SHIFTR( w0, 8, 8 )) {
 		case F3DSETA_MW_NUMLIGHT:
-			gSPNumLights( ((w1 - 0x80000000) >> 5) - 1 );
+			// Same wrap as F3D_MoveWord; see the comment there.
+			if (w1 >= 0x80000020u) {
+				gSPNumLights(static_cast<s32>((w1 - 0x80000000u) >> 5) - 1);
+			} else {
+				DebugMsg(DEBUG_NORMAL | DEBUG_ERROR,
+					"// F3DSETA_MW_NUMLIGHT: invalid light address 0x%08x\n", w1);
+			}
 			break;
 		case F3DSETA_MW_CLIP:
 			gSPClipRatio( w1 );

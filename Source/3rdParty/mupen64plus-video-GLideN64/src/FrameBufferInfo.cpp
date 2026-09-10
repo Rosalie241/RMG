@@ -1,4 +1,3 @@
-#include <assert.h>
 #include "FrameBufferInfoAPI.h"
 #include "FrameBufferInfo.h"
 #include "Config.h"
@@ -24,15 +23,23 @@ namespace FBInfo {
 		m_readBuffers.fill(nullptr);
 	}
 
+	// Searches _buffers (a densely packed, nullptr-terminated prefix) for _buf.
+	//
+	// Returns (true, index of the entry) when _buf is present.
+	// Returns (false, index of the first free slot) when it is not.
+	// Returns (false, _buffers.size()) when it is not present and the array is
+	// full - a legitimate runtime condition, not a programming error. Callers
+	// must check the index against _buffers.size() before using it for a write.
 	FBInfo::BufferSearchResult FBInfo::_findBuffer(const BuffersArray& _buffers, const FrameBuffer* _buf) const
 	{
-		u32 i = 0;
-		while (_buffers[i] != nullptr) {
-			if (_buffers[i++] == _buf)
+		const u32 size = static_cast<u32>(_buffers.size());
+		for (u32 i = 0; i < size; ++i) {
+			if (_buffers[i] == nullptr)
+				return BufferSearchResult(false, i);
+			if (_buffers[i] == _buf)
 				return BufferSearchResult(true, i);
 		}
-		assert(i < _buffers.size());
-		return BufferSearchResult(false, i);
+		return BufferSearchResult(false, size);
 	}
 
 
@@ -43,7 +50,7 @@ namespace FBInfo {
 		if (writeBuffer == nullptr)
 			return;
 		const auto findRes = _findBuffer(m_writeBuffers, writeBuffer);
-		if (!findRes.first)
+		if (!findRes.first && findRes.second < m_writeBuffers.size())
 			m_writeBuffers[findRes.second] = writeBuffer;
 		FrameBuffer_AddAddress(address, size);
 	}
@@ -74,15 +81,19 @@ namespace FBInfo {
 				FrameBuffer_CopyToRDRAM(address, true);
 		}
 
-		if (!findRes.first)
+		if (!findRes.first && findRes.second < m_readBuffers.size())
 			m_readBuffers[findRes.second] = pBuffer;
 	}
 
 	void FBInfo::GetInfo(void *pinfo)
 	{
-		//	debugPrint("FBGetInfo\n");
-		FrameBufferInfo * pFBInfo = (FrameBufferInfo*)pinfo;
-		memset(pFBInfo, 0, sizeof(FrameBufferInfo)* 6);
+		if (pinfo == nullptr) {
+			LOG(LOG_ERROR, "FBGetInfo called with a null buffer");
+			return;
+		}
+
+		FrameBufferInfo * pFBInfo = static_cast<FrameBufferInfo*>(pinfo);
+		memset(pFBInfo, 0, sizeof(FrameBufferInfo) * numFrameBufferInfos);
 
 		if (config.frameBufferEmulation.fbInfoDisabled != 0)
 			return;
@@ -95,7 +106,7 @@ namespace FBInfo {
 			pFBInfo[idx].height = VI.real_height;
 			pFBInfo[idx++].size = 2;
 		}
-		frameBufferList().fillBufferInfo(&pFBInfo[idx], 6 - idx);
+		frameBufferList().fillBufferInfo(&pFBInfo[idx], numFrameBufferInfos - idx);
 
 		m_writeBuffers.fill(nullptr);
 		m_readBuffers.fill(nullptr);

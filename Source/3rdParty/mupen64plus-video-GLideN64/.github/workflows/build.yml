@@ -16,7 +16,7 @@ jobs:
           sudo apt-mark hold grub-common grub-efi-amd64-bin shim-signed
           sudo apt-get -qq update
           sudo apt-get -y upgrade
-          sudo apt-get -y install build-essential libfreetype6-dev libgl1-mesa-dev libpng-dev qt5-qmake qtbase5-dev qtbase5-dev-tools qtchooser zlib1g-dev
+          sudo apt-get -y install build-essential libfreetype6-dev libgl1-mesa-dev libpng-dev libzstd-dev qt5-qmake qtbase5-dev qtbase5-dev-tools qtchooser zlib1g-dev
       - name: Prepare Environment
         run: |
           echo "GIT_REVISION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
@@ -67,8 +67,8 @@ jobs:
       QTDIR_x86: C:\Static_Qt_x86
       QTDIR_x64: C:\Static_Qt_x64
       QT_BUILD_BASE_URL: https://github.com/gonetz/GLideN64/releases/download/qt_build/
-      QT_BUILD_x86: qt-5_15-x86-msvc2017-static
-      QT_BUILD_x64: qt-5_15-x64-msvc2017-static
+      QT_BUILD_x86: qt-5_15-x86-msvc2026-static
+      QT_BUILD_x64: qt-5_15-x64-msvc2026-static
     steps:
       - uses: actions/checkout@v4
       - uses: microsoft/setup-msbuild@v2
@@ -84,6 +84,13 @@ jobs:
             mingw-w64-x86_64-libpng
             mingw-w64-x86_64-qt5
             mingw-w64-x86_64-zlib
+            mingw-w64-x86_64-zstd
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
+        id: runvcpkg
+        with:
+          vcpkgConfigurationJsonGlob: projects/msvc/vcpkg-configuration.json
+          vcpkgJsonGlob: projects/msvc/vcpkg.json
       - name: Prepare Environment
         run: |
           $env:revision = git rev-parse --short HEAD
@@ -95,6 +102,10 @@ jobs:
           echo "Mupen64PluginsDir_x64=$pwd\build\windows-mupen64plus-cli-x64\" >> $env:GITHUB_ENV
           echo "GIT_REVISION=$env:revision" >> $env:GITHUB_ENV
         shell: pwsh
+      - name: Prepare vcpkg
+        run: |
+          vcpkg integrate install
+        shell: cmd
       - name: Prepare Qt x64 Builds
         if: ${{ matrix.image == 'GLideN64 (x64 Project64-Qt)' || matrix.image == 'GLideN64 (x64 PJ64Legacy-Qt)' }}
         run: |

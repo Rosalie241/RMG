@@ -85,6 +85,14 @@
 #define G_LOD					0x00100000
 #define G_POINT_LIGHTING		0x00400000
 
+// Note that when F3DEX3 is enabled, AMBOCCLUSION or ATTROFFSET_ST will intersect with ACCLAIM lighting.
+// Condition to check for ACCLAIM then is ensuring that both AMBOCCLUSION and ATTROFFSET_ST are equal to 0.
+#define F3DEX3_G_PACKED_NORMALS        0x00000800
+#define F3DEX3_G_LIGHTTOALPHA          0x00001000
+#define F3DEX3_G_LIGHTING_SPECULAR     0x00002000
+#define F3DEX3_G_FRESNEL_COLOR         0x00004000
+#define F3DEX3_G_FRESNEL_ALPHA         0x00008000
+
 #define G_MV_MMTX		2
 #define G_MV_PMTX		6
 #define G_MV_LIGHT		10
@@ -191,6 +199,9 @@ extern u32 G_CULL_FRONT;
 extern u32 G_CULL_BACK;
 extern u32 G_CULL_BOTH;
 extern u32 G_CLIPPING;
+
+extern u32 G_ATTROFFSET_ST_ENABLE;
+extern u32 G_AMBOCCLUSION;
 
 extern u32 G_MV_VIEWPORT;
 
@@ -560,6 +571,8 @@ extern GBIInfo GBI;
 	G_CULL_BACK			= ucode##_CULL_BACK; \
 	G_CULL_BOTH			= ucode##_CULL_BOTH; \
 	G_CLIPPING			= ucode##_CLIPPING; \
+	G_ATTROFFSET_ST_ENABLE = 0; \
+	G_AMBOCCLUSION		= 0; \
 \
 	G_MV_VIEWPORT		= ucode##_MV_VIEWPORT; \
 \

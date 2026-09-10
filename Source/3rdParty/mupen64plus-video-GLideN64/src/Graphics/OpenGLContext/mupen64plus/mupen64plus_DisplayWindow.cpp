@@ -252,10 +252,11 @@ void DisplayWindowMupen64plus::_readScreen2(void * _dest, int * _width, int * _h
 	if (_dest == nullptr)
 		return;
 
-	u8 *pBufferData = (u8*)malloc((*_width)*(*_height) * 4);
-	if (pBufferData == nullptr)
-		return;
-	u8 *pDest = (u8*)_dest;
+	// GL_PACK_ALIGNMENT defaults to 4, so with the 3 byte format below the
+	// driver pads every row up to a 4 byte boundary and writes past the
+	// width*height*3 buffer whenever width*3 is not a multiple of 4. _dest is
+	// owned by the emulator core, so the overrun lands in its memory.
+	glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
 	GLint oldMode;
@@ -265,7 +266,7 @@ void DisplayWindowMupen64plus::_readScreen2(void * _dest, int * _width, int * _h
 		glReadBuffer(GL_FRONT);
 	else
 		glReadBuffer(GL_BACK);
-	glReadPixels(0, m_heightOffset, m_screenWidth, m_screenHeight, GL_RGBA, GL_UNSIGNED_BYTE, pBufferData);
+	glReadPixels(0, m_heightOffset, m_screenWidth, m_screenHeight, GL_RGB, GL_UNSIGNED_BYTE, _dest);
 	if (graphics::BufferAttachmentParam(oldMode) == graphics::bufferAttachment::COLOR_ATTACHMENT0) {
 		FrameBuffer * pBuffer = frameBufferList().getCurrent();
 		if (pBuffer != nullptr)
@@ -273,8 +274,11 @@ void DisplayWindowMupen64plus::_readScreen2(void * _dest, int * _width, int * _h
 	}
 	glReadBuffer(oldMode);
 #else
+	u8 *pBufferData = (u8*)malloc((*_width)*(*_height) * 4);
+	if (pBufferData == nullptr)
+		return;
+	u8 *pDest = (u8*)_dest;
 	glReadPixels(0, m_heightOffset, m_screenWidth, m_screenHeight, GL_RGBA, GL_UNSIGNED_BYTE, pBufferData);
-#endif
 
 	//Convert RGBA to RGB
 	for (s32 y = 0; y < *_height; ++y) {
@@ -289,6 +293,7 @@ void DisplayWindowMupen64plus::_readScreen2(void * _dest, int * _width, int * _h
 	}
 
 	free(pBufferData);
+#endif
 }
 
 graphics::ObjectHandle DisplayWindowMupen64plus::_getDefaultFramebuffer()

@@ -9,10 +9,14 @@
 #include "glsl_CombinerProgramUniformFactoryAccurate.h"
 #include "GraphicsDrawer.h"
 
+#ifndef GL_COMPLETION_STATUS_ARB
+#define GL_COMPLETION_STATUS_ARB 0x91B1
+#endif
+
 namespace glsl {
 
-u32 CombinerProgramBuilder::s_cycleType = G_CYC_1CYCLE;
-TextureConvert CombinerProgramBuilder::s_textureConvert;
+thread_local u32 CombinerProgramBuilder::s_cycleType = G_CYC_1CYCLE;
+thread_local TextureConvert CombinerProgramBuilder::s_textureConvert;
 
 /*---------------_compileCombiner-------------*/
 
@@ -342,9 +346,10 @@ CombinerInputs CombinerProgramBuilder::compileCombiner(const CombinerKey & _key,
 	return inputs;
 }
 
-graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combiner & _color,
-																		Combiner & _alpha,
-																		const CombinerKey & _key)
+GLuint CombinerProgramBuilder::_createProgram(Combiner & _color,
+											Combiner & _alpha,
+											const CombinerKey & _key,
+											CombinerInputs & _inputs)
 {
 	CombinerProgramBuilder::s_cycleType = _key.getCycleType();
 	CombinerProgramBuilder::s_textureConvert.setMode(_key.getBilerp());
@@ -511,13 +516,63 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 			glProgramParameteri(program, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
 	}
 	glLinkProgram(program);
-	assert(Utils::checkProgramLinkStatus(program));
 	glDeleteShader(fragmentShader);
 
-	UniformGroups uniforms;
-	m_uniformFactory->buildUniforms(program, combinerInputs, _key, uniforms);
+	_inputs = combinerInputs;
+	return program;
+}
 
-	return new CombinerProgramImpl(_key, program, m_useProgram, combinerInputs, std::move(uniforms));
+graphics::CombinerProgram * CombinerProgramBuilder::_finishProgram(GLuint _program,
+																const CombinerKey & _key,
+																const CombinerInputs & _inputs)
+{
+	assert(Utils::checkProgramLinkStatus(_program));
+
+	UniformGroups uniforms;
+	m_uniformFactory->buildUniforms(_program, _inputs, _key, uniforms);
+
+	return new CombinerProgramImpl(_key, _program, m_useProgram, _inputs, std::move(uniforms));
+}
+
+graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combiner & _color,
+																		Combiner & _alpha,
+																		const CombinerKey & _key)
+{
+	CombinerInputs inputs;
+	const GLuint program = _createProgram(_color, _alpha, _key, inputs);
+	return _finishProgram(program, _key, inputs);
+}
+
+void CombinerProgramBuilder::beginCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key)
+{
+	m_pendingPrograms.emplace_back(_key);
+	PendingCombinerProgram & pending = m_pendingPrograms.back();
+	pending.program = _createProgram(_color, _alpha, _key, pending.inputs);
+}
+
+void CombinerProgramBuilder::getCompiledCombinerPrograms(graphics::Combiners & _compiled, bool _wait)
+{
+	auto it = m_pendingPrograms.begin();
+	while (it != m_pendingPrograms.end()) {
+		bool ready = true;
+		if (!_wait && m_parallelShaderCompile) {
+			GLint status = GL_FALSE;
+			glGetProgramiv(it->program, GL_COMPLETION_STATUS_ARB, &status);
+			ready = status == GL_TRUE;
+		}
+		if (ready) {
+			_compiled[it->key] = _finishProgram(it->program, it->key, it->inputs);
+			it = m_pendingPrograms.erase(it);
+		} else
+			++it;
+	}
+}
+
+void CombinerProgramBuilder::dropPendingCombinerPrograms()
+{
+	for (const PendingCombinerProgram & pending : m_pendingPrograms)
+		glDeleteProgram(pending.program);
+	m_pendingPrograms.clear();
 }
 
 CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, opengl::CachedUseProgram * _useProgram,
@@ -525,11 +580,13 @@ CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, o
 : m_uniformFactory(std::move(_uniformFactory))
 , m_useProgram(_useProgram)
 , m_useCoverage(_glinfo.coverage && config.generalEmulation.enableCoverage != 0)
+, m_parallelShaderCompile(_glinfo.parallelShaderCompile)
 {
 }
 
 CombinerProgramBuilder::~CombinerProgramBuilder()
 {
+	dropPendingCombinerPrograms();
 }
 
 }

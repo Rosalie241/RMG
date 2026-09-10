@@ -122,6 +122,10 @@
   <PropertyGroup Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus'">
     <TargetName>mupen64plus-video-GLideN64</TargetName>
   </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnableManifest>true</VcpkgEnableManifest>
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>../../src;../../src/inc;../../src/osal;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -153,7 +157,6 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>freetype253MT_D.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_qt_legacy' Or '$(Configuration)'=='Release_wtl' Or '$(Configuration)'=='Release_wtl_legacy' Or '$(Configuration)'=='Release_mupenplus'">
@@ -173,7 +176,6 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalDependencies>freetype253MT.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
@@ -287,7 +289,7 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_qt_legacy' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Debug_wtl_legacy' Or '$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_qt_legacy' Or '$(Configuration)'=='Release_wtl' Or '$(Configuration)'=='Release_wtl_legacy' Or '$(Configuration)'=='Release_mupenplus'">
     <ClCompile>
-      <AdditionalIncludeDirectories>../../src/inc/freetype/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ConformanceMode>
       <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">stdcpp17</LanguageStandard>
       <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Debug_qt|Win32'">true</ConformanceMode>
@@ -579,6 +581,7 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
     <ClInclude Include="..\..\src\Platform.h" />
     <ClInclude Include="..\..\src\PluginAPI.h" />
     <ClInclude Include="..\..\src\PostProcessor.h" />
+    <ClInclude Include="..\..\src\Pow.h" />
     <ClInclude Include="..\..\src\RDP.h" />
     <ClInclude Include="..\..\src\GraphicsDrawer.h" />
     <ClInclude Include="..\..\src\resource.h" />

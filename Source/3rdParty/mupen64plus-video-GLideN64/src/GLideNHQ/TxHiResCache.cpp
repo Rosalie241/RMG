@@ -32,7 +32,6 @@
 #include "TxDbg.h"
 #include <osal_files.h>
 #include <osal_keys.h>
-#include <zlib.h>
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>

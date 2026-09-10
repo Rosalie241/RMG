@@ -116,6 +116,12 @@ namespace opengl {
 
 		graphics::CombinerProgram * createCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key) override;
 
+		void createCombinerProgramAsync(Combiner & _color, Combiner & _alpha, const CombinerKey & _key) override;
+
+		void getCompiledCombinerPrograms(graphics::Combiners & _compiled, bool _wait) override;
+
+		void dropPendingCombinerPrograms() override;
+
 		bool saveShadersStorage(const graphics::Combiners & _combiners) override;
 
 		bool loadShadersStorage(graphics::Combiners & _combiners) override;

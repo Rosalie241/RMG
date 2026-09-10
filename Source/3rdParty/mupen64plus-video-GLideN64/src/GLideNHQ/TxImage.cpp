@@ -31,6 +31,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <limits.h> // INT_MAX
+#include <stdint.h> // SIZE_MAX
 
 #include "TxImage.h"
 #include "TxReSample.h"
@@ -180,10 +182,27 @@ TxImage::readPNG(FILE* fp, int* width, int* height, ColorFormat *format)
 	png_read_update_info(png_ptr, info_ptr);
 
 	/* we only get here if RGBA8888 */
-	row_bytes = static_cast<int>(png_get_rowbytes(png_ptr, info_ptr));
+	const png_size_t rowBytes = png_get_rowbytes(png_ptr, info_ptr);
+
+	/* The row size and the height both come from the file, so the allocation
+   * size has to be computed in size_t and checked before use. Multiplying
+   * two ints here overflows for a large enough image, which is undefined
+   * behaviour and, in practice, allocates a small buffer that the
+   * png_read_rows loop below then writes rowBytes * o_height bytes into.
+   * row_bytes is also used as an int further down, so reject a row that
+   * does not fit in one.
+   */
+	if (o_height <= 0 || rowBytes == 0 ||
+			rowBytes > static_cast<png_size_t>(INT_MAX) ||
+			static_cast<png_size_t>(o_height) > SIZE_MAX / rowBytes) {
+		png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
+		DBG_INFO(80, wst("Error: unsupported png dimensions!\n"));
+		return nullptr;
+	}
+	row_bytes = static_cast<int>(rowBytes);
 
 	/* allocate memory to read in image */
-	image = (uint8*)malloc(row_bytes * o_height);
+	image = (uint8*)malloc(rowBytes * static_cast<png_size_t>(o_height));
 
 	/* read in image */
 	if (image) {

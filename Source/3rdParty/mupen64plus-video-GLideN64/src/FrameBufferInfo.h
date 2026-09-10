@@ -19,6 +19,10 @@ namespace FBInfo {
 		unsigned int height;
 	};
 
+	// Plugin API contract: the buffer passed to FBGetFrameBufferInfo holds
+	// this many FrameBufferInfo structures.
+	static const u32 numFrameBufferInfos = 6;
+
 	struct FrameBufferModifyEntry
 	{
 		unsigned int addr;

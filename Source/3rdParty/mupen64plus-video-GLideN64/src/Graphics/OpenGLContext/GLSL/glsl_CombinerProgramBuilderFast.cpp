@@ -5,6 +5,27 @@
 namespace {
 using namespace glsl;
 
+// Replace the plain texture() lookups used by the custom bilinear/3-point taps with
+// textureGrad() using an explicit, continuous gradient (afGradX/afGradY). The sampled
+// texCoord is produced by clampWrapMirror(), which is discontinuous at texture-repeat
+// boundaries, so its implicit derivative spikes there and corrupts the hardware AF
+// footprint (dotted seams). afGradX/afGradY are computed from the *pre-wrap* varying
+// (dFdx(vTexCoordN) * uTexScaleN), which is continuous and correctly scaled for any level
+// of minification - this also makes AF work for HD textures (real mip chain), where the
+// footprint can exceed one texel-period per pixel. They are set per tile right before each
+// read. Only the desktop taps (texture(tex, texCoord - (off)/texSize)) are affected;
+// textureLod() mip reads and GLES2 texture2D() calls are left untouched.
+static void replaceGradientSampling(std::string & _shader)
+{
+	static const std::string from = "texture(tex, texCoord - (off)/texSize)";
+	static const std::string to = "textureGrad(tex, texCoord - (off)/texSize, afGradX, afGradY)";
+	size_t pos = 0;
+	while ((pos = _shader.find(from, pos)) != std::string::npos) {
+		_shader.replace(pos, from.length(), to);
+		pos += to.length();
+	}
+}
+
 class VertexShaderTexturedTriangleFast : public ShaderPart
 {
 public:
@@ -178,6 +199,16 @@ public:
 			"uniform lowp int uBlendAlphaMode;		\n"
 			"lowp float cvg;		\n"
 			;
+
+		if (config.texture.anisotropy > 1) {
+			// Continuous texture-coordinate gradient (pre-wrap), set per tile before each
+			// filtered read and fed to textureGrad() so hardware AF gets a correct footprint
+			// across texture-repeat seams and for HD textures (which have a real mip chain).
+			m_part +=
+				"highp vec2 afGradX;	\n"
+				"highp vec2 afGradY;	\n"
+				;
+		}
 
 		if (config.generalEmulation.enableLegacyBlending != 0) {
 			m_part +=
@@ -508,6 +539,15 @@ public:
 			}
 		}
 
+		// When anisotropic filtering is enabled, sample the custom bilinear taps with
+		// explicit, continuous gradients. The bilinear offset is fract-based and
+		// discontinuous, so the implicit derivative of the sample coordinate spikes at
+		// texel/polygon boundaries, corrupting the hardware AF footprint and producing
+		// dotted seams between polygons. textureGrad with the smooth texCoord gradient
+		// gives a correct footprint (and still drives hardware AF).
+		if (!m_glinfo.isGLES2 && config.texture.anisotropy > 1)
+			replaceGradientSampling(shaderPart);
+
 		shader << shaderPart;
 	}
 
@@ -655,6 +695,8 @@ public:
 
 		}
 
+		if (!m_glinfo.isGLES2 && config.texture.anisotropy > 1)
+			shader << "  afGradX = dFdx(vTexCoord0) * uTexScale0; afGradY = dFdy(vTexCoord0) * uTexScale0;\n";
 		shader << shaderPart;
 	}
 
@@ -704,6 +746,8 @@ public:
 
 		}
 
+		if (!m_glinfo.isGLES2 && config.texture.anisotropy > 1)
+			shader << "  afGradX = dFdx(vTexCoord1) * uTexScale1; afGradY = dFdy(vTexCoord1) * uTexScale1;\n";
 		shader << shaderPart;
 	}
 
@@ -872,15 +916,72 @@ public:
 					}
 			}
 
+			// Custom anisotropic filtering for HD / no-mip textures. Hardware AF only works
+			// when the texture has a mip chain; HD textures (and the fake-mipmap path) have
+			// none, so we supersample the bilinear read along the major axis of the footprint
+			// at the minor-axis LOD instead. Available to both the fake-mipmap and the LOD
+			// (HD-detected at runtime) branches below.
+			if (config.texture.anisotropy > 1) {
+				m_part +=
+					"#ifndef MAX_ANISO_SAMPLES												\n"
+					"#define MAX_ANISO_SAMPLES 16											\n"
+					"#endif																	\n"
+					"#define READ_TEX_NORMAL_AF(name, tex, texCoord, lod)					\\\n"
+					"{																		\\\n"
+					"  highp vec2 afMaj; highp vec2 afMin;									\\\n"
+					"  if (dot(afGradX, afGradX) >= dot(afGradY, afGradY)) { afMaj = afGradX; afMin = afGradY; }	\\\n"
+					"  else { afMaj = afGradY; afMin = afGradX; }							\\\n"
+					"  highp float afR = clamp(sqrt(dot(afMaj, afMaj) / max(dot(afMin, afMin), 1e-12)), 1.0, float(uMaxAnisotropy));	\\\n"
+					"  int afTp = int(ceil(afR - 0.001));									\\\n"
+					"  afGradX = afMin; afGradY = afMin;									\\\n"  // taps sample at the minor-axis LOD
+					"  lowp vec4 afSum = vec4(0.0);											\\\n"
+					"  for (int afI = 0; afI < MAX_ANISO_SAMPLES; ++afI) {					\\\n"
+					"    if (afI >= afTp) break;											\\\n"
+					"    highp float afK = (float(afI) + 0.5) / float(afTp) - 0.5;			\\\n"
+					"    lowp vec4 afC; READ_TEX_NORMAL(afC, tex, texCoord + afK * afMaj, lod);	\\\n"
+					"    afSum += afC;														\\\n"
+					"  }																	\\\n"
+					"  name = afSum / float(afTp);											\\\n"
+					"}																		\n"
+					;
+			}
+
 			if (config.generalEmulation.enableLOD == 0) {
-				// Fake mipmap
+				// Fake mipmap. With N64 LOD emulation off (the usual case for HD textures,
+				// where tile0/tile1 are two separate HD images), the textures have no mip
+				// chain, so hardware AF does nothing; use the manual supersampling above.
 				m_part +=
 					"uniform lowp int uMaxTile;			\n"
 					"uniform mediump float uMinLod;		\n"
+					;
+				if (config.texture.anisotropy > 1)
+					m_part +=
+						"uniform lowp int uMaxAnisotropy;	\n"
+						"uniform lowp int uTextureHD;		\n"  // 1 when tile0/tile1 are HD (no mip chain)
+						;
+				m_part +=
 					"														\n"
 					"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
-					"  READ_TEX_NORMAL(readtex0, uTex0, texCoord0, 0.0);	\n"
-					"  READ_TEX_NORMAL(readtex1, uTex1, texCoord1, 0.0);	\n"
+					;
+				if (config.texture.anisotropy > 1) {
+					// Manual AF only for HD textures (no mip chain). Original textures keep the
+					// plain read: without mips there is nothing to filter anisotropically, and
+					// applying the supersampling loop to them breaks the bilinear result.
+					m_part +=
+						"  afGradX = dFdx(vTexCoord0) * uTexScale0; afGradY = dFdy(vTexCoord0) * uTexScale0;	\n"
+						"  if (uMaxAnisotropy > 1 && uTextureHD != 0) { READ_TEX_NORMAL_AF(readtex0, uTex0, texCoord0, 0.0) }	\n"
+						"  else { READ_TEX_NORMAL(readtex0, uTex0, texCoord0, 0.0) }							\n"
+						"  afGradX = dFdx(vTexCoord1) * uTexScale1; afGradY = dFdy(vTexCoord1) * uTexScale1;	\n"
+						"  if (uMaxAnisotropy > 1 && uTextureHD != 0) { READ_TEX_NORMAL_AF(readtex1, uTex1, texCoord1, 0.0) }	\n"
+						"  else { READ_TEX_NORMAL(readtex1, uTex1, texCoord1, 0.0) }							\n"
+						;
+				} else {
+					m_part +=
+						"  READ_TEX_NORMAL(readtex0, uTex0, texCoord0, 0.0);	\n"
+						"  READ_TEX_NORMAL(readtex1, uTex1, texCoord1, 0.0);	\n"
+						;
+				}
+				m_part +=
 					"  if (uMaxTile == 0) return 1.0;						\n"
 					"  return uMinLod;										\n"
 					"}														\n"
@@ -891,8 +992,19 @@ public:
 					"uniform mediump float uMinLod;		\n"
 					"uniform lowp int uMaxTile;			\n"
 					"uniform lowp int uTextureDetail;	\n"
+					;
+				if (config.texture.anisotropy > 1)
+					m_part +=
+						"uniform lowp int uMaxAnisotropy;	\n"
+						"uniform lowp int uTextureHD;		\n"  // 1 when tile0/tile1 are HD (no mip chain)
+						;
+				m_part +=
 					"																		\n"
 					"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
+					;
+				if (config.texture.anisotropy > 1)
+					m_part += "  afGradX = dFdx(vTexCoord0) * uTexScale0; afGradY = dFdy(vTexCoord0) * uTexScale0;	\n";
+				m_part +=
 					"  READ_TEX_NORMAL(readtex0, uTex0, texCoord0, 0.0);					\n"
 					"  READ_TEX_MIPMAP(readtex1, uTex1, texCoord1, 0.0);					\n"
 					"																		\n"
@@ -911,6 +1023,22 @@ public:
 					"  }																	\n"
 					"  if (magnify && ((uTextureDetail & 1) != 0))							\n"
 					"      lod_frac = 1.0 - lod_frac;										\n"
+					;
+				if (config.texture.anisotropy > 1) {
+					// HD textures have no mip chain, so hardware AF does nothing. Detect them
+					// at runtime and supersample both HD tiles manually; the N64 mip-tile logic
+					// below is meaningless for HD (tile0/tile1 are two independent HD images).
+					m_part +=
+						"  if (uMaxAnisotropy > 1 && uTextureHD != 0) {						\n"
+						"    afGradX = dFdx(vTexCoord0) * uTexScale0; afGradY = dFdy(vTexCoord0) * uTexScale0;	\n"
+						"    READ_TEX_NORMAL_AF(readtex0, uTex0, texCoord0, 0.0)				\n"
+						"    afGradX = dFdx(vTexCoord1) * uTexScale1; afGradY = dFdy(vTexCoord1) * uTexScale1;	\n"
+						"    READ_TEX_NORMAL_AF(readtex1, uTex1, texCoord1, 0.0)				\n"
+						"    return lod_frac;												\n"
+						"  }																	\n"
+						;
+				}
+				m_part +=
 					"  if (uMaxTile == 0) {													\n"
 					"    if (uEnableLod != 0) {												\n"
 					"      if ((uTextureDetail & 2) == 0) readtex1 = readtex0;				\n"
@@ -952,6 +1080,10 @@ public:
 					;
 			}
 		}
+		// See replaceGradientSampling(): fix hardware-AF seams for the low-LOD
+		// (magnify) taps that sample with plain texture().
+		if (!_glinfo.isGLES2 && config.texture.anisotropy > 1)
+			replaceGradientSampling(m_part);
 	}
 };
 

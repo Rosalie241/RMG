@@ -63,7 +63,7 @@ void Normalize(float v[3])
 		ftst							// Compare ST to 0
 		fstsw	ax						// Store FPU status word in ax
 		sahf							// Transfer ax to flags register
-		jz		End						// Skip if length is zero
+		jz		Zero					// Skip if length is zero
 		fsqrt							//									v2				v1				v0				1.0				len
 		fdiv							//													v2				v1				v0				1.0/len
 		fmul	ST(3), ST				//													v2*(1.0/len)	v1				v0				1.0/len
@@ -71,9 +71,19 @@ void Normalize(float v[3])
 		fmul							//																	v2*(1.0/len)	v1*(1.0/len)	v0*(1.0/len)
 		fstp	dword ptr [esi]			//																					v2*(1.0/len)	v1*(1.0/len)
 		fstp	dword ptr [esi+04h]		//																									v2*(1.0/len)
-		fstp	dword ptr [esi+08h]		//
+		fstp	dword ptr [esi+08h]		//	(stack empty - all values pushed by this function are popped)
+		jmp		End
+Zero:									//									v2				v1				v0				1.0				len*len
+		// Length is zero: v is left untouched, but the five values this
+		// function pushed must be popped explicitly. Do NOT use finit here -
+		// it resets the *entire* FPU state (including the control word and
+		// any values the caller had live on the x87 stack), not just ours.
+		fstp	ST(0)					//													v2				v1				v0				1.0
+		fstp	ST(0)					//													                v2				v1				v0
+		fstp	ST(0)					//																					v2				v1
+		fstp	ST(0)					//																									v2
+		fstp	ST(0)					//	(stack empty)
 End:
-		finit
 	}
 #else // WIN32_ASM
 	float len;

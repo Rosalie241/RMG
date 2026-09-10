@@ -178,6 +178,8 @@ extern PFNGLBUFFERSUBDATAPROC ptrBufferSubData;
 extern PFNGLGETPROGRAMBINARYPROC ptrGetProgramBinary;
 extern PFNGLPROGRAMBINARYPROC ptrProgramBinary;
 extern PFNGLPROGRAMPARAMETERIPROC ptrProgramParameteri;
+extern PFNGLMAXSHADERCOMPILERTHREADSARBPROC ptrMaxShaderCompilerThreadsARB;
+extern PFNGLMAXSHADERCOMPILERTHREADSARBPROC ptrMaxShaderCompilerThreadsKHR;
 
 extern PFNGLTEXSTORAGE2DPROC ptrTexStorage2D;
 extern PFNGLTEXTURESTORAGE2DPROC ptrTextureStorage2D;
@@ -324,6 +326,7 @@ void initGLFunctions();
 #define glGetProgramBinary(...) opengl::FunctionWrapper::wrGetProgramBinary(__VA_ARGS__)
 #define glProgramBinary(...) opengl::FunctionWrapper::wrProgramBinary(__VA_ARGS__)
 #define glProgramParameteri(...) opengl::FunctionWrapper::wrProgramParameteri(__VA_ARGS__)
+#define glMaxShaderCompilerThreadsARB(...) opengl::FunctionWrapper::wrMaxShaderCompilerThreads(__VA_ARGS__)
 
 #define glTexStorage2D(...) opengl::FunctionWrapper::wrTexStorage2D(__VA_ARGS__)
 #define glTextureStorage2D(...) opengl::FunctionWrapper::wrTextureStorage2D(__VA_ARGS__)

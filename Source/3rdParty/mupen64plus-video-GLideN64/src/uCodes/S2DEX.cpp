@@ -397,8 +397,8 @@ struct ObjCoordinates
 		const u16 objSpriteScaleW = std::max(_pObjSprite->scaleW, u16(1));
 		const u16 objSpriteScaleH = std::max(_pObjSprite->scaleH, u16(1));
 		if (_useMatrix) {
-			const u32 scaleW = (u32(objMtx.BaseScaleX) * 0x40 * objSpriteScaleW) >> 16;
-			const u32 scaleH = (u32(objMtx.BaseScaleY) * 0x40 * objSpriteScaleH) >> 16;
+			const u32 scaleW = std::max((u32(objMtx.BaseScaleX) * 0x40 * objSpriteScaleW) >> 16, 1u);
+			const u32 scaleH = std::max((u32(objMtx.BaseScaleY) * 0x40 * objSpriteScaleH) >> 16, 1u);
 			if (gs_s2dexversion == eVer1_3) {
 				// XH = AND ((((objX << 0x10) * 0x0800 * (0x80007FFF/BaseScaleX)) >> 0x30) + X + A2) by B0
 				// XL = XH + AND (((((imageW - A1) * 0x100) *  (0x80007FFF/scaleW)) >> 0x20) + B2) by B0
@@ -668,6 +668,15 @@ void gSPObjLoadTxtr(u32 tx)
 {
 	const u32 address = RSP_SegmentToPhysical(tx);
 	uObjTxtr *objTxtr = (uObjTxtr*)&RDRAM[address];
+
+	// sid is a byte offset into the four word gSP.status, read straight out of
+	// an RDRAM structure, so sid >> 2 reaches 16383. Both the test below and
+	// the write at the end of this function index with it.
+	if (objTxtr->block.sid > 12) {
+		DebugMsg(DEBUG_NORMAL | DEBUG_ERROR,
+			"// gSPObjLoadTxtr: invalid sid %u\n", objTxtr->block.sid);
+		return;
+	}
 
 	if ((gSP.status[objTxtr->block.sid >> 2] & objTxtr->block.mask) != objTxtr->block.flag) {
 		switch (objTxtr->block.type) {
@@ -1566,6 +1575,12 @@ void S2DEX_Select_DL(u32 w0, u32 w1)
 	const u8 sid = gSP.selectDL.sid;
 	const u32 flag = gSP.selectDL.flag;
 	const u32 mask = w1;
+
+	if (sid >= 4) {
+		DebugMsg(DEBUG_NORMAL | DEBUG_ERROR, "// S2DEX_Select_DL: invalid sid %u\n", sid);
+		return;
+	}
+
 	if ((gSP.status[sid] & mask) == flag)
 		// Do nothing;
 		return;

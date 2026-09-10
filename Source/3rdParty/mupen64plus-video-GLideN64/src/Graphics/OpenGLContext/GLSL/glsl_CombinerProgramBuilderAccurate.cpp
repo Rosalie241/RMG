@@ -323,6 +323,7 @@ public:
 
 			if (CombinerProgramBuilder::s_textureConvert.useTextureFiltering()) {
 				shaderPart += "uniform lowp int uTextureFilterMode;								\n";
+				shaderPart += "uniform lowp int uMaxAnisotropy;									\n";
 				shaderPart += "#define TEX_NEAREST(name, tex, tcData)							\\\n"
 					"{																			\\\n"
 					" name = texelFetch(tex, ivec2(tcData[0]), 0); \\\n"
@@ -408,17 +409,58 @@ public:
 						;
 				break;
 				}
+				// Custom anisotropic filtering.
+				// texelFetch-based custom bilinear/3-point filtering bypasses the
+				// sampler object entirely, so GL_TEXTURE_MAX_ANISOTROPY_EXT has no
+				// effect. We emulate anisotropic filtering by supersampling the
+				// custom filter along the major axis of the pixel's texture-space
+				// footprint (estimated from screen-space derivatives) and averaging.
+				// coord   - the (pre-tile) texture coordinate passed to the texture engine.
+				// tscale  - per-tile coordinate->texel scale (uShiftScale*uHDRatio).
+				// engine  - the tile's texture engine function (textureEngine0/1).
 				shaderPart +=
-					"#define READ_TEX(name, tex, tcData, fbMonochrome, fbFixedAlpha)	\\\n"
+					"#ifndef MAX_ANISO_SAMPLES											\n"
+					"#define MAX_ANISO_SAMPLES 16										\n"
+					"#endif																\n"
+					"#define TEX_FILTER_ANISO(name, tex, coord, tscale, engine)			\\\n"
+					"{																	\\\n"
+					"  highp vec2 afRawDx = dFdx(coord);								\\\n"
+					"  highp vec2 afRawDy = dFdy(coord);								\\\n"
+					"  highp vec2 afDx = afRawDx * (tscale);							\\\n"
+					"  highp vec2 afDy = afRawDy * (tscale);							\\\n"
+					"  highp float afPx2 = dot(afDx, afDx);								\\\n"
+					"  highp float afPy2 = dot(afDy, afDy);								\\\n"
+					"  highp vec2 afMajor; highp float afMax2; highp float afMin2;		\\\n"
+					"  if (afPx2 >= afPy2) { afMajor = afRawDx; afMax2 = afPx2; afMin2 = afPy2; }	\\\n"
+					"  else                { afMajor = afRawDy; afMax2 = afPy2; afMin2 = afPx2; }	\\\n"
+					"  highp float afRatio = sqrt(afMax2 / max(afMin2, 1e-6));			\\\n"
+					"  afRatio = clamp(afRatio, 1.0, float(uMaxAnisotropy));			\\\n"
+					"  int afTaps = int(ceil(afRatio - 0.001));							\\\n"
+					"  lowp vec4 afAccum = vec4(0.0);									\\\n"
+					"  highp vec2 afData[5];											\\\n"
+					"  for (int afI = 0; afI < MAX_ANISO_SAMPLES; ++afI) {				\\\n"
+					"    if (afI >= afTaps) break;										\\\n"
+					"    highp float afT = (float(afI) + 0.5) / float(afTaps) - 0.5;	\\\n"
+					"    highp vec2 afCoord = (coord) + afT * afMajor;					\\\n"
+					"    engine(afCoord, afData);										\\\n"
+					"    lowp vec4 afColor; TEX_FILTER(afColor, tex, afData);			\\\n"
+					"    afAccum += afColor;											\\\n"
+					"  }																\\\n"
+					"  name = afAccum / float(afTaps);									\\\n"
+					"}																	\n"
+					;
+				shaderPart +=
+					"#define READ_TEX(name, tex, tcData, coord, tscale, engine, fbMonochrome, fbFixedAlpha)	\\\n"
 					"  {																\\\n"
 					"  if (fbMonochrome == 3) {											\\\n"
-					"    mediump ivec2 coord = ivec2(gl_FragCoord.xy);					\\\n"
-					"    name = texelFetch(tex, coord, 0);								\\\n"
+					"    mediump ivec2 coordMono = ivec2(gl_FragCoord.xy);				\\\n"
+					"    name = texelFetch(tex, coordMono, 0);							\\\n"
 					"  } else {															\\\n"
 					"    if (uTextureFilterMode == 0)									\\\n"
 					"  {																\\\n"
 					"    TEX_NEAREST(name, tex, tcData);								\\\n"
 					"  }																\\\n"
+					"    else if (uMaxAnisotropy > 1) TEX_FILTER_ANISO(name, tex, coord, tscale, engine)	\\\n"
 					"    else TEX_FILTER(name, tex, tcData);			 				\\\n"
 					"  }																\\\n"
 					"  if (fbMonochrome == 1) name = vec4(name.r);						\\\n"
@@ -468,6 +510,12 @@ public:
 					"uniform lowp int uTextureFilterMode;								\n"
 					"lowp vec4 readTex(in sampler2D tex, in highp vec2 tcData[5], in lowp int fbMonochrome, in lowp int fbFixedAlpha);	\n"
 					;
+				if (config.texture.anisotropy > 1) {
+					shaderPart +=
+						"uniform lowp int uMaxAnisotropy;									\n"
+						"lowp vec4 readTexAniso(in sampler2D tex, in highp vec2 coord, in lowp int fbMonochrome, in lowp int fbFixedAlpha);	\n"
+						;
+				}
 			}
 			if (CombinerProgramBuilder::s_textureConvert.useYUVCoversion()) {
 				shaderPart +=
@@ -562,7 +610,13 @@ public:
 
 			shaderPart = "  nCurrentTile = 0; \n";
 			if (CombinerProgramBuilder::s_textureConvert.getBilerp0()) {
-				shaderPart += "  lowp vec4 readtex0 = readTex(uTex0, tcData0, uFbMonochrome[0], uFbFixedAlpha[0]);		\n";
+				if (config.texture.anisotropy > 1) {
+					shaderPart += "  lowp vec4 readtex0;																			\n"
+								  "  if (uMaxAnisotropy > 1) readtex0 = readTexAniso(uTex0, mTexCoord, uFbMonochrome[0], uFbFixedAlpha[0]);	\n"
+								  "  else readtex0 = readTex(uTex0, tcData0, uFbMonochrome[0], uFbFixedAlpha[0]);				\n";
+				} else {
+					shaderPart += "  lowp vec4 readtex0 = readTex(uTex0, tcData0, uFbMonochrome[0], uFbFixedAlpha[0]);		\n";
+				}
 			} else {
 				shaderPart += "  lowp vec4 tmpTex = vec4(0.0);																\n"
 							  "  lowp vec4 readtex0 = YUV_Convert(uTex0, tcData0, 0, uTextureFormat[0], tmpTex);			\n";
@@ -578,11 +632,11 @@ public:
 					shaderPart =
 						"  lowp vec4 readtex0;																				\n"
 						"  if (uMSTexEnabled[0] == 0) {																		\n"
-						"    READ_TEX(readtex0, uTex0, tcData0, uFbMonochrome[0], uFbFixedAlpha[0])						\n"
+						"    READ_TEX(readtex0, uTex0, tcData0, mTexCoord, (uShiftScale[0]*uHDRatio[0]), textureEngine0, uFbMonochrome[0], uFbFixedAlpha[0])						\n"
 						"  } else readtex0 = readTexMS(uMSTex0, tcData0, uFbMonochrome[0], uFbFixedAlpha[0]);			\n";
 				} else {
 					shaderPart = "  lowp vec4 readtex0;																		\n"
-								" READ_TEX(readtex0, uTex0, tcData0, uFbMonochrome[0], uFbFixedAlpha[0])				\n";
+								" READ_TEX(readtex0, uTex0, tcData0, mTexCoord, (uShiftScale[0]*uHDRatio[0]), textureEngine0, uFbMonochrome[0], uFbFixedAlpha[0])				\n";
 				}
 			}
 
@@ -611,7 +665,13 @@ public:
 			shaderPart = "  nCurrentTile = 1; \n";
 
 			if (CombinerProgramBuilder::s_textureConvert.getBilerp1()) {
-				shaderPart += "  lowp vec4 readtex1 = readTex(uTex1, tcData1, uFbMonochrome[1], uFbFixedAlpha[1]);				\n";
+				if (config.texture.anisotropy > 1) {
+					shaderPart += "  lowp vec4 readtex1;																			\n"
+								  "  if (uMaxAnisotropy > 1) readtex1 = readTexAniso(uTex1, mTexCoord, uFbMonochrome[1], uFbFixedAlpha[1]);	\n"
+								  "  else readtex1 = readTex(uTex1, tcData1, uFbMonochrome[1], uFbFixedAlpha[1]);				\n";
+				} else {
+					shaderPart += "  lowp vec4 readtex1 = readTex(uTex1, tcData1, uFbMonochrome[1], uFbFixedAlpha[1]);				\n";
+				}
 			} else {
 				shaderPart += "  lowp vec4 readtex1 = YUV_Convert(uTex1, tcData1, uTextureConvert, uTextureFormat[1], readtex0);	\n";
 			}
@@ -627,11 +687,11 @@ public:
 					shaderPart =
 						"  lowp vec4 readtex1;																						\n"
 						"  if (uMSTexEnabled[1] == 0) {																				\n"
-						"    READ_TEX(readtex1, uTex1, tcData1, uFbMonochrome[1], uFbFixedAlpha[1])								\n"
+						"    READ_TEX(readtex1, uTex1, tcData1, mTexCoord, (uShiftScale[1]*uHDRatio[1]), textureEngine1, uFbMonochrome[1], uFbFixedAlpha[1])								\n"
 						"  } else readtex1 = readTexMS(uMSTex1, tcData1, uFbMonochrome[1], uFbFixedAlpha[1]);					\n";
 				} else {
 					shaderPart = "  lowp vec4 readtex1;																				\n"
-								"  READ_TEX(readtex1, uTex1, tcData1, uFbMonochrome[1], uFbFixedAlpha[1])						\n";
+								"  READ_TEX(readtex1, uTex1, tcData1, mTexCoord, (uShiftScale[1]*uHDRatio[1]), textureEngine1, uFbMonochrome[1], uFbFixedAlpha[1])						\n";
 
 				}
 			}
@@ -730,9 +790,20 @@ public:
 				"uniform lowp int uMaxTile;													\n"
 				"uniform lowp int uNoAtlasTex;												\n"
 				"uniform lowp int uTextureDetail;											\n"
+				;
+			if (config.texture.anisotropy > 1)
+				m_part += "uniform lowp int uMaxAnisotropy;								\n";
+			m_part +=
 				"																			\n"
 				"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {		\n"
 				;
+			if (config.texture.anisotropy > 1) {
+				m_part +=
+					"  int afTaps = 1;														\n"
+					"  highp vec2 afMajor0 = vec2(0.0);										\n"
+					"  highp vec2 afMajor1 = vec2(0.0);										\n"
+					;
+			}
 
 			if (config.generalEmulation.enableLOD == 0) {
 				m_part +=
@@ -743,6 +814,33 @@ public:
 					"  mediump vec2 dx = abs(dFdx(vLodTexCoord)) * uScreenScale;			\n"
 					"  mediump vec2 dy = abs(dFdy(vLodTexCoord)) * uScreenScale;			\n"
 					"  mediump float lod = max(max(dx.x, dx.y), max(dy.x, dy.y));			\n"
+					;
+			}
+			if (config.texture.anisotropy > 1) {
+				// Footprint runs whether or not N64 LOD emulation is on, so AF still
+				// supersamples the base reads when mip-mapping is disabled.
+				m_part +=
+					"  if (uMaxAnisotropy > 1) {										\n"
+					"    highp vec2 afRawDx = dFdx(vLodTexCoord);						\n"
+					"    highp vec2 afRawDy = dFdy(vLodTexCoord);						\n"
+					"    highp vec2 afDx0 = afRawDx * uShiftScale[0] * uHDRatio[0];		\n"
+					"    highp vec2 afDy0 = afRawDy * uShiftScale[0] * uHDRatio[0];		\n"
+					"    highp float afPx2 = dot(afDx0, afDx0);							\n"
+					"    highp float afPy2 = dot(afDy0, afDy0);							\n"
+					"    highp vec2 afMajorCoord; highp float afMax2; highp float afMin2;	\n"
+					"    if (afPx2 >= afPy2) { afMajorCoord = afRawDx; afMax2 = afPx2; afMin2 = afPy2; }	\n"
+					"    else                { afMajorCoord = afRawDy; afMax2 = afPy2; afMin2 = afPx2; }	\n"
+					"    mediump float afRatio = clamp(sqrt(afMax2 / max(afMin2, 1e-6)), 1.0, float(uMaxAnisotropy));	\n"
+					"    afTaps = int(ceil(afRatio - 0.001));							\n"
+					"    afMajor0 = afMajorCoord * uShiftScale[0] * uHDRatio[0];		\n"
+					"    afMajor1 = afMajorCoord * uShiftScale[1] * uHDRatio[1];		\n"
+					;
+				if (config.generalEmulation.enableLOD != 0)
+					m_part +=
+					"    lod = lod / afRatio;											\n"
+					;
+				m_part +=
+					"  }																\n"
 					;
 			}
 			m_part +=
@@ -776,15 +874,53 @@ public:
 				"    lod_frac = clamp(lod_frac - 1.0, -1.0, 1.0);							\n"
 				"  }																		\n"
 				"																			\n"
-				"  if (tile0 == 0) readtex0 = TextureMipMap0(uTex0, tcData0);				\n"
-				"  else if (uNoAtlasTex != 0) readtex0 = TextureMipMap0(uTex1, tcData1);	\n"
-				"  else readtex0 = TextureMipMap1(uTex1, tcData1, float(tile0 - 1));		\n"
-				"  if (tile1 == 0) readtex1 = TextureMipMap0(uTex0, tcData0);				\n"
-				"  else if (uNoAtlasTex != 0) readtex1 = TextureMipMap0(uTex1, tcData1);	\n"
-				"  else readtex1 = TextureMipMap1(uTex1, tcData1, float(tile1 - 1));		\n"
-				"  return lod_frac;															\n"
-				"}																			\n"
 				;
+			if (config.texture.anisotropy > 1) {
+				m_part +=
+					"#ifndef MAX_ANISO_SAMPLES												\n"
+					"#define MAX_ANISO_SAMPLES 16											\n"
+					"#endif																	\n"
+					"  lowp vec4 afAcc0 = vec4(0.0);										\n"
+					"  lowp vec4 afAcc1 = vec4(0.0);										\n"
+					"  for (int afI = 0; afI < MAX_ANISO_SAMPLES; ++afI) {					\n"
+					"    if (afI >= afTaps) break;											\n"
+					"    mediump float afT = (float(afI) + 0.5) / float(afTaps) - 0.5;		\n"
+					"    highp vec2 afOff0 = afT * afMajor0;								\n"
+					"    highp vec2 afOff1 = afT * afMajor1;								\n"
+					"    highp vec2 afTc0[5];												\n"
+					"    afTc0[0] = tcData0[0] + afOff0; afTc0[1] = tcData0[1] + afOff0;		\n"
+					"    afTc0[2] = tcData0[2] + afOff0; afTc0[3] = tcData0[3] + afOff0;		\n"
+					"    afTc0[4] = tcData0[4];											\n"
+					"    highp vec2 afTc1[5];												\n"
+					"    afTc1[0] = tcData1[0] + afOff1; afTc1[1] = tcData1[1] + afOff1;		\n"
+					"    afTc1[2] = tcData1[2] + afOff1; afTc1[3] = tcData1[3] + afOff1;		\n"
+					"    afTc1[4] = tcData1[4];											\n"
+					"    lowp vec4 afR0; lowp vec4 afR1;									\n"
+					"    if (tile0 == 0) afR0 = TextureMipMap0(uTex0, afTc0);				\n"
+					"    else if (uNoAtlasTex != 0) afR0 = TextureMipMap0(uTex1, afTc1);	\n"
+					"    else afR0 = TextureMipMap1(uTex1, afTc1, float(tile0 - 1));		\n"
+					"    if (tile1 == 0) afR1 = TextureMipMap0(uTex0, afTc0);				\n"
+					"    else if (uNoAtlasTex != 0) afR1 = TextureMipMap0(uTex1, afTc1);	\n"
+					"    else afR1 = TextureMipMap1(uTex1, afTc1, float(tile1 - 1));		\n"
+					"    afAcc0 += afR0; afAcc1 += afR1;									\n"
+					"  }																	\n"
+					"  readtex0 = afAcc0 / float(afTaps);									\n"
+					"  readtex1 = afAcc1 / float(afTaps);									\n"
+					"  return lod_frac;														\n"
+					"}																			\n"
+					;
+			} else {
+				m_part +=
+					"  if (tile0 == 0) readtex0 = TextureMipMap0(uTex0, tcData0);				\n"
+					"  else if (uNoAtlasTex != 0) readtex0 = TextureMipMap0(uTex1, tcData1);	\n"
+					"  else readtex0 = TextureMipMap1(uTex1, tcData1, float(tile0 - 1));		\n"
+					"  if (tile1 == 0) readtex1 = TextureMipMap0(uTex0, tcData0);				\n"
+					"  else if (uNoAtlasTex != 0) readtex1 = TextureMipMap0(uTex1, tcData1);	\n"
+					"  else readtex1 = TextureMipMap1(uTex1, tcData1, float(tile1 - 1));		\n"
+					"  return lod_frac;															\n"
+					"}																			\n"
+					;
+			}
 		} else {
 			static const std::string strReadTex0 =
 				"#define READ_TEX0_MIPMAP(name, tex, tcData)											\\\n"
@@ -855,8 +991,17 @@ public:
 				"uniform lowp int uMaxTile;												\n"
 				"uniform lowp int uNoAtlasTex;											\n"
 				"uniform lowp int uTextureDetail;										\n"
+				"uniform lowp int uMaxAnisotropy;										\n"
 				"																		\n"
 				"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
+				;
+			// Custom anisotropic filtering for the mipmap path: pick the LOD from the
+			// minor footprint axis (lod / ratio) and supersample the mip reads along
+			// the major axis. afTaps==1 (uMaxAnisotropy<=1) reproduces the original result.
+			m_part +=
+				"  int afTaps = 1;														\n"
+				"  highp vec2 afMajor0 = vec2(0.0);										\n"
+				"  highp vec2 afMajor1 = vec2(0.0);										\n"
 				;
 			if (config.generalEmulation.enableLOD == 0) {
 				m_part +=
@@ -864,11 +1009,38 @@ public:
 					;
 			} else {
 				m_part +=
-					"  mediump vec2 dx = abs(dFdx(vLodTexCoord)) * uScreenScale;		\n"
-					"  mediump vec2 dy = abs(dFdy(vLodTexCoord)) * uScreenScale;		\n"
+					"  mediump vec2 dx = abs(dFdx(vLodTexCoord)) * uScreenScale;			\n"
+					"  mediump vec2 dy = abs(dFdy(vLodTexCoord)) * uScreenScale;			\n"
 					"  mediump float lod = max(max(dx.x, dx.y), max(dy.x, dy.y));		\n"
 					;
 			}
+			// Anisotropic filtering footprint from screen-space derivatives. This runs
+			// whether or not N64 LOD emulation is enabled, so AF still supersamples the
+			// base reads when mip-mapping is off. When LOD is on we additionally bias the
+			// LOD toward the minor footprint axis (sharper mip).
+			m_part +=
+				"  if (uMaxAnisotropy > 1) {										\n"
+				"    highp vec2 afRawDx = dFdx(vLodTexCoord);						\n"
+				"    highp vec2 afRawDy = dFdy(vLodTexCoord);						\n"
+				"    highp vec2 afDx0 = afRawDx * uShiftScale[0] * uHDRatio[0];		\n"
+				"    highp vec2 afDy0 = afRawDy * uShiftScale[0] * uHDRatio[0];		\n"
+				"    highp float afPx2 = dot(afDx0, afDx0);							\n"
+				"    highp float afPy2 = dot(afDy0, afDy0);							\n"
+				"    highp vec2 afMajorCoord; highp float afMax2; highp float afMin2;\n"
+				"    if (afPx2 >= afPy2) { afMajorCoord = afRawDx; afMax2 = afPx2; afMin2 = afPy2; }	\n"
+				"    else                { afMajorCoord = afRawDy; afMax2 = afPy2; afMin2 = afPx2; }	\n"
+				"    mediump float afRatio = clamp(sqrt(afMax2 / max(afMin2, 1e-6)), 1.0, float(uMaxAnisotropy));	\n"
+				"    afTaps = int(ceil(afRatio - 0.001));							\n"
+				"    afMajor0 = afMajorCoord * uShiftScale[0] * uHDRatio[0];		\n"
+				"    afMajor1 = afMajorCoord * uShiftScale[1] * uHDRatio[1];		\n"
+				;
+			if (config.generalEmulation.enableLOD != 0)
+				m_part +=
+				"    lod = lod / afRatio;											\n"
+				;
+			m_part +=
+				"  }																\n"
+				;
 			m_part +=
 				"  lowp int max_tile = min(uTextureDetail != 2 ? 7 : 6, uMaxTile);		\n"
 				"  mediump float min_lod = uTextureDetail != 0 ? uMinLod : 1.0;			\n"
@@ -894,12 +1066,35 @@ public:
 				"    lod_frac = clamp(lod_frac - 1.0, -1.0, 1.0);						\n"
 				"  }																	\n"
 				"																		\n"
-				"  if(tile0 == 0) {READ_TEX0_MIPMAP(readtex0, uTex0, tcData0);}			\n"
-				"  else if (uNoAtlasTex != 0) {READ_TEX0_MIPMAP(readtex0, uTex1, tcData1);}	\n"
-				"  else {READ_TEX1_MIPMAP(readtex0, uTex1, tcData1, tile0 - 1);}		\n"
-				"  if(tile1 == 0) {READ_TEX0_MIPMAP(readtex1, uTex0, tcData0);}			\n"
-				"  else if (uNoAtlasTex != 0) {READ_TEX0_MIPMAP(readtex1, uTex1, tcData1);}	\n"
-				"  else {READ_TEX1_MIPMAP(readtex1, uTex1, tcData1, tile1 - 1);}		\n"
+				"#ifndef MAX_ANISO_SAMPLES												\n"
+				"#define MAX_ANISO_SAMPLES 16											\n"
+				"#endif																	\n"
+				"  lowp vec4 afAcc0 = vec4(0.0);										\n"
+				"  lowp vec4 afAcc1 = vec4(0.0);										\n"
+				"  for (int afI = 0; afI < MAX_ANISO_SAMPLES; ++afI) {					\n"
+				"    if (afI >= afTaps) break;											\n"
+				"    mediump float afT = (float(afI) + 0.5) / float(afTaps) - 0.5;		\n"
+				"    highp vec2 afOff0 = afT * afMajor0;								\n"
+				"    highp vec2 afOff1 = afT * afMajor1;								\n"
+				"    highp vec2 afTc0[5];												\n"
+				"    afTc0[0] = tcData0[0] + afOff0; afTc0[1] = tcData0[1] + afOff0;		\n"
+				"    afTc0[2] = tcData0[2] + afOff0; afTc0[3] = tcData0[3] + afOff0;		\n"
+				"    afTc0[4] = tcData0[4];											\n"
+				"    highp vec2 afTc1[5];												\n"
+				"    afTc1[0] = tcData1[0] + afOff1; afTc1[1] = tcData1[1] + afOff1;		\n"
+				"    afTc1[2] = tcData1[2] + afOff1; afTc1[3] = tcData1[3] + afOff1;		\n"
+				"    afTc1[4] = tcData1[4];											\n"
+				"    lowp vec4 afR0; lowp vec4 afR1;									\n"
+				"    if(tile0 == 0) {READ_TEX0_MIPMAP(afR0, uTex0, afTc0);}				\n"
+				"    else if (uNoAtlasTex != 0) {READ_TEX0_MIPMAP(afR0, uTex1, afTc1);}	\n"
+				"    else {READ_TEX1_MIPMAP(afR0, uTex1, afTc1, tile0 - 1);}			\n"
+				"    if(tile1 == 0) {READ_TEX0_MIPMAP(afR1, uTex0, afTc0);}				\n"
+				"    else if (uNoAtlasTex != 0) {READ_TEX0_MIPMAP(afR1, uTex1, afTc1);}	\n"
+				"    else {READ_TEX1_MIPMAP(afR1, uTex1, afTc1, tile1 - 1);}			\n"
+				"    afAcc0 += afR0; afAcc1 += afR1;									\n"
+				"  }																	\n"
+				"  readtex0 = afAcc0 / float(afTaps);									\n"
+				"  readtex1 = afAcc1 / float(afTaps);									\n"
 				"  return lod_frac;														\n"
 				"}																		\n"
 				;
@@ -1004,6 +1199,49 @@ public:
 					"  return texColor;															\n"
 					"}																			\n"
 					;
+				if (config.texture.anisotropy > 1) {
+					// Custom anisotropic filtering (GLES2): supersample the bilinear/
+					// 3-point filter along the major axis of the texture-space footprint.
+					shaderPart +=
+						"#ifndef MAX_ANISO_SAMPLES													\n"
+						"#define MAX_ANISO_SAMPLES 16												\n"
+						"#endif																		\n"
+						"lowp vec4 readTexAniso(in sampler2D tex, in highp vec2 coord, in lowp int fbMonochrome, in lowp int fbFixedAlpha)	\n"
+						"{																			\n"
+						"  highp vec2 afScale;														\n"
+						"  if (nCurrentTile == 0) afScale = uShiftScale[0]*uHDRatio[0];				\n"
+						"  else afScale = uShiftScale[1]*uHDRatio[1];								\n"
+						"  highp vec2 afRawDx = dFdx(coord);										\n"
+						"  highp vec2 afRawDy = dFdy(coord);										\n"
+						"  highp vec2 afDx = afRawDx * afScale;										\n"
+						"  highp vec2 afDy = afRawDy * afScale;										\n"
+						"  highp float afPx2 = dot(afDx, afDx);										\n"
+						"  highp float afPy2 = dot(afDy, afDy);										\n"
+						"  highp vec2 afMajor; highp float afMax2; highp float afMin2;				\n"
+						"  if (afPx2 >= afPy2) { afMajor = afRawDx; afMax2 = afPx2; afMin2 = afPy2; }	\n"
+						"  else { afMajor = afRawDy; afMax2 = afPy2; afMin2 = afPx2; }				\n"
+						"  highp float afRatio = sqrt(afMax2 / max(afMin2, 1e-6));					\n"
+						"  afRatio = clamp(afRatio, 1.0, float(uMaxAnisotropy));					\n"
+						"  int afTaps = int(ceil(afRatio - 0.001));									\n"
+						"  lowp vec4 afAccum = vec4(0.0);											\n"
+						"  highp vec2 afData[5];													\n"
+						"  for (int afI = 0; afI < MAX_ANISO_SAMPLES; ++afI) {						\n"
+						"    if (afI >= afTaps) break;												\n"
+						"    highp float afT = (float(afI) + 0.5) / float(afTaps) - 0.5;			\n"
+						"    highp vec2 afCoord = coord + afT * afMajor;							\n"
+						"    if (nCurrentTile == 0) textureEngine0(afCoord, afData);					\n"
+						"    else textureEngine1(afCoord, afData);									\n"
+						"    afAccum += TextureFilter(tex, afData);									\n"
+						"  }																		\n"
+						"  lowp vec4 texColor = afAccum / float(afTaps);							\n"
+						"  if (fbMonochrome == 1) texColor = vec4(texColor.r);						\n"
+						"  else if (fbMonochrome == 2) 												\n"
+						"    texColor.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), texColor.rgb));	\n"
+						"  if (fbFixedAlpha == 1) texColor.a = 0.825;								\n"
+						"  return texColor;															\n"
+						"}																			\n"
+						;
+				}
 			}
 		} else {
 			if (config.video.multisampling > 0 && CombinerProgramBuilder::s_textureConvert.useTextureFiltering()) {

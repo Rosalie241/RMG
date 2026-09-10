@@ -7,8 +7,8 @@
 namespace opengl {
 
 	bool FunctionWrapper::m_threaded_wrapper = false;
-	bool FunctionWrapper::m_shutdown = false;
-	int FunctionWrapper::m_swapBuffersQueued = 0;
+	std::atomic<bool> FunctionWrapper::m_shutdown{false};
+	std::atomic<int> FunctionWrapper::m_swapBuffersQueued{0};
 	bool FunctionWrapper::m_fastVertexAttributes = false;
 	std::thread FunctionWrapper::m_commandExecutionThread;
 	std::mutex FunctionWrapper::m_condvarMutex;
@@ -587,6 +587,16 @@ namespace opengl {
 			executeCommand(GlLinkProgramCommand::get(program));
 		else
 			ptrLinkProgram(program);
+	}
+
+	void FunctionWrapper::wrMaxShaderCompilerThreads(GLuint count)
+	{
+		if (m_threaded_wrapper)
+			executeCommand(GlMaxShaderCompilerThreadsCommand::get(count));
+		else if (ptrMaxShaderCompilerThreadsARB != nullptr)
+			ptrMaxShaderCompilerThreadsARB(count);
+		else if (ptrMaxShaderCompilerThreadsKHR != nullptr)
+			ptrMaxShaderCompilerThreadsKHR(count);
 	}
 
 	void FunctionWrapper::wrUseProgram(GLuint program)
@@ -1459,7 +1469,11 @@ namespace opengl {
 
 #ifndef GL_DEBUG
 		if (m_threaded_wrapper) {
-			m_condition.notify_all();
+			// Under the mutex, for the same reason as ReduceSwapBuffersQueued.
+			{
+				std::lock_guard<std::mutex> lock(m_condvarMutex);
+				m_condition.notify_all();
+			}
 			m_commandExecutionThread.join();
 		}
 #endif
@@ -1539,7 +1553,11 @@ namespace opengl {
 
 #ifndef GL_DEBUG
 		if (m_threaded_wrapper) {
-			m_condition.notify_all();
+			// Under the mutex, for the same reason as ReduceSwapBuffersQueued.
+			{
+				std::lock_guard<std::mutex> lock(m_condvarMutex);
+				m_condition.notify_all();
+			}
 			m_commandExecutionThread.join();
 		}
 #endif
@@ -1562,6 +1580,16 @@ namespace opengl {
 		--m_swapBuffersQueued;
 
 		if (m_swapBuffersQueued <= MAX_SWAP) {
+			// The mutex has to be taken between the decrement above and the
+			// notify below. Making the counter atomic removed the data race
+			// but not the lost wakeup: a notifier that never touches the mutex
+			// can place both the decrement and the notification in the gap
+			// between WaitForSwapBuffersQueued testing its predicate and
+			// actually blocking. The predicate then reads true, the
+			// notification has already been delivered to nobody, and the main
+			// thread waits for a wakeup that will never arrive, because this
+			// thread has nothing left to decrement.
+			std::lock_guard<std::mutex> lock(m_condvarMutex);
 			m_condition.notify_all();
 		}
 	}
@@ -1571,7 +1599,13 @@ namespace opengl {
 		std::unique_lock<std::mutex> lock(m_condvarMutex);
 
 		if (!m_shutdown && m_swapBuffersQueued > MAX_SWAP) {
-			m_condition.wait(lock, []{return FunctionWrapper::m_swapBuffersQueued <= MAX_SWAP; });
+			// m_shutdown belongs in the predicate as well as the test above:
+			// without it the notify_all on the shutdown paths wakes this
+			// thread, the predicate is still false and it goes straight back
+			// to sleep, so shutting down could never release a blocked waiter.
+			m_condition.wait(lock, []{
+				return FunctionWrapper::m_shutdown ||
+					   FunctionWrapper::m_swapBuffersQueued <= MAX_SWAP; });
 		}
 	}
 

@@ -23,7 +23,9 @@ set PJREN=Project64
 set CONF=Release
 set EXT=7z
 set DQTD=1
+set BYP=exp ilk lib pdb
 set EBQ=start "" explorer .
+set ETSB=REM
 for %%B in (EX86 EX64 D7Z DPJQT DMQT DPJWTL DMCL ESIM) do set "%%B=0"
 set DMQT=1
 for %%K in (msbuild vctip mspdbsrv) do taskkill /im %%K.exe /f 2>nul
@@ -35,9 +37,11 @@ for %%P in (%*) do (
 	if /i "%%P" == "--all" set EX86=1& set EX64=1
 	if /i "%%P" == "--legacy" set PJSF=_legacy& set PJREN=PJ64Legacy
 	if /i "%%P" == "--debug" set CONF=Debug
+	if /i "%%P" == "--keepby" set BYP=
 	if /i "%%P" == "--zip" set EXT=zip
 	if /i "%%P" == "--nopak" set D7Z=1
 	if /i "%%P" == "--rebuild" set REB=/t:Rebuild
+	if /i "%%P" == "--twosteps" set ETSB=call
 	if /i "%%P" == "--nopjqt" set DPJQT=1
 REM	if /i "%%P" == "--nomqt" set DMQT=1
 REM	if /i "%%P" == "--noqt" set DPJQT=1& set DMQT=1
@@ -59,8 +63,12 @@ set /a MOD=%D7Z%+%DQTD%
 if %MOD% NEQ 2 7z >nul 2>&1
 %ERR%
 
-set tVSPF=%ProgramFiles(x86)%
-if "%PROCESSOR_ARCHITECTURE%" == "x86" set tVSPF=%ProgramFiles%
+set MSG=Visual Studio developer environment was not loaded
+msbuild -version >nul 2>&1
+if not errorlevel 1 goto SKDS
+
+set tVSPF=%ProgramFiles%
+if "%PROCESSOR_ARCHITECTURE%" == "AMD64" set tVSPF=%ProgramFiles(x86)%
 set "tVSPF=%tVSPF%\Microsoft Visual Studio"
 set tVSDS=Common7\Tools\VsDevCmd.bat
 set "tVSWHERE=%tVSPF%\Installer\vswhere.exe"
@@ -82,10 +90,10 @@ set MOD=\
 call :VSENV " 14.0"
 call :VSENV " 12.0"
 
-set MSG=Visual Studio developer environment was not loaded
-msbuild -version >nul 2>&1
-if errorlevel 1 call "%tVSDS%"
+call "%tVSDS%"
 %ERR%
+:SKDS
+
 set MSG=Git was not found in the environment
 git --version >nul 2>&1
 %ERR%
@@ -99,7 +107,7 @@ if "%ARCH%" == "x86" set TARCH=Win32
 
 if %DQT% == 2 goto NOQT
 if defined QTDIR_%ARCH% goto NODL
-set "QTVER=qt-5_15-%ARCH%-msvc2017-static"
+set "QTVER=qt-5_15-%ARCH%-msvc2026-static"
 if exist "..\Qt\%QTVER%\include\QtCore" goto NODL
 
 set MSG=Path to Qt %ARCH% was not specified or detected
@@ -116,8 +124,8 @@ curl -L -o "..\%QTVER%.7z" "%QTURL%/%QTVER%.7z"
 set MSG=7z failed to extract:^& echo %QTVER%.7z
 7z x -y "..\%QTVER%.7z" -o"..\Qt"
 %ERR%
-
 :NODL
+
 set "QTDIR=%~dp0%TPSM%..\..\..\Qt\%QTVER%"
 if "%ARCH%" == "x64" (
 	if defined QTDIR_x64 set "QTDIR="%QTDIR_x64%""
@@ -131,6 +139,15 @@ if not exist "%QTDIR%\include\QtCore" goto ERR
 
 if not defined BUILDROUTE set "BUILDROUTE="%~dp0%TPSM%..\..\build""
 set BUILDROUTE=%BUILDROUTE:"=%
+set MSG=The route could not be accessed:^& echo %BUILDROUTE%
+pushd "%BUILDROUTE%"
+%ERR%
+set MOD=
+set MSG=Invalid 'BUILDROUTE', it MUST be a directory
+for %%T in (.) do set MOD=%%~nxT
+if not defined MOD goto ERR
+popd
+
 for /f "tokens=1" %%R in ('git rev-parse --short HEAD') do set "REV=GLideN64-%%R-"
 set "IDTS=-%ARCH%"
 if "%CONF%" == "Debug" set "IDTS=%IDTS%-dbg"
@@ -155,12 +172,10 @@ if %MOD% LEQ 4 (set MOD=Lylat
 set BPJQT=msbuild
 if %ESIM% == 1 (
 	set BPJQT=echo msbuild
-	md "translations\wtl" 2>nul
-	cd.>"translations\wtl\%MOD%.Lang"
+	md translations\wtl 2>nul
+	cd.> "translations\wtl\%MOD%.Lang"
 	pushd "%BUILDROUTE%"
-	for /f "tokens=*" %%S in ('dir /ad /b %REV%*%IDTS%') do (
-		if "%%S" NEQ "" rd /s /q "%%S"
-	)
+	for /f "tokens=*" %%S in ('dir /ad /b %REV%*%IDTS% 2^>nul') do rd /s /q "%%S"
 	del /f /q "%REV%*%IDTS%.%EXT%" 2>nul
 	popd
 	type nul
@@ -184,18 +199,18 @@ goto MBBEG
 
 :MBBEG
 set MSG=Qt version, architecture and path are really correct?^& echo %QTDIR%
-call :MBCL "%BPJQT%" "GLideNUI.vcxproj"
+%ETSB% :MBCL "%BPJQT%" "GLideNUI.vcxproj"
 %DMN%
 call :MBCL "%BPJQT%" "%FPROJ%" "_qt%PJSF%"
 %DMN%
 
-::if %DPJQT% == 1 call :MBCL "%BMQT%" "GLideNUI.vcxproj"
+::if %DPJQT% == 1 %ETSB% :MBCL "%BMQT%" "GLideNUI.vcxproj"
 %DMN%
 ::call :MBCL "%BMQT%" "%FPROJ%" "_mupenplus_qt"
 %DMN%
 
 set MSG=ERROR!
-call :MBCL "%BPJWTL%" "GLideNUI-wtl.vcxproj"
+%ETSB% :MBCL "%BPJWTL%" "GLideNUI-wtl.vcxproj"
 %DMN%
 call :MBCL "%BPJWTL%" "%FPROJ%" "_wtl%PJSF%"
 %DMN%
@@ -210,7 +225,7 @@ goto PJQT
 	type nul
 	copy /y ini\GLideN64.custom.ini "%~1\"
 	%ERR%
-	for %%D in (exp ilk lib) do del /f /q "%~1\*.%%D" 2>nul
+	for %%D in (%BYP%) do del /f /q "%~1\*.%%D" 2>nul
 	type nul
 	goto:EOF
 
@@ -243,13 +258,11 @@ call :CINI "%M64CL%"
 %DMN%
 
 :PKG
-set MSG=The route could not be accessed:^& echo %BUILDROUTE%
 pushd "%BUILDROUTE%"
-%ERR%
 set MOD=binaries
 if %D7Z% == 0 (
 	set MOD=compressed files
-	for /f "tokens=*" %%Z in ('dir /ad /b %REV%*%IDTS%') do 7z a -t%EXT% "%%Z.%EXT%" ".\%%Z\*"
+	for /f "tokens=*" %%Z in ('dir /ad /b %REV%*%IDTS% 2^>nul') do 7z a -t%EXT% "%%Z.%EXT%" ".\%%Z\*"
 )
 
 if "%ARCH%" == "x64" (
@@ -267,13 +280,13 @@ echo %MSG%
 
 :CLEAN
 pushd "%~dp0%TPSM%"
-for /f "tokens=*" %%E in ('dir /ad /b') do (
+for /f "tokens=*" %%E in ('dir /ad /b 2^>nul') do (
 	if /i "%%E" NEQ "lib" rd /s /q "%%E"
 )
 cd ..\..
-del /f /q "src\Revision.h" 2>nul
-rd /s /q "build" 2>nul
-rd /s /q "translations\wtl" 2>nul
+del /f /q src\Revision.h 2>nul
+rd /s /q build 2>nul
+rd /s /q translations\wtl 2>nul
 %EXIT% 0
 
 :HELP
@@ -285,8 +298,8 @@ echo   set ^<variable^>
 echo   %~nx0 ^<architecture^> ^<other^>
 echo.
 echo ^<Variables^>
-echo   set BUILDROUTE=^<Custom build folder^>
-echo     e.g.         "Z:\My share folder"
+echo   set BUILDROUTE=^<Custom build directory^>
+echo     e.g.         "Z:\My shared folder"
 echo   set QTDIR_x86=^<Your Qt x86 path^>
 echo     e.g.        "D:\Static Qt\qt-5.7.1-x86-msvc2013"
 echo   set QTDIR_x64=^<Your Qt x64 path^>
@@ -303,9 +316,11 @@ echo.
 echo ^<Others^>
 echo   --clean     Clean ALL auto-generated build files within the project
 echo   --debug     For debug builds
-echo   --dlqt      Auto download and configure Qt for VS2017-2022, it would
-echo               have no effect if Qt variables are used or if the same
-echo               version has already been extracted
+echo   --dlqt      Auto download and configure Qt for VS2026, it would have
+echo               no effect if Qt variables are used or if the same version
+echo               has already been extracted
+echo   --keepby    To keep all the byproduct binaries, normally unwanted in
+echo               release versions
 echo   --legacy    To build PJ64Legacy plugin spec instead current Project64
 echo               plugin spec
 ::echo   --noqt      To build without Qt support, equivalent to using '--nopjqt'
@@ -318,6 +333,8 @@ echo   --nomcl     To skip Mupen64Plus CLI builds
 echo   --nopak     To skip packing the binaries, '--zip' will be ineffective
 echo               It will disable 7-Zip completely if '--dlqt' isn't used
 echo   --rebuild   To rebuild without cleaning
+echo   --twosteps  Required to build older revisions that didn't compile
+echo               the GUI from the main project file
 echo   --sim       Simulated build, quick environment check without compiling
 echo               It's destructive to the final product, it removes binaries
 echo               and creates dummy files, use '--clean' to discard changes

@@ -5,6 +5,7 @@
 #include <Combiner.h>
 #include <Textures.h>
 #include <Config.h>
+#include <Log.h>
 #include <N64.h>
 #include <VI.h>
 
@@ -66,6 +67,9 @@ void RDRAMtoColorBuffer::init()
 	gfxContext.setTextureParameters(setParams);
 
 	m_pbuf = (u8*)malloc(m_pTexture->textureBytes);
+	if (m_pbuf == nullptr)
+		LOG(LOG_ERROR, "RDRAMtoColorBuffer::init: failed to allocate %u bytes; "
+			"copying from RDRAM will be disabled", m_pTexture->textureBytes);
 }
 
 void RDRAMtoColorBuffer::destroy()
@@ -86,8 +90,13 @@ void RDRAMtoColorBuffer::addAddress(u32 _address, u32 _size)
 			return;
 	}
 
+	// pixelSize is bytes per pixel, and it is zero for a 4bpp buffer, where a
+	// pixel is half a byte. Only the modulo is undefined in that case; the
+	// size comparison before it still short circuits correctly. Such a buffer
+	// never reaches _copyFromRDRAM anyway, since copyFromRDRAM rejects
+	// anything below G_IM_SIZ_16b, so ignoring the write is the right answer.
 	const u32 pixelSize = 1 << m_pCurBuffer->m_size >> 1;
-	if (_size != pixelSize && (_address%pixelSize) > 0)
+	if (_size != pixelSize && (pixelSize == 0 || (_address%pixelSize) > 0))
 		return;
 	m_vecAddress.push_back(_address);
 	gDP.colorImage.changed = TRUE;
@@ -138,7 +147,7 @@ bool _copyPixelsFromRdram(u32 _address, const std::vector<u32> & _vecAddress, u3
 		idx = (_vecAddress[i] - _address) / szPixel;
 		w = idx % _width;
 		h = idx / _width;
-		if (h > _height)
+		if (h >= _height)
 			return false;
 		col = src[idx];
 		summ += col;
@@ -179,6 +188,13 @@ u32 RGBA32ToABGR32(u32 col, bool _fullAlpha)
 void RDRAMtoColorBuffer::_copyFromRDRAM(u32 _height, bool _fullAlpha)
 {
 	Cleaner cleaner(this);
+
+	// init() may have failed to allocate the staging buffer. Everything below
+	// writes through it, either directly or as the source of the texture
+	// upload, so there is nothing sensible to do without it.
+	if (m_pbuf == nullptr)
+		return;
+
 	const u32 address = m_pCurBuffer->m_startAddress;
 	const u32 width = m_pCurBuffer->m_width;
 	const u32 height = _height;

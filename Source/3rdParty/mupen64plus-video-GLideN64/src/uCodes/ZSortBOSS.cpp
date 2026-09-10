@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <math.h>
+#include <algorithm>
 #include "N64.h"
 #include "RSP.h"
 #include "RDP.h"
@@ -140,7 +141,7 @@ void StoreMatrix( f32 mtx[4][4], u32 address )
 void ZSortBOSS_MoveMem( u32 _w0, u32 _w1 )
 {
 	int flag = (_w0 >> 23) & 0x01;
-	int len = 1 + (_w0 >> 12) & 0x7ff;
+	u32 len = 1 + ((_w0 >> 12) & 0x7ff);
 	u32 addr = RSP_SegmentToPhysical(_w1);
 	assert((addr & 3) == 0);
 	assert((_w0 & 3) == 0);
@@ -150,24 +151,30 @@ void ZSortBOSS_MoveMem( u32 _w0, u32 _w1 )
 	// model matrix
 	if((_w0 & 0xfff) == 0x830) {
 		assert(flag == 0);
-		RSP_LoadMatrix(gSP.matrix.modelView[gSP.matrix.modelViewi], addr);
-		gSP.changed |= CHANGED_MATRIX;
+		if (RSP_LoadMatrix(gSP.matrix.modelView[gSP.matrix.modelViewi], addr))
+			gSP.changed |= CHANGED_MATRIX;
+		else
+			LOG(LOG_ERROR, "ZSortBOSS MoveMem: invalid model matrix address 0x%08x", addr);
 		return;
 	}
 
 	// projection matrix
 	if((_w0 & 0xfff) == 0x870) {
 		assert(flag == 0);
-		RSP_LoadMatrix(gSP.matrix.projection, addr);
-		gSP.changed |= CHANGED_MATRIX;
+		if (RSP_LoadMatrix(gSP.matrix.projection, addr))
+			gSP.changed |= CHANGED_MATRIX;
+		else
+			LOG(LOG_ERROR, "ZSortBOSS MoveMem: invalid projection matrix address 0x%08x", addr);
 		return;
 	}
 
 	// combined matrix
 	if((_w0 & 0xfff) == 0x8b0) {
 		if(flag == 0) {
-			RSP_LoadMatrix(gSP.matrix.combined, addr);
-			gSP.changed &= ~CHANGED_MATRIX;
+			if (RSP_LoadMatrix(gSP.matrix.combined, addr))
+				gSP.changed &= ~CHANGED_MATRIX;
+			else
+				LOG(LOG_ERROR, "ZSortBOSS MoveMem: invalid combined matrix address 0x%08x", addr);
 		} else {
 			StoreMatrix(gSP.matrix.combined, addr);
 		}
@@ -211,15 +218,27 @@ void ZSortBOSS_MoveMem( u32 _w0, u32 _w1 )
 		return;
 	}
 
-	if((_w0 & 0xfff) == 0x730) {
-		assert(len == 256);
-		memcpy(gstate.fogtable, (RDRAM + addr), len);
+	// Everything below copies len bytes between RDRAM and DMEM at offsets taken
+	// from the display list. len reaches 2048, the DMEM offset 4095 and DMEM is
+	// only 4 KB, so both ends need checking.
+	const u32 dmemOffset = _w0 & 0xfff;
+	if (!isRDRAMRangeValid(addr, len) || !isDMEMRangeValid(dmemOffset, len)) {
+		LOG(LOG_ERROR, "ZSortBOSS_MoveMem: %u bytes between RDRAM 0x%08x and DMEM 0x%04x is out of range",
+			len, addr, dmemOffset);
+		return;
 	}
 
-	if(flag == 0) {
-		memcpy((DMEM + (_w0 & 0xfff)), (RDRAM + addr), len);
+	if (dmemOffset == 0x730) {
+		assert(len == sizeof(gstate.fogtable));
+		// No return here on purpose: the fall-through below also mirrors the
+		// table into DMEM, which is what the microcode expects.
+		memcpy(gstate.fogtable, (RDRAM + addr), std::min(len, u32(sizeof(gstate.fogtable))));
+	}
+
+	if (flag == 0) {
+		memcpy((DMEM + dmemOffset), (RDRAM + addr), len);
 	} else {
-		memcpy((RDRAM + addr), (DMEM + (_w0 & 0xfff)), len);
+		memcpy((RDRAM + addr), (DMEM + dmemOffset), len);
 	}
 }
 
@@ -576,7 +595,12 @@ void ZSortBOSS_TransformLights( u32 _w0, u32 _w1 )
 
 	M44 *mtx = nullptr;
 	int addr = _w1 & 0xfff;
-	gSP.numLights = 1 - (_w1 >> 12);
+	const s32 numLights = 1 - static_cast<s32>(_w1 >> 12);
+	if (numLights < 0 || numLights >= 12) {
+		LOG(LOG_ERROR, "ZSortBOSS_TransformLights: invalid light count %d from 0x%08x", numLights, _w1);
+		return;
+	}
+	gSP.numLights = static_cast<u32>(numLights);
 
 	/*
 	switch(_w0 & 0xfff) {

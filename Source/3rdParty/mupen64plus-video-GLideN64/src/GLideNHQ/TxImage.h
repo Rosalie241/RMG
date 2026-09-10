@@ -31,24 +31,24 @@
 #ifndef WIN32
 typedef struct tagBITMAPFILEHEADER {
   unsigned short bfType;
-  unsigned long  bfSize;
+  unsigned int   bfSize;
   unsigned short bfReserved1;
   unsigned short bfReserved2;
-  unsigned long  bfOffBits;
+  unsigned int   bfOffBits;
 } BITMAPFILEHEADER;
 
 typedef struct tagBITMAPINFOHEADER {
-  unsigned long  biSize;
-  long           biWidth;
-  long           biHeight;
+  unsigned int   biSize;
+  int            biWidth;
+  int            biHeight;
   unsigned short biPlanes;
   unsigned short biBitCount;
-  unsigned long  biCompression;
-  unsigned long  biSizeImage;
-  long           biXPelsPerMeter;
-  long           biYPelsPerMeter;
-  unsigned long  biClrUsed;
-  unsigned long  biClrImportant;
+  unsigned int   biCompression;
+  unsigned int   biSizeImage;
+  int            biXPelsPerMeter;
+  int            biYPelsPerMeter;
+  unsigned int   biClrUsed;
+  unsigned int   biClrImportant;
 } BITMAPINFOHEADER;
 #else
 typedef struct tagBITMAPFILEHEADER BITMAPFILEHEADER;

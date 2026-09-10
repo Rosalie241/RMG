@@ -50,7 +50,7 @@ void ColorBufferReaderWithEGLImage::_initBuffers()
 
 
 const u8 * ColorBufferReaderWithEGLImage::_readPixels(const ReadColorBufferParams& _params, u32& _heightOffset,
-	u32& _stride)
+	u32& _stride, size_t& _gpuDataSize)
 {
 	GLenum format = GLenum(_params.colorFormat);
 	GLenum type = GLenum(_params.colorType);
@@ -62,11 +62,16 @@ const u8 * ColorBufferReaderWithEGLImage::_readPixels(const ReadColorBufferParam
 		m_bufferLocked = true;
 		_heightOffset = static_cast<u32>(_params.y0);
 		_stride = m_hardwareBuffer.getStride();
+		// The buffer was allocated in _initBuffers as
+		// texture width x texture height, AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM,
+		// and the driver reports its row length as the stride.
+		_gpuDataSize = static_cast<size_t>(_stride) * m_pTexture->height * 4;
 	} else {
 		gpuData = m_pixelData.data();
 		glReadPixels(_params.x0, _params.y0,  m_pTexture->width, _params.height, format, type, gpuData);
 		_heightOffset = 0;
 		_stride = m_pTexture->width;
+		_gpuDataSize = m_pixelData.size();
 	}
 
 	return reinterpret_cast<u8*>(gpuData);

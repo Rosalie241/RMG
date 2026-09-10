@@ -19,38 +19,38 @@ struct GHQTexInfo;
 
 struct CachedTexture
 {
-	CachedTexture(graphics::ObjectHandle _name) : name(_name), max_level(0), frameBufferTexture(fbNone), bHDTexture(false) {}
+	CachedTexture(graphics::ObjectHandle _name)
+		: name(_name)
+	{}
 
-	graphics::ObjectHandle name;
-	u64		crc = 0;
-//	float	fulS, fulT;
-//	WORD	ulS, ulT, lrS, lrT;
-	float	offsetS, offsetT;
-	u8		maskS, maskT;
-	u8		clampS, clampT;
-	u8		mirrorS, mirrorT;
-	u16		line;
-	u16		size;
-	u16		format;
-	u32		tMem;
-	u32		palette;
-	u16		width, height;			  // N64 width and height
-	u16		clampWidth, clampHeight;  // Size to clamp to
-	f32		scaleS, scaleT;			  // Scale to map to 0.0-1.0
-	f32     hdRatioS, hdRatioT;       // HD / N64 width and height
-	f32		shiftScaleS, shiftScaleT; // Scale to shift
-	u32		textureBytes;
+	graphics::ObjectHandle name{ 0 };
+	u64		crc{ 0 };
+	float	offsetS{ 0 }, offsetT{ 0 };
+	u8		maskS{ 0 }, maskT{ 0 };
+	u8		clampS{ 0 }, clampT{ 0 };
+	u8		mirrorS{ 0 }, mirrorT{ 0 };
+	u16		line{ 0 };
+	u16		size{ 0 };
+	u16		format{ 0 };
+	u32		tMem{ 0 };
+	u32		palette{ 0 };
+	u16		width{ 0 }, height{ 0 };			// N64 width and height
+	u16		clampWidth{ 0 }, clampHeight{ 0 };  // Size to clamp to
+	f32		scaleS{ 0 }, scaleT{ 0 };			// Scale to map to 0.0-1.0
+	f32     hdRatioS{ 0 }, hdRatioT{ 0 };       // HD / N64 width and height
+	f32		shiftScaleS{ 0 }, shiftScaleT{ 0 }; // Scale to shift
+	u32		textureBytes{ 0 };
 
-	u32		address;
-	u8		max_level;
+	u32		address{ 0 };
+	u8		max_level{ 0 };
 	u16		mipmapAtlasWidth{ 0 };
 	u16		mipmapAtlasHeight{ 0 };
 	enum {
 		fbNone = 0,
 		fbOneSample = 1,
 		fbMultiSample = 2
-	} frameBufferTexture;
-	bool bHDTexture;
+	} frameBufferTexture{ fbNone };
+	bool bHDTexture{ false };
 };
 
 struct TextureCache
@@ -130,26 +130,4 @@ inline TextureCache & textureCache()
 	return TextureCache::get();
 }
 
-inline u32 pow2( u32 dim )
-{
-	u32 i = 1;
-
-	while (i < dim) i <<= 1;
-
-	return i;
-}
-
-inline u32 powof( u32 dim )
-{
-	u32 num = 1;
-	u32 i = 0;
-
-	while (num < dim)
-	{
-		num <<= 1;
-		i++;
-	}
-
-	return i;
-}
 #endif

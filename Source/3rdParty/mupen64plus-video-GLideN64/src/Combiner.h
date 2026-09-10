@@ -3,6 +3,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 
 #include "GLideN64.h"
 #include "GraphicsDrawer.h"
@@ -128,6 +129,11 @@ public:
 	void setCombine(u64 _mux);
 	void updateParameters();
 
+	// Collect combiner programs, which were scheduled for asynchronous compilation,
+	// and add ready ones to the combiners map. If _wait is true, wait for compilation
+	// of all pending programs to complete.
+	void processPendingCombiners(bool _wait = false);
+
 	void setDepthFogCombiner();
 	graphics::ShaderProgram * getTexrectUpscaleCopyProgram();
 	graphics::ShaderProgram * getTexrectColorAndDepthUpscaleCopyProgram();
@@ -147,6 +153,7 @@ private:
 	CombinerInfo()
 		: m_bChanged(false)
 		, m_rectMode(true)
+		, m_bAsyncCompilation(false)
 		, m_shadersLoaded(0)
 		, m_configOptionsBitSet(0)
 		, m_pCurrent(nullptr) {}
@@ -157,11 +164,13 @@ private:
 
 	bool m_bChanged;
 	bool m_rectMode;
+	bool m_bAsyncCompilation;
 	u32 m_shadersLoaded;
 	u32 m_configOptionsBitSet;
 
 	graphics::CombinerProgram * m_pCurrent;
 	graphics::Combiners m_combiners;
+	std::set<CombinerKey> m_pendingCombiners;
 
 	std::unique_ptr<graphics::ShaderProgram> m_shadowmapProgram;
 	std::unique_ptr<graphics::ShaderProgram> m_texrectUpscaleCopyProgram;
@@ -178,6 +187,7 @@ graphics::CombinerProgram * currentCombiner() {
 void Combiner_Init();
 void Combiner_Destroy();
 graphics::CombinerProgram * Combiner_Compile(CombinerKey key);
+void Combiner_Compile_Async(CombinerKey key);
 
 #endif
 
