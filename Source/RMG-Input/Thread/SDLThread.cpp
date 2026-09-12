@@ -124,7 +124,7 @@ void SDLThread::run(void)
                         name = SDL_GetJoystickName(joystick);
                         path = SDL_GetJoystickPath(joystick);
                         serial = SDL_GetJoystickSerial(joystick);
-                        guid = nullptr;
+                        guid = QString::fromStdString(Utilities::Sdl3GuidWithIndex(guidsWithoutIndex, joystickId));
                         SDL_CloseJoystick(joystick);
                     }
 

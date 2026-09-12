@@ -619,7 +619,7 @@ static void open_controller(InputProfile* profile, SDL_JoystickID* joysticks, in
                 PluginDebugMessage(M64MSG_ERROR, errorMessage);
                 continue;
             }
-            
+
             joystick = SDL_GetGamepadJoystick(gamepad);
             if (joystick == nullptr)
             {
@@ -648,7 +648,7 @@ static void open_controller(InputProfile* profile, SDL_JoystickID* joysticks, in
             deviceName = string_from_const_char(SDL_GetJoystickName(joystick));
             devicePath = string_from_const_char(SDL_GetJoystickPath(joystick));
             deviceSerial = string_from_const_char(SDL_GetJoystickSerial(joystick));
-            deviceGuid = nullptr;
+            deviceGuid = Utilities::Sdl3GuidWithIndex(deviceGuidsWithoutIndex, joystickId);
         }
 
         if (deviceGuid   == profile->DeviceGuid ||

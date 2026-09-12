@@ -17,7 +17,7 @@ using namespace Utilities;
 std::string Utilities::Sdl3GuidWithIndex(std::vector<std::string>& guidsWithoutIndex, SDL_JoystickID joystickId)
 {
     char guidBuffer[33]{};
-    SDL_GUIDToString(SDL_GetGamepadGUIDForID(joystickId), guidBuffer, sizeof(guidBuffer));
+    SDL_GUIDToString(SDL_GetJoystickGUIDForID(joystickId), guidBuffer, sizeof(guidBuffer));
     std::string guidWithoutIndex = std::string(guidBuffer);
 
     int guidIndex = 0;
