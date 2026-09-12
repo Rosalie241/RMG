@@ -654,6 +654,9 @@ static l_Setting get_setting(SettingsID settingId)
     case SettingsID::Input_DeviceSerial:
         setting = {"", "DeviceSerial"};
         break;
+    case SettingsID::Input_DeviceGuid:
+        setting = {"", "DeviceGuid"};
+        break;
     case SettingsID::Input_Deadzone:
         setting = {"", "Deadzone"};
         break;

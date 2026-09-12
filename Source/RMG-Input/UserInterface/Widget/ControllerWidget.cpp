@@ -618,6 +618,7 @@ void ControllerWidget::CheckInputDeviceSettings(QString sectionQString)
     std::string deviceName = CoreSettingsGetStringValue(SettingsID::Input_DeviceName, section);
     std::string devicePath = CoreSettingsGetStringValue(SettingsID::Input_DevicePath, section);
     std::string deviceSerial = CoreSettingsGetStringValue(SettingsID::Input_DeviceSerial, section);
+    std::string deviceGuid = CoreSettingsGetStringValue(SettingsID::Input_DeviceGuid, section);
     InputDeviceType deviceType;
 
     // keep compatibility with <v0.8.1
@@ -648,7 +649,7 @@ void ControllerWidget::CheckInputDeviceSettings(QString sectionQString)
         }
     }
 
-    InputDevice device = { deviceType, deviceName, devicePath, deviceSerial };
+    InputDevice device = { deviceType, deviceName, devicePath, deviceSerial, deviceGuid };
 
     // do nothing when input device combobox
     // is empty
@@ -666,11 +667,17 @@ void ControllerWidget::CheckInputDeviceSettings(QString sectionQString)
 
     int deviceIndex = -1;
     int deviceSerialIndex = -1;
+    int deviceGuidIndex = -1;
 
     for (int i = 0; i < this->inputDeviceComboBox->count(); i++)
     {
         inputDeviceData otherDeviceData = this->inputDeviceComboBox->itemData(i).value<inputDeviceData>();
         InputDevice otherDevice = otherDeviceData.device;
+        if (device.guid == otherDevice.guid)
+        {
+            deviceGuidIndex = i;
+            break;
+        }
         if (device.name == otherDevice.name &&
             device.serial == otherDevice.serial)
         {
@@ -687,7 +694,11 @@ void ControllerWidget::CheckInputDeviceSettings(QString sectionQString)
         }
     }
 
-    if (deviceIndex != -1)
+    if (deviceGuidIndex != -1)
+    { // guid match
+        this->inputDeviceComboBox->setCurrentIndex(deviceGuidIndex);
+    }
+    else if (deviceIndex != -1)
     { // full match
         this->inputDeviceComboBox->setCurrentIndex(deviceIndex);
 
@@ -1882,6 +1893,7 @@ void ControllerWidget::SaveDefaultSettings()
     CoreSettingsSetValue(SettingsID::Input_DeviceType, section, static_cast<int>(InputDeviceType::None));
     CoreSettingsSetValue(SettingsID::Input_DevicePath, section, std::string(""));
     CoreSettingsSetValue(SettingsID::Input_DeviceSerial, section, std::string(""));
+    CoreSettingsSetValue(SettingsID::Input_DeviceGuid, section, std::string(""));
     CoreSettingsSetValue(SettingsID::Input_Deadzone, section, 9);
     CoreSettingsSetValue(SettingsID::Input_Sensitivity, section, 100);
     CoreSettingsSetValue(SettingsID::Input_Pak, section, 0);
@@ -1998,6 +2010,7 @@ void ControllerWidget::SaveSettings(QString section)
     CoreSettingsSetValue(SettingsID::Input_DeviceType, sectionStr, static_cast<int>(device.type));
     CoreSettingsSetValue(SettingsID::Input_DevicePath, sectionStr, device.path);
     CoreSettingsSetValue(SettingsID::Input_DeviceSerial, sectionStr, device.serial);
+    CoreSettingsSetValue(SettingsID::Input_DeviceGuid, sectionStr, device.guid);
     CoreSettingsSetValue(SettingsID::Input_Deadzone, sectionStr, this->deadZoneSlider->value());
     CoreSettingsSetValue(SettingsID::Input_Sensitivity, sectionStr, this->analogStickSensitivitySlider->value());
     CoreSettingsSetValue(SettingsID::Input_Pak, sectionStr, this->optionsDialogSettings.ControllerPak);
