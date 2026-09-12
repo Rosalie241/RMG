@@ -4,6 +4,7 @@
  */
 
 #include <assert.h>
+#include <string.h>
 #include <array>
 #include <algorithm>
 #include <cmath>
@@ -235,25 +236,61 @@ static
 void TriGen0000_PrepareColorData(const u32 * _params, std::vector<u32> & _data)
 {
 	assert((_params[3] & 0x07) % 4 == 0);
-	const u32* data32 = (const u32*)&RDRAM[_SHIFTR(_params[3], 0, 24)];
-	std::copy_n(data32, 25, _data.begin());
+	assert(_data.size() >= 25);
+	const u32 dataAddr = _SHIFTR(_params[3], 0, 24);
+	if (!isRDRAMRangeValid(dataAddr, 25 * sizeof(u32))) {
+		DebugMsg(DEBUG_NORMAL | DEBUG_ERROR,
+			"// TriGen0000_PrepareColorData: colour data at 0x%08x lies outside RDRAM\n", dataAddr);
+		return;
+	}
+	// memcpy rather than casting RDRAM to u32*: the cast violates strict
+	// aliasing and assumes an alignment the address does not guarantee.
+	memcpy(_data.data(), RDRAM + dataAddr, 25 * sizeof(u32));
 }
 
 static
 void TriGen0001_PrepareColorData(const u32 * _params, std::vector<u32> & _data)
 {
 	assert((_params[3] & 0x07) % 4 == 0);
-	const u32 dataSize = (((_SHIFTR(_params[4], 0, 16) + 0x13) & 0xFF0) - (_params[3] & 0x07)) / 4;
-	const u32 dataAddr = (_SHIFTR(_params[3], 0, 24) & 0x00FFFFF8) +(_params[3] & 0x07);
-	const u32* data32 = (const u32*)&RDRAM[dataAddr];
+	// The subtraction is unsigned and the two terms are independent, so a
+	// malformed command can make it wrap: the masked end is at most 0xFF0
+	// but the offset is taken straight from the low bits of _params[3].
+	// A wrapped dataSize is around 0x3FFFFFFF words, which both runs the
+	// loop below off the end of RDRAM and overflows the size computation
+	// used to guard it.
+	const u32 dataEnd = (_SHIFTR(_params[4], 0, 16) + 0x13) & 0xFF0;
+	const u32 dataOffset = _params[3] & 0x07;
+	if (dataEnd < dataOffset) {
+		DebugMsg(DEBUG_NORMAL | DEBUG_ERROR,
+			"// TriGen0001_PrepareColorData: bad data size, end 0x%x < offset 0x%x\n", dataEnd, dataOffset);
+		return;
+	}
+	const u32 dataSize = (dataEnd - dataOffset) / 4;
+	const u32 dataAddr = (_SHIFTR(_params[3], 0, 24) & 0x00FFFFF8) + dataOffset;
+
+	// The loop below runs at least once and reads up to index idx32 + 4 while
+	// idx32 < dataSize, so it can touch dataSize + 5 words. dataSize is now
+	// capped at 0xFF0 / 4, so the product cannot overflow.
+	if (!isRDRAMRangeValid(dataAddr, (dataSize + 5) * sizeof(u32))) {
+		DebugMsg(DEBUG_NORMAL | DEBUG_ERROR,
+			"// TriGen0001_PrepareColorData: colour data at 0x%08x lies outside RDRAM\n", dataAddr);
+		return;
+	}
+
+	const u8 * const data8 = RDRAM + dataAddr;
+	auto readWord = [data8](u32 _idx) -> u32 {
+		u32 word;
+		memcpy(&word, data8 + _idx * sizeof(u32), sizeof(word));
+		return word;
+	};
 
 	u32 idx32 = 0;
 	do {
-		_data.push_back(data32[idx32++]);
+		_data.push_back(readWord(idx32++));
 		idx32++;
-		_data.push_back(data32[idx32++]);
+		_data.push_back(readWord(idx32++));
 		idx32++;
-		_data.push_back(data32[idx32]);
+		_data.push_back(readWord(idx32));
 		idx32 += 6;
 	} while(dataSize > idx32);
 
@@ -1187,6 +1224,17 @@ void F3DSWRS_TexrectGen(u32 _w0, u32 _w1)
 
 	if (flip)
 		std::swap(offset_x_i, offset_y_i);
+
+	// Both offsets are the result of an integer division and can round down
+	// to zero. The lrx - ulx and lry - uly tests above happen to catch that
+	// for finite coordinates, but v.w may be zero, in which case screenX and
+	// screenY are infinite or NaN, both comparisons are false, and execution
+	// reaches the divisions below with a zero divisor.
+	if (offset_x_i == 0 || offset_y_i == 0) {
+		DebugMsg(DEBUG_NORMAL | DEBUG_ERROR,
+			"// F3DSWRS_TexrectGen: zero texrect extent, skipping\n");
+		return;
+	}
 
 	u16 dsdx_i = (u16)((param4X / offset_x_i) >> 10);
 	u16 dtdy_i = (u16)((param4Y / offset_y_i) >> 10);

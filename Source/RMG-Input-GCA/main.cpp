@@ -41,8 +41,10 @@
 
 #define GCA_COMMAND_POLL 0x13
 
-#define GCA_IS_WAVEBIRD_MASK 1 << 5
-#define GCA_IS_WIRED_GC_CONTROLLER_MASK 1 << 4
+#define GCA_IS_WIRELESS_WAVEBIRD_MASK 0x20
+#define GCA_IS_WIRED_GC_CONTROLLER_MASK 0x10
+
+#define GCA_STATUS_HAS_CONTROLLER_MASK (GCA_IS_WIRELESS_WAVEBIRD_MASK | GCA_IS_WIRED_GC_CONTROLLER_MASK)
 
 //
 // Local Structures
@@ -478,7 +480,7 @@ EXPORT void CALL InitiateControllers(CONTROL_INFO ControlInfo)
     for (int i = 0; i < NUM_CONTROLLERS; i++)
     {
         GameCubeAdapterControllerState state = l_ControllerState[i];
-        ControlInfo.Controls[i].Present = state.Status & (GCA_IS_WAVEBIRD_MASK | GCA_IS_WIRED_GC_CONTROLLER_MASK) ? 1 : 0;
+        ControlInfo.Controls[i].Present = (state.Status & GCA_STATUS_HAS_CONTROLLER_MASK) ? 1 : 0;
     }
     l_ControllerStateMutex.unlock();
 

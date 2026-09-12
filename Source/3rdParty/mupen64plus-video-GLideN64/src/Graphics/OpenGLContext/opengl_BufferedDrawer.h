@@ -21,8 +21,10 @@ namespace opengl {
 		void drawLine(f32 _width, SPVertex * _vertices) override;
 
 	private:
-		void _updateRectBuffer(const graphics::Context::DrawRectParameters & _params);
-		void _updateTrianglesBuffers(const graphics::Context::DrawTriangleParameters & _params);
+		// These return false when the vertex data could not be uploaded, in
+		// which case the caller must skip the draw.
+		bool _updateRectBuffer(const graphics::Context::DrawRectParameters & _params);
+		bool _updateTrianglesBuffers(const graphics::Context::DrawTriangleParameters & _params);
 
 		enum class BuffersType {
 			none,
@@ -62,7 +64,7 @@ namespace opengl {
 		};
 
 		void _initBuffer(Buffer & _buffer, GLuint _bufSize);
-		void _updateBuffer(Buffer & _buffer, u32 _count, u32 _dataSize, const void * _data);
+		bool _updateBuffer(Buffer & _buffer, u32 _count, u32 _dataSize, const void * _data);
 		void _convertFromSPVertex(bool _flatColors, u32 _count, const SPVertex * _data);
 
 		const GLInfo & m_glInfo;

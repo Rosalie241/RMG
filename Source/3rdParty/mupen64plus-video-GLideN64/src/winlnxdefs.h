@@ -30,8 +30,6 @@
 #ifndef WINLNXDEFS_H
 #define WINLNXDEFS_H
 
-#include <dlfcn.h>
-#include <errno.h>
 #include <limits.h> // PATH_MAX
 #include <stdlib.h> // malloc(), srand()
 #include <stdio.h>
@@ -91,37 +89,5 @@ typedef const char 	*LPCSTR;
 #ifndef true
 #define true 1
 #endif
-
-static inline const char *GetPluginDir()
-{
-	static char path[PATH_MAX];
-
-#ifdef __USE_GNU
-	Dl_info info;
-	void *addr = (void *)GetPluginDir;
-	//__asm__( "movl %%eip, %%eax" : "=a"(addr) );
-	if (dladdr( addr, &info ) != 0)
-	{
-		strncpy( path, info.dli_fname, PATH_MAX );
-		*(strrchr( path, '/' )) = '\0';
-	}
-	else
-	{
-		fprintf( stderr, "(WW) Couldn't get path of .so, trying to get emulator's path\n" );
-#endif // __USE_GNU
-		if (readlink( "/proc/self/exe", path, PATH_MAX ) == -1)
-		{
-			fprintf( stderr, "(WW) readlink() /proc/self/exe failed: %s\n", strerror( errno ) );
-			path[0] = '.';
-			path[1] = '\0';
-		}
-		*(strrchr( path, '/' )) = '\0';
-		strncat( path, "/plugins", PATH_MAX );
-#ifdef __USE_GNU
-	}
-#endif
-
-	return path;
-}
 
 #endif

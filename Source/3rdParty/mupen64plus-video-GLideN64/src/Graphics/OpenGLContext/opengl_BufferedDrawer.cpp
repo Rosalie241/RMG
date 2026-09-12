@@ -64,6 +64,9 @@ void BufferedDrawer::_initBuffer(Buffer & _buffer, GLuint _bufSize)
 	if (m_glInfo.bufferStorage) {
 		glBufferStorage(_buffer.type, _bufSize, nullptr, m_bufAccessBits);
 		_buffer.data = (GLubyte*)glMapBufferRange(_buffer.type, 0, _bufSize, m_bufMapBits);
+		if (_buffer.data == nullptr)
+			LOG(LOG_ERROR, "Failed to persistently map %u bytes of buffer 0x%x; "
+				"draws using it will be skipped", _bufSize, _buffer.type);
 	} else {
 		glBufferData(_buffer.type, _bufSize, nullptr, GL_DYNAMIC_DRAW);
 	}
@@ -80,7 +83,10 @@ BufferedDrawer::~BufferedDrawer()
 	glDeleteVertexArrays(2, arrays);
 }
 
-void BufferedDrawer::_updateBuffer(Buffer & _buffer, u32 _count, u32 _dataSize, const void * _data)
+// Returns false if the buffer could not be written, in which case offset and
+// pos are left alone and the caller must skip the draw: the data the draw
+// would read was never uploaded.
+bool BufferedDrawer::_updateBuffer(Buffer & _buffer, u32 _count, u32 _dataSize, const void * _data)
 {
 	if (_buffer.offset + _dataSize >= _buffer.size) {
 		_buffer.offset = 0;
@@ -88,19 +94,30 @@ void BufferedDrawer::_updateBuffer(Buffer & _buffer, u32 _count, u32 _dataSize, 
 	}
 
 	if (m_glInfo.bufferStorage) {
+		// The persistent mapping is made once in _initBuffer and may have
+		// failed there.
+		if (_buffer.data == nullptr)
+			return false;
 		memcpy(&_buffer.data[_buffer.offset], _data, _dataSize);
 	} else {
 		m_bindBuffer->bind(Parameter(_buffer.type), ObjectHandle(_buffer.handle));
 		void* buffer_pointer = glMapBufferRange(_buffer.type, _buffer.offset, _dataSize, GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+		if (buffer_pointer == nullptr) {
+			// Nothing to unmap: the mapping is what failed.
+			LOG(LOG_ERROR, "glMapBufferRange failed for %u bytes at offset %lld of buffer 0x%x",
+				_dataSize, static_cast<long long>(_buffer.offset), _buffer.type);
+			return false;
+		}
 		memcpy(buffer_pointer, _data, _dataSize);
 		glUnmapBuffer(_buffer.type);
 	}
 
 	_buffer.offset += _dataSize;
 	_buffer.pos += _count;
+	return true;
 }
 
-void BufferedDrawer::_updateRectBuffer(const graphics::Context::DrawRectParameters & _params)
+bool BufferedDrawer::_updateRectBuffer(const graphics::Context::DrawRectParameters & _params)
 {
 	const BuffersType type = BuffersType::rects;
 	if (m_type != type) {
@@ -111,31 +128,32 @@ void BufferedDrawer::_updateRectBuffer(const graphics::Context::DrawRectParamete
 	Buffer & buffer = m_rectsBuffers.vbo;
 	const u32 dataSize = _params.verticesCount * static_cast<u32>(sizeof(RectVertex));
 
-	if (m_glInfo.bufferStorage) {
-		_updateBuffer(buffer, _params.verticesCount, dataSize, _params.vertices);
-		return;
-	}
+	if (m_glInfo.bufferStorage)
+		return _updateBuffer(buffer, _params.verticesCount, dataSize, _params.vertices);
 
 	const u64 crc = CRC_Calculate(UINT64_MAX, _params.vertices, dataSize);
 	auto iter = m_rectBufferOffsets.find(crc);
 	if (iter != m_rectBufferOffsets.end()) {
 		buffer.pos = iter->second;
-		return;
+		return true;
 	}
 
 	const GLintptr prevOffset = buffer.offset;
-	_updateBuffer(buffer, _params.verticesCount, dataSize, _params.vertices);
+	if (!_updateBuffer(buffer, _params.verticesCount, dataSize, _params.vertices))
+		return false;
 	if (buffer.offset < prevOffset)
 		m_rectBufferOffsets.clear();
 
 	buffer.pos = static_cast<GLint>(buffer.offset / sizeof(RectVertex));
 	m_rectBufferOffsets[crc] = buffer.pos;
+	return true;
 }
 
 
 void BufferedDrawer::drawRects(const graphics::Context::DrawRectParameters & _params)
 {
-	_updateRectBuffer(_params);
+	if (!_updateRectBuffer(_params))
+		return;
 
 	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::texcoord0, _params.texrect);
 	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::texcoord1, _params.texrect);
@@ -174,7 +192,7 @@ void BufferedDrawer::_convertFromSPVertex(bool _flatColors, u32 _count, const SP
 	}
 }
 
-void BufferedDrawer::_updateTrianglesBuffers(const graphics::Context::DrawTriangleParameters & _params)
+bool BufferedDrawer::_updateTrianglesBuffers(const graphics::Context::DrawTriangleParameters & _params)
 {
 	const BuffersType type = BuffersType::triangles;
 
@@ -186,19 +204,21 @@ void BufferedDrawer::_updateTrianglesBuffers(const graphics::Context::DrawTriang
 	_convertFromSPVertex(_params.flatColors, _params.verticesCount, _params.vertices);
 	const u32 vboDataSize = _params.verticesCount * static_cast<u32>(sizeof(Vertex));
 	Buffer & vboBuffer = m_trisBuffers.vbo;
-	_updateBuffer(vboBuffer, _params.verticesCount, vboDataSize, m_vertices.data());
+	if (!_updateBuffer(vboBuffer, _params.verticesCount, vboDataSize, m_vertices.data()))
+		return false;
 
 	if (_params.elements == nullptr)
-		return;
+		return true;
 
 	const u32 eboDataSize = static_cast<u32>(sizeof(GLushort)) * _params.elementsCount;
 	Buffer & eboBuffer = m_trisBuffers.ebo;
-	_updateBuffer(eboBuffer, _params.elementsCount, eboDataSize, _params.elements);
+	return _updateBuffer(eboBuffer, _params.elementsCount, eboDataSize, _params.elements);
 }
 
 void BufferedDrawer::drawTriangles(const graphics::Context::DrawTriangleParameters & _params)
 {
-	_updateTrianglesBuffers(_params);
+	if (!_updateTrianglesBuffers(_params))
+		return;
 
 	if (isHWLightingAllowed())
 		glVertexAttrib1f(triangleAttrib::numlights, GLfloat(_params.vertices[0].HWLight));
@@ -252,7 +272,8 @@ void BufferedDrawer::drawLine(f32 _width, SPVertex * _vertices)
 	_convertFromSPVertex(false, 2, _vertices);
 	const GLsizeiptr vboDataSize = 2 * sizeof(Vertex);
 	Buffer & vboBuffer = m_trisBuffers.vbo;
-	_updateBuffer(vboBuffer, 2, vboDataSize, m_vertices.data());
+	if (!_updateBuffer(vboBuffer, 2, vboDataSize, m_vertices.data()))
+		return;
 
 	glLineWidth(_width);
 	glDrawArrays(GL_LINES, m_trisBuffers.vbo.pos - 2, 2);

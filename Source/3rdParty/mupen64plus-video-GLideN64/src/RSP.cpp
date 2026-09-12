@@ -141,6 +141,11 @@ void RSP_ProcessDList()
 		gSP.geometryMode = 0U;
 		memset(&gSP.lookat, 0, sizeof(gSPInfo::lookat));
 		gSP.lookat.xyz[0][Y] = gSP.lookat.xyz[1][X] = 1.0f;
+		memset(&gSP.lights, 0, sizeof(gSPInfo::lights));
+		gSP.ao = { 1.f, 0.625f, 0 };
+		gSP.attrOffset = { 0x0100, -0x0100 };
+		gSP.fresnel = {};
+		gSP.alphaCompareCull = {};
 		gSP.changed |= CHANGED_MATRIX | CHANGED_LIGHT | CHANGED_LOOKAT | CHANGED_GEOMETRYMODE;
 		gSP.tri_num = 0;
 		gSP.cbfd.advancedLighting = false;

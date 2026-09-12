@@ -12,7 +12,7 @@ ColorBufferReaderWithReadPixels::ColorBufferReaderWithReadPixels(CachedTexture *
 }
 
 const u8 * ColorBufferReaderWithReadPixels::_readPixels(const ReadColorBufferParams& _params, u32& _heightOffset,
-	u32& _stride)
+	u32& _stride, size_t& _gpuDataSize)
 {
 	GLenum format = GLenum(_params.colorFormat);
 	GLenum type = GLenum(_params.colorType);
@@ -23,6 +23,7 @@ const u8 * ColorBufferReaderWithReadPixels::_readPixels(const ReadColorBufferPar
 
 	_heightOffset = 0;
 	_stride = m_pTexture->width;
+	_gpuDataSize = m_pixelData.size();
 
 	return gpuData;
 }

@@ -829,6 +829,9 @@
     <ClInclude Include="..\..\src\GLideNHQ\TxFilterExport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Pow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\src\GLideN64.rc">

@@ -54,6 +54,9 @@ namespace graphics {
 		virtual bool isCombinerProgramBuilderObsolete() = 0;
 		virtual void resetCombinerProgramBuilder() = 0;
 		virtual CombinerProgram * createCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key) = 0;
+		virtual void createCombinerProgramAsync(Combiner & _color, Combiner & _alpha, const CombinerKey & _key) = 0;
+		virtual void getCompiledCombinerPrograms(Combiners & _compiled, bool _wait) = 0;
+		virtual void dropPendingCombinerPrograms() = 0;
 		virtual bool saveShadersStorage(const Combiners & _combiners) = 0;
 		virtual bool loadShadersStorage(Combiners & _combiners) = 0;
 		virtual ShaderProgram * createDepthFogShader() = 0;

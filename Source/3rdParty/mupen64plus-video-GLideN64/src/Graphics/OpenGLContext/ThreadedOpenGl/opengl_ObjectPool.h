@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <memory>
 #include <vector>
 
@@ -23,7 +24,7 @@ namespace opengl {
 		void setObjectId(int _objectId);
 	private:
 
-		bool m_inUse;
+		std::atomic<bool> m_inUse;
 		int m_poolId;
 		int m_objectId;
 	};

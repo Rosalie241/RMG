@@ -132,7 +132,19 @@ void F3D_MoveWord( u32 w0, u32 w1 )
 			gSPInsertMatrix( _SHIFTR( w0, 8, 16 ), w1 );
 			break;
 		case G_MW_NUMLIGHT:
-			gSPNumLights( ((w1 - 0x80000000) >> 5) - 1 );
+			// w1 is a DMEM address just past the last light, so the count is
+			// (w1 - 0x80000000) / 32 - 1. Both steps misbehave on a malformed
+			// display list: the subtraction wraps when w1 is below the base,
+			// and the shift yields zero for the 32 values at the base, after
+			// which the -1 underflows to 0xFFFFFFFF.
+			if (w1 >= 0x80000020u) {
+				gSPNumLights(static_cast<s32>((w1 - 0x80000000u) >> 5) - 1);
+			} else {
+				// Braces matter: DebugMsg is an empty macro without
+				// DEBUG_DUMP, so an unbraced else would be an empty body.
+				DebugMsg(DEBUG_NORMAL | DEBUG_ERROR,
+					"// G_MW_NUMLIGHT: invalid light address 0x%08x\n", w1);
+			}
 			break;
 		case G_MW_CLIP:
 			gSPClipRatio( w1 );

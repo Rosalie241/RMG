@@ -95,6 +95,10 @@ void CombinerInfo::init()
 	gfxContext.resetCombinerProgramBuilder();
 	m_pCurrent = nullptr;
 
+	// Base combiners below must be compiled synchronously.
+	m_bAsyncCompilation = false;
+	m_pendingCombiners.clear();
+
 	m_shadersLoaded = 0;
 	if (config.generalEmulation.enableShadersStorage != 0 && !_loadShadersStorage()) {
 		for (auto cur = m_combiners.begin(); cur != m_combiners.end(); ++cur)
@@ -115,10 +119,23 @@ void CombinerInfo::init()
 	m_texrectColorAndDepthUpscaleCopyProgram.reset(gfxContext.createTexrectColorAndDepthUpscaleCopyShader());
 	m_texrectDownscaleCopyProgram.reset(gfxContext.createTexrectDownscaleCopyShader());
 	m_texrectColorAndDepthDownscaleCopyProgram.reset(gfxContext.createTexrectColorAndDepthDownscaleCopyShader());
+
+	m_bAsyncCompilation = config.video.asyncShaderCompilation != 0 &&
+		Context::AsyncShaderCompilation;
 }
 
 void CombinerInfo::destroy()
 {
+	m_bAsyncCompilation = false;
+	if (!m_pendingCombiners.empty()) {
+		if (config.generalEmulation.enableShadersStorage != 0) {
+			// Finalize pending programs, so they can be saved to the shaders storage.
+			processPendingCombiners(true);
+		} else
+			gfxContext.dropPendingCombinerPrograms();
+		m_pendingCombiners.clear();
+	}
+
 	m_shadowmapProgram.reset();
 	m_texrectUpscaleCopyProgram.reset();
 	m_texrectColorAndDepthUpscaleCopyProgram.reset();
@@ -194,13 +211,12 @@ void SimplifyCycle( CombineCycle *cc, CombinerStage *stage )
 	}
 }
 
-graphics::CombinerProgram * Combiner_Compile(CombinerKey key)
+static
+void Combiner_GetStages(const CombinerKey & key, Combiner & color, Combiner & alpha)
 {
 	gDPCombine combine;
 
 	combine.mux = key.getMux();
-
-	Combiner color, alpha;
 
 	const u32 cycleType = key.getCycleType();
 	const u32 numCycles = cycleType + 1;
@@ -270,8 +286,20 @@ graphics::CombinerProgram * Combiner_Compile(CombinerKey key)
 			alpha.numStages = 1;
 		}
 	}
+}
 
+graphics::CombinerProgram * Combiner_Compile(CombinerKey key)
+{
+	Combiner color, alpha;
+	Combiner_GetStages(key, color, alpha);
 	return gfxContext.createCombinerProgram(color, alpha, key);
+}
+
+void Combiner_Compile_Async(CombinerKey key)
+{
+	Combiner color, alpha;
+	Combiner_GetStages(key, color, alpha);
+	gfxContext.createCombinerProgramAsync(color, alpha, key);
 }
 
 void CombinerInfo::update()
@@ -295,15 +323,43 @@ void CombinerInfo::setCombine(u64 _mux )
 		m_bChanged = false;
 		return;
 	}
-	auto iter = m_combiners.find(key);
+	const auto iter = m_combiners.find(key);
 	if (iter != m_combiners.end()) {
 		m_pCurrent = iter->second;
-	} else {
-		m_pCurrent = Combiner_Compile(key);
-		m_pCurrent->update(true);
-		m_combiners[m_pCurrent->getKey()] = m_pCurrent;
+		m_bChanged = true;
+		return;
 	}
+
+	if (m_bAsyncCompilation && m_pCurrent != nullptr) {
+		// Program for this mux is not compiled yet.
+		// Schedule asynchronous compilation to avoid stall of the current thread
+		// and keep the current program as a dummy substitute.
+		// The compiled program will be added to m_combiners in processPendingCombiners(),
+		// called when the plugin passes control back to the emulator, see gDPFullSync().
+		if (m_pendingCombiners.insert(key).second) {
+			Combiner_Compile_Async(key);
+		}
+		m_bChanged = false;
+		return;
+	}
+
+	m_pCurrent = Combiner_Compile(key);
+	m_pCurrent->update(true);
+	m_combiners[m_pCurrent->getKey()] = m_pCurrent;
 	m_bChanged = true;
+}
+
+void CombinerInfo::processPendingCombiners(bool _wait)
+{
+	if (m_pendingCombiners.empty())
+		return;
+
+	graphics::Combiners compiled;
+	gfxContext.getCompiledCombinerPrograms(compiled, _wait);
+	for (auto & item : compiled) {
+		m_combiners[item.first] = item.second;
+		m_pendingCombiners.erase(item.first);
+	}
 }
 
 void CombinerInfo::updateParameters()

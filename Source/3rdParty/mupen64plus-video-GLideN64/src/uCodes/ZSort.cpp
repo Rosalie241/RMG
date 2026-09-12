@@ -11,6 +11,9 @@
 #include "3DMath.h"
 #include "DisplayWindow.h"
 
+// ZSort addresses DMEM with a 0x400 bias baked into the display list fields.
+static const u32 ZSORT_DMEM_BIAS = 1024;
+
 #define	GZM_USER0		0
 #define	GZM_USER1		2
 #define	GZM_MMTX		4
@@ -192,7 +195,20 @@ void ZSort_XFMLight( u32 _w0, u32 _w1 )
 {
 	int mid = _SHIFTR(_w0, 0, 8);
 	gSPNumLights(1 + _SHIFTR(_w1, 12, 8));
-	u32 addr = -1024 + _SHIFTR(_w1, 0, 12);
+	// ZSort DMEM offsets carry a 0x400 bias. The subtraction is unsigned, so a
+	// field below 1024 wraps to near UINT32_MAX and is then used as a DMEM
+	// index. The walk below skips 8 bytes, then strides 24 per light for
+	// numLights lights and twice more for the lookat vectors, reading up to
+	// offset +10 (+3 more once the ^3 byte swap is applied) each time.
+	const u32 addrField = _SHIFTR(_w1, 0, 12);
+	const u32 addrExtent = 8 + (gSP.numLights + 2) * 24 + 14;
+	if (addrField < ZSORT_DMEM_BIAS ||
+		!isDMEMRangeValid(addrField - ZSORT_DMEM_BIAS, addrExtent)) {
+		LOG(LOG_ERROR, "ZSort_XFMLight: DMEM offset 0x%03x with %u lights is out of range",
+			addrField, gSP.numLights);
+		return;
+	}
+	u32 addr = addrField - ZSORT_DMEM_BIAS;
 
 	assert(mid == GZM_MMTX);
 /*
@@ -244,12 +260,37 @@ void ZSort_LightingL( u32, u32 )
 
 void ZSort_Lighting( u32 _w0, u32 _w1 )
 {
-	u32 csrs = -1024 + _SHIFTR(_w0, 12, 12);
-	u32 nsrs = -1024 + _SHIFTR(_w0, 0, 12);
+	const u32 csrsField = _SHIFTR(_w0, 12, 12);
+	const u32 nsrsField = _SHIFTR(_w0, 0, 12);
 	u32 num = 1 + _SHIFTR(_w1, 24, 8);
-	u32 cdest = -1024 + _SHIFTR(_w1, 12, 12);
-	u32 tdest = -1024 + _SHIFTR(_w1, 0, 12);
+	const u32 cdestField = _SHIFTR(_w1, 12, 12);
+	const u32 tdestField = _SHIFTR(_w1, 0, 12);
+
+	// All four offsets carry the 0x400 bias and the subtraction is unsigned, so
+	// a field below 1024 wraps to near UINT32_MAX. cdest and tdest are DMEM
+	// *write* indices. Per vertex this reads 3 bytes at nsrs, 4 at csrs, and
+	// writes 4 at cdest and two s16 at tdest, with num up to 256.
+	if (csrsField < ZSORT_DMEM_BIAS || nsrsField < ZSORT_DMEM_BIAS ||
+		cdestField < ZSORT_DMEM_BIAS || tdestField < ZSORT_DMEM_BIAS) {
+		LOG(LOG_ERROR, "ZSort_Lighting: DMEM offset below the 0x400 bias");
+		return;
+	}
+	u32 csrs = csrsField - ZSORT_DMEM_BIAS;
+	u32 nsrs = nsrsField - ZSORT_DMEM_BIAS;
+	u32 cdest = cdestField - ZSORT_DMEM_BIAS;
+	u32 tdest = tdestField - ZSORT_DMEM_BIAS;
+	// use_material compares the biased value against 0x0ff0, which a 12 bit
+	// field can never produce after subtracting 1024. Left as it is: correcting
+	// the sentinel would change which vertices get material colours.
 	int use_material = (csrs != 0x0ff0);
+	if (!isDMEMRangeValid(nsrs, num * 3) ||
+		(use_material && !isDMEMRangeValid(csrs, num * 4)) ||
+		!isDMEMRangeValid(cdest, num * 4) ||
+		!isDMEMRangeValid(tdest, num * 4)) {
+		LOG(LOG_ERROR, "ZSort_Lighting: %u vertices from DMEM 0x%03x/0x%03x to 0x%03x/0x%03x is out of range",
+			num, nsrs, csrs, cdest, tdest);
+		return;
+	}
 	tdest >>= 1;
 	GraphicsDrawer & drawer = dwnd().getDrawer();
 	drawer.setDMAVerticesSize(num);
@@ -442,18 +483,24 @@ void ZSort_MoveMem( u32 _w0, u32 _w1 )
 	break;
 
 	case GZM_MMTX:  // model matrix
-		RSP_LoadMatrix(gSP.matrix.modelView[gSP.matrix.modelViewi], addr);
-		gSP.changed |= CHANGED_MATRIX;
+		if (RSP_LoadMatrix(gSP.matrix.modelView[gSP.matrix.modelViewi], addr))
+			gSP.changed |= CHANGED_MATRIX;
+		else
+			LOG(LOG_ERROR, "ZSort MoveMem: invalid model matrix address 0x%08x", addr);
 	break;
 
 	case GZM_PMTX:  // projection matrix
-		RSP_LoadMatrix(gSP.matrix.projection, addr);
-		gSP.changed |= CHANGED_MATRIX;
+		if (RSP_LoadMatrix(gSP.matrix.projection, addr))
+			gSP.changed |= CHANGED_MATRIX;
+		else
+			LOG(LOG_ERROR, "ZSort MoveMem: invalid projection matrix address 0x%08x", addr);
 	break;
 
 	case GZM_MPMTX:  // combined matrix
-		RSP_LoadMatrix(gSP.matrix.combined, addr);
-		gSP.changed &= ~CHANGED_MATRIX;
+		if (RSP_LoadMatrix(gSP.matrix.combined, addr))
+			gSP.changed &= ~CHANGED_MATRIX;
+		else
+			LOG(LOG_ERROR, "ZSort MoveMem: invalid combined matrix address 0x%08x", addr);
 	break;
 
 	case GZM_OTHERMODE:

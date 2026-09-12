@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <vector>
 #include <Combiner.h>
 #include <Graphics/OpenGLContext/opengl_GLInfo.h>
 #include "glsl_CombinerProgramUniformFactory.h"
@@ -56,6 +57,17 @@ public:
 
 	graphics::CombinerProgram * buildCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key);
 
+	// Asynchronous compilation:
+	// beginCombinerProgram issues shader compilation and program linking without waiting
+	// for the result. With GL_ARB/KHR_parallel_shader_compile the driver performs
+	// compilation in background threads.
+	void beginCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key);
+	// Finalizes pending programs whose compilation is complete (or all of them if _wait is true)
+	// and moves them into _compiled.
+	void getCompiledCombinerPrograms(graphics::Combiners & _compiled, bool _wait);
+	// Deletes pending programs without finalizing them.
+	void dropPendingCombinerPrograms();
+
 	virtual const ShaderPart * getVertexShaderHeader() const = 0;
 
 	virtual const ShaderPart * getFragmentShaderHeader() const = 0;
@@ -64,14 +76,25 @@ public:
 
 	virtual bool isObsolete() const = 0;
 
-	static u32 s_cycleType;
-	static TextureConvert s_textureConvert;
+	static thread_local u32 s_cycleType;
+	static thread_local TextureConvert s_textureConvert;
 
 protected:
 	virtual const ShaderPart * getVertexShaderTexturedRect() const = 0;
 	virtual const ShaderPart * getVertexShaderTexturedTriangle() const = 0;
 
 private:
+	struct PendingCombinerProgram
+	{
+		PendingCombinerProgram(const CombinerKey & _key) : key(_key) {}
+		CombinerKey key;
+		GLuint program = 0;
+		CombinerInputs inputs;
+	};
+
+	GLuint _createProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key, CombinerInputs & _inputs);
+	graphics::CombinerProgram * _finishProgram(GLuint _program, const CombinerKey & _key, const CombinerInputs & _inputs);
+
 	CombinerInputs compileCombiner(const CombinerKey & _key, Combiner & _color, Combiner & _alpha, std::string & _strShader);
 
 	virtual void _writeSignExtendAlphaC(std::stringstream& ssShader) const = 0;
@@ -130,7 +153,9 @@ private:
 
 	std::unique_ptr<CombinerProgramUniformFactory> m_uniformFactory;
 	opengl::CachedUseProgram * m_useProgram;
+	std::vector<PendingCombinerProgram> m_pendingPrograms;
 	bool m_useCoverage = false;
+	bool m_parallelShaderCompile = false;
 };
 
 }

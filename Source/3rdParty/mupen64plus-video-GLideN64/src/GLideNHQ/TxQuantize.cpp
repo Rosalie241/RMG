@@ -89,7 +89,8 @@ TxQuantize::~TxQuantize()
 void
 TxQuantize::ARGB1555_ARGB8888(uint32* src, uint32* dest, int width, int height)
 {
-	const int siz = (width * height) >> 1;
+	const int numPixels = width * height;
+	const int siz = numPixels >> 1;
 	uint8 r, g, b, a;
 	uint32 color;
 	for (int i = 0; i < siz; ++i) {
@@ -109,12 +110,25 @@ TxQuantize::ARGB1555_ARGB8888(uint32* src, uint32* dest, int width, int height)
 		++dest;
 		++src;
 	}
+	/* Two source pixels are packed per word, so an odd pixel count leaves one
+	 * behind, in the low half of the final word. Without this the last pixel
+	 * of the destination is never written and keeps whatever was in the
+	 * allocation. */
+	if ((numPixels & 1) != 0) {
+		color = (*src) & 0xffff;
+		r = Five2Eight[color >> 11];
+		g = Five2Eight[(color >> 6) & 0x001f];
+		b = Five2Eight[(color >> 1) & 0x001f];
+		a = One2Eight [(color     ) & 0x0001];
+		*dest = (a << 24) | (b << 16) | (g << 8) | r;
+	}
 }
 
 void
 TxQuantize::ARGB4444_ARGB8888(uint32* src, uint32* dest, int width, int height)
 {
-	const int siz = (width * height) >> 1;
+	const int numPixels = width * height;
+	const int siz = numPixels >> 1;
 	for (int i = 0; i < siz; ++i) {
 		*dest = ((*src & 0x0000f000) >> 8 ) |
 				((*src & 0x00000f00) << 4 ) |
@@ -130,12 +144,21 @@ TxQuantize::ARGB4444_ARGB8888(uint32* src, uint32* dest, int width, int height)
 		dest++;
 		src++;
 	}
+	/* Odd pixel count: convert the leftover pixel in the low half. */
+	if ((numPixels & 1) != 0) {
+		*dest = ((*src & 0x0000f000) >> 8 ) |
+				((*src & 0x00000f00) << 4 ) |
+				((*src & 0x000000f0) << 16) |
+				((*src & 0x0000000f) << 28);
+		*dest |= (*dest >> 4);
+	}
 }
 
 void
 TxQuantize::RGB565_ARGB8888(uint32* src, uint32* dest, int width, int height)
 {
-	int siz = (width * height) >> 1;
+	const int numPixels = width * height;
+	int siz = numPixels >> 1;
 	int i;
 	for (i = 0; i < siz; i++) {
 		*dest = (0xff000000 |
@@ -149,6 +172,13 @@ TxQuantize::RGB565_ARGB8888(uint32* src, uint32* dest, int width, int height)
 				 ((*src & 0x001f0000) >> 13) | ((*src & 0x001c0000) >> 18));
 		dest++;
 		src++;
+	}
+	/* Odd pixel count: convert the leftover pixel in the low half. */
+	if ((numPixels & 1) != 0) {
+		*dest = (0xff000000 |
+				 ((*src & 0x0000f800) << 8) | ((*src & 0x0000e000) << 3) |
+				 ((*src & 0x000007e0) << 5) | ((*src & 0x00000600) >> 1) |
+				 ((*src & 0x0000001f) << 3) | ((*src & 0x0000001c) >> 2));
 	}
 }
 
@@ -420,7 +450,10 @@ TxQuantize::ARGB8888_RGB565_ErrD(uint32* src, uint32* dst, int width, int height
 	   *  3/16  5/16  1/16
 	   */
 			/* SOUTH-WEST */
-			if (x > 1) {
+			/* x > 0, not x > 1: the south-west neighbour of column 1 is
+			 * column 0, which is a valid index. The old guard dropped the
+			 * 3/16 error from column 1 into column 0 on every row. */
+			if (x > 0) {
 				errR[x - 1] += qr * 1875 / 10000;
 				errG[x - 1] += qg * 1875 / 10000;
 				errB[x - 1] += qb * 1875 / 10000;
@@ -523,7 +556,10 @@ TxQuantize::ARGB8888_ARGB1555_ErrD(uint32* src, uint32* dst, int width, int heig
 	   *  3/16  5/16  1/16
 	   */
 			/* SOUTH-WEST */
-			if (x > 1) {
+			/* x > 0, not x > 1: the south-west neighbour of column 1 is
+			 * column 0, which is a valid index. The old guard dropped the
+			 * 3/16 error from column 1 into column 0 on every row. */
+			if (x > 0) {
 				errR[x - 1] += qr * 1875 / 10000;
 				errG[x - 1] += qg * 1875 / 10000;
 				errB[x - 1] += qb * 1875 / 10000;
@@ -633,7 +669,10 @@ TxQuantize::ARGB8888_ARGB4444_ErrD(uint32* src, uint32* dst, int width, int heig
 	   *  3/16  5/16  1/16
 	   */
 			/* SOUTH-WEST */
-			if (x > 1) {
+			/* x > 0, not x > 1: the south-west neighbour of column 1 is
+			 * column 0, which is a valid index. The old guard dropped the
+			 * 3/16 error from column 1 into column 0 on every row. */
+			if (x > 0) {
 				errR[x - 1] += qr * 1875 / 10000;
 				errG[x - 1] += qg * 1875 / 10000;
 				errB[x - 1] += qb * 1875 / 10000;
@@ -730,7 +769,10 @@ TxQuantize::ARGB8888_AI44_ErrD(uint32* src, uint32* dst, int width, int height)
 	   *  3/16  5/16  1/16
 	   */
 			/* SOUTH-WEST */
-			if (x > 1) {
+			/* x > 0, not x > 1: the south-west neighbour of column 1 is
+			 * column 0, which is a valid index. The old guard dropped the
+			 * 3/16 error from column 1 into column 0 on every row. */
+			if (x > 0) {
 				errI[x - 1] += qi * 1875 / 10000;
 				errA[x - 1] += qa * 1875 / 10000;
 			}

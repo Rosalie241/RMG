@@ -73,6 +73,12 @@ void DisplayWindowWindows::_saveScreenshot()
 	gfxContext.bindFramebuffer(graphics::bufferTarget::READ_FRAMEBUFFER, graphics::ObjectHandle::defaultFramebuffer);
 	glReadBuffer(GL_FRONT);
 	pixelData = (unsigned char*)malloc(m_screenWidth * m_screenHeight * 3);
+	if (pixelData == nullptr)
+		return;
+	// GL_PACK_ALIGNMENT defaults to 4, so with a 3 byte format the driver pads
+	// every row up to a 4 byte boundary and writes past a width*height*3
+	// allocation whenever width*3 is not a multiple of 4.
+	glPixelStorei(GL_PACK_ALIGNMENT, 1);
 	glReadPixels(0, m_heightOffset, m_screenWidth, m_screenHeight, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
 	if (graphics::BufferAttachmentParam(oldMode) == graphics::bufferAttachment::COLOR_ATTACHMENT0) {
 		FrameBuffer * pBuffer = frameBufferList().getCurrent();
@@ -91,6 +97,9 @@ void DisplayWindowWindows::_saveBufferContent(graphics::ObjectHandle _fbo, Cache
 	glGetIntegerv(GL_READ_BUFFER, &oldMode);
 	gfxContext.bindFramebuffer(graphics::bufferTarget::READ_FRAMEBUFFER, _fbo);
 	pixelData = (unsigned char*)malloc(_pTexture->width * _pTexture->height * 3);
+	if (pixelData == nullptr)
+		return;
+	glPixelStorei(GL_PACK_ALIGNMENT, 1);	// see _saveScreenshot
 	glReadPixels(0, 0, _pTexture->width, _pTexture->height, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
 	if (graphics::BufferAttachmentParam(oldMode) == graphics::bufferAttachment::COLOR_ATTACHMENT0) {
 		FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
@@ -267,6 +276,8 @@ void DisplayWindowWindows::_readScreen(void **_pDest, long *_pWidth, long *_pHei
 	*_pDest = malloc(m_height * m_width * 3);
 	if (*_pDest == nullptr)
 		return;
+
+	glPixelStorei(GL_PACK_ALIGNMENT, 1);	// see _saveScreenshot
 
 #ifndef GLESX
 	GLint oldMode;

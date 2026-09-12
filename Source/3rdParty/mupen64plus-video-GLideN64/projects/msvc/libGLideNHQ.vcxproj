@@ -48,15 +48,19 @@
     <TargetExt>.lib</TargetExt>
     <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\lib\</OutDir>
   </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnableManifest>true</VcpkgEnableManifest>
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\src;$(ProjectDir)..\..\src\inc;$(ProjectDir)..\..\src\osal;$(ProjectDir)..\..\src\GLideNHQ\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <CompileAs>CompileAsCpp</CompileAs>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\src;$(ProjectDir)..\..\src\inc;$(ProjectDir)..\..\src\osal;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CompileAs>Default</CompileAs>
       <ExceptionHandling>Sync</ExceptionHandling>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>UNICODE;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;OS_WINDOWS;__MSC__;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;OS_WINDOWS;__MSC__;ZWRAP_USE_ZSTD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
@@ -76,15 +80,8 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PreprocessorDefinitions>_DEBUG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <Lib>
-      <AdditionalDependencies>libpngd.lib;zlibd.lib;</AdditionalDependencies>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug' And '$(Platform)'=='Win32'">
-    <Lib>
-      <AdditionalLibraryDirectories Condition="'$(MSBuildAssemblyVersion)'=='12.0'">lib/msvc12/dbg</AdditionalLibraryDirectories>
-      <AdditionalLibraryDirectories Condition="'$(MSBuildAssemblyVersion)'!='12.0'">lib/dbg</AdditionalLibraryDirectories>
-    </Lib>
     <ClCompile>
       <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ConformanceMode>
     </ClCompile>
@@ -93,9 +90,6 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug' And '$(Platform)'=='x64'">
-    <Lib>
-      <AdditionalLibraryDirectories>lib/x64/dbg</AdditionalLibraryDirectories>
-    </Lib>
     <ClCompile>
       <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ConformanceMode>
     </ClCompile>
@@ -113,15 +107,8 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <Lib>
-      <AdditionalDependencies>libpng.lib;zlib.lib;</AdditionalDependencies>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="('$(Configuration)'=='Release') And '$(Platform)'=='Win32'">
-    <Lib>
-      <AdditionalLibraryDirectories Condition="'$(MSBuildAssemblyVersion)'=='12.0'">lib/msvc12/rel</AdditionalLibraryDirectories>
-      <AdditionalLibraryDirectories Condition="'$(MSBuildAssemblyVersion)'!='12.0'">lib/rel</AdditionalLibraryDirectories>
-    </Lib>
     <ClCompile>
       <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ConformanceMode>
     </ClCompile>
@@ -130,9 +117,6 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="('$(Configuration)'=='Release') And '$(Platform)'=='x64'">
-    <Lib>
-      <AdditionalLibraryDirectories>lib/x64/rel</AdditionalLibraryDirectories>
-    </Lib>
     <ClCompile>
       <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ConformanceMode>
     </ClCompile>
@@ -158,6 +142,11 @@
     <ClCompile Include="..\..\src\GLideNHQ\TxReSample.cpp" />
     <ClCompile Include="..\..\src\GLideNHQ\TxTexCache.cpp" />
     <ClCompile Include="..\..\src\GLideNHQ\TxUtil.cpp" />
+    <ClCompile Include="..\..\src\GLideNHQ\zstd\zstd_zlibwrapper.c" />
+    <ClCompile Include="..\..\src\GLideNHQ\zstd\gzclose.c" />
+    <ClCompile Include="..\..\src\GLideNHQ\zstd\gzlib.c" />
+    <ClCompile Include="..\..\src\GLideNHQ\zstd\gzread.c" />
+    <ClCompile Include="..\..\src\GLideNHQ\zstd\gzwrite.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

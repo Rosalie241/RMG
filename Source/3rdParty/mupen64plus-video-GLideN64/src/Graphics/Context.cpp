@@ -18,6 +18,7 @@ bool Context::TextureBarrier = false;
 bool Context::EglImage = false;
 bool Context::EglImageFramebuffer = false;
 bool Context::DualSourceBlending = false;
+bool Context::AsyncShaderCompilation = false;
 
 Context::Context() {}
 
@@ -44,6 +45,7 @@ void Context::init()
 	EglImage = m_impl->isSupported(SpecialFeatures::EglImage);
 	EglImageFramebuffer = m_impl->isSupported(SpecialFeatures::EglImageFramebuffer);
 	DualSourceBlending = m_impl->isSupported(SpecialFeatures::DualSourceBlending);
+	AsyncShaderCompilation = m_impl->isSupported(SpecialFeatures::AsyncShaderCompilation);
 }
 
 void Context::destroy()
@@ -265,6 +267,21 @@ void Context::resetCombinerProgramBuilder()
 CombinerProgram * Context::createCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key)
 {
 	return m_impl->createCombinerProgram(_color, _alpha, _key);
+}
+
+void Context::createCombinerProgramAsync(Combiner & _color, Combiner & _alpha, const CombinerKey & _key)
+{
+	m_impl->createCombinerProgramAsync(_color, _alpha, _key);
+}
+
+void Context::getCompiledCombinerPrograms(Combiners & _compiled, bool _wait)
+{
+	m_impl->getCompiledCombinerPrograms(_compiled, _wait);
+}
+
+void Context::dropPendingCombinerPrograms()
+{
+	m_impl->dropPendingCombinerPrograms();
 }
 
 bool Context::saveShadersStorage(const Combiners & _combiners)

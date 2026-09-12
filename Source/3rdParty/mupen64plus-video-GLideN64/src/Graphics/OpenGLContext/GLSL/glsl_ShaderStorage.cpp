@@ -1,6 +1,7 @@
 #include <fstream>
 #include <assert.h>
 #include <cstdlib>
+#include <cstring>
 #include <algorithm>
 #include <iomanip>
 
@@ -135,6 +136,16 @@ bool ShaderStorage::saveShadersStorage(const graphics::Combiners & _combiners) c
 		// Shaders storage is not supported, but we saved combiners keys.
 		return true;
 
+	// glGetString returns null if the context is invalid or the enum is not
+	// accepted. Check before opening the output file, which is opened with
+	// trunc: bailing out later would leave a truncated cache behind.
+	const char * strRenderer = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
+	const char * strGLVersion = reinterpret_cast<const char *>(glGetString(GL_VERSION));
+	if (strRenderer == nullptr || strGLVersion == nullptr) {
+		LOG(LOG_ERROR, "Can't save shaders storage: glGetString returned null");
+		return false;
+	}
+
 	std::string shadersFileName = getStorageFileName(m_glinfo, "shaders");
 
 #if defined(OS_WINDOWS) && !defined(MINGW)
@@ -152,12 +163,10 @@ bool ShaderStorage::saveShadersStorage(const graphics::Combiners & _combiners) c
 	const u32 configOptionsBitSet = graphics::CombinerProgram::getShaderCombinerOptionsBits();
 	shadersOut.write((char*)&configOptionsBitSet, sizeof(configOptionsBitSet));
 
-	const char * strRenderer = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
 	u32 len = static_cast<u32>(strlen(strRenderer));
 	shadersOut.write((char*)&len, sizeof(len));
 	shadersOut.write(strRenderer, len);
 
-	const char * strGLVersion = reinterpret_cast<const char *>(glGetString(GL_VERSION));
 	len = static_cast<u32>(strlen(strGLVersion));
 	shadersOut.write((char*)&len, sizeof(len));
 	shadersOut.write(strGLVersion, len);
@@ -219,11 +228,12 @@ CombinerProgramImpl * _readCombinerProgramFromStream(std::istream & _is,
 	std::vector<char> binary(binaryLength);
 	_is.read(binary.data(), binaryLength);
 
-	GLuint program = glCreateProgram();
+	const GLuint program = glCreateProgram();
 	const bool isRect = _cmbKey.isRectKey();
 	glsl::Utils::locateAttributes(program, isRect, cmbInputs.usesTexture());
 	glProgramBinary(program, binaryFormat, binary.data(), binaryLength);
 	if (!glsl::Utils::checkProgramLinkStatus(program, true)) {
+		glDeleteProgram(program);
 		return nullptr;
 	}
 
@@ -272,6 +282,14 @@ bool ShaderStorage::_loadFromCombinerKeys(graphics::Combiners & _combiners)
 		if (!useGlobalHWLSuport)
 			GBI.setHWLSupported(key.isHWLSupported());
 		graphics::CombinerProgram * pCombiner = Combiner_Compile(key);
+		if (pCombiner == nullptr) {
+			// Returning false makes the caller discard and delete whatever was
+			// loaded so far and build combiners on demand instead.
+			LOG(LOG_ERROR, "Failed to compile combiner 0x%016llx from stored keys",
+				static_cast<unsigned long long>(mux));
+			displayLoadProgress(L"");
+			return false;
+		}
 		pCombiner->update(true);
 		_combiners[pCombiner->getKey()] = pCombiner;
 		progress += step;
@@ -282,8 +300,10 @@ bool ShaderStorage::_loadFromCombinerKeys(graphics::Combiners & _combiners)
 	}
 	fin.close();
 
-	if (opengl::Utils::isGLError())
+	if (opengl::Utils::isGLError()) {
+		displayLoadProgress(L"");
 		return false;
+	}
 
 	if (graphics::Context::ShaderProgramBinary)
 		// Restore shaders storage
@@ -322,19 +342,35 @@ bool ShaderStorage::loadShadersStorage(graphics::Combiners & _combiners)
 		if (optionsSet != configOptionsBitSet)
 			return _loadFromCombinerKeys(_combiners);
 
+		// Null here would be passed straight to strncmp below. Treat it the
+		// same as a mismatch and rebuild from the combiner keys.
 		const char * strRenderer = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
+		const char * strGLVersion = reinterpret_cast<const char *>(glGetString(GL_VERSION));
+		if (strRenderer == nullptr || strGLVersion == nullptr) {
+			LOG(LOG_ERROR, "Can't validate shaders storage: glGetString returned null");
+			return _loadFromCombinerKeys(_combiners);
+		}
+
+		// The stored strings have no terminator and strncmp stops after len
+		// characters, so a stored string that is a prefix of the current one
+		// compared equal: a cache written for "ABC" was accepted on a renderer
+		// reporting "ABCDEF". Compare the lengths as well, and do it before
+		// allocating, so a corrupt len cannot request an absurd buffer either.
 		u32 len;
 		fin.read((char*)&len, sizeof(len));
+		if (len != strlen(strRenderer))
+			return _loadFromCombinerKeys(_combiners);
 		std::vector<char> strBuf(len);
 		fin.read(strBuf.data(), len);
-		if (strncmp(strRenderer, strBuf.data(), len) != 0)
+		if (memcmp(strRenderer, strBuf.data(), len) != 0)
 			return _loadFromCombinerKeys(_combiners);
 
-		const char * strGLVersion = reinterpret_cast<const char *>(glGetString(GL_VERSION));
 		fin.read((char*)&len, sizeof(len));
+		if (len != strlen(strGLVersion))
+			return _loadFromCombinerKeys(_combiners);
 		strBuf.resize(len);
 		fin.read(strBuf.data(), len);
-		if (strncmp(strGLVersion, strBuf.data(), len) != 0)
+		if (memcmp(strGLVersion, strBuf.data(), len) != 0)
 			return _loadFromCombinerKeys(_combiners);
 
 		displayLoadProgress(L"LOAD COMBINER SHADERS %.1f%%", 0.0f);
@@ -364,6 +400,11 @@ bool ShaderStorage::loadShadersStorage(graphics::Combiners & _combiners)
 			} else {
 				LOG(LOG_ERROR, "Shader is not a valid binary compiling from key instead");
 				graphics::CombinerProgram *pCombinerFromKey = Combiner_Compile(cmbKey);
+				if (pCombinerFromKey == nullptr) {
+					LOG(LOG_ERROR, "Failed to compile combiner from key, abandoning the shader cache");
+					displayLoadProgress(L"");
+					return false;
+				}
 				pCombinerFromKey->update(true);
 				_combiners[cmbKey] = pCombinerFromKey;
 			}

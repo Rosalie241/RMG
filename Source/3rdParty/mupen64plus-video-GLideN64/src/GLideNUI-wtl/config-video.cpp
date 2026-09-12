@@ -4,6 +4,7 @@
 #include "Language.h"
 #include "ConfigDlg.h"
 #include "../Config.h"
+#include "../Pow.h"
 #include "wtl-tooltip.h"
 
 static struct {
@@ -26,25 +27,6 @@ WindowedModes[] = {
 	{ 1600, 1200, _T("1600 x 1200") }
 };
 static const unsigned int numWindowedModes = sizeof(WindowedModes) / sizeof(WindowedModes[0]);
-
-static u32 pow2(u32 dim)
-{
-	if (dim == 0) return 0;
-
-	return (1 << dim);
-}
-
-static u32 powof(u32 dim)
-{
-	if (dim == 0) return 0;
-
-	u32 num = 2; u32 i = 1;
-	while (num < dim) {
-		num <<= 1;
-		i++;
-	}
-	return i;
-}
 
 CVideoTab::CVideoTab(CConfigDlg & Dlg, CFrameBufferTab & FrameBufferTab, const char * strIniPath) :
 	CConfigTab(IDD_TAB_VIDEO),
@@ -215,7 +197,7 @@ LRESULT CVideoTab::OnScroll(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOO
 	LONG SliderId = CWindow((HWND)lParam).GetWindowLong(GWL_ID);
 	if (SliderId == IDC_ALIASING_SLIDER) {
 		int32_t multisampling = m_AliasingSlider.GetPos();
-		std::wstring AliasingText = FormatStrW(L"%dx", pow2(multisampling));
+		std::wstring AliasingText = FormatStrW(L"%dx", twopow(multisampling));
 		CWindow(GetDlgItem(IDC_ALIASING_LABEL)).SetWindowTextW(AliasingText.c_str());
 		CButton(GetDlgItem(multisampling != 0 ? IDC_MSAA_RADIO : IDC_NOAA_RADIO)).SetCheck(BST_CHECKED);
 		CButton(GetDlgItem(multisampling != 0 ? IDC_NOAA_RADIO : IDC_MSAA_RADIO)).SetCheck(BST_UNCHECKED);
@@ -550,7 +532,7 @@ void CVideoTab::SaveSettings()
 		|| CComboBox(m_FrameBufferTab.GetDlgItem(IDC_CMB_N64_DEPTH_COMPARE)).GetCurSel() != 0)	{
 		config.video.multisampling = 0;
 	} else {
-		config.video.multisampling = pow2(m_AliasingSlider.GetPos());
+		config.video.multisampling = twopow(m_AliasingSlider.GetPos());
 	}
 	if (CButton(GetDlgItem(IDC_MSAA_RADIO)).GetCheck() == BST_CHECKED
 		&& CComboBox(m_FrameBufferTab.GetDlgItem(IDC_CMB_N64_DEPTH_COMPARE)).GetCurSel() != 0) {

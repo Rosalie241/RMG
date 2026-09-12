@@ -138,6 +138,14 @@ void GLInfo::init() {
 		}
 	}
 
+	parallelShaderCompile = Utils::isExtensionSupported(*this, "GL_ARB_parallel_shader_compile") ||
+		Utils::isExtensionSupported(*this, "GL_KHR_parallel_shader_compile");
+	if (parallelShaderCompile &&
+		(IS_GL_FUNCTION_VALID(MaxShaderCompilerThreadsARB) || IS_GL_FUNCTION_VALID(MaxShaderCompilerThreadsKHR))) {
+		// Request an implementation-specific maximum number of background shader compilation threads.
+		glMaxShaderCompilerThreadsARB(0xFFFFFFFFu);
+	}
+
 	bool ext_draw_buffers_indexed = isGLESX && (Utils::isExtensionSupported(*this, "GL_EXT_draw_buffers_indexed") || numericVersion >= 32);
 #ifdef EGL
 	if (isGLESX && bufferStorage)

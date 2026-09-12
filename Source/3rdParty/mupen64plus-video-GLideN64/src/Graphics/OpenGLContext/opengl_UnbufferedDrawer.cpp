@@ -119,7 +119,7 @@ void UnbufferedDrawer::drawTriangles(const graphics::Context::DrawTriangleParame
 
 	for (GLint i = 0; i < GLint(_params.elementsCount); i += 3) {
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-		glDrawElements(GLenum(_params.mode), 3, GL_UNSIGNED_BYTE, (u8*)_params.elements + i);
+		glDrawElements(GLenum(_params.mode), 3, GL_UNSIGNED_SHORT, (u16*)_params.elements + i);
 	}
 }
 

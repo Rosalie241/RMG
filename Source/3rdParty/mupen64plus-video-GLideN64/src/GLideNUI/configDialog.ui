@@ -246,6 +246,16 @@
              </widget>
             </item>
             <item>
+             <widget class="QCheckBox" name="asyncShadersCheckBox">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Asynchronous shaders compilation solves the "stuttering" problem at the cost of visual artifacts, which can be visible within one-two frames.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Usually off, unless there are performance issues&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Enable async shaders compile</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QFrame" name="overscanFrame">
               <property name="minimumSize">
                <size>
@@ -968,19 +978,6 @@
               </item>
              </layout>
             </widget>
-           </item>
-           <item>
-            <spacer name="userInterfaceSpacer">
-             <property name="orientation">
-              <enum>Qt::Orientation::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
            </item>
           </layout>
          </item>

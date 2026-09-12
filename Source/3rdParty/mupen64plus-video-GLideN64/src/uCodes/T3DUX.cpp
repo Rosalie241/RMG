@@ -1,3 +1,4 @@
+#include <string.h>
 #include "T3DUX.h"
 #include "N64.h"
 #include "RSP.h"
@@ -5,6 +6,7 @@
 #include "gSP.h"
 #include "gDP.h"
 #include "DisplayWindow.h"
+#include "Log.h"
 
 /******************T3DUX microcode*************************/
 
@@ -60,20 +62,38 @@ static u32 t32uxSetTileW1 = 0;
 static
 void T3DUX_ProcessRDP(u32 _cmds)
 {
+	// addr indexes RDRAM as 32-bit words. RDRAMSize is the index of the last
+	// valid byte, so RDRAM holds (RDRAMSize + 1) / 4 whole words.
+	const u32 rdramWords = (RDRAMSize + 1) >> 2;
 	u32 addr = RSP_SegmentToPhysical(_cmds) >> 2;
 	if (addr != 0) {
+		if (addr + 2 > rdramWords) {
+			LOG(LOG_ERROR, "T3DUX_ProcessRDP: command list at 0x%08x lies outside RDRAM", _cmds);
+			return;
+		}
+		bool truncated = false;
 		RSP.LLE = true;
 		u32 w0 = ((u32*)RDRAM)[addr++];
 		u32 w1 = ((u32*)RDRAM)[addr++];
 		RSP.cmd = _SHIFTR( w0, 24, 8 );
 		while (w0 + w1 != 0) {
 			GBI.cmd[RSP.cmd]( w0, w1 );
+			// A malformed list has no terminator, so every read has to be
+			// checked against the end of RDRAM.
+			if (addr + 2 > rdramWords) {
+				truncated = true;
+				break;
+			}
 			w0 = ((u32*)RDRAM)[addr++];
 			w1 = ((u32*)RDRAM)[addr++];
 			RSP.cmd = _SHIFTR( w0, 24, 8 );
 			switch (RSP.cmd) {
 			case G_TEXRECT:
 			case G_TEXRECTFLIP:
+				if (addr + 2 > rdramWords) {
+					truncated = true;
+					break;
+				}
 				RDP.w2 = ((u32*)RDRAM)[addr++];
 				RDP.w3 = ((u32*)RDRAM)[addr++];
 				break;
@@ -82,8 +102,12 @@ void T3DUX_ProcessRDP(u32 _cmds)
 				t32uxSetTileW1 = w1;
 				break;
 			}
+			if (truncated)
+				break;
 		}
 		RSP.LLE = false;
+		if (truncated)
+			LOG(LOG_ERROR, "T3DUX_ProcessRDP: command list at 0x%08x ran past the end of RDRAM", _cmds);
 	}
 }
 
@@ -91,24 +115,39 @@ static
 void T3DUX_LoadGlobState(u32 pgstate)
 {
 	const u32 addr = RSP_SegmentToPhysical(pgstate);
-	T3DUXGlobState *gstate = (T3DUXGlobState*)&RDRAM[addr];
-	const u32 w0 = gstate->othermode0;
-	const u32 w1 = gstate->othermode1;
+	if (!isRDRAMRangeValid(addr, sizeof(T3DUXGlobState))) {
+		LOG(LOG_ERROR, "T3DUX_LoadGlobState: state at 0x%08x lies outside RDRAM", pgstate);
+		return;
+	}
+	// Copy out rather than casting RDRAM to the struct type: the cast
+	// violates strict aliasing and assumes an alignment a display list
+	// address does not guarantee.
+	T3DUXGlobState gstate;
+	memcpy(&gstate, RDRAM + addr, sizeof(gstate));
+	const u32 w0 = gstate.othermode0;
+	const u32 w1 = gstate.othermode1;
 	gDPSetOtherMode( _SHIFTR( w0, 0, 24 ),	// mode0
 					 w1 );					// mode1
 
 	for (int s = 0; s < 16; ++s)
-		gSPSegment(s, gstate->segBases[s] & 0x00FFFFFF);
+		gSPSegment(s, gstate.segBases[s] & 0x00FFFFFF);
 
 	gSPViewport(pgstate + 80);
 
-	T3DUX_ProcessRDP(gstate->rdpCmds);
+	T3DUX_ProcessRDP(gstate.rdpCmds);
 }
 
 static
 void T3DUX_LoadObject(u32 pstate, u32 pvtx, u32 ptri, u32 pcol)
 {
-	T3DUXState *ostate = (T3DUXState*)&RDRAM[RSP_SegmentToPhysical(pstate)];
+	const u32 stateAddr = RSP_SegmentToPhysical(pstate);
+	if (!isRDRAMRangeValid(stateAddr, sizeof(T3DUXState))) {
+		LOG(LOG_ERROR, "T3DUX_LoadObject: state at 0x%08x lies outside RDRAM", pstate);
+		return;
+	}
+	T3DUXState ostateStorage;
+	memcpy(&ostateStorage, RDRAM + stateAddr, sizeof(ostateStorage));
+	const T3DUXState * ostate = &ostateStorage;
 	// TODO: fix me
 	const u32 tile = 0;
 	gSP.texture.tile = tile;
@@ -141,16 +180,35 @@ void T3DUX_LoadObject(u32 pstate, u32 pvtx, u32 ptri, u32 pcol)
 
 	GraphicsDrawer & drawer = dwnd().getDrawer();
 	const u32 coladdr = RSP_SegmentToPhysical(pcol);
-	const T3DUXTriN * tri = (const T3DUXTriN*)&RDRAM[RSP_SegmentToPhysical(ptri)];
+	const u32 triaddr = RSP_SegmentToPhysical(ptri);
 	u8 pal = _SHIFTR(t32uxSetTileW1, 20, 4);
 	t32uxSetTileW1 &= 0xFF0FFFFF;
 	const bool flatShading = (ostate->geommode & 0x0F) == 0;
 	const bool texturing = ostate->texmode != 1;
 	f32 flatr, flatg, flatb, flata;
 
+	// triCount is a u8, so the triangle list is at most 255 * 8 bytes.
+	if (!isRDRAMRangeValid(triaddr, ostate->triCount * sizeof(T3DUXTriN))) {
+		LOG(LOG_ERROR, "T3DUX_LoadObject: triangle list at 0x%08x lies outside RDRAM", ptri);
+		return;
+	}
+
+	// The colour and texture coordinate lookups below index from coladdr with
+	// a u8 scaled by 4 and masked to 0x03FC, so at most the 0x400 bytes at
+	// coladdr can be touched.
+	static const u32 COLOR_TABLE_SIZE = 0x400;
+	if ((flatShading || texturing) && !isRDRAMRangeValid(coladdr, COLOR_TABLE_SIZE)) {
+		LOG(LOG_ERROR, "T3DUX_LoadObject: colour table at 0x%08x lies outside RDRAM", pcol);
+		return;
+	}
+
 	drawer.setDMAVerticesSize(ostate->triCount * 3);
 	SPVertex * pVtx = drawer.getDMAVerticesData();
-	for (int t = 0; t < ostate->triCount; ++t, ++tri) {
+	for (int t = 0; t < ostate->triCount; ++t) {
+		T3DUXTriN triStorage;
+		memcpy(&triStorage, RDRAM + triaddr + t * sizeof(T3DUXTriN), sizeof(triStorage));
+		const T3DUXTriN * tri = &triStorage;
+
 		if (texturing && tri->pal != 0) {
 			const u32 w1 = t32uxSetTileW1 | (tri->pal << 20);
 			const u32 newPal = _SHIFTR(w1, 20, 4);
@@ -175,7 +233,8 @@ void T3DUX_LoadObject(u32 pstate, u32 pvtx, u32 ptri, u32 pcol)
 				u8 b;
 				u8 g;
 				u8 r;
-			} color = *(T3DUXColor*)&RDRAM[coladdr + ((tri->flag << 2) & 0x03FC)];
+			} color;
+			memcpy(&color, RDRAM + coladdr + ((tri->flag << 2) & 0x03FC), sizeof(color));
 			flata = _FIXED2FLOAT(color.a, 8);
 			flatb = _FIXED2FLOAT(color.b, 8);
 			flatg = _FIXED2FLOAT(color.g, 8);
@@ -188,7 +247,8 @@ void T3DUX_LoadObject(u32 pstate, u32 pvtx, u32 ptri, u32 pcol)
 			*pVtx = drawer.getVertex(vtxIdx[v]);
 
 			if (texturing) {
-				u32 texcoords = *(const u32*)&RDRAM[coladdr + (texIdx[v] << 2)];
+				u32 texcoords;
+				memcpy(&texcoords, RDRAM + coladdr + (texIdx[v] << 2), sizeof(texcoords));
 				pVtx->s = _FIXED2FLOAT(_SHIFTR(texcoords, 16, 16), 5);
 				pVtx->t = _FIXED2FLOAT(_SHIFTR(texcoords, 0, 16), 5);
 			} else {
@@ -212,7 +272,17 @@ void T3DUX_LoadObject(u32 pstate, u32 pvtx, u32 ptri, u32 pcol)
 
 void RunT3DUX()
 {
+	// Five words are read per command; the PC advances by 24 with nothing
+	// else bounding it, so it has to be checked every iteration the way
+	// _ProcessDList does for the normal microcodes.
+	static const u32 T3DUX_COMMAND_READ_SIZE = 20;
+
 	while (true) {
+		if (!isRDRAMRangeValid(RSP.PC[RSP.PCi], T3DUX_COMMAND_READ_SIZE)) {
+			LOG(LOG_ERROR, "RunT3DUX: display list ran past the end of RDRAM at 0x%08x", RSP.PC[RSP.PCi]);
+			RSP.halt = true;
+			break;
+		}
 		u32 addr = RSP.PC[RSP.PCi] >> 2;
 		const u32 pgstate = ((u32*)RDRAM)[addr++];
 		const u32 pstate = ((u32*)RDRAM)[addr++];

@@ -45,7 +45,7 @@ void ColorBufferReaderWithPixelBuffer::_initBuffers()
 }
 
 const u8 * ColorBufferReaderWithPixelBuffer::_readPixels(const ReadColorBufferParams& _params, u32& _heightOffset,
-	u32& _stride)
+	u32& _stride, size_t& _gpuDataSize)
 {
 	GLenum format = GLenum(_params.colorFormat);
 	GLenum type = GLenum(_params.colorType);
@@ -62,8 +62,15 @@ const u8 * ColorBufferReaderWithPixelBuffer::_readPixels(const ReadColorBufferPa
 	_heightOffset = 0;
 	_stride = m_pTexture->width;
 
+	// Only the mapped range is readable, so that is the extent to report.
+	// A request larger than the PBO makes the map fail, and readPixels
+	// already bails out on a null return.
+	const size_t mappedSize =
+		static_cast<size_t>(m_pTexture->width) * _params.height * _params.colorFormatBytes;
+	_gpuDataSize = mappedSize;
+
 	return reinterpret_cast<u8*>(glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0,
-		m_pTexture->width * _params.height * _params.colorFormatBytes, GL_MAP_READ_BIT));
+		mappedSize, GL_MAP_READ_BIT));
 }
 
 void ColorBufferReaderWithPixelBuffer::cleanUp()

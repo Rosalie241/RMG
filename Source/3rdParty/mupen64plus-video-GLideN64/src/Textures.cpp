@@ -4,6 +4,7 @@
 #include <thread>         // std::this_thread::sleep_for
 #include <chrono>         // std::chrono::seconds
 #include "Platform.h"
+#include "Pow.h"
 #include "Textures.h"
 #include "GBI.h"
 #include "RSP.h"

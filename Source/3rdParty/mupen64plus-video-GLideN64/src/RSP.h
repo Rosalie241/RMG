@@ -26,7 +26,9 @@ extern u32 rectDepthBufferCopyFrame;
 
 void RSP_Init();
 void RSP_ProcessDList();
-void RSP_LoadMatrix( f32 mtx[4][4], u32 address );
+// Loads a 64 byte N64 matrix from RDRAM. Returns false and leaves mtx
+// untouched if address does not hold a whole matrix within RDRAM.
+bool RSP_LoadMatrix( f32 mtx[4][4], u32 address );
 void RSP_CheckDLCounter();
 
 #endif

@@ -400,6 +400,7 @@ public:
 		LocateUniform(uTextureFormat);
 		LocateUniform(uTextureConvert);
 		LocateUniform(uConvertParams);
+		LocateUniform(uMaxAnisotropy);
 	}
 
 	void update(bool _force) override
@@ -410,6 +411,15 @@ public:
 		uTextureConvert.set(gDP.otherMode.convert_one, _force);
 		if (gDP.otherMode.bi_lerp0 == 0 || gDP.otherMode.bi_lerp1 == 0)
 			uConvertParams.set(gDP.convert.k0, gDP.convert.k1, gDP.convert.k2, gDP.convert.k3, _force);
+		// Custom anisotropic filtering level for the in-shader bilinear/3-point
+		// filter. texelFetch/texture() based custom filtering bypasses the sampler's
+		// GL_TEXTURE_MAX_ANISOTROPY_EXT, so the shader emulates AF by supersampling.
+		// Enabled whenever AF is requested and texture filtering is on; axis-aligned
+		// (e.g. rectangle) draws collapse to a single tap via the in-shader footprint
+		// ratio, so no draw-state gating is needed here.
+		const int maxAnisotropy = (config.texture.anisotropy > 1 && textureFilter != 0)
+			? static_cast<int>(config.texture.anisotropy) : 1;
+		uMaxAnisotropy.set(maxAnisotropy, _force);
 	}
 
 private:
@@ -417,6 +427,7 @@ private:
 	iv2Uniform uTextureFormat;
 	iUniform uTextureConvert;
 	i4Uniform uConvertParams;
+	iUniform uMaxAnisotropy;
 };
 
 class UAlphaTestInfo : public UniformGroup
@@ -747,15 +758,17 @@ public:
 
 	void update(bool _force) override
 	{
-		for (u32 i = 0; i <= gSP.numLights; ++i) {
+		const u32 numLights = std::min(gSP.numLights, _numLights);
+		for (u32 i = 0; i <= numLights; ++i) {
 			uLightDirection[i].set(gSP.lights.xyz[i], _force);
 			uLightColor[i].set(gSP.lights.rgb[i], _force);
 		}
 	}
 
 private:
-	fv3Uniform uLightDirection[8];
-	fv3Uniform uLightColor[8];
+	static constexpr u32 _numLights = 8;
+	fv3Uniform uLightDirection[_numLights];
+	fv3Uniform uLightColor[_numLights];
 };
 
 } //nameless namespace

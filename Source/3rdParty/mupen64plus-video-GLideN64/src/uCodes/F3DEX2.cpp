@@ -65,7 +65,7 @@ void F3DEX2_Tri1( u32 w0, u32 w1 )
 
 void F3DEX2_Line3D( u32 w0, u32 w1 )
 {
-	assert(false);
+	DebugMsg(DEBUG_NORMAL | DEBUG_ERROR, "// F3DEX2::Line3D(0x%08X, 0x%08X) called\n", w0, w1);
 }
 
 void F3DEX2_PopMtx( u32 w0, u32 w1 )

@@ -192,6 +192,9 @@ public:
 			if (config.generalEmulation.enableLOD) {
 				m_part += "#extension GL_EXT_shader_texture_lod : enable \n";
 				m_part += "#extension GL_OES_standard_derivatives : enable \n";
+			} else if (config.texture.anisotropy > 1) {
+				// Custom anisotropic filtering needs screen-space derivatives.
+				m_part += "#extension GL_OES_standard_derivatives : enable \n";
 			}
 			m_part +=
 				"#if (__VERSION__ > 120)		\n"

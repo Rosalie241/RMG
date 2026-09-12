@@ -48,6 +48,9 @@
     <TargetName>$(ProjectName)</TargetName>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
   </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnabled>false</VcpkgEnabled>
+  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;QT_STATICPLUGIN;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CORE_LIB;QT_UITOOLS_LIB;QT_WINEXTRAS_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>

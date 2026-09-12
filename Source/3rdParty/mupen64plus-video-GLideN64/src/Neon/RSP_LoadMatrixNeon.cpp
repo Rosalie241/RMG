@@ -1,34 +1,50 @@
+#include <string.h>
 #include "RSP.h"
 #include "N64.h"
 #include "arm_neon.h"
 #include "GBI.h"
 
-void RSP_LoadMatrix( f32 mtx[4][4], u32 address )
+struct _N64Matrix
 {
+    s16 integer[4][4];
+    u16 fraction[4][4];
+};
+
+// 16 s16 integer parts followed by 16 u16 fraction parts, no padding.
+static_assert(sizeof(_N64Matrix) == 64, "unexpected _N64Matrix layout");
+
+bool RSP_LoadMatrix( f32 mtx[4][4], u32 address )
+{
+    // Written to avoid overflowing the addition; address comes from a display
+    // list and is not trustworthy.
+    if (address > RDRAMSize || RDRAMSize - address < sizeof(_N64Matrix))
+        return false;
+
     f32 recip = FIXED2FLOATRECIP16;
 
-    struct _N64Matrix
-    {
-        s16 integer[4][4];
-        u16 fraction[4][4];
-    } *n64Mat = (struct _N64Matrix *)&RDRAM[address];
+    // Copy into a local rather than overlaying the struct on RDRAM. Casting
+    // u8* to a struct pointer violates strict aliasing, and vld1 on such a
+    // pointer would also assume an alignment that an arbitrary display list
+    // address does not guarantee. The local is naturally aligned.
+    struct _N64Matrix n64Mat;
+    memcpy(&n64Mat, RDRAM + address, sizeof(n64Mat));
 
     // Load recip
     float32_t _recip = recip;
 
     // Load integer
     int16x4x4_t _integer_s16;
-    _integer_s16.val[0] = vld1_s16(n64Mat->integer[0]);
-    _integer_s16.val[1] = vld1_s16(n64Mat->integer[1]);
-    _integer_s16.val[2] = vld1_s16(n64Mat->integer[2]);
-    _integer_s16.val[3] = vld1_s16(n64Mat->integer[3]);
+    _integer_s16.val[0] = vld1_s16(n64Mat.integer[0]);
+    _integer_s16.val[1] = vld1_s16(n64Mat.integer[1]);
+    _integer_s16.val[2] = vld1_s16(n64Mat.integer[2]);
+    _integer_s16.val[3] = vld1_s16(n64Mat.integer[3]);
 
     // Load fraction
     uint16x4x4_t _fraction_u16;
-    _fraction_u16.val[0] = vld1_u16(n64Mat->fraction[0]);
-    _fraction_u16.val[1] = vld1_u16(n64Mat->fraction[1]);
-    _fraction_u16.val[2] = vld1_u16(n64Mat->fraction[2]);
-    _fraction_u16.val[3] = vld1_u16(n64Mat->fraction[3]);
+    _fraction_u16.val[0] = vld1_u16(n64Mat.fraction[0]);
+    _fraction_u16.val[1] = vld1_u16(n64Mat.fraction[1]);
+    _fraction_u16.val[2] = vld1_u16(n64Mat.fraction[2]);
+    _fraction_u16.val[3] = vld1_u16(n64Mat.fraction[3]);
 
     // Reverse 16bit values --> j^1
     _integer_s16.val[0] = vrev32_s16 (_integer_s16.val[0]);                 // 0 1 2 3 --> 1 0 3 2
@@ -75,5 +91,7 @@ void RSP_LoadMatrix( f32 mtx[4][4], u32 address )
     vst1q_f32(mtx[1], _integer_f32.val[1]);
     vst1q_f32(mtx[2], _integer_f32.val[2]);
     vst1q_f32(mtx[3], _integer_f32.val[3]);
+
+    return true;
 }
 

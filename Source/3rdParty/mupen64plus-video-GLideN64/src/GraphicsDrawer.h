@@ -137,6 +137,8 @@ public:
 
 	bool isRejected(u32 _v0, u32 _v1, u32 _v2) const;
 
+	bool isAlphaCompareCulled(s32 _v0, s32 _v1, s32 _v2, s8 _mode, u8 _alpha) const;
+
 	SPVertex & getVertex(u32 _v) { return triangles.vertices[_v&VERTBUFF_MASK]; }
 
 	SPVertex * getVertexPtr(u32 _v) { return triangles.vertices.data() + _v; }

@@ -274,7 +274,14 @@ TxReSample::minify(uint8 **src, int *width, int *height, int ratio)
 	}
 
 	/* prepare filter lookup table. only half width required for symetric filters. */
-	double *weight = (double*)malloc((int)((half_window * ratio) * sizeof(double)));
+	/* The loops below run while x < half_window * ratio, so they touch
+	 * ceil(half_window * ratio) entries. Truncating the product instead, as
+	 * (int)((half_window * ratio) * sizeof(double)) did, happens to be exact
+	 * for the half_window of 5.0 used here but is one entry short whenever the
+	 * product is fractional: swapping in the commented-out gaussian window of
+	 * 1.5 at ratio 3 would allocate 4 doubles and write 5. */
+	const size_t numWeights = static_cast<size_t>(ceil(half_window * ratio));
+	double *weight = (double*)malloc(numWeights * sizeof(double));
 	if (!weight) {
 		free(tmptex);
 		free(workbuf);

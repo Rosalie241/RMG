@@ -418,6 +418,23 @@ graphics::CombinerProgram * ContextImpl::createCombinerProgram(Combiner & _color
 	return m_combinerProgramBuilder->buildCombinerProgram(_color, _alpha, _key);
 }
 
+void ContextImpl::createCombinerProgramAsync(Combiner & _color, Combiner & _alpha, const CombinerKey & _key)
+{
+	m_combinerProgramBuilder->beginCombinerProgram(_color, _alpha, _key);
+}
+
+void ContextImpl::getCompiledCombinerPrograms(graphics::Combiners & _compiled, bool _wait)
+{
+	if (m_combinerProgramBuilder)
+		m_combinerProgramBuilder->getCompiledCombinerPrograms(_compiled, _wait);
+}
+
+void ContextImpl::dropPendingCombinerPrograms()
+{
+	if (m_combinerProgramBuilder)
+		m_combinerProgramBuilder->dropPendingCombinerPrograms();
+}
+
 bool ContextImpl::saveShadersStorage(const graphics::Combiners & _combiners)
 {
 	glsl::ShaderStorage storage(m_glInfo, m_cachedFunctions->getCachedUseProgram());
@@ -536,6 +553,8 @@ bool ContextImpl::isSupported(graphics::SpecialFeatures _feature) const
 		return m_glInfo.eglImageFramebuffer;
 	case graphics::SpecialFeatures::DualSourceBlending:
 		return m_glInfo.dual_source_blending;
+	case graphics::SpecialFeatures::AsyncShaderCompilation:
+		return m_glInfo.parallelShaderCompile;
 	}
 	return false;
 }
