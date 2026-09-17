@@ -312,10 +312,10 @@ void MainDialog::on_tabWidget_currentChanged(int index)
     }
 }
 
-void MainDialog::on_SDLThread_DeviceFound(QString name, QString path, QString serial, SDL_JoystickID joystickId)
+void MainDialog::on_SDLThread_DeviceFound(QString name, QString path, QString serial, QString guid, SDL_JoystickID joystickId)
 {
     const InputDevice inputDevice = { InputDeviceType::Joystick, name.toStdString(), 
-                                      path.toStdString(), serial.toStdString(), joystickId };
+                                      path.toStdString(), serial.toStdString(), guid.toStdString(), joystickId };
     this->inputDeviceList.append(inputDevice);
 }
 
