@@ -8,24 +8,31 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "Sdl3GuidWithIndex.hpp"
+
 #include <string>
 #include <vector>
+
 #include <SDL3/SDL.h>
 
 using namespace Utilities;
 
 std::string Utilities::Sdl3GuidWithIndex(std::vector<std::string>& guidsWithoutIndex, SDL_JoystickID joystickId)
 {
-    char guidBuffer[33]{};
-    SDL_GUIDToString(SDL_GetJoystickGUIDForID(joystickId), guidBuffer, sizeof(guidBuffer));
-    std::string guidWithoutIndex = std::string(guidBuffer);
-
+    char guidBuffer[33] = {0};
     int guidIndex = 0;
-    for(auto& otherDeviceGuidWithoutIndex : guidsWithoutIndex) {
-        if(otherDeviceGuidWithoutIndex == guidWithoutIndex) guidIndex++;
+    std::string guidWithoutIndex;
+
+    SDL_GUIDToString(SDL_GetJoystickGUIDForID(joystickId), guidBuffer, sizeof(guidBuffer));
+    guidWithoutIndex = guidBuffer;
+
+    for (const auto& otherDeviceGuidWithoutIndex : guidsWithoutIndex)
+    {
+        if (otherDeviceGuidWithoutIndex == guidWithoutIndex)
+        {
+            guidIndex++;
+        }
     }
     guidsWithoutIndex.push_back(guidWithoutIndex);
-    std::string guidWithIndex = guidWithoutIndex + "/" + std::to_string(guidIndex);
 
-    return guidWithIndex;
+    return guidWithoutIndex + "/" + std::to_string(guidIndex);
 }
