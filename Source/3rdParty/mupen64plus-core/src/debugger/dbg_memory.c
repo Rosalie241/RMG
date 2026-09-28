@@ -36,7 +36,7 @@
 #define ATTR_FMT(fmtpos, attrpos)
 #endif
 
-#if !defined(NO_ASM) && (defined(__i386__) || (defined(__x86_64__) && defined(__GNUC__)))
+#if !defined(NO_HOST_DISASSEMBLER) && !defined(NO_ASM) && (defined(__i386__) || (defined(__x86_64__) && defined(__GNUC__)))
 
 /* we must define PACKAGE so that bfd.h (which is included from dis-asm.h) doesn't throw an error */
 #define PACKAGE "mupen64plus-core"
@@ -224,7 +224,7 @@ int get_has_recompiled(struct r4300_core* r4300, uint32_t addr)
     unsigned char *assemb, *end_addr;
 
     if (r4300->emumode != EMUMODE_DYNAREC || r4300->cached_interp.blocks[addr>>12] == NULL)
-        return FALSE;
+        return 0;
 
     assemb = (r4300->cached_interp.blocks[addr>>12]->code) +
         (r4300->cached_interp.blocks[addr>>12]->block[(addr&0xFFF)/4].local_addr);
@@ -236,9 +236,9 @@ int get_has_recompiled(struct r4300_core* r4300, uint32_t addr)
     else
         end_addr += r4300->cached_interp.blocks[addr>>12]->block[(addr&0xFFF)/4+1].local_addr;
     if(assemb==end_addr)
-        return FALSE;
+        return 0;
 
-    return TRUE;
+    return 1;
 }
 
 #else
