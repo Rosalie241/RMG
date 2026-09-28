@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = git@github.com:PixelMechanic0/softrdp.git
+	branch = main
+	commit = f14621162b3b5fe15a9408542d543c17e99e7e57
+	parent = ad2265a4d37192dba44607e52bd8e187b12640b9
+	method = merge
+	cmdver = 0.4.6

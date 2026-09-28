@@ -1,0 +1,215 @@
+name: Build and Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+env:
+  LLVM_MINGW_VERSION: "20260908"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            ca-certificates \
+            curl \
+            make \
+            xz-utils \
+            zip
+
+      - name: Install llvm-mingw
+        shell: bash
+        run: |
+          set -euxo pipefail
+
+          ARCHIVE="llvm-mingw-${LLVM_MINGW_VERSION}-ucrt-ubuntu-22.04-x86_64.tar.xz"
+          URL="https://github.com/mstorsjo/llvm-mingw/releases/download/${LLVM_MINGW_VERSION}/${ARCHIVE}"
+          TOOLCHAIN="${RUNNER_TEMP}/llvm-mingw"
+
+          curl \
+            --fail \
+            --location \
+            --retry 3 \
+            --output "${RUNNER_TEMP}/${ARCHIVE}" \
+            "${URL}"
+
+          mkdir -p "${TOOLCHAIN}"
+
+          tar \
+            -xJf "${RUNNER_TEMP}/${ARCHIVE}" \
+            -C "${TOOLCHAIN}" \
+            --strip-components=1
+
+          echo "${TOOLCHAIN}/bin" >> "${GITHUB_PATH}"
+
+      - name: Verify LLVM toolchain
+        shell: bash
+        run: |
+          set -euxo pipefail
+
+          x86_64-w64-mingw32-clang --version
+          i686-w64-mingw32-clang --version
+          ld.lld --version
+
+          echo
+          echo "64-bit target:"
+          x86_64-w64-mingw32-clang -dumpmachine
+
+          echo
+          echo "32-bit target:"
+          i686-w64-mingw32-clang -dumpmachine
+
+      - name: Show build configuration
+        shell: bash
+        run: |
+          make print-config \
+            CC=x86_64-w64-mingw32-clang \
+            PJ64_CC=i686-w64-mingw32-clang
+
+      - name: Build Windows plugins
+        shell: bash
+        run: |
+          set -euxo pipefail
+
+          make -j"$(nproc)" all \
+            CC=x86_64-w64-mingw32-clang \
+            PJ64_CC=i686-w64-mingw32-clang
+
+      - name: Verify build outputs
+        shell: bash
+        run: |
+          set -euxo pipefail
+
+          M64P="build/mupen64plus-video-softrdp.dll"
+          PJ64="build32/softrdp-pj64.dll"
+
+          test -f "${M64P}"
+          test -f "${PJ64}"
+
+          echo
+          echo "Mupen64Plus:"
+          llvm-readobj --file-headers "${M64P}" \
+            | tee "${RUNNER_TEMP}/m64p-headers.txt"
+
+          grep -q \
+            "Machine: IMAGE_FILE_MACHINE_AMD64" \
+            "${RUNNER_TEMP}/m64p-headers.txt"
+
+          echo
+          echo "Project64:"
+          llvm-readobj --file-headers "${PJ64}" \
+            | tee "${RUNNER_TEMP}/pj64-headers.txt"
+
+          grep -q \
+            "Machine: IMAGE_FILE_MACHINE_I386" \
+            "${RUNNER_TEMP}/pj64-headers.txt"
+
+          echo
+          echo "Architecture checks passed."
+
+      - name: Determine version
+        shell: bash
+        run: |
+          set -euxo pipefail
+
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+          else
+            REF="${GITHUB_REF_NAME//\//-}"
+            VERSION="${REF}-${GITHUB_SHA::7}"
+          fi
+
+          echo "VERSION=${VERSION}" >> "${GITHUB_ENV}"
+          echo "Version: ${VERSION}"
+
+      - name: Package build
+        shell: bash
+        run: |
+          set -euxo pipefail
+
+          PACKAGE_NAME="softrdp-${VERSION}-windows"
+
+          rm -rf package dist
+
+          mkdir -p \
+            package/Project64 \
+            package/Mupen64Plus \
+            dist
+
+          cp \
+            build32/softrdp-pj64.dll \
+            package/Project64/
+
+          cp \
+            build/mupen64plus-video-softrdp.dll \
+            package/Mupen64Plus/
+
+          cp README.md package/
+          cp LICENSE package/
+          cp THIRD_PARTY_NOTICES.md package/
+          cp -a LICENSES package/LICENSES
+
+          (
+            cd package
+
+            zip -9 -r \
+              "../dist/${PACKAGE_NAME}.zip" \
+              Project64 \
+              Mupen64Plus \
+              README.md \
+              LICENSE \
+              THIRD_PARTY_NOTICES.md \
+              LICENSES
+          )
+
+          (
+            cd dist
+
+            sha256sum \
+              "${PACKAGE_NAME}.zip" \
+              > SHA256SUMS.txt
+          )
+
+          echo
+          echo "Package contents:"
+          unzip -l "dist/${PACKAGE_NAME}.zip"
+
+          echo
+          echo "SHA-256:"
+          cat dist/SHA256SUMS.txt
+
+      - name: Upload build artifact
+        if: github.ref_type != 'tag'
+        uses: actions/upload-artifact@v7
+        with:
+          path: dist/softrdp-${{ env.VERSION }}-windows.zip
+          archive: false
+          retention-days: 14
+
+      - name: Create GitHub Release
+        if: github.ref_type == 'tag'
+        shell: bash
+        run: |
+          set -euxo pipefail
+
+          gh release create "${GITHUB_REF_NAME}" \
+            "dist/softrdp-${VERSION}-windows.zip" \
+            "dist/SHA256SUMS.txt" \
+            --verify-tag \
+            --generate-notes \
+            --title "${GITHUB_REF_NAME}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

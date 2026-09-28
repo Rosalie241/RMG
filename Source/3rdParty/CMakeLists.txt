@@ -206,6 +206,25 @@ ExternalProject_Add(mupen64plus-video-parallel
     BUILD_BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-video-parallel/mupen64plus-video-parallel.${SO_EXT}
 )
 
+set(SOFTRDP_MAKE_OPTFLAGS "-fPIC ${MAKE_OPTFLAGS}")
+ExternalProject_Add(mupen64plus-video-softrdp
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-video-softrdp/
+
+    CONFIGURE_COMMAND ""
+    INSTALL_COMMAND ""
+
+    BUILD_COMMAND ${MAKE_CMD} mupen64plus -f ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-video-softrdp/Makefile
+        CC=${MAKE_CC_COMPILER} CXX=${MAKE_CXX_COMPILER}
+        CFLAGS=${SOFTRDP_MAKE_OPTFLAGS} LDFLAGS=${SOFTRDP_MAKE_OPTFLAGS}
+        BUILD_DIR=${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-video-softrdp
+        OBJ_DIR=${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-video-softrdp
+        WINDOWS=0
+    BUILD_IN_SOURCE True
+    BUILD_ALWAYS True
+
+    BUILD_BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/mupen64plus-video-softrdp/mupen64plus-video-softrdp.${SO_EXT}
+)
+
 set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/imgui)
 set(IMGUI_SOURCES
     ${IMGUI_DIR}/imgui_draw.cpp
@@ -264,6 +283,9 @@ set(MUPEN64PLUS_PLUGIN_GFX_GLIDEN64_DATA ${GLIDEN64_CUSTOM_INI} PARENT_SCOPE)
 
 ExternalProject_Get_property(mupen64plus-video-parallel BUILD_BYPRODUCTS)
 set(MUPEN64PLUS_PLUGIN_GFX_PARALLEL ${BUILD_BYPRODUCTS} PARENT_SCOPE)
+
+ExternalProject_Get_property(mupen64plus-video-softrdp BUILD_BYPRODUCTS)
+set(MUPEN64PLUS_PLUGIN_GFX_SOFTRDP ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 
 set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/imgui PARENT_SCOPE)
 

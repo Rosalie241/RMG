@@ -1,0 +1,11 @@
+# Build output
+/build/
+/build32/
+*.o
+*.d
+*.dll
+*.exe
+
+# Runtime diagnostics
+/logs/
+/frame_dump.bin
