@@ -673,15 +673,15 @@ void ControllerWidget::CheckInputDeviceSettings(QString sectionQString)
     {
         inputDeviceData otherDeviceData = this->inputDeviceComboBox->itemData(i).value<inputDeviceData>();
         InputDevice otherDevice = otherDeviceData.device;
-        if (device.guid == otherDevice.guid)
+        if (device.name == otherDevice.name)
         {
-            deviceGuidIndex = i;
-            break;
-        }
-        if (device.name == otherDevice.name &&
-            device.serial == otherDevice.serial)
-        {
-            if (!device.serial.empty())
+            if (device.guid == otherDevice.guid)
+            {
+                deviceGuidIndex = i;
+            }
+
+            if (device.serial == otherDevice.serial && 
+                !device.serial.empty())
             {
                 deviceSerialIndex = i;
             }

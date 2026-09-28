@@ -85,11 +85,14 @@ struct InputDevice
 
     bool operator== (const InputDevice& other) const
     {
-        return other.guid == guid || (other.type == type &&
-                other.name == name &&
-                other.path == path &&
-                other.serial == serial &&
-                other.id == id);
+        return (!other.guid.empty() &&
+                    !guid.empty() &&
+                    other.guid == guid)
+                || (other.type == type &&
+                    other.name == name &&
+                    other.path == path &&
+                    other.serial == serial &&
+                    other.id == id);
     }
 };
 
