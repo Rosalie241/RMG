@@ -8,6 +8,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 #include "NetplayCommon.hpp"
+#include "Utilities/QtMessageBox.hpp"
 
 #include <QCryptographicHash>
 #include <QByteArray>
@@ -22,6 +23,12 @@
 #include <RMG-Core/Version.hpp>
 
 using namespace NetplayCommon;
+using namespace Utilities;
+
+void NetplayCommon::ShowServerConfigError(QWidget* parent)
+{
+    QtMessageBox::Error(parent, "Servers have not been configured", "You can configure the server list in the netplay tab of the settings dialog");
+}
 
 void NetplayCommon::AddCommonJson(QJsonObject& json)
 {

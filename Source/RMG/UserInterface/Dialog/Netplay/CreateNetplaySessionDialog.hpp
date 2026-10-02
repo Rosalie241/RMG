@@ -34,12 +34,16 @@ class CreateNetplaySessionDialog : public QDialog, private Ui::CreateNetplaySess
     CreateNetplaySessionDialog(QWidget *parent, QWebSocket* webSocket, QMap<QString, CoreRomSettings> data);
     ~CreateNetplaySessionDialog(void);
 
+    bool HasValidServerConfig(void);
+
     QJsonObject GetSessionJson(void);
     QString     GetSessionFile(void);
 
   private:
   	QWebSocket* webSocket;
     QUdpSocket broadcastSocket;
+
+    bool validServerConfig = false;
 
     int pingTimerId = -1;
 

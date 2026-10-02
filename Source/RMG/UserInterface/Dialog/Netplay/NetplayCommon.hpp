@@ -13,6 +13,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QComboBox>
+#include <QWidget>
 #include <QString>
 #ifdef NETPLAY
 #include <QNetworkRequest>
@@ -25,6 +26,9 @@ namespace NetplayCommon
     #define NETPLAYCOMMON_SESSION_REGEX "[a-zA-Z0-9 ]+"
     #define NETPLAYCOMMON_NICKNAME_REGEX "[a-zA-Z0-9]+"
     #define NETPLAYCOMMON_PASSWORD_REGEX "[a-zA-Z0-9,.\\/<>?;:[\\]{}\\-=_+`~!@#$%^&*()]+"
+
+    // Shows unconfigured server list error
+    void ShowServerConfigError(QWidget* parent);
 
     // Adds common json emulator and auth info
     void AddCommonJson(QJsonObject& json);

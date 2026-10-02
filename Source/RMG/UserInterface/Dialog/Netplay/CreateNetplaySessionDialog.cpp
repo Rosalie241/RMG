@@ -83,25 +83,34 @@ CreateNetplaySessionDialog::CreateNetplaySessionDialog(QWidget *parent, QWebSock
     if (!serverUrl.isEmpty())
     {
         QFile qFile(serverUrl);
+        QUrl qUrl = QUrl::fromUserInput(serverUrl);
         if (qFile.exists())
         {
             if (qFile.open(QIODevice::ReadOnly))
             {
                 NetplayCommon::AddServers(this->serverComboBox, 
-                                          QJsonDocument::fromJson(qFile.readAll()));   
+                                          QJsonDocument::fromJson(qFile.readAll()));
+                this->validServerConfig = true;
             }
             else
             {
                 QtMessageBox::Error(this, "Server Error", "Failed to open server list json: " + qFile.errorString());
+                return;
             }
         }
-        else if (QUrl(serverUrl).isValid())
+        else if (qUrl.isValid() && !qUrl.isLocalFile())
         {
             QNetworkAccessManager* networkAccessManager = new QNetworkAccessManager(this);
             connect(networkAccessManager, &QNetworkAccessManager::finished, this, &CreateNetplaySessionDialog::on_jsonServerListDownload_Finished);
             networkAccessManager->setTransferTimeout(15000);
             networkAccessManager->get(QNetworkRequest(QUrl(serverUrl)));
+            this->validServerConfig = true;
         }
+    }
+
+    if (!this->validServerConfig)
+    {
+        NetplayCommon::ShowServerConfigError(this);
     }
 }
 
@@ -118,6 +127,11 @@ CreateNetplaySessionDialog::~CreateNetplaySessionDialog(void)
     {
         CoreSettingsSetValue(SettingsID::Netplay_SelectedServer, server.toStdString());
     }
+}
+
+bool CreateNetplaySessionDialog::HasValidServerConfig(void)
+{
+    return this->validServerConfig;
 }
 
 QJsonObject CreateNetplaySessionDialog::GetSessionJson(void)

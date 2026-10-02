@@ -35,6 +35,8 @@ class NetplaySessionBrowserDialog : public QDialog, private Ui::NetplaySessionBr
     NetplaySessionBrowserDialog(QWidget *parent, QWebSocket* webSocket, QMap<QString, CoreRomSettings> data);
     ~NetplaySessionBrowserDialog(void);
 
+    bool HasValidServerConfig(void);
+
     QJsonObject GetSessionJson(void);
     QString     GetSessionFile(void);
 
@@ -46,6 +48,8 @@ class NetplaySessionBrowserDialog : public QDialog, private Ui::NetplaySessionBr
     QString sessionPassword;
     NetplaySessionData sessionData;
     QMap<QString, CoreRomSettings> romData;
+
+    bool validServerConfig = false;
 
     int pingTimerId = -1;
 
