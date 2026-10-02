@@ -41,7 +41,9 @@ PJ64_CC  ?= i686-w64-mingw32-gcc
 # compile and the artefact suffix follow CC's target, not the host. Clang may
 # canonicalize x86_64-w64-mingw32 to x86_64-w64-windows-gnu; accept both.
 CC_MACHINE := $(shell $(CC) -dumpmachine)
+ifeq ($(WINDOWS),1)
 PJ64_CC_MACHINE := $(shell $(PJ64_CC) -dumpmachine)
+endif
 ifneq (,$(or $(findstring mingw,$(CC_MACHINE)),$(findstring windows,$(CC_MACHINE))))
 TARGET_WINDOWS := 1
 DLL := .dll
