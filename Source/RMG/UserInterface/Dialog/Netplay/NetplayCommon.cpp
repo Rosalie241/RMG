@@ -119,14 +119,32 @@ void NetplayCommon::RestoreSelectedServer(QComboBox* comboBox)
     }
 }
 
-QString NetplayCommon::GetServerData(QComboBox* comboBox, int index)
+QUrl NetplayCommon::GetServerUrl(QComboBox* comboBox, int index)
 {
     if (index == -1)
     {
         index = comboBox->currentIndex();
     }
 
-    return comboBox->itemData(index).toString();
+    QString itemData = comboBox->itemData(index).toString();
+    QUrl url = QUrl::fromUserInput(itemData);
+    if (!url.isValid())
+    {
+        return url;
+    }
+
+    if (url.port() == -1)
+    {
+        url.setPort(45000);
+    }
+
+    if (url.scheme().isEmpty() ||
+        url.scheme() == "http")
+    {
+        url.setScheme("ws");
+    }
+
+    return url;
 }
 
 QNetworkRequest NetplayCommon::GetNetworkRequest(QUrl url)

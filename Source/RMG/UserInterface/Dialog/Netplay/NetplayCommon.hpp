@@ -42,10 +42,10 @@ namespace NetplayCommon
     // Restores previously selected server
     void RestoreSelectedServer(QComboBox* comboBox);
 
-    // Returns server data from comboBox
-    QString GetServerData(QComboBox* comboBox, int index = -1);
-
 #ifdef NETPLAY
+    // Returns server URL from comboBox
+    QUrl GetServerUrl(QComboBox* comboBox, int index = -1);
+
     // Returns network request from url with emulator id
     QNetworkRequest GetNetworkRequest(QUrl url);
 #endif // NETPLAY

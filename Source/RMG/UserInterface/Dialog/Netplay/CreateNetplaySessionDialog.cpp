@@ -303,8 +303,7 @@ void CreateNetplaySessionDialog::on_serverComboBox_currentIndexChanged(int index
 
     this->pingTimerId = this->startTimer(2000);
 
-    QString address = NetplayCommon::GetServerData(this->serverComboBox, index);
-    this->webSocket->open(QUrl(address));
+    this->webSocket->open(NetplayCommon::GetServerUrl(this->serverComboBox, index));
 }
 
 void CreateNetplaySessionDialog::on_nickNameLineEdit_textChanged(void)

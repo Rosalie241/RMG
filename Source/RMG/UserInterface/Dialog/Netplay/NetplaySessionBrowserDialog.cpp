@@ -373,8 +373,7 @@ void NetplaySessionBrowserDialog::on_serverComboBox_currentIndexChanged(int inde
 
     this->pingTimerId = this->startTimer(2000);
 
-    QString address = NetplayCommon::GetServerData(this->serverComboBox, index);
-    this->webSocket->open(QUrl(address));
+    this->webSocket->open(NetplayCommon::GetServerUrl(this->serverComboBox, index));
 }
 
 void NetplaySessionBrowserDialog::on_sessionBrowserWidget_OnSessionChanged(bool valid)
