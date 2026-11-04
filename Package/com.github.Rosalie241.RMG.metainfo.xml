@@ -29,6 +29,17 @@
     </screenshot>
   </screenshots>
   <releases>
+    <release version="v0.9.1" date="2026-11-04" type="stable">
+      <description>
+        <p>Changes:</p>
+        <ul>
+          <li>Fix controller presence detection in RMG-Input-GCA (thank you EIREXE)</li>
+          <li>Use SDL GUID in RMG-Input (thank you bmsuseluda)</li>
+          <li>Add mupen64plus-video-softrdp plugin (thank you PixelMechanic0 for the suggestion)</li>
+          <li>Update mupen64plus-core, mupen64plus-video-GLideN64, SDL_GameControllerDB and LZMA SDK</li>
+        </ul>
+      </description>
+    </release>
     <release version="v0.9.0" date="2026-06-14" type="stable">
       <description>
         <p>Changes:</p>
