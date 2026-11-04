@@ -52,13 +52,15 @@ else()
     set(MAKE_DEBUG "0")
 endif()
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(SDL3_net REQUIRED sdl3-net)
-set(SDL3NET_LDLIBS ${SDL3_net_LDFLAGS})
-set(SDL3NET_CFLAGS "-DUSE_SDL3NET ${SDL3_net_CFLAGS}")
-# list -> string
-string (REPLACE ";" " " SDL3NET_LDLIBS "${SDL3NET_LDLIBS}")
-string (REPLACE ";" " " SDL3NET_CFLAGS "${SDL3NET_CFLAGS}")
+if (NETPLAY)
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(SDL3_net REQUIRED sdl3-net)
+    set(SDL3NET_LDLIBS ${SDL3_net_LDFLAGS})
+    set(SDL3NET_CFLAGS "-DUSE_SDL3NET ${SDL3_net_CFLAGS}")
+    # list -> string
+    string (REPLACE ";" " " SDL3NET_LDLIBS "${SDL3NET_LDLIBS}")
+    string (REPLACE ";" " " SDL3NET_CFLAGS "${SDL3NET_CFLAGS}")
+endif(NETPLAY)
 
 ExternalProject_Add(mupen64plus-core
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/mupen64plus-core/
